@@ -1294,7 +1294,9 @@ function showPracticeEnvironment(reason){
   if(currentTileEntity){
     // Destroy abandoned Google tile runtime instead of caching raw meshes.
     currentTileEntity.removeAttribute('loader-3dtiles');
-    currentTileEntity.remove();currentTileEntity=null;
+    currentTileEntity.dataset.routeKey='';
+    currentTileEntity.dataset.tilesReady='';
+    currentTileEntity=null;
   }
   clearInterval(tilePollTimer);
   byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
@@ -1337,28 +1339,38 @@ function activateRouteFromSelection(iso){
   if(currentTileEntity){
     // Do not hold previously unloaded route imagery in an offscreen cache.
     currentTileEntity.removeAttribute('loader-3dtiles');
-    currentTileEntity.remove();currentTileEntity=null;
+    currentTileEntity.dataset.routeKey='';
+    currentTileEntity.dataset.tilesReady='';
+    currentTileEntity=null;
     clearInterval(tilePollTimer);
   }
   activeMapMode='practice';
   byId('practice-world').object3D.visible=true;
   byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
   mapMessage('Loading Google 3D Tiles near '+route.name+'…');
-  const tile=document.createElement('a-entity');
-  tile.id='google-3d-tiles';
+  // Reuse dedicated scene entity rather than creating a new root per route.
+  const tile=byId('google-tiles');
+  if(!tile){showPracticeEnvironment('Practice road · missing Google tile entity');return;}
   tile.dataset.routeKey=sessionKey;
+  tile.dataset.tilesReady='';
   currentTileEntity=tile;
-  // Loader handles tile paging and Google's temporary tileset session.
-  // Set NO lat/long/height attributes: the NYT component's update method
-  // can otherwise perform an unnecessary second root load. Use the ready
-  // runtime.orientToGeocoord() API once instead.
-  scene.appendChild(tile);
-  tile.setAttribute('loader-3dtiles',{
-    url:'https://tile.googleapis.com/v1/3dtiles/root.json',
-    googleApiKey:GOOGLE_MAPS_API_KEY,
-    cameraEl:'#head',geoTransform:'Mercator',
-    maximumSSE:48,maximumMem:64
-  });
+  // The NYT v1.0.6 loader's documented schema names.
+  // Height 0 avoids its falsy-height branch that can reinitialize tiles;
+  // orientToGeocoord below performs the geolocation exactly once.
+  // Credentials are a restricted *public browser key*, never a server secret.
+  const config=[
+    'url: https://tile.googleapis.com/v1/3dtiles/root.json',
+    'googleApiKey: '+GOOGLE_MAPS_API_KEY,
+    'geoTransform: Mercator',
+    'cameraEl: #camera',
+    'lat: '+Number(route.lat),
+    'long: '+Number(route.lon),
+    'height: 0',
+    'maximumSSE: 48',
+    'maximumMem: 64'
+  ].join('; ');
+  tile.setAttribute('loader-3dtiles',config);
+  console.info('[3D Tiles] Loader requested for '+route.name+' on #camera (Mercator)');
   const requestedAt=Date.now();
   let oriented=false;
   clearInterval(tilePollTimer);
@@ -1408,6 +1420,8 @@ function activateRouteFromSelection(iso){
       }
     }else if(Date.now()-requestedAt>35000){
       clearInterval(tilePollTimer);
+      console.warn('[3D Tiles] Timed out. Inspect tile.googleapis.com calls, billing, key restrictions,',
+                   'and NYT loader compatibility in the Network and Console panels.');
       showPracticeEnvironment('Practice road · Google tiles timed out or key rejected');
     }
   },350);
