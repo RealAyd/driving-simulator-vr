@@ -26,6 +26,12 @@ Right-handed: **+X east/right, +Y up, -Z north/forward at heading 0**. Heading i
 
 Steps 1–6 run inside `FixedStepClock.advance` at 60 Hz (max 5 catch-up steps). Step 7 interpolates with `clock.alpha`.
 
+## Mirrors
+
+- A mirror is a camera in the same world rendering into a texture on the mirror glass (`src/cockpit/mirror.ts`). It is never a tinted gaze target.
+- Mirror cameras exclude the learner car's own meshes and use a fixed projection matching the glass shape.
+- Mirror resolution and update interval come from the quality profile. Reduce decorative detail before reducing mirror usefulness.
+
 ## Ownership rules
 
 - The learner vehicle's movement is owned by `VehicleController`. Others read `pose` / `interpolatedPose`.

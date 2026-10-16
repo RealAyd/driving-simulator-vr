@@ -1,4 +1,4 @@
-import {WebXRState,type Scene,type TransformNode,type WebXRDefaultExperience} from '@babylonjs/core';
+import {WebXRState,type Scene,type TransformNode,type WebXRDefaultExperience} from '../engine/babylon';
 
 export interface XrSupport{
   available:boolean;
@@ -30,7 +30,9 @@ export class SeatedXr{
   constructor(private readonly scene:Scene,private readonly seatNode:TransformNode){}
 
   async enter():Promise<void>{
-    this.experience??=await this.scene.createDefaultXRExperienceAsync({
+    // WebXR code is loaded only when someone actually enters VR.
+    const {WebXRDefaultExperience}=await import('@babylonjs/core/XR/webXRDefaultExperience');
+    this.experience??=await WebXRDefaultExperience.CreateAsync(this.scene,{
       disableDefaultUI:true,
       disableTeleportation:true,
       disableNearInteraction:true,

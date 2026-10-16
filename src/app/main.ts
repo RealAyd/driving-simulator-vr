@@ -1,10 +1,12 @@
-import {Engine,FreeCamera,Scene,TransformNode,Vector3} from '@babylonjs/core';
+import {Engine,FreeCamera,Matrix,Scene,TransformNode,Vector3} from '../engine/babylon';
 import locationJson from '../../content/locations/representative-residential-straight.json';
 import {degToRad,parseLocation,type Pose} from '../contracts';
 import {applyPose,configureScene} from '../engine/babylonAdapter';
 import {FixedStepClock} from '../engine/clock';
+import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
 import {buildCockpit} from '../cockpit/cockpitModel';
+import {INTERIOR_MIRROR,Mirror} from '../cockpit/mirror';
 import {DriverHead} from '../cockpit/seat';
 import {KeyboardInput,type InputAction} from '../input/keyboard';
 import {Hud} from '../ui/hud';
@@ -68,6 +70,8 @@ export async function boot():Promise<void>{
   const seatNode=new TransformNode('driver-seat',scene);
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);
+
+  const mirrors=[new Mirror(scene,vehicleNode,cockpit.root,INTERIOR_MIRROR,quality,head.seat.eye)];
 
   const camera=new FreeCamera('driver-camera',Vector3.Zero(),scene);
   camera.inputs.clear();
@@ -162,14 +166,17 @@ export async function boot():Promise<void>{
   hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
   byId('location-label').textContent=`${place.name} — ${place.fidelity} layout, ${place.reviewStatus}`;
 
+  const perf=new PerfProbe();
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
+    if(session.state==='running')perf.record(engine.getDeltaTime());
     if(session.state==='running')clock.advance(dt,step=>vehicle.fixedUpdate(step));
     const pose=vehicle.interpolatedPose(session.state==='running'?clock.alpha:1);
     applyPose(vehicleNode,pose);
     const eye=head.eyeWorld(pose),look=head.lookWorld(pose);
     camera.position.set(eye.x,eye.y,eye.z);
     camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
+    for(const mirror of mirrors)mirror.update(pose);
     hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     scene.render();
   });
@@ -184,11 +191,28 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     quality:quality.id,
-    fps:()=>engine.getFps()
+    /** On-screen rectangle of each mirror's glass, in CSS pixels. */
+    mirrors:()=>mirrors.map(m=>{
+      m.glass.computeWorldMatrix(true);
+      const box=m.glass.getBoundingInfo().boundingBox.vectorsWorld;
+      const viewport=camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight());
+      const ratio=canvas.clientWidth/engine.getRenderWidth();
+      const points=box.map(v=>Vector3.Project(v,Matrix.IdentityReadOnly,scene.getTransformMatrix(),viewport));
+      const xs=points.map(p=>p.x*ratio),ys=points.map(p=>p.y*ratio);
+      return {id:m.spec.id,left:Math.min(...xs),top:Math.min(...ys),right:Math.max(...xs),bottom:Math.max(...ys)};
+    }),
+    fps:()=>engine.getFps(),
+    perf:()=>perf.stats(),
+    resetPerf:()=>perf.reset(),
+    renderer:()=>{
+      const gl=engine._gl as WebGLRenderingContext|null;
+      const info=gl?.getExtension('WEBGL_debug_renderer_info');
+      return {webgl:engine.webGLVersion,renderer:info&&gl?String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)):'unknown',size:[engine.getRenderWidth(),engine.getRenderHeight()]};
+    }
   })});
 
   window.addEventListener('pagehide',()=>{
-    input.dispose();xr.dispose();cockpit.dispose();world.dispose();scene.dispose();engine.dispose();
+    input.dispose();xr.dispose();for(const mirror of mirrors)mirror.dispose();cockpit.dispose();world.dispose();scene.dispose();engine.dispose();
   });
 
   session.to('ready');

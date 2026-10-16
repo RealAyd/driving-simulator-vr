@@ -1,0 +1,20 @@
+{
+  "measuredAt": "2026-10-16T23:50:30.464Z",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+  "renderer": {
+    "webgl": 2,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "size": [
+      1280,
+      720
+    ]
+  },
+  "quality": "desktop",
+  "perf": {
+    "frames": 53,
+    "averageFps": 8.662112247900044,
+    "p50Ms": 112.9000000001397,
+    "p95Ms": 207.80000000004657,
+    "worstMs": 230.69999999995343
+  }
+}

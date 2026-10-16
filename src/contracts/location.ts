@@ -32,7 +32,9 @@ export const BlockSchema=z.object({
   headingDeg:z.number().default(0),
   size:z.object({width:z.number().positive(),depth:z.number().positive(),height:z.number().positive()}).strict(),
   /** Blocks driver sight lines (true) or is decorative only. */
-  occludes:z.boolean().default(true)
+  occludes:z.boolean().default(true),
+  /** Optional display colour, #rrggbb. */
+  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 }).strict();
 
 export const LocationSchema=z.object({

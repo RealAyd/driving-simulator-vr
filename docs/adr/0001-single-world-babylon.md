@@ -19,5 +19,5 @@ The legacy prototype (`/index.html`, A-Frame) placed a cockpit over a separate G
 ## Consequences
 
 - Realism comes from authored geometry and reusable assets, not photographs. Locations are labelled honestly: representative, geographically inspired, or reviewed.
-- Babylon is imported from the package root in G0 (about 1.5 MB gzipped). Deep imports to shrink this are a G1 task.
+- Babylon is imported per module through `src/engine/babylon.ts` (G1: about 251 KB gzipped for the main bundle); WebXR is loaded on demand.
 - WebXR comes from Babylon's default experience; the headset only adds physical head pose to a seat-mounted camera.

@@ -1,5 +1,6 @@
 import {describe,expect,it} from 'vitest';
-import {FreeCamera,NullEngine,Scene,TransformNode,Vector3} from '@babylonjs/core';
+import {NullEngine} from '@babylonjs/core/Engines/nullEngine';
+import {FreeCamera,Scene,TransformNode,Vector3} from '../../src/engine/babylon';
 import {degToRad,forwardFromHeading,localToWorld} from '../../src/contracts';
 import {applyPose,configureScene,headingFromRotationY,rotationYFromHeading} from '../../src/engine/babylonAdapter';
 import {FixedStepClock} from '../../src/engine/clock';
@@ -73,5 +74,21 @@ describe('quality profiles',()=>{
     expect(pickQualityProfile('?quality=phone',false,1920).id).toBe('phone');
     expect(pickQualityProfile('',true,400).id).toBe('phone');
     expect(pickQualityProfile('',false,1280).id).toBe('desktop');
+  });
+});
+
+import {PerfProbe} from '../../src/engine/perfProbe';
+describe('performance probe',()=>{
+  it('reports average fps and frame-time percentiles over a rolling window',()=>{
+    const probe=new PerfProbe(100);
+    for(let i=0;i<95;i++)probe.record(16);
+    for(let i=0;i<5;i++)probe.record(50);
+    const s=probe.stats();
+    expect(s.frames).toBe(100);
+    expect(s.p50Ms).toBe(16);
+    expect(s.worstMs).toBe(50);
+    expect(s.averageFps).toBeCloseTo(1000/17.7,1);
+    probe.record(NaN);probe.record(-1);
+    expect(probe.stats().frames).toBe(100);
   });
 });

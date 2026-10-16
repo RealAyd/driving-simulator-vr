@@ -1,4 +1,4 @@
-import {Color3,MeshBuilder,StandardMaterial,TransformNode,type Scene} from '@babylonjs/core';
+import {Color3,CreateBox,CreateCylinder,CreateTorus,StandardMaterial,TransformNode,type Scene} from '../engine/babylon';
 import type {SeatConfig} from './seat';
 
 /**
@@ -6,7 +6,7 @@ import type {SeatConfig} from './seat';
  * node so its transform comes from the vehicle pose only. The dashboard top
  * sits low enough that the road is visible from about 6 m ahead.
  */
-export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConfig):{dispose():void}{
+export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConfig):{root:TransformNode;dispose():void}{
   const root=new TransformNode('cockpit',scene);
   root.parent=vehicleNode;
   const mat=(name:string,c:Color3)=>{
@@ -20,7 +20,7 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   const glassFrame=mat('pillar',new Color3(.05,.05,.06));
 
   const box=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,m:StandardMaterial)=>{
-    const mesh=MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);
+    const mesh=CreateBox(name,{width:w,height:h,depth:d},scene);
     mesh.position.set(x,y,z);
     mesh.material=m;
     mesh.parent=root;
@@ -38,7 +38,7 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   box('roof-lining',1.76,.04,1.9,0,1.58,.45,trim);
   box('rear-panel',1.76,1.3,.06,0,.95,1.2,trim);
 
-  const wheel=MeshBuilder.CreateTorus('steering-wheel',{diameter:.38,thickness:.035,tessellation:32},scene);
+  const wheel=CreateTorus('steering-wheel',{diameter:.38,thickness:.035,tessellation:32},scene);
   wheel.position.set(seat.eye.x,.93,-.5);
   wheel.rotation.x=Math.PI/2-.45;
   wheel.material=trim;
@@ -46,7 +46,7 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
 
   // Thin A-pillars and a slim windscreen header frame the view.
   for(const side of [-1,1]){
-    const pillar=MeshBuilder.CreateCylinder(`a-pillar-${side}`,{height:.78,diameter:.07},scene);
+    const pillar=CreateCylinder(`a-pillar-${side}`,{height:.78,diameter:.07},scene);
     pillar.position.set(side*.82,1.24,-.86);
     pillar.rotation.x=-.8;
     pillar.material=glassFrame;
@@ -56,10 +56,10 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
 
   // Exterior body for other cameras (mirrors, later). Seen from inside, its
   // faces are back faces and are culled, so it does not block the driver.
-  const body=MeshBuilder.CreateBox('car-body',{width:1.8,height:1.0,depth:4.3},scene);
+  const body=CreateBox('car-body',{width:1.8,height:1.0,depth:4.3},scene);
   body.position.set(0,.75,0);
   body.material=paint;
   body.parent=root;
 
-  return {dispose:()=>root.dispose(false,true)};
+  return {root,dispose:()=>root.dispose(false,true)};
 }

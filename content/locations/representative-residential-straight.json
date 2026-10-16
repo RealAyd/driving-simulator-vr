@@ -16,24 +16,191 @@
   "roads": [
     {
       "id": "main-street",
-      "centreline": [{"x": 0, "z": 40}, {"x": 0, "z": -160}, {"x": 12, "z": -260}, {"x": 40, "z": -340}],
-      "lanes": {"count": 2, "width": 3.2},
+      "centreline": [
+        {
+          "x": 0,
+          "z": 40
+        },
+        {
+          "x": 0,
+          "z": -160
+        },
+        {
+          "x": 12,
+          "z": -260
+        },
+        {
+          "x": 40,
+          "z": -340
+        }
+      ],
+      "lanes": {
+        "count": 2,
+        "width": 3.2
+      },
       "surfaceHeight": 0,
       "pavementWidth": 2,
       "kerbHeight": 0.12,
-      "markings": {"centre": "dashed", "edges": false}
+      "markings": {
+        "centre": "dashed",
+        "edges": false
+      }
     }
   ],
   "blocks": [
-    {"id": "house-w-1", "kind": "building", "position": {"x": -12, "z": -10}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "house-w-2", "kind": "building", "position": {"x": -12, "z": -30}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "house-w-3", "kind": "building", "position": {"x": -12, "z": -50}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "house-w-4", "kind": "building", "position": {"x": -12, "z": -70}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "house-e-1", "kind": "building", "position": {"x": 12, "z": -15}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "house-e-2", "kind": "building", "position": {"x": 12, "z": -35}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "house-e-3", "kind": "building", "position": {"x": 12, "z": -55}, "size": {"width": 8, "depth": 9, "height": 7}},
-    {"id": "hedge-w", "kind": "hedge", "position": {"x": -6.6, "z": -40}, "size": {"width": 0.8, "depth": 70, "height": 1.2}, "occludes": true},
-    {"id": "parked-van", "kind": "parked-vehicle", "position": {"x": -2.4, "z": -95}, "size": {"width": 2.0, "depth": 5.3, "height": 2.3}}
+    {
+      "id": "house-w-1",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -10
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-w-2",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -30
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-w-3",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -50
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-w-4",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -70
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-e-1",
+      "kind": "building",
+      "position": {
+        "x": 12,
+        "z": -15
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-e-2",
+      "kind": "building",
+      "position": {
+        "x": 12,
+        "z": -35
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-e-3",
+      "kind": "building",
+      "position": {
+        "x": 12,
+        "z": -55
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "hedge-w",
+      "kind": "hedge",
+      "position": {
+        "x": -6.6,
+        "z": -40
+      },
+      "size": {
+        "width": 0.8,
+        "depth": 70,
+        "height": 1.2
+      },
+      "occludes": true
+    },
+    {
+      "id": "parked-van",
+      "kind": "parked-vehicle",
+      "position": {
+        "x": -2.4,
+        "z": -95
+      },
+      "size": {
+        "width": 2.0,
+        "depth": 5.3,
+        "height": 2.3
+      }
+    },
+    {
+      "id": "parked-car-behind-left",
+      "kind": "parked-vehicle",
+      "position": {
+        "x": -2.5,
+        "z": 14
+      },
+      "size": {
+        "width": 1.8,
+        "depth": 4.2,
+        "height": 1.5
+      },
+      "colour": "#c81e1e"
+    },
+    {
+      "id": "parked-car-behind-right",
+      "kind": "parked-vehicle",
+      "position": {
+        "x": 2.5,
+        "z": 40
+      },
+      "size": {
+        "width": 1.8,
+        "depth": 4.2,
+        "height": 1.5
+      },
+      "colour": "#1e4fc8"
+    }
   ],
-  "spawn": {"position": {"x": -1.6, "z": 0}, "headingDeg": 0, "roadId": "main-street"}
+  "spawn": {
+    "position": {
+      "x": -1.6,
+      "z": 0
+    },
+    "headingDeg": 0,
+    "roadId": "main-street"
+  }
 }

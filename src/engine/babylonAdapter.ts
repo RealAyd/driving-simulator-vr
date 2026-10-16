@@ -1,4 +1,4 @@
-import {Vector3,type Scene,type TransformNode} from '@babylonjs/core';
+import {Vector3,type Scene,type TransformNode} from './babylon';
 import type {Pose,Radians,Vec3} from '../contracts';
 
 /**

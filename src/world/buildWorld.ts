@@ -1,7 +1,7 @@
 import {
-  Color3,DirectionalLight,HemisphericLight,MeshBuilder,StandardMaterial,TransformNode,Vector3,
+  Color3,CreateBox,CreateGround,CreateRibbon,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
   type Mesh,type Scene
-} from '@babylonjs/core';
+} from '../engine/babylon';
 import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
@@ -35,7 +35,7 @@ function offsetLine(road:Road,offset:number,y:number):Vector3[]{
 }
 
 function strip(scene:Scene,name:string,road:Road,from:number,to:number,y:number,mat:StandardMaterial,parent:TransformNode):Mesh{
-  const mesh=MeshBuilder.CreateRibbon(name,{pathArray:[offsetLine(road,from,y),offsetLine(road,to,y)],sideOrientation:2},scene);
+  const mesh=CreateRibbon(name,{pathArray:[offsetLine(road,from,y),offsetLine(road,to,y)],sideOrientation:2},scene);
   mesh.material=mat;
   mesh.parent=parent;
   return mesh;
@@ -53,7 +53,7 @@ function markings(scene:Scene,road:Road,offset:number,dash:number,gap:number,wid
     for(let s=0;s<len;s+=step){
       const l=Math.min(gap>0?dash:len,len-s);
       const c=s+l/2;
-      const line=MeshBuilder.CreateGround(`marking-${road.id}-${offset}-${i}-${s}`,{width,height:l},scene);
+      const line=CreateGround(`marking-${road.id}-${offset}-${i}-${s}`,{width,height:l},scene);
       line.position.set(a.x+ux*c+(-uz)*offset,y,a.z+uz*c+ux*offset);
       line.rotation.y=rotationYFromHeading(heading);
       line.material=mat;
@@ -80,7 +80,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   const white=material(scene,'road-white',new Color3(.95,.95,.93));
   white.emissiveColor=new Color3(.25,.25,.25);
 
-  const ground=MeshBuilder.CreateGround('verge',{width:2000,height:2000},scene);
+  const ground=CreateGround('verge',{width:2000,height:2000},scene);
   ground.position.y=-.02;
   ground.material=grass;
   ground.parent=root;
@@ -93,7 +93,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
       const inner=side*half,outer=side*(half+road.pavementWidth);
       strip(scene,`pavement-${road.id}-${side}`,road,inner,outer,y+road.kerbHeight,pavement,root);
       // Kerb face between carriageway and raised pavement.
-      const face=MeshBuilder.CreateRibbon(`kerb-${road.id}-${side}`,{
+      const face=CreateRibbon(`kerb-${road.id}-${side}`,{
         pathArray:[offsetLine(road,inner,y),offsetLine(road,inner,y+road.kerbHeight)],sideOrientation:2
       },scene);
       face.material=kerb;
@@ -116,12 +116,13 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   const blockMaterials=new Map<string,StandardMaterial>();
   for(const block of location.blocks){
     if(quality.decorativeDetail==='reduced'&&!block.occludes)continue;
-    let mat=blockMaterials.get(block.kind);
+    const key=block.colour??block.kind;
+    let mat=blockMaterials.get(key);
     if(!mat){
-      mat=material(scene,`block-${block.kind}`,blockColours[block.kind]!);
-      blockMaterials.set(block.kind,mat);
+      mat=material(scene,`block-${key}`,block.colour?Color3.FromHexString(block.colour):blockColours[block.kind]!);
+      blockMaterials.set(key,mat);
     }
-    const box=MeshBuilder.CreateBox(block.id,{width:block.size.width,depth:block.size.depth,height:block.size.height},scene);
+    const box=CreateBox(block.id,{width:block.size.width,depth:block.size.depth,height:block.size.height},scene);
     box.position.set(block.position.x,block.size.height/2,block.position.z);
     box.rotation.y=rotationYFromHeading(degToRad(block.headingDeg));
     box.material=mat;
