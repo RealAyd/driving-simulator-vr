@@ -1,0 +1,85 @@
+import type {Controls} from '../vehicle/kinematics';
+import type {ControlSource} from '../vehicle/vehicleController';
+
+export type InputAction='indicator-left'|'indicator-right'|'pause'|'reset'|'recentre';
+
+const THROTTLE=['KeyW','ArrowUp'];
+const BRAKE=['KeyS','ArrowDown','Space'];
+const LEFT=['KeyA','ArrowLeft'];
+const RIGHT=['KeyD','ArrowRight'];
+const ACTIONS:Record<string,InputAction>={
+  BracketLeft:'indicator-left',
+  BracketRight:'indicator-right',
+  KeyP:'pause',
+  Escape:'pause',
+  KeyR:'reset',
+  KeyC:'recentre'
+};
+const DRIVING_KEYS=new Set([...THROTTLE,...BRAKE,...LEFT,...RIGHT]);
+
+/**
+ * Keyboard and on-screen button input. Held keys are cleared whenever the
+ * page loses focus or becomes hidden, so no control can stay stuck on.
+ */
+export class KeyboardInput implements ControlSource{
+  private readonly held=new Set<string>();
+  /** On-screen buttons hold virtual keys through the same path. */
+  private readonly virtual=new Set<string>();
+  private readonly listeners:Array<[EventTarget,string,EventListener]>=[];
+  onAction:(action:InputAction)=>void=()=>{};
+
+  constructor(private readonly keyTarget:EventTarget,private readonly focusTarget:EventTarget,private readonly doc?:Document){
+    this.listen(keyTarget,'keydown',event=>this.onKeyDown(event as KeyboardEvent));
+    this.listen(keyTarget,'keyup',event=>this.held.delete((event as KeyboardEvent).code));
+    this.listen(focusTarget,'blur',()=>this.clear());
+    if(doc)this.listen(doc,'visibilitychange',()=>{if(doc.hidden)this.clear()});
+  }
+
+  private listen(target:EventTarget,type:string,handler:EventListener):void{
+    target.addEventListener(type,handler);
+    this.listeners.push([target,type,handler]);
+  }
+
+  private onKeyDown(event:KeyboardEvent):void{
+    if(DRIVING_KEYS.has(event.code)){
+      this.held.add(event.code);
+      event.preventDefault?.();
+      return;
+    }
+    const action=ACTIONS[event.code];
+    if(action&&!event.repeat){
+      event.preventDefault?.();
+      this.onAction(action);
+    }
+  }
+
+  private any(codes:string[]):boolean{
+    return codes.some(code=>this.held.has(code)||this.virtual.has(code));
+  }
+
+  read():Controls{
+    return {
+      throttle:this.any(THROTTLE)?1:0,
+      brake:this.any(BRAKE)?1:0,
+      steer:(this.any(RIGHT)?1:0)-(this.any(LEFT)?1:0)
+    };
+  }
+
+  /** Holds or releases a driving control from an on-screen button. */
+  setVirtual(control:'throttle'|'brake'|'left'|'right',down:boolean):void{
+    const code={throttle:'KeyW',brake:'KeyS',left:'KeyA',right:'KeyD'}[control];
+    if(down)this.virtual.add(code);
+    else this.virtual.delete(code);
+  }
+
+  clear():void{
+    this.held.clear();
+    this.virtual.clear();
+  }
+
+  dispose():void{
+    for(const [target,type,handler] of this.listeners)target.removeEventListener(type,handler);
+    this.listeners.length=0;
+    this.clear();
+  }
+}

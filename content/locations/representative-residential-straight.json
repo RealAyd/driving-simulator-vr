@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "representative-residential-straight",
+  "name": "Representative residential road",
+  "fidelity": "representative",
+  "drivingSide": "left",
+  "description": "A plausible UK residential street used to prove the foundation: two-way road, pavements, houses set back and one parked van. Not a real location or test route.",
+  "sources": [
+    {
+      "title": "Authored placeholder layout",
+      "licence": "Project-owned",
+      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements). No external data used."
+    }
+  ],
+  "reviewStatus": "unreviewed",
+  "roads": [
+    {
+      "id": "main-street",
+      "centreline": [{"x": 0, "z": 40}, {"x": 0, "z": -160}, {"x": 12, "z": -260}, {"x": 40, "z": -340}],
+      "lanes": {"count": 2, "width": 3.2},
+      "surfaceHeight": 0,
+      "pavementWidth": 2,
+      "kerbHeight": 0.12,
+      "markings": {"centre": "dashed", "edges": false}
+    }
+  ],
+  "blocks": [
+    {"id": "house-w-1", "kind": "building", "position": {"x": -12, "z": -10}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "house-w-2", "kind": "building", "position": {"x": -12, "z": -30}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "house-w-3", "kind": "building", "position": {"x": -12, "z": -50}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "house-w-4", "kind": "building", "position": {"x": -12, "z": -70}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "house-e-1", "kind": "building", "position": {"x": 12, "z": -15}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "house-e-2", "kind": "building", "position": {"x": 12, "z": -35}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "house-e-3", "kind": "building", "position": {"x": 12, "z": -55}, "size": {"width": 8, "depth": 9, "height": 7}},
+    {"id": "hedge-w", "kind": "hedge", "position": {"x": -6.6, "z": -40}, "size": {"width": 0.8, "depth": 70, "height": 1.2}, "occludes": true},
+    {"id": "parked-van", "kind": "parked-vehicle", "position": {"x": -2.4, "z": -95}, "size": {"width": 2.0, "depth": 5.3, "height": 2.3}}
+  ],
+  "spawn": {"position": {"x": -1.6, "z": 0}, "headingDeg": 0, "roadId": "main-street"}
+}

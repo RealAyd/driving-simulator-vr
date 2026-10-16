@@ -2,7 +2,7 @@
 
 Source: index.html blob cbbad015b3dbb5aa891d16d890c57b237fcc3ce7, branch baseline 067d7cd34c748d4a5cb2df1aa0923993cdc33238.
 
-The legacy app remains in index.html. New files are not wired into it and are not a runnable Babylon simulator.
+The legacy app remains in index.html. The G0 Babylon foundation now lives in src/ (contracts, engine, world, vehicle, input, cockpit, xr, app, ui) with its entry at sim/index.html; see docs/CONTRACTS.md. The migration modules below are still not wired into it.
 
 ## Ready for adaptation
 

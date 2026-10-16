@@ -1,0 +1,35 @@
+name: Simulator checks
+
+on:
+  push:
+    paths: ['src/**','sim/**','content/**','public/**','tests/**','package.json','package-lock.json','tsconfig.json','playwright.config.ts','vitest.config.ts','.github/workflows/sim-ci.yml']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx vite build --config sim/vite.config.ts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      # The preview build is kept as an artifact only. This workflow never
+      # deploys and never touches the production site.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: simulator-preview
+          path: |
+            dist-sim
+            test-results
+          retention-days: 14
