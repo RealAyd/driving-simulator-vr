@@ -593,6 +593,17 @@ label{color:var(--brand-navy)}
   .map-credits{right:8px;bottom:4px;max-width:calc(100vw - 16px);font-size:9px;max-height:34px}
   .route-fields{gap:8px}
 }
+
+/* Ground tracking debug overlay, using existing cream, navy and green. */
+.ground-status{
+  position:fixed;top:147px;left:16px;z-index:7;
+  max-width:350px;border:1px solid #d6e3da;border-radius:10px;
+  background:rgba(250,245,235,.94);color:#0e1c39;
+  padding:5px 9px;font-size:11px;font-weight:650;pointer-events:none;
+}
+@media(max-width:650px){
+  .ground-status{top:136px;left:12px;max-width:80vw;font-size:10px}
+}
 </style>
 <script>
 'use strict';
@@ -601,6 +612,40 @@ label{color:var(--brand-navy)}
 // browser/referrer-restricted Map Tiles API key (and set quotas/budgets).
 // No key is supplied: the built-in practice road remains available at no Google cost.
 const GOOGLE_MAPS_API_KEY = "PASTE_YOUR_RESTRICTED_KEY_HERE";
+const CHASSIS_GROUND_OFFSET_METRES = 0.25;
+
+/**
+ * GOOGLE CLOUD CONSOLE SETUP — displayed in DevTools at app initialization:
+ * 1. Select a project, attach a billing account.
+ * 2. Google Maps Platform > APIs & Services > Library > "Map Tiles API".
+ *    Service: tile.googleapis.com. NOT under WebXR/VR/hardware APIs.
+ *    Direct URL: https://console.cloud.google.com/apis/library/tile.googleapis.com
+ * 3. APIs & Services > Credentials > Create credentials > API key.
+ * 4. Restrict application to browser HTTP referrers:
+ *    https://realayd.github.io/* and your own VERIFIED custom domain.
+ *    Restrict API selection to "Map Tiles API".
+ * 5. Set quotas/billing budgets and monitor usage before publishing.
+ * 6. Replace only the placeholder above with the restricted browser key.
+ * 7. Verify Google attribution and request errors in browser DevTools.
+ *
+ * Google prohibits deriving elevations / collision geometry from its
+ * photorealistic tiles. Ground-snap uses YOUR OWN licensed road collision
+ * meshes, never Google tile meshes. Visual 3D Tiles continue to stream.
+ */
+(function explainGoogleMapsSetup(){
+  console.groupCollapsed('[Driving Practice VR] How to enable Google Maps 3D Tiles');
+  console.warn('Map Tiles API is under Google Maps Platform > APIs & Services > Library, NOT VR/AR/XR or device categories.');
+  console.info('1. Select/create a Google Cloud project and attach billing.');
+  console.info('2. Enable Map Tiles API: https://console.cloud.google.com/apis/library/tile.googleapis.com');
+  console.info('3. Create a browser key: https://console.cloud.google.com/apis/credentials');
+  console.warn('4. Limit HTTP referrers to https://realayd.github.io/* and authorised custom domains; restrict key to Map Tiles API only.');
+  console.info('5. Apply quotas and billing alerts; edit GOOGLE_MAPS_API_KEY in index.html.');
+  console.info('6. Inspect DevTools Network tile.googleapis.com and display Google Maps tile attributions.');
+  console.warn('No elevation or collision data may be extracted from Google photorealistic mesh. Use licensed local collision geometry.');
+  console.info('Setup guide: https://developers.google.com/maps/documentation/tile/get-api-key');
+  console.info('Policy: https://developers.google.com/maps/documentation/tile/policies');
+  console.groupEnd();
+})();
 
 // Borehamwood (London) Driving Test Centre, Unit 1 Stirling Court, WD6 2BT.
 // Coordinates: point near the test centre, NOT a surveyed on-road start line.
@@ -781,7 +826,9 @@ AFRAME.registerComponent('car-physics',{
     this.speed=0;this.steer=0;this.brakingWeight=0;this.heading=0;
     this.velocity.set(0,0,0);
     if(activeMapMode==='google'&&activeRoute){
-      this.el.object3D.position.set(activeRoute.spawnX||0,activeRoute.spawnY||0,activeRoute.spawnZ||0);
+      this.el.object3D.position.set(activeRoute.spawnX||0,
+        Math.max(CHASSIS_GROUND_OFFSET_METRES,activeRoute.spawnY||0),
+        activeRoute.spawnZ||0);
       this.heading=(activeRoute.heading||0)*Math.PI/180;
       this.el.object3D.rotation.set(0,this.heading,0);
     }else{
@@ -903,6 +950,80 @@ AFRAME.registerComponent('mirror-panel',{
     this.el.removeEventListener('mouseleave',this.leave);
     this.el.removeEventListener('object3dset',this.onObject);
     this.material?.dispose();this.target.dispose();
+  }
+});
+
+
+/**
+ * ground-snap — dynamic downward raycaster ground tracking.
+ *
+ * An A-Frame raycaster on #ground-probe is pointed at (0,-1,0), runs
+ * every frame, and targets only OUR independently authored/licensed
+ * .drivable-surface meshes and the global invisible safety plane.
+ * It deliberately DOES NOT sample Google photorealistic tile meshes:
+ * extracting elevation from Map Tiles imagery is prohibited.
+ *
+ * This uses hit.point.y in world metres, adds a constant +0.25 m chassis
+ * offset, smooths step changes and clamps against a global Y=0 floor.
+ * Scene meshes can be supplied later as <a-entity class="drivable-surface">
+ * without changing the steering, gaze mirrors or country UI.
+ */
+AFRAME.registerComponent('ground-snap',{
+  schema:{
+    chassisOffset:{type:'number',default:CHASSIS_GROUND_OFFSET_METRES},
+    smoothing:{type:'number',default:10},
+    maxRise:{type:'number',default:2.5},
+    maxDelta:{type:'number',default:0.5},
+    floorY:{type:'number',default:0}
+  },
+  init(){
+    this.probe=this.el.querySelector('#ground-probe');
+    this.frames=0;
+    this.surface='safety plane';
+  },
+  tick(time,delta){
+    if(!active||!delta)return;
+    const dt=Math.min(delta/1000,0.05);
+    // A-Frame's raycaster component performs one intersection query per frame
+    // and caches its current intersections. Do not perform a second expensive
+    // raycast or traverse all 3D Tiles meshes here.
+    const hits=this.probe?.components?.raycaster?.intersections||[];
+    const currentY=this.el.object3D.position.y;
+    let bestY=this.data.floorY;
+    let hasCustomSurface=false;
+    let floorHitY=this.data.floorY;
+    for(const hit of hits){
+      if(!Number.isFinite(hit?.point?.y))continue;
+      const el=hit.object?.el||hit.el;
+      if(el?.id==='road-safety-plane'){
+        floorHitY=Math.max(this.data.floorY,hit.point.y);
+        continue;
+      }
+      if(!el?.closest?.('.drivable-surface'))continue;
+      // Reject a high overpass or roof hit from below the current roadway.
+      if(hit.point.y>currentY+this.data.maxRise)continue;
+      if(!hasCustomSurface||hit.point.y>bestY){
+        bestY=hit.point.y;
+        hasCustomSurface=true;
+      }
+    }
+    if(!hasCustomSurface)bestY=floorHitY;
+    this.surface=hasCustomSurface?'licensed road mesh':'Y=0 fallback';
+    // User's manual height correction is user-authored metadata, not an
+    // elevation derived from any Google map tile.
+    const correction=activeMapMode==='google'&&activeRoute
+      ?THREE.MathUtils.clamp(Number(activeRoute.spawnY)||0,-30,40):0;
+    const minY=this.data.floorY+this.data.chassisOffset;
+    const targetY=Math.max(minY,bestY+this.data.chassisOffset+correction);
+    const requestedStep=(targetY-currentY)*(1-Math.exp(-this.data.smoothing*dt));
+    const step=THREE.MathUtils.clamp(requestedStep,-this.data.maxDelta,this.data.maxDelta);
+    this.el.object3D.position.y=Math.max(minY,currentY+step);
+    // Update the small debug HUD periodically, not on every render tick.
+    if((++this.frames%15)===0){
+      const status=byId('ground-status');
+      if(status)status.textContent='Ground: '+this.surface+
+        ' · chassis '+this.el.object3D.position.y.toFixed(2)+' m';
+    }
   }
 });
 
@@ -1029,6 +1150,7 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
   </div>
   <div id="toast" role="status" aria-live="polite"></div>
   <div id="map-mode" class="map-mode" role="status">Practice environment</div>
+  <div id="ground-status" class="ground-status" role="status">Ground: Y=0 fallback · chassis 0.25 m</div>
   <div id="map-credits" class="map-credits" hidden aria-label="Google Maps data attributions">
     <strong>Google Maps</strong> · <span id="map-copyright"></span>
   </div>
@@ -1056,8 +1178,19 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
     <a-entity light="type: ambient; intensity: 1.15"></a-entity>
     <a-entity light="type: directional; intensity: 0.85" position="-12 22 5"></a-entity>
     <a-entity id="practice-world" practice-world></a-entity>
+    <!-- Invisible fallback mesh: opacity 0, but material must remain raycastable.
+         A-Frame visible=false would disable rendering (and can affect queries). -->
+    <a-plane id="road-safety-plane" position="0 0 0" rotation="-90 0 0"
+             width="1200" height="1200"
+             material="shader: flat; color: #ffffff; transparent: true; opacity: 0; side: double; depthWrite: false"></a-plane>
 
-    <a-entity id="car" position="-2 0 82" car-physics global-cockpit="country: GB">
+    <a-entity id="car" position="-2 0.25 82"
+              car-physics global-cockpit="country: GB"
+              ground-snap="chassisOffset: 0.25; floorY: 0">
+      <!-- One downward (0,-1,0) ray query/frame, only against app-owned
+           drivable surfaces; Google photorealistic tiles are visual-only. -->
+      <a-entity id="ground-probe" position="0 4 0"
+                raycaster="direction: 0 -1 0; origin: 0 0 0; near: 0; far: 18; interval: 0; showLine: false; objects: .drivable-surface, #road-safety-plane"></a-entity>
       <!-- Chassis and dashboard shell are visible in the cockpit, hidden during mirror reflection. -->
       <a-entity id="cockpit-shell" class="reflection-hide">
         <a-box position="0 0.47 0.12" width="2.05" height="0.18" depth="3.25" color="#18364b"></a-box>
@@ -1260,8 +1393,8 @@ function activateRouteFromSelection(iso){
     }
   },350);
 }
-// Adjust only the USER vehicle's manually specified height/direction;
-// no programmatic probing/extraction of Google's mesh elevations.
+// Adjust USER-selected vehicle height/direction; snap combines these
+// adjustments with independent licensed road geometry, not Google imagery.
 function adjustMapCar(heightStep,headingStep){
   if(activeMapMode!=='google'||!activeRoute)return;
   activeRoute.spawnY=Math.max(-30,Math.min(40,(activeRoute.spawnY||0)+heightStep));
