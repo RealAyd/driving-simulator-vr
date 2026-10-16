@@ -171,7 +171,7 @@ h1 em{color:#41c78a;font-style:normal}
   <div id="scene-mount">
     <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
     <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.64736,-0.25260,115" heading="0" tilt="90" range="22" fov="80" mode="hybrid"></gmp-map-3d>
+      <gmp-map-3d id="native-map" center="51.64736,-0.25260,108" heading="0" tilt="65" range="200" fov="80" mode="hybrid"></gmp-map-3d>
     </div>
   </div>
   <div id="hud" class="hud-card">
@@ -253,14 +253,14 @@ h1 em{color:#41c78a;font-style:normal}
        no raycasting and no map-mesh collision/height extraction. -->
   <a-plane id="safety-floor" position="0 0 0" rotation="-90 0 0"
            width="1200" height="1200" visible="false"></a-plane>
-  <a-entity id="player-car" position="0 0.1 0" car-physics global-cockpit="country: GB" turn-signals blind-spot-tracker>
+  <a-entity id="player-car" position="0 0 0" car-physics global-cockpit="country: GB" turn-signals blind-spot-tracker>
     <a-entity class="cockpit-shell">
-      <a-box position="0 .45 0" width="2.05" height=".14" depth="3" color="#18364b"></a-box>
-      <a-box position="0 .85 -.78" width="2.05" height=".35" depth=".65" color="#152638"></a-box>
+      <a-box position="0 0 0" width="2.05" height=".14" depth="3" color="#18364b"></a-box>
+      <a-box id="dashboard" position="0 0 -1.5" width="2.05" height=".35" depth=".65" color="#152638"></a-box>
       <a-box position="-1 .95 -.45" width=".1" height="1" depth=".13" color="#306f96"></a-box>
       <a-box position="1 .95 -.45" width=".1" height="1" depth=".13" color="#306f96"></a-box>
       <a-box position="0 1.94 -.70" width="2.05" height=".09" depth=".1" color="#21354a" scale=".85 .85 .85"></a-box>
-      <a-entity id="steering-column" position=".48 .98 -.5" scale=".85 .85 .85">
+      <a-entity id="steering-column" position="0 0 -1.5" scale=".85 .85 .85">
         <a-cylinder radius=".043" height=".4" rotation="72 0 0" color="#5d7687"></a-cylinder>
         <a-entity id="wheel" rotation="-14 0 0" position="0 .09 .14">
           <a-torus radius=".22" radius-tubular=".024" color="#060d16"></a-torus>
@@ -268,21 +268,21 @@ h1 em{color:#41c78a;font-style:normal}
           <a-cylinder radius=".055" height=".05" rotation="90 0 0" color="#2d3d50"></a-cylinder>
         </a-entity>
       </a-entity>
-      <a-entity id="instrument-panel" position=".48 1.04 -.76">
+      <a-entity id="instrument-panel" position="0 .19 -1.48">
         <a-plane color="#071521" width=".47" height=".19"></a-plane>
         <a-text id="speed3d" value="0 MPH" width=".7" align="center" color="#5eeab6" position="0 0 .005"></a-text>
       </a-entity>
-      <a-plane position="0 .97 -.88" width=".7" height=".25" color="#081622">
+      <a-plane position="0 .12 -1.6" width=".7" height=".25" color="#081622">
         <a-text value="DRIVING PRACTICE" width="1.05" align="center" position="0 .06 .008"></a-text>
         <a-text id="vr-toast" value="" align="center" color="#77f1aa" width=".85" position="0 -.045 .009"></a-text>
       </a-plane>
-      <a-text id="signal-3d" value="" align="center" color="#56ff99" width="1.15" position="0 1.145 -.79"></a-text>
-      <a-text id="fault-3d" value="TEST FAULT" visible="false" align="center" color="#ffcb47" width="1.06" position="0 1.225 -.79"></a-text>
-      <a-text id="mock-score-3d" value="FAULTS 0 | S/D 0" align="center" color="#b9e8d9" width="1.27" position="0 .68 -.79"></a-text>
-      <a-plane class="share-target" share-link position="0 .78 -.8" width=".72" height=".12" color="#128e54">
+      <a-text id="signal-3d" value="" align="center" color="#56ff99" width="1.15" position="0 .295 -1.51"></a-text>
+      <a-text id="fault-3d" value="TEST FAULT" visible="false" align="center" color="#ffcb47" width="1.06" position="0 .375 -1.51"></a-text>
+      <a-text id="mock-score-3d" value="FAULTS 0 | S/D 0" align="center" color="#b9e8d9" width="1.27" position="0 -.17 -1.51"></a-text>
+      <a-plane class="share-target" share-link position="0 -.07 -1.52" width=".72" height=".12" color="#128e54">
         <a-text value="Tap to Share App Link" width="1" align="center" position="0 0 .008"></a-text>
       </a-plane>
-      <a-text id="country-label" value="UNITED KINGDOM | RHD" width="1.7" align="center" position="0 .6 -.8" color="#a7d6e7"></a-text>
+      <a-text id="country-label" value="UNITED KINGDOM | RHD" width="1.7" align="center" position="0 -.25 -1.52" color="#a7d6e7"></a-text>
     </a-entity>
     <a-box position="-1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
     <a-box position="1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
@@ -290,7 +290,7 @@ h1 em{color:#41c78a;font-style:normal}
     <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.34 -.69" rotation="0 -25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
     <a-box position="0 1.69 -.75" width=".55" height=".23" depth=".055" color="#273f52" scale=".85 .85 .85"></a-box>
     <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.68 -.7" width=".47" height=".16" scale=".85 .85 .85" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
-    <a-camera id="camera" position=".48 1.42 .26"
+    <a-camera id="camera" position="0 1.2 0"
               camera="near: .05; far: 2500; fov: 80"
               look-controls="pointerLockEnabled: true" wasd-controls="enabled: false">
       <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4"
@@ -309,17 +309,14 @@ h1 em{color:#41c78a;font-style:normal}
 // Public GitHub Pages source: insert ONLY a referrer-restricted browser key.
 // Enable Maps JavaScript API, NOT just Map Tiles API.
 const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
-// Requested 115m map datum is a calibration estimate, not surveyed road height.
-const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:115});
-const CAR_Y = 0.1;
-const MAP_RANGE_METRES = 22;
-const MAP_SYNC_INTERVAL_MS = 32; // At most ~30 map updates/sec; RAF is still display-paced.
-let mapCameraFrame=0,mapLastSyncAt=0,mapLastPose=null;
+// Requested 108m map center is a calibration estimate, not surveyed road height.
+const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:108});
+const CAR_Y = 0;
+const MAP_RANGE_METRES = 200;
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
 const JUNCTION_EVALUATION_ZONES=Object.freeze([-55,-117,-165]);
-const EARTH_RADIUS = 6378137;
 const ROUTE_SESSION_HISTORY = new Map(); // route metadata only, never Google imagery
 let active=false,scene=null,selectedRoute=null,googleMapReady=false;
 let mapsPromise=null,toastTimer=0,mapActivation=0;
@@ -602,73 +599,7 @@ function createPicker(inputId){
  pickers.push(picker);
  return picker;
 }
-function geoFromVehicle(x,z){
- if(!selectedRoute)return null;
- const lat=selectedRoute.lat-z/EARTH_RADIUS*180/Math.PI;
- const avg=(lat+selectedRoute.lat)/2*Math.PI/180;
- return {lat,lng:selectedRoute.lng+x/(EARTH_RADIUS*Math.cos(avg))*180/Math.PI};
-}
-// Best-effort camera pose sync; Google and A-Frame do NOT share WebGL projection/depth.
-const mapEye=new THREE.Vector3();
-const mapOrientation=new THREE.Quaternion();
-const mapForward=new THREE.Vector3();
-function syncGoogleMap(force=false){
- if(!googleMapReady||!selectedRoute||scene?.is('vr-mode'))return;
- const camera=byId('camera');
- if(!camera||!scene?.camera)return;
- camera.object3D.updateWorldMatrix(true,false);
- camera.object3D.getWorldPosition(mapEye);
- camera.object3D.getWorldQuaternion(mapOrientation);
- mapForward.set(0,0,-1).applyQuaternion(mapOrientation).normalize();
- const horizontal=Math.hypot(mapForward.x,mapForward.z);
- const tilt=clamp(Math.atan2(horizontal,-mapForward.y)*180/Math.PI,5,175);
- const heading=horizontal>.0001?
-   (Math.atan2(mapForward.x,-mapForward.z)*180/Math.PI+360)%360:
-   (mapLastPose?.heading??0);
- const fov=clamp(camera.components?.camera?.camera?.fov||80,5,80);
- const location=geoFromVehicle(mapEye.x,mapEye.z);
- if(!location)return;
- const pose={lat:location.lat,lng:location.lng,
-   altitude:selectedRoute.altitude+mapEye.y,heading,tilt,fov};
- const prev=mapLastPose;
- if(!force&&prev&&
-   Math.abs((pose.lat-prev.lat)*111100)<.05&&
-   Math.abs((pose.lng-prev.lng)*111100*Math.cos(pose.lat*Math.PI/180))<.05&&
-   Math.abs(pose.altitude-prev.altitude)<.05&&
-   Math.abs((((heading-prev.heading)+540)%360)-180)<.2&&
-   Math.abs(tilt-prev.tilt)<.2&&Math.abs(fov-prev.fov)<.1)return;
- try{
-   mapElement.heading=heading;
-   mapElement.tilt=tilt;
-   mapElement.range=MAP_RANGE_METRES;
-   mapElement.fov=fov;
-   mapElement.cameraPosition={lat:pose.lat,lng:pose.lng,altitude:pose.altitude};
-   mapLastPose=pose;
- }catch(error){
-   if(!syncGoogleMap.warned){
-     syncGoogleMap.warned=true;
-     console.warn('[Driving Practice VR] Map pose sync unavailable',error);
-   }
- }
-}
-function mapCameraLoop(timestamp){
- mapCameraFrame=requestAnimationFrame(mapCameraLoop);
- if(!active||!googleMapReady||!selectedRoute||!scene||document.hidden||scene.is('vr-mode'))return;
- if(timestamp-mapLastSyncAt<MAP_SYNC_INTERVAL_MS)return;
- mapLastSyncAt=timestamp;
- syncGoogleMap();
-}
-function startMapCameraLoop(){
- if(mapCameraFrame)return;
- mapLastPose=null;mapLastSyncAt=0;
- mapCameraFrame=requestAnimationFrame(mapCameraLoop);
-}
-function stopMapCameraLoop(){
- if(mapCameraFrame)cancelAnimationFrame(mapCameraFrame);
- mapCameraFrame=0;mapLastPose=null;
-}
 function showMapsError(reason){
- stopMapCameraLoop();
  googleMapReady=false;
  setFallback(true);
  byId('map-help').hidden=true;
@@ -726,7 +657,6 @@ async function startGoogleMap(){
    return;
  }
  const generation=++mapActivation;
- stopMapCameraLoop();
  googleMapReady=false;
  setFallback(true);
  status('Loading official Google 3D Maps…');
@@ -742,12 +672,10 @@ async function startGoogleMap(){
    settled=true;
    mapElement.removeEventListener('gmp-steadychange',onSteady);
    googleMapReady=true;
-   startMapCameraLoop();
-   syncGoogleMap(true);
    mapDebug('Google 3D emitted steady=true. Tiles are available to its native renderer.');
    if(!scene?.is('vr-mode'))setFallback(false);
    byId('map-help').hidden=false;
-   status('Google 3D map · estimated road altitude '+selectedRoute.altitude+'m · chassis Y='+CAR_Y+'m');
+   status('Google 3D fixed reference · estimated center altitude '+selectedRoute.altitude+'m');
  };
  mapElement.addEventListener('gmp-steadychange',onSteady);
  try{
@@ -763,10 +691,10 @@ async function startGoogleMap(){
      lat:selectedRoute.lat,lng:selectedRoute.lng,altitude:selectedRoute.altitude
    };
    mapElement.range=MAP_RANGE_METRES;
-   mapElement.tilt=90;
+   mapElement.tilt=65;
    mapElement.heading=0;
    mapElement.fov=80;
-   mapDebug('Google Map set to eye-level view, 22m range, FOV 80°.');
+   mapDebug('Google Map fixed reference: tilt 65°, range 200m, FOV 80°.');
    // A stalled steady event does not prove the map failed. Use Map Only
    // to differentiate a stalled map renderer from an opaque A-Frame layer.
    setTimeout(()=>{
@@ -793,7 +721,7 @@ function readRoute(){
  let record=ROUTE_SESSION_HISTORY.get(key);
  if(!record){
    record=Object.freeze({
-     country:activeCountryCode,lat,lng,altitude:activeCountryCode==='GB'?115:100,
+     country:activeCountryCode,lat,lng,altitude:activeCountryCode==='GB'?BOREHAMWOOD.altitude:100,
      name:activeCountryCode==='GB'?'Borehamwood Driving Test Centre':country.name
    });
    ROUTE_SESSION_HISTORY.set(key,record);
@@ -827,7 +755,6 @@ AFRAME.registerComponent('car-physics',{
    this.el.object3D.position.set(laneX,CAR_Y,0);
    this.el.object3D.rotation.set(0,0,0);
    updateSpeed(0);
-   if(googleMapReady)syncGoogleMap();
  },
  tick(time,delta){
    if(!active||!delta)return;
@@ -871,7 +798,7 @@ AFRAME.registerComponent('car-physics',{
    if(Math.abs(pos.x)>440||Math.abs(pos.z)>440){
      this.reset();toast('Practice boundary — reset');return;
    }
-   // Map pose sync is driven by requestAnimationFrame so head tracking works. 
+   // Google scenery stays fixed; A-Frame look-controls remain independent.
  },
  remove(){
    window.removeEventListener('keydown',this.keydown);
@@ -893,13 +820,13 @@ AFRAME.registerComponent('global-cockpit',{
  update(){this.apply()},
  apply(){
    const country=COUNTRIES[this.data.country]||COUNTRIES.GB;
-   const x=country.seatX;
+   const x=0; // Fixed central driver position; country scoring and road rules remain active.
    const set=(id,attr,value)=>{
      const el=byId(id);if(el)el.setAttribute(attr,value);
    };
-   set('camera','position',{x,y:1.42,z:.26});
-   set('steering-column','position',{x,y:.98,z:-.5});
-   set('instrument-panel','position',{x,y:1.04,z:-.76});
+   set('camera','position',{x:0,y:1.2,z:0});
+   set('steering-column','position',{x:0,y:0,z:-1.5});
+   set('instrument-panel','position',{x:0,y:.19,z:-1.48});
    set('mirror-left','rotation',{x:0,y:THREE.MathUtils.radToDeg(Math.atan2(x+1.1,.92)),z:0});
    set('mirror-right','rotation',{x:0,y:THREE.MathUtils.radToDeg(Math.atan2(x-1.1,.92)),z:0});
    set('mirror-rear','position',{x:x*.22,y:1.68,z:-.7});
@@ -1331,14 +1258,12 @@ byId('start-button').addEventListener('click',async()=>{
    setFallback(true);
    void startGoogleMap();
    scene.addEventListener('enter-vr',()=>{
-     stopMapCameraLoop();
      // DOM-backed Google Maps is NOT visible to the immersive XR compositor.
      setFallback(true);
      byId('controls').hidden=true;
      status('VR mode · independent practice scene');
    });
    scene.addEventListener('exit-vr',()=>{
-     if(googleMapReady){startMapCameraLoop();syncGoogleMap(true)}
      byId('controls').hidden=false;
      setFallback(!googleMapReady);
      status(googleMapReady?'Google 3D reference · chassis Y='+CAR_Y+'m':'Practice environment');
