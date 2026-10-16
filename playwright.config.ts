@@ -21,5 +21,6 @@ export default defineConfig({
     reuseExistingServer:true,
     timeout:60_000
   },
-  reporter:[['list']]
+  // In CI, failures also become GitHub check annotations (readable without log access).
+  reporter:process.env.CI?[['github'],['list']]:[['list']]
 });

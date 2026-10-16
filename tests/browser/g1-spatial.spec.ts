@@ -93,11 +93,19 @@ test('G1: road sits under the car, kerb raises it, and braking from 30 mph stops
   expect(Math.abs(distance-predicted)).toBeLessThan(1+v*2/60);
   expect(Math.abs(after.position.x+1.6)).toBeLessThan(.05); // still in its lane
 
-  // Steer left onto the pavement: the car rises by the kerb height.
+  // Steer left onto the pavement, then stop there: the car rises by the kerb
+  // height. Stopping first keeps the result independent of machine speed.
   await page.keyboard.down('KeyW');await page.keyboard.down('KeyA');
   await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().position.x< -3.4,null,{timeout:10_000});
   await page.keyboard.up('KeyA');await page.keyboard.up('KeyW');
+  await page.keyboard.down('Space');
+  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed===0,null,{timeout:10_000});
+  await page.keyboard.up('Space');
   const kerb=await read(page,'vehicle()');
+  test.info().annotations.push({type:'kerb',description:`stopped at x=${kerb.position.x.toFixed(2)} y=${kerb.position.y.toFixed(3)}`});
+  // Pavement spans 3.2–5.2 m left of the centre line.
+  expect(kerb.position.x).toBeLessThan(-3.2);
+  expect(kerb.position.x).toBeGreaterThan(-5.2);
   expect(kerb.position.y).toBeCloseTo(.12,6);
 });
 
