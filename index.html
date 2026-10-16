@@ -987,19 +987,22 @@ AFRAME.registerComponent('ground-snap',{
     // A-Frame's raycaster component performs one intersection query per frame
     // and caches its current intersections. Do not perform a second expensive
     // raycast or traverse all 3D Tiles meshes here.
-    const hits=this.probe?.components?.raycaster?.intersections||[];
+    const ray=this.probe?.components?.raycaster;
     const currentY=this.el.object3D.position.y;
     let bestY=this.data.floorY;
     let hasCustomSurface=false;
     let floorHitY=this.data.floorY;
-    for(const hit of hits){
+    // A-Frame maps each hit to its A-Frame entity. This avoids relying on
+    // THREE.Mesh.userData.el being present on every glTF/primitive child mesh.
+    const hitEntities=ray?.intersectedEls||[];
+    for(const el of hitEntities){
+      const hit=ray.getIntersection(el);
       if(!Number.isFinite(hit?.point?.y))continue;
-      const el=hit.object?.el||hit.el;
-      if(el?.id==='road-safety-plane'){
+      if(el.id==='road-safety-plane'){
         floorHitY=Math.max(this.data.floorY,hit.point.y);
         continue;
       }
-      if(!el?.closest?.('.drivable-surface'))continue;
+      if(!el.closest('.drivable-surface'))continue;
       // Reject a high overpass or roof hit from below the current roadway.
       if(hit.point.y>currentY+this.data.maxRise)continue;
       if(!hasCustomSurface||hit.point.y>bestY){
