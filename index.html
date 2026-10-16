@@ -79,6 +79,14 @@ h1 em{color:#41c78a;font-style:normal}
 #controls{position:absolute;z-index:10;bottom:max(56px,calc(env(safe-area-inset-bottom) + 52px));left:16px;right:110px;display:flex;flex-wrap:wrap;gap:8px;pointer-events:auto}
 #controls button{background:#0f172ae8;border:1px solid #64748b;border-radius:999px;color:white;padding:10px 13px;font-size:12px;font-weight:750;touch-action:none}
 #controls button:hover,#controls button:active{background:#128e54;border-color:#2ee391}
+/* Safe map diagnostic: view the native Google WebGL map WITHOUT the
+   transparent A-Frame layer to distinguish authorization vs occlusion. */
+#map-view-toggle{background:#0e5260!important;border-color:#5bb6ca!important}
+#map-view-toggle[aria-pressed="true"]{background:#128e54!important;border-color:#68f2ad!important}
+#scene-mount.map-only>#driving-scene{visibility:hidden!important;pointer-events:none!important}
+#scene-mount.map-only>#native-map{z-index:4!important;pointer-events:auto!important}
+#map-debug{font-size:11px;font-weight:650;color:#c9e5f0;display:block;margin-top:5px}
+#map-debug.error{color:#ffc98b}
 /* Direction signals are flat touch controls, distinct from steering. */
 #controls .signal-control{border-radius:11px;background:#123b35;border:1px solid #277a59;color:#f0fff6;box-shadow:none}
 #controls .signal-control:hover{background:#146a45}
@@ -189,7 +197,9 @@ h1 em{color:#41c78a;font-style:normal}
       <div class="suggestions" id="country-live-options" role="listbox" hidden></div>
     </div>
   </div>
-  <div id="map-status" role="status">Preparing practice environment…</div>
+  <div id="map-status" role="status">Preparing practice environment…
+    <span id="map-debug">3D map diagnostics not started</span>
+  </div>
   <div id="toast" role="status" aria-live="polite"></div>
   <div id="fault-banner" role="alert" aria-live="assertive" hidden>
     <strong>TEST FAULT: Failed to check blind spot before moving!</strong>
@@ -204,6 +214,10 @@ h1 em{color:#41c78a;font-style:normal}
     <button data-drive="brake" type="button">Brake</button>
     <button data-drive="go" type="button">Accelerate</button>
     <button id="reset" type="button">Reset</button>
+    <button id="map-view-toggle" type="button" aria-pressed="false"
+            title="Show only Google's map to diagnose rendering">
+       <span id="map-view-text">Map Only</span>
+    </button>
     <button id="finish-test" type="button">Finish Mock Test</button>
     <button id="share" type="button">Share</button>
   </div>
@@ -306,7 +320,36 @@ const pickers=[];
 const byId=id=>document.getElementById(id);
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const mapElement=byId('native-map');
-const status=message=>{byId('map-status').textContent=message};
+// Keep the text node separate from the diagnostic detail below it.
+const status=message=>{
+ const box=byId('map-status');
+ if(box.firstChild?.nodeType===Node.TEXT_NODE)box.firstChild.textContent=message+'\n';
+ else box.prepend(document.createTextNode(message+'\n'));
+};
+const mapDebug=(message,isError=false)=>{
+ const element=byId('map-debug');
+ element.textContent=message;
+ element.classList.toggle('error',isError);
+ // Never emit Google Maps API credentials, full script URLs, or auth tokens.
+ console[isError?'warn':'info']('[Driving Practice VR / Maps]',message);
+};
+function showMapOnly(yes){
+ const wrapper=byId('scene-mount');
+ wrapper.classList.toggle('map-only',yes);
+ byId('map-view-toggle').setAttribute('aria-pressed',String(yes));
+ byId('map-view-text').textContent=yes?'Show Cockpit':'Map Only';
+ const native=byId('native-map');
+ if(yes){
+  mapDebug('Map Only enabled: Google map drawn without the A-Frame layer.');
+  if(!googleMapReady)status('Map Only diagnostics · native Google map inspection');
+ }else{
+  mapDebug('Cockpit overlay restored.');
+  if(scene?.renderer){
+   scene.renderer.setClearColor(0,0);
+   scene.renderer.setClearAlpha(0);
+  }
+ }
+}
 const keyConfigured=()=>GOOGLE_MAPS_API_KEY.trim()!==''&&!GOOGLE_MAPS_API_KEY.includes('PASTE_YOUR_');
 
 // Complete 249-code ISO 3166-1 country/territory data. Names use the browser's
@@ -571,7 +614,11 @@ function showMapsError(reason){
  setFallback(true);
  byId('map-help').hidden=true;
  status('Practice environment · '+reason);
+ mapDebug(reason,true);
 }
+window.gm_authFailure=()=>{
+ showMapsError('Google rejected this browser key or website origin. Check Maps JavaScript API authorization, referrer restrictions, and billing.');
+};
 function mapsLoader(){
  if(mapsPromise)return mapsPromise;
  mapsPromise=new Promise((resolve,reject)=>{
@@ -583,14 +630,22 @@ function mapsLoader(){
    script.src='https://maps.googleapis.com/maps/api/js?key='+
      encodeURIComponent(GOOGLE_MAPS_API_KEY)+
      '&v=weekly&libraries=maps3d&loading=async';
-   script.onload=()=>resolve();
-   script.onerror=()=>reject(Error('Maps JavaScript API script failed to load'));
+   script.onload=()=>{
+     mapDebug('Maps JavaScript API script downloaded. Initialising maps3d library…');
+     resolve();
+   };
+   script.onerror=()=>{
+     mapDebug('Maps JavaScript API request failed (network error or script blocked).',true);
+     reject(Error('Maps JavaScript API script failed to load'));
+   };
    document.head.appendChild(script);
  }).then(async()=>{
    if(!window.google?.maps?.importLibrary)throw Error('Google Maps library not available');
    await google.maps.importLibrary('maps3d');
+   mapDebug('maps3d library imported; waiting for gmp-map-3d registration…');
    if(!customElements.get('gmp-map-3d'))
      await customElements.whenDefined('gmp-map-3d');
+   mapDebug('Native gmp-map-3d component registered.');
  }).catch(error=>{mapsPromise=null;throw error});
  return mapsPromise;
 }
@@ -606,14 +661,18 @@ async function startGoogleMap(){
  const generation=++mapActivation;
  setFallback(true);
  status('Loading official Google 3D Maps…');
- mapElement.addEventListener('gmp-error',()=>{
-   if(generation===mapActivation)showMapsError('Google 3D initialization error: check billing/API restrictions');
+ mapDebug('Maps API key found in page. Requesting Maps JavaScript API 3D renderer.');
+ mapElement.addEventListener('gmp-error',event=>{
+   if(generation!==mapActivation)return;
+   console.warn('[Driving Practice VR] gmp-error details (no key)',event);
+   showMapsError('Google 3D initialization error. Inspect DevTools Console for the Maps error code; verify Maps JavaScript API access, referrer and billing.');
  },{once:true});
  let settled=false;
  const onSteady=event=>{
    if(generation!==mapActivation||!event.isSteady)return;
    settled=true;
    googleMapReady=true;
+   mapDebug('Google 3D emitted steady=true. Tiles are available to its native renderer.');
    if(!scene?.is('vr-mode'))setFallback(false);
    byId('map-help').hidden=false;
    status('Google 3D map · Borehamwood reference · flat vehicle Y=0.25');
@@ -629,10 +688,13 @@ async function startGoogleMap(){
    mapElement.range=190;
    mapElement.tilt=78;
    mapElement.heading=0;
-   // If the map never reaches steady, retain a usable A-Frame fallback.
+   mapDebug('Native map configured: HYBRID, Borehamwood, range 190m. Waiting for first steady event.');
+   // A stalled steady event does not prove the map failed. Use Map Only
+   // to differentiate a stalled map renderer from an opaque A-Frame layer.
    setTimeout(()=>{
      if(generation===mapActivation&&!settled){
-       status('Google 3D still loading · practice fallback remains available');
+       status('Google 3D not ready · click Map Only to inspect native viewport');
+       mapDebug('No gmp-steadychange event after 18 seconds. Inspect Console/Network for authorization, WebGL and referrer errors.',true);
      }
    },18000);
  }catch(error){
@@ -1208,6 +1270,10 @@ byId('start-button').addEventListener('click',async()=>{
  else scene.addEventListener('loaded',ready,{once:true});
 });
 byId('reset').addEventListener('click',()=>byId('player-car')?.components['car-physics']?.reset());
+byId('map-view-toggle').addEventListener('click',()=>{
+ const only=!byId('scene-mount').classList.contains('map-only');
+ showMapOnly(only);
+});
 // Scenario reset preserves the mock test fault ledger. Only "New Mock Test"
 // clears previous incidents and re-enables a finished test.
 byId('finish-test').addEventListener('click',()=>{
