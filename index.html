@@ -1435,8 +1435,17 @@ byId('start-button').addEventListener('click',async()=>{
  byId('app').hidden=false;
  byId('splash').hidden=true;
  const fragment=byId('driving-template').content.cloneNode(true);
- byId('scene-mount').appendChild(fragment);
- scene=byId('driving-scene');
+ scene=fragment.querySelector('a-scene');
+ // Initialize the scene systems before connecting material-bearing entities.
+ const entities=document.createDocumentFragment();
+ while(scene.firstChild)entities.appendChild(scene.firstChild);
+ const sceneLoaded=new Promise(resolve=>scene.addEventListener('loaded',resolve,{once:true}));
+ byId('scene-mount').appendChild(scene);
+ if(!scene.hasLoaded)await sceneLoaded;
+ const car=entities.querySelector('#player-car');
+ const carLoaded=new Promise(resolve=>car.addEventListener('loaded',resolve,{once:true}));
+ scene.appendChild(entities);
+ if(!car.hasLoaded)await carLoaded;
  const ready=()=>{
    // Clear A-Frame's scene background; Google owns the lower WebGL layer.
    if(scene.renderer){
