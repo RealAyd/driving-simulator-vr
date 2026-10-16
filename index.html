@@ -296,7 +296,7 @@ const DRACO_DECODER_PATH='https://www.gstatic.com/draco/versioned/decoders/1.5.7
 const TILES_ERROR_TARGET=6;
 const SKY_COLOR='#a9cbe3';
 // Shown in the status box so a stale cached page is easy to spot.
-const APP_BUILD='build 2026-10-16 · street-view-blend 2';
+const APP_BUILD='build 2026-10-16 · street-view-blend 3';
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
@@ -778,16 +778,19 @@ function streetViewLoader(){
    if(window.google?.maps?.importLibrary){resolve();return}
    const script=document.createElement('script');
    script.async=true;
+   // Google invokes the callback only once the API (and importLibrary) is
+   // initialised; the script's own load event can fire before that.
+   window.__drivingPracticeMapsReady=()=>{delete window.__drivingPracticeMapsReady;resolve()};
    script.src='https://maps.googleapis.com/maps/api/js?key='+
-     encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&v=weekly&loading=async';
+     encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&v=weekly&loading=async&callback=__drivingPracticeMapsReady';
    // Google calls this if the key is refused for the Maps JavaScript API.
    window.gm_authFailure=()=>{
      const blend=byId('google-tiles')?.components['street-view-blend'];
      if(blend)blend.failed=true;
      mapDebug('Street View off: Google refused this key for the Maps JavaScript API (check API restrictions and website referrers).',true);
    };
-   script.onload=resolve;
    script.onerror=()=>reject(Error('Maps JavaScript API failed to load'));
+   setTimeout(()=>reject(Error('Maps JavaScript API did not initialise within 15 s')),15000);
    document.head.appendChild(script);
  }).then(()=>google.maps.importLibrary('streetView'))
    .catch(error=>{streetViewPromise=null;throw error});
