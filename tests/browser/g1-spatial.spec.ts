@@ -56,11 +56,16 @@ test('G1: interior mirror shows the real scene behind, correctly oriented, and u
   // Drive away: the red car must get narrower in the mirror (live updates).
   // Width, not area: an interior mirror shows a thin strip, so a more distant
   // car shows more of its height while getting narrower.
+  // Drive 10 m (a simulation condition, not a wall-clock wait), then stop.
   await page.keyboard.down('KeyW');
-  await page.waitForTimeout(3000);
+  await page.waitForFunction('window.__drivingPractice.vehicle().position.z< -10',null,{timeout:30_000});
   await page.keyboard.up('KeyW');
+  await page.keyboard.down('Space');
+  await page.waitForFunction('window.__drivingPractice.vehicle().speed===0',null,{timeout:30_000});
+  await page.keyboard.up('Space');
+  await page.waitForTimeout(300); // let the mirror texture refresh at the final position
   const later=await mirrorColours(page);
-  testInfo.annotations.push({type:'mirror pixels after driving 3 s',description:JSON.stringify(later)});
+  testInfo.annotations.push({type:'mirror pixels after driving 10 m',description:JSON.stringify(later)});
   expect(later.redColumns).toBeLessThan(atStart.redColumns*.8);
   await page.screenshot({path:testInfo.outputPath('g1-02-mirror-after-moving.png')});
   expect(errors).toEqual([]);

@@ -11,6 +11,9 @@ type Sim={
 };
 const sim=<T>(page:Page,fn:(s:Sim)=>T)=>page.evaluate(fn as never,undefined) as Promise<T>;
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
+// Wait for simulation conditions, not wall-clock time: on slow machines the
+// fixed clock caps catch-up, so simulation time can run slower than real time.
+const until=(page:Page,fn:string,timeout=30_000)=>page.waitForFunction(fn,null,{timeout});
 
 test('G0: start, drive, brake, signal, pause, restart and recover focus',async({page},testInfo)=>{
   const errors:string[]=[];
@@ -37,7 +40,7 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   // Drive forward.
   await page.keyboard.down('KeyW');
-  await page.waitForTimeout(2500);
+  await until(page,'window.__drivingPractice.vehicle().speed>3');
   const moving=await read(page,'vehicle()');
   expect(moving.speed).toBeGreaterThan(2);
   expect(moving.position.z).toBeLessThan(-1);
@@ -55,7 +58,7 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   // Brake to a stop.
   await page.keyboard.down('KeyS');
-  await page.waitForTimeout(2500);
+  await until(page,'window.__drivingPractice.vehicle().speed===0');
   await page.keyboard.up('KeyS');
   expect((await read(page,'vehicle()')).speed).toBe(0);
 
@@ -68,7 +71,7 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   // Steer right while moving: heading turns clockwise.
   await page.keyboard.down('KeyW');await page.keyboard.down('KeyD');
-  await page.waitForTimeout(1500);
+  await until(page,'window.__drivingPractice.vehicle().heading>.1');
   await page.keyboard.up('KeyD');await page.keyboard.up('KeyW');
   const turned=await read(page,'vehicle()');
   expect(turned.heading).toBeGreaterThan(.05);
