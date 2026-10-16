@@ -555,6 +555,37 @@ const COUNTRY_LIST=Object.freeze(ISO_CODES.map(iso=>{
   });
 }).sort((a,b)=>a.name.localeCompare(b.name,'en')));
 const COUNTRIES=Object.freeze(Object.fromEntries(COUNTRY_LIST.map(c=>[c.iso,c])));
+
+/*
+ * Regression checks for frequently selected countries.
+ * CAUTION: Nigeria has used RIGHT-hand road traffic and LEFT-HAND-DRIVE
+ * (driver seat on the left) since 2 April 1972. Do not treat every
+ * Commonwealth nation as RHD; verify country-specific traffic rules.
+ * UK, Australia, India, South Africa, Japan, New Zealand, Kenya and
+ * Jamaica use LEFT-hand road traffic / RIGHT-HAND-DRIVE vehicles.
+ * These assertions intentionally keep the live UI data aligned with
+ * the car's actual cockpit configuration.
+ */
+const EXPECTED_DRIVE_CONFIG=Object.freeze({
+  NG:{drive:'LHD',roadSide:'right'},
+  GB:{drive:'RHD',roadSide:'left'},
+  AU:{drive:'RHD',roadSide:'left'},
+  IN:{drive:'RHD',roadSide:'left'},
+  ZA:{drive:'RHD',roadSide:'left'},
+  JP:{drive:'RHD',roadSide:'left'},
+  NZ:{drive:'RHD',roadSide:'left'},
+  KE:{drive:'RHD',roadSide:'left'},
+  JM:{drive:'RHD',roadSide:'left'}
+});
+for(const [iso,expected] of Object.entries(EXPECTED_DRIVE_CONFIG)){
+  const actual=COUNTRIES[iso];
+  if(!actual||actual.drive!==expected.drive||actual.roadSide!==expected.roadSide||
+     actual.seatSide!==(expected.drive==='RHD'?'right':'left')){
+    throw new Error('Invalid driving convention for '+iso+
+      ': verify road-side and steering-side data before deployment');
+  }
+}
+
 let activeCountryCode='GB';
 function countryFlag(iso){
   return [...iso].map(letter=>String.fromCodePoint(127397+letter.charCodeAt(0))).join('');
