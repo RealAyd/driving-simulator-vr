@@ -352,6 +352,30 @@ a-scene {width:100%;height:100%}
   .primary,.primary .arrow,#buttons button,#toast,select {transition:none}
   .primary:hover:not(:disabled) {transform:none}
 }
+
+/* Accessible searchable ISO country picker with native Unicode flag emojis. */
+.select-wrap.country-picker::after,.hud:has(#country-live)::after{content:none}
+.country-picker{position:relative;min-width:0;pointer-events:auto}
+.country-picker::before{content:"⌕";position:absolute;z-index:1;right:15px;top:25px;transform:translateY(-50%);font-size:23px;color:#94a3b8;pointer-events:none}
+.country-search,#country-live.country-search{width:100%;min-width:0;min-height:52px;display:block;padding:12px 43px 12px 15px;border:1px solid #334155;border-radius:12px;background:#0b1323;color:#f8fafc;font-size:14px;font-weight:650;text-overflow:ellipsis;pointer-events:auto}
+.country-search::placeholder{color:#94a3b8;opacity:1}
+.country-search:hover{border-color:#64748b}
+.country-search:focus{outline:none;border-color:#2dd4bf;box-shadow:0 0 0 4px rgba(20,184,166,.12)}
+.country-search[aria-invalid="true"]{border-color:#fb7185}
+.country-results{position:absolute;z-index:90;left:0;right:0;top:calc(100% + 7px);max-height:min(315px,45vh);overflow:auto;overscroll-behavior:contain;padding:5px;border:1px solid #334155;border-radius:14px;background:#111827;box-shadow:0 18px 50px #020617aa;scrollbar-color:#475569 #111827;pointer-events:auto}
+.country-results[hidden]{display:none}
+.country-option{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;border:0;border-radius:9px;background:transparent;color:#f8fafc;text-align:left;font:inherit;font-size:13px;cursor:pointer}
+.country-option:hover,.country-option.active,.country-option:focus-visible{background:#164e4a;outline:none}
+.country-option .flag{flex:none;font-size:21px;line-height:1.2;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.country-option .country-name{flex:1;min-width:0;overflow-wrap:anywhere}
+.country-option .country-meta{flex:none;font-size:11px;color:#94a3b8;font-weight:700}
+.country-empty{padding:15px 12px;color:#94a3b8;font-size:13px}
+.country-hint{font-size:11px;color:#94a3b8;margin:7px 0 0}
+.hud .country-picker{width:min(100%,250px)}
+#country-live.country-search{min-width:0;width:100%;min-height:39px;padding:8px 33px 8px 11px;font-size:12px}
+.hud .country-picker::before{top:19px;right:11px;font-size:18px}
+.hud .country-results{right:0;left:auto;width:max(100%,265px)}
+@media(max-width:650px){.hud .country-picker{width:100%}.hud .country-results{min-width:230px;max-width:calc(100vw - 24px)}#country-live.country-search{min-height:36px;font-size:11px;padding:7px 26px 7px 8px}.country-option{padding:10px 9px;gap:7px}.country-option .flag{font-size:19px}.country-option .country-meta{font-size:10px}.hud .country-picker::before{top:18px;right:8px}}
 </style>
 <script>
 'use strict';
@@ -639,13 +663,13 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
     <h1>Take the driver's seat.</h1>
     <p class="lead">Practise observation and road awareness in a cockpit designed for your country. No download needed.</p>
     <label for="country-start">Select your country</label>
-    <div class="select-wrap">
-      <select id="country-start">
-        <option value="uk">United Kingdom (Right-Hand Drive)</option>
-        <option value="us">United States (Left-Hand Drive)</option>
-        <option value="de">Germany (Left-Hand Drive)</option>
-      </select>
+    <div class="select-wrap country-picker">
+      <input id="country-start" class="country-search" type="text" autocomplete="off" spellcheck="false"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-start-options"
+             placeholder="Search countries, e.g. Japan">
+      <div id="country-start-options" class="country-results" role="listbox" aria-label="Country suggestions" hidden></div>
     </div>
+    <p class="country-hint">Search by name or ISO code, then select a country.</p>
     <button class="primary" id="start" type="button">
       <span>Enter Driving Practice</span><span class="arrow" aria-hidden="true">→</span>
     </button>
@@ -664,11 +688,12 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
   <div id="overlay">
     <div class="hud"><strong>DRIVING PRACTICE VR</strong><div id="speed">0 mph</div><div id="status">Look at each mirror to check it · R to reset</div></div>
     <div class="hud"><label for="country-live" style="margin:0 0 5px;font-size:12px">Change country / cockpit</label>
-      <select id="country-live">
-        <option value="uk">United Kingdom · RHD</option>
-        <option value="us">United States · LHD</option>
-        <option value="de">Germany · LHD</option>
-      </select>
+      <div class="country-picker">
+        <input id="country-live" class="country-search" type="text" autocomplete="off" spellcheck="false"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-live-options"
+               placeholder="Search country">
+        <div id="country-live-options" class="country-results" role="listbox" aria-label="Country suggestions" hidden></div>
+      </div>
       <input id="share-fallback" hidden readonly aria-label="Copyable app link" style="width:100%;margin-top:8px">
     </div>
   </div>
@@ -741,11 +766,53 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
 </template>
 
 <script>
-// Lazy-mount the entire A-Frame scene only AFTER the visitor chooses a country.
+// Both searchable inputs share one confirmed ISO country, never unvalidated text.
+const countryPickers=Object.create(null);
+const SUGGESTED_CODES=['GB','US','DE','NG','IN','AU','CA','JP','ZA','BR','FR','AE'];
+function closePicker(p){
+  p.results.hidden=true;p.input.setAttribute('aria-expanded','false');
+  p.input.removeAttribute('aria-activedescendant');p.activeIndex=-1;
+}
+function populateResults(p,query){
+  const q=normalized(query);
+  const matches=q
+    ?COUNTRY_LIST.filter(c=>normalized(c.name+' '+c.iso+' '+(COUNTRY_ALIASES[c.iso]||'')).includes(q))
+    :SUGGESTED_CODES.map(code=>COUNTRIES[code]);
+  p.matches=matches.slice(0,50);p.activeIndex=-1;p.results.replaceChildren();
+  if(!p.matches.length){
+    const empty=document.createElement('div');empty.className='country-empty';
+    empty.textContent='No matching countries. Try a different name or ISO code.';
+    p.results.appendChild(empty);
+  }else{
+    const fragment=document.createDocumentFragment();
+    p.matches.forEach((country,index)=>{
+      const option=document.createElement('button');option.type='button';
+      option.id=p.input.id+'-result-'+index;
+      option.className='country-option';
+      option.setAttribute('role','option');option.setAttribute('aria-selected','false');
+      const flag=document.createElement('span');
+      flag.className='flag';flag.textContent=countryFlag(country.iso);flag.setAttribute('aria-hidden','true');
+      const name=document.createElement('span');name.className='country-name';name.textContent=country.name;
+      const meta=document.createElement('span');meta.className='country-meta';meta.textContent=country.iso+' · '+country.drive;
+      option.append(flag,name,meta);
+      option.addEventListener('pointerdown',event=>event.preventDefault());
+      option.addEventListener('click',()=>configureCountry(country.iso));
+      fragment.appendChild(option);
+    });
+    p.results.appendChild(fragment);
+  }
+  p.results.hidden=false;p.input.setAttribute('aria-expanded','true');
+  p.input.removeAttribute('aria-activedescendant');
+}
+function updatePickerDisplay(p,code){
+  const c=COUNTRIES[code];if(!c)return;
+  p.selectedCode=code;p.input.value=countryFlag(code)+' '+c.name;
+  p.input.setAttribute('aria-invalid','false');closePicker(p);
+}
 function configureCountry(code){
   if(!COUNTRIES[code])return;
-  byId('country-start').value=code;
-  byId('country-live').value=code;
+  activeCountryCode=code;
+  Object.values(countryPickers).forEach(p=>updatePickerDisplay(p,code));
   const car=byId('car');
   if(car){
     car.setAttribute('global-cockpit','country',code);
@@ -753,8 +820,70 @@ function configureCountry(code){
     car.components['car-physics']?.reset();
   }
 }
+function setupCountryPicker(id){
+  const p={input:byId(id),results:byId(id+'-options'),selectedCode:null,matches:[],activeIndex:-1};
+  countryPickers[id]=p;
+  p.input.addEventListener('focus',()=>{
+    p.input.select();populateResults(p,'');
+  });
+  p.input.addEventListener('input',()=>{
+    p.selectedCode=null;p.input.setAttribute('aria-invalid','false');
+    populateResults(p,p.input.value);
+  });
+  p.input.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){
+      if(!p.results.hidden){event.preventDefault();updatePickerDisplay(p,activeCountryCode)}
+      return;
+    }
+    if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+      event.preventDefault();
+      if(p.results.hidden)populateResults(p,'');
+      if(!p.matches.length)return;
+      p.activeIndex=(p.activeIndex+(event.key==='ArrowDown'?1:-1)+p.matches.length)%p.matches.length;
+      p.results.querySelectorAll('[role="option"]').forEach((option,i)=>{
+        const active=i===p.activeIndex;
+        option.classList.toggle('active',active);
+        option.setAttribute('aria-selected',String(active));
+        if(active){p.input.setAttribute('aria-activedescendant',option.id);option.scrollIntoView({block:'nearest'});}
+      });
+      return;
+    }
+    if(event.key==='Enter'&&!p.results.hidden){
+      event.preventDefault();
+      if(p.matches.length)configureCountry(p.matches[p.activeIndex<0?0:p.activeIndex].iso);
+    }else if(event.key==='Tab'){
+      if(!p.selectedCode)updatePickerDisplay(p,activeCountryCode);
+      else closePicker(p);
+    }
+  });
+  p.input.addEventListener('blur',()=>setTimeout(()=>{
+    if(!p.results.hidden){
+      if(!p.selectedCode)updatePickerDisplay(p,activeCountryCode);
+      else closePicker(p);
+    }
+  },160));
+  updatePickerDisplay(p,activeCountryCode);
+}
+// Use browser locale only as an initial preference, never as precise geolocation.
+try{
+  for(const language of (navigator.languages||[navigator.language||'en-GB'])){
+    const region=new Intl.Locale(language).region;
+    if(region&&COUNTRIES[region]){activeCountryCode=region;break}
+  }
+}catch(error){console.debug('Defaulting country to United Kingdom',error)}
+setupCountryPicker('country-start');
+setupCountryPicker('country-live');
+document.addEventListener('pointerdown',event=>{
+  for(const p of Object.values(countryPickers))
+    if(!event.target.closest('.country-picker'))closePicker(p);
+});
+// Existing lazy scene mounting and all WebXR components remain in place.
 byId('start').addEventListener('click',()=>{
-  const code=byId('country-start').value;
+  const code=countryPickers['country-start'].selectedCode;
+  if(!code||!COUNTRIES[code]){
+    byId('load-status').textContent='Select a country from the search results to continue.';
+    countryPickers['country-start'].input.focus();return;
+  }
   byId('start').disabled=true;
   byId('load-status').textContent='Preparing your '+COUNTRIES[code].name+' cockpit…';
   if(!window.AFRAME||!AFRAME.components['environment']){
@@ -762,11 +891,9 @@ byId('start').addEventListener('click',()=>{
     byId('start').disabled=false;return;
   }
   const startScene=()=>{
-    active=false;
-    configureCountry(code);
+    active=false;configureCountry(code);
     byId('splash').hidden=true;byId('app').hidden=false;
     scene=byId('scene-mount').querySelector('a-scene');
-    // Scene already exists by this point; refresh size after removing the overlay.
     scene.resize?.();active=true;
   };
   if(!scene){
@@ -779,17 +906,23 @@ byId('start').addEventListener('click',()=>{
     scene.addEventListener('exit-vr',()=>byId('buttons').style.display='flex');
   }else startScene();
 });
-byId('country-live').addEventListener('change',e=>configureCountry(e.target.value));
 byId('reset').addEventListener('click',()=>byId('car')?.components['car-physics']?.reset());
 byId('share').addEventListener('click',shareApp);
-window.addEventListener('keydown',e=>{if(e.code==='KeyR')byId('reset').click()});
+window.addEventListener('keydown',event=>{
+  if(event.code==='KeyR'&&!event.target?.closest?.('input,textarea,[contenteditable="true"]'))
+    byId('reset').click();
+});
 document.querySelectorAll('[data-drive]').forEach(button=>{
   const code=button.dataset.drive;
-  button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture(e.pointerId);keys[code]=true});
-  for(const eventName of ['pointerup','pointercancel','lostpointercapture'])
-    button.addEventListener(eventName,()=>keys[code]=false);
+  button.addEventListener('pointerdown',event=>{
+    event.preventDefault();button.setPointerCapture(event.pointerId);keys[code]=true;
+  });
+  for(const name of ['pointerup','pointercancel','lostpointercapture'])
+    button.addEventListener(name,()=>keys[code]=false);
 });
-document.addEventListener('visibilitychange',()=>{if(document.hidden)Object.keys(keys).forEach(k=>keys[k]=false)});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)Object.keys(keys).forEach(k=>keys[k]=false);
+});
 </script>
 </body>
 </html>
