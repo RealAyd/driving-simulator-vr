@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<meta name="description" content="Driving Practice VR: country-aware cockpit and native Google 3D Maps reference with a reliable WebXR practice fallback.">
+<meta name="description" content="Driving Practice VR: country-aware cockpit and native Google Street View reference with a reliable WebXR practice fallback.">
 <title>Driving Practice VR — Global Cockpit</title>
 <!-- Only A-Frame is required at page load. The official Google Maps JS API
      (https://maps.googleapis.com/maps/api/js) loads ON DEMAND after Start.
@@ -61,7 +61,7 @@ h1 em{color:#41c78a;font-style:normal}
 #app{position:fixed;inset:0}
 #scene-mount{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(#799cad,#475f61);isolation:isolate}
 #map-container{position:absolute;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;overflow:hidden}
-#map-container>#native-map{position:absolute;inset:0;display:block;width:100%;height:100%;background:#142235;pointer-events:none}
+#map-container>#streetview-panorama{position:absolute;inset:0;display:block;width:100%;height:100%;background:#142235;pointer-events:none}
 #scene-mount>a-scene{position:absolute!important;inset:0!important;z-index:2;width:100%!important;height:100%!important;background:transparent!important}
 #scene-mount>a-scene canvas{background:transparent!important}
 #hud{position:absolute;left:15px;top:max(14px,env(safe-area-inset-top));z-index:9;pointer-events:none}
@@ -86,7 +86,7 @@ h1 em{color:#41c78a;font-style:normal}
 #map-view-toggle[aria-pressed="true"]{background:#128e54!important;border-color:#68f2ad!important}
 #scene-mount.map-only>#driving-scene{visibility:hidden!important;pointer-events:none!important}
 #scene-mount.map-only>#map-container{z-index:4!important;pointer-events:auto!important}
-#scene-mount.map-only>#map-container>#native-map{pointer-events:auto!important}
+#scene-mount.map-only>#map-container>#streetview-panorama{pointer-events:auto!important}
 #map-debug{font-size:11px;font-weight:650;color:#c9e5f0;display:block;margin-top:5px}
 #map-debug.error{color:#ffc98b}
 /* Direction signals are flat touch controls, distinct from steering. */
@@ -159,7 +159,7 @@ h1 em{color:#41c78a;font-style:normal}
       <label>Latitude<input id="start-lat" inputmode="decimal" type="number" step="any" min="-90" max="90" value="51.64736"></label>
       <label>Longitude<input id="start-lng" inputmode="decimal" type="number" step="any" min="-180" max="180" value="-0.25260"></label>
     </div>
-    <p>The background is a separate 3D reference, not a collision-calibrated VR environment.</p>
+    <p>Street View moves between photographs. Mirrors are gaze targets, not rear-facing views. Immersive VR uses the separate practice scene.</p>
   </details>
   <button id="start-button" class="primary" type="button">Enter Driving Practice →</button>
   <div class="feature-line"><span>✓ Global cockpit</span><span>✓ Mirror practice</span><span>✓ Mobile &amp; VR</span></div>
@@ -169,9 +169,9 @@ h1 em{color:#41c78a;font-style:normal}
 </section>
 <div id="app" hidden>
   <div id="scene-mount">
-    <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
+    <!-- Native Google Street View uses its OWN DOM/WebGL renderer and retains Google attribution. -->
     <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.64736,-0.25260,108" heading="0" tilt="82" range="50" fov="80" mode="hybrid"></gmp-map-3d>
+      <div id="streetview-panorama" aria-label="Street View road-level panorama"></div>
     </div>
   </div>
   <div id="hud" class="hud-card">
@@ -202,7 +202,7 @@ h1 em{color:#41c78a;font-style:normal}
     </div>
   </div>
   <div id="map-status" role="status">Preparing practice environment…
-    <span id="map-debug">3D map diagnostics not started</span>
+    <span id="map-debug">Street View diagnostics not started</span>
   </div>
   <div id="toast" role="status" aria-live="polite"></div>
   <div id="fault-banner" role="alert" aria-live="assertive" hidden>
@@ -225,7 +225,7 @@ h1 em{color:#41c78a;font-style:normal}
     <button id="finish-test" type="button">Finish Mock Test</button>
     <button id="share" type="button">Share</button>
   </div>
-  <div id="map-help" hidden>Google Maps 3D background · <strong>visual reference only</strong></div>
+  <div id="map-help" hidden>Google Street View background · <strong>visual reference only</strong></div>
 </div>
 <!-- Scene is not constructed until the user actually starts practice. -->
 <template id="driving-template">
@@ -257,9 +257,9 @@ h1 em{color:#41c78a;font-style:normal}
     <a-entity class="cockpit-shell">
       <a-box position="0 0 0" width="2.05" height=".14" depth="3" color="#18364b"></a-box>
       <a-box id="dashboard" position="0 0 -1.5" width="2.05" height=".35" depth=".65" color="#152638"></a-box>
-      <a-box position="-1 .95 -.45" width=".1" height="1" depth=".13" color="#306f96"></a-box>
-      <a-box position="1 .95 -.45" width=".1" height="1" depth=".13" color="#306f96"></a-box>
-      <a-box position="0 1.94 -.70" width="2.05" height=".09" depth=".1" color="#21354a" scale=".85 .85 .85"></a-box>
+      <!-- Windshield obstruction 1 removed for panoramic road visibility. -->
+      <!-- Windshield obstruction 2 removed for panoramic road visibility. -->
+      <!-- Windshield obstruction 3 removed for panoramic road visibility. -->
       <a-entity id="steering-column" position="0 0 -1.5" scale=".85 .85 .85">
         <a-cylinder radius=".043" height=".4" rotation="72 0 0" color="#5d7687"></a-cylinder>
         <a-entity id="wheel" rotation="-14 0 0" position="0 .09 .14">
@@ -284,12 +284,12 @@ h1 em{color:#41c78a;font-style:normal}
       </a-plane>
       <a-text id="country-label" value="UNITED KINGDOM | RHD" width="1.7" align="center" position="0 -.25 -1.52" color="#a7d6e7"></a-text>
     </a-entity>
-    <a-box position="-1.1 1.10 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
-    <a-box position="1.1 1.10 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
-    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror; side: left" position="-1.12 1.12 -.69" rotation="0 25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
-    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.12 -.69" rotation="0 -25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
-    <a-box position="0 1.56 -.75" width=".55" height=".23" depth=".055" color="#273f52" scale=".85 .85 .85"></a-box>
-    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.55 -.7" width=".47" height=".16" scale=".85 .85 .85" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
+    <!-- Heavy mirror housing replaced with a lightweight transparent gaze panel. -->
+    <!-- Heavy mirror housing replaced with a lightweight transparent gaze panel. -->
+    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror; side: left" position="-1.12 1.12 -.69" rotation="0 25 0" width=".36" height=".21" scale=".72 .72 .72" material="color: #163545; transparent: true; opacity: .48; side: double; depthWrite: false; shader: flat"></a-plane>
+    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.12 -.69" rotation="0 -25 0" width=".36" height=".21" scale=".72 .72 .72" material="color: #163545; transparent: true; opacity: .48; side: double; depthWrite: false; shader: flat"></a-plane>
+    <!-- Heavy mirror housing replaced with a lightweight transparent gaze panel. -->
+    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.55 -.7" width=".47" height=".16" scale=".72 .72 .72" material="color: #163545; transparent: true; opacity: .48; side: double; depthWrite: false; shader: flat"></a-plane>
     <a-camera id="camera" position="0 1.2 0"
               camera="near: .05; far: 2500; fov: 80"
               look-controls="pointerLockEnabled: true" wasd-controls="enabled: false">
@@ -312,7 +312,10 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
 // Requested 108m map center is a calibration estimate, not surveyed road height.
 const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:108});
 const CAR_Y = 0;
-const MAP_RANGE_METRES = 50;
+// Street View locations are discrete photo capture points, NOT 3D road meshes.
+const STREET_STEP_METRES=7.5;
+const STREET_TICK_INTERVAL_MS=105;
+const STREET_MAX_LINK_ANGLE=68;
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
@@ -324,7 +327,8 @@ const inputs=Object.create(null);
 const pickers=[];
 const byId=id=>document.getElementById(id);
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
-const mapElement=byId('native-map');
+const streetViewTarget=byId('streetview-panorama');
+let streetViewPanorama=null,streetViewService=null,streetStartPano=null;
 // Keep the text node separate from the diagnostic detail below it.
 const status=message=>{
  const box=byId('map-status');
@@ -343,7 +347,7 @@ function showMapOnly(yes){
  wrapper.classList.toggle('map-only',yes);
  byId('map-view-toggle').setAttribute('aria-pressed',String(yes));
  byId('map-view-text').textContent=yes?'Show Cockpit':'Map Only';
- const native=byId('native-map');
+ const native=byId('streetview-panorama');
  if(yes){
   mapDebug('Map Only enabled: Google map drawn without the A-Frame layer.');
   if(!googleMapReady)status('Map Only diagnostics · native Google map inspection');
@@ -599,116 +603,265 @@ function createPicker(inputId){
  pickers.push(picker);
  return picker;
 }
+
+// -------------------------------- STREET VIEW ENGINE ---------------------------
+// Uses Google Maps JavaScript API's streetView sub-library. Photos are used
+// only in Google's own panorama player; Google's logo/credits remain visible.
+// This is a photo-navigation simulator: scenery advances panorama-by-panorama.
+let streetFrame=0,streetFrameLast=0,streetLastPose=null,streetDistance=0;
+let streetNavBusy=false,streetLastMove=0,streetPreviousPano=null,streetNavToken=0;
+let streetLinks=[];
+let streetStartHeading=0,streetStreetReady=false;
+const streetForward=new THREE.Vector3(),streetQ=new THREE.Quaternion();
+function loadStreetViewLibrary(){
+ if(mapsPromise)return mapsPromise;
+ mapsPromise=new Promise((resolve,reject)=>{
+  if(window.google?.maps?.importLibrary){resolve();return}
+  const script=document.createElement('script');
+  script.async=true;
+  script.src='https://maps.googleapis.com/maps/api/js?key='+
+    encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&v=weekly&libraries=streetView&loading=async';
+  script.onload=resolve;
+  script.onerror=()=>reject(Error('Maps JavaScript API failed to load'));
+  document.head.appendChild(script);
+ }).then(async()=>{
+  if(!window.google?.maps?.importLibrary)throw Error('Google Maps API not ready');
+  return google.maps.importLibrary('streetView');
+ }).catch(error=>{mapsPromise=null;throw error});
+ return mapsPromise;
+}
+function minimalAngularDifference(a,b){
+ return Math.abs((((a-b)%360+540)%360)-180);
+}
+function streetHeadingForCar(){
+ const car=byId('player-car');
+ const radians=car?.object3D.rotation.y||0;
+ return ((-THREE.MathUtils.radToDeg(radians)%360)+360)%360;
+}
+function syncStreetPov(){
+ if(!googleMapReady||!streetViewPanorama||scene?.is('vr-mode'))return;
+ if(byId('scene-mount').classList.contains('map-only'))return;
+ const camera=byId('camera');
+ if(!camera?.object3D)return;
+ camera.object3D.getWorldQuaternion(streetQ);
+ streetForward.set(0,0,-1).applyQuaternion(streetQ).normalize();
+ const heading=(Math.atan2(streetForward.x,-streetForward.z)*180/Math.PI+360)%360;
+ const pitch=THREE.MathUtils.clamp(Math.asin(streetForward.y)*180/Math.PI,-50,50);
+ const current=streetViewPanorama.getPov();
+ if(!current||minimalAngularDifference(current.heading||0,heading)>.65||
+    Math.abs((current.pitch||0)-pitch)>.6){
+  streetViewPanorama.setPov({heading,pitch});
+ }
+}
+function nextRoadPanorama(){
+ if(streetNavBusy||!streetViewPanorama||!googleMapReady)return;
+ const links=streetLinks;
+ const forward=streetHeadingForCar();
+ const valid=links.filter(link=>link&&typeof link.heading==='number'&&link.pano&&
+    link.pano!==streetViewPanorama.getPano());
+ const options=valid.map(link=>({...link,error:minimalAngularDifference(link.heading,forward)}))
+   .filter(link=>link.error<=STREET_MAX_LINK_ANGLE)
+   .sort((a,b)=>a.error-b.error);
+ if(!options.length){
+  // Distinct photos are connected only where Google supplies valid links.
+  streetDistance=Math.min(streetDistance,STREET_STEP_METRES);
+  if(performance.now()-streetLastMove>2200){
+   streetLastMove=performance.now();
+   mapDebug('No forward panorama link in this direction. Turn at the junction or reset.');
+  }
+  return;
+ }
+ streetNavBusy=true;
+ const token=++streetNavToken,generation=mapActivation;
+ const destination=options[0].pano;
+ const departing=streetViewPanorama.getPano();
+ streetLastMove=performance.now();
+ // Fetch destination metadata before moving; never navigate using old links.
+ streetViewService.getPanorama({pano:destination}).then(response=>{
+  if(token!==streetNavToken||generation!==mapActivation)return;
+  if(!response?.data?.location?.pano)throw Error('Panorama metadata unavailable');
+  streetLinks=response.data.links||[];
+  streetPreviousPano=departing;
+  streetDistance=0;
+  streetViewPanorama.setPano(destination);
+ }).catch(error=>{
+  if(token!==streetNavToken||generation!==mapActivation)return;
+  mapDebug('Street View could not advance: '+error.message,true);
+ }).finally(()=>{
+  if(token!==streetNavToken||generation!==mapActivation)return;
+  streetNavBusy=false;streetLastMove=performance.now();
+ });
+}
+
+function streetFrameLoop(timestamp){
+ streetFrame=requestAnimationFrame(streetFrameLoop);
+ if(!active||!googleMapReady||!streetViewPanorama||document.hidden||scene?.is('vr-mode'))return;
+ if(timestamp-streetFrameLast<STREET_TICK_INTERVAL_MS)return;
+ streetFrameLast=timestamp;
+ const car=byId('player-car');
+ if(!car)return;
+ syncStreetPov();
+ const current=car.object3D.position;
+ if(streetLastPose){
+  const dx=current.x-streetLastPose.x,dz=current.z-streetLastPose.z;
+  const heading=car.object3D.rotation.y;
+  const forwardDisplacement=dx*-Math.sin(heading)+dz*-Math.cos(heading);
+  if(forwardDisplacement>0 && car.components['car-physics']?.speed>.6)
+   streetDistance+=Math.min(forwardDisplacement,3);
+ }else streetLastPose={x:current.x,z:current.z};
+ streetLastPose.x=current.x;streetLastPose.z=current.z;
+ if(streetDistance>=STREET_STEP_METRES && !streetNavBusy &&
+    timestamp-streetLastMove>750){
+  nextRoadPanorama();
+ }
+}
+function startStreetFrame(){
+ if(streetFrame)return;
+ streetFrameLast=0;streetLastPose=null;streetDistance=0;
+ streetFrame=requestAnimationFrame(streetFrameLoop);
+}
+function stopStreetFrame(){
+ if(streetFrame)cancelAnimationFrame(streetFrame);
+ streetFrame=0;streetLastPose=null;streetDistance=0;streetNavBusy=false;streetNavToken++;
+}
+function resetStreetStart(){
+ if(!streetViewPanorama||!streetStartPano)return;
+ streetDistance=0;streetLastPose=null;streetPreviousPano=null;streetNavBusy=false;
+ streetNavToken++;streetLinks=[];
+ const generation=mapActivation,token=streetNavToken;
+ streetViewService.getPanorama({pano:streetStartPano}).then(response=>{
+  if(generation===mapActivation&&token===streetNavToken)streetLinks=response.data.links||[];
+ }).catch(()=>{});
+ streetViewPanorama.setPano(streetStartPano);
+ const car=byId('player-car');
+ const heading=-streetStartHeading*Math.PI/180;
+ if(car){
+  car.object3D.rotation.y=heading;
+  const physics=car.components['car-physics'];
+  if(physics)physics.heading=heading;
+ }
+}
 function showMapsError(reason){
+ stopStreetFrame();
  googleMapReady=false;
+ streetStreetReady=false;
  setFallback(true);
  byId('map-help').hidden=true;
  status('Practice environment · '+reason);
  mapDebug(reason,true);
 }
 window.gm_authFailure=()=>{
- showMapsError('Google rejected this browser key or website origin. Check Maps JavaScript API authorization, referrer restrictions, and billing.');
+ showMapsError('Google rejected the browser key/domain. Check Maps JavaScript API credentials and billing.');
 };
-function mapsLoader(){
- if(mapsPromise)return mapsPromise;
- mapsPromise=new Promise((resolve,reject)=>{
-   if(window.google?.maps?.importLibrary){resolve();return}
-   const script=document.createElement('script');
-   script.async=true;
-   // Official Maps JavaScript API endpoint; the bare googleapis.com domain
-   // is NOT a JavaScript 3D Maps loader.
-   script.src='https://maps.googleapis.com/maps/api/js?key='+
-     encodeURIComponent(GOOGLE_MAPS_API_KEY)+
-     '&v=weekly&libraries=maps3d&loading=async';
-   script.onload=()=>{
-     mapDebug('Maps JavaScript API script downloaded. Initialising maps3d library…');
-     resolve();
-   };
-   script.onerror=()=>{
-     mapDebug('Maps JavaScript API request failed (network error or script blocked).',true);
-     reject(Error('Maps JavaScript API script failed to load'));
-   };
-   document.head.appendChild(script);
- }).then(async()=>{
-   if(!window.google?.maps?.importLibrary)throw Error('Google Maps library not available');
-   // Official Maps JS API sub-library. No undocumented alpha array.
-   const maps3d = await google.maps.importLibrary('maps3d');
-   mapDebug('maps3d library imported; checking custom element registration…');
-   if(!customElements.get('gmp-map-3d')){
-     if(!maps3d.Map3DElement)throw Error('maps3d Map3DElement not available');
-     await Promise.race([
-       customElements.whenDefined('gmp-map-3d'),
-       new Promise((_,reject)=>setTimeout(()=>reject(Error('3D map component registration timed out')),15000))
-     ]);
-   }
-   if(!customElements.get('gmp-map-3d'))throw Error('gmp-map-3d not registered');
-   console.log("3D Map Viewport element loaded at targets:", 51.64736, -0.25260);
-   mapDebug('Native gmp-map-3d component registered.');
- }).catch(error=>{mapsPromise=null;throw error});
- return mapsPromise;
-}
 async function startGoogleMap(){
  if(!keyConfigured()){
-   showMapsError('Maps JavaScript API key not configured');
-   return;
+  showMapsError('Maps JavaScript API key not configured');return;
  }
  if(!selectedRoute){
-   showMapsError('Add map coordinates to enable Google 3D background');
-   return;
+  showMapsError('Enter coordinates to locate the first road panorama');return;
  }
  const generation=++mapActivation;
- googleMapReady=false;
+ stopStreetFrame();
+ googleMapReady=false;streetStreetReady=false;streetStartPano=null;streetLinks=[];
+ if(streetViewPanorama){
+  google.maps.event.clearInstanceListeners(streetViewPanorama);
+  streetViewPanorama.setVisible(false);
+ }
  setFallback(true);
- status('Loading official Google 3D Maps…');
- mapDebug('Maps API key found in page. Requesting Maps JavaScript API 3D renderer.');
- mapElement.addEventListener('gmp-error',event=>{
-   if(generation!==mapActivation)return;
-   console.warn('[Driving Practice VR] gmp-error details (no key)',event);
-   showMapsError('Google 3D initialization error. Inspect DevTools Console for the Maps error code; verify Maps JavaScript API access, referrer and billing.');
- },{once:true});
- let settled=false;
- const onSteady=event=>{
-   if(generation!==mapActivation||!event.isSteady||settled)return;
-   settled=true;
-   mapElement.removeEventListener('gmp-steadychange',onSteady);
-   googleMapReady=true;
-   mapDebug('Google 3D emitted steady=true. Tiles are available to its native renderer.');
-   if(!scene?.is('vr-mode'))setFallback(false);
-   byId('map-help').hidden=false;
-   status('Google 3D fixed reference · estimated center altitude '+selectedRoute.altitude+'m');
- };
- mapElement.addEventListener('gmp-steadychange',onSteady);
+ status('Finding Street View roads near your selected location…');
  try{
-   await mapsLoader();
+  const {StreetViewPanorama,StreetViewService,StreetViewStatus}=await loadStreetViewLibrary();
+  if(generation!==mapActivation)return;
+  streetViewService=new StreetViewService();
+  // Restrict to Google's outdoor coverage where possible. Radius is not a
+  // promise that the exact test-centre entrance has panoramic imagery.
+  const response=await streetViewService.getPanorama({
+   location:{lat:selectedRoute.lat,lng:selectedRoute.lng},
+   radius:120,
+   sources:[google.maps.StreetViewSource.GOOGLE,google.maps.StreetViewSource.OUTDOOR]
+  });
+  if(generation!==mapActivation)return;
+  const initialPano=response?.data?.location?.pano;
+  if(!initialPano)
+    throw Error('No connected Street View panorama close to this location');
+  streetStartPano=initialPano;
+  // Align the simulated vehicle to an actual connected road link at launch.
+  const initialLinks=response?.data?.links||[];
+  streetLinks=initialLinks;
+  const initialRoad=initialLinks.filter(link=>link&&Number.isFinite(link.heading))
+    .sort((a,b)=>minimalAngularDifference(a.heading,0)-minimalAngularDifference(b.heading,0))[0];
+  streetStartHeading=initialRoad?.heading||0;
+  const startingCar=byId('player-car');
+  if(startingCar){
+   const yaw=-streetStartHeading*Math.PI/180;
+   startingCar.object3D.rotation.y=yaw;
+   const physics=startingCar.components['car-physics'];
+   if(physics)physics.heading=yaw;
+  }
+  streetViewTarget.replaceChildren();
+  streetViewPanorama=new StreetViewPanorama(streetViewTarget,{
+    pano:streetStartPano,
+    pov:{heading:streetStartHeading,pitch:0},zoom:0,
+    visible:true,disableDefaultUI:true,clickToGo:false,
+    linksControl:false,panControl:false,zoomControl:false,
+    addressControl:false,fullscreenControl:false,
+    motionTracking:false,scrollwheel:false,showRoadLabels:false
+  });
+  streetViewPanorama.addListener('pano_changed',()=>{
    if(generation!==mapActivation)return;
-   const mapBox=byId('map-container');
-   if(!mapBox?.contains(mapElement))throw Error('Native map not inside #map-container');
-   const bounds=mapBox.getBoundingClientRect();
-   if(bounds.width<20||bounds.height<20)throw Error('Native map viewport has no visible dimensions');
-   mapDebug('Native map viewport '+Math.round(bounds.width)+'×'+Math.round(bounds.height)+' pixels');
-   mapElement.mode='HYBRID'; // Required or the 3D map can remain blank.
-   mapElement.center={
-     lat:selectedRoute.lat,lng:selectedRoute.lng,altitude:selectedRoute.altitude
-   };
-   mapElement.range=MAP_RANGE_METRES;
-   mapElement.tilt=82;
-   mapElement.heading=0;
-   mapElement.fov=80;
-   mapDebug('Google Map calibration: tilt 82°, range 50m, target altitude 108m (estimate).');
-   // A stalled steady event does not prove the map failed. Use Map Only
-   // to differentiate a stalled map renderer from an opaque A-Frame layer.
-   setTimeout(()=>{
-     if(generation===mapActivation&&!settled){
-       status('Google 3D not ready · click Map Only to inspect native viewport');
-       mapDebug('No gmp-steadychange event after 18 seconds. Inspect Console/Network for authorization, WebGL and referrer errors.',true);
+   streetLastMove=performance.now();
+  });
+  // Links may arrive AFTER pano_changed; avoid choosing a stale connection.
+  // If the first metadata response had no links, orient the stationary car
+  // once the panorama navigation metadata becomes available.
+  let firstLinksAligned=initialLinks.length>0;
+  streetViewPanorama.addListener('links_changed',()=>{
+   if(generation!==mapActivation||firstLinksAligned||streetViewPanorama.getPano()!==streetStartPano)return;
+   const links=streetViewPanorama.getLinks()||[];
+   const preferred=links.filter(link=>link&&Number.isFinite(link.heading))
+     .sort((a,b)=>minimalAngularDifference(a.heading,0)-minimalAngularDifference(b.heading,0))[0];
+   if(!preferred)return;
+   const car=byId('player-car');
+   if(car?.components['car-physics']?.speed>0.3)return;
+   firstLinksAligned=true;
+   streetStartHeading=preferred.heading;
+   const yaw=-streetStartHeading*Math.PI/180;
+   if(car){
+     car.object3D.rotation.y=yaw;
+     const physics=car.components['car-physics'];
+     if(physics)physics.heading=yaw;
+   }
+  });
+  streetViewPanorama.addListener('status_changed',()=>{
+   if(generation!==mapActivation)return;
+   const state=streetViewPanorama.getStatus();
+   if(state===StreetViewStatus.OK){
+     if(!streetStreetReady){
+       streetStreetReady=true;
+       googleMapReady=true;
+       setFallback(!!scene?.is('vr-mode'));
+       byId('map-help').hidden=false;
+       status('Google Street View · panorama-step driving practice');
+       startStreetFrame();
      }
-   },18000);
+   }else if(state===StreetViewStatus.ZERO_RESULTS){
+     showMapsError('Street View could not load a matching road panorama');
+   }
+  });
+  // Some API versions finish loading before the listener attaches.
+  if(streetViewPanorama.getStatus()===StreetViewStatus.OK){
+   googleMapReady=true;streetStreetReady=true;
+   setFallback(!!scene?.is('vr-mode'));byId('map-help').hidden=false;
+   status('Street View ready · navigation follows photographed road links');
+   startStreetFrame();
+  }
  }catch(error){
-   if(generation!==mapActivation)return;
-   console.error('[Driving Practice VR] Google Maps 3D load error',error);
-   showMapsError('Google Maps unavailable · check API key / domain / billing');
+  if(generation!==mapActivation)return;
+  console.warn('[Driving Practice VR / Street View]',error);
+  showMapsError(error.message||'Street View unavailable');
  }
 }
+
 function readRoute(){
  const latText=byId('start-lat').value.trim();
  const lngText=byId('start-lng').value.trim();
@@ -755,6 +908,7 @@ AFRAME.registerComponent('car-physics',{
    this.el.object3D.position.set(laneX,CAR_Y,0);
    this.el.object3D.rotation.set(0,0,0);
    updateSpeed(0);
+   if(googleMapReady&&!scene?.is('vr-mode'))resetStreetStart();
  },
  tick(time,delta){
    if(!active||!delta)return;
@@ -810,7 +964,7 @@ AFRAME.registerComponent('car-physics',{
    if(Math.abs(pos.x)>440||Math.abs(pos.z)>440){
      this.reset();toast('Practice boundary — reset');return;
    }
-   // Google scenery stays fixed; A-Frame look-controls remain independent.
+   // Street View advances across linked panoramas in streetFrameLoop().
  },
  remove(){
    window.removeEventListener('keydown',this.keydown);
@@ -1296,21 +1450,25 @@ byId('start-button').addEventListener('click',async()=>{
    setFallback(true);
    void startGoogleMap();
    scene.addEventListener('enter-vr',()=>{
-     // DOM-backed Google Maps is NOT visible to the immersive XR compositor.
+     stopStreetFrame();
+     // DOM-backed Google Street View is NOT visible to immersive WebXR.
      setFallback(true);
      byId('controls').hidden=true;
      status('VR mode · independent practice scene');
    });
    scene.addEventListener('exit-vr',()=>{
+     if(googleMapReady)startStreetFrame();
      byId('controls').hidden=false;
      setFallback(!googleMapReady);
-     status(googleMapReady?'Google 3D reference · chassis Y='+CAR_Y+'m':'Practice environment');
+     status(googleMapReady?'Google Street View reference · chassis Y='+CAR_Y+'m':'Practice environment');
    });
  };
  if(scene.hasLoaded)ready();
  else scene.addEventListener('loaded',ready,{once:true});
 });
-byId('reset').addEventListener('click',()=>byId('player-car')?.components['car-physics']?.reset());
+byId('reset').addEventListener('click',()=>{
+ byId('player-car')?.components['car-physics']?.reset();
+});
 byId('map-view-toggle').addEventListener('click',()=>{
  const only=!byId('scene-mount').classList.contains('map-only');
  showMapOnly(only);
@@ -1352,12 +1510,13 @@ document.querySelectorAll('[data-drive]').forEach(button=>{
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden)Object.keys(inputs).forEach(key=>inputs[key]=false);
 });
-console.info('[Driving Practice VR] Google 3D Maps is a separate WebGL layer.');
+console.info('[Driving Practice VR] Google Street View is a separate WebGL layer.');
 console.info('Enable Maps JavaScript API, restrict the browser key to your site, and configure billing quotas.');
-console.warn('The native Google 3D background is visual only; A-Frame drives on a fixed Y=0 road.');
+console.warn('The native Google Street View background is visual only; A-Frame drives on a fixed Y=0 road.');
 </script>
 </body>
 </html>
+
 
 
 
