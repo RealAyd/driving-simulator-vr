@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "description": "Builds vendor/google-tiles.bundle.js: 3d-tiles-renderer bound to A-Frame 1.6's window.THREE",
+  "type": "module",
+  "devDependencies": {
+    "3d-tiles-renderer": "0.3.46",
+    "esbuild": "0.24.0",
+    "three": "0.164.0"
+  }
+}

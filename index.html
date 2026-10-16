@@ -6,10 +6,11 @@
 <meta name="theme-color" content="#0f172a">
 <meta name="description" content="Driving Practice VR: country-aware cockpit and native Google 3D Maps reference with a reliable WebXR practice fallback.">
 <title>Driving Practice VR — Global Cockpit</title>
-<!-- Only A-Frame is required at page load. The official Google Maps JS API
-     (https://maps.googleapis.com/maps/api/js) loads ON DEMAND after Start.
-     This avoids both the NYT 3D Tiles / Three.js incompatibility and billing
-     map sessions for visitors who have not yet started. Flags use FlagCDN. -->
+<!-- Only A-Frame is required at page load. Google Photorealistic 3D Tiles
+     (Map Tiles API) load ON DEMAND after Start and render INSIDE the A-Frame
+     scene, so the city is visible in VR headsets. vendor/google-tiles.bundle.js
+     is 3d-tiles-renderer built against A-Frame's own THREE (tools/google-tiles).
+     Flags use FlagCDN. -->
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 <style>
 :root{color-scheme:dark;--slate:#0f172a;--deep:#111827;--line:#334155;--green:#128e54;--green-light:#1ca86a;--ink:#f8fafc;--soft:#cbd5e1;--muted:#94a3b8}
@@ -60,8 +61,6 @@ h1 em{color:#41c78a;font-style:normal}
 #load-message{font-size:12px;color:#74e2a5;margin:10px 0 0}
 #app{position:fixed;inset:0}
 #scene-mount{z-index:1;position:absolute;top:0;left:0;width:100vw;height:100vh;display:block;background:linear-gradient(#799cad,#475f61);isolation:isolate}
-#map-container{position:absolute;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;overflow:hidden}
-#map-container>#native-map{position:absolute;inset:0;display:block;width:100%;height:100%;background:#142235;pointer-events:none}
 #scene-mount>a-scene{position:absolute!important;inset:0!important;z-index:2;width:100%!important;height:100%!important;background:transparent!important;pointer-events:none}
 #scene-mount>a-scene canvas{background:transparent!important}
 #hud{position:absolute;left:15px;top:max(14px,env(safe-area-inset-top));z-index:9;pointer-events:none}
@@ -80,13 +79,6 @@ h1 em{color:#41c78a;font-style:normal}
 #controls{position:absolute;z-index:10;bottom:max(56px,calc(env(safe-area-inset-bottom) + 52px));left:16px;right:110px;display:flex;flex-wrap:wrap;gap:8px;pointer-events:auto}
 #controls button{background:#0f172ae8;border:1px solid #64748b;border-radius:999px;color:white;padding:10px 13px;font-size:12px;font-weight:750;touch-action:none}
 #controls button:hover,#controls button:active{background:#128e54;border-color:#2ee391}
-/* Safe map diagnostic: view the native Google WebGL map WITHOUT the
-   transparent A-Frame layer to distinguish authorization vs occlusion. */
-#map-view-toggle{background:#0e5260!important;border-color:#5bb6ca!important}
-#map-view-toggle[aria-pressed="true"]{background:#128e54!important;border-color:#68f2ad!important}
-#scene-mount.map-only>#driving-scene{visibility:hidden!important;pointer-events:none!important}
-#scene-mount.map-only>#map-container{z-index:4!important;pointer-events:auto!important}
-#scene-mount.map-only>#map-container>#native-map{pointer-events:auto!important}
 #map-debug{font-size:11px;font-weight:650;color:#c9e5f0;display:block;margin-top:5px}
 #map-debug.error{color:#ffc98b}
 /* Direction signals are flat touch controls, distinct from steering. */
@@ -169,10 +161,6 @@ h1 em{color:#41c78a;font-style:normal}
 </section>
 <div id="app" hidden>
   <div id="scene-mount">
-    <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
-    <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.6473487,-0.2523889,0" heading="19" tilt="84" max-tilt="90" range="12" fov="80" mode="hybrid"></gmp-map-3d>
-    </div>
   </div>
   <div id="hud" class="hud-card">
     <div class="hud-title">DRIVING PRACTICE VR</div>
@@ -218,14 +206,10 @@ h1 em{color:#41c78a;font-style:normal}
     <button data-drive="brake" type="button">Brake</button>
     <button data-drive="go" type="button">Accelerate</button>
     <button id="reset" type="button">Reset</button>
-    <button id="map-view-toggle" type="button" aria-pressed="false"
-            title="Show only Google's map to diagnose rendering">
-       <span id="map-view-text">Map Only</span>
-    </button>
     <button id="finish-test" type="button">Finish Mock Test</button>
     <button id="share" type="button">Share</button>
   </div>
-  <div id="map-help" hidden>Google Maps 3D background · <strong>visual reference only</strong></div>
+  <div id="map-help" hidden>Google · <span id="map-credits">Map data</span> · <strong>visual reference only</strong></div>
 </div>
 <!-- Scene is not constructed until the user actually starts practice. -->
 <template id="driving-template">
@@ -236,6 +220,8 @@ h1 em{color:#41c78a;font-style:normal}
   <a-entity light="type: directional; intensity: .8" position="-8 16 7"></a-entity>
   <!-- These are ONLY for no-key/map errors and immersive VR, in which
        browser DOM Google Maps cannot be presented by the XR compositor. -->
+  <!-- Google Photorealistic 3D Tiles are attached here after Start. -->
+  <a-entity id="google-tiles" google-3d-tiles></a-entity>
   <a-entity id="practice-fallback">
     <a-box position="-4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
     <a-box position="4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
@@ -279,7 +265,7 @@ h1 em{color:#41c78a;font-style:normal}
     <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.12 -.69" rotation="0 -25 0" width=".36" height=".21" scale=".72 .72 .72" material="color: #163545; transparent: true; opacity: .48; side: double; depthWrite: false; shader: flat"></a-plane>
     <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.55 -.7" width=".47" height=".16" scale=".72 .72 .72" material="color: #163545; transparent: true; opacity: .48; side: double; depthWrite: false; shader: flat"></a-plane>
     <a-camera id="camera" position="0 1.2 0"
-              camera="near: .05; far: 2500; fov: 80"
+              camera="near: .05; far: 4000; fov: 80"
               look-controls="pointerLockEnabled: true" wasd-controls="enabled: false">
       <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4"
                 cursor="fuse: true; fuseTimeout: 750"
@@ -295,27 +281,28 @@ h1 em{color:#41c78a;font-style:normal}
 <script>
 'use strict';
 // Public GitHub Pages source: insert ONLY a referrer-restricted browser key.
-// Enable Maps JavaScript API, NOT just Map Tiles API.
+// The key must have the Map Tiles API enabled (Photorealistic 3D Tiles).
 const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
-// Map3D center altitude is metres above ground; 0 + 12m range at 84° tilt
-// puts the Google camera at ~1.25m, roughly driver eye height.
 // Start is the driver's eye position on Stirling Way (Street View capture
 // point); heading 19° follows the road north-east past the test centre.
 const BOREHAMWOOD = Object.freeze({lat:51.6472476,lng:-0.252445,altitude:0,heading:19});
 const CAR_Y = 0;
-const MAP_RANGE_METRES = 12;
+const TILES_ROOT_URL='https://tile.googleapis.com/v1/3dtiles/root.json';
+const DRACO_DECODER_PATH='https://www.gstatic.com/draco/versioned/decoders/1.5.7/';
+// Lower = sharper close-up tiles but more downloads (Map Tiles API usage).
+const TILES_ERROR_TARGET=12;
+const SKY_COLOR='#a9cbe3';
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
 const JUNCTION_EVALUATION_ZONES=Object.freeze([-55,-117,-165]);
 const ROUTE_SESSION_HISTORY = new Map(); // route metadata only, never Google imagery
 let active=false,scene=null,selectedRoute=null,googleMapReady=false;
-let mapsPromise=null,toastTimer=0,mapActivation=0;
+let tilesPromise=null,tiles=null,toastTimer=0,mapActivation=0;
 const inputs=Object.create(null);
 const pickers=[];
 const byId=id=>document.getElementById(id);
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
-const mapElement=byId('native-map');
 // Keep the text node separate from the diagnostic detail below it.
 const status=message=>{
  const box=byId('map-status');
@@ -329,23 +316,6 @@ const mapDebug=(message,isError=false)=>{
  // Never emit Google Maps API credentials, full script URLs, or auth tokens.
  console[isError?'warn':'info']('[Driving Practice VR / Maps]',message);
 };
-function showMapOnly(yes){
- const wrapper=byId('scene-mount');
- wrapper.classList.toggle('map-only',yes);
- byId('map-view-toggle').setAttribute('aria-pressed',String(yes));
- byId('map-view-text').textContent=yes?'Show Cockpit':'Map Only';
- const native=byId('native-map');
- if(yes){
-  mapDebug('Map Only enabled: Google map drawn without the A-Frame layer.');
-  if(!googleMapReady)status('Map Only diagnostics · native Google map inspection');
- }else{
-  mapDebug('Cockpit overlay restored.');
-  if(scene?.renderer){
-   scene.renderer.setClearColor(0,0);
-   scene.renderer.setClearAlpha(0);
-  }
- }
-}
 // The scene lives in <template> until Start, so bind on the element itself
 // before it is mounted; A-Frame emits render-target-loaded during mount.
 // That event fires from setupCanvas, BEFORE scene.renderer exists, so the
@@ -485,11 +455,7 @@ async function shareApp(){
 function setFallback(shouldShow){
  const world=byId('practice-fallback');
  if(world)world.object3D.visible=shouldShow;
- if(scene?.renderer){
-   scene.object3D.background=null;
-   scene.renderer.setClearColor(0,0);
-   scene.renderer.setClearAlpha(0);
- }
+ if(scene?.renderer)scene.object3D.background=new THREE.Color(SKY_COLOR);
 }
 function setCountry(iso,fromUser=false){
  if(!COUNTRIES[iso])return;
@@ -606,132 +572,176 @@ function createPicker(inputId){
 }
 function showMapsError(reason){
  googleMapReady=false;
+ disposeTiles();
  setFallback(true);
  byId('map-help').hidden=true;
  status('Practice environment · '+reason);
  mapDebug(reason,true);
 }
-window.gm_authFailure=()=>{
- showMapsError('Google rejected this browser key or website origin. Check Maps JavaScript API authorization, referrer restrictions, and billing.');
-};
-function mapsLoader(){
- if(mapsPromise)return mapsPromise;
- mapsPromise=new Promise((resolve,reject)=>{
-   if(window.google?.maps?.importLibrary){resolve();return}
+function tilesLoader(){
+ if(tilesPromise)return tilesPromise;
+ tilesPromise=new Promise((resolve,reject)=>{
+   if(window.GoogleTiles){resolve();return}
    const script=document.createElement('script');
-   script.async=true;
-   // Official Maps JavaScript API endpoint; the bare googleapis.com domain
-   // is NOT a JavaScript 3D Maps loader.
-   script.src='https://maps.googleapis.com/maps/api/js?key='+
-     encodeURIComponent(GOOGLE_MAPS_API_KEY)+
-     '&v=weekly&libraries=maps3d&loading=async';
-   script.onload=()=>{
-     mapDebug('Maps JavaScript API script downloaded. Initialising maps3d library…');
-     resolve();
-   };
-   script.onerror=()=>{
-     mapDebug('Maps JavaScript API request failed (network error or script blocked).',true);
-     reject(Error('Maps JavaScript API script failed to load'));
-   };
+   script.src='vendor/google-tiles.bundle.js';
+   script.onload=()=>window.GoogleTiles?resolve():reject(Error('3D tiles bundle did not initialise'));
+   script.onerror=()=>reject(Error('3D tiles bundle failed to load'));
    document.head.appendChild(script);
- }).then(async()=>{
-   if(!window.google?.maps?.importLibrary)throw Error('Google Maps library not available');
-   // Official Maps JS API sub-library. No undocumented alpha array.
-   const maps3d = await google.maps.importLibrary('maps3d');
-   mapDebug('maps3d library imported; checking custom element registration…');
-   if(!customElements.get('gmp-map-3d')){
-     if(!maps3d.Map3DElement)throw Error('maps3d Map3DElement not available');
-     await Promise.race([
-       customElements.whenDefined('gmp-map-3d'),
-       new Promise((_,reject)=>setTimeout(()=>reject(Error('3D map component registration timed out')),15000))
-     ]);
-   }
-   if(!customElements.get('gmp-map-3d'))throw Error('gmp-map-3d not registered');
-   console.log("3D Map Viewport element loaded at targets:", BOREHAMWOOD.lat, BOREHAMWOOD.lng);
-   mapDebug('Native gmp-map-3d component registered.');
- }).catch(error=>{mapsPromise=null;throw error});
- return mapsPromise;
+ }).catch(error=>{tilesPromise=null;throw error});
+ return tilesPromise;
+}
+function disposeTiles(){
+ if(!tiles)return;
+ byId('google-tiles')?.components['google-3d-tiles']?.detach();
+ tiles.group.removeFromParent();
+ tiles.dispose();
+ tiles=null;
+}
+// Anchor the Earth-centred tileset so the route start sits at the scene
+// origin: east=+X, up=+Y, north=-Z, then turn by the route heading so the
+// road runs along the car's forward (-Z). Height is fixed by raycast later.
+function placeTiles(tileset,route){
+ const {WGS84_ELLIPSOID}=window.GoogleTiles;
+ const toRad=THREE.MathUtils.degToRad;
+ const enu=WGS84_ELLIPSOID.getEastNorthUpFrame(toRad(route.lat),toRad(route.lng),new THREE.Matrix4());
+ const enuToScene=new THREE.Matrix4().set(
+   1,0,0,0,
+   0,0,1,0,
+   0,-1,0,0,
+   0,0,0,1);
+ new THREE.Matrix4().makeRotationY(toRad(route.heading))
+   .multiply(enuToScene).multiply(enu.invert())
+   .decompose(tileset.group.position,tileset.group.quaternion,tileset.group.scale);
+ tileset.group.updateMatrixWorld(true);
+}
+function updateCredits(){
+ if(!tiles)return;
+ const text=tiles.getAttributions().filter(a=>a.type==='string').map(a=>a.value).join(' · ');
+ byId('map-credits').textContent=text||'Map data';
 }
 async function startGoogleMap(){
  if(!keyConfigured()){
-   showMapsError('Maps JavaScript API key not configured');
+   showMapsError('Google Maps API key not configured');
    return;
  }
  if(!selectedRoute){
-   showMapsError('Add map coordinates to enable Google 3D background');
+   showMapsError('Add map coordinates to enable Google 3D tiles');
    return;
  }
  const generation=++mapActivation;
  googleMapReady=false;
  setFallback(true);
- status('Loading official Google 3D Maps…');
- mapDebug('Maps API key found in page. Requesting Maps JavaScript API 3D renderer.');
- mapElement.addEventListener('gmp-error',event=>{
-   if(generation!==mapActivation)return;
-   console.warn('[Driving Practice VR] gmp-error details (no key)',event);
-   showMapsError('Google 3D initialization error. Inspect DevTools Console for the Maps error code; verify Maps JavaScript API access, referrer and billing.');
- },{once:true});
- let settled=false;
- const onSteady=event=>{
-   if(generation!==mapActivation||!event.isSteady||settled)return;
-   settled=true;
-   mapElement.removeEventListener('gmp-steadychange',onSteady);
-   googleMapReady=true;
-   mapDebug('Google 3D emitted steady=true. Tiles are available to its native renderer.');
-   if(!scene?.is('vr-mode'))setFallback(false);
-   byId('map-help').hidden=false;
-   status('Google 3D fixed reference · estimated center altitude '+selectedRoute.altitude+'m');
-   // Report the camera Google actually applied, in case it clamped our values.
-   const c=mapElement.center,fix=n=>Number(n??NaN).toFixed(1);
-   mapDebug('Applied camera: tilt '+fix(mapElement.tilt)+'° (max '+fix(mapElement.maxTilt)+
-     '), range '+fix(mapElement.range)+'m, center alt '+fix(c?.altitude)+'m, heading '+fix(mapElement.heading)+
-     '° → eye ≈ '+fix((c?.altitude||0)+mapElement.range*Math.cos(mapElement.tilt*Math.PI/180))+'m');
- };
- mapElement.addEventListener('gmp-steadychange',onSteady);
+ status('Loading Google Photorealistic 3D Tiles…');
+ mapDebug('Requesting Map Tiles API root tileset.');
  try{
-   await mapsLoader();
+   await tilesLoader();
    if(generation!==mapActivation)return;
-   const mapBox=byId('map-container');
-   if(!mapBox?.contains(mapElement))throw Error('Native map not inside #map-container');
-   const bounds=mapBox.getBoundingClientRect();
-   if(bounds.width<20||bounds.height<20)throw Error('Native map viewport has no visible dimensions');
-   mapDebug('Native map viewport '+Math.round(bounds.width)+'×'+Math.round(bounds.height)+' pixels');
-   mapElement.mode='HYBRID'; // Required or the 3D map can remain blank.
-   // Map3D orbits a look-at point with the camera `range` metres behind it,
-   // so place that point ahead of the start to keep the camera on the road.
-   mapElement.center=lookAtAhead(selectedRoute,MAP_RANGE_METRES,84);
-   mapElement.maxTilt=90; // a lower default cap would lift the camera
-   mapElement.minAltitude=0;
-   mapElement.range=MAP_RANGE_METRES;
-   mapElement.tilt=84;
-   mapElement.heading=selectedRoute.heading;
-   mapElement.fov=80;
-   mapDebug('Google Map calibration: tilt 84°, range '+MAP_RANGE_METRES+'m, target altitude '+selectedRoute.altitude+'m (estimate).');
-   // A stalled steady event does not prove the map failed. Use Map Only
-   // to differentiate a stalled map renderer from an opaque A-Frame layer.
+   const {TilesRenderer,GoogleCloudAuthPlugin,GLTFExtensionsPlugin,DRACOLoader}=window.GoogleTiles;
+   disposeTiles();
+   tiles=new TilesRenderer(TILES_ROOT_URL);
+   tiles.registerPlugin(new GoogleCloudAuthPlugin({apiToken:GOOGLE_MAPS_API_KEY,autoRefreshToken:true}));
+   tiles.registerPlugin(new GLTFExtensionsPlugin({dracoLoader:new DRACOLoader().setDecoderPath(DRACO_DECODER_PATH)}));
+   tiles.errorTarget=TILES_ERROR_TARGET;
+   placeTiles(tiles,selectedRoute);
+   byId('google-tiles').components['google-3d-tiles'].attach(tiles);
+   tiles.addEventListener('load-tile-set',()=>{
+     if(generation===mapActivation&&!googleMapReady)
+       mapDebug('Root tileset loaded; streaming tiles around the start point.');
+   });
+   tiles.addEventListener('load-model',()=>{
+     if(generation!==mapActivation||googleMapReady)return;
+     googleMapReady=true;
+     setFallback(false);
+     byId('player-car').components['car-physics']?.reset();
+     byId('map-help').hidden=false;
+     status('Google 3D tiles · driver eye height on the road surface');
+     mapDebug('Tiles rendering inside the A-Frame scene.');
+   });
    setTimeout(()=>{
-     if(generation===mapActivation&&!settled){
-       status('Google 3D not ready · click Map Only to inspect native viewport');
-       mapDebug('No gmp-steadychange event after 18 seconds. Inspect Console/Network for authorization, WebGL and referrer errors.',true);
-     }
-   },18000);
+     if(generation===mapActivation&&!googleMapReady)
+       showMapsError('No 3D tiles after 20 s · check the key has Map Tiles API enabled, allows this website, and billing is on');
+   },20000);
  }catch(error){
    if(generation!==mapActivation)return;
-   console.error('[Driving Practice VR] Google Maps 3D load error',error);
-   showMapsError('Google Maps unavailable · check API key / domain / billing');
+   console.error('[Driving Practice VR] Google 3D tiles load error',error);
+   showMapsError('Google 3D tiles unavailable · check API key / domain / billing');
  }
 }
-function lookAtAhead(route,range,tilt){
- const ahead=range*Math.sin(THREE.MathUtils.degToRad(tilt));
- const bearing=THREE.MathUtils.degToRad(route.heading);
- const metresPerDegLat=111320;
- const metresPerDegLng=111320*Math.cos(THREE.MathUtils.degToRad(route.lat));
- return {
-   lat:route.lat+ahead*Math.cos(bearing)/metresPerDegLat,
-   lng:route.lng+ahead*Math.sin(bearing)/metresPerDegLng,
-   altitude:route.altitude
- };
-}
+// Streams tiles for the active camera every frame and keeps the road surface
+// under the car at Y=0 by casting a short ray down from just above the car.
+AFRAME.registerComponent('google-3d-tiles',{
+ init(){
+   this.tiles=null;this.camera=null;
+   this.ray=new THREE.Raycaster();this.down=new THREE.Vector3(0,-1,0);
+   this.origin=new THREE.Vector3();this.lastGround=0;this.lastCredits=0;
+   this.settled=false;this.misses=0;
+ },
+ attach(tileset){
+   this.detach();
+   this.tiles=tileset;this.settled=false;
+   this.el.object3D.add(tileset.group);
+ },
+ detach(){
+   if(this.tiles&&this.camera)this.tiles.deleteCamera(this.camera);
+   this.tiles=null;this.camera=null;
+ },
+ tick(time){
+   const tileset=this.tiles;
+   if(!tileset)return;
+   const renderer=this.el.sceneEl.renderer;
+   const camera=renderer.xr.isPresenting?renderer.xr.getCamera():this.el.sceneEl.camera;
+   if(camera!==this.camera){
+     if(this.camera)tileset.deleteCamera(this.camera);
+     tileset.setCamera(camera);
+     this.camera=camera;
+   }
+   tileset.setResolutionFromRenderer(camera,renderer);
+   camera.updateMatrixWorld();
+   tileset.update();
+   if(time-this.lastGround>150){
+     this.lastGround=time;
+     this.followGround();
+   }
+   if(time-this.lastCredits>2000){
+     this.lastCredits=time;
+     updateCredits();
+   }
+ },
+ followGround(){
+   const group=this.tiles.group,car=byId('player-car')?.object3D;
+   if(!car)return;
+   // Before the first fix the road can be ~150 m away (ellipsoid vs terrain),
+   // so search a long way; afterwards only look just above the car so tree
+   // canopies and bridges overhead are ignored.
+   const reach=this.settled?10:4000;
+   this.origin.set(car.position.x,this.settled?3:2000,car.position.z);
+   this.ray.set(this.origin,this.down);
+   this.ray.far=reach;
+   if(!this.settled){
+     // Search upward too, in case the ellipsoid anchor is above the road.
+     const hits=this.ray.intersectObject(group,true);
+     this.origin.y=-2000;this.ray.set(this.origin,new THREE.Vector3(0,1,0));
+     const below=this.ray.intersectObject(group,true);
+     const hit=hits[hits.length-1]||below[0];
+     if(!hit)return;
+     group.position.y-=hit.point.y;
+     group.updateMatrixWorld(true);
+     this.settled=true;
+     return;
+   }
+   const hit=this.ray.intersectObject(group,true)[0];
+   if(!hit){
+     // Surface left the short window (coarse tile replaced); search again.
+     if(++this.misses>6){this.settled=false;this.misses=0}
+     return;
+   }
+   this.misses=0;
+   // Ease toward the surface so tile refinement does not jolt the view.
+   group.position.y-=hit.point.y*.35;
+   group.updateMatrixWorld(true);
+ },
+ remove(){this.detach()}
+});
 function readRoute(){
  const latText=byId('start-lat').value.trim();
  const lngText=byId('start-lng').value.trim();
@@ -1318,37 +1328,29 @@ byId('start-button').addEventListener('click',async()=>{
  scene.appendChild(entities);
  if(!car.hasLoaded)await carLoaded;
  const ready=()=>{
-   // Clear A-Frame's scene background; Google owns the lower WebGL layer.
-   if(scene.renderer){
-     scene.object3D.background=null;
-     scene.renderer.setClearColor(0,0);
-     scene.renderer.setClearAlpha(0);
-   }
+   // Google tiles render inside this scene, so it needs its own sky.
+   if(scene.renderer)scene.object3D.background=new THREE.Color(SKY_COLOR);
    active=true;
    setCountry(activeCountryCode);
    byId('player-car').components['car-physics']?.reset();
    setFallback(true);
    void startGoogleMap();
    scene.addEventListener('enter-vr',()=>{
-     // DOM-backed Google Maps is NOT visible to the immersive XR compositor.
-     setFallback(true);
+     // Tiles are part of the WebGL scene, so they stay visible in the headset.
+     setFallback(!googleMapReady);
      byId('controls').hidden=true;
-     status('VR mode · independent practice scene');
+     status(googleMapReady?'VR mode · Google 3D tiles':'VR mode · practice scene');
    });
    scene.addEventListener('exit-vr',()=>{
      byId('controls').hidden=false;
      setFallback(!googleMapReady);
-     status(googleMapReady?'Google 3D reference · chassis Y='+CAR_Y+'m':'Practice environment');
+     status(googleMapReady?'Google 3D tiles · driver eye height on the road surface':'Practice environment');
    });
  };
  if(scene.hasLoaded)ready();
  else scene.addEventListener('loaded',ready,{once:true});
 });
 byId('reset').addEventListener('click',()=>byId('player-car')?.components['car-physics']?.reset());
-byId('map-view-toggle').addEventListener('click',()=>{
- const only=!byId('scene-mount').classList.contains('map-only');
- showMapOnly(only);
-});
 // Scenario reset preserves the mock test fault ledger. Only "New Mock Test"
 // clears previous incidents and re-enables a finished test.
 byId('finish-test').addEventListener('click',()=>{
@@ -1388,7 +1390,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 console.info('[Driving Practice VR] Google 3D Maps is a separate WebGL layer.');
 console.info('Enable Maps JavaScript API, restrict the browser key to your site, and configure billing quotas.');
-console.warn('The native Google 3D background is visual only; A-Frame drives on a fixed Y=0 road.');
+console.info('Google 3D tiles are visual only; the car follows the road surface height but has no collisions.');
 </script>
 </body>
 </html>
