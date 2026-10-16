@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0d1928">
+<meta name="theme-color" content="#faf5eb">
 <meta name="description" content="A browser-based VR driving observation practice with country-specific driving positions.">
 <title>Driving Practice VR | Global Cockpit</title>
 <!-- Only external dependencies: A-Frame 1.6.0 and the Environment component. -->
@@ -376,6 +376,147 @@ a-scene {width:100%;height:100%}
 .hud .country-picker::before{top:19px;right:11px;font-size:18px}
 .hud .country-results{right:0;left:auto;width:max(100%,265px)}
 @media(max-width:650px){.hud .country-picker{width:100%}.hud .country-results{min-width:230px;max-width:calc(100vw - 24px)}#country-live.country-search{min-height:36px;font-size:11px;padding:7px 26px 7px 8px}.country-option{padding:10px 9px;gap:7px}.country-option .flag{font-size:19px}.country-option .country-meta{font-size:10px}.hud .country-picker::before{top:18px;right:8px}}
+/* BRAND ALIGNMENT — sampled from drivingpractice.live reference screenshot.
+   Core palette: cream #faf5eb, navy #0e1c39, green #128e54.
+   Deliberately overrides the older dark-slate/teal splash styles above,
+   without changing A-Frame scene logic or country autocomplete behavior. */
+:root{
+  color-scheme:light;
+  --bg:#faf5eb;
+  --surface:#ffffff;
+  --surface-raised:#faf8f4;
+  --surface-input:#ffffff;
+  --line:#dbe1da;
+  --text:#0e1c39;
+  --muted:#53617a;
+  --teal:#128e54;
+  --teal-hover:#0d7c4b;
+  --teal-focus:rgba(18,142,84,.22);
+  --brand-cream:#faf5eb;
+  --brand-navy:#0e1c39;
+  --brand-green:#128e54;
+  --brand-mint:#eaf3ea;
+}
+body{background:var(--brand-cream);color:var(--brand-navy)}
+button:focus-visible,select:focus-visible,input:focus-visible{
+  outline:3px solid var(--teal-focus);
+  outline-offset:3px;
+}
+#splash{
+  background-color:var(--brand-cream);
+  background-image:
+    radial-gradient(circle at 90% 15%,rgba(18,142,84,.095),transparent 41%),
+    linear-gradient(rgba(14,28,57,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(14,28,57,.035) 1px,transparent 1px);
+  background-size:auto,76px 76px,76px 76px;
+}
+.card{
+  width:min(100%,552px);
+  background:rgba(255,255,255,.95);
+  border:1px solid #e6e6e0;
+  box-shadow:0 22px 70px rgba(14,28,57,.10);
+}
+.brand-mark{
+  background:var(--brand-green);
+  color:#fff;
+}
+.brand-name{color:var(--brand-navy)}
+.brand-subtitle{color:#617087}
+.eyebrow{
+  color:#137d4b;
+  background:#eaf3ea;
+  border-radius:999px;
+  padding:7px 12px;
+  letter-spacing:.045em;
+  font-size:11px;
+}
+.eyebrow::before{
+  background:var(--brand-green);
+  box-shadow:none;
+}
+h1{color:var(--brand-navy)}
+h1 .brand-highlight{color:var(--brand-green)}
+.lead{color:#41506c}
+label{color:var(--brand-navy)}
+.primary{
+  background:var(--brand-green);
+  border-color:var(--brand-green);
+  color:#fff;
+  box-shadow:0 7px 19px rgba(18,142,84,.18);
+}
+.primary:hover:not(:disabled){
+  background:#0c7749;
+  border-color:#0c7749;
+  box-shadow:0 9px 24px rgba(18,142,84,.23);
+}
+.primary:active:not(:disabled){box-shadow:0 3px 9px rgba(18,142,84,.13)}
+.feature-row{color:#53617a}
+.feature-row li::before{color:var(--brand-green)}
+.card-footer{border-top-color:#e3e7df}
+.help,.country-hint{color:#64748b}
+#load-status{color:#137d4b}
+.country-search,#country-live.country-search{
+  background:#fff;
+  border-color:#d8ded9;
+  color:var(--brand-navy);
+}
+.country-search::placeholder{color:#758295}
+.country-search:hover{border-color:#78968b}
+.country-search:focus{
+  border-color:var(--brand-green);
+  box-shadow:0 0 0 4px rgba(18,142,84,.11);
+}
+.country-picker::before{color:#52627a}
+.country-results{
+  background:#fff;
+  border-color:#dde4dd;
+  box-shadow:0 20px 42px rgba(14,28,57,.16);
+  scrollbar-color:#a9bbae #fff;
+}
+.country-option{color:var(--brand-navy)}
+.country-option:hover,.country-option.active,.country-option:focus-visible{
+  background:#eaf3ea;
+  color:#0e1c39;
+}
+.country-option .country-meta{color:#137d4b}
+.country-empty{color:#64748b}
+.hud{
+  color:var(--brand-navy);
+  background:rgba(250,245,235,.96);
+  border:1px solid rgba(14,28,57,.13);
+  box-shadow:0 10px 32px rgba(14,28,57,.13);
+}
+.hud strong,.hud label,#speed{color:var(--brand-navy)}
+#status{color:#40516b}
+#share-fallback{
+  background:#fff;
+  border-color:#dbe1da;
+  color:var(--brand-navy);
+}
+#buttons button{
+  background:rgba(14,28,57,.96);
+  border:1px solid #0e1c39;
+  color:#fff;
+}
+#buttons button:hover{
+  background:var(--brand-green);
+  border-color:var(--brand-green);
+}
+#buttons button:active{background:#0b7146}
+#toast{
+  background:var(--brand-green);
+  border:1px solid #0b7146;
+  color:#fff;
+  box-shadow:0 8px 28px rgba(14,28,57,.2);
+}
+@media(max-width:650px){
+  .card{
+    max-width:440px;
+    background:rgba(255,255,255,.97);
+    border-color:#e5e7e2;
+  }
+  #splash{background-size:auto,56px 56px,56px 56px}
+}
 </style>
 <script>
 'use strict';
@@ -660,7 +801,7 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
       </div>
     </header>
     <div class="eyebrow">GLOBAL DRIVING PRACTICE</div>
-    <h1>Take the driver's seat.</h1>
+    <h1>Take the <span class="brand-highlight">driver's seat.</span></h1>
     <p class="lead">Practise observation and road awareness in a cockpit designed for your country. No download needed.</p>
     <label for="country-start">Select your country</label>
     <div class="select-wrap country-picker">
