@@ -1173,7 +1173,8 @@ function activateRouteFromSelection(iso){
   }
   session.selectionCount+=1;
   activeRoute={...session.origin};
-  if(currentTileEntity?.dataset.routeKey===sessionKey){
+  if(currentTileEntity?.dataset.routeKey===sessionKey &&
+     currentTileEntity.dataset.tilesReady==='yes'){
     activeMapMode='google';
     byId('practice-world').object3D.visible=false;
     byId('map-adjust').hidden=false;
@@ -1207,25 +1208,33 @@ function activateRouteFromSelection(iso){
     maximumSSE:48,maximumMem:64
   });
   const requestedAt=Date.now();
+  let oriented=false;
   clearInterval(tilePollTimer);
   tilePollTimer=setInterval(()=>{
     if(tile!==currentTileEntity){clearInterval(tilePollTimer);return}
     const component=tile.components?.['loader-3dtiles'];
     const runtime=component?.runtime;
     if(runtime){
-      clearInterval(tilePollTimer);
       try{
-        // WGS84 world origin -> local 3D metres at (0,0,0).
-        // Map orientation is loader-provided, not a hand-positioned mesh.
-        runtime.orientToGeocoord({
-          lat:activeRoute.lat,long:activeRoute.lon,height:activeRoute.height
-        });
+        if(!oriented){
+          // WGS84 origin -> local 3D metres, calculated by the NYT tiles loader.
+          runtime.orientToGeocoord({
+            lat:activeRoute.lat,long:activeRoute.lon,height:activeRoute.height
+          });
+          oriented=true;
+        }
         if(typeof runtime.getDataAttributions!=='function')
           throw Error('Loader does not expose required Google attribution data');
         const credits=String(runtime.getDataAttributions()||'');
-        // Third-party attributions are dynamic. Do not display the map if
-        // attribution cannot be collected by this renderer.
-        if(!credits.trim())throw Error('Tile credits not available yet');
+        // Attribution arrives asynchronously as tiles become visible. Wait
+        // for the first attribution instead of falsely treating empty as error.
+        if(!credits.trim()){
+          if(Date.now()-requestedAt>35000)
+            throw Error('No required map attributions after tile-load timeout');
+          return;
+        }
+        clearInterval(tilePollTimer);
+        tile.dataset.tilesReady='yes';
         byId('map-copyright').textContent=credits;
         byId('map-credits').hidden=false;
         byId('practice-world').object3D.visible=false;
