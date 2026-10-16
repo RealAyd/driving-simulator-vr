@@ -63,6 +63,7 @@ h1 em{color:#41c78a;font-style:normal}
 #scene-mount{z-index:1;position:absolute;top:0;left:0;width:100vw;height:100vh;display:block;background:linear-gradient(#799cad,#475f61);isolation:isolate}
 #scene-mount>a-scene{position:absolute!important;inset:0!important;z-index:2;width:100%!important;height:100%!important;background:transparent!important;pointer-events:none}
 #scene-mount>a-scene canvas{background:transparent!important}
+#streetview-layer{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .45s;pointer-events:none}
 #hud{position:absolute;left:15px;top:max(14px,env(safe-area-inset-top));z-index:9;pointer-events:none}
 .hud-card{border:1px solid #475569;border-radius:14px;background:rgba(15,23,42,.88);box-shadow:0 9px 28px #0003;padding:10px 13px;backdrop-filter:blur(7px);pointer-events:auto}
 .hud-title{font-weight:850;font-size:11px;letter-spacing:.05em}
@@ -161,6 +162,8 @@ h1 em{color:#41c78a;font-style:normal}
 </section>
 <div id="app" hidden>
   <div id="scene-mount">
+    <!-- Street View photo shown under the transparent cockpit when stopped. -->
+    <div id="streetview-layer" aria-hidden="true"></div>
   </div>
   <div id="hud" class="hud-card">
     <div class="hud-title">DRIVING PRACTICE VR</div>
@@ -221,7 +224,7 @@ h1 em{color:#41c78a;font-style:normal}
   <!-- These are ONLY for no-key/map errors and immersive VR, in which
        browser DOM Google Maps cannot be presented by the XR compositor. -->
   <!-- Google Photorealistic 3D Tiles are attached here after Start. -->
-  <a-entity id="google-tiles" google-3d-tiles></a-entity>
+  <a-entity id="google-tiles" google-3d-tiles street-view-blend></a-entity>
   <a-entity id="practice-fallback">
     <a-box position="-4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
     <a-box position="4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
@@ -628,6 +631,9 @@ function prepareTileModel(model){
      child.material=new THREE.MeshBasicMaterial({map,color:map?0xffffff:material.color});
      material.dispose();
    }
+   const blend=byId('google-tiles')?.components['street-view-blend']?.blend||0;
+   child.material.transparent=blend>0;
+   child.material.opacity=1-blend;
  });
 }
 function updateCredits(){
@@ -759,6 +765,138 @@ AFRAME.registerComponent('google-3d-tiles',{
    group.updateMatrixWorld(true);
  },
  remove(){this.detach()}
+});
+// ---- Street View photo blend: when the car stops, fade the 3D tiles out and
+// show the nearest Street View photo underneath the transparent cockpit.
+// DOM Street View cannot be shown by the XR compositor, so VR keeps tiles.
+let streetViewPromise=null;
+function streetViewLoader(){
+ if(streetViewPromise)return streetViewPromise;
+ streetViewPromise=new Promise((resolve,reject)=>{
+   if(window.google?.maps?.importLibrary){resolve();return}
+   const script=document.createElement('script');
+   script.async=true;
+   script.src='https://maps.googleapis.com/maps/api/js?key='+
+     encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&v=weekly&loading=async';
+   script.onload=resolve;
+   script.onerror=()=>reject(Error('Maps JavaScript API failed to load'));
+   document.head.appendChild(script);
+ }).then(()=>google.maps.importLibrary('streetView'))
+   .catch(error=>{streetViewPromise=null;throw error});
+ return streetViewPromise;
+}
+// Inverse of placeTiles: scene X/Z (metres) back to latitude/longitude.
+function sceneToLatLng(route,x,z){
+ const h=THREE.MathUtils.degToRad(route.heading);
+ const east=x*Math.cos(h)-z*Math.sin(h);
+ const north=-(x*Math.sin(h)+z*Math.cos(h));
+ return {
+   lat:route.lat+north/111320,
+   lng:route.lng+east/(111320*Math.cos(THREE.MathUtils.degToRad(route.lat)))
+ };
+}
+AFRAME.registerComponent('street-view-blend',{
+ schema:{
+   stopSpeed:{default:.3},      // m/s regarded as stopped
+   stopDelay:{default:700},     // ms stopped before the photo is requested
+   searchRadius:{default:25},   // metres to look for a Street View photo
+   fadeSeconds:{default:.45}
+ },
+ init(){
+   this.layer=byId('streetview-layer');
+   this.panorama=null;this.service=null;this.failed=false;
+   this.stoppedSince=0;this.blend=0;this.want=false;
+   this.lookup=null;this.lookupAt=null;
+ },
+ tick(time,delta){
+   const car=byId('player-car');
+   const physics=car?.components['car-physics'];
+   const camera=byId('camera')?.object3D;
+   if(!physics||!camera||!selectedRoute)return;
+   const vr=this.el.sceneEl.is('vr-mode');
+   const stopped=physics.speed<this.data.stopSpeed;
+   if(!stopped||vr||!googleMapReady)this.stoppedSince=0;
+   else if(!this.stoppedSince)this.stoppedSince=time;
+   const settled=this.stoppedSince&&time-this.stoppedSince>this.data.stopDelay;
+   if(settled&&!this.failed)this.requestPhoto(car.object3D.position);
+   this.want=!!(settled&&this.panoReady);
+   if(!stopped||vr)this.panoReady=false;
+   const step=(delta||16)/1000/this.data.fadeSeconds;
+   const next=clamp(this.blend+(this.want?step:-step),0,1);
+   if(next!==this.blend||this.want)this.apply(next);
+   if(this.blend>0&&this.panorama){
+     // Photo follows the car heading plus wherever the driver is looking.
+     const yaw=THREE.MathUtils.radToDeg(car.object3D.rotation.y+camera.rotation.y);
+     this.panorama.setPov({
+       heading:((selectedRoute.heading-yaw)%360+360)%360,
+       pitch:THREE.MathUtils.radToDeg(camera.rotation.x)
+     });
+   }
+ },
+ async requestPhoto(position){
+   if(this.lookup)return;
+   if(this.lookupAt&&Math.hypot(position.x-this.lookupAt.x,position.z-this.lookupAt.z)<2){
+     this.panoReady=!!this.panoId;
+     return;
+   }
+   const at={x:position.x,z:position.z};
+   this.lookup=(async()=>{
+     try{
+       const {StreetViewPanorama,StreetViewService,StreetViewPreference,StreetViewSource,StreetViewStatus}=await streetViewLoader();
+       this.service??=new StreetViewService();
+       const response=await this.service.getPanorama({
+         location:sceneToLatLng(selectedRoute,at.x,at.z),
+         radius:this.data.searchRadius,
+         preference:StreetViewPreference.NEAREST,
+         sources:[StreetViewSource.OUTDOOR]
+       }).catch(()=>null);
+       this.lookupAt=at;
+       this.panoId=response?.data?.location?.pano||null;
+       if(!this.panoId){this.panoReady=false;return}
+       if(!this.panorama){
+         this.panorama=new StreetViewPanorama(this.layer,{
+           pano:this.panoId,visible:true,disableDefaultUI:true,clickToGo:false,
+           linksControl:false,panControl:false,zoomControl:false,addressControl:false,
+           fullscreenControl:false,motionTracking:false,motionTrackingControl:false,
+           showRoadLabels:false,scrollwheel:false,disableDoubleClickZoom:true,zoom:.7
+         });
+       }else this.panorama.setPano(this.panoId);
+       this.panoReady=await new Promise(resolve=>{
+         if(this.panorama.getStatus()===StreetViewStatus.OK&&this.panorama.getPano()===this.panoId){resolve(true);return}
+         const listener=this.panorama.addListener('status_changed',()=>{
+           listener.remove();
+           resolve(this.panorama.getStatus()===StreetViewStatus.OK);
+         });
+         setTimeout(()=>{listener.remove();resolve(false)},6000);
+       });
+     }catch(error){
+       // Missing Maps JavaScript API access: keep driving on 3D tiles only.
+       this.failed=true;
+       console.warn('[Driving Practice VR] Street View blend unavailable',error);
+     }finally{this.lookup=null}
+   })();
+ },
+ apply(blend){
+   const was=this.blend;
+   this.blend=blend;
+   this.layer.style.opacity=blend>0?'1':'0';
+   const sceneObject=this.el.sceneEl.object3D;
+   if(blend>0)sceneObject.background=null;
+   else if(was>0)sceneObject.background=new THREE.Color(SKY_COLOR);
+   const group=tiles?.group;
+   if(group){
+     const opacity=1-blend;
+     group.visible=opacity>0;
+     group.traverse(child=>{
+       const material=child.material;
+       if(!material||Array.isArray(material))return;
+       material.transparent=opacity<1;
+       material.opacity=opacity;
+     });
+   }
+   if(blend===1&&was<1)status('Street View photo · car stopped');
+   else if(blend===0&&was>0)status('Google 3D tiles · driver eye height on the road surface');
+ }
 });
 function readRoute(){
  const latText=byId('start-lat').value.trim();
