@@ -1,68 +1,435 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101c2c"><title>Driving Practice · VR Cockpit</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1928">
+<meta name="description" content="A browser-based VR driving observation practice with country-specific driving positions.">
+<title>Driving Practice VR | Global Cockpit</title>
+<!-- Only external dependencies: A-Frame 1.6.0 and the Environment component. -->
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-<style>body{margin:0;background:#101c2c;font:15px system-ui;color:white}#hud{position:fixed;z-index:3;top:18px;left:20px;pointer-events:none}h1{font-size:19px;margin:0 0 6px}small{color:#b9c9d9}#toast{color:#58efa5;min-height:24px}#controls{position:fixed;z-index:4;bottom:24px;left:18px;right:85px;display:flex;gap:8px;flex-wrap:wrap}button{border:1px solid #49617a;border-radius:12px;background:#14273deb;color:white;padding:13px 17px;font:inherit;touch-action:none}button:active{background:#2875a2}#intro{position:fixed;z-index:8;inset:0;display:grid;place-items:center;background:#0a1422e8}.card{max-width:450px;padding:30px;margin:20px;border:1px solid #40536a;border-radius:22px;background:#142438}.card p{line-height:1.6;color:#c3d0df}.card button{background:#176b91}a{color:#7cdbff}</style>
+<script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+<style>
+  :root{color-scheme:dark;--bg:#0b1726;--panel:#15273a;--line:#36506a;--accent:#43dcaa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:#f4f8fc}
+  button,select{font:inherit}
+  button{cursor:pointer;border:1px solid #47718c;background:#1b4661;color:white;border-radius:10px;padding:11px 15px}
+  button:hover{background:#255b78}
+  button:focus-visible,select:focus-visible{outline:3px solid #7fe4e4;outline-offset:2px}
+  #splash{position:fixed;inset:0;display:grid;place-items:center;z-index:20;padding:20px;background:radial-gradient(circle at 45% 20%,#24445b,#07121f 75%);overflow:auto}
+  #splash[hidden]{display:none}
+  .card{width:min(100%,530px);border:1px solid #46637c;border-radius:24px;padding:clamp(22px,5vw,38px);background:#122337;box-shadow:0 28px 90px #0008}
+  .eyebrow{color:#70dfc7;font-size:12px;letter-spacing:.17em;font-weight:700}
+  h1{font-size:clamp(25px,5vw,38px);line-height:1.12;margin:12px 0}
+  p{color:#c5d6e6}
+  label{display:block;margin-top:24px;margin-bottom:9px;font-weight:650}
+  select{width:100%;padding:14px;border-radius:10px;border:1px solid #68869b;background:#0c1d2e;color:white}
+  .primary{width:100%;margin-top:17px;background:#127e72;border-color:#41d6bd;font-weight:750}
+  .primary:hover{background:#139b88}
+  .help{font-size:13px;color:#acc0d1}
+  #app{position:fixed;inset:0}
+  #app[hidden]{display:none}
+  #overlay{position:absolute;z-index:5;inset:14px 12px auto 12px;pointer-events:none;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .hud{border:1px solid #4f779266;background:#0d2236dc;padding:10px 13px;border-radius:13px;backdrop-filter:blur(6px)}
+  .hud strong{letter-spacing:.04em}
+  #speed{font-size:23px;font-weight:750;font-variant-numeric:tabular-nums}
+  #country-live{width:auto;min-width:200px;margin:0;padding:7px;font-size:12px;pointer-events:auto}
+  #toast{position:fixed;z-index:10;top:100px;left:50%;transform:translateX(-50%);background:#0c663e;color:#e6ffee;padding:10px 20px;border:1px solid #69eca9;border-radius:100px;box-shadow:0 6px 28px #0018;font-weight:800;opacity:0;transition:opacity .18s;pointer-events:none;text-align:center;white-space:nowrap}
+  #toast.show{opacity:1}
+  #buttons{position:absolute;bottom:20px;left:18px;right:80px;z-index:5;display:flex;flex-wrap:wrap;gap:8px}
+  #buttons button{touch-action:none;background:#163b55e8;min-width:70px}
+  #buttons button:active{background:#2c879d}
+  #status{font-size:12px;color:#bad0dd;max-width:260px}
+  a-scene{height:100%;width:100%}
+  @media(max-width:650px){#overlay{flex-direction:column}#country-live{width:100%}#toast{top:164px;max-width:92%;white-space:normal}#buttons{right:12px;bottom:15px}#buttons button{padding:10px}#status{display:none}}
+</style>
 <script>
-const input={}; let active=false;
-function notify(msg){document.querySelector('#toast').textContent=msg;const t=document.querySelector('#vrtoast');if(t)t.setAttribute('value',msg);clearTimeout(notify.timer);notify.timer=setTimeout(()=>{document.querySelector('#toast').textContent='';if(t)t.setAttribute('value','')},1800)}
-async function shareApp(){const url='https://vr.drivingpractice.live/';try{if(navigator.share)await navigator.share({title:'Driving Practice VR',text:'Try the Driving Practice cockpit',url});else{await navigator.clipboard.writeText(url);notify('App link copied')}}catch(e){if(e.name!=='AbortError')notify('Share link: '+url)}}
+'use strict';
+
+// COUNTRY METADATA: roadSide and seatSide are distinct by design.
+// UK traffic keeps LEFT and the driver sits RIGHT; US/DE are the opposite.
+const COUNTRIES=Object.freeze({
+  uk:{name:'United Kingdom',roadSide:'left',seatSide:'right',seatX:0.48,units:'mph'},
+  us:{name:'United States',roadSide:'right',seatSide:'left',seatX:-0.48,units:'mph'},
+  de:{name:'Germany',roadSide:'right',seatSide:'left',seatX:-0.48,units:'km/h'}
+});
+const keys=Object.create(null);
+let active=false,scene=null,toastTimer=0;
+const byId=id=>document.getElementById(id);
+const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+
+function showToast(message){
+  const el=byId('toast');
+  if(!el)return;
+  el.textContent=message;el.classList.add('show');
+  const vr=byId('vr-toast');
+  if(vr)vr.setAttribute('value',message);
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{el.classList.remove('show');if(vr)vr.setAttribute('value','')},2000);
+}
+async function shareApp(){
+  // The CURRENT page URL works with GitHub Pages or any future custom domain.
+  const url=location.href.split('#')[0];
+  try{
+    if(navigator.share)await navigator.share({title:'Driving Practice VR',text:'Try this VR driving practice!',url});
+    else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);showToast('App link copied');}
+    else throw Error('Clipboard API unavailable');
+  }catch(err){
+    if(err.name==='AbortError')return;
+    // A native share sheet usually requires a click/trigger gesture, not passive gaze.
+    const link=byId('share-fallback');link.value=url;link.hidden=false;link.select();
+    showToast('Copy the app link from the panel');
+  }
+}
+
+// Momentum-based arcade physics (not a certified vehicle dynamics simulation).
 AFRAME.registerComponent('car-physics',{
-init(){this.speed=0;this.v=new THREE.Vector3();this.steer=0;this.brakingWeight=0;this.heading=0;this.keys=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();input[e.code]=e.type==='keydown'}};window.addEventListener('keydown',this.keys);window.addEventListener('keyup',this.keys);window.addEventListener('blur',()=>{for(const k in input)input[k]=false;this.speed=0;this.v.set(0,0,0)});this.forward=new THREE.Vector3();this.right=new THREE.Vector3()},
-tick(t,delta){if(!active)return;const dt=Math.min(delta/1000,.04);let throttle=(input.KeyW||input.ArrowUp||input.go)?1:0;let brake=(input.KeyS||input.ArrowDown||input.Space||input.brake)?1:0;
-const session=this.el.sceneEl.renderer.xr.getSession();if(session)for(const s of session.inputSources){if(s.gamepad){throttle=Math.max(throttle,s.gamepad.buttons[0]?.value||0);brake=Math.max(brake,s.gamepad.buttons[1]?.value||0);if(Math.abs(s.gamepad.axes[2]||0)>.12)input.xrSteer=s.gamepad.axes[2]}}
-let turn=((input.KeyA||input.ArrowLeft||input.left)?1:0)-((input.KeyD||input.ArrowRight||input.right)?1:0);turn-=input.xrSteer||0;input.xrSteer=0;
-this.steer=THREE.MathUtils.damp(this.steer,turn,6,dt);this.brakingWeight=THREE.MathUtils.damp(this.brakingWeight,brake*Math.min(this.speed/8,1),5,dt);
-this.speed=Math.max(0,Math.min(13.4,this.speed+(throttle*3.1-brake*8-.12-this.speed*.025)*dt));this.heading+=this.steer*this.speed/(3.2+this.speed*1.1)*dt;
-this.el.object3D.rotation.y=this.heading;this.forward.set(-Math.sin(this.heading),0,-Math.cos(this.heading));this.right.set(Math.cos(this.heading),0,-Math.sin(this.heading));
-const lateral=this.v.dot(this.right)*Math.exp(-8*dt);this.v.copy(this.forward).multiplyScalar(this.speed).addScaledVector(this.right,lateral);this.el.object3D.position.addScaledVector(this.v,dt);
-const p=this.el.object3D.position;if(Math.abs(p.x)>65||Math.abs(p.z)>230){this.reset();notify('Practice area boundary — reset')}
-document.querySelector('#speed').textContent=Math.round(this.speed*2.23694)+' mph';document.querySelector('#speed3d').setAttribute('value',Math.round(this.speed*2.23694)+' MPH');document.querySelector('#wheel').object3D.rotation.z=-this.steer*.65;document.querySelector('#dash').object3D.rotation.x=-this.brakingWeight*.025},
-reset(){this.speed=0;this.v.set(0,0,0);this.heading=0;this.el.object3D.position.set(-2,0,80);this.el.object3D.rotation.set(0,0,0)}
+  init(){
+    this.speed=0;this.steer=0;this.brakingWeight=0;this.velocity=new THREE.Vector3();
+    this.forward=new THREE.Vector3();this.targetVelocity=new THREE.Vector3();
+    this.heading=0;this.lastCollision=0;
+    this.down=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();keys[e.code]=true}};
+    this.up=e=>{keys[e.code]=false};
+    window.addEventListener('keydown',this.down);
+    window.addEventListener('keyup',this.up);
+    this.blur=()=>{Object.keys(keys).forEach(k=>keys[k]=false);this.speed=0;this.velocity.set(0,0,0)};
+    window.addEventListener('blur',this.blur);
+  },
+  reset(){
+    const country=COUNTRIES[byId('country-live')?.value||'uk']||COUNTRIES.uk;
+    this.speed=0;this.steer=0;this.brakingWeight=0;this.heading=0;
+    this.velocity.set(0,0,0);
+    this.el.object3D.position.set(country.roadSide==='left'?-2:2,0,82);
+    this.el.object3D.rotation.set(0,0,0);
+    this.updateSpeed();
+  },
+  updateSpeed(){
+    const country=COUNTRIES[byId('country-live')?.value||'uk']||COUNTRIES.uk;
+    const v=Math.round(this.speed*(country.units==='mph'?2.236936:3.6));
+    const message=v+' '+country.units;
+    if(byId('speed'))byId('speed').textContent=message;
+    if(byId('speed3d'))byId('speed3d').setAttribute('value',message.toUpperCase());
+  },
+  tick(time,delta){
+    if(!active||!delta)return;
+    const dt=Math.min(delta/1000,0.05);
+    let throttle=(keys.KeyW||keys.ArrowUp||keys.go)?1:0;
+    let brake=(keys.KeyS||keys.ArrowDown||keys.Space||keys.brake)?1:0;
+    let steering=((keys.KeyA||keys.ArrowLeft||keys.left)?1:0)-((keys.KeyD||keys.ArrowRight||keys.right)?1:0);
+    // Optional XR gamepads: trigger throttle, grip brake, thumbstick steering.
+    const xr=this.el.sceneEl.renderer?.xr;
+    const session=xr?.getSession();
+    if(session)for(const source of session.inputSources){
+      const gp=source.gamepad;if(!gp)continue;
+      throttle=Math.max(throttle,gp.buttons[0]?.value||0);
+      brake=Math.max(brake,gp.buttons[1]?.value||0);
+      const axis=gp.axes.find((v,i)=>i%2===0&&Math.abs(v)>.16);
+      if(axis!==undefined)steering-=axis;
+    }
+    steering=clamp(steering,-1,1);
+    this.steer=THREE.MathUtils.damp(this.steer,steering,5.5,dt);
+    this.brakingWeight=THREE.MathUtils.damp(this.brakingWeight,brake*Math.min(this.speed/10,1),7,dt);
+    // Acceleration, rolling resistance, speed-proportional aerodynamic drag, and braking.
+    const resistance=0.20+0.013*this.speed*this.speed;
+    this.speed=clamp(this.speed+(3.35*throttle-8.8*brake-resistance)*dt,0,14);
+    // Bicycle-style approximate yaw with reduced steering response at high speed.
+    const turnRate=this.steer*this.speed/(3.4+0.35*this.speed);
+    this.heading+=turnRate*dt;
+    this.el.object3D.rotation.y=this.heading;
+    this.forward.set(-Math.sin(this.heading),0,-Math.cos(this.heading));
+    this.targetVelocity.copy(this.forward).multiplyScalar(this.speed);
+    // Velocity lags changing heading: deliberate lateral slip, with tyre-grip friction.
+    const grip=clamp(8-0.18*this.speed+2*brake,3.2,10);
+    this.velocity.lerp(this.targetVelocity,1-Math.exp(-grip*dt));
+    this.el.object3D.position.addScaledVector(this.velocity,dt);
+    const wheel=byId('wheel');if(wheel)wheel.object3D.rotation.z=-this.steer*0.68;
+    const dash=byId('instrument-panel');if(dash)dash.object3D.rotation.x=-this.brakingWeight*0.018;
+    this.updateSpeed();
+    const pos=this.el.object3D.position;
+    if(Math.abs(pos.x)>45||Math.abs(pos.z)>205){this.reset();showToast('Practice area boundary — reset');return}
+    // Basic collision response for the obstacle boxes (not rigid-body physics).
+    if(time-this.lastCollision>1000)for(const h of this.el.sceneEl.querySelectorAll('.hazard')){
+      const hp=h.object3D.position;
+      if(Math.abs(pos.x-hp.x)<1.6&&Math.abs(pos.z-hp.z)<2.2){
+        this.speed=0;this.velocity.set(0,0,0);this.lastCollision=time;
+        showToast('Hazard! Stop and reassess');break;
+      }
+    }
+  },
+  remove(){window.removeEventListener('keydown',this.down);window.removeEventListener('keyup',this.up);window.removeEventListener('blur',this.blur)}
 });
+
+// REAL render-to-texture mirror view, with a separate rear-facing camera per panel.
+// Render at a reduced rate for headset/mobile performance; do not render cockpit recursively.
 AFRAME.registerComponent('mirror-panel',{
-schema:{label:{default:'Mirror'},angle:{default:180}},
-init(){this.target=new THREE.WebGLRenderTarget(256,128);this.cam=new THREE.PerspectiveCamera(65,2,.1,450);this.pos=new THREE.Vector3();this.dir=new THREE.Vector3();this.up=new THREE.Vector3(0,1,0);this.frame=0;this.enter=()=>{this.timer=setTimeout(()=>notify(this.data.label+' Mirror Checked'),350)};this.leave=()=>clearTimeout(this.timer);this.el.addEventListener('mouseenter',this.enter);this.el.addEventListener('mouseleave',this.leave);this.el.addEventListener('object3dset',()=>this.apply());this.apply()},
-apply(){const m=this.el.getObject3D('mesh');if(m){m.material=new THREE.MeshBasicMaterial({map:this.target.texture});this.target.texture.repeat.x=-1;this.target.texture.offset.x=1}},
-tock(){if(++this.frame%3)return;const scene=this.el.sceneEl,r=scene.renderer;if(!r)return;this.el.object3D.getWorldPosition(this.pos);this.cam.position.copy(this.pos);const car=document.querySelector('#car');const yaw=car.object3D.rotation.y+THREE.MathUtils.degToRad(this.data.angle);this.dir.set(-Math.sin(yaw),0,-Math.cos(yaw));this.cam.lookAt(this.pos.clone().add(this.dir));const xr=r.xr.enabled,rt=r.getRenderTarget();const mirrors=scene.querySelectorAll('[mirror-panel]');try{mirrors.forEach(m=>m.object3D.visible=false);r.xr.enabled=false;r.setRenderTarget(this.target);r.render(scene.object3D,this.cam)}finally{r.setRenderTarget(rt);r.xr.enabled=xr;mirrors.forEach(m=>m.object3D.visible=true)}},
-remove(){clearTimeout(this.timer);this.target.dispose();this.el.removeEventListener('mouseenter',this.enter);this.el.removeEventListener('mouseleave',this.leave)}
+  schema:{label:{default:'Mirror'},side:{default:'rear'}},
+  init(){
+    this.target=new THREE.WebGLRenderTarget(256,128);
+    this.mirrorCam=new THREE.PerspectiveCamera(72,2,0.06,220);
+    this.position=new THREE.Vector3();this.aim=new THREE.Vector3();this.frame=0;this.timer=null;
+    this.enter=()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>showToast('Mirror Checked — '+this.data.label),450)};
+    this.leave=()=>clearTimeout(this.timer);
+    this.el.addEventListener('mouseenter',this.enter);
+    this.el.addEventListener('mouseleave',this.leave);
+    this.onObject=()=>this.attachTexture();
+    this.el.addEventListener('object3dset',this.onObject);
+    this.attachTexture();
+  },
+  attachTexture(){
+    const mesh=this.el.getObject3D('mesh');
+    if(!mesh||!this.target)return;
+    if(this.material)this.material.dispose();
+    // Flip the resulting rear camera image horizontally, as with a conventional mirror.
+    this.target.texture.wrapS=THREE.RepeatWrapping;
+    this.target.texture.repeat.x=-1;this.target.texture.offset.x=1;
+    this.material=new THREE.MeshBasicMaterial({map:this.target.texture,side:THREE.DoubleSide});
+    mesh.material=this.material;
+  },
+  tock(){
+    if(!active||++this.frame%5!==0)return;
+    const sc=this.el.sceneEl,r=sc.renderer;
+    if(!r||!sc.object3D||!r.getRenderTarget)return;
+    this.el.object3D.getWorldPosition(this.position);
+    this.mirrorCam.position.copy(this.position);
+    const heading=byId('car').object3D.rotation.y;
+    const outward=this.data.side==='left'?-18:this.data.side==='right'?18:0;
+    const yaw=heading+THREE.MathUtils.degToRad(180+outward);
+    this.aim.set(-Math.sin(yaw),-0.02,-Math.cos(yaw));
+    this.mirrorCam.lookAt(this.position.clone().add(this.aim));
+    const hidden=Array.from(sc.querySelectorAll('.reflection-hide, .mirror-target'));
+    const vis=hidden.map(node=>node.object3D.visible);
+    const target=r.getRenderTarget(),xrEnabled=r.xr.enabled;
+    try{
+      hidden.forEach(node=>node.object3D.visible=false);
+      r.xr.enabled=false;
+      r.setRenderTarget(this.target);r.clear();r.render(sc.object3D,this.mirrorCam);
+    }catch(error){if(!this.reported){console.warn('Mirror rendering unavailable:',error);this.reported=true}}
+    finally{
+      r.setRenderTarget(target);r.xr.enabled=xrEnabled;
+      hidden.forEach((node,i)=>node.object3D.visible=vis[i]);
+    }
+  },
+  remove(){
+    clearTimeout(this.timer);
+    this.el.removeEventListener('mouseenter',this.enter);
+    this.el.removeEventListener('mouseleave',this.leave);
+    this.el.removeEventListener('object3dset',this.onObject);
+    this.material?.dispose();this.target.dispose();
+  }
 });
-AFRAME.registerComponent('share-link',{init(){this.el.addEventListener('click',shareApp)}});
-AFRAME.registerComponent('world',{init(){const add=(tag,attrs)=>{const el=document.createElement(tag);for(const k in attrs)el.setAttribute(k,attrs[k]);this.el.appendChild(el)};
-add('a-box',{position:'0 -.12 0',width:130,height:.2,depth:480,color:'#6b9673'});
-add('a-box',{position:'0 0 0',width:8,height:.04,depth:460,color:'#424c58'});
-for(let z=-220;z<230;z+=10){add('a-box',{position:'0 .03 '+z,width:.12,height:.01,depth:4,color:'#eee9d9'});for(const x of [-7,7]){add('a-cylinder',{position:x+' 1.4 '+z,radius:.18,height:2.8,color:'#6a5140',segments:6});add('a-cone',{position:x+' 3.4 '+z,'radius-bottom':1.5,height:3,color:'#3c7154',segments:6})}}
-for(const x of [-4,4])add('a-box',{position:x+' .04 0',width:.12,height:.02,depth:460,color:'#e5e4d5'});
-for(let z=-170;z<150;z+=40)for(const x of [-17,17])add('a-box',{position:x+' 3 '+z,width:8,height:6,depth:12,color:x<0?'#a5b9c2':'#b5a99b'});
-for(const z of [-30,15,55]){add('a-box',{position:'2 .65 '+z,width:1.7,height:1.1,depth:3.7,color:'#ba5c4b'});add('a-box',{position:'2 1.4 '+z,width:1.4,height:.5,depth:1.8,color:'#9bb8c7'})}
-}});
-</script></head><body>
-<div id="hud"><h1>DRIVING PRACTICE <small>VR</small></h1><div id="speed">0 mph</div><small>WASD / arrows · Drag to look · R to reset</small><div id="toast" role="status" aria-live="polite"></div></div>
-<div id="intro"><div class="card"><small>YOUR FIRST LOOK AROUND</small><h1>Take the driver's seat.</h1><p>A UK right-hand-drive practice cockpit. Look at each mirror to check it, then explore the quiet practice road.</p><p>Keyboard: W to accelerate, S or Space to brake, A/D to steer. Touch: hold the controls below. Quest: right trigger accelerates, grip brakes, thumbstick steers.</p><p>This is an experimental observation practice environment. Vehicle handling is simplified and does not replace driving lessons. Stop if VR motion makes you uncomfortable.</p><button id="start">Start practice</button><p id="loadstatus">Loading 3D engine…</p></div></div>
-<div id="controls"><button data-key="left" aria-label="Steer left">←</button><button data-key="right" aria-label="Steer right">→</button><button data-key="brake">Brake</button><button data-key="go">Accelerate</button><button id="reset">Reset</button><button id="share">Share</button></div>
-<a-scene background="color: #b9d8e8" fog="type: linear; color: #b9d8e8; near: 90; far: 240" renderer="antialias: true; colorManagement: true" loading-screen="enabled: false">
-<a-entity light="type: ambient; intensity: 1.1"></a-entity><a-entity light="type: directional; intensity: 1" position="-10 20 5"></a-entity><a-entity world></a-entity>
-<a-entity id="car" position="-2 0 80" car-physics>
-<a-entity id="dash"><a-box position="0 .88 -.8" width="1.95" height=".36" depth=".65" color="#152335"></a-box><a-box position="0 .38 .05" width="2" height=".12" depth="3" color="#192a3c"></a-box>
-<a-box position="-.98 .75 .2" width=".12" height=".65" depth="2.8" color="#2877af"></a-box><a-box position=".98 .75 .2" width=".12" height=".65" depth="2.8" color="#2877af"></a-box>
-<a-cylinder position=".48 .87 -.42" rotation="65 0 0" radius=".045" height=".45" color="#46546a"></a-cylinder>
-<a-entity id="wheel" position=".48 1.03 -.45" rotation="-15 0 0"><a-torus radius=".22" radius-tubular=".025" color="#0c1522"></a-torus><a-box width=".4" height=".025" depth=".035" color="#45566b"></a-box><a-cylinder rotation="90 0 0" radius=".065" height=".045" color="#2b3c53"></a-cylinder></a-entity>
-<a-plane position=".48 1.04 -.76" width=".38" height=".17" color="#071621"><a-text id="speed3d" value="0 MPH" align="center" width=".65" position="0 0 .005" color="#73eac8"></a-text></a-plane>
-<a-plane position="-.22 1.03 -.73" width=".7" height=".22" color="#071621"><a-text value="DRIVING PRACTICE" align="center" width="1.1" position="0 .04 .005"></a-text><a-text id="vrtoast" value="" align="center" width=".95" position="0 -.035 .006" color="#58efa5"></a-text></a-plane>
-<a-plane class="interactive" share-link position="-.22 .86 -.69" width=".7" height=".1" color="#176b91"><a-text value="Tap to Share App Link" align="center" width="1" position="0 0 .006"></a-text></a-plane>
-</a-entity>
-<a-box position="0 1.83 -.72" width="2" height=".09" depth=".14" color="#24394f"></a-box><a-text value="L" color="#ef4141" align="center" position="0 1.79 -.64" width=".7"></a-text>
-<a-plane class="interactive" mirror-panel="label: Left; angle: 165" position="-1.12 1.3 -.7" rotation="0 22 0" width=".36" height=".22"></a-plane>
-<a-plane class="interactive" mirror-panel="label: Right; angle: 195" position="1.12 1.3 -.7" rotation="0 -22 0" width=".36" height=".22"></a-plane>
-<a-plane class="interactive" mirror-panel="label: Rearview; angle: 180" position="0 1.65 -.74" width=".48" height=".18"></a-plane>
-<a-entity id="head" camera="near: .05" position=".48 1.42 .15" look-controls wasd-controls="enabled: false"><a-cursor cursor="fuse: false" raycaster="objects: .interactive; far: 5" material="shader: flat; color: #66ead4" geometry="primitive: ring; radiusInner: .002; radiusOuter: .004" position="0 0 -.3"></a-cursor></a-entity>
-<a-entity laser-controls="hand: right" raycaster="objects: .interactive; far: 5"></a-entity>
-</a-entity></a-scene>
+
+// Country-driven cockpit arrangement. Seat, instruments, wheel and mirror aim
+// are all recalculated without reloading the scene or fetching new 3D assets.
+AFRAME.registerComponent('global-cockpit',{
+  schema:{country:{default:'uk'}},
+  init(){this.el.addEventListener('loaded',()=>this.apply());this.apply()},
+  update(){this.apply()},
+  apply(){
+    const c=COUNTRIES[this.data.country]||COUNTRIES.uk;
+    const set=(id,attr,value)=>{const el=byId(id);if(el)el.setAttribute(attr,value)};
+    set('head','position',{x:c.seatX,y:1.42,z:0.12});
+    set('wheel-column','position',{x:c.seatX,y:0.98,z:-0.55});
+    set('instrument-panel','position',{x:c.seatX,y:1.04,z:-0.78});
+    // Side mirrors remain mounted on their real-world respective wings.
+    // Rotate each glass inward toward the selected seat to maintain visibility.
+    const leftAngle=THREE.MathUtils.radToDeg(Math.atan2(c.seatX+1.10,0.92));
+    const rightAngle=THREE.MathUtils.radToDeg(Math.atan2(c.seatX-1.10,0.92));
+    set('left-mirror','position',{x:-1.12,y:1.35,z:-0.8});
+    set('right-mirror','position',{x:1.12,y:1.35,z:-0.8});
+    set('left-mirror','rotation',{x:0,y:leftAngle,z:0});
+    set('right-mirror','rotation',{x:0,y:rightAngle,z:0});
+    // Centre rearview mirror tilts toward the driver.
+    set('rear-mirror','position',{x:c.seatX*0.22,y:1.68,z:-0.76});
+    set('rear-mirror','rotation',{x:0,y:c.seatX*24,z:0});
+    set('country-3d','value',c.name.toUpperCase()+' | '+c.seatSide.toUpperCase()+' HAND DRIVE');
+    if(byId('country-live'))byId('country-live').value=this.data.country;
+    const physics=this.el.components['car-physics'];
+    if(physics)physics.updateSpeed();
+  }
+});
+
+// The ground grid and road are generated with low-poly primitives only.
+AFRAME.registerComponent('practice-world',{
+  init(){
+    const add=(tag,attrs,parent=this.el)=>{
+      const el=document.createElement(tag);
+      Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+      parent.appendChild(el);return el;
+    };
+    add('a-box',{position:'0 -0.08 0',width:94,height:0.1,depth:425,color:'#718b7b'});
+    add('a-box',{position:'0 0 0',width:8,height:0.06,depth:410,color:'#3a4650'});
+    // Neutral practice grid.
+    for(let x=-44;x<=44;x+=8)add('a-box',{position:x+' 0.008 0',width:0.035,height:0.008,depth:410,color:'#a2baa4'});
+    for(let z=-200;z<=200;z+=8)add('a-box',{position:'0 0.009 '+z,width:94,height:0.008,depth:0.035,color:'#a2baa4'});
+    // Two lanes separated by a broken central line.
+    for(let z=-196;z<202;z+=12)add('a-box',{position:'0 0.05 '+z,width:0.12,height:0.012,depth:5,color:'#f7eccc'});
+    for(const x of [-4,4])add('a-box',{position:x+' 0.05 0',width:0.12,height:0.012,depth:405,color:'#ecedef'});
+    // Sparse, uncomplicated practice hazards and low-poly surroundings.
+    const hazards=[[-2,37,'#e59038'],[2,-4,'#bd5d50'],[-2,-48,'#d8a23f'],[2,-91,'#d98639'],[-2,-145,'#c86357']];
+    for(const [x,z,color] of hazards){
+      const h=add('a-box',{class:'hazard',position:x+' 0.68 '+z,width:1.6,height:1.36,depth:1.8,color});
+      add('a-box',{position:'0 0.3 0',width:1.45,height:0.22,depth:1.66,color:'#f5e4bb'},h);
+    }
+    for(let z=-190;z<=170;z+=37)for(const x of [-15,15]){
+      add('a-cylinder',{position:x+' 1.1 '+z,radius:0.16,height:2.2,segmentsRadial:6,color:'#645648'});
+      add('a-cone',{position:x+' 3 '+z,'radius-bottom':1.25,height:2.5,segmentsRadial:6,color:'#446b5b'});
+    }
+  }
+});
+AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.el.addEventListener('click',this.onClick)},remove(){this.el.removeEventListener('click',this.onClick)}});
+</script>
+</head>
+<body>
+<!-- The 3D scene is inside a template: it does NOT initialize before selection. -->
+<section id="splash" aria-label="Select your driving country">
+  <div class="card">
+    <div class="eyebrow">DRIVING PRACTICE · WEBXR</div>
+    <h1>Choose your driving position.</h1>
+    <p>The driver's seat, steering wheel, instruments and mirror angles adapt to your country. No download required.</p>
+    <label for="country-start">Country</label>
+    <select id="country-start">
+      <option value="uk">United Kingdom (Right-Hand Drive)</option>
+      <option value="us">United States (Left-Hand Drive)</option>
+      <option value="de">Germany (Left-Hand Drive)</option>
+    </select>
+    <button class="primary" id="start" type="button">Enter Driving Practice</button>
+    <p class="help">W / ↑ accelerate · S / ↓ or Space brake · A / D or ← / → steer · R reset · Drag/look at mirrors to check them. Touch controls are included.</p>
+    <p class="help">This is a judgement-and-observation prototype, not a real-world vehicle handling simulator. Stop immediately if VR motion causes discomfort.</p>
+    <p id="load-status" class="help" role="status">Choose a country to begin.</p>
+  </div>
+</section>
+
+<div id="app" hidden>
+  <div id="overlay">
+    <div class="hud"><strong>DRIVING PRACTICE VR</strong><div id="speed">0 mph</div><div id="status">Look at each mirror to check it · R to reset</div></div>
+    <div class="hud"><label for="country-live" style="margin:0 0 5px;font-size:12px">Change country / cockpit</label>
+      <select id="country-live">
+        <option value="uk">United Kingdom · RHD</option>
+        <option value="us">United States · LHD</option>
+        <option value="de">Germany · LHD</option>
+      </select>
+      <input id="share-fallback" hidden readonly aria-label="Copyable app link" style="width:100%;margin-top:8px">
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="buttons" aria-label="Touch driving controls">
+    <button data-drive="left" type="button">← Steer</button>
+    <button data-drive="right" type="button">Steer →</button>
+    <button data-drive="brake" type="button">Brake</button>
+    <button data-drive="go" type="button">Accelerate</button>
+    <button id="reset" type="button">Reset</button>
+    <button id="share" type="button">Share App</button>
+  </div>
+  <div id="scene-mount"></div>
+</div>
+
+<template id="scene-template">
+  <a-scene embedded renderer="antialias: true; colorManagement: true" background="color: #bad9e7" fog="type: linear; color: #bad9e7; near: 90; far: 220" loading-screen="enabled: false" vr-mode-ui="enabled: true">
+    <a-entity environment="preset: default; ground: flat; groundColor: #718b7b; dressingAmount: 0; skyType: color; skyColor: #bad9e7; lighting: none"></a-entity>
+    <a-entity light="type: ambient; intensity: 1.15"></a-entity>
+    <a-entity light="type: directional; intensity: 0.85" position="-12 22 5"></a-entity>
+    <a-entity practice-world></a-entity>
+
+    <a-entity id="car" position="-2 0 82" car-physics global-cockpit="country: uk">
+      <!-- Chassis and dashboard shell are visible in the cockpit, hidden during mirror reflection. -->
+      <a-entity id="cockpit-shell" class="reflection-hide">
+        <a-box position="0 0.47 0.12" width="2.05" height="0.18" depth="3.25" color="#18364b"></a-box>
+        <a-box position="0 0.87 -0.84" width="2.04" height="0.37" depth="0.65" color="#142838"></a-box>
+        <a-box position="-1.00 0.97 -0.44" width="0.11" height="1.0" depth="0.12" color="#285c7d"></a-box>
+        <a-box position="1.00 0.97 -0.44" width="0.11" height="1.0" depth="0.12" color="#285c7d"></a-box>
+        <a-box position="0 1.87 -0.57" width="2.1" height="0.11" depth="0.13" color="#233b50"></a-box>
+        <!-- The two items below move left/right via global-cockpit. -->
+        <a-entity id="wheel-column" position="0.48 0.98 -0.55">
+          <a-cylinder rotation="75 0 0" radius="0.047" height="0.46" color="#607384"></a-cylinder>
+          <a-entity id="wheel" position="0 0.11 0.13" rotation="-15 0 0">
+            <a-torus radius="0.23" radius-tubular="0.025" color="#07131f"></a-torus>
+            <a-box width="0.42" height="0.029" depth="0.04" color="#596b7c"></a-box>
+            <a-cylinder rotation="90 0 0" radius="0.066" height="0.06" color="#293b50"></a-cylinder>
+          </a-entity>
+        </a-entity>
+        <a-entity id="instrument-panel" position="0.48 1.04 -0.78">
+          <a-plane width="0.46" height="0.22" color="#071721"></a-plane>
+          <a-text id="speed3d" value="0 MPH" width="0.7" align="center" color="#72f0c4" position="0 0 0.008"></a-text>
+        </a-entity>
+        <!-- Dashboard confirmation and sharing surface are both real 3D geometry. -->
+        <a-plane position="0 0.98 -0.89" width="0.68" height="0.25" color="#071721">
+          <a-text value="DRIVING PRACTICE" width="1.0" align="center" position="0 0.062 0.009"></a-text>
+          <a-text id="vr-toast" value="" color="#66f2aa" width="0.85" align="center" position="0 -0.047 0.01"></a-text>
+        </a-plane>
+        <a-plane class="share-target" share-link position="0 0.79 -0.83" width="0.73" height="0.13" color="#167c8d">
+          <a-text value="Tap to Share App Link" width="1.02" align="center" position="0 0 0.01"></a-text>
+        </a-plane>
+        <a-text id="country-3d" value="UNITED KINGDOM | RIGHT HAND DRIVE" position="0 0.60 -0.83" align="center" width="1.65" color="#b4d8e8"></a-text>
+      </a-entity>
+
+      <!-- Mirror geometry stays on physical wings; glass aims toward the active seat. -->
+      <a-box class="reflection-hide" position="-1.1 1.30 -0.8" width="0.45" height="0.29" depth="0.10" color="#24374b"></a-box>
+      <a-box class="reflection-hide" position="1.1 1.30 -0.8" width="0.45" height="0.29" depth="0.10" color="#24374b"></a-box>
+      <a-plane id="left-mirror" class="mirror-target" mirror-panel="label: Left; side: left" position="-1.12 1.35 -0.73" rotation="0 25 0" width="0.39" height="0.23"></a-plane>
+      <a-plane id="right-mirror" class="mirror-target" mirror-panel="label: Right; side: right" position="1.12 1.35 -0.73" rotation="0 -25 0" width="0.39" height="0.23"></a-plane>
+      <a-box class="reflection-hide" position="0 1.69 -0.81" width="0.56" height="0.24" depth="0.055" color="#263b50"></a-box>
+      <a-plane id="rear-mirror" class="mirror-target" mirror-panel="label: Rearview; side: rear" position="0 1.68 -0.76" width="0.49" height="0.17"></a-plane>
+
+      <!-- Native look-controls drives the central fuse raycaster for gaze checks. -->
+      <a-entity id="head" position="0.48 1.42 0.12" camera="near: 0.04; fov: 78" look-controls wasd-controls="enabled: false">
+        <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4" cursor="fuse: true; fuseTimeout: 650" geometry="primitive: ring; radiusInner: 0.003; radiusOuter: 0.005" material="shader: flat; color: #68f7d1" position="0 0 -0.45"></a-cursor>
+      </a-entity>
+      <a-entity laser-controls="hand: right" raycaster="objects: .mirror-target, .share-target; far: 5"></a-entity>
+    </a-entity>
+  </a-scene>
+</template>
+
 <script>
-const scene=document.querySelector('a-scene');scene.addEventListener('loaded',()=>document.querySelector('#loadstatus').textContent='Ready. Enter VR using the headset button after starting.');
-document.querySelector('#start').onclick=()=>{if(!window.AFRAME){document.querySelector('#loadstatus').textContent='3D engine could not load. Check your connection and reload.';return}active=true;document.querySelector('#intro').style.display='none'};
-document.querySelector('#reset').onclick=()=>document.querySelector('#car').components['car-physics'].reset();document.querySelector('#share').onclick=shareApp;
-window.addEventListener('keydown',e=>{if(e.code==='KeyR')document.querySelector('#reset').click()});
-document.querySelectorAll('[data-key]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);input[b.dataset.key]=true});for(const evt of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(evt,()=>input[b.dataset.key]=false)});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in input)input[k]=false}});
-scene.addEventListener('enter-vr',()=>{document.querySelector('#controls').style.display='none'});scene.addEventListener('exit-vr',()=>{document.querySelector('#controls').style.display='flex'});
-</script></body></html>
+// Lazy-mount the entire A-Frame scene only AFTER the visitor chooses a country.
+function configureCountry(code){
+  if(!COUNTRIES[code])return;
+  byId('country-start').value=code;
+  byId('country-live').value=code;
+  const car=byId('car');
+  if(car){
+    car.setAttribute('global-cockpit','country',code);
+    car.components['global-cockpit']?.apply();
+    car.components['car-physics']?.reset();
+  }
+}
+byId('start').addEventListener('click',()=>{
+  const code=byId('country-start').value;
+  byId('start').disabled=true;
+  byId('load-status').textContent='Preparing your '+COUNTRIES[code].name+' cockpit…';
+  if(!window.AFRAME||!AFRAME.components['environment']){
+    byId('load-status').textContent='3D libraries failed to load. Check your internet connection and reload.';
+    byId('start').disabled=false;return;
+  }
+  const startScene=()=>{
+    active=false;
+    configureCountry(code);
+    byId('splash').hidden=true;byId('app').hidden=false;
+    scene=byId('scene-mount').querySelector('a-scene');
+    // Scene already exists by this point; refresh size after removing the overlay.
+    scene.resize?.();active=true;
+  };
+  if(!scene){
+    const fragment=byId('scene-template').content.cloneNode(true);
+    byId('scene-mount').appendChild(fragment);
+    scene=byId('scene-mount').querySelector('a-scene');
+    if(scene.hasLoaded)startScene();
+    else scene.addEventListener('loaded',startScene,{once:true});
+    scene.addEventListener('enter-vr',()=>byId('buttons').style.display='none');
+    scene.addEventListener('exit-vr',()=>byId('buttons').style.display='flex');
+  }else startScene();
+});
+byId('country-live').addEventListener('change',e=>configureCountry(e.target.value));
+byId('reset').addEventListener('click',()=>byId('car')?.components['car-physics']?.reset());
+byId('share').addEventListener('click',shareApp);
+window.addEventListener('keydown',e=>{if(e.code==='KeyR')byId('reset').click()});
+document.querySelectorAll('[data-drive]').forEach(button=>{
+  const code=button.dataset.drive;
+  button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture(e.pointerId);keys[code]=true});
+  for(const eventName of ['pointerup','pointercancel','lostpointercapture'])
+    button.addEventListener(eventName,()=>keys[code]=false);
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)Object.keys(keys).forEach(k=>keys[k]=false)});
+</script>
+</body>
+</html>
