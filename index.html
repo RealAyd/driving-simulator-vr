@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101c2c"><title>Driving Practice · VR Cockpit</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<style>body{margin:0;background:#101c2c;font:15px system-ui;color:white}#hud{position:fixed;z-index:3;top:18px;left:20px;pointer-events:none}h1{font-size:19px;margin:0 0 6px}small{color:#b9c9d9}#toast{color:#58efa5;min-height:24px}#controls{position:fixed;z-index:4;bottom:24px;left:18px;right:85px;display:flex;gap:8px;flex-wrap:wrap}button{border:1px solid #49617a;border-radius:12px;background:#14273deb;color:white;padding:13px 17px;font:inherit;touch-action:none}button:active{background:#2875a2}#intro{position:fixed;z-index:8;inset:0;display:grid;place-items:center;background:#0a1422e8}.card{max-width:450px;padding:30px;margin:20px;border:1px solid #40536a;border-radius:22px;background:#142438}.card p{line-height:1.6;color:#c3d0df}.card button{background:#176b91}a{color:#7cdbff}</style>
+<script>
+const input={}; let active=false;
+function notify(msg){document.querySelector('#toast').textContent=msg;const t=document.querySelector('#vrtoast');if(t)t.setAttribute('value',msg);clearTimeout(notify.timer);notify.timer=setTimeout(()=>{document.querySelector('#toast').textContent='';if(t)t.setAttribute('value','')},1800)}
+async function shareApp(){const url='https://vr.drivingpractice.live/';try{if(navigator.share)await navigator.share({title:'Driving Practice VR',text:'Try the Driving Practice cockpit',url});else{await navigator.clipboard.writeText(url);notify('App link copied')}}catch(e){if(e.name!=='AbortError')notify('Share link: '+url)}}
+AFRAME.registerComponent('car-physics',{
+init(){this.speed=0;this.v=new THREE.Vector3();this.steer=0;this.brakingWeight=0;this.heading=0;this.keys=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();input[e.code]=e.type==='keydown'}};window.addEventListener('keydown',this.keys);window.addEventListener('keyup',this.keys);window.addEventListener('blur',()=>{for(const k in input)input[k]=false;this.speed=0;this.v.set(0,0,0)});this.forward=new THREE.Vector3();this.right=new THREE.Vector3()},
+tick(t,delta){if(!active)return;const dt=Math.min(delta/1000,.04);let throttle=(input.KeyW||input.ArrowUp||input.go)?1:0;let brake=(input.KeyS||input.ArrowDown||input.Space||input.brake)?1:0;
+const session=this.el.sceneEl.renderer.xr.getSession();if(session)for(const s of session.inputSources){if(s.gamepad){throttle=Math.max(throttle,s.gamepad.buttons[0]?.value||0);brake=Math.max(brake,s.gamepad.buttons[1]?.value||0);if(Math.abs(s.gamepad.axes[2]||0)>.12)input.xrSteer=s.gamepad.axes[2]}}
+let turn=((input.KeyA||input.ArrowLeft||input.left)?1:0)-((input.KeyD||input.ArrowRight||input.right)?1:0);turn-=input.xrSteer||0;input.xrSteer=0;
+this.steer=THREE.MathUtils.damp(this.steer,turn,6,dt);this.brakingWeight=THREE.MathUtils.damp(this.brakingWeight,brake*Math.min(this.speed/8,1),5,dt);
+this.speed=Math.max(0,Math.min(13.4,this.speed+(throttle*3.1-brake*8-.12-this.speed*.025)*dt));this.heading+=this.steer*this.speed/(3.2+this.speed*1.1)*dt;
+this.el.object3D.rotation.y=this.heading;this.forward.set(-Math.sin(this.heading),0,-Math.cos(this.heading));this.right.set(Math.cos(this.heading),0,-Math.sin(this.heading));
+const lateral=this.v.dot(this.right)*Math.exp(-8*dt);this.v.copy(this.forward).multiplyScalar(this.speed).addScaledVector(this.right,lateral);this.el.object3D.position.addScaledVector(this.v,dt);
+const p=this.el.object3D.position;if(Math.abs(p.x)>65||Math.abs(p.z)>230){this.reset();notify('Practice area boundary — reset')}
+document.querySelector('#speed').textContent=Math.round(this.speed*2.23694)+' mph';document.querySelector('#speed3d').setAttribute('value',Math.round(this.speed*2.23694)+' MPH');document.querySelector('#wheel').object3D.rotation.z=-this.steer*.65;document.querySelector('#dash').object3D.rotation.x=-this.brakingWeight*.025},
+reset(){this.speed=0;this.v.set(0,0,0);this.heading=0;this.el.object3D.position.set(-2,0,80);this.el.object3D.rotation.set(0,0,0)}
+});
+AFRAME.registerComponent('mirror-panel',{
+schema:{label:{default:'Mirror'},angle:{default:180}},
+init(){this.target=new THREE.WebGLRenderTarget(256,128);this.cam=new THREE.PerspectiveCamera(65,2,.1,450);this.pos=new THREE.Vector3();this.dir=new THREE.Vector3();this.up=new THREE.Vector3(0,1,0);this.frame=0;this.enter=()=>{this.timer=setTimeout(()=>notify(this.data.label+' Mirror Checked'),350)};this.leave=()=>clearTimeout(this.timer);this.el.addEventListener('mouseenter',this.enter);this.el.addEventListener('mouseleave',this.leave);this.el.addEventListener('object3dset',()=>this.apply());this.apply()},
+apply(){const m=this.el.getObject3D('mesh');if(m){m.material=new THREE.MeshBasicMaterial({map:this.target.texture});this.target.texture.repeat.x=-1;this.target.texture.offset.x=1}},
+tock(){if(++this.frame%3)return;const scene=this.el.sceneEl,r=scene.renderer;if(!r)return;this.el.object3D.getWorldPosition(this.pos);this.cam.position.copy(this.pos);const car=document.querySelector('#car');const yaw=car.object3D.rotation.y+THREE.MathUtils.degToRad(this.data.angle);this.dir.set(-Math.sin(yaw),0,-Math.cos(yaw));this.cam.lookAt(this.pos.clone().add(this.dir));const xr=r.xr.enabled,rt=r.getRenderTarget();const mirrors=scene.querySelectorAll('[mirror-panel]');try{mirrors.forEach(m=>m.object3D.visible=false);r.xr.enabled=false;r.setRenderTarget(this.target);r.render(scene.object3D,this.cam)}finally{r.setRenderTarget(rt);r.xr.enabled=xr;mirrors.forEach(m=>m.object3D.visible=true)}},
+remove(){clearTimeout(this.timer);this.target.dispose();this.el.removeEventListener('mouseenter',this.enter);this.el.removeEventListener('mouseleave',this.leave)}
+});
+AFRAME.registerComponent('share-link',{init(){this.el.addEventListener('click',shareApp)}});
+AFRAME.registerComponent('world',{init(){const add=(tag,attrs)=>{const el=document.createElement(tag);for(const k in attrs)el.setAttribute(k,attrs[k]);this.el.appendChild(el)};
+add('a-box',{position:'0 -.12 0',width:130,height:.2,depth:480,color:'#6b9673'});
+add('a-box',{position:'0 0 0',width:8,height:.04,depth:460,color:'#424c58'});
+for(let z=-220;z<230;z+=10){add('a-box',{position:'0 .03 '+z,width:.12,height:.01,depth:4,color:'#eee9d9'});for(const x of [-7,7]){add('a-cylinder',{position:x+' 1.4 '+z,radius:.18,height:2.8,color:'#6a5140',segments:6});add('a-cone',{position:x+' 3.4 '+z,'radius-bottom':1.5,height:3,color:'#3c7154',segments:6})}}
+for(const x of [-4,4])add('a-box',{position:x+' .04 0',width:.12,height:.02,depth:460,color:'#e5e4d5'});
+for(let z=-170;z<150;z+=40)for(const x of [-17,17])add('a-box',{position:x+' 3 '+z,width:8,height:6,depth:12,color:x<0?'#a5b9c2':'#b5a99b'});
+for(const z of [-30,15,55]){add('a-box',{position:'2 .65 '+z,width:1.7,height:1.1,depth:3.7,color:'#ba5c4b'});add('a-box',{position:'2 1.4 '+z,width:1.4,height:.5,depth:1.8,color:'#9bb8c7'})}
+}});
+</script></head><body>
+<div id="hud"><h1>DRIVING PRACTICE <small>VR</small></h1><div id="speed">0 mph</div><small>WASD / arrows · Drag to look · R to reset</small><div id="toast" role="status" aria-live="polite"></div></div>
+<div id="intro"><div class="card"><small>YOUR FIRST LOOK AROUND</small><h1>Take the driver's seat.</h1><p>A UK right-hand-drive practice cockpit. Look at each mirror to check it, then explore the quiet practice road.</p><p>Keyboard: W to accelerate, S or Space to brake, A/D to steer. Touch: hold the controls below. Quest: right trigger accelerates, grip brakes, thumbstick steers.</p><p>This is an experimental observation practice environment. Vehicle handling is simplified and does not replace driving lessons. Stop if VR motion makes you uncomfortable.</p><button id="start">Start practice</button><p id="loadstatus">Loading 3D engine…</p></div></div>
+<div id="controls"><button data-key="left" aria-label="Steer left">←</button><button data-key="right" aria-label="Steer right">→</button><button data-key="brake">Brake</button><button data-key="go">Accelerate</button><button id="reset">Reset</button><button id="share">Share</button></div>
+<a-scene background="color: #b9d8e8" fog="type: linear; color: #b9d8e8; near: 90; far: 240" renderer="antialias: true; colorManagement: true" loading-screen="enabled: false">
+<a-entity light="type: ambient; intensity: 1.1"></a-entity><a-entity light="type: directional; intensity: 1" position="-10 20 5"></a-entity><a-entity world></a-entity>
+<a-entity id="car" position="-2 0 80" car-physics>
+<a-entity id="dash"><a-box position="0 .88 -.8" width="1.95" height=".36" depth=".65" color="#152335"></a-box><a-box position="0 .38 .05" width="2" height=".12" depth="3" color="#192a3c"></a-box>
+<a-box position="-.98 .75 .2" width=".12" height=".65" depth="2.8" color="#2877af"></a-box><a-box position=".98 .75 .2" width=".12" height=".65" depth="2.8" color="#2877af"></a-box>
+<a-cylinder position=".48 .87 -.42" rotation="65 0 0" radius=".045" height=".45" color="#46546a"></a-cylinder>
+<a-entity id="wheel" position=".48 1.03 -.45" rotation="-15 0 0"><a-torus radius=".22" radius-tubular=".025" color="#0c1522"></a-torus><a-box width=".4" height=".025" depth=".035" color="#45566b"></a-box><a-cylinder rotation="90 0 0" radius=".065" height=".045" color="#2b3c53"></a-cylinder></a-entity>
+<a-plane position=".48 1.04 -.76" width=".38" height=".17" color="#071621"><a-text id="speed3d" value="0 MPH" align="center" width=".65" position="0 0 .005" color="#73eac8"></a-text></a-plane>
+<a-plane position="-.22 1.03 -.73" width=".7" height=".22" color="#071621"><a-text value="DRIVING PRACTICE" align="center" width="1.1" position="0 .04 .005"></a-text><a-text id="vrtoast" value="" align="center" width=".95" position="0 -.035 .006" color="#58efa5"></a-text></a-plane>
+<a-plane class="interactive" share-link position="-.22 .86 -.69" width=".7" height=".1" color="#176b91"><a-text value="Tap to Share App Link" align="center" width="1" position="0 0 .006"></a-text></a-plane>
+</a-entity>
+<a-box position="0 1.83 -.72" width="2" height=".09" depth=".14" color="#24394f"></a-box><a-text value="L" color="#ef4141" align="center" position="0 1.79 -.64" width=".7"></a-text>
+<a-plane class="interactive" mirror-panel="label: Left; angle: 165" position="-1.12 1.3 -.7" rotation="0 22 0" width=".36" height=".22"></a-plane>
+<a-plane class="interactive" mirror-panel="label: Right; angle: 195" position="1.12 1.3 -.7" rotation="0 -22 0" width=".36" height=".22"></a-plane>
+<a-plane class="interactive" mirror-panel="label: Rearview; angle: 180" position="0 1.65 -.74" width=".48" height=".18"></a-plane>
+<a-entity id="head" camera="near: .05" position=".48 1.42 .15" look-controls wasd-controls="enabled: false"><a-cursor cursor="fuse: false" raycaster="objects: .interactive; far: 5" material="shader: flat; color: #66ead4" geometry="primitive: ring; radiusInner: .002; radiusOuter: .004" position="0 0 -.3"></a-cursor></a-entity>
+<a-entity laser-controls="hand: right" raycaster="objects: .interactive; far: 5"></a-entity>
+</a-entity></a-scene>
+<script>
+const scene=document.querySelector('a-scene');scene.addEventListener('loaded',()=>document.querySelector('#loadstatus').textContent='Ready. Enter VR using the headset button after starting.');
+document.querySelector('#start').onclick=()=>{if(!window.AFRAME){document.querySelector('#loadstatus').textContent='3D engine could not load. Check your connection and reload.';return}active=true;document.querySelector('#intro').style.display='none'};
+document.querySelector('#reset').onclick=()=>document.querySelector('#car').components['car-physics'].reset();document.querySelector('#share').onclick=shareApp;
+window.addEventListener('keydown',e=>{if(e.code==='KeyR')document.querySelector('#reset').click()});
+document.querySelectorAll('[data-key]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);input[b.dataset.key]=true});for(const evt of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(evt,()=>input[b.dataset.key]=false)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in input)input[k]=false}});
+scene.addEventListener('enter-vr',()=>{document.querySelector('#controls').style.display='none'});scene.addEventListener('exit-vr',()=>{document.querySelector('#controls').style.display='flex'});
+</script></body></html>
