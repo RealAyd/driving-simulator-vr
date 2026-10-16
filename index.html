@@ -59,10 +59,10 @@ h1 em{color:#41c78a;font-style:normal}
 .disclaimer{border-top:1px solid #334155;padding-top:16px;margin-top:22px;color:#94a3b8;font-size:12px;line-height:1.6}
 #load-message{font-size:12px;color:#74e2a5;margin:10px 0 0}
 #app{position:fixed;inset:0}
-#scene-mount{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(#799cad,#475f61);isolation:isolate}
+#scene-mount{z-index:1;position:absolute;top:0;left:0;width:100vw;height:100vh;display:block;background:linear-gradient(#799cad,#475f61);isolation:isolate}
 #map-container{position:absolute;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;overflow:hidden}
 #map-container>#streetview-panorama{position:absolute;inset:0;display:block;width:100%;height:100%;background:#142235;pointer-events:none}
-#scene-mount>a-scene{position:absolute!important;inset:0!important;z-index:2;width:100%!important;height:100%!important;background:transparent!important}
+#scene-mount>a-scene{position:absolute!important;inset:0!important;z-index:2;width:100%!important;height:100%!important;background:transparent!important;pointer-events:none}
 #scene-mount>a-scene canvas{background:transparent!important}
 #hud{position:absolute;left:15px;top:max(14px,env(safe-area-inset-top));z-index:9;pointer-events:none}
 .hud-card{border:1px solid #475569;border-radius:14px;background:rgba(15,23,42,.88);box-shadow:0 9px 28px #0003;padding:10px 13px;backdrop-filter:blur(7px);pointer-events:auto}
@@ -229,7 +229,7 @@ h1 em{color:#41c78a;font-style:normal}
 </div>
 <!-- Scene is not constructed until the user actually starts practice. -->
 <template id="driving-template">
-<a-scene id="driving-scene" embedded
+<a-scene id="driving-scene" embedded style="background: transparent !important;" transparent-canvas="true"
          renderer="antialias: true; colorManagement: true; alpha: true"
          loading-screen="enabled: false" vr-mode-ui="enabled: true">
   <a-entity light="type: ambient; intensity: 1.1"></a-entity>
@@ -237,17 +237,11 @@ h1 em{color:#41c78a;font-style:normal}
   <!-- These are ONLY for no-key/map errors and immersive VR, in which
        browser DOM Google Maps cannot be presented by the XR compositor. -->
   <a-entity id="practice-fallback">
-    <a-sky color="#a5c9db"></a-sky>
-    <a-plane color="#749886" rotation="-90 0 0" position="0 -.06 0" width="1000" height="1000"></a-plane>
-    <a-plane color="#44515b" rotation="-90 0 0" position="0 .005 0" width="8" height="360"></a-plane>
     <a-box position="-4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
     <a-box position="4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
     <a-entity id="fallback-markings" practice-markings></a-entity>
     <!-- Marked TRAINING intersections for the optional strict sequence
          evaluation. They are not derived from Google's map data. -->
-    <a-plane position="0 .013 -55" rotation="-90 0 0" width="46" height="8" color="#44515b"></a-plane>
-    <a-plane position="0 .013 -117" rotation="-90 0 0" width="46" height="8" color="#44515b"></a-plane>
-    <a-plane position="0 .013 -165" rotation="-90 0 0" width="46" height="8" color="#44515b"></a-plane>
   </a-entity>
   <!-- Track is mathematically flat at Y=0; no physics-plugin dependency,
        no raycasting and no map-mesh collision/height extraction. -->
@@ -358,6 +352,20 @@ function showMapOnly(yes){
    scene.renderer.setClearAlpha(0);
   }
  }
+}
+// The scene lives in <template> until Start, so bind on the element itself
+// before it is mounted; A-Frame emits render-target-loaded during mount.
+// That event fires from setupCanvas, BEFORE scene.renderer exists, so the
+// clear is applied immediately if possible, otherwise on renderstart.
+function forceTransparentRenderer(sceneEl){
+ sceneEl.addEventListener('render-target-loaded', function () {
+   const clear=()=>{
+     this.renderer.setClearColor(0x000000, 0);
+     this.renderer.alpha = true;
+   };
+   if(this.renderer)clear();
+   else this.addEventListener('renderstart',clear,{once:true});
+ });
 }
 const keyConfigured=()=>GOOGLE_MAPS_API_KEY.trim()!==''&&!GOOGLE_MAPS_API_KEY.includes('PASTE_YOUR_');
 
@@ -1436,6 +1444,7 @@ byId('start-button').addEventListener('click',async()=>{
  byId('splash').hidden=true;
  const fragment=byId('driving-template').content.cloneNode(true);
  scene=fragment.querySelector('a-scene');
+ forceTransparentRenderer(scene);
  // Initialize the scene systems before connecting material-bearing entities.
  const entities=document.createDocumentFragment();
  while(scene.firstChild)entities.appendChild(scene.firstChild);
