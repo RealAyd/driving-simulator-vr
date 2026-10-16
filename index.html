@@ -464,6 +464,7 @@ function setCountry(iso,fromUser=false){
    // A specific map origin must be chosen before entering practice.
    status('Cockpit: '+COUNTRIES[iso].drive+' · map location unchanged');
  }
+ paintUkMockScore();
 }
 function createPicker(inputId){
  const input=byId(inputId),wrapper=input.closest('.picker');
@@ -897,6 +898,8 @@ AFRAME.registerComponent('turn-signals',{
     this.signalAt=0;
     this.mirrorBeforeSignal=0;
     this.mirrors={left:0,right:0,rear:0};
+    this.leftMirrorCheckedAt=0;this.rightMirrorCheckedAt=0;
+    this.signalTimingFaultRecorded=false;
     this.blind={left:0,right:0};
     this.flashOn=false;
     this.interval=null;
@@ -905,7 +908,10 @@ AFRAME.registerComponent('turn-signals',{
     this.mirrorListener=event=>{
       const side=event.detail?.side;
       if(Object.hasOwn(this.mirrors,side)){
-        this.mirrors[side]=performance.now();
+        const checkedAt=performance.now();
+        this.mirrors[side]=checkedAt;
+        if(side==='left')this.leftMirrorCheckedAt=checkedAt;
+        if(side==='right')this.rightMirrorCheckedAt=checkedAt;
       }
     };
     this.blindListener=event=>{
@@ -960,11 +966,23 @@ AFRAME.registerComponent('turn-signals',{
     this.stop();
     this.side=side;
     this.signalAt=performance.now();
-    // Freeze the LAST relevant mirror observation at the moment of signalling,
-    // so looking in the mirror after switching the indicator doesn't falsely
-    // satisfy the required order.
-    this.mirrorBeforeSignal=this.mirrors[side];
+    // Snapshot the correct mirror at signal activation: looking in it
+    // AFTER signalling cannot retroactively satisfy the MSM sequence.
+    this.mirrorBeforeSignal=side==='left'?
+      this.leftMirrorCheckedAt:this.rightMirrorCheckedAt;
+    this.signalTimingFaultRecorded=false;
     this.blind[side]=0;
+    if(activeCountryCode==='GB'&&
+      !(this.mirrorBeforeSignal>0&&
+        this.signalAt>=this.mirrorBeforeSignal&&
+        this.signalAt-this.mirrorBeforeSignal<=MSM_MIRROR_WINDOW_MS)){
+      // One event at signal activation. A subsequent manoeuvre must not
+      // record this same missed/pre-signalling mirror observation again.
+      this.signalTimingFaultRecorded=true;
+      recordUkPracticeFault('signal',
+        'Signals - Incorrect Timing: '+side+' mirror not checked within the preceding 2 seconds.',
+        'signal-'+this.signalAt);
+    }
     this.flashOn=true;
     this.paint();
     const audio=this.getAudio();
@@ -1012,6 +1030,22 @@ AFRAME.registerComponent('turn-signals',{
       toast('Safe sequence: Mirror → Signal → Blind spot → Manoeuvre');
     }else{
       showTestFault(result.reason);
+      if(activeCountryCode==='GB'&&!ukMockScore.finished){
+        const missingSignal=this.side!==side||!this.signalAt;
+        const missedMirror=!this.mirrorBeforeSignal||
+          this.mirrorBeforeSignal>this.signalAt||
+          this.signalAt-this.mirrorBeforeSignal>MSM_MIRROR_WINDOW_MS;
+        // No double count for a signal-timing fault logged at activation.
+        if(!this.signalTimingFaultRecorded){
+          const incidentId='turn-'+this.lastEvaluation.at+'-'+side;
+          if(missingSignal)
+            recordUkPracticeFault('signal','Signals - Necessary signal omitted before '+side+' turn.',incidentId);
+          else if(missedMirror)
+            recordUkPracticeFault('mirror','Mirrors - Change direction: mirror check missed before '+side+' turn.',incidentId);
+          else
+            recordUkPracticeFault('mirror','Observation - Blind spot check omitted before '+side+' turn.',incidentId);
+        }
+      }
     }
     // No inherited blind-spot observation after manoeuvring; next turn
     // requires a fresh deliberate check and an explicitly rearmed signal.
@@ -1021,6 +1055,8 @@ AFRAME.registerComponent('turn-signals',{
   resetExercise(){
     this.stop();
     this.mirrors={left:0,right:0,rear:0};
+    this.leftMirrorCheckedAt=0;this.rightMirrorCheckedAt=0;
+    this.signalTimingFaultRecorded=false;
     this.blind={left:0,right:0};
     this.lastEvaluation={at:-Infinity,side:null};
     const banner=byId('fault-banner');if(banner){banner.hidden=true;banner.classList.remove('active')}
@@ -1172,6 +1208,24 @@ byId('start-button').addEventListener('click',async()=>{
  else scene.addEventListener('loaded',ready,{once:true});
 });
 byId('reset').addEventListener('click',()=>byId('player-car')?.components['car-physics']?.reset());
+// Scenario reset preserves the mock test fault ledger. Only "New Mock Test"
+// clears previous incidents and re-enables a finished test.
+byId('finish-test').addEventListener('click',()=>{
+  if(activeCountryCode!=='GB'){
+    toast('Choose United Kingdom to score a UK mock test');
+    return;
+  }
+  if(ukMockScore.finished){
+    ukMockScore.newTest();
+    byId('player-car')?.components['car-physics']?.reset();
+    toast('New UK mock test started');
+  }else{
+    const finalResult=ukMockScore.finish();
+    toast(finalResult==='pass'?'Mock test completed: pass':'Mock test completed: fail');
+  }
+  paintUkMockScore();
+});
+paintUkMockScore();
 byId('share').addEventListener('click',shareApp);
 window.addEventListener('keydown',event=>{
  if(event.code==='KeyR'&&!event.target?.closest?.('input,textarea,select')){
