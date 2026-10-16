@@ -88,6 +88,15 @@ h1 em{color:#41c78a;font-style:normal}
 #indicator-hud .indicator-arrow{font-size:25px;line-height:1;color:#28593e;opacity:.55;transition:color .09s ease,opacity .09s ease,text-shadow .09s ease}
 #indicator-hud .indicator-arrow.lit{color:#52ff96;opacity:1;text-shadow:0 0 10px rgba(73,255,135,.8)}
 #indicator-hud .indicator-label{font-size:9px;color:#9eacb5;font-weight:700;letter-spacing:.07em}
+#mock-score-panel{display:grid;gap:4px;border-top:1px solid #405063;margin-top:10px;padding-top:8px}
+#mock-score-panel .score-row{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:750}
+#mock-score-panel .score-row strong{font-variant-numeric:tabular-nums;color:#fff}
+#score-breakdown{color:#a7c9b9;font-size:10px}
+#mock-result{font-size:11px;font-weight:900;color:#8ef5b1}
+#mock-result.failed,#mock-failure-reason{color:#ffcb5b}
+#mock-failure-reason{font-size:10px;font-weight:800}
+#score-disclaimer{color:#a4b8bb;font-size:9px;line-height:1.35}
+#finish-test{background:#14563b!important;border-color:#27976a!important}
 #fault-banner{position:absolute;z-index:13;top:166px;left:15px;max-width:min(485px,94vw);padding:13px 16px;background:#3c2907;border:2px solid #fbbf24;border-radius:12px;box-shadow:0 9px 32px #0008;color:#fff0c2;font-size:13px}
 #fault-banner strong{display:block;color:#ffdf80;font-weight:900}
 #fault-banner small{display:block;color:#ffe6a7;margin-top:4px}
@@ -162,6 +171,14 @@ h1 em{color:#41c78a;font-style:normal}
       <span class="indicator-label">SIGNAL</span>
       <span id="indicator-right" class="indicator-arrow" aria-hidden="true">▶</span>
     </div>
+    <div id="mock-score-panel" aria-label="Simulated UK driving-test assessment">
+      <div class="score-row"><span>DRIVING FAULTS:</span><strong id="driving-fault-count">0</strong></div>
+      <div class="score-row"><span>SERIOUS / DANGEROUS FAULTS:</span><strong id="serious-fault-count">0</strong></div>
+      <div id="score-breakdown">Mirrors: 0 · Signals: 0 · Speed: 0</div>
+      <div id="mock-result" role="status">DVSA RESULT: IN PROGRESS</div>
+      <div id="mock-failure-reason"></div>
+      <div id="score-disclaimer">Simulation only · three repeats = serious is a strict training rule, not DVSA policy.</div>
+    </div>
     <input id="share-fallback" hidden readonly aria-label="Copyable app link">
   </div>
   <div id="country-hud" class="hud-card">
@@ -187,6 +204,7 @@ h1 em{color:#41c78a;font-style:normal}
     <button data-drive="brake" type="button">Brake</button>
     <button data-drive="go" type="button">Accelerate</button>
     <button id="reset" type="button">Reset</button>
+    <button id="finish-test" type="button">Finish Mock Test</button>
     <button id="share" type="button">Share</button>
   </div>
   <div id="map-help" hidden>Google Maps 3D background · <strong>visual reference only</strong></div>
@@ -242,6 +260,7 @@ h1 em{color:#41c78a;font-style:normal}
       </a-plane>
       <a-text id="signal-3d" value="" align="center" color="#56ff99" width="1.15" position="0 1.145 -.79"></a-text>
       <a-text id="fault-3d" value="TEST FAULT" visible="false" align="center" color="#ffcb47" width="1.06" position="0 1.225 -.79"></a-text>
+      <a-text id="mock-score-3d" value="FAULTS 0 | S/D 0" align="center" color="#b9e8d9" width="1.27" position="0 .68 -.79"></a-text>
       <a-plane class="share-target" share-link position="0 .78 -.8" width=".72" height=".12" color="#128e54">
         <a-text value="Tap to Share App Link" width="1" align="center" position="0 0 .008"></a-text>
       </a-plane>
@@ -275,6 +294,8 @@ const GOOGLE_MAPS_API_KEY = "PASTE_YOUR_RESTRICTED_KEY_HERE";
 const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:110});
 const CAR_Y = 0.25;
 const TURN_SEQUENCE_WINDOW_MS=15000;
+const MSM_MIRROR_WINDOW_MS=2000;
+const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
 const JUNCTION_EVALUATION_ZONES=Object.freeze([-55,-117,-165]);
 const EARTH_RADIUS = 6378137;
 const ROUTE_SESSION_HISTORY = new Map(); // route metadata only, never Google imagery
@@ -760,12 +781,99 @@ AFRAME.registerComponent('global-cockpit',{
 function assessTurnSequence({side,activeSignal,mirrorAt,signalAt,blindAt,now}){
   if(activeSignal!==side||!signalAt||now-signalAt>TURN_SEQUENCE_WINDOW_MS)
     return {passed:false,reason:'Matching '+side+' signal was not activated before turning.'};
-  if(!mirrorAt||mirrorAt>signalAt||signalAt-mirrorAt>TURN_SEQUENCE_WINDOW_MS)
+  if(!mirrorAt||mirrorAt>signalAt||signalAt-mirrorAt>MSM_MIRROR_WINDOW_MS)
     return {passed:false,reason:'Check the '+side+' mirror BEFORE signalling.'};
   if(!blindAt||blindAt<=signalAt||blindAt>now||now-blindAt>TURN_SEQUENCE_WINDOW_MS)
     return {passed:false,reason:'Hold a '+side+' shoulder check for at least 400 ms AFTER signalling.'};
   return {passed:true,reason:'Mirror → Signal → Blind spot → Manoeuvre'};
 }
+
+/**
+ * SIMULATED UK car-test fault ledger.
+ * GOV.UK: <=15 driving faults AND no serious/dangerous faults.
+ * Automatic escalation on a third same-category fault is a deliberate
+ * stricter practice-mode rule, NOT an official DVSA numeric rule.
+ * Distinct incident keys prevent double marking the same driving event.
+ */
+class UkMockScore{
+ constructor(){this.newTest()}
+ newTest(){
+   this.mirrorMinors=0;this.signalMinors=0;this.speedMinors=0;
+   this.drivingFaults=0;this.seriousFaults=0;this.dangerousFaults=0;
+   this.failed=false;this.finished=false;this.failureReason='';
+   this.upgraded=new Set();this.incidents=new Set();this.log=[];
+ }
+ record(category,reason,incidentKey){
+   if(this.finished)return null;
+   if(!['mirror','signal','speed'].includes(category))throw Error('Unsupported fault category '+category);
+   if(incidentKey&&this.incidents.has(incidentKey))return null;
+   if(incidentKey)this.incidents.add(incidentKey);
+   const name=category+'Minors';
+   this[name]++;
+   this.drivingFaults++;
+   const event={category,reason,incidentKey:incidentKey||null,at:Date.now(),escalated:false};
+   this.log.push(event);
+   if(this[name]===STRICT_REPEAT_CATEGORY_THRESHOLD&&!this.upgraded.has(category)){
+     this.upgraded.add(category);
+     this.seriousFaults++;
+     this.failed=true;
+     this.failureReason='TEST FAILED: Repeated Fault in Single Category';
+     event.escalated=true;
+   }
+   if(this.drivingFaults>=16){
+     this.failed=true;
+     if(!this.failureReason)this.failureReason='TEST FAILED: More than 15 driving faults';
+   }
+   return event;
+ }
+ recordSerious(reason){
+   if(this.finished)return;
+   this.seriousFaults++;this.failed=true;
+   this.failureReason=reason||'TEST FAILED: Serious fault';
+ }
+ recordDangerous(reason){
+   if(this.finished)return;
+   this.dangerousFaults++;this.failed=true;
+   this.failureReason=reason||'TEST FAILED: Dangerous fault';
+ }
+ finish(){this.finished=true;return this.result}
+ get result(){
+   if(this.failed||this.drivingFaults>15||this.seriousFaults>0||this.dangerousFaults>0)return 'fail';
+   return this.finished?'pass':'in-progress';
+ }
+}
+const ukMockScore=new UkMockScore();
+function paintUkMockScore(){
+ const s=ukMockScore;
+ byId('driving-fault-count').textContent=String(s.drivingFaults);
+ byId('serious-fault-count').textContent=String(s.seriousFaults+s.dangerousFaults);
+ byId('score-breakdown').textContent=
+   'Mirrors: '+s.mirrorMinors+' · Signals: '+s.signalMinors+' · Speed: '+s.speedMinors;
+ const result=byId('mock-result');
+ result.classList.toggle('failed',s.result==='fail');
+ result.textContent=activeCountryCode!=='GB'?'UK MOCK: PAUSED OUTSIDE UK':
+   s.result==='fail'?'DVSA RESULT: ❌ REJECTED (FAIL)':
+   s.result==='pass'?'DVSA RESULT: ✅ PASSED':'DVSA RESULT: IN PROGRESS';
+ byId('mock-failure-reason').textContent=activeCountryCode==='GB'?s.failureReason:'';
+ const text=byId('mock-score-3d');
+ if(text)text.setAttribute('value','FAULTS '+s.drivingFaults+' | S/D '+(s.seriousFaults+s.dangerousFaults));
+ byId('finish-test').textContent=s.finished?'New Mock Test':'Finish Mock Test';
+}
+function recordUkPracticeFault(category,reason,incidentKey){
+ if(activeCountryCode!=='GB')return null;
+ const event=ukMockScore.record(category,reason,incidentKey);
+ if(!event)return null;
+ paintUkMockScore();
+ if(event.escalated){
+   showTestFault(ukMockScore.failureReason+' · '+category);
+   toast('Repeated '+category+' faults — mock test failed');
+ }
+ return event;
+}
+// Speed faults are not guessed from Google imagery or a missing speed limit.
+// The scenario engine may call recordUkPracticeFault('speed', reason, eventId)
+// only when a speed limit and actual unsafe driving event are established.
+
 let faultDismissTimeout=0;
 function showTestFault(reason){
   const banner=byId('fault-banner');
