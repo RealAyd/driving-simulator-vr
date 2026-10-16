@@ -4,11 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#faf5eb">
-<meta name="description" content="A browser-based VR driving observation practice with country-specific driving positions.">
+<meta name="description" content="VR driving practice with country-specific cockpits and optional photorealistic 3D streets.">
 <title>Driving Practice VR | Global Cockpit</title>
 <!-- Only external dependencies: A-Frame 1.6.0 and the Environment component. -->
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+<!-- New York Times experimental 3D Tiles A-Frame adapter.
+     Load only a viewer when a restricted Google Map Tiles API key is configured.
+     These extras are documented dependencies for basis/KTX2 textures. -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/utils/WorkerPool.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/KTX2Loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aframe-loader-3dtiles-component@1.0.6/dist/aframe-loader-3dtiles-component.min.js"></script>
 <style>
 /* Driving Practice UI: slate + emerald, built with system fonts and zero extra assets. */
 :root {
@@ -517,9 +523,123 @@ label{color:var(--brand-navy)}
   }
   #splash{background-size:auto,56px 56px,56px 56px}
 }
+
+/* In the search list, show crisp CDN flags on the requested dark slate panel. */
+.country-results{
+  background:#0f172a;
+  border-color:#334155;
+  box-shadow:0 20px 45px rgba(14,28,57,.27);
+  color:#fff;
+}
+.country-option{color:#f8fafc}
+.country-option:hover,.country-option.active,.country-option:focus-visible{
+  background:#164e4a;color:#fff;
+}
+.country-option .country-meta{color:#b4dec9}
+.country-empty{color:#cbd5e1}
+.country-option img.flag{display:block;width:27px;height:20px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px #ffffff30}
+.country-option .flag-emoji{font-size:21px;line-height:1.2}
+.country-picker input.country-search,#country-live.country-search{padding-left:51px}
+.country-picker .selected-flag{position:absolute;pointer-events:none;left:14px;top:50%;transform:translateY(-50%);width:27px;height:20px;object-fit:cover;border-radius:2px;z-index:2}
+.hud .country-picker .selected-flag{left:9px}
+#country-live.country-search{padding-left:43px}
+.route-settings{
+  margin-top:16px;padding:12px 14px;
+  background:#f8faf7;border:1px solid #dae6dd;border-radius:14px;color:#0e1c39
+}
+.route-settings summary{cursor:pointer;font-size:13px;font-weight:750;color:#0e1c39}
+.route-settings summary:focus-visible{outline:2px solid #128e54;border-radius:4px}
+.route-settings .muted-caption{font-size:11px;color:#64748b;font-weight:500}
+.route-settings p{font-size:12px;color:#53617a;line-height:1.5;margin:9px 0}
+.route-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.route-fields label{font-size:11px;color:#273957;min-width:0}
+.route-fields input{
+  display:block;width:100%;max-width:100%;margin-top:5px;
+  border:1px solid #cbd5d1;border-radius:9px;
+  padding:9px 10px;background:#fff;color:#0e1c39;font-size:13px
+}
+.route-fields input:focus{border-color:#128e54;outline:2px solid #128e5433}
+#map-mode{
+  position:fixed;top:113px;left:16px;z-index:7;
+  max-width:350px;
+  border:1px solid #b7d2c1;background:#f9fffbe8;
+  color:#145a38;padding:6px 10px;border-radius:11px;
+  font-size:12px;font-weight:700;pointer-events:none
+}
+.map-credits{
+  position:fixed;z-index:8;bottom:10px;right:12px;
+  max-width:min(50vw,470px);max-height:65px;overflow:auto;
+  padding:6px 9px;border-radius:6px;
+  background:#0e1c39dd;color:#fff;
+  font-size:11px;line-height:1.35;pointer-events:auto
+}
+.map-credits strong{font-weight:850;color:#fff}
+.map-adjust{
+  position:fixed;z-index:7;left:50%;transform:translateX(-50%);
+  bottom:76px;display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:5px;padding:6px;border-radius:12px;
+  background:#faf5ebea;border:1px solid #aec8b8;color:#0e1c39;
+  font-size:11px;font-weight:750;max-width:calc(100vw - 22px)
+}
+.map-adjust[hidden],.map-credits[hidden]{display:none}
+.map-adjust button{
+  font-size:11px;padding:5px 9px;white-space:nowrap;
+  background:#0e1c39;border:0;border-radius:8px;color:white
+}
+.map-adjust button:hover{background:#128e54}
+@media(max-width:650px){
+  #map-mode{top:104px;left:12px;max-width:85%;font-size:10px}
+  .map-adjust{bottom:120px}
+  .map-credits{right:8px;bottom:4px;max-width:calc(100vw - 16px);font-size:9px;max-height:34px}
+  .route-fields{gap:8px}
+}
 </style>
 <script>
 'use strict';
+// ===== GOOGLE MAP TILES SETUP =====
+// Public GitHub Pages JS is visible to everyone. Replace only with a
+// browser/referrer-restricted Map Tiles API key (and set quotas/budgets).
+// No key is supplied: the built-in practice road remains available at no Google cost.
+const GOOGLE_MAPS_API_KEY = "PASTE_YOUR_RESTRICTED_KEY_HERE";
+
+// Borehamwood (London) Driving Test Centre, Unit 1 Stirling Court, WD6 2BT.
+// Coordinates: point near the test centre, NOT a surveyed on-road start line.
+// Height is a rough postcode-level estimate (metres above sea level).
+const ROUTE_PRESETS = Object.freeze({
+  GB: Object.freeze({
+    id:'gb-borehamwood-test-centre',
+    name:'Borehamwood Test Centre, UK',
+    lat:51.64736,
+    lon:-0.25260,
+    height:110,
+    heading:0
+  })
+});
+// Metadata and the CURRENT live tile entity only. NEVER cache, index, serialize,
+// persist, or prefetch Google 3D Tiles assets or derivative road geometry.
+const ROUTE_SESSION_HISTORY = new Map();
+let activeRoute=null,activeMapMode='practice',currentTileEntity=null,tilePollTimer=0;
+const EARTH_RADIUS_METRES=6378137;
+
+// East is +X; north is -Z; coordinates approximate a local tangent plane.
+// Use this for the user's OWN route points; the tiles loader does its own
+// georeferencing with runtime.orientToGeocoord().
+function geoToLocalMetres(lat,lon,origin){
+  const meanLat=((lat+origin.lat)/2)*Math.PI/180;
+  return {x:EARTH_RADIUS_METRES*(lon-origin.lon)*Math.PI/180*Math.cos(meanLat),
+          z:-EARTH_RADIUS_METRES*(lat-origin.lat)*Math.PI/180};
+}
+function localMetresToGeo(x,z,origin){
+  const lat=origin.lat-z/EARTH_RADIUS_METRES*180/Math.PI;
+  const meanLat=((lat+origin.lat)/2)*Math.PI/180;
+  return {lat,lon:origin.lon+x/(EARTH_RADIUS_METRES*Math.cos(meanLat))*180/Math.PI};
+}
+function isMapsKeyReady(){
+  return GOOGLE_MAPS_API_KEY.trim()!=='' &&
+    !GOOGLE_MAPS_API_KEY.includes('PASTE_YOUR_');
+}
+
+
 
 // Complete 249-code ISO 3166-1 country/territory data. Names use the browser's
 // built-in Intl.DisplayNames, with overrides for clearer everyday English.
@@ -660,8 +780,14 @@ AFRAME.registerComponent('car-physics',{
     const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
     this.speed=0;this.steer=0;this.brakingWeight=0;this.heading=0;
     this.velocity.set(0,0,0);
-    this.el.object3D.position.set(country.roadSide==='left'?-2:2,0,82);
-    this.el.object3D.rotation.set(0,0,0);
+    if(activeMapMode==='google'&&activeRoute){
+      this.el.object3D.position.set(activeRoute.spawnX||0,activeRoute.spawnY||0,activeRoute.spawnZ||0);
+      this.heading=(activeRoute.heading||0)*Math.PI/180;
+      this.el.object3D.rotation.set(0,this.heading,0);
+    }else{
+      this.el.object3D.position.set(country.roadSide==='left'?-2:2,0,82);
+      this.el.object3D.rotation.set(0,0,0);
+    }
     this.updateSpeed();
   },
   updateSpeed(){
@@ -707,9 +833,10 @@ AFRAME.registerComponent('car-physics',{
     const dash=byId('instrument-panel');if(dash)dash.object3D.rotation.x=-this.brakingWeight*0.018;
     this.updateSpeed();
     const pos=this.el.object3D.position;
-    if(Math.abs(pos.x)>45||Math.abs(pos.z)>205){this.reset();showToast('Practice area boundary — reset');return}
+    const limit=activeMapMode==='google'?450:205;
+    if(Math.abs(pos.x)>limit||Math.abs(pos.z)>limit){this.reset();showToast('Practice area boundary — reset');return}
     // Basic collision response for the obstacle boxes (not rigid-body physics).
-    if(time-this.lastCollision>1000)for(const h of this.el.sceneEl.querySelectorAll('.hazard')){
+    if(activeMapMode!=='google'&&time-this.lastCollision>1000)for(const h of this.el.sceneEl.querySelectorAll('.hazard')){
       const hp=h.object3D.position;
       if(Math.abs(pos.x-hp.x)<1.6&&Math.abs(pos.z-hp.z)<2.2){
         this.speed=0;this.velocity.set(0,0,0);this.lastCollision=time;
@@ -862,6 +989,17 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
       <div id="country-start-options" class="country-results" role="listbox" aria-label="Country suggestions" hidden></div>
     </div>
     <p class="country-hint">Search by name or ISO code, then select a country.</p>
+    <details id="route-settings" class="route-settings">
+      <summary>Starting location <span class="muted-caption">(Google 3D optional)</span></summary>
+      <p id="route-caption">United Kingdom default: Borehamwood Test Centre, WD6 2BT.</p>
+      <div class="route-fields">
+        <label>Latitude <input id="route-lat" type="number" step="any" min="-90" max="90" inputmode="decimal" placeholder="51.64736"></label>
+        <label>Longitude <input id="route-lon" type="number" step="any" min="-180" max="180" inputmode="decimal" placeholder="-0.25260"></label>
+        <label>Approx. ground height (m) <input id="route-height" type="number" step="1" min="-420" max="9000" inputmode="numeric" placeholder="110"></label>
+        <label>Vehicle heading (°) <input id="route-heading" type="number" step="5" min="-360" max="360" inputmode="numeric" placeholder="0"></label>
+      </div>
+      <p class="route-disclaimer">Map mode requires a restricted API key. Vehicle height and heading must be calibrated manually; 3D imagery is not a drivable collision surface.</p>
+    </details>
     <button class="primary" id="start" type="button">
       <span>Enter Driving Practice</span><span class="arrow" aria-hidden="true">→</span>
     </button>
@@ -890,6 +1028,17 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
     </div>
   </div>
   <div id="toast" role="status" aria-live="polite"></div>
+  <div id="map-mode" class="map-mode" role="status">Practice environment</div>
+  <div id="map-credits" class="map-credits" hidden aria-label="Google Maps data attributions">
+    <strong>Google Maps</strong> · <span id="map-copyright"></span>
+  </div>
+  <div id="map-adjust" class="map-adjust" hidden>
+    <span>Road alignment (manual)</span>
+    <button id="map-raise" type="button" title="Move car up 0.5m">Height +</button>
+    <button id="map-lower" type="button" title="Move car down 0.5m">Height −</button>
+    <button id="map-turn-left" type="button" title="Turn starting direction 10 degrees left">Turn −</button>
+    <button id="map-turn-right" type="button" title="Turn starting direction 10 degrees right">Turn +</button>
+  </div>
   <div id="buttons" aria-label="Touch driving controls">
     <button data-drive="left" type="button">← Steer</button>
     <button data-drive="right" type="button">Steer →</button>
@@ -906,7 +1055,7 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
     <a-entity environment="preset: default; ground: flat; groundColor: #718b7b; dressingAmount: 0; skyType: color; skyColor: #bad9e7; lighting: none"></a-entity>
     <a-entity light="type: ambient; intensity: 1.15"></a-entity>
     <a-entity light="type: directional; intensity: 0.85" position="-12 22 5"></a-entity>
-    <a-entity practice-world></a-entity>
+    <a-entity id="practice-world" practice-world></a-entity>
 
     <a-entity id="car" position="-2 0 82" car-physics global-cockpit="country: GB">
       <!-- Chassis and dashboard shell are visible in the cockpit, hidden during mirror reflection. -->
@@ -949,7 +1098,7 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
       <a-plane id="rear-mirror" class="mirror-target" mirror-panel="label: Rearview; side: rear" position="0 1.68 -0.76" width="0.49" height="0.17"></a-plane>
 
       <!-- Native look-controls drives the central fuse raycaster for gaze checks. -->
-      <a-entity id="head" position="0.48 1.42 0.12" camera="near: 0.04; fov: 78" look-controls wasd-controls="enabled: false">
+      <a-entity id="head" position="0.48 1.42 0.12" camera="near: 0.04; fov: 78; far: 1200" look-controls wasd-controls="enabled: false">
         <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4" cursor="fuse: true; fuseTimeout: 650" geometry="primitive: ring; radiusInner: 0.003; radiusOuter: 0.005" material="shader: flat; color: #68f7d1" position="0 0 -0.45"></a-cursor>
       </a-entity>
       <a-entity laser-controls="hand: right" raycaster="objects: .mirror-target, .share-target; far: 5"></a-entity>
@@ -958,6 +1107,164 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
 </template>
 
 <script>
+
+function readActiveRoute(iso){
+  const preset=ROUTE_PRESETS[iso]||null;
+  const isSetupVisible=!byId('splash').hidden;
+  if(!isSetupVisible){
+    // On in-game country changes, use configured regional defaults only.
+    if(!preset)return null;
+    return {...preset,countryCode:iso,spawnX:0,spawnY:0,spawnZ:0};
+  }
+  const latitude=byId('route-lat').value.trim();
+  const longitude=byId('route-lon').value.trim();
+  if(latitude===''||longitude==='')return null;
+  const lat=Number(latitude),lon=Number(longitude);
+  const height=Number(byId('route-height').value||0);
+  const heading=Number(byId('route-heading').value||0);
+  if(!Number.isFinite(lat)||lat< -90||lat>90||
+     !Number.isFinite(lon)||lon< -180||lon>180||
+     !Number.isFinite(height)||height< -420||height>9000||
+     !Number.isFinite(heading)||Math.abs(heading)>360){
+    showToast('Invalid route coordinates');return null;
+  }
+  return {
+    id:preset?.id||('custom-'+iso),name:preset?.name||COUNTRIES[iso].name+' custom location',
+    lat,lon,height,heading,countryCode:iso,spawnX:0,spawnY:0,spawnZ:0
+  };
+}
+function mapMessage(message){
+  const el=byId('map-mode');if(el)el.textContent=message;
+}
+function showPracticeEnvironment(reason){
+  activeMapMode='practice';activeRoute=null;
+  const world=byId('practice-world');if(world)world.object3D.visible=true;
+  if(currentTileEntity){
+    // Destroy abandoned Google tile runtime instead of caching raw meshes.
+    currentTileEntity.removeAttribute('loader-3dtiles');
+    currentTileEntity.remove();currentTileEntity=null;
+  }
+  clearInterval(tilePollTimer);
+  byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
+  mapMessage(reason||'Practice environment');
+  byId('car')?.components['car-physics']?.reset();
+}
+function activateRouteFromSelection(iso){
+  const route=readActiveRoute(iso);
+  if(!isMapsKeyReady()){
+    showPracticeEnvironment('Practice road · 3D Maps key not configured');
+    return;
+  }
+  if(!route){
+    showPracticeEnvironment('Practice road · no real-world start coordinates for '+COUNTRIES[iso].name);
+    return;
+  }
+  if(!AFRAME.components['loader-3dtiles']){
+    showPracticeEnvironment('Practice road · 3D Tiles loader unavailable');
+    return;
+  }
+  // Record only route metadata for the current browser session. It is legal
+  // to reuse the mounted live tileset on reset; we never store map assets.
+  const sessionKey=iso+'|'+route.lat+'|'+route.lon+'|'+route.height;
+  let session=ROUTE_SESSION_HISTORY.get(sessionKey);
+  if(!session){
+    session={origin:Object.freeze({...route}),firstSelectedAt:Date.now(),selectionCount:0};
+    ROUTE_SESSION_HISTORY.set(sessionKey,session);
+  }
+  session.selectionCount+=1;
+  activeRoute={...session.origin};
+  if(currentTileEntity?.dataset.routeKey===sessionKey){
+    activeMapMode='google';
+    byId('practice-world').object3D.visible=false;
+    byId('map-adjust').hidden=false;
+    mapMessage('Google Maps · '+route.name+' (live session reused)');
+    byId('car').components['car-physics']?.reset();
+    return;
+  }
+  if(currentTileEntity){
+    // Do not hold previously unloaded route imagery in an offscreen cache.
+    currentTileEntity.removeAttribute('loader-3dtiles');
+    currentTileEntity.remove();currentTileEntity=null;
+    clearInterval(tilePollTimer);
+  }
+  activeMapMode='practice';
+  byId('practice-world').object3D.visible=true;
+  byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
+  mapMessage('Loading Google 3D Tiles near '+route.name+'…');
+  const tile=document.createElement('a-entity');
+  tile.id='google-3d-tiles';
+  tile.dataset.routeKey=sessionKey;
+  currentTileEntity=tile;
+  // Loader handles tile paging and Google's temporary tileset session.
+  // Set NO lat/long/height attributes: the NYT component's update method
+  // can otherwise perform an unnecessary second root load. Use the ready
+  // runtime.orientToGeocoord() API once instead.
+  scene.appendChild(tile);
+  tile.setAttribute('loader-3dtiles',{
+    url:'https://tile.googleapis.com/v1/3dtiles/root.json',
+    googleApiKey:GOOGLE_MAPS_API_KEY,
+    cameraEl:'#head',geoTransform:'Mercator',
+    maximumSSE:48,maximumMem:64
+  });
+  const requestedAt=Date.now();
+  clearInterval(tilePollTimer);
+  tilePollTimer=setInterval(()=>{
+    if(tile!==currentTileEntity){clearInterval(tilePollTimer);return}
+    const component=tile.components?.['loader-3dtiles'];
+    const runtime=component?.runtime;
+    if(runtime){
+      clearInterval(tilePollTimer);
+      try{
+        // WGS84 world origin -> local 3D metres at (0,0,0).
+        // Map orientation is loader-provided, not a hand-positioned mesh.
+        runtime.orientToGeocoord({
+          lat:activeRoute.lat,long:activeRoute.lon,height:activeRoute.height
+        });
+        if(typeof runtime.getDataAttributions!=='function')
+          throw Error('Loader does not expose required Google attribution data');
+        const credits=String(runtime.getDataAttributions()||'');
+        // Third-party attributions are dynamic. Do not display the map if
+        // attribution cannot be collected by this renderer.
+        if(!credits.trim())throw Error('Tile credits not available yet');
+        byId('map-copyright').textContent=credits;
+        byId('map-credits').hidden=false;
+        byId('practice-world').object3D.visible=false;
+        byId('map-adjust').hidden=false;
+        activeMapMode='google';
+        byId('car').components['car-physics']?.reset();
+        mapMessage('Google Maps · '+activeRoute.name+' · road alignment approximate');
+        // Surface live viewport provider credits, without inventing strings.
+        const creditTimer=setInterval(()=>{
+          if(tile!==currentTileEntity||activeMapMode!=='google'){
+            clearInterval(creditTimer);return;
+          }
+          const value=runtime.getDataAttributions();
+          if(value)byId('map-copyright').textContent=String(value);
+        },1500);
+      }catch(error){
+        console.warn('3D Tiles alignment/credits failed',error);
+        showPracticeEnvironment('Practice road · Google tile setup incomplete');
+      }
+    }else if(Date.now()-requestedAt>35000){
+      clearInterval(tilePollTimer);
+      showPracticeEnvironment('Practice road · Google tiles timed out or key rejected');
+    }
+  },350);
+}
+// Adjust only the USER vehicle's manually specified height/direction;
+// no programmatic probing/extraction of Google's mesh elevations.
+function adjustMapCar(heightStep,headingStep){
+  if(activeMapMode!=='google'||!activeRoute)return;
+  activeRoute.spawnY=Math.max(-30,Math.min(40,(activeRoute.spawnY||0)+heightStep));
+  activeRoute.heading=((activeRoute.heading||0)+headingStep+360)%360;
+  byId('car')?.components['car-physics']?.reset();
+  mapMessage('Google Maps · manual alignment: '+activeRoute.spawnY.toFixed(1)+'m, '+activeRoute.heading+'°');
+}
+byId('map-raise').addEventListener('click',()=>adjustMapCar(.5,0));
+byId('map-lower').addEventListener('click',()=>adjustMapCar(-.5,0));
+byId('map-turn-left').addEventListener('click',()=>adjustMapCar(0,-10));
+byId('map-turn-right').addEventListener('click',()=>adjustMapCar(0,10));
+
 // Both searchable inputs share one confirmed ISO country, never unvalidated text.
 const countryPickers=Object.create(null);
 const SUGGESTED_CODES=['GB','US','DE','NG','IN','AU','CA','JP','ZA','BR','FR','AE'];
@@ -982,8 +1289,15 @@ function populateResults(p,query){
       option.id=p.input.id+'-result-'+index;
       option.className='country-option';
       option.setAttribute('role','option');option.setAttribute('aria-selected','false');
-      const flag=document.createElement('span');
-      flag.className='flag';flag.textContent=countryFlag(country.iso);flag.setAttribute('aria-hidden','true');
+      const flag=document.createElement('img');
+      flag.className='flag';flag.src='https://flagcdn.com/w40/'+country.iso.toLowerCase()+'.png';
+      flag.width=27;flag.height=20;flag.loading='lazy';flag.decoding='async';
+      flag.alt='';flag.setAttribute('aria-hidden','true');
+      flag.addEventListener('error',()=>{
+        const fallback=document.createElement('span');fallback.className='flag-emoji';
+        fallback.textContent=countryFlag(country.iso);fallback.setAttribute('aria-hidden','true');
+        flag.replaceWith(fallback);
+      },{once:true});
       const name=document.createElement('span');name.className='country-name';name.textContent=country.name;
       const meta=document.createElement('span');meta.className='country-meta';meta.textContent=country.iso+' · '+country.drive;
       option.append(flag,name,meta);
@@ -998,18 +1312,33 @@ function populateResults(p,query){
 }
 function updatePickerDisplay(p,code){
   const c=COUNTRIES[code];if(!c)return;
-  p.selectedCode=code;p.input.value=countryFlag(code)+' '+c.name;
+  p.selectedCode=code;p.input.value=c.name;
+  // A text input cannot contain HTML: render the selected flag next to it.
+  if(!p.selectedFlag){
+    p.selectedFlag=document.createElement('img');
+    p.selectedFlag.className='selected-flag';p.selectedFlag.width=27;
+    p.selectedFlag.height=20;p.selectedFlag.alt='';
+    p.selectedFlag.setAttribute('aria-hidden','true');
+    p.input.parentElement.appendChild(p.selectedFlag);
+  }
+  p.selectedFlag.src='https://flagcdn.com/w40/'+code.toLowerCase()+'.png';
+  p.selectedFlag.onerror=()=>{p.selectedFlag.style.visibility='hidden'};
+  p.selectedFlag.onload=()=>{p.selectedFlag.style.visibility='visible'};
   p.input.setAttribute('aria-invalid','false');closePicker(p);
 }
 function configureCountry(code){
   if(!COUNTRIES[code])return;
   activeCountryCode=code;
   Object.values(countryPickers).forEach(p=>updatePickerDisplay(p,code));
+  if(typeof initRouteInputs==='function'&&byId('route-lat'))initRouteInputs(code);
   const car=byId('car');
   if(car){
     car.setAttribute('global-cockpit','country',code);
     car.components['global-cockpit']?.apply();
     car.components['car-physics']?.reset();
+    if(active&&scene){
+      activateRouteFromSelection(code);
+    }
   }
 }
 function setupCountryPicker(id){
@@ -1065,6 +1394,20 @@ try{
 }catch(error){console.debug('Defaulting country to United Kingdom',error)}
 setupCountryPicker('country-start');
 setupCountryPicker('country-live');
+// Initialize optional, manually configurable coordinates for the selected region.
+let coordinatesForRegion=null;
+function initRouteInputs(iso){
+  const preset=ROUTE_PRESETS[iso];
+  if(coordinatesForRegion===iso)return;
+  coordinatesForRegion=iso;
+  document.getElementById('route-caption').textContent=preset
+    ?preset.name+' (approximate origin; verify the on-road starting point).'
+    :'Enter a specific latitude and longitude to enable a real-world 3D location for this country.';
+  for(const [id,property] of [['route-lat','lat'],['route-lon','lon'],['route-height','height'],['route-heading','heading']]){
+    document.getElementById(id).value=preset?.[property]??'';
+  }
+}
+initRouteInputs(activeCountryCode);
 document.addEventListener('pointerdown',event=>{
   for(const p of Object.values(countryPickers))
     if(!event.target.closest('.country-picker'))closePicker(p);
@@ -1086,7 +1429,9 @@ byId('start').addEventListener('click',()=>{
     active=false;configureCountry(code);
     byId('splash').hidden=true;byId('app').hidden=false;
     scene=byId('scene-mount').querySelector('a-scene');
-    scene.resize?.();active=true;
+    scene.resize?.();
+    activateRouteFromSelection(code);
+    active=true;
   };
   if(!scene){
     const fragment=byId('scene-template').content.cloneNode(true);
