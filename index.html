@@ -74,7 +74,7 @@ h1 em{color:#41c78a;font-style:normal}
 #country-hud .selected-flag{top:11px;left:10px;width:24px;height:17px}
 #country-hud .picker::after{right:10px;top:6px;font-size:21px}
 #country-hud .suggestions{max-height:210px}
-#map-status{position:absolute;z-index:8;top:113px;left:15px;background:#0f172ae8;border:1px solid #334155;border-radius:10px;padding:7px 10px;color:#b4e6cb;font-size:11px;pointer-events:none;max-width:min(400px,90vw)}
+#map-status{position:absolute;z-index:8;top:160px;right:15px;background:#0f172ae8;border:1px solid #334155;border-radius:10px;padding:7px 10px;color:#b4e6cb;font-size:11px;pointer-events:none;max-width:min(400px,90vw)}
 #toast{position:fixed;z-index:18;left:50%;top:155px;transform:translateX(-50%);background:#087846;border:1px solid #5ee9a0;color:white;padding:9px 15px;border-radius:999px;box-shadow:0 9px 24px #0005;font-weight:800;opacity:0;transition:opacity .2s;pointer-events:none;text-align:center}
 #toast.show{opacity:1}
 #controls{position:absolute;z-index:10;bottom:max(56px,calc(env(safe-area-inset-bottom) + 52px));left:16px;right:110px;display:flex;flex-wrap:wrap;gap:8px;pointer-events:auto}
@@ -171,7 +171,7 @@ h1 em{color:#41c78a;font-style:normal}
   <div id="scene-mount">
     <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
     <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.6473487,-0.2523889,0" heading="19" tilt="84" range="12" fov="80" mode="hybrid"></gmp-map-3d>
+      <gmp-map-3d id="native-map" center="51.6473487,-0.2523889,0" heading="19" tilt="84" max-tilt="90" range="12" fov="80" mode="hybrid"></gmp-map-3d>
     </div>
   </div>
   <div id="hud" class="hud-card">
@@ -681,6 +681,11 @@ async function startGoogleMap(){
    if(!scene?.is('vr-mode'))setFallback(false);
    byId('map-help').hidden=false;
    status('Google 3D fixed reference · estimated center altitude '+selectedRoute.altitude+'m');
+   // Report the camera Google actually applied, in case it clamped our values.
+   const c=mapElement.center,fix=n=>Number(n??NaN).toFixed(1);
+   mapDebug('Applied camera: tilt '+fix(mapElement.tilt)+'° (max '+fix(mapElement.maxTilt)+
+     '), range '+fix(mapElement.range)+'m, center alt '+fix(c?.altitude)+'m, heading '+fix(mapElement.heading)+
+     '° → eye ≈ '+fix((c?.altitude||0)+mapElement.range*Math.cos(mapElement.tilt*Math.PI/180))+'m');
  };
  mapElement.addEventListener('gmp-steadychange',onSteady);
  try{
@@ -695,6 +700,8 @@ async function startGoogleMap(){
    // Map3D orbits a look-at point with the camera `range` metres behind it,
    // so place that point ahead of the start to keep the camera on the road.
    mapElement.center=lookAtAhead(selectedRoute,MAP_RANGE_METRES,84);
+   mapElement.maxTilt=90; // a lower default cap would lift the camera
+   mapElement.minAltitude=0;
    mapElement.range=MAP_RANGE_METRES;
    mapElement.tilt=84;
    mapElement.heading=selectedRoute.heading;
