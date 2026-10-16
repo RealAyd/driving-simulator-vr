@@ -209,7 +209,7 @@ h1 em{color:#41c78a;font-style:normal}
     <button id="finish-test" type="button">Finish Mock Test</button>
     <button id="share" type="button">Share</button>
   </div>
-  <div id="map-help" hidden>Google · <span id="map-credits">Map data</span> · <strong>visual reference only</strong></div>
+  <div id="map-help" hidden><span id="map-credits">Google</span> · <strong>visual reference only</strong></div>
 </div>
 <!-- Scene is not constructed until the user actually starts practice. -->
 <template id="driving-template">
@@ -289,8 +289,8 @@ const BOREHAMWOOD = Object.freeze({lat:51.6472476,lng:-0.252445,altitude:0,headi
 const CAR_Y = 0;
 const TILES_ROOT_URL='https://tile.googleapis.com/v1/3dtiles/root.json';
 const DRACO_DECODER_PATH='https://www.gstatic.com/draco/versioned/decoders/1.5.7/';
-// Lower = sharper close-up tiles but more downloads (Map Tiles API usage).
-const TILES_ERROR_TARGET=12;
+// Lower = sharper close-up tiles but more data downloaded per session.
+const TILES_ERROR_TARGET=6;
 const SKY_COLOR='#a9cbe3';
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
@@ -614,10 +614,27 @@ function placeTiles(tileset,route){
    .decompose(tileset.group.position,tileset.group.quaternion,tileset.group.scale);
  tileset.group.updateMatrixWorld(true);
 }
+// Photogrammetry textures already contain real sunlight, so draw them unlit
+// (the cockpit lights would wash them out) and with maximum anisotropic
+// filtering, which keeps the road sharp at a driver's grazing view angle.
+function prepareTileModel(model){
+ const anisotropy=scene?.renderer?.capabilities.getMaxAnisotropy()||1;
+ model.traverse(child=>{
+   const material=child.material;
+   if(!material||Array.isArray(material))return;
+   const map=material.map;
+   if(map){map.anisotropy=anisotropy;map.needsUpdate=true}
+   if(!material.isMeshBasicMaterial){
+     child.material=new THREE.MeshBasicMaterial({map,color:map?0xffffff:material.color});
+     material.dispose();
+   }
+ });
+}
 function updateCredits(){
  if(!tiles)return;
- const text=tiles.getAttributions().filter(a=>a.type==='string').map(a=>a.value).join(' · ');
- byId('map-credits').textContent=text||'Map data';
+ const text=[...new Set(tiles.getAttributions().filter(a=>a.type==='string')
+   .flatMap(a=>a.value.split(/[;,]/)).map(v=>v.trim()).filter(Boolean))].join(' · ');
+ byId('map-credits').textContent=text||'Google';
 }
 async function startGoogleMap(){
  if(!keyConfigured()){
@@ -648,7 +665,8 @@ async function startGoogleMap(){
      if(generation===mapActivation&&!googleMapReady)
        mapDebug('Root tileset loaded; streaming tiles around the start point.');
    });
-   tiles.addEventListener('load-model',()=>{
+   tiles.addEventListener('load-model',({scene:model})=>{
+     prepareTileModel(model);
      if(generation!==mapActivation||googleMapReady)return;
      googleMapReady=true;
      setFallback(false);
