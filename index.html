@@ -295,6 +295,8 @@ const DRACO_DECODER_PATH='https://www.gstatic.com/draco/versioned/decoders/1.5.7
 // Lower = sharper close-up tiles but more data downloaded per session.
 const TILES_ERROR_TARGET=6;
 const SKY_COLOR='#a9cbe3';
+// Shown in the status box so a stale cached page is easy to spot.
+const APP_BUILD='build 2026-10-16 · street-view-blend 2';
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
@@ -679,7 +681,7 @@ async function startGoogleMap(){
      byId('player-car').components['car-physics']?.reset();
      byId('map-help').hidden=false;
      status('Google 3D tiles · driver eye height on the road surface');
-     mapDebug('Tiles rendering inside the A-Frame scene.');
+     mapDebug('Tiles rendering inside the A-Frame scene · '+APP_BUILD);
    });
    setTimeout(()=>{
      if(generation===mapActivation&&!googleMapReady)
@@ -778,6 +780,12 @@ function streetViewLoader(){
    script.async=true;
    script.src='https://maps.googleapis.com/maps/api/js?key='+
      encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&v=weekly&loading=async';
+   // Google calls this if the key is refused for the Maps JavaScript API.
+   window.gm_authFailure=()=>{
+     const blend=byId('google-tiles')?.components['street-view-blend'];
+     if(blend)blend.failed=true;
+     mapDebug('Street View off: Google refused this key for the Maps JavaScript API (check API restrictions and website referrers).',true);
+   };
    script.onload=resolve;
    script.onerror=()=>reject(Error('Maps JavaScript API failed to load'));
    document.head.appendChild(script);
@@ -844,15 +852,23 @@ AFRAME.registerComponent('street-view-blend',{
      try{
        const {StreetViewPanorama,StreetViewService,StreetViewPreference,StreetViewSource,StreetViewStatus}=await streetViewLoader();
        this.service??=new StreetViewService();
+       mapDebug('Street View: looking for a photo near the car…');
+       let lookupError=null;
        const response=await this.service.getPanorama({
          location:sceneToLatLng(selectedRoute,at.x,at.z),
          radius:this.data.searchRadius,
          preference:StreetViewPreference.NEAREST,
          sources:[StreetViewSource.OUTDOOR]
-       }).catch(()=>null);
+       }).catch(error=>{lookupError=error;return null});
        this.lookupAt=at;
        this.panoId=response?.data?.location?.pano||null;
-       if(!this.panoId){this.panoReady=false;return}
+       if(!this.panoId){
+         this.panoReady=false;
+         const code=lookupError?.code||lookupError?.message||'no result';
+         mapDebug(code==='ZERO_RESULTS'?'Street View: no photo within '+this.data.searchRadius+' m of the car.'
+           :'Street View lookup failed: '+code,code!=='ZERO_RESULTS');
+         return;
+       }
        if(!this.panorama){
          this.panorama=new StreetViewPanorama(this.layer,{
            pano:this.panoId,visible:true,disableDefaultUI:true,clickToGo:false,
@@ -869,10 +885,13 @@ AFRAME.registerComponent('street-view-blend',{
          });
          setTimeout(()=>{listener.remove();resolve(false)},6000);
        });
+       mapDebug(this.panoReady?'Street View photo ready · '+APP_BUILD
+         :'Street View photo did not load (status '+this.panorama.getStatus()+').',!this.panoReady);
      }catch(error){
        // Missing Maps JavaScript API access: keep driving on 3D tiles only.
        this.failed=true;
        console.warn('[Driving Practice VR] Street View blend unavailable',error);
+       mapDebug('Street View off: '+(error?.message||error),true);
      }finally{this.lookup=null}
    })();
  },
