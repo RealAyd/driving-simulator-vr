@@ -171,7 +171,7 @@ h1 em{color:#41c78a;font-style:normal}
   <div id="scene-mount">
     <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
     <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.64736,-0.25260,24" heading="0" tilt="84" range="45" fov="80" mode="hybrid"></gmp-map-3d>
+      <gmp-map-3d id="native-map" center="51.64736,-0.25260,0" heading="0" tilt="84" range="12" fov="80" mode="hybrid"></gmp-map-3d>
     </div>
   </div>
   <div id="hud" class="hud-card">
@@ -297,10 +297,11 @@ h1 em{color:#41c78a;font-style:normal}
 // Public GitHub Pages source: insert ONLY a referrer-restricted browser key.
 // Enable Maps JavaScript API, NOT just Map Tiles API.
 const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
-// Requested 24m map center is a calibration estimate, not surveyed road height.
-const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:24});
+// Map3D center altitude is metres above ground; 0 + 12m range at 84° tilt
+// puts the Google camera at ~1.25m, roughly driver eye height.
+const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:0});
 const CAR_Y = 0;
-const MAP_RANGE_METRES = 45;
+const MAP_RANGE_METRES = 12;
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
@@ -723,7 +724,7 @@ function readRoute(){
  let record=ROUTE_SESSION_HISTORY.get(key);
  if(!record){
    record=Object.freeze({
-     country:activeCountryCode,lat,lng,altitude:activeCountryCode==='GB'?BOREHAMWOOD.altitude:100,
+     country:activeCountryCode,lat,lng,altitude:activeCountryCode==='GB'?BOREHAMWOOD.altitude:0,
      name:activeCountryCode==='GB'?'Borehamwood Driving Test Centre':country.name
    });
    ROUTE_SESSION_HISTORY.set(key,record);
