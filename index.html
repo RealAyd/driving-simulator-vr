@@ -154,10 +154,10 @@ h1 em{color:#41c78a;font-style:normal}
   <p class="tiny">Start typing to filter countries · use ↑ ↓ and Enter to choose.</p>
   <details class="details">
     <summary>Optional map starting point</summary>
-    <p>UK default: Borehamwood Driving Test Centre (51.64736, -0.25260). Other countries need coordinates for a location-specific map.</p>
+    <p>UK default: Stirling Way outside Borehamwood Driving Test Centre (51.6472476, -0.252445). Other countries need coordinates for a location-specific map.</p>
     <div class="coord-grid">
-      <label>Latitude<input id="start-lat" inputmode="decimal" type="number" step="any" min="-90" max="90" value="51.64736"></label>
-      <label>Longitude<input id="start-lng" inputmode="decimal" type="number" step="any" min="-180" max="180" value="-0.25260"></label>
+      <label>Latitude<input id="start-lat" inputmode="decimal" type="number" step="any" min="-90" max="90" value="51.6472476"></label>
+      <label>Longitude<input id="start-lng" inputmode="decimal" type="number" step="any" min="-180" max="180" value="-0.252445"></label>
     </div>
     <p>The background is a separate 3D reference, not a collision-calibrated VR environment.</p>
   </details>
@@ -171,7 +171,7 @@ h1 em{color:#41c78a;font-style:normal}
   <div id="scene-mount">
     <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
     <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.64736,-0.25260,0" heading="0" tilt="84" range="12" fov="80" mode="hybrid"></gmp-map-3d>
+      <gmp-map-3d id="native-map" center="51.6473487,-0.2523889,0" heading="19" tilt="84" range="12" fov="80" mode="hybrid"></gmp-map-3d>
     </div>
   </div>
   <div id="hud" class="hud-card">
@@ -299,7 +299,9 @@ h1 em{color:#41c78a;font-style:normal}
 const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
 // Map3D center altitude is metres above ground; 0 + 12m range at 84° tilt
 // puts the Google camera at ~1.25m, roughly driver eye height.
-const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:0});
+// Start is the driver's eye position on Stirling Way (Street View capture
+// point); heading 19° follows the road north-east past the test centre.
+const BOREHAMWOOD = Object.freeze({lat:51.6472476,lng:-0.252445,altitude:0,heading:19});
 const CAR_Y = 0;
 const MAP_RANGE_METRES = 12;
 const TURN_SEQUENCE_WINDOW_MS=15000;
@@ -645,7 +647,7 @@ function mapsLoader(){
      ]);
    }
    if(!customElements.get('gmp-map-3d'))throw Error('gmp-map-3d not registered');
-   console.log("3D Map Viewport element loaded at targets:", 51.64736, -0.25260);
+   console.log("3D Map Viewport element loaded at targets:", BOREHAMWOOD.lat, BOREHAMWOOD.lng);
    mapDebug('Native gmp-map-3d component registered.');
  }).catch(error=>{mapsPromise=null;throw error});
  return mapsPromise;
@@ -690,12 +692,12 @@ async function startGoogleMap(){
    if(bounds.width<20||bounds.height<20)throw Error('Native map viewport has no visible dimensions');
    mapDebug('Native map viewport '+Math.round(bounds.width)+'×'+Math.round(bounds.height)+' pixels');
    mapElement.mode='HYBRID'; // Required or the 3D map can remain blank.
-   mapElement.center={
-     lat:selectedRoute.lat,lng:selectedRoute.lng,altitude:selectedRoute.altitude
-   };
+   // Map3D orbits a look-at point with the camera `range` metres behind it,
+   // so place that point ahead of the start to keep the camera on the road.
+   mapElement.center=lookAtAhead(selectedRoute,MAP_RANGE_METRES,84);
    mapElement.range=MAP_RANGE_METRES;
    mapElement.tilt=84;
-   mapElement.heading=0;
+   mapElement.heading=selectedRoute.heading;
    mapElement.fov=80;
    mapDebug('Google Map calibration: tilt 84°, range '+MAP_RANGE_METRES+'m, target altitude '+selectedRoute.altitude+'m (estimate).');
    // A stalled steady event does not prove the map failed. Use Map Only
@@ -712,6 +714,17 @@ async function startGoogleMap(){
    showMapsError('Google Maps unavailable · check API key / domain / billing');
  }
 }
+function lookAtAhead(route,range,tilt){
+ const ahead=range*Math.sin(THREE.MathUtils.degToRad(tilt));
+ const bearing=THREE.MathUtils.degToRad(route.heading);
+ const metresPerDegLat=111320;
+ const metresPerDegLng=111320*Math.cos(THREE.MathUtils.degToRad(route.lat));
+ return {
+   lat:route.lat+ahead*Math.cos(bearing)/metresPerDegLat,
+   lng:route.lng+ahead*Math.sin(bearing)/metresPerDegLng,
+   altitude:route.altitude
+ };
+}
 function readRoute(){
  const latText=byId('start-lat').value.trim();
  const lngText=byId('start-lng').value.trim();
@@ -725,6 +738,7 @@ function readRoute(){
  if(!record){
    record=Object.freeze({
      country:activeCountryCode,lat,lng,altitude:activeCountryCode==='GB'?BOREHAMWOOD.altitude:0,
+     heading:lat===BOREHAMWOOD.lat&&lng===BOREHAMWOOD.lng?BOREHAMWOOD.heading:0,
      name:activeCountryCode==='GB'?'Borehamwood Driving Test Centre':country.name
    });
    ROUTE_SESSION_HISTORY.set(key,record);
