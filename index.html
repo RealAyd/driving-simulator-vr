@@ -171,7 +171,7 @@ h1 em{color:#41c78a;font-style:normal}
   <div id="scene-mount">
     <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
     <div id="map-container">
-      <gmp-map-3d id="native-map" center="51.64736,-0.25260,108" heading="0" tilt="65" range="200" fov="80" mode="hybrid"></gmp-map-3d>
+      <gmp-map-3d id="native-map" center="51.64736,-0.25260,108" heading="0" tilt="82" range="50" fov="80" mode="hybrid"></gmp-map-3d>
     </div>
   </div>
   <div id="hud" class="hud-card">
@@ -284,12 +284,12 @@ h1 em{color:#41c78a;font-style:normal}
       </a-plane>
       <a-text id="country-label" value="UNITED KINGDOM | RHD" width="1.7" align="center" position="0 -.25 -1.52" color="#a7d6e7"></a-text>
     </a-entity>
-    <a-box position="-1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
-    <a-box position="1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
-    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror; side: left" position="-1.12 1.34 -.69" rotation="0 25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
-    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.34 -.69" rotation="0 -25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
-    <a-box position="0 1.69 -.75" width=".55" height=".23" depth=".055" color="#273f52" scale=".85 .85 .85"></a-box>
-    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.68 -.7" width=".47" height=".16" scale=".85 .85 .85" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-box position="-1.1 1.10 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
+    <a-box position="1.1 1.10 -.76" width=".44" height=".27" depth=".08" color="#18364b" scale=".85 .85 .85"></a-box>
+    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror; side: left" position="-1.12 1.12 -.69" rotation="0 25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.12 -.69" rotation="0 -25 0" width=".36" height=".21" scale=".85 .85 .85" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-box position="0 1.56 -.75" width=".55" height=".23" depth=".055" color="#273f52" scale=".85 .85 .85"></a-box>
+    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.55 -.7" width=".47" height=".16" scale=".85 .85 .85" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
     <a-camera id="camera" position="0 1.2 0"
               camera="near: .05; far: 2500; fov: 80"
               look-controls="pointerLockEnabled: true" wasd-controls="enabled: false">
@@ -312,7 +312,7 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
 // Requested 108m map center is a calibration estimate, not surveyed road height.
 const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:108});
 const CAR_Y = 0;
-const MAP_RANGE_METRES = 200;
+const MAP_RANGE_METRES = 50;
 const TURN_SEQUENCE_WINDOW_MS=15000;
 const MSM_MIRROR_WINDOW_MS=2000;
 const STRICT_REPEAT_CATEGORY_THRESHOLD=3; // simulator heuristic, not DVSA fixed regulation.
@@ -691,10 +691,10 @@ async function startGoogleMap(){
      lat:selectedRoute.lat,lng:selectedRoute.lng,altitude:selectedRoute.altitude
    };
    mapElement.range=MAP_RANGE_METRES;
-   mapElement.tilt=65;
+   mapElement.tilt=82;
    mapElement.heading=0;
    mapElement.fov=80;
-   mapDebug('Google Map fixed reference: tilt 65°, range 200m, FOV 80°.');
+   mapDebug('Google Map calibration: tilt 82°, range 50m, target altitude 108m (estimate).');
    // A stalled steady event does not prove the map failed. Use Map Only
    // to differentiate a stalled map renderer from an opaque A-Frame layer.
    setTimeout(()=>{
@@ -749,7 +749,7 @@ AFRAME.registerComponent('car-physics',{
  reset(){
    const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
    this.speed=0;this.heading=0;this.steer=0;this.velocity.set(0,0,0);
-   this.priorTurn=0;this.lastTurnEvaluationAt=-Infinity;
+   this.manoeuvreZone=null;this.manoeuvreAssessed=false;this.straightSince=null;
    this.el.components['turn-signals']?.resetExercise();
    const laneX=googleMapReady?0:(country.roadSide==='left'?-1.8:1.8);
    this.el.object3D.position.set(laneX,CAR_Y,0);
@@ -769,16 +769,28 @@ AFRAME.registerComponent('car-physics',{
    const signals=this.el.components['turn-signals'];
    const indicatedDirection=signals?.side;
    const turnSide=turn>0?'left':turn<0?'right':null;
-   const inMockJunction=JUNCTION_EVALUATION_ZONES.some(z=>
+   const junction=JUNCTION_EVALUATION_ZONES.find(z=>
       Math.abs(this.el.object3D.position.z-z)<14&&
-      Math.abs(this.el.object3D.position.x)<12);
-   if(turnSide&&turn!==this.priorTurn&&this.speed>.75&&
-      (inMockJunction||indicatedDirection)&&
-      time-this.lastTurnEvaluationAt>1700){
-     this.lastTurnEvaluationAt=time;
+      Math.abs(this.el.object3D.position.x)<12)??null;
+   // One assessment per junction visit, including repeated key presses.
+   // Away from junctions, two seconds of neutral steering rearm assessment.
+   if(junction!==this.manoeuvreZone){
+     this.manoeuvreZone=junction;
+     this.manoeuvreAssessed=false;
+     this.straightSince=null;
+   }
+   if(!turnSide){
+     if(this.straightSince===null)this.straightSince=time;
+     if(junction===null&&time-this.straightSince>=2000)
+       this.manoeuvreAssessed=false;
+   }else{
+     this.straightSince=null;
+   }
+   if(turnSide&&!this.manoeuvreAssessed&&this.speed>.75&&
+      (junction!==null||indicatedDirection)){
+     this.manoeuvreAssessed=true;
      signals?.evaluateTurn(turnSide);
    }
-   this.priorTurn=turn;
    this.steer=THREE.MathUtils.damp(this.steer,turn,6,dt);
    this.speed=clamp(this.speed+(3.3*go-9.3*brake-(.18+.014*this.speed*this.speed))*dt,0,14);
    const angularSpeed=this.steer*this.speed/(3.4+.35*this.speed);
@@ -829,7 +841,7 @@ AFRAME.registerComponent('global-cockpit',{
    set('instrument-panel','position',{x:0,y:.19,z:-1.48});
    set('mirror-left','rotation',{x:0,y:THREE.MathUtils.radToDeg(Math.atan2(x+1.1,.92)),z:0});
    set('mirror-right','rotation',{x:0,y:THREE.MathUtils.radToDeg(Math.atan2(x-1.1,.92)),z:0});
-   set('mirror-rear','position',{x:x*.22,y:1.68,z:-.7});
+   set('mirror-rear','position',{x:x*.22,y:1.55,z:-.7});
    set('mirror-rear','rotation',{x:0,y:x*24,z:0});
    set('country-label','value',country.name.toUpperCase().slice(0,26)+' | '+country.drive);
    updateSpeed(this.el.components['car-physics']?.speed||0);
@@ -892,10 +904,16 @@ class UkMockScore{
    }
    return event;
  }
- recordSerious(reason){
-   if(this.finished)return;
+ recordSerious(reason,incidentKey){
+   if(this.finished)return null;
+   if(incidentKey&&this.incidents.has(incidentKey))return null;
+   if(incidentKey)this.incidents.add(incidentKey);
    this.seriousFaults++;this.failed=true;
    this.failureReason=reason||'TEST FAILED: Serious fault';
+   const event={category:'serious',reason:this.failureReason,
+     incidentKey:incidentKey||null,at:Date.now()};
+   this.log.push(event);
+   return event;
  }
  recordDangerous(reason){
    if(this.finished)return;
@@ -1097,18 +1115,38 @@ AFRAME.registerComponent('turn-signals',{
       showTestFault(result.reason);
       if(activeCountryCode==='GB'&&!ukMockScore.finished){
         const missingSignal=this.side!==side||!this.signalAt;
+        const missedBlind=!this.blind[side]||
+          this.blind[side]<=this.signalAt||
+          now-this.blind[side]>TURN_SEQUENCE_WINDOW_MS;
         const missedMirror=!this.mirrorBeforeSignal||
           this.mirrorBeforeSignal>this.signalAt||
           this.signalAt-this.mirrorBeforeSignal>MSM_MIRROR_WINDOW_MS;
-        // No double count for a signal-timing fault logged at activation.
-        if(!this.signalTimingFaultRecorded){
-          const incidentId='turn-'+this.lastEvaluation.at+'-'+side;
-          if(missingSignal)
-            recordUkPracticeFault('signal','Signals - Necessary signal omitted before '+side+' turn.',incidentId);
-          else if(missedMirror)
-            recordUkPracticeFault('mirror','Mirrors - Change direction: mirror check missed before '+side+' turn.',incidentId);
-          else
-            recordUkPracticeFault('mirror','Observation - Blind spot check omitted before '+side+' turn.',incidentId);
+        const incidentId='turn-'+this.lastEvaluation.at+'-'+side;
+        // STRICT TRAINING MODE ONLY: this is NOT automatic official DVSA
+        // grading. evaluateTurn() is triggered on deliberate practice
+        // junction turns or when the user intentionally signals, not on
+        // ordinary steering adjustments.
+        if(missingSignal||missedBlind){
+          const reason=missingSignal?
+            'Strict mock: '+side+' turn without correct indicator.':
+            'Strict mock: '+side+' turn without a recent shoulder check.';
+          const event=ukMockScore.recordSerious(reason,incidentId);
+          if(event){
+            paintUkMockScore();
+            toast('SERIOUS FAULT (strict practice): '+side+' turn');
+          }
+        }else if(!this.signalTimingFaultRecorded){
+          // Any mirror-timing minor already logged at signal activation is
+          // NOT recorded a second time on the subsequent maneuver.
+          if(missedMirror){
+            recordUkPracticeFault('mirror',
+              'Mirrors - Change direction: mirror check missed before '+side+' turn.',
+              incidentId);
+          }else if(now-this.signalAt>TURN_SEQUENCE_WINDOW_MS){
+            recordUkPracticeFault('signal',
+              'Signals - Incorrect Timing: signalled too early for '+side+' turn.',
+              incidentId);
+          }
         }
       }
     }
@@ -1320,5 +1358,6 @@ console.warn('The native Google 3D background is visual only; A-Frame drives on 
 </script>
 </body>
 </html>
+
 
 
