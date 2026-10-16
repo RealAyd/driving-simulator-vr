@@ -3,684 +3,252 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#faf5eb">
-<meta name="description" content="VR driving practice with country-specific cockpits and optional photorealistic 3D streets.">
-<title>Driving Practice VR | Global Cockpit</title>
-<!-- Only external dependencies: A-Frame 1.6.0 and the Environment component. -->
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Driving Practice VR: country-aware cockpit and native Google 3D Maps reference with a reliable WebXR practice fallback.">
+<title>Driving Practice VR — Global Cockpit</title>
+<!-- Only A-Frame is required at page load. The official Google Maps JS API
+     (https://maps.googleapis.com/maps/api/js) loads ON DEMAND after Start.
+     This avoids both the NYT 3D Tiles / Three.js incompatibility and billing
+     map sessions for visitors who have not yet started. Flags use FlagCDN. -->
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-<script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
-<!-- NYT 3D Tiles component pinned to v1.0.6 from unpkg.
-     Remove obsolete three/examples/js scripts: they do not exist in modern Three. -->
-<script src="https://unpkg.com/aframe-loader-3dtiles-component@1.0.6/dist/aframe-loader-3dtiles-component.min.js"></script>
 <style>
-/* Driving Practice UI: slate + emerald, built with system fonts and zero extra assets. */
-:root {
-  color-scheme: dark;
-  --bg: #0f172a;
-  --surface: #111827;
-  --surface-raised: #182337;
-  --surface-input: #0b1323;
-  --line: #334155;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --teal: #0d9488;
-  --teal-hover: #14b8a6;
-  --teal-focus: rgba(45,212,191,.28);
-}
-*, *::before, *::after {box-sizing:border-box}
-html,body {width:100%;height:100%;margin:0}
-body {
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  font-size:15px;
-  line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-button,select,input {font:inherit}
-button {cursor:pointer}
-button:focus-visible,select:focus-visible,input:focus-visible {
-  outline:3px solid var(--teal-focus);
-  outline-offset:3px;
-}
-button:disabled {opacity:.65;cursor:progress}
-
-/* Display a fully styled welcome surface before a-scene gets mounted. */
-#splash {
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:grid;
-  place-items:center;
-  overflow:auto;
-  padding:clamp(18px,4vw,40px);
-  padding-top:max(18px,env(safe-area-inset-top));
-  padding-bottom:max(18px,env(safe-area-inset-bottom));
-  background:
-    radial-gradient(ellipse 55% 38% at 50% 7%,rgba(20,184,166,.11),transparent 80%),
-    #0f172a;
-}
-#splash[hidden] {display:none}
-.card {
-  width:min(100%,520px);
-  margin:0 auto;
-  padding:clamp(24px,5vw,44px);
-  border:1px solid rgba(100,116,139,.42);
-  border-radius:24px;
-  background:rgba(17,24,39,.96);
-  box-shadow:0 30px 85px rgba(2,6,23,.42),inset 0 1px 0 rgba(255,255,255,.045);
-}
-.brand {
-  display:flex;
-  align-items:center;
-  gap:13px;
-  margin-bottom:32px;
-}
-.brand-mark {
-  display:grid;
-  place-items:center;
-  flex:none;
-  width:44px;
-  height:44px;
-  border-radius:13px;
-  background:var(--teal);
-  color:#fff;
-  font-size:15px;
-  font-weight:850;
-  letter-spacing:-.07em;
-}
-.brand-name {
-  margin:0;
-  color:#fff;
-  font-size:15px;
-  font-weight:800;
-  line-height:1.2;
-  letter-spacing:-.025em;
-}
-.brand-subtitle {
-  display:block;
-  margin-top:3px;
-  color:var(--muted);
-  font-size:12px;
-  font-weight:550;
-  letter-spacing:.02em;
-}
-.eyebrow {
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  color:#5eead4;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.13em;
-  text-transform:uppercase;
-}
-.eyebrow::before {
-  content:"";
-  width:7px;height:7px;
-  border-radius:50%;
-  background:#2dd4bf;
-  box-shadow:0 0 0 4px rgba(45,212,191,.13);
-}
-h1 {
-  margin:15px 0 13px;
-  color:#fff;
-  font-size:clamp(30px,4.6vw,42px);
-  font-weight:800;
-  line-height:1.14;
-  letter-spacing:-.045em;
-}
-.lead {
-  margin:0 0 27px;
-  max-width:41ch;
-  color:#b6c3d4;
-  font-size:15px;
-  line-height:1.7;
-}
-label {
-  display:block;
-  margin:0 0 9px;
-  color:#e2e8f0;
-  font-size:13px;
-  font-weight:750;
-}
-.select-wrap {position:relative}
-.select-wrap::after {
-  content:"";
-  position:absolute;
-  top:50%;right:19px;
-  width:9px;height:9px;
-  border-right:2px solid #cbd5e1;
-  border-bottom:2px solid #cbd5e1;
-  transform:translateY(-68%) rotate(45deg);
-  pointer-events:none;
-}
-select {
-  display:block;
-  width:100%;
-  min-height:52px;
-  padding:13px 43px 13px 16px;
-  border:1px solid #334155;
-  border-radius:12px;
-  background:#0b1323;
-  color:#f8fafc;
-  appearance:none;
-  -webkit-appearance:none;
-  font-size:14px;
-  font-weight:600;
-  line-height:1.4;
-  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
-}
-select:hover {border-color:#64748b}
-select:focus {border-color:#2dd4bf;box-shadow:0 0 0 4px rgba(20,184,166,.1)}
-option {background:#111827;color:#f8fafc}
-.primary {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:11px;
-  width:100%;
-  min-height:54px;
-  margin-top:18px;
-  padding:14px 24px;
-  border:1px solid transparent;
-  border-radius:999px;
-  background:#0d9488;
-  color:#fff;
-  font-weight:800;
-  font-size:15px;
-  letter-spacing:-.01em;
-  box-shadow:0 5px 17px rgba(13,148,136,.17);
-  transition:background-color .2s ease,transform .2s ease,box-shadow .2s ease;
-}
-.primary:hover:not(:disabled) {
-  background:#14b8a6;
-  transform:translateY(-1px);
-  box-shadow:0 9px 25px rgba(20,184,166,.22);
-}
-.primary:active:not(:disabled) {transform:translateY(0);box-shadow:0 3px 9px rgba(13,148,136,.18)}
-.primary .arrow {font-size:21px;line-height:1;transition:transform .2s ease}
-.primary:hover .arrow {transform:translateX(3px)}
-.feature-row {
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:8px 14px;
-  margin:21px 0 0;
-  padding:0;
-  list-style:none;
-  color:#94a3b8;
-  font-size:12px;
-  font-weight:600;
-}
-.feature-row li::before {content:"✓";margin-right:6px;color:#2dd4bf;font-weight:900}
-.card-footer {
-  margin-top:25px;
-  padding-top:20px;
-  border-top:1px solid rgba(100,116,139,.24);
-}
-.help {
-  margin:0;
-  color:#94a3b8;
-  font-size:12px;
-  line-height:1.75;
-}
-.help+.help {margin-top:10px}
-#load-status {color:#5eead4}
-
-/* Compact SaaS-style HUD over the A-Frame canvas. */
-#app {position:fixed;inset:0}
-#app[hidden] {display:none}
-#scene-mount {position:absolute;inset:0;width:100%;height:100%}
-a-scene {width:100%;height:100%}
-#overlay {
-  position:absolute;
-  z-index:5;
-  top:max(14px,env(safe-area-inset-top));
-  right:16px;
-  left:16px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  pointer-events:none;
-}
-.hud {
-  border:1px solid rgba(100,116,139,.4);
-  border-radius:16px;
-  background:rgba(15,23,42,.91);
-  box-shadow:0 10px 32px rgba(2,6,23,.15);
-  padding:12px 15px;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-}
-.hud strong {color:#f8fafc;letter-spacing:.04em;font-size:12px;font-weight:850}
-#speed {font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.35}
-#status {max-width:260px;color:#cbd5e1;font-size:12px}
-.hud label {margin:0 0 6px;font-size:12px}
-#country-live {
-  width:min(100%,230px);
-  min-width:190px;
-  min-height:39px;
-  margin:0;
-  padding:8px 34px 8px 11px;
-  font-size:12px;
-  pointer-events:auto;
-}
-.hud:has(#country-live) {position:relative}
-.hud:has(#country-live)::after {
-  content:"";
-  position:absolute;
-  right:28px;
-  top:47px;
-  width:7px;height:7px;
-  border-right:2px solid #cbd5e1;border-bottom:2px solid #cbd5e1;
-  transform:rotate(45deg);
-  pointer-events:none;
-}
-#share-fallback {
-  border:1px solid var(--line);
-  border-radius:8px;
-  padding:8px;
-  background:#0b1323;
-  color:#fff;
-}
-#toast {
-  position:fixed;
-  z-index:10;
-  top:111px;left:50%;
-  transform:translateX(-50%);
-  width:max-content;max-width:92vw;
-  padding:10px 20px;
-  border:1px solid #4adea1;
-  border-radius:999px;
-  background:#065f46;
-  box-shadow:0 8px 28px rgba(2,6,23,.3);
-  color:#eafff3;
-  font-weight:800;
-  text-align:center;
-  opacity:0;
-  transition:opacity .18s ease;
-  pointer-events:none;
-}
-#toast.show {opacity:1}
-#buttons {
-  position:absolute;
-  z-index:5;
-  bottom:max(20px,env(safe-area-inset-bottom));
-  left:18px;right:80px;
-  display:flex;flex-wrap:wrap;gap:9px;
-}
-#buttons button {
-  touch-action:none;
-  min-width:70px;
-  padding:11px 15px;
-  border:1px solid rgba(148,163,184,.4);
-  border-radius:999px;
-  background:rgba(15,23,42,.9);
-  color:#f8fafc;
-  font-weight:700;
-  transition:background-color .18s ease,border-color .18s ease;
-}
-#buttons button:hover {background:rgba(15,118,110,.92);border-color:#2dd4bf}
-#buttons button:active {background:#0d9488}
-@media(max-width:650px) {
-  #splash {padding:16px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}
-  .card {width:100%;max-width:440px;padding:27px 23px;border-radius:20px}
-  .brand {margin-bottom:25px}
-  h1 {font-size:clamp(29px,8vw,37px)}
-  .lead {font-size:14px;margin-bottom:23px}
-  .feature-row {gap:5px 10px;font-size:11px}
-  #overlay {left:12px;right:12px;gap:8px;align-items:stretch}
-  .hud {padding:9px 10px;border-radius:13px;min-width:0;flex:1}
-  .hud strong {font-size:10px}
-  #speed {font-size:20px}
-  .hud label {font-size:10px}
-  #country-live {width:100%;min-width:0;min-height:36px;padding-left:8px;font-size:11px}
-  .hud:has(#country-live)::after {right:19px;top:42px}
-  #status {display:none}
-  #toast {top:110px;white-space:normal}
-  #buttons {left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));justify-content:center;gap:7px}
-  #buttons button {min-width:0;padding:10px 13px;font-size:12px}
-}
-@media(max-width:380px) {
-  .card {padding:22px 18px}
-  .brand {margin-bottom:21px}
-  .hud {padding:8px}
-  #country-live {font-size:10px}
-  #buttons button {padding:9px 10px}
-}
-@media(prefers-reduced-motion:reduce) {
-  .primary,.primary .arrow,#buttons button,#toast,select {transition:none}
-  .primary:hover:not(:disabled) {transform:none}
-}
-
-/* Accessible searchable ISO country picker with native Unicode flag emojis. */
-.select-wrap.country-picker::after,.hud:has(#country-live)::after{content:none}
-.country-picker{position:relative;min-width:0;pointer-events:auto}
-.country-picker::before{content:"⌕";position:absolute;z-index:1;right:15px;top:25px;transform:translateY(-50%);font-size:23px;color:#94a3b8;pointer-events:none}
-.country-search,#country-live.country-search{width:100%;min-width:0;min-height:52px;display:block;padding:12px 43px 12px 15px;border:1px solid #334155;border-radius:12px;background:#0b1323;color:#f8fafc;font-size:14px;font-weight:650;text-overflow:ellipsis;pointer-events:auto}
-.country-search::placeholder{color:#94a3b8;opacity:1}
-.country-search:hover{border-color:#64748b}
-.country-search:focus{outline:none;border-color:#2dd4bf;box-shadow:0 0 0 4px rgba(20,184,166,.12)}
-.country-search[aria-invalid="true"]{border-color:#fb7185}
-.country-results{position:absolute;z-index:90;left:0;right:0;top:calc(100% + 7px);max-height:min(315px,45vh);overflow:auto;overscroll-behavior:contain;padding:5px;border:1px solid #334155;border-radius:14px;background:#111827;box-shadow:0 18px 50px #020617aa;scrollbar-color:#475569 #111827;pointer-events:auto}
-.country-results[hidden]{display:none}
-.country-option{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;border:0;border-radius:9px;background:transparent;color:#f8fafc;text-align:left;font:inherit;font-size:13px;cursor:pointer}
-.country-option:hover,.country-option.active,.country-option:focus-visible{background:#164e4a;outline:none}
-.country-option .flag{flex:none;font-size:21px;line-height:1.2;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
-.country-option .country-name{flex:1;min-width:0;overflow-wrap:anywhere}
-.country-option .country-meta{flex:none;font-size:11px;color:#94a3b8;font-weight:700}
-.country-empty{padding:15px 12px;color:#94a3b8;font-size:13px}
-.country-hint{font-size:11px;color:#94a3b8;margin:7px 0 0}
-.hud .country-picker{width:min(100%,250px)}
-#country-live.country-search{min-width:0;width:100%;min-height:39px;padding:8px 33px 8px 11px;font-size:12px}
-.hud .country-picker::before{top:19px;right:11px;font-size:18px}
-.hud .country-results{right:0;left:auto;width:max(100%,265px)}
-@media(max-width:650px){.hud .country-picker{width:100%}.hud .country-results{min-width:230px;max-width:calc(100vw - 24px)}#country-live.country-search{min-height:36px;font-size:11px;padding:7px 26px 7px 8px}.country-option{padding:10px 9px;gap:7px}.country-option .flag{font-size:19px}.country-option .country-meta{font-size:10px}.hud .country-picker::before{top:18px;right:8px}}
-/* BRAND ALIGNMENT — sampled from drivingpractice.live reference screenshot.
-   Core palette: cream #faf5eb, navy #0e1c39, green #128e54.
-   Deliberately overrides the older dark-slate/teal splash styles above,
-   without changing A-Frame scene logic or country autocomplete behavior. */
-:root{
-  color-scheme:light;
-  --bg:#faf5eb;
-  --surface:#ffffff;
-  --surface-raised:#faf8f4;
-  --surface-input:#ffffff;
-  --line:#dbe1da;
-  --text:#0e1c39;
-  --muted:#53617a;
-  --teal:#128e54;
-  --teal-hover:#0d7c4b;
-  --teal-focus:rgba(18,142,84,.22);
-  --brand-cream:#faf5eb;
-  --brand-navy:#0e1c39;
-  --brand-green:#128e54;
-  --brand-mint:#eaf3ea;
-}
-body{background:var(--brand-cream);color:var(--brand-navy)}
-button:focus-visible,select:focus-visible,input:focus-visible{
-  outline:3px solid var(--teal-focus);
-  outline-offset:3px;
-}
-#splash{
-  background-color:var(--brand-cream);
-  background-image:
-    radial-gradient(circle at 90% 15%,rgba(18,142,84,.095),transparent 41%),
-    linear-gradient(rgba(14,28,57,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(14,28,57,.035) 1px,transparent 1px);
-  background-size:auto,76px 76px,76px 76px;
-}
-.card{
-  width:min(100%,552px);
-  background:rgba(255,255,255,.95);
-  border:1px solid #e6e6e0;
-  box-shadow:0 22px 70px rgba(14,28,57,.10);
-}
-.brand-mark{
-  background:var(--brand-green);
-  color:#fff;
-}
-.brand-name{color:var(--brand-navy)}
-.brand-subtitle{color:#617087}
-.eyebrow{
-  color:#137d4b;
-  background:#eaf3ea;
-  border-radius:999px;
-  padding:7px 12px;
-  letter-spacing:.045em;
-  font-size:11px;
-}
-.eyebrow::before{
-  background:var(--brand-green);
-  box-shadow:none;
-}
-h1{color:var(--brand-navy)}
-h1 .brand-highlight{color:var(--brand-green)}
-.lead{color:#41506c}
-label{color:var(--brand-navy)}
-.primary{
-  background:var(--brand-green);
-  border-color:var(--brand-green);
-  color:#fff;
-  box-shadow:0 7px 19px rgba(18,142,84,.18);
-}
-.primary:hover:not(:disabled){
-  background:#0c7749;
-  border-color:#0c7749;
-  box-shadow:0 9px 24px rgba(18,142,84,.23);
-}
-.primary:active:not(:disabled){box-shadow:0 3px 9px rgba(18,142,84,.13)}
-.feature-row{color:#53617a}
-.feature-row li::before{color:var(--brand-green)}
-.card-footer{border-top-color:#e3e7df}
-.help,.country-hint{color:#64748b}
-#load-status{color:#137d4b}
-.country-search,#country-live.country-search{
-  background:#fff;
-  border-color:#d8ded9;
-  color:var(--brand-navy);
-}
-.country-search::placeholder{color:#758295}
-.country-search:hover{border-color:#78968b}
-.country-search:focus{
-  border-color:var(--brand-green);
-  box-shadow:0 0 0 4px rgba(18,142,84,.11);
-}
-.country-picker::before{color:#52627a}
-.country-results{
-  background:#fff;
-  border-color:#dde4dd;
-  box-shadow:0 20px 42px rgba(14,28,57,.16);
-  scrollbar-color:#a9bbae #fff;
-}
-.country-option{color:var(--brand-navy)}
-.country-option:hover,.country-option.active,.country-option:focus-visible{
-  background:#eaf3ea;
-  color:#0e1c39;
-}
-.country-option .country-meta{color:#137d4b}
-.country-empty{color:#64748b}
-.hud{
-  color:var(--brand-navy);
-  background:rgba(250,245,235,.96);
-  border:1px solid rgba(14,28,57,.13);
-  box-shadow:0 10px 32px rgba(14,28,57,.13);
-}
-.hud strong,.hud label,#speed{color:var(--brand-navy)}
-#status{color:#40516b}
-#share-fallback{
-  background:#fff;
-  border-color:#dbe1da;
-  color:var(--brand-navy);
-}
-#buttons button{
-  background:rgba(14,28,57,.96);
-  border:1px solid #0e1c39;
-  color:#fff;
-}
-#buttons button:hover{
-  background:var(--brand-green);
-  border-color:var(--brand-green);
-}
-#buttons button:active{background:#0b7146}
-#toast{
-  background:var(--brand-green);
-  border:1px solid #0b7146;
-  color:#fff;
-  box-shadow:0 8px 28px rgba(14,28,57,.2);
-}
+:root{color-scheme:dark;--slate:#0f172a;--deep:#111827;--line:#334155;--green:#128e54;--green-light:#1ca86a;--ink:#f8fafc;--soft:#cbd5e1;--muted:#94a3b8}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--slate);color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #5eead4;outline-offset:3px}
+button[disabled]{opacity:.6;cursor:wait}
+[hidden]{display:none!important}
+#splash{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));overflow-y:auto;background:radial-gradient(ellipse at 52% 8%,rgba(18,142,84,.2),transparent 56%),linear-gradient(125deg,#0f172a,#111827)}
+.setup-card{width:min(100%,545px);padding:clamp(23px,5vw,43px);background:#111827;border:1px solid #334155;border-radius:25px;box-shadow:0 28px 100px rgba(0,0,0,.35)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:29px}
+.brand-mark{width:45px;height:45px;display:grid;place-items:center;border-radius:13px;color:#fff;background:var(--green);font-size:16px;font-weight:850;letter-spacing:-.06em}
+.brand-name{font-weight:850;font-size:16px;letter-spacing:-.025em}
+.brand-sub{font-size:12px;color:var(--muted)}
+.eyebrow{font-size:11px;color:#65db9d;font-weight:850;letter-spacing:.13em}
+h1{font-size:clamp(31px,5vw,44px);line-height:1.1;letter-spacing:-.045em;margin:13px 0 12px;color:white}
+h1 em{color:#41c78a;font-style:normal}
+.lead{color:#cbd5e1;font-size:14px;max-width:47ch;margin:0 0 23px;line-height:1.72}
+.field-label{display:block;color:#eef5f8;font-size:13px;font-weight:750;margin:0 0 8px}
+.picker{position:relative}
+.picker-input{width:100%;min-height:52px;background:#0b1422;color:#fff;border:1px solid #475569;border-radius:12px;padding:13px 45px 13px 52px;font-weight:650;font-size:14px;outline:0;text-overflow:ellipsis}
+.picker-input:focus{border-color:#2fc383;box-shadow:0 0 0 4px rgba(18,142,84,.18)}
+.picker-input::placeholder{color:#94a3b8}
+.selected-flag{position:absolute;left:14px;top:16px;width:27px;height:20px;object-fit:cover;border-radius:2px;pointer-events:none;box-shadow:0 0 0 1px #ffffff22}
+.picker::after{content:"⌕";position:absolute;right:15px;top:11px;font-size:23px;color:#94a3b8;pointer-events:none}
+.suggestions{position:absolute;top:calc(100% + 7px);left:0;right:0;z-index:80;max-height:min(290px,40vh);overflow:auto;border:1px solid #475569;border-radius:13px;background:#0f172a;padding:5px;box-shadow:0 19px 45px rgba(0,0,0,.55)}
+.suggestion{display:flex;align-items:center;gap:11px;width:100%;padding:11px;border:0;border-radius:9px;background:transparent;text-align:left;color:white;font-size:13px}
+.suggestion:hover,.suggestion.active{background:#14563c}
+.suggestion img{width:27px;height:20px;object-fit:cover;border-radius:2px;flex:none}
+.suggestion span.name{flex:1;min-width:0}
+.suggestion span.meta{font-size:11px;color:#99dcb5;font-weight:800}
+.suggestion .flag-fallback{width:27px;font-size:22px}
+.no-matches{padding:16px 10px;color:#94a3b8;font-size:13px}
+.tiny{font-size:11px;color:#94a3b8;line-height:1.5;margin:7px 0 0}
+.details{border:1px solid #334155;border-radius:11px;padding:11px 13px;margin-top:16px}
+.details summary{cursor:pointer;font-size:13px;font-weight:750;color:#dce8f0}
+.details p{font-size:12px;color:var(--muted);line-height:1.5}
+.coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.coord-grid label{font-size:11px;color:#cbd5e1;font-weight:650}
+.coord-grid input{width:100%;display:block;margin-top:5px;min-height:39px;padding:9px;border:1px solid #475569;border-radius:9px;color:white;background:#0b1422}
+.primary{margin-top:20px;min-height:54px;width:100%;border-radius:999px;border:1px solid var(--green);background:var(--green);font-weight:850;color:white;box-shadow:0 9px 25px rgba(18,142,84,.22);transition:background .18s,transform .18s}
+.primary:hover:not(:disabled){background:var(--green-light);transform:translateY(-1px)}
+.feature-line{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;font-size:11px;color:#b5cbbf;margin-top:15px}
+.disclaimer{border-top:1px solid #334155;padding-top:16px;margin-top:22px;color:#94a3b8;font-size:12px;line-height:1.6}
+#load-message{font-size:12px;color:#74e2a5;margin:10px 0 0}
+#app{position:fixed;inset:0}
+#scene-mount{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(#799cad,#475f61);isolation:isolate}
+#native-map{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;background:#142235}
+#scene-mount>a-scene{position:absolute!important;inset:0!important;z-index:1;width:100%!important;height:100%!important;background:transparent!important}
+#scene-mount>a-scene canvas{background:transparent!important}
+#hud{position:absolute;left:15px;top:max(14px,env(safe-area-inset-top));z-index:9;pointer-events:none}
+.hud-card{border:1px solid #475569;border-radius:14px;background:rgba(15,23,42,.88);box-shadow:0 9px 28px #0003;padding:10px 13px;backdrop-filter:blur(7px);pointer-events:auto}
+.hud-title{font-weight:850;font-size:11px;letter-spacing:.05em}
+#speed{font-size:24px;font-weight:850;line-height:1.25}
+.hud-hint{font-size:11px;color:#cbd5e1}
+#country-hud{position:absolute;z-index:11;right:15px;top:max(14px,env(safe-area-inset-top));width:min(280px,43vw)}
+#country-hud .picker-input{min-height:41px;font-size:12px;padding:9px 34px 9px 44px}
+#country-hud .selected-flag{top:11px;left:10px;width:24px;height:17px}
+#country-hud .picker::after{right:10px;top:6px;font-size:21px}
+#country-hud .suggestions{max-height:210px}
+#map-status{position:absolute;z-index:8;top:113px;left:15px;background:#0f172ae8;border:1px solid #334155;border-radius:10px;padding:7px 10px;color:#b4e6cb;font-size:11px;pointer-events:none;max-width:min(400px,90vw)}
+#toast{position:fixed;z-index:18;left:50%;top:155px;transform:translateX(-50%);background:#087846;border:1px solid #5ee9a0;color:white;padding:9px 15px;border-radius:999px;box-shadow:0 9px 24px #0005;font-weight:800;opacity:0;transition:opacity .2s;pointer-events:none;text-align:center}
+#toast.show{opacity:1}
+#controls{position:absolute;z-index:10;bottom:max(56px,calc(env(safe-area-inset-bottom) + 52px));left:16px;right:110px;display:flex;flex-wrap:wrap;gap:8px;pointer-events:auto}
+#controls button{background:#0f172ae8;border:1px solid #64748b;border-radius:999px;color:white;padding:10px 13px;font-size:12px;font-weight:750;touch-action:none}
+#controls button:hover,#controls button:active{background:#128e54;border-color:#2ee391}
+#share-fallback{display:block;width:100%;margin-top:7px;border:1px solid #475569;background:#0b1422;border-radius:6px;color:white;padding:7px}
+#map-help{position:absolute;z-index:7;right:15px;bottom:54px;color:#fff;background:#0f172aba;font-size:10px;padding:5px 9px;border-radius:8px;pointer-events:none;max-width:320px;text-align:right}
+#map-help[hidden]{display:none}
+#map-help strong{color:#7be7ae}
 @media(max-width:650px){
-  .card{
-    max-width:440px;
-    background:rgba(255,255,255,.97);
-    border-color:#e5e7e2;
-  }
-  #splash{background-size:auto,56px 56px,56px 56px}
+ .setup-card{max-width:440px;padding:25px 20px}
+ .brand{margin-bottom:21px}
+ #hud{left:10px;top:10px}
+ #country-hud{right:10px;top:10px;width:51vw}
+ .hud-card{padding:8px 9px}
+ #speed{font-size:20px}
+ .hud-title{font-size:9px}
+ .hud-hint{display:none}
+ #map-status{top:102px;left:10px;font-size:10px}
+ #toast{top:143px;max-width:93vw;white-space:normal;font-size:12px}
+ #controls{left:10px;right:10px;justify-content:center;bottom:max(65px,calc(env(safe-area-inset-bottom) + 64px));gap:6px}
+ #controls button{font-size:11px;padding:9px 10px}
+ #map-help{bottom:10px;right:10px;max-width:93vw;font-size:9px}
+ .coord-grid{gap:7px}
 }
-
-/* In the search list, show crisp CDN flags on the requested dark slate panel. */
-.country-results{
-  background:#0f172a;
-  border-color:#334155;
-  box-shadow:0 20px 45px rgba(14,28,57,.27);
-  color:#fff;
-}
-.country-option{color:#f8fafc}
-.country-option:hover,.country-option.active,.country-option:focus-visible{
-  background:#164e4a;color:#fff;
-}
-.country-option .country-meta{color:#b4dec9}
-.country-empty{color:#cbd5e1}
-.country-option img.flag{display:block;width:27px;height:20px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px #ffffff30}
-.country-option .flag-emoji{font-size:21px;line-height:1.2}
-.country-picker input.country-search,#country-live.country-search{padding-left:51px}
-.country-picker .selected-flag{position:absolute;pointer-events:none;left:14px;top:50%;transform:translateY(-50%);width:27px;height:20px;object-fit:cover;border-radius:2px;z-index:2}
-.hud .country-picker .selected-flag{left:9px}
-#country-live.country-search{padding-left:43px}
-.route-settings{
-  margin-top:16px;padding:12px 14px;
-  background:#f8faf7;border:1px solid #dae6dd;border-radius:14px;color:#0e1c39
-}
-.route-settings summary{cursor:pointer;font-size:13px;font-weight:750;color:#0e1c39}
-.route-settings summary:focus-visible{outline:2px solid #128e54;border-radius:4px}
-.route-settings .muted-caption{font-size:11px;color:#64748b;font-weight:500}
-.route-settings p{font-size:12px;color:#53617a;line-height:1.5;margin:9px 0}
-.route-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.route-fields label{font-size:11px;color:#273957;min-width:0}
-.route-fields input{
-  display:block;width:100%;max-width:100%;margin-top:5px;
-  border:1px solid #cbd5d1;border-radius:9px;
-  padding:9px 10px;background:#fff;color:#0e1c39;font-size:13px
-}
-.route-fields input:focus{border-color:#128e54;outline:2px solid #128e5433}
-#map-mode{
-  position:fixed;top:113px;left:16px;z-index:7;
-  max-width:350px;
-  border:1px solid #b7d2c1;background:#f9fffbe8;
-  color:#145a38;padding:6px 10px;border-radius:11px;
-  font-size:12px;font-weight:700;pointer-events:none
-}
-.map-credits{
-  position:fixed;z-index:8;bottom:10px;right:12px;
-  max-width:min(50vw,470px);max-height:65px;overflow:auto;
-  padding:6px 9px;border-radius:6px;
-  background:#0e1c39dd;color:#fff;
-  font-size:11px;line-height:1.35;pointer-events:auto
-}
-.map-credits strong{font-weight:850;color:#fff}
-.map-adjust{
-  position:fixed;z-index:7;left:50%;transform:translateX(-50%);
-  bottom:76px;display:flex;align-items:center;justify-content:center;
-  flex-wrap:wrap;gap:5px;padding:6px;border-radius:12px;
-  background:#faf5ebea;border:1px solid #aec8b8;color:#0e1c39;
-  font-size:11px;font-weight:750;max-width:calc(100vw - 22px)
-}
-.map-adjust[hidden],.map-credits[hidden]{display:none}
-.map-adjust button{
-  font-size:11px;padding:5px 9px;white-space:nowrap;
-  background:#0e1c39;border:0;border-radius:8px;color:white
-}
-.map-adjust button:hover{background:#128e54}
-@media(max-width:650px){
-  #map-mode{top:104px;left:12px;max-width:85%;font-size:10px}
-  .map-adjust{bottom:120px}
-  .map-credits{right:8px;bottom:4px;max-width:calc(100vw - 16px);font-size:9px;max-height:34px}
-  .route-fields{gap:8px}
-}
-
-/* Ground tracking debug overlay, using existing cream, navy and green. */
-.ground-status{
-  position:fixed;top:147px;left:16px;z-index:7;
-  max-width:350px;border:1px solid #d6e3da;border-radius:10px;
-  background:rgba(250,245,235,.94);color:#0e1c39;
-  padding:5px 9px;font-size:11px;font-weight:650;pointer-events:none;
-}
-@media(max-width:650px){
-  .ground-status{top:136px;left:12px;max-width:80vw;font-size:10px}
-}
+@media(prefers-reduced-motion:reduce){.primary,#toast{transition:none}}
 </style>
+</head>
+<body>
+<section id="splash" aria-labelledby="welcome-title">
+ <div class="setup-card">
+  <div class="brand"><div class="brand-mark">DP</div><div><div class="brand-name">Driving Practice</div><div class="brand-sub">Global VR cockpit</div></div></div>
+  <div class="eyebrow">DRIVING PRACTICE · WEBXR</div>
+  <h1 id="welcome-title">Take the <em>driver's seat.</em></h1>
+  <p class="lead">Choose your country and practise observation, mirrors and road judgement. The cockpit adjusts for left- or right-hand drive.</p>
+  <label class="field-label" for="country-start">Select your country</label>
+  <div class="picker" id="picker-start">
+    <img class="selected-flag" alt="" aria-hidden="true" src="https://flagcdn.com/w40/gb.png">
+    <input id="country-start" class="picker-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-start-options" spellcheck="false" autocomplete="off" placeholder="Search countries…" value="United Kingdom">
+    <div class="suggestions" id="country-start-options" role="listbox" hidden></div>
+  </div>
+  <p class="tiny">Start typing to filter countries · use ↑ ↓ and Enter to choose.</p>
+  <details class="details">
+    <summary>Optional map starting point</summary>
+    <p>UK default: Borehamwood Driving Test Centre (51.64736, -0.25260). Other countries need coordinates for a location-specific map.</p>
+    <div class="coord-grid">
+      <label>Latitude<input id="start-lat" inputmode="decimal" type="number" step="any" min="-90" max="90" value="51.64736"></label>
+      <label>Longitude<input id="start-lng" inputmode="decimal" type="number" step="any" min="-180" max="180" value="-0.25260"></label>
+    </div>
+    <p>The background is a separate 3D reference, not a collision-calibrated VR environment.</p>
+  </details>
+  <button id="start-button" class="primary" type="button">Enter Driving Practice →</button>
+  <div class="feature-line"><span>✓ Global cockpit</span><span>✓ Mirror practice</span><span>✓ Mobile &amp; VR</span></div>
+  <p class="disclaimer">W/↑ accelerate · S/↓/Space brake · A/D or ←/→ steer · R reset · drag to look. This is observation practice, not real vehicle-handling instruction.</p>
+  <p id="load-message" role="status">Ready to start.</p>
+ </div>
+</section>
+<div id="app" hidden>
+  <div id="scene-mount">
+    <!-- Native 3D Maps uses its OWN WebGL renderer and retains Google attribution. -->
+    <gmp-map-3d id="native-map" center="51.64736,-0.25260,110" heading="0" tilt="78" range="190" mode="hybrid"></gmp-map-3d>
+  </div>
+  <div id="hud" class="hud-card">
+    <div class="hud-title">DRIVING PRACTICE VR</div>
+    <div id="speed">0 mph</div>
+    <div class="hud-hint">Look at the 3 mirrors · R to reset</div>
+    <input id="share-fallback" hidden readonly aria-label="Copyable app link">
+  </div>
+  <div id="country-hud" class="hud-card">
+    <label for="country-live" class="field-label">Country / cockpit</label>
+    <div class="picker" id="picker-live">
+      <img class="selected-flag" alt="" aria-hidden="true" src="https://flagcdn.com/w40/gb.png">
+      <input id="country-live" class="picker-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-live-options" spellcheck="false" autocomplete="off" placeholder="Find a country…" value="United Kingdom">
+      <div class="suggestions" id="country-live-options" role="listbox" hidden></div>
+    </div>
+  </div>
+  <div id="map-status" role="status">Preparing practice environment…</div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="controls">
+    <button data-drive="left" type="button">← Steer</button>
+    <button data-drive="right" type="button">Steer →</button>
+    <button data-drive="brake" type="button">Brake</button>
+    <button data-drive="go" type="button">Accelerate</button>
+    <button id="reset" type="button">Reset</button>
+    <button id="share" type="button">Share</button>
+  </div>
+  <div id="map-help" hidden>Google Maps 3D background · <strong>visual reference only</strong></div>
+</div>
+<!-- Scene is not constructed until the user actually starts practice. -->
+<template id="driving-template">
+<a-scene id="driving-scene" embedded
+         renderer="antialias: true; colorManagement: true; alpha: true"
+         loading-screen="enabled: false" vr-mode-ui="enabled: true">
+  <a-entity light="type: ambient; intensity: 1.1"></a-entity>
+  <a-entity light="type: directional; intensity: .8" position="-8 16 7"></a-entity>
+  <!-- These are ONLY for no-key/map errors and immersive VR, in which
+       browser DOM Google Maps cannot be presented by the XR compositor. -->
+  <a-entity id="practice-fallback">
+    <a-sky color="#a5c9db"></a-sky>
+    <a-plane color="#749886" rotation="-90 0 0" position="0 -.06 0" width="1000" height="1000"></a-plane>
+    <a-plane color="#44515b" rotation="-90 0 0" position="0 .005 0" width="8" height="360"></a-plane>
+    <a-box position="-4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
+    <a-box position="4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
+    <a-entity id="fallback-markings" practice-markings></a-entity>
+  </a-entity>
+  <!-- Track is mathematically flat at Y=0; no physics-plugin dependency,
+       no raycasting and no map-mesh collision/height extraction. -->
+  <a-plane id="safety-floor" position="0 0 0" rotation="-90 0 0"
+           width="1200" height="1200" visible="false"></a-plane>
+  <a-entity id="player-car" position="-2 0.25 0" car-physics global-cockpit="country: GB">
+    <a-entity class="cockpit-shell">
+      <a-box position="0 .45 0" width="2.05" height=".14" depth="3" color="#18364b"></a-box>
+      <a-box position="0 .85 -.78" width="2.05" height=".35" depth=".65" color="#152638"></a-box>
+      <a-box position="-1 .95 -.45" width=".1" height="1" depth=".13" color="#306f96"></a-box>
+      <a-box position="1 .95 -.45" width=".1" height="1" depth=".13" color="#306f96"></a-box>
+      <a-box position="0 1.87 -.55" width="2.05" height=".09" depth=".1" color="#21354a"></a-box>
+      <a-entity id="steering-column" position=".48 .98 -.5">
+        <a-cylinder radius=".043" height=".4" rotation="72 0 0" color="#5d7687"></a-cylinder>
+        <a-entity id="wheel" rotation="-14 0 0" position="0 .09 .14">
+          <a-torus radius=".22" radius-tubular=".024" color="#060d16"></a-torus>
+          <a-box width=".37" height=".025" depth=".025" color="#64748b"></a-box>
+          <a-cylinder radius=".055" height=".05" rotation="90 0 0" color="#2d3d50"></a-cylinder>
+        </a-entity>
+      </a-entity>
+      <a-entity id="instrument-panel" position=".48 1.04 -.76">
+        <a-plane color="#071521" width=".47" height=".19"></a-plane>
+        <a-text id="speed3d" value="0 MPH" width=".7" align="center" color="#5eeab6" position="0 0 .005"></a-text>
+      </a-entity>
+      <a-plane position="0 .97 -.88" width=".7" height=".25" color="#081622">
+        <a-text value="DRIVING PRACTICE" width="1.05" align="center" position="0 .06 .008"></a-text>
+        <a-text id="vr-toast" value="" align="center" color="#77f1aa" width=".85" position="0 -.045 .009"></a-text>
+      </a-plane>
+      <a-plane class="share-target" share-link position="0 .78 -.8" width=".72" height=".12" color="#128e54">
+        <a-text value="Tap to Share App Link" width="1" align="center" position="0 0 .008"></a-text>
+      </a-plane>
+      <a-text id="country-label" value="UNITED KINGDOM | RHD" width="1.7" align="center" position="0 .6 -.8" color="#a7d6e7"></a-text>
+    </a-entity>
+    <a-box position="-1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b"></a-box>
+    <a-box position="1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b"></a-box>
+    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror" position="-1.12 1.34 -.69" rotation="0 25 0" width=".36" height=".21" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror" position="1.12 1.34 -.69" rotation="0 -25 0" width=".36" height=".21" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-box position="0 1.69 -.75" width=".55" height=".23" depth=".055" color="#273f52"></a-box>
+    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror" position="0 1.68 -.7" width=".47" height=".16" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-camera id="camera" position=".48 1.42 .13"
+              camera="near: .05; far: 2500; fov: 80"
+              look-controls="pointerLockEnabled: true" wasd-controls="enabled: false">
+      <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4"
+                cursor="fuse: true; fuseTimeout: 750"
+                geometry="primitive: ring; radiusInner: .0028; radiusOuter: .0049"
+                material="shader: flat; color: #6bf1cd"
+                position="0 0 -.45"></a-cursor>
+    </a-camera>
+    <a-entity laser-controls="hand: right"
+              raycaster="objects: .mirror-target, .share-target; far: 4"></a-entity>
+  </a-entity>
+</a-scene>
+</template>
 <script>
 'use strict';
-// ===== GOOGLE MAP TILES SETUP =====
-// Public GitHub Pages JS is visible to everyone. Replace only with a
-// browser/referrer-restricted Map Tiles API key (and set quotas/budgets).
-// No key is supplied: the built-in practice road remains available at no Google cost.
-const GOOGLE_MAPS_API_KEY = "AIzaSyCeawqTxkGe7u581gW-BsQOt1C76c6iHn0";
-const CHASSIS_GROUND_OFFSET_METRES = 0.25;
-
-/**
- * GOOGLE CLOUD CONSOLE SETUP — displayed in DevTools at app initialization:
- * 1. Select a project, attach a billing account.
- * 2. Google Maps Platform > APIs & Services > Library > "Map Tiles API".
- *    Service: tile.googleapis.com. NOT under WebXR/VR/hardware APIs.
- *    Direct URL: https://console.cloud.google.com/apis/library/tile.googleapis.com
- * 3. APIs & Services > Credentials > Create credentials > API key.
- * 4. Restrict application to browser HTTP referrers:
- *    https://realayd.github.io/* and your own VERIFIED custom domain.
- *    Restrict API selection to "Map Tiles API".
- * 5. Set quotas/billing budgets and monitor usage before publishing.
- * 6. Replace only the placeholder above with the restricted browser key.
- * 7. Verify Google attribution and request errors in browser DevTools.
- *
- * Google prohibits deriving elevations / collision geometry from its
- * photorealistic tiles. Ground-snap uses YOUR OWN licensed road collision
- * meshes, never Google tile meshes. Visual 3D Tiles continue to stream.
- */
-(function explainGoogleMapsSetup(){
-  console.groupCollapsed('[Driving Practice VR] How to enable Google Maps 3D Tiles');
-  console.warn('Map Tiles API is under Google Maps Platform > APIs & Services > Library, NOT VR/AR/XR or device categories.');
-  console.info('1. Select/create a Google Cloud project and attach billing.');
-  console.info('2. Enable Map Tiles API: https://console.cloud.google.com/apis/library/tile.googleapis.com');
-  console.info('3. Create a browser key: https://console.cloud.google.com/apis/credentials');
-  console.warn('4. Limit HTTP referrers to https://realayd.github.io/* and authorised custom domains; restrict key to Map Tiles API only.');
-  console.info('5. Apply quotas and billing alerts; edit GOOGLE_MAPS_API_KEY in index.html.');
-  console.info('6. Inspect DevTools Network tile.googleapis.com and display Google Maps tile attributions.');
-  console.warn('No elevation or collision data may be extracted from Google photorealistic mesh. Use licensed local collision geometry.');
-  console.info('Setup guide: https://developers.google.com/maps/documentation/tile/get-api-key');
-  console.info('Policy: https://developers.google.com/maps/documentation/tile/policies');
-  console.groupEnd();
-})();
-
-// Owner-supplied Borehamwood map anchor, not the verified DVSA entrance.
-// Published test centre coordinates are nearer 51.64736, -0.25260.
-const ROUTE_PRESETS = Object.freeze({
-  GB: Object.freeze({
-    id:'gb-borehamwood-reference',
-    name:'Borehamwood reference, UK (verify road start)',
-    lat:51.6521,
-    lon:-0.2741,
-    height:0,
-    heading:0
-  })
-});
-// Metadata and the CURRENT live tile entity only. NEVER cache, index, serialize,
-// persist, or prefetch Google 3D Tiles assets or derivative road geometry.
-const ROUTE_SESSION_HISTORY = new Map();
-let activeRoute=null,activeMapMode='practice',currentTileEntity=null,tilePollTimer=0;
-const EARTH_RADIUS_METRES=6378137;
-
-// East is +X; north is -Z; coordinates approximate a local tangent plane.
-// Use this for the user's OWN route points; the tiles loader does its own
-// georeferencing with runtime.orientToGeocoord().
-function geoToLocalMetres(lat,lon,origin){
-  const meanLat=((lat+origin.lat)/2)*Math.PI/180;
-  return {x:EARTH_RADIUS_METRES*(lon-origin.lon)*Math.PI/180*Math.cos(meanLat),
-          z:-EARTH_RADIUS_METRES*(lat-origin.lat)*Math.PI/180};
-}
-function localMetresToGeo(x,z,origin){
-  const lat=origin.lat-z/EARTH_RADIUS_METRES*180/Math.PI;
-  const meanLat=((lat+origin.lat)/2)*Math.PI/180;
-  return {lat,lon:origin.lon+x/(EARTH_RADIUS_METRES*Math.cos(meanLat))*180/Math.PI};
-}
-function isMapsKeyReady(){
-  return GOOGLE_MAPS_API_KEY.trim()!=='' &&
-    !GOOGLE_MAPS_API_KEY.includes('PASTE_YOUR_');
-}
-
-
+// Public GitHub Pages source: insert ONLY a referrer-restricted browser key.
+// Enable Maps JavaScript API, NOT just Map Tiles API.
+const GOOGLE_MAPS_API_KEY = "PASTE_YOUR_RESTRICTED_KEY_HERE";
+const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:110});
+const CAR_Y = 0.25;
+const EARTH_RADIUS = 6378137;
+const ROUTE_SESSION_HISTORY = new Map(); // route metadata only, never Google imagery
+let active=false,scene=null,selectedRoute=null,googleMapReady=false;
+let mapsPromise=null,carSyncAt=0,toastTimer=0,mapActivation=0;
+const inputs=Object.create(null);
+const pickers=[];
+const byId=id=>document.getElementById(id);
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+const mapElement=byId('native-map');
+const status=message=>{byId('map-status').textContent=message};
+const keyConfigured=()=>GOOGLE_MAPS_API_KEY.trim()!==''&&!GOOGLE_MAPS_API_KEY.includes('PASTE_YOUR_');
 
 // Complete 249-code ISO 3166-1 country/territory data. Names use the browser's
 // built-in Intl.DisplayNames, with overrides for clearer everyday English.
@@ -775,866 +343,459 @@ function normalized(text){
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 }
 
-const keys=Object.create(null);
-let active=false,scene=null,toastTimer=0;
-const byId=id=>document.getElementById(id);
-const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 
-function showToast(message){
-  const el=byId('toast');
-  if(!el)return;
-  el.textContent=message;el.classList.add('show');
-  const vr=byId('vr-toast');
-  if(vr)vr.setAttribute('value',message);
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>{el.classList.remove('show');if(vr)vr.setAttribute('value','')},2000);
+function makeFlag(iso){
+ return 'https://flagcdn.com/w40/'+iso.toLowerCase()+'.png';
+}
+function toast(message){
+ const el=byId('toast');el.textContent=message;el.classList.add('show');
+ const vr=byId('vr-toast');if(vr)vr.setAttribute('value',message);
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+   el.classList.remove('show');
+   if(vr)vr.setAttribute('value','');
+ },2100);
 }
 async function shareApp(){
-  // The CURRENT page URL works with GitHub Pages or any future custom domain.
-  const url=location.href.split('#')[0];
-  try{
-    if(navigator.share)await navigator.share({title:'Driving Practice VR',text:'Try this VR driving practice!',url});
-    else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);showToast('App link copied');}
-    else throw Error('Clipboard API unavailable');
-  }catch(err){
-    if(err.name==='AbortError')return;
-    // A native share sheet usually requires a click/trigger gesture, not passive gaze.
-    const link=byId('share-fallback');link.value=url;link.hidden=false;link.select();
-    showToast('Copy the app link from the panel');
-  }
+ const url=location.href.split('#')[0];
+ try{
+  if(navigator.share)await navigator.share({title:'Driving Practice VR',url,text:'Try this driving observation practice'});
+  else if(navigator.clipboard?.writeText){
+   await navigator.clipboard.writeText(url);toast('App link copied');
+  }else throw Error('Share unavailable');
+ }catch(error){
+  if(error.name==='AbortError')return;
+  const fallback=byId('share-fallback');
+  fallback.hidden=false;fallback.value=url;fallback.select();
+  toast('Select and copy the app link above');
+ }
 }
-
-// Momentum-based arcade physics (not a certified vehicle dynamics simulation).
-AFRAME.registerComponent('car-physics',{
-  init(){
-    this.speed=0;this.steer=0;this.brakingWeight=0;this.velocity=new THREE.Vector3();
-    this.forward=new THREE.Vector3();this.targetVelocity=new THREE.Vector3();
-    this.heading=0;this.lastCollision=0;
-    this.down=e=>{if(e.target?.closest?.('input,textarea,[contenteditable="true"]'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();keys[e.code]=true}};
-    this.up=e=>{keys[e.code]=false};
-    window.addEventListener('keydown',this.down);
-    window.addEventListener('keyup',this.up);
-    this.blur=()=>{Object.keys(keys).forEach(k=>keys[k]=false);this.speed=0;this.velocity.set(0,0,0)};
-    window.addEventListener('blur',this.blur);
-  },
-  reset(){
-    const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
-    this.speed=0;this.steer=0;this.brakingWeight=0;this.heading=0;
-    this.velocity.set(0,0,0);
-    if(activeMapMode==='google'&&activeRoute){
-      this.el.object3D.position.set(activeRoute.spawnX||0,
-        Math.max(0.15,activeRoute.spawnY||0),
-        activeRoute.spawnZ||0);
-      this.heading=(activeRoute.heading||0)*Math.PI/180;
-      this.el.object3D.rotation.set(0,this.heading,0);
-    }else{
-      this.el.object3D.position.set(country.roadSide==='left'?-2:2,0.15,82);
-      this.el.object3D.rotation.set(0,0,0);
-    }
-    this.updateSpeed();
-  },
-  updateSpeed(){
-    const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
-    const v=Math.round(this.speed*(country.units==='mph'?2.236936:3.6));
-    const message=v+' '+country.units;
-    if(byId('speed'))byId('speed').textContent=message;
-    if(byId('speed3d'))byId('speed3d').setAttribute('value',message.toUpperCase());
-  },
-  tick(time,delta){
-    if(!active||!delta)return;
-    const dt=Math.min(delta/1000,0.05);
-    let throttle=(keys.KeyW||keys.ArrowUp||keys.go)?1:0;
-    let brake=(keys.KeyS||keys.ArrowDown||keys.Space||keys.brake)?1:0;
-    let steering=((keys.KeyA||keys.ArrowLeft||keys.left)?1:0)-((keys.KeyD||keys.ArrowRight||keys.right)?1:0);
-    // Optional XR gamepads: trigger throttle, grip brake, thumbstick steering.
-    const xr=this.el.sceneEl.renderer?.xr;
-    const session=xr?.getSession();
-    if(session)for(const source of session.inputSources){
-      const gp=source.gamepad;if(!gp)continue;
-      throttle=Math.max(throttle,gp.buttons[0]?.value||0);
-      brake=Math.max(brake,gp.buttons[1]?.value||0);
-      const axis=gp.axes.find((v,i)=>i%2===0&&Math.abs(v)>.16);
-      if(axis!==undefined)steering-=axis;
-    }
-    steering=clamp(steering,-1,1);
-    this.steer=THREE.MathUtils.damp(this.steer,steering,5.5,dt);
-    this.brakingWeight=THREE.MathUtils.damp(this.brakingWeight,brake*Math.min(this.speed/10,1),7,dt);
-    // Acceleration, rolling resistance, speed-proportional aerodynamic drag, and braking.
-    const resistance=0.20+0.013*this.speed*this.speed;
-    this.speed=clamp(this.speed+(3.35*throttle-8.8*brake-resistance)*dt,0,14);
-    // Bicycle-style approximate yaw with reduced steering response at high speed.
-    const turnRate=this.steer*this.speed/(3.4+0.35*this.speed);
-    this.heading+=turnRate*dt;
-    this.el.object3D.rotation.y=this.heading;
-    this.forward.set(-Math.sin(this.heading),0,-Math.cos(this.heading));
-    this.targetVelocity.copy(this.forward).multiplyScalar(this.speed);
-    // Velocity lags changing heading: deliberate lateral slip, with tyre-grip friction.
-    const grip=clamp(8-0.18*this.speed+2*brake,3.2,10);
-    this.velocity.lerp(this.targetVelocity,1-Math.exp(-grip*dt));
-    this.el.object3D.position.addScaledVector(this.velocity,dt);
-    const wheel=byId('wheel');if(wheel)wheel.object3D.rotation.z=-this.steer*0.68;
-    const dash=byId('instrument-panel');if(dash)dash.object3D.rotation.x=-this.brakingWeight*0.018;
-    this.updateSpeed();
-    const pos=this.el.object3D.position;
-    const limit=activeMapMode==='google'?450:205;
-    if(Math.abs(pos.x)>limit||Math.abs(pos.z)>limit){this.reset();showToast('Practice area boundary — reset');return}
-    // Basic collision response for the obstacle boxes (not rigid-body physics).
-    if(activeMapMode!=='google'&&time-this.lastCollision>1000)for(const h of this.el.sceneEl.querySelectorAll('.hazard')){
-      const hp=h.object3D.position;
-      if(Math.abs(pos.x-hp.x)<1.6&&Math.abs(pos.z-hp.z)<2.2){
-        this.speed=0;this.velocity.set(0,0,0);this.lastCollision=time;
-        showToast('Hazard! Stop and reassess');break;
-      }
-    }
-  },
-  remove(){window.removeEventListener('keydown',this.down);window.removeEventListener('keyup',this.up);window.removeEventListener('blur',this.blur)}
-});
-
-// REAL render-to-texture mirror view, with a separate rear-facing camera per panel.
-// Render at a reduced rate for headset/mobile performance; do not render cockpit recursively.
-AFRAME.registerComponent('mirror-panel',{
-  schema:{label:{default:'Mirror'},side:{default:'rear'}},
-  init(){
-    this.target=new THREE.WebGLRenderTarget(256,128);
-    this.mirrorCam=new THREE.PerspectiveCamera(72,2,0.06,220);
-    this.position=new THREE.Vector3();this.aim=new THREE.Vector3();this.frame=0;this.timer=null;
-    this.enter=()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>showToast('Mirror Checked — '+this.data.label),450)};
-    this.leave=()=>clearTimeout(this.timer);
-    this.el.addEventListener('mouseenter',this.enter);
-    this.el.addEventListener('mouseleave',this.leave);
-    this.onObject=()=>this.attachTexture();
-    this.el.addEventListener('object3dset',this.onObject);
-    this.attachTexture();
-  },
-  attachTexture(){
-    const mesh=this.el.getObject3D('mesh');
-    if(!mesh||!this.target)return;
-    if(this.material)this.material.dispose();
-    // Flip the resulting rear camera image horizontally, as with a conventional mirror.
-    this.target.texture.wrapS=THREE.RepeatWrapping;
-    this.target.texture.repeat.x=-1;this.target.texture.offset.x=1;
-    this.material=new THREE.MeshBasicMaterial({map:this.target.texture,side:THREE.DoubleSide});
-    mesh.material=this.material;
-  },
-  tock(){
-    if(!active||++this.frame%5!==0)return;
-    const sc=this.el.sceneEl,r=sc.renderer;
-    if(!r||!sc.object3D||!r.getRenderTarget)return;
-    this.el.object3D.getWorldPosition(this.position);
-    this.mirrorCam.position.copy(this.position);
-    const heading=byId('player-car').object3D.rotation.y;
-    const outward=this.data.side==='left'?-18:this.data.side==='right'?18:0;
-    const yaw=heading+THREE.MathUtils.degToRad(180+outward);
-    this.aim.set(-Math.sin(yaw),-0.02,-Math.cos(yaw));
-    this.mirrorCam.lookAt(this.position.clone().add(this.aim));
-    const hidden=Array.from(sc.querySelectorAll('.reflection-hide, .mirror-target'));
-    const vis=hidden.map(node=>node.object3D.visible);
-    const target=r.getRenderTarget(),xrEnabled=r.xr.enabled;
-    try{
-      hidden.forEach(node=>node.object3D.visible=false);
-      r.xr.enabled=false;
-      r.setRenderTarget(this.target);r.clear();r.render(sc.object3D,this.mirrorCam);
-    }catch(error){if(!this.reported){console.warn('Mirror rendering unavailable:',error);this.reported=true}}
-    finally{
-      r.setRenderTarget(target);r.xr.enabled=xrEnabled;
-      hidden.forEach((node,i)=>node.object3D.visible=vis[i]);
-    }
-  },
-  remove(){
-    clearTimeout(this.timer);
-    this.el.removeEventListener('mouseenter',this.enter);
-    this.el.removeEventListener('mouseleave',this.leave);
-    this.el.removeEventListener('object3dset',this.onObject);
-    this.material?.dispose();this.target.dispose();
-  }
-});
-
-
-/**
- * surface-snapper — dynamic downward raycaster ground tracking.
- *
- * An A-Frame raycaster on #ground-probe is pointed at (0,-1,0), runs
- * every frame, and targets only OUR independently authored/licensed
- * .drivable-surface meshes and the global invisible safety plane.
- * It deliberately DOES NOT sample Google photorealistic tile meshes:
- * extracting elevation from Map Tiles imagery is prohibited.
- *
- * This uses hit.point.y in world metres, adds a constant +0.25 m chassis
- * offset, smooths step changes and clamps against a global Y=0 floor.
- * Scene meshes can be supplied later as <a-entity class="drivable-surface">
- * without changing the steering, gaze mirrors or country UI.
- */
-AFRAME.registerComponent('surface-snapper',{
-  schema:{
-    chassisOffset:{type:'number',default:CHASSIS_GROUND_OFFSET_METRES},
-    smoothing:{type:'number',default:10},
-    maxRise:{type:'number',default:2.5},
-    maxDelta:{type:'number',default:0.5},
-    floorY:{type:'number',default:0}
-  },
-  init(){
-    this.probe=this.el.querySelector('#ground-probe');
-    this.frames=0;
-    this.surface='safety plane';
-  },
-  tick(time,delta){
-    if(!active||!delta)return;
-    const dt=Math.min(delta/1000,0.05);
-    // A-Frame's raycaster component performs one intersection query per frame
-    // and caches its current intersections. Do not perform a second expensive
-    // raycast or traverse all 3D Tiles meshes here.
-    const ray=this.probe?.components?.raycaster;
-    const currentY=this.el.object3D.position.y;
-    let bestY=this.data.floorY;
-    let hasCustomSurface=false;
-    let floorHitY=this.data.floorY;
-    // A-Frame maps each hit to its A-Frame entity. This avoids relying on
-    // THREE.Mesh.userData.el being present on every glTF/primitive child mesh.
-    const hitEntities=ray?.intersectedEls||[];
-    for(const el of hitEntities){
-      const hit=ray.getIntersection(el);
-      if(!Number.isFinite(hit?.point?.y))continue;
-      if(el.id==='road-safety-plane'){
-        floorHitY=Math.max(this.data.floorY,hit.point.y);
-        continue;
-      }
-      if(!el.closest('.drivable-surface'))continue;
-      // Reject a high overpass or roof hit from below the current roadway.
-      if(hit.point.y>currentY+this.data.maxRise)continue;
-      if(!hasCustomSurface||hit.point.y>bestY){
-        bestY=hit.point.y;
-        hasCustomSurface=true;
-      }
-    }
-    if(!hasCustomSurface)bestY=floorHitY;
-    this.surface=hasCustomSurface?'licensed road mesh':'Y=0 fallback';
-    // User's manual height correction is user-authored metadata, not an
-    // elevation derived from any Google map tile.
-    const correction=activeMapMode==='google'&&activeRoute
-      ?THREE.MathUtils.clamp(Number(activeRoute.spawnY)||0,-30,40):0;
-    const minY=this.data.floorY+this.data.chassisOffset;
-    const targetY=Math.max(minY,bestY+this.data.chassisOffset+correction);
-    const requestedStep=(targetY-currentY)*(1-Math.exp(-this.data.smoothing*dt));
-    const step=THREE.MathUtils.clamp(requestedStep,-this.data.maxDelta,this.data.maxDelta);
-    this.el.object3D.position.y=Math.max(minY,currentY+step);
-    // Update the small debug HUD periodically, not on every render tick.
-    if((++this.frames%15)===0){
-      const status=byId('ground-status');
-      if(status)status.textContent='Ground: '+this.surface+
-        ' · chassis '+this.el.object3D.position.y.toFixed(2)+' m';
-    }
-  }
-});
-
-// Country-driven cockpit arrangement. Seat, instruments, wheel and mirror aim
-// are all recalculated without reloading the scene or fetching new 3D assets.
-AFRAME.registerComponent('global-cockpit',{
-  schema:{country:{default:'GB'}},
-  init(){this.el.addEventListener('loaded',()=>this.apply());this.apply()},
-  update(){this.apply()},
-  apply(){
-    const c=COUNTRIES[this.data.country]||COUNTRIES.GB;
-    const set=(id,attr,value)=>{const el=byId(id);if(el)el.setAttribute(attr,value)};
-    set('camera','position',{x:c.seatX,y:1.42,z:0.12});
-    set('wheel-column','position',{x:c.seatX,y:0.98,z:-0.55});
-    set('instrument-panel','position',{x:c.seatX,y:1.04,z:-0.78});
-    // Side mirrors remain mounted on their real-world respective wings.
-    // Rotate each glass inward toward the selected seat to maintain visibility.
-    const leftAngle=THREE.MathUtils.radToDeg(Math.atan2(c.seatX+1.10,0.92));
-    const rightAngle=THREE.MathUtils.radToDeg(Math.atan2(c.seatX-1.10,0.92));
-    set('left-mirror','position',{x:-1.12,y:1.35,z:-0.8});
-    set('right-mirror','position',{x:1.12,y:1.35,z:-0.8});
-    set('left-mirror','rotation',{x:0,y:leftAngle,z:0});
-    set('right-mirror','rotation',{x:0,y:rightAngle,z:0});
-    // Centre rearview mirror tilts toward the driver.
-    set('rear-mirror','position',{x:c.seatX*0.22,y:1.68,z:-0.76});
-    set('rear-mirror','rotation',{x:0,y:c.seatX*24,z:0});
-    set('country-3d','value',c.name.toUpperCase().slice(0,27)+' | '+c.drive);
-    // Country search fields are synchronized by configureCountry().
-    const physics=this.el.components['car-physics'];
-    if(physics)physics.updateSpeed();
-  }
-});
-
-// The ground grid and road are generated with low-poly primitives only.
-AFRAME.registerComponent('practice-world',{
-  init(){
-    const add=(tag,attrs,parent=this.el)=>{
-      const el=document.createElement(tag);
-      Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
-      parent.appendChild(el);return el;
-    };
-    add('a-box',{position:'0 -0.08 0',width:94,height:0.1,depth:425,color:'#718b7b'});
-    add('a-box',{position:'0 0 0',width:8,height:0.06,depth:410,color:'#3a4650'});
-    // Neutral practice grid.
-    for(let x=-44;x<=44;x+=8)add('a-box',{position:x+' 0.008 0',width:0.035,height:0.008,depth:410,color:'#a2baa4'});
-    for(let z=-200;z<=200;z+=8)add('a-box',{position:'0 0.009 '+z,width:94,height:0.008,depth:0.035,color:'#a2baa4'});
-    // Two lanes separated by a broken central line.
-    for(let z=-196;z<202;z+=12)add('a-box',{position:'0 0.05 '+z,width:0.12,height:0.012,depth:5,color:'#f7eccc'});
-    for(const x of [-4,4])add('a-box',{position:x+' 0.05 0',width:0.12,height:0.012,depth:405,color:'#ecedef'});
-    // Sparse, uncomplicated practice hazards and low-poly surroundings.
-    const hazards=[[-2,37,'#e59038'],[2,-4,'#bd5d50'],[-2,-48,'#d8a23f'],[2,-91,'#d98639'],[-2,-145,'#c86357']];
-    for(const [x,z,color] of hazards){
-      const h=add('a-box',{class:'hazard',position:x+' 0.68 '+z,width:1.6,height:1.36,depth:1.8,color});
-      add('a-box',{position:'0 0.3 0',width:1.45,height:0.22,depth:1.66,color:'#f5e4bb'},h);
-    }
-    for(let z=-190;z<=170;z+=37)for(const x of [-15,15]){
-      add('a-cylinder',{position:x+' 1.1 '+z,radius:0.16,height:2.2,segmentsRadial:6,color:'#645648'});
-      add('a-cone',{position:x+' 3 '+z,'radius-bottom':1.25,height:2.5,segmentsRadial:6,color:'#446b5b'});
-    }
-  }
-});
-AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.el.addEventListener('click',this.onClick)},remove(){this.el.removeEventListener('click',this.onClick)}});
-</script>
-</head>
-<body>
-<!-- The 3D scene is inside a template: it does NOT initialize before selection. -->
-<section id="splash" aria-label="Select your driving country">
-  <div class="card">
-    <header class="brand" aria-label="Driving Practice">
-      <div class="brand-mark" aria-hidden="true">DP</div>
-      <div>
-        <div class="brand-name">Driving Practice</div>
-        <span class="brand-subtitle">VR Driving Experience</span>
-      </div>
-    </header>
-    <div class="eyebrow">GLOBAL DRIVING PRACTICE</div>
-    <h1>Take the <span class="brand-highlight">driver's seat.</span></h1>
-    <p class="lead">Practise observation and road awareness in a cockpit designed for your country. No download needed.</p>
-    <label for="country-start">Select your country</label>
-    <div class="select-wrap country-picker">
-      <input id="country-start" class="country-search" type="text" autocomplete="off" spellcheck="false"
-             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-start-options"
-             placeholder="Search countries, e.g. Japan">
-      <div id="country-start-options" class="country-results" role="listbox" aria-label="Country suggestions" hidden></div>
-    </div>
-    <p class="country-hint">Search by name or ISO code, then select a country.</p>
-    <details id="route-settings" class="route-settings">
-      <summary>Starting location <span class="muted-caption">(Google 3D optional)</span></summary>
-      <p id="route-caption">United Kingdom default: Borehamwood Test Centre, WD6 2BT.</p>
-      <div class="route-fields">
-        <label>Latitude <input id="route-lat" type="number" step="any" min="-90" max="90" inputmode="decimal" placeholder="51.64736"></label>
-        <label>Longitude <input id="route-lon" type="number" step="any" min="-180" max="180" inputmode="decimal" placeholder="-0.25260"></label>
-        <label>Approx. ground height (m) <input id="route-height" type="number" step="1" min="-420" max="9000" inputmode="numeric" placeholder="110"></label>
-        <label>Vehicle heading (°) <input id="route-heading" type="number" step="5" min="-360" max="360" inputmode="numeric" placeholder="0"></label>
-      </div>
-      <p class="route-disclaimer">Map mode requires a restricted API key. Vehicle height and heading must be calibrated manually; 3D imagery is not a drivable collision surface.</p>
-    </details>
-    <button class="primary" id="start" type="button">
-      <span>Enter Driving Practice</span><span class="arrow" aria-hidden="true">→</span>
-    </button>
-    <ul class="feature-row" aria-label="Experience features">
-      <li>Country-specific cockpit</li><li>VR ready</li><li>No installation</li>
-    </ul>
-    <div class="card-footer">
-      <p class="help">W / ↑ accelerate · S / ↓ or Space brake · A / D or ← / → steer · R reset. Drag to look and check mirrors. Touch controls included.</p>
-      <p class="help">Observation practice only, not a replacement for driving lessons or real vehicle handling. Stop if VR motion causes discomfort.</p>
-      <p id="load-status" class="help" role="status">Choose a country to begin.</p>
-    </div>
-  </div>
-</section>
-
-<div id="app" hidden>
-  <div id="overlay">
-    <div class="hud"><strong>DRIVING PRACTICE VR</strong><div id="speed">0 mph</div><div id="status">Look at each mirror to check it · R to reset</div></div>
-    <div class="hud"><label for="country-live" style="margin:0 0 5px;font-size:12px">Change country / cockpit</label>
-      <div class="country-picker">
-        <input id="country-live" class="country-search" type="text" autocomplete="off" spellcheck="false"
-               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-live-options"
-               placeholder="Search country">
-        <div id="country-live-options" class="country-results" role="listbox" aria-label="Country suggestions" hidden></div>
-      </div>
-      <input id="share-fallback" hidden readonly aria-label="Copyable app link" style="width:100%;margin-top:8px">
-    </div>
-  </div>
-  <div id="toast" role="status" aria-live="polite"></div>
-  <div id="map-mode" class="map-mode" role="status">Practice environment</div>
-  <div id="ground-status" class="ground-status" role="status">Ground: Y=0 fallback · chassis 0.25 m</div>
-  <div id="map-credits" class="map-credits" hidden aria-label="Google Maps data attributions">
-    <strong>Google Maps</strong> · <span id="map-copyright"></span>
-  </div>
-  <div id="map-adjust" class="map-adjust" hidden>
-    <span>Road alignment (manual)</span>
-    <button id="map-raise" type="button" title="Move car up 0.5m">Height +</button>
-    <button id="map-lower" type="button" title="Move car down 0.5m">Height −</button>
-    <button id="map-turn-left" type="button" title="Turn starting direction 10 degrees left">Turn −</button>
-    <button id="map-turn-right" type="button" title="Turn starting direction 10 degrees right">Turn +</button>
-  </div>
-  <div id="buttons" aria-label="Touch driving controls">
-    <button data-drive="left" type="button">← Steer</button>
-    <button data-drive="right" type="button">Steer →</button>
-    <button data-drive="brake" type="button">Brake</button>
-    <button data-drive="go" type="button">Accelerate</button>
-    <button id="reset" type="button">Reset</button>
-    <button id="share" type="button">Share App</button>
-  </div>
-  <div id="scene-mount"></div>
-</div>
-
-<!-- Three.js global cache must be disabled BEFORE the scene initializes. -->
-<script>
-  THREE.Cache.enabled = false;
-  console.info('[Driving Practice VR] THREE.Cache disabled for streaming 3D Tiles');
-</script>
-<template id="scene-template">
-  <a-scene embedded renderer="antialias: true; colorManagement: true" background="color: #bad9e7" fog="type: linear; color: #bad9e7; near: 90; far: 220" loading-screen="enabled: false" vr-mode-ui="enabled: true">
-    <a-entity environment="preset: default; ground: flat; groundColor: #718b7b; dressingAmount: 0; skyType: color; skyColor: #bad9e7; lighting: none"></a-entity>
-    <a-entity light="type: ambient; intensity: 1.15"></a-entity>
-    <a-entity light="type: directional; intensity: 0.85" position="-12 22 5"></a-entity>
-    <a-entity id="practice-world" practice-world></a-entity>
-    <!-- Google photorealistic root; loader attached only once start is clicked. -->
-    <a-entity id="google-tiles"></a-entity>
-    <!-- Invisible fallback mesh: opacity 0, but material must remain raycastable.
-         A-Frame visible=false would disable rendering (and can affect queries). -->
-    <!-- Optional physics marker as requested. Without a physics library,
-         static-body alone provides NO physical collision enforcement. -->
-    <a-plane position="0 -0.1 0" rotation="-90 0 0"
-             width="100" height="100" visible="false" static-body></a-plane>
-    <!-- Real fallback for our custom raycast/height clamping. Transparent
-         rather than visible=false, so Three's raycaster can intersect it. -->
-    <a-plane id="road-safety-plane" position="0 -0.1 0" rotation="-90 0 0"
-             width="1200" height="1200"
-             material="shader: flat; color: #ffffff; transparent: true; opacity: 0; side: double; depthWrite: false"></a-plane>
-
-    <a-entity id="player-car" position="-2 0.15 82"
-              car-physics global-cockpit="country: GB"
-              surface-snapper="chassisOffset: 0.25; floorY: -0.1">
-      <!-- One downward (0,-1,0) ray query/frame, only against app-owned
-           drivable surfaces; Google photorealistic tiles are visual-only. -->
-      <a-entity id="ground-probe" position="0 4 0"
-                raycaster="direction: 0 -1 0; origin: 0 0 0; near: 0; far: 18; interval: 0; showLine: false; objects: .drivable-surface, #road-safety-plane"></a-entity>
-      <!-- Chassis and dashboard shell are visible in the cockpit, hidden during mirror reflection. -->
-      <a-entity id="cockpit-shell" class="reflection-hide">
-        <a-box position="0 0.47 0.12" width="2.05" height="0.18" depth="3.25" color="#18364b"></a-box>
-        <a-box position="0 0.87 -0.84" width="2.04" height="0.37" depth="0.65" color="#142838"></a-box>
-        <a-box position="-1.00 0.97 -0.44" width="0.11" height="1.0" depth="0.12" color="#285c7d"></a-box>
-        <a-box position="1.00 0.97 -0.44" width="0.11" height="1.0" depth="0.12" color="#285c7d"></a-box>
-        <a-box position="0 1.87 -0.57" width="2.1" height="0.11" depth="0.13" color="#233b50"></a-box>
-        <!-- The two items below move left/right via global-cockpit. -->
-        <a-entity id="wheel-column" position="0.48 0.98 -0.55">
-          <a-cylinder rotation="75 0 0" radius="0.047" height="0.46" color="#607384"></a-cylinder>
-          <a-entity id="wheel" position="0 0.11 0.13" rotation="-15 0 0">
-            <a-torus radius="0.23" radius-tubular="0.025" color="#07131f"></a-torus>
-            <a-box width="0.42" height="0.029" depth="0.04" color="#596b7c"></a-box>
-            <a-cylinder rotation="90 0 0" radius="0.066" height="0.06" color="#293b50"></a-cylinder>
-          </a-entity>
-        </a-entity>
-        <a-entity id="instrument-panel" position="0.48 1.04 -0.78">
-          <a-plane width="0.46" height="0.22" color="#071721"></a-plane>
-          <a-text id="speed3d" value="0 MPH" width="0.7" align="center" color="#72f0c4" position="0 0 0.008"></a-text>
-        </a-entity>
-        <!-- Dashboard confirmation and sharing surface are both real 3D geometry. -->
-        <a-plane position="0 0.98 -0.89" width="0.68" height="0.25" color="#071721">
-          <a-text value="DRIVING PRACTICE" width="1.0" align="center" position="0 0.062 0.009"></a-text>
-          <a-text id="vr-toast" value="" color="#66f2aa" width="0.85" align="center" position="0 -0.047 0.01"></a-text>
-        </a-plane>
-        <a-plane class="share-target" share-link position="0 0.79 -0.83" width="0.73" height="0.13" color="#167c8d">
-          <a-text value="Tap to Share App Link" width="1.02" align="center" position="0 0 0.01"></a-text>
-        </a-plane>
-        <a-text id="country-3d" value="UNITED KINGDOM | RIGHT HAND DRIVE" position="0 0.60 -0.83" align="center" width="1.65" color="#b4d8e8"></a-text>
-      </a-entity>
-
-      <!-- Mirror geometry stays on physical wings; glass aims toward the active seat. -->
-      <a-box class="reflection-hide" position="-1.1 1.30 -0.8" width="0.45" height="0.29" depth="0.10" color="#24374b"></a-box>
-      <a-box class="reflection-hide" position="1.1 1.30 -0.8" width="0.45" height="0.29" depth="0.10" color="#24374b"></a-box>
-      <a-plane id="left-mirror" class="mirror-target" mirror-panel="label: Left; side: left" position="-1.12 1.35 -0.73" rotation="0 25 0" width="0.39" height="0.23"></a-plane>
-      <a-plane id="right-mirror" class="mirror-target" mirror-panel="label: Right; side: right" position="1.12 1.35 -0.73" rotation="0 -25 0" width="0.39" height="0.23"></a-plane>
-      <a-box class="reflection-hide" position="0 1.69 -0.81" width="0.56" height="0.24" depth="0.055" color="#263b50"></a-box>
-      <a-plane id="rear-mirror" class="mirror-target" mirror-panel="label: Rearview; side: rear" position="0 1.68 -0.76" width="0.49" height="0.17"></a-plane>
-
-      <!-- Native look-controls drives the central fuse raycaster for gaze checks. -->
-      <a-camera id="camera" position="0.48 1.42 0.12"
-                look-controls="pointerLockEnabled: true"
-                wasd-controls="enabled: false"
-                camera="near: 0.04; fov: 78; far: 1200">
-        <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4"
-                  cursor="fuse: true; fuseTimeout: 650"
-                  geometry="primitive: ring; radiusInner: 0.003; radiusOuter: 0.005"
-                  material="shader: flat; color: #68f7d1"
-                  position="0 0 -0.45"></a-cursor>
-      </a-camera>
-      <a-entity laser-controls="hand: right" raycaster="objects: .mirror-target, .share-target; far: 5"></a-entity>
-    </a-entity>
-  </a-scene>
-</template>
-
-<script>
-
-function readActiveRoute(iso){
-  const preset=ROUTE_PRESETS[iso]||null;
-  const isSetupVisible=!byId('splash').hidden;
-  if(!isSetupVisible){
-    // On in-game country changes, use configured regional defaults only.
-    if(!preset)return null;
-    return {...preset,countryCode:iso,spawnX:0,spawnY:0,spawnZ:0};
-  }
-  const latitude=byId('route-lat').value.trim();
-  const longitude=byId('route-lon').value.trim();
-  if(latitude===''||longitude==='')return null;
-  const lat=Number(latitude),lon=Number(longitude);
-  const height=Number(byId('route-height').value||0);
-  const heading=Number(byId('route-heading').value||0);
-  if(!Number.isFinite(lat)||lat< -90||lat>90||
-     !Number.isFinite(lon)||lon< -180||lon>180||
-     !Number.isFinite(height)||height< -420||height>9000||
-     !Number.isFinite(heading)||Math.abs(heading)>360){
-    showToast('Invalid route coordinates');return null;
-  }
-  return {
-    id:preset?.id||('custom-'+iso),name:preset?.name||COUNTRIES[iso].name+' custom location',
-    lat,lon,height,heading,countryCode:iso,spawnX:0,spawnY:0,spawnZ:0
-  };
+function setFallback(shouldShow){
+ const world=byId('practice-fallback');
+ if(world)world.object3D.visible=shouldShow;
+ if(scene?.renderer){
+   scene.object3D.background=null;
+   scene.renderer.setClearColor(0,0);
+   scene.renderer.setClearAlpha(0);
+ }
 }
-function mapMessage(message){
-  const el=byId('map-mode');if(el)el.textContent=message;
-}
-function showPracticeEnvironment(reason){
-  activeMapMode='practice';activeRoute=null;
-  const world=byId('practice-world');if(world)world.object3D.visible=true;
-  if(currentTileEntity){
-    // Destroy abandoned Google tile runtime instead of caching raw meshes.
-    currentTileEntity.removeAttribute('loader-3dtiles');
-    currentTileEntity.dataset.routeKey='';
-    currentTileEntity.dataset.tilesReady='';
-    currentTileEntity=null;
-  }
-  clearInterval(tilePollTimer);
-  byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
-  mapMessage(reason||'Practice environment');
-  byId('player-car')?.components['car-physics']?.reset();
-}
-function activateRouteFromSelection(iso){
-  const route=readActiveRoute(iso);
-  if(!isMapsKeyReady()){
-    showPracticeEnvironment('Practice road · 3D Maps key not configured');
-    return;
-  }
-  if(!route){
-    showPracticeEnvironment('Practice road · no real-world start coordinates for '+COUNTRIES[iso].name);
-    return;
-  }
-  if(!AFRAME.components['loader-3dtiles']){
-    showPracticeEnvironment('Practice road · 3D Tiles loader unavailable');
-    return;
-  }
-  // Record only route metadata for the current browser session. It is legal
-  // to reuse the mounted live tileset on reset; we never store map assets.
-  const sessionKey=iso+'|'+route.lat+'|'+route.lon+'|'+route.height;
-  let session=ROUTE_SESSION_HISTORY.get(sessionKey);
-  if(!session){
-    session={origin:Object.freeze({...route}),firstSelectedAt:Date.now(),selectionCount:0};
-    ROUTE_SESSION_HISTORY.set(sessionKey,session);
-  }
-  session.selectionCount+=1;
-  activeRoute={...session.origin};
-  if(currentTileEntity?.dataset.routeKey===sessionKey &&
-     currentTileEntity.dataset.tilesReady==='yes'){
-    activeMapMode='google';
-    byId('practice-world').object3D.visible=false;
-    byId('map-adjust').hidden=false;
-    mapMessage('Google Maps · '+route.name+' (live session reused)');
-    byId('player-car').components['car-physics']?.reset();
-    return;
-  }
-  if(currentTileEntity){
-    // Do not hold previously unloaded route imagery in an offscreen cache.
-    currentTileEntity.removeAttribute('loader-3dtiles');
-    currentTileEntity.dataset.routeKey='';
-    currentTileEntity.dataset.tilesReady='';
-    currentTileEntity=null;
-    clearInterval(tilePollTimer);
-  }
-  activeMapMode='practice';
-  byId('practice-world').object3D.visible=true;
-  byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
-  mapMessage('Loading Google 3D Tiles near '+route.name+'…');
-  // Reuse dedicated scene entity rather than creating a new root per route.
-  const tile=byId('google-tiles');
-  if(!tile){showPracticeEnvironment('Practice road · missing Google tile entity');return;}
-  tile.dataset.routeKey=sessionKey;
-  tile.dataset.tilesReady='';
-  currentTileEntity=tile;
-  // The NYT v1.0.6 loader's documented schema names.
-  // Height 0 avoids its falsy-height branch that can reinitialize tiles;
-  // orientToGeocoord below performs the geolocation exactly once.
-  // Credentials are a restricted *public browser key*, never a server secret.
-  const config=[
-    'url: https://tile.googleapis.com/v1/3dtiles/root.json',
-    'googleApiKey: '+GOOGLE_MAPS_API_KEY,
-    'geoTransform: Mercator',
-    'cameraEl: #camera',
-    'lat: '+Number(route.lat),
-    'long: '+Number(route.lon),
-    'height: 0',
-    'maximumSSE: 48',
-    'maximumMem: 64'
-  ].join('; ');
-  tile.setAttribute('loader-3dtiles',config);
-  console.info('[3D Tiles] Loader requested for '+route.name+' on #camera (Mercator)');
-  const requestedAt=Date.now();
-  let oriented=false;
-  clearInterval(tilePollTimer);
-  tilePollTimer=setInterval(()=>{
-    if(tile!==currentTileEntity){clearInterval(tilePollTimer);return}
-    const component=tile.components?.['loader-3dtiles'];
-    const runtime=component?.runtime;
-    if(runtime){
-      try{
-        if(!oriented){
-          // WGS84 origin -> local 3D metres, calculated by the NYT tiles loader.
-          runtime.orientToGeocoord({
-            lat:activeRoute.lat,long:activeRoute.lon,height:activeRoute.height
-          });
-          oriented=true;
-        }
-        if(typeof runtime.getDataAttributions!=='function')
-          throw Error('Loader does not expose required Google attribution data');
-        const credits=String(runtime.getDataAttributions()||'');
-        // Attribution arrives asynchronously as tiles become visible. Wait
-        // for the first attribution instead of falsely treating empty as error.
-        if(!credits.trim()){
-          if(Date.now()-requestedAt>35000)
-            throw Error('No required map attributions after tile-load timeout');
-          return;
-        }
-        clearInterval(tilePollTimer);
-        tile.dataset.tilesReady='yes';
-        byId('map-copyright').textContent=credits;
-        byId('map-credits').hidden=false;
-        byId('practice-world').object3D.visible=false;
-        byId('map-adjust').hidden=false;
-        activeMapMode='google';
-        byId('player-car').components['car-physics']?.reset();
-        mapMessage('Google Maps · '+activeRoute.name+' · road alignment approximate');
-        // Surface live viewport provider credits, without inventing strings.
-        const creditTimer=setInterval(()=>{
-          if(tile!==currentTileEntity||activeMapMode!=='google'){
-            clearInterval(creditTimer);return;
-          }
-          const value=runtime.getDataAttributions();
-          if(value)byId('map-copyright').textContent=String(value);
-        },1500);
-      }catch(error){
-        console.warn('3D Tiles alignment/credits failed',error);
-        showPracticeEnvironment('Practice road · Google tile setup incomplete');
-      }
-    }else if(Date.now()-requestedAt>35000){
-      clearInterval(tilePollTimer);
-      console.warn('[3D Tiles] Timed out. Inspect tile.googleapis.com calls, billing, key restrictions,',
-                   'and NYT loader compatibility in the Network and Console panels.');
-      showPracticeEnvironment('Practice road · Google tiles timed out or key rejected');
-    }
-  },350);
-}
-// Adjust USER-selected vehicle height/direction; snap combines these
-// adjustments with independent licensed road geometry, not Google imagery.
-function adjustMapCar(heightStep,headingStep){
-  if(activeMapMode!=='google'||!activeRoute)return;
-  activeRoute.spawnY=Math.max(-30,Math.min(40,(activeRoute.spawnY||0)+heightStep));
-  activeRoute.heading=((activeRoute.heading||0)+headingStep+360)%360;
-  byId('player-car')?.components['car-physics']?.reset();
-  mapMessage('Google Maps · manual alignment: '+activeRoute.spawnY.toFixed(1)+'m, '+activeRoute.heading+'°');
-}
-byId('map-raise').addEventListener('click',()=>adjustMapCar(.5,0));
-byId('map-lower').addEventListener('click',()=>adjustMapCar(-.5,0));
-byId('map-turn-left').addEventListener('click',()=>adjustMapCar(0,-10));
-byId('map-turn-right').addEventListener('click',()=>adjustMapCar(0,10));
-
-// Both searchable inputs share one confirmed ISO country, never unvalidated text.
-const countryPickers=Object.create(null);
-const SUGGESTED_CODES=['GB','US','DE','NG','IN','AU','CA','JP','ZA','BR','FR','AE'];
-function closePicker(p){
-  p.results.hidden=true;p.input.setAttribute('aria-expanded','false');
-  p.input.removeAttribute('aria-activedescendant');p.activeIndex=-1;
-}
-function populateResults(p,query){
-  const q=normalized(query);
-  const matches=q
-    ?COUNTRY_LIST.filter(c=>normalized(c.name+' '+c.iso+' '+(COUNTRY_ALIASES[c.iso]||'')).includes(q))
-    :SUGGESTED_CODES.map(code=>COUNTRIES[code]);
-  p.matches=matches.slice(0,50);p.activeIndex=-1;p.results.replaceChildren();
-  if(!p.matches.length){
-    const empty=document.createElement('div');empty.className='country-empty';
-    empty.textContent='No matching countries. Try a different name or ISO code.';
-    p.results.appendChild(empty);
+function setCountry(iso,fromUser=false){
+ if(!COUNTRIES[iso])return;
+ const old=activeCountryCode;
+ activeCountryCode=iso;
+ for(const picker of pickers)picker.select(iso);
+ if(fromUser&&old!==iso&&!active){
+  if(iso==='GB'){
+    byId('start-lat').value=BOREHAMWOOD.lat;
+    byId('start-lng').value=BOREHAMWOOD.lng;
   }else{
-    const fragment=document.createDocumentFragment();
-    p.matches.forEach((country,index)=>{
-      const option=document.createElement('button');option.type='button';
-      option.id=p.input.id+'-result-'+index;
-      option.className='country-option';
-      option.setAttribute('role','option');option.setAttribute('aria-selected','false');
-      const flag=document.createElement('img');
-      flag.className='flag';flag.src='https://flagcdn.com/w40/'+country.iso.toLowerCase()+'.png';
-      flag.width=27;flag.height=20;flag.loading='lazy';flag.decoding='async';
-      flag.alt='';flag.setAttribute('aria-hidden','true');
-      flag.addEventListener('error',()=>{
-        const fallback=document.createElement('span');fallback.className='flag-emoji';
-        fallback.textContent=countryFlag(country.iso);fallback.setAttribute('aria-hidden','true');
-        flag.replaceWith(fallback);
-      },{once:true});
-      const name=document.createElement('span');name.className='country-name';name.textContent=country.name;
-      const meta=document.createElement('span');meta.className='country-meta';meta.textContent=country.iso+' · '+country.drive;
-      option.append(flag,name,meta);
-      option.addEventListener('pointerdown',event=>event.preventDefault());
-      option.addEventListener('click',()=>configureCountry(country.iso));
-      fragment.appendChild(option);
-    });
-    p.results.appendChild(fragment);
+    byId('start-lat').value='';
+    byId('start-lng').value='';
   }
-  p.results.hidden=false;p.input.setAttribute('aria-expanded','true');
-  p.input.removeAttribute('aria-activedescendant');
+ }
+ const car=byId('player-car');
+ if(car){
+   car.setAttribute('global-cockpit','country',iso);
+   car.components['car-physics']?.reset();
+ }
+ if(active&&old!==iso){
+   toast(COUNTRIES[iso].name+' · '+COUNTRIES[iso].drive);
+   // In-game country switching moves the cockpit, NOT the geography.
+   // A specific map origin must be chosen before entering practice.
+   status('Cockpit: '+COUNTRIES[iso].drive+' · map location unchanged');
+ }
 }
-function updatePickerDisplay(p,code){
-  const c=COUNTRIES[code];if(!c)return;
-  p.selectedCode=code;p.input.value=c.name;
-  // A text input cannot contain HTML: render the selected flag next to it.
-  if(!p.selectedFlag){
-    p.selectedFlag=document.createElement('img');
-    p.selectedFlag.className='selected-flag';p.selectedFlag.width=27;
-    p.selectedFlag.height=20;p.selectedFlag.alt='';
-    p.selectedFlag.setAttribute('aria-hidden','true');
-    p.input.parentElement.appendChild(p.selectedFlag);
-  }
-  p.selectedFlag.src='https://flagcdn.com/w40/'+code.toLowerCase()+'.png';
-  p.selectedFlag.onerror=()=>{p.selectedFlag.style.visibility='hidden'};
-  p.selectedFlag.onload=()=>{p.selectedFlag.style.visibility='visible'};
-  p.input.setAttribute('aria-invalid','false');closePicker(p);
+function createPicker(inputId){
+ const input=byId(inputId),wrapper=input.closest('.picker');
+ const list=wrapper.querySelector('.suggestions');
+ const selectedFlag=wrapper.querySelector('.selected-flag');
+ const picker={
+   input,list,selected:null,entries:[],active:-1,
+   close(){list.hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');this.active=-1;},
+   select(iso){
+     const c=COUNTRIES[iso];
+     if(!c)return;
+     this.selected=iso;input.value=c.name;
+     selectedFlag.src=makeFlag(iso);
+     selectedFlag.onerror=()=>{selectedFlag.style.visibility='hidden'};
+     selectedFlag.onload=()=>{selectedFlag.style.visibility='visible'};
+     this.close();
+   },
+   render(text=''){
+     const q=normalized(text);
+     const matches=q
+       ?COUNTRY_LIST.filter(c=>normalized(c.name+' '+c.iso+' '+(COUNTRY_ALIASES[c.iso]||'')).includes(q))
+       :['GB','US','DE','NG','IN','AU','JP','ZA','CA','BR','FR','AE'].map(code=>COUNTRIES[code]);
+     this.entries=matches.slice(0,48);this.active=-1;
+     list.replaceChildren();
+     if(!this.entries.length){
+       const empty=document.createElement('div');
+       empty.className='no-matches';empty.textContent='No matching country or ISO code';
+       list.appendChild(empty);
+     }else{
+       const fragment=document.createDocumentFragment();
+       this.entries.forEach((c,i)=>{
+         const button=document.createElement('button');
+         button.type='button';button.className='suggestion';button.id=inputId+'-option-'+i;
+         button.setAttribute('role','option');button.setAttribute('aria-selected','false');
+         const image=document.createElement('img');
+         image.src=makeFlag(c.iso);image.width=27;image.height=20;image.loading='lazy';
+         image.decoding='async';image.alt='';image.setAttribute('aria-hidden','true');
+         image.onerror=()=>{
+           const emoji=document.createElement('span');emoji.className='flag-fallback';
+           emoji.textContent=countryFlag(c.iso);emoji.setAttribute('aria-hidden','true');
+           image.replaceWith(emoji);
+         };
+         const name=document.createElement('span');name.className='name';name.textContent=c.name;
+         const meta=document.createElement('span');meta.className='meta';meta.textContent=c.iso+' · '+c.drive;
+         button.append(image,name,meta);
+         button.addEventListener('pointerdown',event=>event.preventDefault());
+         button.addEventListener('click',()=>setCountry(c.iso,true));
+         fragment.appendChild(button);
+       });
+       list.appendChild(fragment);
+     }
+     list.hidden=false;input.setAttribute('aria-expanded','true');
+   }
+ };
+ input.addEventListener('focus',()=>{input.select();picker.render('')});
+ input.addEventListener('input',()=>{picker.selected=null;picker.render(input.value)});
+ input.addEventListener('keydown',event=>{
+   if(event.key==='Escape'){
+     event.preventDefault();picker.select(activeCountryCode);return;
+   }
+   if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+     event.preventDefault();if(list.hidden)picker.render('');
+     if(!picker.entries.length)return;
+     picker.active=(picker.active+(event.key==='ArrowDown'?1:-1)+picker.entries.length)%picker.entries.length;
+     list.querySelectorAll('.suggestion').forEach((button,i)=>{
+       const isActive=i===picker.active;button.classList.toggle('active',isActive);
+       button.setAttribute('aria-selected',String(isActive));
+       if(isActive){
+         input.setAttribute('aria-activedescendant',button.id);
+         button.scrollIntoView({block:'nearest'});
+       }
+     });return;
+   }
+   if(event.key==='Enter'&&!list.hidden){
+     event.preventDefault();
+     if(picker.entries.length)
+       setCountry(picker.entries[picker.active>=0?picker.active:0].iso,true);
+     return;
+   }
+   if(event.key==='Tab')picker.select(activeCountryCode);
+ });
+ input.addEventListener('blur',()=>setTimeout(()=>picker.select(activeCountryCode),130));
+ picker.select(activeCountryCode);
+ pickers.push(picker);
+ return picker;
 }
-function configureCountry(code){
-  if(!COUNTRIES[code])return;
-  activeCountryCode=code;
-  Object.values(countryPickers).forEach(p=>updatePickerDisplay(p,code));
-  if(typeof initRouteInputs==='function'&&byId('route-lat'))initRouteInputs(code);
-  const car=byId('player-car');
-  if(car){
-    car.setAttribute('global-cockpit','country',code);
-    car.components['global-cockpit']?.apply();
-    car.components['car-physics']?.reset();
-    if(active&&scene){
-      activateRouteFromSelection(code);
-    }
-  }
+function geoFromVehicle(x,z){
+ if(!selectedRoute)return null;
+ const lat=selectedRoute.lat-z/EARTH_RADIUS*180/Math.PI;
+ const avg=(lat+selectedRoute.lat)/2*Math.PI/180;
+ return {lat,lng:selectedRoute.lng+x/(EARTH_RADIUS*Math.cos(avg))*180/Math.PI};
 }
-function setupCountryPicker(id){
-  const p={input:byId(id),results:byId(id+'-options'),selectedCode:null,matches:[],activeIndex:-1};
-  countryPickers[id]=p;
-  p.input.addEventListener('focus',()=>{
-    p.input.select();populateResults(p,'');
-  });
-  p.input.addEventListener('input',()=>{
-    p.selectedCode=null;p.input.setAttribute('aria-invalid','false');
-    populateResults(p,p.input.value);
-  });
-  p.input.addEventListener('keydown',event=>{
-    if(event.key==='Escape'){
-      if(!p.results.hidden){event.preventDefault();updatePickerDisplay(p,activeCountryCode)}
-      return;
-    }
-    if(event.key==='ArrowDown'||event.key==='ArrowUp'){
-      event.preventDefault();
-      if(p.results.hidden)populateResults(p,'');
-      if(!p.matches.length)return;
-      p.activeIndex=(p.activeIndex+(event.key==='ArrowDown'?1:-1)+p.matches.length)%p.matches.length;
-      p.results.querySelectorAll('[role="option"]').forEach((option,i)=>{
-        const active=i===p.activeIndex;
-        option.classList.toggle('active',active);
-        option.setAttribute('aria-selected',String(active));
-        if(active){p.input.setAttribute('aria-activedescendant',option.id);option.scrollIntoView({block:'nearest'});}
-      });
-      return;
-    }
-    if(event.key==='Enter'&&!p.results.hidden){
-      event.preventDefault();
-      if(p.matches.length)configureCountry(p.matches[p.activeIndex<0?0:p.activeIndex].iso);
-    }else if(event.key==='Tab'){
-      if(!p.selectedCode)updatePickerDisplay(p,activeCountryCode);
-      else closePicker(p);
-    }
-  });
-  p.input.addEventListener('blur',()=>setTimeout(()=>{
-    if(!p.results.hidden){
-      if(!p.selectedCode)updatePickerDisplay(p,activeCountryCode);
-      else closePicker(p);
-    }
-  },160));
-  updatePickerDisplay(p,activeCountryCode);
+function syncGoogleMap(){
+ if(!googleMapReady||!selectedRoute||scene?.is('vr-mode'))return;
+ const car=byId('player-car');
+ if(!car)return;
+ const pos=car.object3D.position;
+ const center=geoFromVehicle(pos.x,pos.z);
+ mapElement.center={lat:center.lat,lng:center.lng,altitude:selectedRoute.altitude};
+ mapElement.heading=(((-car.object3D.rotation.y)*180/Math.PI)%360+360)%360;
 }
-// Use browser locale only as an initial preference, never as precise geolocation.
-try{
-  for(const language of (navigator.languages||[navigator.language||'en-GB'])){
-    const region=new Intl.Locale(language).region;
-    if(region&&COUNTRIES[region]){activeCountryCode=region;break}
-  }
-}catch(error){console.debug('Defaulting country to United Kingdom',error)}
-setupCountryPicker('country-start');
-setupCountryPicker('country-live');
-// Initialize optional, manually configurable coordinates for the selected region.
-let coordinatesForRegion=null;
-function initRouteInputs(iso){
-  const preset=ROUTE_PRESETS[iso];
-  if(coordinatesForRegion===iso)return;
-  coordinatesForRegion=iso;
-  document.getElementById('route-caption').textContent=preset
-    ?preset.name+' (approximate origin; verify the on-road starting point).'
-    :'Enter a specific latitude and longitude to enable a real-world 3D location for this country.';
-  for(const [id,property] of [['route-lat','lat'],['route-lon','lon'],['route-height','height'],['route-heading','heading']]){
-    document.getElementById(id).value=preset?.[property]??'';
-  }
+function showMapsError(reason){
+ googleMapReady=false;
+ setFallback(true);
+ byId('map-help').hidden=true;
+ status('Practice environment · '+reason);
 }
-initRouteInputs(activeCountryCode);
-document.addEventListener('pointerdown',event=>{
-  for(const p of Object.values(countryPickers))
-    if(!event.target.closest('.country-picker'))closePicker(p);
+function mapsLoader(){
+ if(mapsPromise)return mapsPromise;
+ mapsPromise=new Promise((resolve,reject)=>{
+   if(window.google?.maps?.importLibrary){resolve();return}
+   const script=document.createElement('script');
+   script.async=true;
+   // Official Maps JavaScript API endpoint; the bare googleapis.com domain
+   // is NOT a JavaScript 3D Maps loader.
+   script.src='https://maps.googleapis.com/maps/api/js?key='+
+     encodeURIComponent(GOOGLE_MAPS_API_KEY)+
+     '&v=weekly&libraries=maps3d&loading=async';
+   script.onload=()=>resolve();
+   script.onerror=()=>reject(Error('Maps JavaScript API script failed to load'));
+   document.head.appendChild(script);
+ }).then(async()=>{
+   if(!window.google?.maps?.importLibrary)throw Error('Google Maps library not available');
+   await google.maps.importLibrary('maps3d');
+   if(!customElements.get('gmp-map-3d'))
+     await customElements.whenDefined('gmp-map-3d');
+ }).catch(error=>{mapsPromise=null;throw error});
+ return mapsPromise;
+}
+async function startGoogleMap(){
+ if(!keyConfigured()){
+   showMapsError('Maps JavaScript API key not configured');
+   return;
+ }
+ if(!selectedRoute){
+   showMapsError('Add map coordinates to enable Google 3D background');
+   return;
+ }
+ const generation=++mapActivation;
+ setFallback(true);
+ status('Loading official Google 3D Maps…');
+ mapElement.addEventListener('gmp-error',()=>{
+   if(generation===mapActivation)showMapsError('Google 3D initialization error: check billing/API restrictions');
+ },{once:true});
+ let settled=false;
+ const onSteady=event=>{
+   if(generation!==mapActivation||!event.isSteady)return;
+   settled=true;
+   googleMapReady=true;
+   if(!scene?.is('vr-mode'))setFallback(false);
+   byId('map-help').hidden=false;
+   status('Google 3D map · Borehamwood reference · flat vehicle Y=0.25');
+ };
+ mapElement.addEventListener('gmp-steadychange',onSteady);
+ try{
+   await mapsLoader();
+   if(generation!==mapActivation)return;
+   mapElement.mode='HYBRID'; // Required or the 3D map can remain blank.
+   mapElement.center={
+     lat:selectedRoute.lat,lng:selectedRoute.lng,altitude:selectedRoute.altitude
+   };
+   mapElement.range=190;
+   mapElement.tilt=78;
+   mapElement.heading=0;
+   // If the map never reaches steady, retain a usable A-Frame fallback.
+   setTimeout(()=>{
+     if(generation===mapActivation&&!settled){
+       status('Google 3D still loading · practice fallback remains available');
+     }
+   },18000);
+ }catch(error){
+   if(generation!==mapActivation)return;
+   console.error('[Driving Practice VR] Google Maps 3D load error',error);
+   showMapsError('Google Maps unavailable · check API key / domain / billing');
+ }
+}
+function readRoute(){
+ const latText=byId('start-lat').value.trim();
+ const lngText=byId('start-lng').value.trim();
+ if(!latText||!lngText)return null;
+ const lat=Number(latText),lng=Number(lngText);
+ if(!Number.isFinite(lat)||Math.abs(lat)>90||
+    !Number.isFinite(lng)||Math.abs(lng)>180)return null;
+ const country=COUNTRIES[activeCountryCode];
+ const key=activeCountryCode+'|'+lat+'|'+lng;
+ let record=ROUTE_SESSION_HISTORY.get(key);
+ if(!record){
+   record=Object.freeze({
+     country:activeCountryCode,lat,lng,altitude:activeCountryCode==='GB'?110:100,
+     name:activeCountryCode==='GB'?'Borehamwood Driving Test Centre':country.name
+   });
+   ROUTE_SESSION_HISTORY.set(key,record);
+ }
+ return record;
+}
+// --------------------- A-FRAME COMPONENTS ---------------------------
+AFRAME.registerComponent('car-physics',{
+ init(){
+   this.speed=0;this.heading=0;this.steer=0;this.velocity=new THREE.Vector3();
+   this.fwd=new THREE.Vector3();this.target=new THREE.Vector3();
+   this.keydown=event=>{
+     if(event.target?.closest?.('input,textarea,select,[contenteditable="true"]'))return;
+     const codes=['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'];
+     if(codes.includes(event.code)){
+       event.preventDefault();inputs[event.code]=true;
+     }
+   };
+   this.keyup=event=>{inputs[event.code]=false};
+   this.onBlur=()=>{Object.keys(inputs).forEach(key=>inputs[key]=false)};
+   window.addEventListener('keydown',this.keydown);
+   window.addEventListener('keyup',this.keyup);
+   window.addEventListener('blur',this.onBlur);
+ },
+ reset(){
+   const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
+   this.speed=0;this.heading=0;this.steer=0;this.velocity.set(0,0,0);
+   const laneX=country.roadSide==='left'?-1.8:1.8;
+   this.el.object3D.position.set(laneX,CAR_Y,0);
+   this.el.object3D.rotation.set(0,0,0);
+   updateSpeed(0);
+   if(googleMapReady)syncGoogleMap();
+ },
+ tick(time,delta){
+   if(!active||!delta)return;
+   const dt=Math.min(delta/1000,.05);
+   const go=Number(!!(inputs.KeyW||inputs.ArrowUp||inputs.go));
+   const brake=Number(!!(inputs.KeyS||inputs.ArrowDown||inputs.Space||inputs.brake));
+   const turn=Number(!!(inputs.KeyA||inputs.ArrowLeft||inputs.left))-
+     Number(!!(inputs.KeyD||inputs.ArrowRight||inputs.right));
+   this.steer=THREE.MathUtils.damp(this.steer,turn,6,dt);
+   this.speed=clamp(this.speed+(3.3*go-9.3*brake-(.18+.014*this.speed*this.speed))*dt,0,14);
+   const angularSpeed=this.steer*this.speed/(3.4+.35*this.speed);
+   this.heading+=angularSpeed*dt;
+   this.el.object3D.rotation.y=this.heading;
+   this.fwd.set(-Math.sin(this.heading),0,-Math.cos(this.heading));
+   this.target.copy(this.fwd).multiplyScalar(this.speed);
+   const grip=clamp(8-.2*this.speed+2.5*brake,3.4,10);
+   this.velocity.lerp(this.target,1-Math.exp(-grip*dt));
+   this.el.object3D.position.addScaledVector(this.velocity,dt);
+   // A permanent flat road is the sole height authority.
+   this.el.object3D.position.y=CAR_Y;
+   const wheel=byId('wheel');
+   if(wheel)wheel.object3D.rotation.z=-this.steer*.7;
+   updateSpeed(this.speed);
+   const pos=this.el.object3D.position;
+   if(Math.abs(pos.x)>440||Math.abs(pos.z)>440){
+     this.reset();toast('Practice boundary — reset');return;
+   }
+   if(googleMapReady&&time-carSyncAt>450){
+     carSyncAt=time;syncGoogleMap();
+   }
+ },
+ remove(){
+   window.removeEventListener('keydown',this.keydown);
+   window.removeEventListener('keyup',this.keyup);
+   window.removeEventListener('blur',this.onBlur);
+ }
 });
-// Existing lazy scene mounting and all WebXR components remain in place.
-byId('start').addEventListener('click',()=>{
-  const code=countryPickers['country-start'].selectedCode;
-  if(!code||!COUNTRIES[code]){
-    byId('load-status').textContent='Select a country from the search results to continue.';
-    countryPickers['country-start'].input.focus();return;
-  }
-  byId('start').disabled=true;
-  byId('load-status').textContent='Preparing your '+COUNTRIES[code].name+' cockpit…';
-  if(!window.AFRAME||!AFRAME.components['environment']){
-    byId('load-status').textContent='3D libraries failed to load. Check your internet connection and reload.';
-    byId('start').disabled=false;return;
-  }
-  const startScene=()=>{
-    active=false;configureCountry(code);
-    byId('splash').hidden=true;byId('app').hidden=false;
-    scene=byId('scene-mount').querySelector('a-scene');
-    scene.resize?.();
-    activateRouteFromSelection(code);
-    active=true;
-  };
-  if(!scene){
-    const fragment=byId('scene-template').content.cloneNode(true);
-    byId('scene-mount').appendChild(fragment);
-    scene=byId('scene-mount').querySelector('a-scene');
-    if(scene.hasLoaded)startScene();
-    else scene.addEventListener('loaded',startScene,{once:true});
-    scene.addEventListener('enter-vr',()=>byId('buttons').style.display='none');
-    scene.addEventListener('exit-vr',()=>byId('buttons').style.display='flex');
-  }else startScene();
+function updateSpeed(speed){
+ const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
+ const amount=Math.round(speed*(country.units==='mph'?2.236936:3.6));
+ const label=amount+' '+country.units;
+ byId('speed').textContent=label;
+ const vr=byId('speed3d');
+ if(vr)vr.setAttribute('value',label.toUpperCase());
+}
+AFRAME.registerComponent('global-cockpit',{
+ schema:{country:{default:'GB'}},
+ init(){this.apply()},
+ update(){this.apply()},
+ apply(){
+   const country=COUNTRIES[this.data.country]||COUNTRIES.GB;
+   const x=country.seatX;
+   const set=(id,attr,value)=>{
+     const el=byId(id);if(el)el.setAttribute(attr,value);
+   };
+   set('camera','position',{x,y:1.42,z:.13});
+   set('steering-column','position',{x,y:.98,z:-.5});
+   set('instrument-panel','position',{x,y:1.04,z:-.76});
+   set('mirror-left','rotation',{x:0,y:THREE.MathUtils.radToDeg(Math.atan2(x+1.1,.92)),z:0});
+   set('mirror-right','rotation',{x:0,y:THREE.MathUtils.radToDeg(Math.atan2(x-1.1,.92)),z:0});
+   set('mirror-rear','position',{x:x*.22,y:1.68,z:-.7});
+   set('mirror-rear','rotation',{x:0,y:x*24,z:0});
+   set('country-label','value',country.name.toUpperCase().slice(0,26)+' | '+country.drive);
+   updateSpeed(this.el.components['car-physics']?.speed||0);
+ }
+});
+AFRAME.registerComponent('mirror-gaze',{
+ schema:{label:{default:'Mirror'}},
+ init(){
+   this.timer=null;
+   this.inView=()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>toast('Mirror Checked · '+this.data.label),480)};
+   this.outView=()=>clearTimeout(this.timer);
+   this.el.addEventListener('mouseenter',this.inView);
+   this.el.addEventListener('mouseleave',this.outView);
+ },
+ remove(){
+   clearTimeout(this.timer);
+   this.el.removeEventListener('mouseenter',this.inView);
+   this.el.removeEventListener('mouseleave',this.outView);
+ }
+});
+AFRAME.registerComponent('share-link',{
+ init(){this.click=()=>shareApp();this.el.addEventListener('click',this.click)},
+ remove(){this.el.removeEventListener('click',this.click)}
+});
+AFRAME.registerComponent('practice-markings',{
+ init(){
+   for(let z=-175;z<175;z+=11){
+     const dash=document.createElement('a-box');
+     dash.setAttribute('position','0 .03 '+z);
+     dash.setAttribute('width',.095);
+     dash.setAttribute('height',.016);
+     dash.setAttribute('depth',4);
+     dash.setAttribute('color','#f6f3da');
+     this.el.appendChild(dash);
+   }
+ }
+});
+// ---------------------------- STARTUP -------------------------------
+createPicker('country-start');
+createPicker('country-live');
+document.addEventListener('pointerdown',event=>{
+ if(!event.target.closest('.picker')){
+   for(const p of pickers)p.close();
+ }
+});
+byId('start-button').addEventListener('click',async()=>{
+ const button=byId('start-button');
+ if(button.disabled)return;
+ if(!window.AFRAME){
+   byId('load-message').textContent='3D engine could not load. Check your connection and reload.';
+   return;
+ }
+ button.disabled=true;
+ byId('load-message').textContent='Preparing 3D cockpit…';
+ selectedRoute=readRoute();
+ byId('app').hidden=false;
+ byId('splash').hidden=true;
+ const fragment=byId('driving-template').content.cloneNode(true);
+ byId('scene-mount').appendChild(fragment);
+ scene=byId('driving-scene');
+ const ready=()=>{
+   // Clear A-Frame's scene background; Google owns the lower WebGL layer.
+   if(scene.renderer){
+     scene.object3D.background=null;
+     scene.renderer.setClearColor(0,0);
+     scene.renderer.setClearAlpha(0);
+   }
+   active=true;
+   setCountry(activeCountryCode);
+   byId('player-car').components['car-physics']?.reset();
+   setFallback(true);
+   void startGoogleMap();
+   scene.addEventListener('enter-vr',()=>{
+     // DOM-backed Google Maps is NOT visible to the immersive XR compositor.
+     setFallback(true);
+     byId('controls').hidden=true;
+     status('VR mode · independent practice scene');
+   });
+   scene.addEventListener('exit-vr',()=>{
+     byId('controls').hidden=false;
+     setFallback(!googleMapReady);
+     status(googleMapReady?'Google 3D reference · flat practice Y=0.25':'Practice environment');
+   });
+ };
+ if(scene.hasLoaded)ready();
+ else scene.addEventListener('loaded',ready,{once:true});
 });
 byId('reset').addEventListener('click',()=>byId('player-car')?.components['car-physics']?.reset());
 byId('share').addEventListener('click',shareApp);
 window.addEventListener('keydown',event=>{
-  if(event.code==='KeyR'&&!event.target?.closest?.('input,textarea,[contenteditable="true"]'))
-    byId('reset').click();
+ if(event.code==='KeyR'&&!event.target?.closest?.('input,textarea,select')){
+   byId('reset').click();
+ }
 });
 document.querySelectorAll('[data-drive]').forEach(button=>{
-  const code=button.dataset.drive;
-  button.addEventListener('pointerdown',event=>{
-    event.preventDefault();button.setPointerCapture(event.pointerId);keys[code]=true;
-  });
-  for(const name of ['pointerup','pointercancel','lostpointercapture'])
-    button.addEventListener(name,()=>keys[code]=false);
+ const key=button.dataset.drive;
+ button.addEventListener('pointerdown',event=>{
+   event.preventDefault();
+   button.setPointerCapture(event.pointerId);
+   inputs[key]=true;
+ });
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])
+   button.addEventListener(type,()=>inputs[key]=false);
 });
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden)Object.keys(keys).forEach(k=>keys[k]=false);
+ if(document.hidden)Object.keys(inputs).forEach(key=>inputs[key]=false);
 });
+console.info('[Driving Practice VR] Google 3D Maps is a separate WebGL layer.');
+console.info('Enable Maps JavaScript API, restrict the browser key to your site, and configure billing quotas.');
+console.warn('The native Google 3D background is visual only; A-Frame drives on a fixed Y=0 road.');
 </script>
 </body>
 </html>
