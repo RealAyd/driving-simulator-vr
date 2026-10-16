@@ -356,13 +356,48 @@ a-scene {width:100%;height:100%}
 <script>
 'use strict';
 
-// COUNTRY METADATA: roadSide and seatSide are distinct by design.
-// UK traffic keeps LEFT and the driver sits RIGHT; US/DE are the opposite.
-const COUNTRIES=Object.freeze({
-  uk:{name:'United Kingdom',roadSide:'left',seatSide:'right',seatX:0.48,units:'mph'},
-  us:{name:'United States',roadSide:'right',seatSide:'left',seatX:-0.48,units:'mph'},
-  de:{name:'Germany',roadSide:'right',seatSide:'left',seatX:-0.48,units:'km/h'}
-});
+// Complete 249-code ISO 3166-1 country/territory data. Names use the browser's
+// built-in Intl.DisplayNames, with overrides for clearer everyday English.
+const ISO_CODES="AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW".split(' ');
+const LEFT_TRAFFIC=new Set("AG AI AU BB BD BM BN BS BT BW CC CK CX CY DM FJ FK GB GD GG GY HK ID IE IM IN JE JM JP KE KI KN KY LC LK LS MO MS MT MU MV MW MY MZ NA NF NP NR NU NZ PG PK PN SB SC SG SH SR SZ TC TH TK TL TO TT TV TZ UG VC VG VI WS ZA ZM ZW".split(' '));
+// Road-side and steering-side are different; the US Virgin Islands is the
+// important exception (left-side road traffic, predominantly LHD vehicles).
+const LHD_ON_LEFT=new Set(['VI']);
+const MPH_COUNTRIES=new Set(['GB','US','VI','PR','GU','MP','AS','BS','KY']);
+const NAME_OVERRIDES={
+  GB:'United Kingdom',US:'United States',KR:'South Korea',KP:'North Korea',
+  CD:'DR Congo',CG:'Republic of the Congo',CI:"Côte d'Ivoire",
+  CZ:'Czechia',SZ:'Eswatini',TL:'Timor-Leste',TW:'Taiwan',
+  VI:'U.S. Virgin Islands',VG:'British Virgin Islands',HK:'Hong Kong',
+  MO:'Macau',PS:'Palestine',VA:'Vatican City',TR:'Türkiye'
+};
+const COUNTRY_ALIASES={
+  GB:'UK Great Britain Britain England Scotland Wales Northern Ireland',
+  US:'USA America United States of America',
+  AE:'UAE Emirates',CI:'Ivory Coast',MM:'Burma',SZ:'Swaziland',
+  TL:'East Timor',CZ:'Czech Republic',TR:'Turkey',
+  KR:'Korea South',KP:'Korea North',CD:'Congo Kinshasa',CG:'Congo Brazzaville'
+};
+const regionNames=typeof Intl.DisplayNames==='function'
+  ?new Intl.DisplayNames(['en'],{type:'region'}):null;
+const COUNTRY_LIST=Object.freeze(ISO_CODES.map(iso=>{
+  const name=NAME_OVERRIDES[iso]||(regionNames?.of(iso)??iso);
+  const roadSide=LEFT_TRAFFIC.has(iso)?'left':'right';
+  const drive=roadSide==='left'&&!LHD_ON_LEFT.has(iso)?'RHD':'LHD';
+  return Object.freeze({
+    name,iso,drive,roadSide,seatSide:drive==='RHD'?'right':'left',
+    seatX:drive==='RHD'?0.48:-0.48,units:MPH_COUNTRIES.has(iso)?'mph':'km/h'
+  });
+}).sort((a,b)=>a.name.localeCompare(b.name,'en')));
+const COUNTRIES=Object.freeze(Object.fromEntries(COUNTRY_LIST.map(c=>[c.iso,c])));
+let activeCountryCode='GB';
+function countryFlag(iso){
+  return [...iso].map(letter=>String.fromCodePoint(127397+letter.charCodeAt(0))).join('');
+}
+function normalized(text){
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
 const keys=Object.create(null);
 let active=false,scene=null,toastTimer=0;
 const byId=id=>document.getElementById(id);
@@ -398,7 +433,7 @@ AFRAME.registerComponent('car-physics',{
     this.speed=0;this.steer=0;this.brakingWeight=0;this.velocity=new THREE.Vector3();
     this.forward=new THREE.Vector3();this.targetVelocity=new THREE.Vector3();
     this.heading=0;this.lastCollision=0;
-    this.down=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();keys[e.code]=true}};
+    this.down=e=>{if(e.target?.closest?.('input,textarea,[contenteditable="true"]'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();keys[e.code]=true}};
     this.up=e=>{keys[e.code]=false};
     window.addEventListener('keydown',this.down);
     window.addEventListener('keyup',this.up);
@@ -406,7 +441,7 @@ AFRAME.registerComponent('car-physics',{
     window.addEventListener('blur',this.blur);
   },
   reset(){
-    const country=COUNTRIES[byId('country-live')?.value||'uk']||COUNTRIES.uk;
+    const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
     this.speed=0;this.steer=0;this.brakingWeight=0;this.heading=0;
     this.velocity.set(0,0,0);
     this.el.object3D.position.set(country.roadSide==='left'?-2:2,0,82);
@@ -414,7 +449,7 @@ AFRAME.registerComponent('car-physics',{
     this.updateSpeed();
   },
   updateSpeed(){
-    const country=COUNTRIES[byId('country-live')?.value||'uk']||COUNTRIES.uk;
+    const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
     const v=Math.round(this.speed*(country.units==='mph'?2.236936:3.6));
     const message=v+' '+country.units;
     if(byId('speed'))byId('speed').textContent=message;
@@ -531,11 +566,11 @@ AFRAME.registerComponent('mirror-panel',{
 // Country-driven cockpit arrangement. Seat, instruments, wheel and mirror aim
 // are all recalculated without reloading the scene or fetching new 3D assets.
 AFRAME.registerComponent('global-cockpit',{
-  schema:{country:{default:'uk'}},
+  schema:{country:{default:'GB'}},
   init(){this.el.addEventListener('loaded',()=>this.apply());this.apply()},
   update(){this.apply()},
   apply(){
-    const c=COUNTRIES[this.data.country]||COUNTRIES.uk;
+    const c=COUNTRIES[this.data.country]||COUNTRIES.GB;
     const set=(id,attr,value)=>{const el=byId(id);if(el)el.setAttribute(attr,value)};
     set('head','position',{x:c.seatX,y:1.42,z:0.12});
     set('wheel-column','position',{x:c.seatX,y:0.98,z:-0.55});
@@ -551,8 +586,8 @@ AFRAME.registerComponent('global-cockpit',{
     // Centre rearview mirror tilts toward the driver.
     set('rear-mirror','position',{x:c.seatX*0.22,y:1.68,z:-0.76});
     set('rear-mirror','rotation',{x:0,y:c.seatX*24,z:0});
-    set('country-3d','value',c.name.toUpperCase()+' | '+c.seatSide.toUpperCase()+' HAND DRIVE');
-    if(byId('country-live'))byId('country-live').value=this.data.country;
+    set('country-3d','value',c.name.toUpperCase().slice(0,27)+' | '+c.drive);
+    // Country search fields are synchronized by configureCountry().
     const physics=this.el.components['car-physics'];
     if(physics)physics.updateSpeed();
   }
@@ -656,7 +691,7 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
     <a-entity light="type: directional; intensity: 0.85" position="-12 22 5"></a-entity>
     <a-entity practice-world></a-entity>
 
-    <a-entity id="car" position="-2 0 82" car-physics global-cockpit="country: uk">
+    <a-entity id="car" position="-2 0 82" car-physics global-cockpit="country: GB">
       <!-- Chassis and dashboard shell are visible in the cockpit, hidden during mirror reflection. -->
       <a-entity id="cockpit-shell" class="reflection-hide">
         <a-box position="0 0.47 0.12" width="2.05" height="0.18" depth="3.25" color="#18364b"></a-box>
