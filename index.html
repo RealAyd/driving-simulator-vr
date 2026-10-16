@@ -9,12 +9,9 @@
 <!-- Only external dependencies: A-Frame 1.6.0 and the Environment component. -->
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
-<!-- New York Times experimental 3D Tiles A-Frame adapter.
-     Load only a viewer when a restricted Google Map Tiles API key is configured.
-     These extras are documented dependencies for basis/KTX2 textures. -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/utils/WorkerPool.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/KTX2Loader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aframe-loader-3dtiles-component@1.0.6/dist/aframe-loader-3dtiles-component.min.js"></script>
+<!-- NYT 3D Tiles component pinned to v1.0.6 from unpkg.
+     Remove obsolete three/examples/js scripts: they do not exist in modern Three. -->
+<script src="https://unpkg.com/aframe-loader-3dtiles-component@1.0.6/dist/aframe-loader-3dtiles-component.min.js"></script>
 <style>
 /* Driving Practice UI: slate + emerald, built with system fonts and zero extra assets. */
 :root {
@@ -647,16 +644,15 @@ const CHASSIS_GROUND_OFFSET_METRES = 0.25;
   console.groupEnd();
 })();
 
-// Borehamwood (London) Driving Test Centre, Unit 1 Stirling Court, WD6 2BT.
-// Coordinates: point near the test centre, NOT a surveyed on-road start line.
-// Height is a rough postcode-level estimate (metres above sea level).
+// Owner-supplied Borehamwood map anchor, not the verified DVSA entrance.
+// Published test centre coordinates are nearer 51.64736, -0.25260.
 const ROUTE_PRESETS = Object.freeze({
   GB: Object.freeze({
-    id:'gb-borehamwood-test-centre',
-    name:'Borehamwood Test Centre, UK',
-    lat:51.64736,
-    lon:-0.25260,
-    height:110,
+    id:'gb-borehamwood-reference',
+    name:'Borehamwood reference, UK (verify road start)',
+    lat:51.6521,
+    lon:-0.2741,
+    height:0,
     heading:0
   })
 });
@@ -926,7 +922,7 @@ AFRAME.registerComponent('mirror-panel',{
     if(!r||!sc.object3D||!r.getRenderTarget)return;
     this.el.object3D.getWorldPosition(this.position);
     this.mirrorCam.position.copy(this.position);
-    const heading=byId('car').object3D.rotation.y;
+    const heading=byId('player-car').object3D.rotation.y;
     const outward=this.data.side==='left'?-18:this.data.side==='right'?18:0;
     const yaw=heading+THREE.MathUtils.degToRad(180+outward);
     this.aim.set(-Math.sin(yaw),-0.02,-Math.cos(yaw));
@@ -1039,7 +1035,7 @@ AFRAME.registerComponent('global-cockpit',{
   apply(){
     const c=COUNTRIES[this.data.country]||COUNTRIES.GB;
     const set=(id,attr,value)=>{const el=byId(id);if(el)el.setAttribute(attr,value)};
-    set('head','position',{x:c.seatX,y:1.42,z:0.12});
+    set('camera','position',{x:c.seatX,y:1.42,z:0.12});
     set('wheel-column','position',{x:c.seatX,y:0.98,z:-0.55});
     set('instrument-panel','position',{x:c.seatX,y:1.04,z:-0.78});
     // Side mirrors remain mounted on their real-world respective wings.
@@ -1175,6 +1171,11 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
   <div id="scene-mount"></div>
 </div>
 
+<!-- Three.js global cache must be disabled BEFORE the scene initializes. -->
+<script>
+  THREE.Cache.enabled = false;
+  console.info('[Driving Practice VR] THREE.Cache disabled for streaming 3D Tiles');
+</script>
 <template id="scene-template">
   <a-scene embedded renderer="antialias: true; colorManagement: true" background="color: #bad9e7" fog="type: linear; color: #bad9e7; near: 90; far: 220" loading-screen="enabled: false" vr-mode-ui="enabled: true">
     <a-entity environment="preset: default; ground: flat; groundColor: #718b7b; dressingAmount: 0; skyType: color; skyColor: #bad9e7; lighting: none"></a-entity>
@@ -1187,7 +1188,7 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
              width="1200" height="1200"
              material="shader: flat; color: #ffffff; transparent: true; opacity: 0; side: double; depthWrite: false"></a-plane>
 
-    <a-entity id="car" position="-2 0.25 82"
+    <a-entity id="player-car" position="-2 0.25 82"
               car-physics global-cockpit="country: GB"
               ground-snap="chassisOffset: 0.25; floorY: 0">
       <!-- One downward (0,-1,0) ray query/frame, only against app-owned
@@ -1234,9 +1235,16 @@ AFRAME.registerComponent('share-link',{init(){this.onClick=()=>shareApp();this.e
       <a-plane id="rear-mirror" class="mirror-target" mirror-panel="label: Rearview; side: rear" position="0 1.68 -0.76" width="0.49" height="0.17"></a-plane>
 
       <!-- Native look-controls drives the central fuse raycaster for gaze checks. -->
-      <a-entity id="head" position="0.48 1.42 0.12" camera="near: 0.04; fov: 78; far: 1200" look-controls wasd-controls="enabled: false">
-        <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4" cursor="fuse: true; fuseTimeout: 650" geometry="primitive: ring; radiusInner: 0.003; radiusOuter: 0.005" material="shader: flat; color: #68f7d1" position="0 0 -0.45"></a-cursor>
-      </a-entity>
+      <a-camera id="camera" position="0.48 1.42 0.12"
+                look-controls="pointerLockEnabled: true"
+                wasd-controls="enabled: false"
+                camera="near: 0.04; fov: 78; far: 1200">
+        <a-cursor raycaster="objects: .mirror-target, .share-target; far: 4"
+                  cursor="fuse: true; fuseTimeout: 650"
+                  geometry="primitive: ring; radiusInner: 0.003; radiusOuter: 0.005"
+                  material="shader: flat; color: #68f7d1"
+                  position="0 0 -0.45"></a-cursor>
+      </a-camera>
       <a-entity laser-controls="hand: right" raycaster="objects: .mirror-target, .share-target; far: 5"></a-entity>
     </a-entity>
   </a-scene>
@@ -1283,7 +1291,7 @@ function showPracticeEnvironment(reason){
   clearInterval(tilePollTimer);
   byId('map-credits').hidden=true;byId('map-adjust').hidden=true;
   mapMessage(reason||'Practice environment');
-  byId('car')?.components['car-physics']?.reset();
+  byId('player-car')?.components['car-physics']?.reset();
 }
 function activateRouteFromSelection(iso){
   const route=readActiveRoute(iso);
@@ -1315,7 +1323,7 @@ function activateRouteFromSelection(iso){
     byId('practice-world').object3D.visible=false;
     byId('map-adjust').hidden=false;
     mapMessage('Google Maps · '+route.name+' (live session reused)');
-    byId('car').components['car-physics']?.reset();
+    byId('player-car').components['car-physics']?.reset();
     return;
   }
   if(currentTileEntity){
@@ -1376,7 +1384,7 @@ function activateRouteFromSelection(iso){
         byId('practice-world').object3D.visible=false;
         byId('map-adjust').hidden=false;
         activeMapMode='google';
-        byId('car').components['car-physics']?.reset();
+        byId('player-car').components['car-physics']?.reset();
         mapMessage('Google Maps · '+activeRoute.name+' · road alignment approximate');
         // Surface live viewport provider credits, without inventing strings.
         const creditTimer=setInterval(()=>{
@@ -1402,7 +1410,7 @@ function adjustMapCar(heightStep,headingStep){
   if(activeMapMode!=='google'||!activeRoute)return;
   activeRoute.spawnY=Math.max(-30,Math.min(40,(activeRoute.spawnY||0)+heightStep));
   activeRoute.heading=((activeRoute.heading||0)+headingStep+360)%360;
-  byId('car')?.components['car-physics']?.reset();
+  byId('player-car')?.components['car-physics']?.reset();
   mapMessage('Google Maps · manual alignment: '+activeRoute.spawnY.toFixed(1)+'m, '+activeRoute.heading+'°');
 }
 byId('map-raise').addEventListener('click',()=>adjustMapCar(.5,0));
@@ -1476,7 +1484,7 @@ function configureCountry(code){
   activeCountryCode=code;
   Object.values(countryPickers).forEach(p=>updatePickerDisplay(p,code));
   if(typeof initRouteInputs==='function'&&byId('route-lat'))initRouteInputs(code);
-  const car=byId('car');
+  const car=byId('player-car');
   if(car){
     car.setAttribute('global-cockpit','country',code);
     car.components['global-cockpit']?.apply();
@@ -1588,7 +1596,7 @@ byId('start').addEventListener('click',()=>{
     scene.addEventListener('exit-vr',()=>byId('buttons').style.display='flex');
   }else startScene();
 });
-byId('reset').addEventListener('click',()=>byId('car')?.components['car-physics']?.reset());
+byId('reset').addEventListener('click',()=>byId('player-car')?.components['car-physics']?.reset());
 byId('share').addEventListener('click',shareApp);
 window.addEventListener('keydown',event=>{
   if(event.code==='KeyR'&&!event.target?.closest?.('input,textarea,[contenteditable="true"]'))
