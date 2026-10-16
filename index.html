@@ -79,6 +79,23 @@ h1 em{color:#41c78a;font-style:normal}
 #controls{position:absolute;z-index:10;bottom:max(56px,calc(env(safe-area-inset-bottom) + 52px));left:16px;right:110px;display:flex;flex-wrap:wrap;gap:8px;pointer-events:auto}
 #controls button{background:#0f172ae8;border:1px solid #64748b;border-radius:999px;color:white;padding:10px 13px;font-size:12px;font-weight:750;touch-action:none}
 #controls button:hover,#controls button:active{background:#128e54;border-color:#2ee391}
+/* Direction signals are flat touch controls, distinct from steering. */
+#controls .signal-control{border-radius:11px;background:#123b35;border:1px solid #277a59;color:#f0fff6;box-shadow:none}
+#controls .signal-control:hover{background:#146a45}
+#controls .signal-control[aria-pressed="true"]{border-color:#44ed92;background:#105939;color:#fff}
+#controls .signal-control:focus-visible{outline:3px solid #8af5bd}
+#indicator-hud{display:flex;gap:9px;align-items:center;justify-content:center;margin-top:8px;padding:4px 7px;border-radius:10px;background:#0b1b27a8;border:1px solid #395365;min-height:35px}
+#indicator-hud .indicator-arrow{font-size:25px;line-height:1;color:#28593e;opacity:.55;transition:color .09s ease,opacity .09s ease,text-shadow .09s ease}
+#indicator-hud .indicator-arrow.lit{color:#52ff96;opacity:1;text-shadow:0 0 10px rgba(73,255,135,.8)}
+#indicator-hud .indicator-label{font-size:9px;color:#9eacb5;font-weight:700;letter-spacing:.07em}
+#fault-banner{position:absolute;z-index:13;top:166px;left:15px;max-width:min(485px,94vw);padding:13px 16px;background:#3c2907;border:2px solid #fbbf24;border-radius:12px;box-shadow:0 9px 32px #0008;color:#fff0c2;font-size:13px}
+#fault-banner strong{display:block;color:#ffdf80;font-weight:900}
+#fault-banner small{display:block;color:#ffe6a7;margin-top:4px}
+#fault-banner.active{animation:faultBlink .48s step-end infinite}
+@keyframes faultBlink{50%{border-color:#864f07;background:#221a11;box-shadow:none}}
+@media(prefers-reduced-motion:reduce){#fault-banner.active{animation:none}}
+@media(max-width:650px){#fault-banner{top:145px;left:10px;max-width:calc(100vw - 20px);font-size:12px;padding:10px 12px}}
+
 #share-fallback{display:block;width:100%;margin-top:7px;border:1px solid #475569;background:#0b1422;border-radius:6px;color:white;padding:7px}
 #map-help{position:absolute;z-index:7;right:15px;bottom:54px;color:#fff;background:#0f172aba;font-size:10px;padding:5px 9px;border-radius:8px;pointer-events:none;max-width:320px;text-align:right}
 #map-help[hidden]{display:none}
@@ -140,6 +157,11 @@ h1 em{color:#41c78a;font-style:normal}
     <div class="hud-title">DRIVING PRACTICE VR</div>
     <div id="speed">0 mph</div>
     <div class="hud-hint">Look at the 3 mirrors · R to reset</div>
+    <div id="indicator-hud" aria-label="Turn signal dashboard">
+      <span id="indicator-left" class="indicator-arrow" aria-hidden="true">◀</span>
+      <span class="indicator-label">SIGNAL</span>
+      <span id="indicator-right" class="indicator-arrow" aria-hidden="true">▶</span>
+    </div>
     <input id="share-fallback" hidden readonly aria-label="Copyable app link">
   </div>
   <div id="country-hud" class="hud-card">
@@ -152,7 +174,14 @@ h1 em{color:#41c78a;font-style:normal}
   </div>
   <div id="map-status" role="status">Preparing practice environment…</div>
   <div id="toast" role="status" aria-live="polite"></div>
+  <div id="fault-banner" role="alert" aria-live="assertive" hidden>
+    <strong>TEST FAULT: Failed to check blind spot before moving!</strong>
+    <div id="fault-reason"></div>
+    <small>Strict practice-sequence feedback, not an official DVSA result.</small>
+  </div>
   <div id="controls">
+    <button id="signal-left" class="signal-control" type="button" aria-pressed="false" aria-keyshortcuts="[" title="Toggle left indicator ([)">⬅️ Signal Left [</button>
+    <button id="signal-right" class="signal-control" type="button" aria-pressed="false" aria-keyshortcuts="]" title="Toggle right indicator (])">➡️ Signal Right ]</button>
     <button data-drive="left" type="button">← Steer</button>
     <button data-drive="right" type="button">Steer →</button>
     <button data-drive="brake" type="button">Brake</button>
@@ -178,12 +207,17 @@ h1 em{color:#41c78a;font-style:normal}
     <a-box position="-4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
     <a-box position="4 .02 0" width=".1" height=".015" depth="360" color="#f5f5ee"></a-box>
     <a-entity id="fallback-markings" practice-markings></a-entity>
+    <!-- Marked TRAINING intersections for the optional strict sequence
+         evaluation. They are not derived from Google's map data. -->
+    <a-plane position="0 .013 -55" rotation="-90 0 0" width="46" height="8" color="#44515b"></a-plane>
+    <a-plane position="0 .013 -117" rotation="-90 0 0" width="46" height="8" color="#44515b"></a-plane>
+    <a-plane position="0 .013 -165" rotation="-90 0 0" width="46" height="8" color="#44515b"></a-plane>
   </a-entity>
   <!-- Track is mathematically flat at Y=0; no physics-plugin dependency,
        no raycasting and no map-mesh collision/height extraction. -->
   <a-plane id="safety-floor" position="0 0 0" rotation="-90 0 0"
            width="1200" height="1200" visible="false"></a-plane>
-  <a-entity id="player-car" position="-2 0.25 0" car-physics global-cockpit="country: GB">
+  <a-entity id="player-car" position="-2 0.25 0" car-physics global-cockpit="country: GB" turn-signals blind-spot-tracker>
     <a-entity class="cockpit-shell">
       <a-box position="0 .45 0" width="2.05" height=".14" depth="3" color="#18364b"></a-box>
       <a-box position="0 .85 -.78" width="2.05" height=".35" depth=".65" color="#152638"></a-box>
@@ -206,6 +240,8 @@ h1 em{color:#41c78a;font-style:normal}
         <a-text value="DRIVING PRACTICE" width="1.05" align="center" position="0 .06 .008"></a-text>
         <a-text id="vr-toast" value="" align="center" color="#77f1aa" width=".85" position="0 -.045 .009"></a-text>
       </a-plane>
+      <a-text id="signal-3d" value="" align="center" color="#56ff99" width="1.15" position="0 1.145 -.79"></a-text>
+      <a-text id="fault-3d" value="TEST FAULT" visible="false" align="center" color="#ffcb47" width="1.06" position="0 1.225 -.79"></a-text>
       <a-plane class="share-target" share-link position="0 .78 -.8" width=".72" height=".12" color="#128e54">
         <a-text value="Tap to Share App Link" width="1" align="center" position="0 0 .008"></a-text>
       </a-plane>
@@ -213,10 +249,10 @@ h1 em{color:#41c78a;font-style:normal}
     </a-entity>
     <a-box position="-1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b"></a-box>
     <a-box position="1.1 1.32 -.76" width=".44" height=".27" depth=".08" color="#18364b"></a-box>
-    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror" position="-1.12 1.34 -.69" rotation="0 25 0" width=".36" height=".21" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
-    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror" position="1.12 1.34 -.69" rotation="0 -25 0" width=".36" height=".21" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-plane id="mirror-left" class="mirror-target" mirror-gaze="label: Left mirror; side: left" position="-1.12 1.34 -.69" rotation="0 25 0" width=".36" height=".21" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-plane id="mirror-right" class="mirror-target" mirror-gaze="label: Right mirror; side: right" position="1.12 1.34 -.69" rotation="0 -25 0" width=".36" height=".21" material="color: #93bbcd; metalness: .8; roughness: .22; side: double"></a-plane>
     <a-box position="0 1.69 -.75" width=".55" height=".23" depth=".055" color="#273f52"></a-box>
-    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror" position="0 1.68 -.7" width=".47" height=".16" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
+    <a-plane id="mirror-rear" class="mirror-target" mirror-gaze="label: Rearview mirror; side: rear" position="0 1.68 -.7" width=".47" height=".16" material="color: #9bc1d0; metalness: .8; roughness: .22; side: double"></a-plane>
     <a-camera id="camera" position=".48 1.42 .13"
               camera="near: .05; far: 2500; fov: 80"
               look-controls="pointerLockEnabled: true" wasd-controls="enabled: false">
@@ -238,6 +274,8 @@ h1 em{color:#41c78a;font-style:normal}
 const GOOGLE_MAPS_API_KEY = "PASTE_YOUR_RESTRICTED_KEY_HERE";
 const BOREHAMWOOD = Object.freeze({lat:51.64736,lng:-0.25260,altitude:110});
 const CAR_Y = 0.25;
+const TURN_SEQUENCE_WINDOW_MS=15000;
+const JUNCTION_EVALUATION_ZONES=Object.freeze([-55,-117,-165]);
 const EARTH_RADIUS = 6378137;
 const ROUTE_SESSION_HISTORY = new Map(); // route metadata only, never Google imagery
 let active=false,scene=null,selectedRoute=null,googleMapReady=false;
@@ -396,6 +434,7 @@ function setCountry(iso,fromUser=false){
  const car=byId('player-car');
  if(car){
    car.setAttribute('global-cockpit','country',iso);
+   if(old!==iso)car.components['turn-signals']?.resetExercise();
    car.components['car-physics']?.reset();
  }
  if(active&&old!==iso){
@@ -620,6 +659,8 @@ AFRAME.registerComponent('car-physics',{
  reset(){
    const country=COUNTRIES[activeCountryCode]||COUNTRIES.GB;
    this.speed=0;this.heading=0;this.steer=0;this.velocity.set(0,0,0);
+   this.priorTurn=0;this.lastTurnEvaluationAt=-Infinity;
+   this.el.components['turn-signals']?.resetExercise();
    const laneX=country.roadSide==='left'?-1.8:1.8;
    this.el.object3D.position.set(laneX,CAR_Y,0);
    this.el.object3D.rotation.set(0,0,0);
@@ -633,6 +674,22 @@ AFRAME.registerComponent('car-physics',{
    const brake=Number(!!(inputs.KeyS||inputs.ArrowDown||inputs.Space||inputs.brake));
    const turn=Number(!!(inputs.KeyA||inputs.ArrowLeft||inputs.left))-
      Number(!!(inputs.KeyD||inputs.ArrowRight||inputs.right));
+   // Intent only: ordinary small lane corrections are not automatically
+   // DVSA faults. Evaluate a new steering action inside a marked practice
+   // junction, or whenever the driver intentionally has an active signal.
+   const signals=this.el.components['turn-signals'];
+   const indicatedDirection=signals?.side;
+   const turnSide=turn>0?'left':turn<0?'right':null;
+   const inMockJunction=JUNCTION_EVALUATION_ZONES.some(z=>
+      Math.abs(this.el.object3D.position.z-z)<14&&
+      Math.abs(this.el.object3D.position.x)<12);
+   if(turnSide&&turn!==this.priorTurn&&this.speed>.75&&
+      (inMockJunction||indicatedDirection)&&
+      time-this.lastTurnEvaluationAt>1700){
+     this.lastTurnEvaluationAt=time;
+     signals?.evaluateTurn(turnSide);
+   }
+   this.priorTurn=turn;
    this.steer=THREE.MathUtils.damp(this.steer,turn,6,dt);
    this.speed=clamp(this.speed+(3.3*go-9.3*brake-(.18+.014*this.speed*this.speed))*dt,0,14);
    const angularSpeed=this.steer*this.speed/(3.4+.35*this.speed);
@@ -691,11 +748,244 @@ AFRAME.registerComponent('global-cockpit',{
    updateSpeed(this.el.components['car-physics']?.speed||0);
  }
 });
+
+/* TRAINING RUBRIC (not an official DVSA scoring algorithm).
+   A passing evaluation requires:
+      side mirror observation -> matching active signal -> matching 400ms
+      shoulder check -> first steering input at a marked junction/with signal.
+   Observations expire after TURN_SEQUENCE_WINDOW_MS.
+   GOV.UK Rule 161 says mirrors must be checked before signalling; rules
+   159, 180, 182 describe checking blind spots when appropriate.
+*/
+function assessTurnSequence({side,activeSignal,mirrorAt,signalAt,blindAt,now}){
+  if(activeSignal!==side||!signalAt||now-signalAt>TURN_SEQUENCE_WINDOW_MS)
+    return {passed:false,reason:'Matching '+side+' signal was not activated before turning.'};
+  if(!mirrorAt||mirrorAt>signalAt||signalAt-mirrorAt>TURN_SEQUENCE_WINDOW_MS)
+    return {passed:false,reason:'Check the '+side+' mirror BEFORE signalling.'};
+  if(!blindAt||blindAt<=signalAt||blindAt>now||now-blindAt>TURN_SEQUENCE_WINDOW_MS)
+    return {passed:false,reason:'Hold a '+side+' shoulder check for at least 400 ms AFTER signalling.'};
+  return {passed:true,reason:'Mirror → Signal → Blind spot → Manoeuvre'};
+}
+let faultDismissTimeout=0;
+function showTestFault(reason){
+  const banner=byId('fault-banner');
+  if(!banner)return;
+  byId('fault-reason').textContent=reason;
+  banner.hidden=false;banner.classList.add('active');
+  const text=byId('fault-3d');
+  if(text){text.setAttribute('value','TEST FAULT');text.setAttribute('visible',true)}
+  clearTimeout(faultDismissTimeout);
+  faultDismissTimeout=setTimeout(()=>{
+    banner.hidden=true;banner.classList.remove('active');
+    if(text)text.setAttribute('visible',false);
+  },3800);
+}
+// Direction signalling with audio pulses generated only after user input.
+// This avoids autoplay-policy errors, uses one shared AudioContext, and
+// cleans intervals/oscillators when indicators are switched off.
+AFRAME.registerComponent('turn-signals',{
+  init(){
+    this.side=null;
+    this.signalAt=0;
+    this.mirrorBeforeSignal=0;
+    this.mirrors={left:0,right:0,rear:0};
+    this.blind={left:0,right:0};
+    this.flashOn=false;
+    this.interval=null;
+    this.audio=null;
+    this.lastEvaluation={at:-Infinity,side:null};
+    this.mirrorListener=event=>{
+      const side=event.detail?.side;
+      if(Object.hasOwn(this.mirrors,side)){
+        this.mirrors[side]=performance.now();
+      }
+    };
+    this.blindListener=event=>{
+      const side=event.detail?.side;
+      if(side==='left'||side==='right')this.blind[side]=performance.now();
+    };
+    this.el.addEventListener('driver-mirror-check',this.mirrorListener);
+    this.el.addEventListener('driver-blind-check',this.blindListener);
+    this.keyboard=event=>{
+      if(event.repeat||event.target?.closest?.('input,textarea,select,[contenteditable="true"]'))return;
+      const side=event.code==='BracketLeft'?'left':
+                 event.code==='BracketRight'?'right':null;
+      if(!side)return;
+      event.preventDefault();
+      this.toggle(side);
+    };
+    this.clickLeft=()=>this.toggle('left');
+    this.clickRight=()=>this.toggle('right');
+    window.addEventListener('keydown',this.keyboard);
+    byId('signal-left').addEventListener('click',this.clickLeft);
+    byId('signal-right').addEventListener('click',this.clickRight);
+    this.paint();
+  },
+  getAudio(){
+    if(this.audio)return this.audio;
+    const Context=window.AudioContext||window.webkitAudioContext;
+    if(!Context)return null;
+    try{this.audio=new Context()}catch(error){console.info('[Turn signals] Audio unavailable',error)}
+    return this.audio;
+  },
+  clickSound(){
+    if(document.hidden||!this.audio||this.audio.state!=='running')return;
+    try{
+      const now=this.audio.currentTime;
+      const oscillator=this.audio.createOscillator();
+      const gain=this.audio.createGain();
+      oscillator.type='square';
+      oscillator.frequency.setValueAtTime(1040,now);
+      gain.gain.setValueAtTime(.0001,now);
+      gain.gain.exponentialRampToValueAtTime(.045,now+.004);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+.032);
+      oscillator.connect(gain);
+      gain.connect(this.audio.destination);
+      oscillator.start(now);
+      oscillator.stop(now+.036);
+      oscillator.onended=()=>{oscillator.disconnect();gain.disconnect()};
+    }catch(error){console.debug('[Turn signals] Click sound error',error)}
+  },
+  toggle(side){
+    if(!active||!this.el.isConnected)return;
+    if(this.side===side){this.stop();return}
+    this.stop();
+    this.side=side;
+    this.signalAt=performance.now();
+    // Freeze the LAST relevant mirror observation at the moment of signalling,
+    // so looking in the mirror after switching the indicator doesn't falsely
+    // satisfy the required order.
+    this.mirrorBeforeSignal=this.mirrors[side];
+    this.blind[side]=0;
+    this.flashOn=true;
+    this.paint();
+    const audio=this.getAudio();
+    if(audio){
+      const resume=audio.state==='suspended'?audio.resume():Promise.resolve();
+      Promise.resolve(resume).then(()=>{if(this.side===side)this.clickSound()})
+        .catch(()=>{/* Quiet indicators remain operational without audio. */});
+    }
+    this.interval=setInterval(()=>{
+      if(!this.side)return;
+      this.flashOn=!this.flashOn;
+      this.paint();
+      this.clickSound();
+    },355); // ~710 ms blink cycle with two rhythmic clicks.
+  },
+  stop(){
+    if(this.interval){clearInterval(this.interval);this.interval=null}
+    this.side=null;this.flashOn=false;this.signalAt=0;
+    this.mirrorBeforeSignal=0;
+    this.paint();
+  },
+  paint(){
+    for(const side of ['left','right']){
+      const button=byId('signal-'+side),arrow=byId('indicator-'+side);
+      const selected=this.side===side;
+      if(button)button.setAttribute('aria-pressed',String(selected));
+      if(arrow)arrow.classList.toggle('lit',selected&&this.flashOn);
+    }
+    const dash=byId('signal-3d');
+    if(dash){
+      const text=this.side&&this.flashOn?(this.side==='left'?'◀ LEFT':'RIGHT ▶'):'';
+      dash.setAttribute('value',text);
+    }
+  },
+  evaluateTurn(side){
+    const now=performance.now();
+    if(now-this.lastEvaluation.at<1600&&this.lastEvaluation.side===side)return;
+    this.lastEvaluation={at:now,side};
+    const result=assessTurnSequence({
+      side,activeSignal:this.side,
+      mirrorAt:this.mirrorBeforeSignal,
+      signalAt:this.signalAt,blindAt:this.blind[side],now
+    });
+    if(result.passed){
+      toast('Safe sequence: Mirror → Signal → Blind spot → Manoeuvre');
+    }else{
+      showTestFault(result.reason);
+    }
+    // No inherited blind-spot observation after manoeuvring; next turn
+    // requires a fresh deliberate check and an explicitly rearmed signal.
+    this.blind[side]=0;
+    this.mirrorBeforeSignal=0;
+  },
+  resetExercise(){
+    this.stop();
+    this.mirrors={left:0,right:0,rear:0};
+    this.blind={left:0,right:0};
+    this.lastEvaluation={at:-Infinity,side:null};
+    const banner=byId('fault-banner');if(banner){banner.hidden=true;banner.classList.remove('active')}
+    const warning=byId('fault-3d');if(warning)warning.setAttribute('visible',false);
+  },
+  remove(){
+    this.stop();
+    window.removeEventListener('keydown',this.keyboard);
+    byId('signal-left')?.removeEventListener('click',this.clickLeft);
+    byId('signal-right')?.removeEventListener('click',this.clickRight);
+    this.el.removeEventListener('driver-mirror-check',this.mirrorListener);
+    this.el.removeEventListener('driver-blind-check',this.blindListener);
+    this.audio?.close().catch(()=>{});
+  }
+});
+/*
+ * Over-the-shoulder tracking: UK right-hand driver positions use:
+ *  right yaw <= -90°; left yaw >= +110°.
+ * LHD swaps those two thresholds (driver-near/far-side asymmetry).
+ * Angles are computed relative to CAR heading, not to the world map.
+ */
+AFRAME.registerComponent('blind-spot-tracker',{
+  init(){
+    this.camera=null;
+    this.carQuaternion=new THREE.Quaternion();
+    this.cameraQuaternion=new THREE.Quaternion();
+    this.relative=new THREE.Quaternion();
+    this.forward=new THREE.Vector3();
+    this.currentSide=null;
+    this.enteredAt=0;
+    this.confirmed=false;
+  },
+  tick(){
+    if(!active)return;
+    if(!this.camera)this.camera=byId('camera');
+    if(!this.camera)return;
+    this.el.object3D.getWorldQuaternion(this.carQuaternion);
+    this.camera.object3D.getWorldQuaternion(this.cameraQuaternion);
+    this.relative.copy(this.carQuaternion).invert().multiply(this.cameraQuaternion);
+    this.forward.set(0,0,-1).applyQuaternion(this.relative);
+    const yaw=THREE.MathUtils.radToDeg(Math.atan2(-this.forward.x,-this.forward.z));
+    const rhd=(COUNTRIES[activeCountryCode]||COUNTRIES.GB).drive==='RHD';
+    const rightLimit=rhd?90:110;
+    const leftLimit=rhd?110:90;
+    const side=yaw< -rightLimit?'right':yaw>leftLimit?'left':null;
+    if(side!==this.currentSide){
+      this.currentSide=side;
+      this.enteredAt=performance.now();
+      this.confirmed=false;
+    }
+    if(side&&!this.confirmed&&performance.now()-this.enteredAt>=400){
+      this.confirmed=true;
+      this.el.emit('driver-blind-check',{side,at:performance.now()},false);
+      toast('Blind Spot Checked · '+(side==='right'?'Right':'Left'));
+    }
+  }
+});
+
 AFRAME.registerComponent('mirror-gaze',{
- schema:{label:{default:'Mirror'}},
+ schema:{label:{default:'Mirror'},side:{default:'rear'}},
  init(){
    this.timer=null;
-   this.inView=()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>toast('Mirror Checked · '+this.data.label),480)};
+   this.inView=()=>{
+     clearTimeout(this.timer);
+     this.timer=setTimeout(()=>{
+       toast('Mirror Checked · '+this.data.label);
+       // Mirror event bubbles from the panel to the car's turn-signals
+       // component, storing a direction and monotonic observation timestamp.
+       this.el.emit('driver-mirror-check',{
+         side:this.data.side,at:performance.now()
+       },true);
+     },480);
+   };
    this.outView=()=>clearTimeout(this.timer);
    this.el.addEventListener('mouseenter',this.inView);
    this.el.addEventListener('mouseleave',this.outView);
