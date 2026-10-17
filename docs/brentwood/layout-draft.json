@@ -1,0 +1,466 @@
+{
+  "status": "DRAFT for location review. Not yet a runnable location file.",
+  "label": "Area-inspired practice environment based on the Brentwood High Street / Ingrave Road / Ongar Road / Shenfield Road mini-roundabouts. Not an official test route and not a guarantee of current road conditions.",
+  "frame": {
+    "origin": {
+      "lat": 51.6213112,
+      "lng": 0.3055506,
+      "note": "Centre of the aerial screenshot URL supplied by the user."
+    },
+    "units": "metres east (x) and north (y) of the origin. Simulator converts to its contract (-Z north) on import.",
+    "metresPerDegree": {
+      "lat": 111320,
+      "lng": 69081
+    }
+  },
+  "confidence": {
+    "measured": "Derived from Street View camera coordinates supplied by the user (camera sits on the carriageway; \u00b12 m).",
+    "estimated": "Read by eye from the supplied aerial screenshot and Street View images (\u00b15\u201310 m, angles \u00b110\u00b0). To be replaced with OpenStreetMap geometry when network access allows."
+  },
+  "streetViewPoints": [
+    {
+      "id": "S0-start",
+      "x": -29.53,
+      "y": -18.95,
+      "headingDeg": 72.4,
+      "source": "user link: car starts here (15 High St, pano gZMTZqFCPjGIMH4DEdu2HA)",
+      "confidence": "measured"
+    },
+    {
+      "id": "S1-approach-rb1",
+      "x": -10.79,
+      "y": -9.86,
+      "headingDeg": 72.5,
+      "source": "user link: 1st mini-roundabout (11 A1023, pano jOIxI3MJCvD1oOiKGzlTAA)",
+      "confidence": "measured"
+    },
+    {
+      "id": "S2-approach-rb2",
+      "x": 5.51,
+      "y": 1.28,
+      "headingDeg": 68.3,
+      "source": "user link: 2nd mini-roundabout (A1023, pano ECKRipkUSYI_zpbmZLIY6g)",
+      "confidence": "measured"
+    }
+  ],
+  "roundabouts": [
+    {
+      "id": "rb1",
+      "name": "Mini-roundabout 1 (High St / Ingrave Rd)",
+      "x": 0,
+      "y": -8.5,
+      "domeDiameter": 3,
+      "confidence": "estimated",
+      "arms": [
+        "high-st",
+        "ingrave-rd",
+        "link"
+      ],
+      "junctionRadius": 6.5
+    },
+    {
+      "id": "rb2",
+      "name": "Mini-roundabout 2 (Ongar Rd / Shenfield Rd)",
+      "x": 16.6,
+      "y": 5.6,
+      "domeDiameter": 3,
+      "confidence": "estimated",
+      "arms": [
+        "link",
+        "ongar-rd",
+        "shenfield-rd"
+      ],
+      "junctionRadius": 6.5
+    }
+  ],
+  "roads": [
+    {
+      "id": "high-st",
+      "name": "High Street (A1023)",
+      "from": [
+        -95.3,
+        -38.7
+      ],
+      "to": [
+        0,
+        -8.5
+      ],
+      "width": 9.5,
+      "lanes": {
+        "towardJunction": 2,
+        "awayFromJunction": 1
+      },
+      "laneNote": "Eastbound flares to two lanes before rb1: left 'A1023' (ahead), right 'Ingrave Rd' (Street View road markings).",
+      "confidence": "estimated"
+    },
+    {
+      "id": "link",
+      "name": "Connecting section (A1023 / A128)",
+      "from": [
+        0,
+        -8.5
+      ],
+      "to": [
+        16.6,
+        5.6
+      ],
+      "width": 7.5,
+      "lanes": {
+        "towardRb2": 1,
+        "towardRb1": 1
+      },
+      "laneNote": "Northeast-bound approach to rb2 marked 'Shenfield Rd' with a splitter island and keep-left bollards (Street View).",
+      "confidence": "estimated"
+    },
+    {
+      "id": "ingrave-rd",
+      "name": "Ingrave Road (A128)",
+      "from": [
+        0,
+        -8.5
+      ],
+      "to": [
+        20.2,
+        -96.2
+      ],
+      "width": 7.5,
+      "lanes": {
+        "each": 1
+      },
+      "confidence": "estimated"
+    },
+    {
+      "id": "ongar-rd",
+      "name": "Ongar Road (A128)",
+      "from": [
+        16.6,
+        5.6
+      ],
+      "to": [
+        -21.4,
+        87.2
+      ],
+      "width": 7.5,
+      "lanes": {
+        "each": 1
+      },
+      "confidence": "estimated"
+    },
+    {
+      "id": "shenfield-rd",
+      "name": "Shenfield Road (A1023)",
+      "from": [
+        16.6,
+        5.6
+      ],
+      "to": [
+        125.4,
+        56.3
+      ],
+      "width": 7.5,
+      "lanes": {
+        "each": 1
+      },
+      "confidence": "estimated"
+    }
+  ],
+  "features": [
+    {
+      "id": "clock-tower",
+      "kind": "landmark",
+      "name": "Wilson Corner clock tower building",
+      "x": 25.8,
+      "y": -16.3,
+      "confidence": "estimated",
+      "source": "aerial label + Street View (rb1 approach)"
+    },
+    {
+      "id": "obelisk",
+      "kind": "landmark",
+      "name": "William Hunter memorial obelisk",
+      "x": 44,
+      "y": 10,
+      "confidence": "estimated",
+      "source": "aerial label + Street View (rb2 approach, ahead-right)"
+    },
+    {
+      "id": "forecourt-parking",
+      "kind": "parking",
+      "name": "Parking in front of Shenfield Rd shops",
+      "polygon": [
+        [
+          22,
+          -5
+        ],
+        [
+          58,
+          2
+        ],
+        [
+          56,
+          11
+        ],
+        [
+          24,
+          4
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "se-block",
+      "kind": "buildings",
+      "name": "Wilson Corner / Shenfield Rd shop block (red-brick)",
+      "polygon": [
+        [
+          7,
+          -12
+        ],
+        [
+          62,
+          -2
+        ],
+        [
+          66,
+          -40
+        ],
+        [
+          12,
+          -48
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "nw-block",
+      "kind": "buildings",
+      "name": "High St north side shops (corner shopfronts)",
+      "polygon": [
+        [
+          -50,
+          -16
+        ],
+        [
+          -8,
+          -3
+        ],
+        [
+          -6,
+          18
+        ],
+        [
+          -48,
+          10
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "showroom-corner",
+      "kind": "buildings",
+      "name": "Corner showroom (Ongar Rd / High St)",
+      "polygon": [
+        [
+          -4,
+          0
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          -6,
+          14
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "sw-block",
+      "kind": "buildings",
+      "name": "High St south side shops",
+      "polygon": [
+        [
+          -60,
+          -42
+        ],
+        [
+          -12,
+          -27
+        ],
+        [
+          -8,
+          -48
+        ],
+        [
+          -55,
+          -62
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "ne-block",
+      "kind": "buildings",
+      "name": "Ongar Rd / Shenfield Rd north-east corner",
+      "polygon": [
+        [
+          26,
+          20
+        ],
+        [
+          60,
+          36
+        ],
+        [
+          44,
+          62
+        ],
+        [
+          18,
+          40
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "horse-trough",
+      "kind": "landmark",
+      "name": "Larkin's horse trough",
+      "x": -7.2,
+      "y": -19.3,
+      "confidence": "estimated"
+    },
+    {
+      "id": "trees-high-st",
+      "kind": "trees",
+      "points": [
+        [
+          -16,
+          -1
+        ],
+        [
+          -6,
+          4
+        ],
+        [
+          -13,
+          -21
+        ],
+        [
+          -30,
+          -30
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "trees-ne",
+      "kind": "trees",
+      "points": [
+        [
+          62,
+          32
+        ],
+        [
+          70,
+          24
+        ]
+      ],
+      "confidence": "estimated"
+    },
+    {
+      "id": "signal-crossing",
+      "kind": "crossing",
+      "name": "Signal-controlled crossing with refuge on High St",
+      "x": -20,
+      "y": -15,
+      "confidence": "estimated",
+      "source": "Street View from the start point shows signals and a central refuge ahead; exact position unknown"
+    },
+    {
+      "id": "rb2-splitter",
+      "kind": "island",
+      "name": "Splitter island with keep-left bollards",
+      "x": 10.5,
+      "y": 0.6,
+      "confidence": "estimated"
+    },
+    {
+      "id": "bus-stop",
+      "kind": "bus-stop",
+      "name": "Bus stop: position not established",
+      "x": null,
+      "y": null,
+      "confidence": "missing"
+    }
+  ],
+  "proposedRoute": {
+    "id": "route-a",
+    "description": "Start at S0 on High Street eastbound, left lane. rb1: first exit (ahead/left) onto the connecting section. rb2: second exit (ahead) onto Shenfield Road. Finish 70 m along Shenfield Road.",
+    "path": [
+      [
+        -29.53,
+        -18.95
+      ],
+      [
+        -10.79,
+        -9.86
+      ],
+      [
+        -2.6,
+        -5.6
+      ],
+      [
+        5.51,
+        1.28
+      ],
+      [
+        14.2,
+        8.2
+      ],
+      [
+        22,
+        10.8
+      ],
+      [
+        48.3,
+        20.4
+      ],
+      [
+        80,
+        35
+      ]
+    ],
+    "editable": "The route will be a list of lane-graph connections in the scenario file, so the start, exits and finish can be changed without touching the location.",
+    "note": "Passes each painted dome keeping it on the driver's right (clockwise), as at any UK mini-roundabout."
+  },
+  "movements": {
+    "rb1": [
+      "High St EB \u2192 link (1st exit)",
+      "High St EB \u2192 Ingrave Rd (2nd exit, right lane)",
+      "Ingrave Rd NB \u2192 link",
+      "Ingrave Rd NB \u2192 High St WB",
+      "link SW \u2192 High St WB",
+      "link SW \u2192 Ingrave Rd"
+    ],
+    "rb2": [
+      "link NE \u2192 Ongar Rd (1st exit)",
+      "link NE \u2192 Shenfield Rd (2nd exit)",
+      "Shenfield Rd WB \u2192 link",
+      "Shenfield Rd WB \u2192 Ongar Rd",
+      "Ongar Rd SB \u2192 Shenfield Rd",
+      "Ongar Rd SB \u2192 link"
+    ]
+  },
+  "openQuestions": [
+    "Exact centres and approach widths of both mini-roundabouts (blocked: OpenStreetMap hosts are not reachable from this environment).",
+    "Does the connecting section have one lane each way, or two towards rb2 (Ongar Rd / Shenfield Rd)?",
+    "Position of the bus stop(s) and of the signal-controlled crossing on High Street.",
+    "Any further arm at rb2 (the aerial shows a small road label at the top-left edge)."
+  ]
+}

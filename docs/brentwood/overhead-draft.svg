@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 966 819" role="img" aria-label="Draft overhead layout of the Brentwood paired mini-roundabouts">
+<rect class="ground" x="0" y="0" width="100%" height="100%"/>
+<polygon class="parking" points="512.4,420.0 663.6,390.6 655.2,352.8 520.8,382.2"/>
+<polygon class="buildings" points="449.4,449.4 680.4,407.4 697.2,567.0 470.4,600.6"/>
+<polygon class="buildings" points="210.0,466.2 386.4,411.6 394.8,323.4 218.4,357.0"/>
+<polygon class="buildings" points="403.2,399.0 445.2,373.8 428.4,323.4 394.8,340.2"/>
+<polygon class="buildings" points="168.0,575.4 369.6,512.4 386.4,600.6 189.0,659.4"/>
+<polygon class="buildings" points="529.2,315.0 672.0,247.8 604.8,138.6 495.6,231.0"/>
+<line class="pavement" x1="19.7" y1="561.5" x2="420.0" y2="434.7" stroke-width="56.7"/>
+<line class="pavement" x1="420.0" y1="434.7" x2="489.7" y2="375.5" stroke-width="48.3"/>
+<line class="pavement" x1="420.0" y1="434.7" x2="504.8" y2="803.0" stroke-width="48.3"/>
+<line class="pavement" x1="489.7" y1="375.5" x2="330.1" y2="32.8" stroke-width="48.3"/>
+<line class="pavement" x1="489.7" y1="375.5" x2="946.7" y2="162.5" stroke-width="48.3"/>
+<circle class="pavement" cx="420.0" cy="434.7" r="35.7"/>
+<circle class="pavement" cx="489.7" cy="375.5" r="35.7"/>
+<line class="carriageway" x1="19.7" y1="561.5" x2="420.0" y2="434.7" stroke-width="39.9"/>
+<line class="carriageway" x1="420.0" y1="434.7" x2="489.7" y2="375.5" stroke-width="31.5"/>
+<line class="carriageway" x1="420.0" y1="434.7" x2="504.8" y2="803.0" stroke-width="31.5"/>
+<line class="carriageway" x1="489.7" y1="375.5" x2="330.1" y2="32.8" stroke-width="31.5"/>
+<line class="carriageway" x1="489.7" y1="375.5" x2="946.7" y2="162.5" stroke-width="31.5"/>
+<circle class="carriageway" cx="420.0" cy="434.7" r="27.3"/>
+<circle class="carriageway" cx="489.7" cy="375.5" r="27.3"/>
+<line class="centre" x1="47.8" y1="552.7" x2="420.0" y2="434.7"/>
+<polygon class="arrow" points="165.6,504.8 145.8,503.4 150.2,517.5"/>
+<polygon class="arrow" points="305.7,460.5 285.9,459.0 290.3,473.1"/>
+<polygon class="arrow" points="154.0,529.4 173.9,530.9 169.4,516.8"/>
+<polygon class="arrow" points="294.1,485.1 314.0,486.5 309.5,472.4"/>
+<line class="centre" x1="442.4" y1="415.7" x2="467.3" y2="394.5"/>
+<polygon class="arrow" points="446.3,402.0 427.5,408.3 437.0,419.6"/>
+<polygon class="arrow" points="470.7,381.3 451.9,387.6 461.4,398.9"/>
+<polygon class="arrow" points="442.5,426.0 461.3,419.6 451.8,408.4"/>
+<polygon class="arrow" points="466.9,405.2 485.7,398.9 476.2,387.6"/>
+<line class="centre" x1="426.6" y1="463.3" x2="504.8" y2="803.0"/>
+<polygon class="arrow" points="459.4,570.9 462.5,551.2 448.1,554.5"/>
+<polygon class="arrow" points="489.1,699.8 492.2,680.1 477.8,683.4"/>
+<polygon class="arrow" points="439.9,556.4 436.9,576.0 451.3,572.7"/>
+<polygon class="arrow" points="469.6,685.3 466.6,705.0 481.0,701.7"/>
+<line class="centre" x1="477.3" y1="348.8" x2="330.1" y2="32.8"/>
+<polygon class="arrow" points="422.8,250.5 423.9,270.3 437.3,264.1"/>
+<polygon class="arrow" points="367.0,130.5 368.1,150.4 381.5,144.2"/>
+<polygon class="arrow" points="444.9,260.6 443.8,240.7 430.4,246.9"/>
+<polygon class="arrow" points="389.0,140.6 387.9,120.8 374.5,127.0"/>
+<line class="centre" x1="516.4" y1="363.1" x2="946.7" y2="162.5"/>
+<polygon class="arrow" points="654.7,289.9 634.8,291.0 641.1,304.4"/>
+<polygon class="arrow" points="814.6,215.4 794.8,216.5 801.0,229.9"/>
+<polygon class="arrow" points="644.6,312.0 664.5,310.9 658.2,297.5"/>
+<polygon class="arrow" points="804.5,237.5 824.4,236.4 818.2,223.0"/>
+<circle class="dome" cx="420.0" cy="434.7" r="6.3"/>
+<polygon class="circulate" points="437.6,441.4 443.0,428.0 432.3,428.0"/>
+<polygon class="circulate" points="426.7,417.1 413.3,411.7 413.3,422.4"/>
+<polygon class="circulate" points="402.4,428.0 397.0,441.4 407.7,441.4"/>
+<polygon class="circulate" points="413.3,452.3 426.7,457.7 426.7,447.0"/>
+<circle class="dome" cx="489.7" cy="375.5" r="6.3"/>
+<polygon class="circulate" points="507.4,382.2 512.7,368.8 502.0,368.8"/>
+<polygon class="circulate" points="496.4,357.8 483.0,352.5 483.0,363.2"/>
+<polygon class="circulate" points="472.1,368.8 466.7,382.2 477.5,382.2"/>
+<polygon class="circulate" points="483.0,393.1 496.4,398.5 496.4,387.7"/>
+<polyline class="route" points="296.0,478.6 374.7,440.4 409.1,422.5 443.1,393.6 479.6,364.6 512.4,353.6 622.9,313.3 756.0,252.0"/>
+<polygon class="route-head" points="768.2,246.4 739.3,247.9 748.3,267.4"/>
+<line class="sv-ray" x1="296.0" y1="478.6" x2="324.0" y2="469.7"/>
+<circle class="sv" cx="296.0" cy="478.6" r="5"/>
+<text class="sv-label" x="287.6" y="461.8" text-anchor="end">S0</text>
+<line class="sv-ray" x1="374.7" y1="440.4" x2="402.7" y2="431.6"/>
+<circle class="sv" cx="374.7" cy="440.4" r="5"/>
+<text class="sv-label" x="366.3" y="423.6" text-anchor="end">S1</text>
+<line class="sv-ray" x1="443.1" y1="393.6" x2="470.5" y2="382.8"/>
+<circle class="sv" cx="443.1" cy="393.6" r="5"/>
+<text class="sv-label" x="434.7" y="376.8" text-anchor="end">S2</text>
+<rect class="landmark" x="522.4" y="461.5" width="12" height="12" rx="3" transform="rotate(45 528.4 467.5)"/>
+<rect class="landmark" x="598.8" y="351.0" width="12" height="12" rx="3" transform="rotate(45 604.8 357.0)"/>
+<rect class="landmark" x="383.8" y="474.1" width="12" height="12" rx="3" transform="rotate(45 389.8 480.1)"/>
+<rect class="crossing" x="330.0" y="456.0" width="12" height="12" rx="3" transform="rotate(45 336.0 462.0)"/>
+<rect class="island" x="458.1" y="390.5" width="12" height="12" rx="3" transform="rotate(45 464.1 396.5)"/>
+<circle class="tree" cx="352.8" cy="403.2" r="16.8"/>
+<circle class="tree" cx="394.8" cy="382.2" r="16.8"/>
+<circle class="tree" cx="365.4" cy="487.2" r="16.8"/>
+<circle class="tree" cx="294.0" cy="525.0" r="16.8"/>
+<circle class="tree" cx="680.4" cy="264.6" r="16.8"/>
+<circle class="tree" cx="714.0" cy="298.2" r="16.8"/>
+<text class="label" x="159.6" y="499.8" text-anchor="middle">High Street (A1023)</text>
+<text class="label" x="478.8" y="693.0" text-anchor="middle">Ingrave Rd (A128)</text>
+<text class="label" x="369.6" y="121.8" text-anchor="middle">Ongar Rd (A128)</text>
+<text class="label" x="806.4" y="180.6" text-anchor="middle">Shenfield Rd (A1023)</text>
+<text class="label" x="382.2" y="407.4" text-anchor="middle">rb1</text>
+<text class="label" x="453.6" y="344.4" text-anchor="middle">rb2</text>
+<text class="label" x="529.2" y="499.8" text-anchor="middle">Clock tower</text>
+<text class="label" x="617.4" y="336.0" text-anchor="middle">Obelisk</text>
+<text class="label" x="579.6" y="405.3" text-anchor="middle">Parking</text>
+<text class="label" x="302.4" y="382.2" text-anchor="middle">Shops</text>
+<text class="label" x="394.8" y="508.2" text-anchor="middle">Horse trough</text>
+<text class="label" x="336.0" y="489.3" text-anchor="middle">Signal crossing</text>
+<text class="label" x="546.0" y="550.2" text-anchor="middle">Wilson Corner block</text>
+<line class="scale" x1="25.2" y1="793.8" x2="109.2" y2="793.8"/>
+<text class="small" x="67.2" y="787.8" text-anchor="middle">20 m</text>
+<path class="north" d="M 932.4 40.8 L 925.4 62.8 L 932.4 56.8 L 939.4 62.8 Z"/>
+<text class="small" x="932.4" y="76.8" text-anchor="middle">N</text>
+</svg>
