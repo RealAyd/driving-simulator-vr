@@ -1,0 +1,32 @@
+{
+  "note": "Every model shipped in public/assets must have an entry here. Original packs and ZIPs are not stored in the repository.",
+  "packs": [
+    {
+      "id": "quaternius-lowpoly-cars",
+      "title": "LowPoly Cars",
+      "author": "Quaternius",
+      "source": "Patreon download supplied by the project owner (https://www.patreon.com/quaternius), received 2026-10-17 as Patreon.com.zip (Blend, FBX, OBJ)",
+      "licence": "CC0 1.0 Universal (public domain dedication), per License.txt in the pack",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "contents": ["Cop", "NormalCar1", "NormalCar2", "SUV", "SportsCar", "SportsCar2", "Taxi"]
+    }
+  ],
+  "models": [
+    {
+      "id": "quaternius-normal-car-1",
+      "file": "public/assets/models/vehicles/quaternius-normal-car-1.glb",
+      "pack": "quaternius-lowpoly-cars",
+      "sourceFile": "OBJ/NormalCar1.obj + NormalCar1.mtl",
+      "use": "Other road users' cars (moving-off purple car, zebra following car, Brentwood lead car); body tinted per road user",
+      "modifications": [
+        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0",
+        "glTF-Transform 4.5.1: weld, dedup, join (one primitive per material), prune, quantize (KHR_mesh_quantization)",
+        "At load: glTF PBR materials replaced with StandardMaterial of the same colour (cheaper on phones, lit like the rest of the scene); body material 'Blue' recoloured per road user; turned 180° and scaled uniformly to the 4.3 m collision length"
+      ],
+      "stats": {"triangles": 2954, "materials": 6, "bytes": 113240},
+      "build": "tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar1"
+    }
+  ]
+}

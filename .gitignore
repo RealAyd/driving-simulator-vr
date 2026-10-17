@@ -2,3 +2,7 @@ node_modules/
 dist-sim/
 test-results/
 playwright-report/
+
+# Original asset packs (ZIPs, Blend/FBX/OBJ sources) stay outside the repository; see content/assets/register.json.
+assets-incoming/
+*.zip

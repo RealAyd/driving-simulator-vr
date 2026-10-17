@@ -1,5 +1,6 @@
 import {applyPose,rotationYFromHeading} from '../engine/babylonAdapter';
 import {Color3,CreateBox,CreateCylinder,CreateSphere,StandardMaterial,TransformNode,type Scene} from '../engine/babylon';
+import type {CarModel} from '../assets/models';
 import type {FollowingVehicle} from './followingVehicle';
 import type {Pedestrian} from './pedestrian';
 
@@ -29,10 +30,17 @@ export function pedestrianVisual(scene:Scene,ped:Pedestrian){
   };
 }
 
-/** Placeholder body for other vehicles: a car, or a cyclist on a bicycle. */
-/** `visible`: hidden until the road user sets off, so a waiting actor never sits in the road. */
-export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car',visible:()=>boolean=()=>true){
+/**
+ * Body for other vehicles: the car model when one is loaded (scaled to the
+ * collision length), otherwise simple shapes; or a cyclist on a bicycle.
+ * `visible`: hidden until the road user sets off, so a waiting actor never sits in the road.
+ */
+export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car',visible:()=>boolean=()=>true,model:CarModel|null=null,length=4.3){
   const root=new TransformNode(`actor-${id}`,scene);
+  if(shape==='car'&&model){
+    model.instantiate(root,id,colour,length);
+    return {update(){root.setEnabled(visible());applyPose(root,pose())},dispose:()=>root.dispose(false,true)};
+  }
   const paint=mat(scene,`${id}-paint`,Color3.FromHexString(colour));
   if(shape==='cyclist'){
     const bike=CreateBox(`${id}-bike`,{width:.12,height:.7,depth:1.7},scene);

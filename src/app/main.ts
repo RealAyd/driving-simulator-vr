@@ -16,6 +16,7 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
+import {CAR_MODEL,CarModel} from '../assets/models';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
@@ -138,6 +139,8 @@ export async function boot():Promise<void>{
     byId('hud-credit').textContent=osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'';
   };
   const store=await openAttemptStore();
+  // Other road users' car model (content/assets/register.json); simple shapes if it cannot load.
+  const carModel=await CarModel.load(scene,CAR_MODEL);
 
   const clock=new FixedStepClock(SIM_STEP);
   const events=new EventLog(()=>clock.time);
@@ -263,8 +266,8 @@ export async function boot():Promise<void>{
     for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started});
     const visuals=[
       ...(pedestrian?[pedestrianVisual(scene,pedestrian)]:[]),
-      ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose)]:[]),
-      ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started))
+      ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
+      ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,carModel,2*p.size.halfLength))
     ];
     const guide=scenario.guide?buildGuide(scene,scenario.guide.path,scenario.guide.arrows):null;
 
@@ -672,6 +675,7 @@ export async function boot():Promise<void>{
     byId('about-quality').textContent=`${quality.id} (render scale 1/${quality.hardwareScaling}, ${engine.getRenderWidth()}×${engine.getRenderHeight()} px)`;
     const p=perf.stats();
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
+    byId('about-models').textContent=carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple shapes (model not loaded)';
     byId('about-mirrors').textContent=`${mirrors.filter(m=>m.isActive).length} of 3 rendering now; ${quality.mirrorResolution} px, every ${quality.mirrorUpdateInterval} frame${quality.mirrorUpdateInterval===1?'':'s'} (every frame for the mirror you are looking at)`;
     byId('screen-about').hidden=false;
   };
@@ -756,6 +760,7 @@ export async function boot():Promise<void>{
     assist:()=>steeringMode==='assist',
     steering:()=>steeringMode,
     location:()=>place.id,
+    carModel:()=>carModel?.spec.id??null,
     overhead:(view:{x:number;z:number;height:number}|null)=>{overhead=view},
     variant:()=>runtime?.variant?.id??null,
     /** Diagnostics: switch mirror rendering off to measure what it costs. */
