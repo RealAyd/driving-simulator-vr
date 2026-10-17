@@ -82,3 +82,39 @@ test('G4: without sensor readings, choosing tilt falls back to assisted steering
   await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
   expect(await read(page,'steering()')).toBe('assist');
 });
+
+test('G4: assisted steering in the mirror check keeps to the road through the bend, and after a manual correction',async({page},testInfo)=>{
+  // Regression for an iPhone report: holding Go on assisted steering ran off the road at the bend.
+  test.setTimeout(300_000);
+  const errors:string[]=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
+  await page.click('#start-mirror-check');
+  await page.click('#briefing-go');
+  const go=page.locator('[data-hold=throttle]');
+  await go.dispatchEvent('pointerdown');
+  // A correction to the right with the button, then let the assistance bring the car back.
+  await expect.poll(async()=>(await read(page,'vehicle()')).position.z,{timeout:30_000}).toBeLessThan(-30);
+  const right=page.locator('[data-hold=right]');
+  await right.dispatchEvent('pointerdown');
+  await page.waitForTimeout(400);
+  await right.dispatchEvent('pointerup');
+  expect((await read(page,'vehicle()')).steerAngle).toBeGreaterThan(0);
+  // Simulation time runs slower than real time under headless software rendering.
+  await expect.poll(async()=>{
+    const v=await read(page,'vehicle()');
+    testInfo.annotations.push({type:'car',description:`t=${(await read(page,'simTime()')).toFixed(1)} x=${v.position.x.toFixed(2)} z=${v.position.z.toFixed(1)} v=${v.speed.toFixed(1)} ${v.surface} ${await read(page,'session()')}`});
+    return v.position.z;
+  },{timeout:200_000,intervals:[5000]}).toBeLessThan(-300);
+  await go.dispatchEvent('pointerup');
+  const car=await read(page,'vehicle()');
+  await page.screenshot({path:testInfo.outputPath('g4-04-after-bend.png')});
+  expect(await read(page,'session()')).toBe('running');
+  expect(car.surface).toBe('carriageway');
+  const types=(await read(page,'events()')).map((e:{type:string})=>e.type);
+  expect(types).not.toContain('vehicle.collision');
+  expect(types).not.toContain('vehicle.offroad');
+  expect(errors).toEqual([]);
+});

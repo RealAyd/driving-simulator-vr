@@ -17,8 +17,11 @@ export interface VehicleParams{
   rollingDeceleration:number;
   maxSteerAngle:Radians;
   steerRate:Radians;        // how fast the front wheels turn, rad/s
-  /** Steering lock is reduced at speed so high-speed inputs stay controllable. */
-  highSpeedSteerFactor:number;
+  /**
+   * Full steering at speed is limited to this sideways acceleration (m/s²), a
+   * firm but normal turn, so a full input never asks more than tyre grip allows.
+   */
+  maxLateralAccel:number;
 }
 
 export const LEARNER_CAR:Readonly<VehicleParams>=Object.freeze({
@@ -29,7 +32,7 @@ export const LEARNER_CAR:Readonly<VehicleParams>=Object.freeze({
   rollingDeceleration:.35,
   maxSteerAngle:.55,
   steerRate:1.1,
-  highSpeedSteerFactor:.75
+  maxLateralAccel:4.5
 });
 
 export interface VehicleState{
@@ -43,8 +46,9 @@ export interface VehicleState{
 const clamp=(v:number,lo:number,hi:number)=>Math.min(hi,Math.max(lo,v));
 
 export function steerLimit(params:VehicleParams,speed:MetresPerSecond):Radians{
-  const t=clamp(speed/params.maxSpeed,0,1);
-  return params.maxSteerAngle*(1-params.highSpeedSteerFactor*t);
+  // Turning radius R = wheelbase / tan(angle); sideways acceleration = speed² / R.
+  const gripLimited=Math.atan(params.maxLateralAccel*params.wheelbase/Math.max(speed*speed,1e-6));
+  return Math.min(params.maxSteerAngle,gripLimited);
 }
 
 /**

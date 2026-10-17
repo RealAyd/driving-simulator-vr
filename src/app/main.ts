@@ -21,6 +21,7 @@ import {FixedStepClock} from '../engine/clock';
 import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
 import {KeyboardInput,type InputAction,type ViewTarget} from '../input/keyboard';
+import {SteerRamp} from '../input/steerRamp';
 import {TILT_SENSITIVITY,TiltSteering} from '../input/tilt';
 import {ScenarioRunner,type Outcome} from '../scenarios/scenarioRunner';
 import {ZoneTracker} from '../scenarios/zones';
@@ -41,6 +42,7 @@ import {Session} from './session';
 const LOOK_SENSITIVITY=.004;
 /** Seconds the briefing stays up, with the simulation held, before each attempt. */
 const BRIEFING_SECONDS=10;
+const SIM_STEP=1/60;
 type SteeringMode='assist'|'tilt'|'buttons';
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
@@ -108,7 +110,7 @@ export async function boot():Promise<void>{
   const world=buildWorld(scene,place,quality);
   const store=await openAttemptStore();
 
-  const clock=new FixedStepClock(1/60);
+  const clock=new FixedStepClock(SIM_STEP);
   const events=new EventLog(()=>clock.time);
   const input=new KeyboardInput(window,window,document);
   const spawn:Pose={position:{x:place.spawn.position.x,y:0,z:place.spawn.position.z},heading:degToRad(place.spawn.headingDeg)};
@@ -118,10 +120,13 @@ export async function boot():Promise<void>{
   let steeringMode:SteeringMode=quality.id==='phone'?'assist':'buttons';
   const tilt=new TiltSteering();
   let tiltSteer=0;
+  const buttonSteer=new SteerRamp();
   const dynamicFootprints:DynamicFootprint[]=[];
   let vehicle!:VehicleController;
   const controls:ControlSource={read:()=>{
-    const c=input.read();
+    const keys=input.read();
+    // Called once per fixed simulation step.
+    const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
     // The driver's own button/key steering always overrides tilt and the assistance.
     if(c.steer!==0)return c;
     if(steeringMode==='tilt')return {...c,steer:tiltSteer};
@@ -291,6 +296,7 @@ export async function boot():Promise<void>{
   };
   const resetAttempt=()=>{
     input.clear();
+    buttonSteer.reset();
     vehicle.reset();
     for(const m of runtime?.modules??[])m.reset();
     head.recentre();

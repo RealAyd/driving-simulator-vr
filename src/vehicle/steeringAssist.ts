@@ -24,19 +24,25 @@ export class SteeringAssist{
     for(let i=0;i<this.path.length-1;i++){
       const a=this.path[i]!,b=this.path[i+1]!;
       const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz)||1;
-      const t=Math.max(0,Math.min(len,((x-a.x)*dx+(z-a.z)*dz)/len));
+      // The last segment runs on past its end, so progress keeps growing there.
+      const last=i===this.path.length-2;
+      const t=Math.max(0,Math.min(last?Infinity:len,((x-a.x)*dx+(z-a.z)*dz)/len));
       const d=Math.hypot(a.x+dx/len*t-x,a.z+dz/len*t-z);
       if(d<best){best=d;at=this.lengths[i]!+t}
     }
     return at;
   }
 
-  /** Point on the path at distance s (clamped to its ends). */
+  /**
+   * Point on the path at distance s. Beyond the end it continues along the
+   * last segment, so the target never falls behind the car and the assist
+   * never tries to turn it round.
+   */
   pointAt(s:number):Vec2{
     const total=this.lengths[this.lengths.length-1]!;
-    const target=Math.max(0,Math.min(total,s));
+    const target=Math.max(0,s);
     let i=0;
-    while(i<this.path.length-2&&this.lengths[i+1]!<target)i++;
+    while(i<this.path.length-2&&this.lengths[i+1]!<Math.min(target,total))i++;
     const a=this.path[i]!,b=this.path[i+1]!;
     const seg=this.lengths[i+1]!-this.lengths[i]!||1;
     const k=(target-this.lengths[i]!)/seg;
