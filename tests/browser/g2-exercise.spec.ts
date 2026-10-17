@@ -58,8 +58,9 @@ async function startExercise(page:Page){
 
 /** Pass the parked van in the right-hand lane between along 95 and 155. */
 const passVanLane=(car:Car)=>{const a=alongOf(car);return a>95&&a<155?1.3:-1.6};
-/** At 30 mph the lane change has to start earlier. */
-const passVanLaneFast=(car:Car)=>{const a=alongOf(car);return a>70&&a<155?1.3:-1.6};
+/** Fast attempt: change lane early at low speed, then hold the other lane at 30 mph. */
+const passVanLaneFast=(car:Car)=>{const a=alongOf(car);return a>45&&a<160?1.3:-1.6};
+const fastSpeed=(car:Car)=>{const a=alongOf(car);return a<75?7:13.4};
 
 test('G2: a careful attempt (mirror check, slow approach, gives way) completes without serious findings',async({page},testInfo)=>{
   const errors:string[]=[];
@@ -106,16 +107,18 @@ test('G2: a fast attempt is flagged, findings cite real events, and Try again re
   page.on('pageerror',e=>errors.push(e.message));
   await startExercise(page);
   const driver=new TestDriver(page);
-  await driver.drive({speed:()=>13.4,laneX:passVanLaneFast,until:()=>false,timeout:240_000});
+  await driver.drive({speed:fastSpeed,laneX:passVanLaneFast,until:()=>false,timeout:240_000});
 
   await expect(page.locator('#screen-results')).toBeVisible({timeout:30_000});
   const result=await read(page,'result()');
   const events=await read(page,'events()');
   testInfo.annotations.push({type:'fast result',description:JSON.stringify({outcome:result.outcome,findings:result.findings.map((f:any)=>`${f.severity}:${f.ruleId}:${f.incidentId}`)})});
+  const summary=JSON.stringify({outcome:result.outcome,findings:result.findings.map((f:any)=>`${f.severity}:${f.ruleId}:${f.explanation}`)});
+  expect(result.outcome,summary).toBe('completed');
   const speed=result.findings.find((f:any)=>f.ruleId==='approach.speed');
-  expect(speed?.severity).toBe('serious');
+  expect(speed?.severity,summary).toBe('serious');
   const conflict=result.findings.filter((f:any)=>f.incidentId==='crossing-conflict');
-  expect(conflict).toHaveLength(1);
+  expect(conflict,summary).toHaveLength(1);
   expect(['serious','dangerous']).toContain(conflict[0].severity);
   for(const f of result.findings)for(const id of f.eventIds)expect(events.some((e:any)=>e.id===id)).toBe(true);
   await expect(page.locator('#results-findings li')).toHaveCount(result.findings.length);
