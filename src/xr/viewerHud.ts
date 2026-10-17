@@ -1,69 +1,62 @@
-import {Color3,CreateDisc,CreatePlane,DynamicTexture,Mesh,Quaternion,StandardMaterial,Vector3,type Scene,type TransformNode} from '../engine/babylon';
+import {Color3,CreateBox,CreateDisc,CreatePlane,DynamicTexture,Mesh,Quaternion,StandardMaterial,Vector3,type Scene,type TransformNode} from '../engine/babylon';
 import type {Vec3} from '../contracts';
 import type {HeadBasis} from './headOrientation';
 
 /**
- * What the driver sees and uses inside the headset, where the touch screen
- * cannot be reached: a status panel on the dashboard, a reticle in the middle
- * of the view, and gaze buttons (look at one for a moment to press it).
+ * What the driver sees inside the headset, where the touch screen cannot be
+ * reached: a status panel on the dashboard, a reticle in the middle of the
+ * view, a menu panel straight ahead (pause, calibration, instructions) and,
+ * only where the car cannot move, gaze items (look at one for a moment to
+ * press it). Driving controls are never gaze items: a glance at a mirror or
+ * over a shoulder must not be able to press anything that affects the car.
  * Everything is in vehicle-local coordinates, parented to the car.
  */
-export type ViewerCommand='start'|'go'|'stop'|'signal-left'|'signal-right'|'recentre';
+export interface GazeItem{
+  id:string;
+  label:string;
+  /** Centre, vehicle-local metres. */
+  x:number;y:number;z:number;
+  w:number;h:number;
+  /** Seconds of looking needed to press it. */
+  dwell:number;
+}
 
-interface Button{command:ViewerCommand;label:string;mesh:Mesh;texture:DynamicTexture;centre:Vector3;normal:Vector3;right:Vector3;up:Vector3;w:number;h:number;drawn:string}
-
-/** Gaze button row on the dashboard (vehicle-local metres): first button's x, spacing, height, depth. */
-export const VIEWER_BUTTON_ROW={x0:-.55,step:.16,y:.99,z:-.76};
-
-/** Time a gaze button must be looked at to press it, seconds. */
-export const GAZE_DWELL=.9;
+interface Placed extends GazeItem{mesh:Mesh;texture:DynamicTexture;centre:Vector3;normal:Vector3;right:Vector3;up:Vector3;drawn:string}
 
 export class ViewerHud{
-  private readonly buttons:Button[]=[];
+  private items:Placed[]=[];
   private readonly panel:Mesh;
   private readonly panelTexture:DynamicTexture;
+  private readonly menu:Mesh;
+  private readonly menuTexture:DynamicTexture;
   private readonly reticle:Mesh;
   private readonly reticleMaterial:StandardMaterial;
+  private readonly farTarget:Mesh;
+  private readonly nearTarget:Mesh;
   private panelText='';
-  private gazed:Button|null=null;
+  private menuText='';
+  private gazed:Placed|null=null;
   private dwell=0;
-  /** Lit state per button (Go while moving on, Stop while holding, signals while on). */
-  private lit=new Map<ViewerCommand,boolean>();
+  private visible=false;
+  private targets=false;
+  private readonly lit=new Set<string>();
 
-  constructor(scene:Scene,parent:TransformNode,private readonly eye:Vec3){
-    const eyeV=new Vector3(eye.x,eye.y,eye.z);
-    const facing=(mesh:Mesh,centre:Vector3)=>{
-      // Plane faces the eye: its normal points from the plane towards the eye.
-      const n=eyeV.subtract(centre).normalize();
-      mesh.rotationQuaternion=Quaternion.FromLookDirectionRH(n.scale(-1),Vector3.Up());
-      const right=Vector3.Cross(Vector3.Up(),n).normalize().scale(-1);
-      return {normal:n,right,up:Vector3.Cross(n,right).normalize().scale(-1)};
+  constructor(private readonly scene:Scene,private readonly parent:TransformNode,private readonly eye:Vec3){
+    const text=(name:string,w:number,h:number,px:number,c:Vector3)=>{
+      const texture=new DynamicTexture(name,{width:px,height:Math.round(px*h/w)},scene,true);
+      const mesh=CreatePlane(name,{width:w,height:h},scene);
+      mesh.parent=parent;
+      mesh.position.copyFrom(c);
+      this.face(mesh,c);
+      mesh.material=this.material(name,texture);
+      return {mesh,texture};
     };
-    const material=(name:string,texture:DynamicTexture)=>{
-      const m=new StandardMaterial(name,scene);
-      m.diffuseTexture=texture;
-      m.emissiveTexture=texture;
-      m.disableLighting=true;
-      m.backFaceCulling=false;
-      return m;
-    };
-
     // Status panel on top of the dashboard, left of the steering wheel.
-    this.panelTexture=new DynamicTexture('viewer-panel',{width:640,height:160},scene,true);
-    this.panel=CreatePlane('viewer-panel',{width:.44,height:.11},scene);
-    this.panel.parent=parent;
-    const pc=new Vector3(-.2,1.075,-1.0);
-    this.panel.position.copyFrom(pc);
-    facing(this.panel,pc);
-    this.panel.material=material('viewer-panel',this.panelTexture);
+    ({mesh:this.panel,texture:this.panelTexture}=text('viewer-panel',.44,.11,640,new Vector3(-.2,1.075,-1.0)));
+    // Menu panel straight ahead at eye level (pause, calibration, instructions); hidden unless needed.
+    ({mesh:this.menu,texture:this.menuTexture}=text('viewer-menu',.74,.42,900,new Vector3(eye.x,eye.y+.02,eye.z-1.35)));
+    this.menu.renderingGroupId=1;
 
-    // Gaze buttons in a row on the dashboard, below the panel.
-    const row:Array<[ViewerCommand,string]>=[['signal-left','◀ Signal'],['stop','Stop'],['go','Go'],['signal-right','Signal ▶'],['recentre','Recentre']];
-    row.forEach(([command,label],i)=>this.addButton(scene,parent,command,label,new Vector3(VIEWER_BUTTON_ROW.x0+i*VIEWER_BUTTON_ROW.step,VIEWER_BUTTON_ROW.y,VIEWER_BUTTON_ROW.z),.15,.07,facing,material));
-    // Straight ahead, only before the exercise starts.
-    this.addButton(scene,parent,'start','Start',new Vector3(eye.x,eye.y-.02,eye.z-1.2),.2,.08,facing,material);
-
-    // Reticle: drawn over everything, about 0.6 m in front of the eyes.
     this.reticle=CreateDisc('viewer-reticle',{radius:.004,tessellation:16,sideOrientation:Mesh.DOUBLESIDE},scene);
     this.reticle.parent=parent;
     this.reticle.renderingGroupId=1;
@@ -72,38 +65,72 @@ export class ViewerHud{
     this.reticleMaterial.disableLighting=true;
     this.reticle.material=this.reticleMaterial;
     this.reticle.rotationQuaternion=new Quaternion();
+
+    // Alignment targets for calibration: a cross far away (both eyes should see one cross) and a small one near.
+    const cross=(name:string,size:number,thick:number)=>{
+      const m=new StandardMaterial(name,scene);
+      m.emissiveColor=new Color3(1,.85,.2);m.disableLighting=true;
+      const a=CreateBox(`${name}-h`,{width:size,height:thick,depth:thick},scene),b=CreateBox(`${name}-v`,{width:thick,height:size,depth:thick},scene);
+      const merged=Mesh.MergeMeshes([a,b],true)!;
+      merged.name=name;merged.material=m;merged.parent=parent;merged.renderingGroupId=1;
+      merged.rotationQuaternion=new Quaternion();
+      return merged;
+    };
+    this.farTarget=cross('viewer-target-far',2.4,.12);
+    this.nearTarget=cross('viewer-target-near',.05,.003);
     this.setVisible(false);
   }
 
-  private addButton(scene:Scene,parent:TransformNode,command:ViewerCommand,label:string,centre:Vector3,w:number,h:number,
-    facing:(m:Mesh,c:Vector3)=>{normal:Vector3;right:Vector3;up:Vector3},material:(n:string,t:DynamicTexture)=>StandardMaterial){
-    const texture=new DynamicTexture(`viewer-button-${command}`,{width:256,height:Math.round(256*h/w)},scene,true);
-    const mesh=CreatePlane(`viewer-button-${command}`,{width:w,height:h},scene);
-    mesh.parent=parent;
-    mesh.position.copyFrom(centre);
-    const axes=facing(mesh,centre);
-    mesh.material=material(`viewer-button-${command}`,texture);
-    this.buttons.push({command,label,mesh,texture,centre,...axes,w,h,drawn:''});
+  private material(name:string,texture:DynamicTexture):StandardMaterial{
+    const m=new StandardMaterial(name,this.scene);
+    m.diffuseTexture=texture;m.emissiveTexture=texture;m.disableLighting=true;m.backFaceCulling=false;
+    return m;
+  }
+
+  /** Turns a plane at `c` to face the eye; returns its axes for gaze hit tests. */
+  private face(mesh:Mesh,c:Vector3){
+    const n=new Vector3(this.eye.x,this.eye.y,this.eye.z).subtract(c).normalize();
+    mesh.rotationQuaternion=Quaternion.FromLookDirectionRH(n.scale(-1),Vector3.Up());
+    const right=Vector3.Cross(Vector3.Up(),n).normalize().scale(-1);
+    return {normal:n,right,up:Vector3.Cross(n,right).normalize().scale(-1)};
   }
 
   setVisible(on:boolean):void{
+    this.visible=on;
     this.panel.setEnabled(on);
     this.reticle.setEnabled(on);
-    for(const b of this.buttons)b.mesh.setEnabled(on&&b.command!=='start');
+    this.menu.setEnabled(on&&this.menuText!=='');
+    this.farTarget.setEnabled(on&&this.targets);
+    this.nearTarget.setEnabled(on&&this.targets);
+    for(const i of this.items)i.mesh.setEnabled(on);
     if(!on){this.gazed=null;this.dwell=0}
   }
 
-  /** Before the exercise begins: driving buttons hidden; the Start button shown once `ready`. After: the reverse. */
-  setStarting(starting:boolean,ready=false):void{
-    for(const b of this.buttons){
-      const on=b.command==='start'?starting&&ready:!starting;
-      if(b.mesh.isEnabled()!==on)b.mesh.setEnabled(on);
-    }
+  /** Replaces the gaze items (an empty list while driving: nothing to press by looking). */
+  setItems(items:GazeItem[]):void{
+    const key=(l:GazeItem[])=>l.map(i=>`${i.id}|${i.label}|${i.x}|${i.y}|${i.z}`).join(';');
+    if(key(items)===key(this.items))return;
+    for(const i of this.items)i.mesh.dispose(false,true);
+    this.items=items.map(item=>{
+      const texture=new DynamicTexture(`viewer-item-${item.id}`,{width:256,height:Math.max(32,Math.round(256*item.h/item.w))},this.scene,true);
+      const mesh=CreatePlane(`viewer-item-${item.id}`,{width:item.w,height:item.h},this.scene);
+      mesh.parent=this.parent;
+      const centre=new Vector3(item.x,item.y,item.z);
+      mesh.position.copyFrom(centre);
+      mesh.renderingGroupId=1;
+      const axes=this.face(mesh,centre);
+      mesh.material=this.material(`viewer-item-${item.id}`,texture);
+      mesh.setEnabled(this.visible);
+      return {...item,mesh,texture,centre,...axes,drawn:''};
+    });
+    this.gazed=null;this.dwell=0;
   }
 
-  setLit(command:ViewerCommand,on:boolean):void{this.lit.set(command,on)}
+  get itemIds():string[]{return this.items.map(i=>i.id)}
 
-  /** Status text, one line per entry (redrawn only when it changes). */
+  setLit(id:string,on:boolean):void{if(on)this.lit.add(id);else this.lit.delete(id)}
+
+  /** Status text on the dashboard panel, one line per entry (redrawn only when it changes). */
   setStatus(lines:string[]):void{
     const text=lines.join('\n');
     if(text===this.panelText)return;
@@ -115,17 +142,49 @@ export class ViewerHud{
     this.panelTexture.update(true);
   }
 
+  /** The menu panel straight ahead: a title and lines, or null to hide it. */
+  setMenu(lines:string[]|null):void{
+    const text=lines?lines.join('\n'):'';
+    if(text===this.menuText)return;
+    this.menuText=text;
+    this.menu.setEnabled(this.visible&&!!lines);
+    if(!lines)return;
+    const {width,height}=this.menuTexture.getSize();
+    const ctx=this.menuTexture.getContext() as unknown as CanvasRenderingContext2D;
+    ctx.fillStyle='#0b1220f2';ctx.fillRect(0,0,width,height);
+    ctx.strokeStyle='#64748b';ctx.lineWidth=6;ctx.strokeRect(3,3,width-6,height-6);
+    lines.forEach((line,i)=>{
+      ctx.fillStyle=i===0?'#fbbf24':'#e2e8f0';
+      ctx.font=i===0?'bold 48px sans-serif':'32px sans-serif';
+      ctx.fillText(line,28,62+i*46,width-56);
+    });
+    this.menuTexture.update(true);
+  }
+
+  /** Calibration alignment targets (far and near crosses straight ahead of the head). */
+  showTargets(on:boolean):void{
+    this.targets=on;
+    this.farTarget.setEnabled(this.visible&&on);
+    this.nearTarget.setEnabled(this.visible&&on);
+  }
+
   /**
-   * Moves the reticle with the head and advances the gaze dwell. Returns the
-   * command whose button has just been looked at for GAZE_DWELL seconds.
+   * Moves the reticle (and targets) with the head and advances the gaze
+   * dwell. Returns the id of an item that has just been looked at for its
+   * dwell time.
    */
-  update(dt:number,head:HeadBasis):ViewerCommand|null{
-    const o=new Vector3(this.eye.x,this.eye.y,this.eye.z),d=new Vector3(head.forward.x,head.forward.y,head.forward.z);
+  update(dt:number,head:HeadBasis):string|null{
+    const o=new Vector3(this.eye.x,this.eye.y,this.eye.z),d=new Vector3(head.forward.x,head.forward.y,head.forward.z),u=new Vector3(head.up.x,head.up.y,head.up.z);
     this.reticle.position.copyFrom(o.add(d.scale(.6)));
-    Quaternion.FromLookDirectionRHToRef(d,new Vector3(head.up.x,head.up.y,head.up.z),this.reticle.rotationQuaternion!);
-    let hit:Button|null=null;
-    for(const b of this.buttons){
-      if(!b.mesh.isEnabled())continue;
+    Quaternion.FromLookDirectionRHToRef(d,u,this.reticle.rotationQuaternion!);
+    if(this.targets){
+      this.farTarget.position.copyFrom(o.add(d.scale(40)));
+      Quaternion.FromLookDirectionRHToRef(d,u,this.farTarget.rotationQuaternion!);
+      this.nearTarget.position.copyFrom(o.add(d.scale(.9)));
+      Quaternion.FromLookDirectionRHToRef(d,u,this.nearTarget.rotationQuaternion!);
+    }
+    let hit:Placed|null=null;
+    for(const b of this.items){
       const den=Vector3.Dot(d,b.normal);
       if(den>-1e-3)continue;
       const t=Vector3.Dot(b.centre.subtract(o),b.normal)/den;
@@ -134,70 +193,38 @@ export class ViewerHud{
       if(Math.abs(Vector3.Dot(p,b.right))<=b.w/2&&Math.abs(Vector3.Dot(p,b.up))<=b.h/2){hit=b;break}
     }
     if(hit!==this.gazed){this.gazed=hit;this.dwell=0}
-    let fired:ViewerCommand|null=null;
+    let fired:string|null=null;
     if(hit){
       this.dwell+=dt;
-      if(this.dwell>=GAZE_DWELL){fired=hit.command;this.dwell=-1e9}
+      if(this.dwell>=hit.dwell){fired=hit.id;this.dwell=-1e9}
     }
-    this.reticleMaterial.emissiveColor.set(hit?1:1,hit?.75:1,hit?.2:1);
-    for(const b of this.buttons)this.drawButton(b,b===hit?Math.max(0,Math.min(1,this.dwell/GAZE_DWELL)):0);
+    this.reticleMaterial.emissiveColor.set(1,hit?.75:1,hit?.2:1);
+    for(const b of this.items)this.draw(b,b===hit?Math.max(0,Math.min(1,this.dwell/b.dwell)):0);
     return fired;
   }
 
-  /** What is being looked at and how far through the dwell (0..1), for tests and diagnostics. */
-  get gaze():{command:ViewerCommand|null;progress:number}{
-    return {command:this.gazed?.command??null,progress:this.gazed?Math.max(0,Math.min(1,this.dwell/GAZE_DWELL)):0};
+  /** What is being looked at and how far through its dwell (0..1). */
+  get gaze():{id:string|null;progress:number}{
+    return {id:this.gazed?.id??null,progress:this.gazed?Math.max(0,Math.min(1,this.dwell/this.gazed.dwell)):0};
   }
 
-  private drawButton(b:Button,progress:number):void{
-    const lit=this.lit.get(b.command)??false;
-    const key=`${lit}|${Math.round(progress*20)}`;
+  private draw(b:Placed,progress:number):void{
+    const lit=this.lit.has(b.id);
+    const key=`${lit}|${Math.round(progress*20)}|${b.label}`;
     if(key===b.drawn)return;
     b.drawn=key;
     const ctx=b.texture.getContext() as unknown as CanvasRenderingContext2D;
     const {width,height}=b.texture.getSize();
     ctx.fillStyle=lit?'#0f766e':'#1e293b';ctx.fillRect(0,0,width,height);
-    if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-14,width*progress,14)}
+    if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-12,width*progress,12)}
     ctx.strokeStyle='#94a3b8';ctx.lineWidth=6;ctx.strokeRect(3,3,width-6,height-6);
-    ctx.fillStyle='#f8fafc';ctx.font=`bold ${Math.round(height*.42)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(b.label,width/2,height/2-4,width-16);
+    ctx.fillStyle='#f8fafc';ctx.font=`bold ${Math.round(Math.min(height*.42,40))}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(b.label,width/2,height/2-3,width-14);
     b.texture.update(true);
   }
 
   dispose():void{
-    this.panel.dispose(false,true);
-    this.reticle.dispose(false,true);
-    for(const b of this.buttons)b.mesh.dispose(false,true);
-  }
-}
-
-/** Game controller (Gamepad API, standard mapping): held controls and button presses. */
-export class ViewerGamepad{
-  private previous:boolean[]=[];
-  connected=false;
-  name='';
-
-  /** Reads the first connected controller. */
-  read():{throttle:boolean;brake:boolean;steer:number;pressed:ViewerCommand[];pause:boolean}{
-    const pads=typeof navigator!=='undefined'&&navigator.getGamepads?[...navigator.getGamepads()].filter(Boolean) as Gamepad[]:[];
-    const pad=pads[0];
-    this.connected=!!pad;
-    this.name=pad?.id??'';
-    if(!pad)return {throttle:false,brake:false,steer:0,pressed:[],pause:false};
-    const down=(i:number)=>!!pad.buttons[i]?.pressed||(pad.buttons[i]?.value??0)>.3;
-    const now=pad.buttons.map((_,i)=>down(i));
-    const edge=(i:number)=>!!now[i]&&!this.previous[i];
-    const pressed:ViewerCommand[]=[];
-    // LB / D-pad left: signal left; RB / D-pad right: signal right; Y: recentre.
-    if(edge(4)||edge(14))pressed.push('signal-left');
-    if(edge(5)||edge(15))pressed.push('signal-right');
-    if(edge(3))pressed.push('recentre');
-    // Any face button or trigger also confirms Start.
-    if([0,1,2,6,7].some(edge))pressed.push('start');
-    const pause=edge(9);
-    this.previous=now;
-    const x=pad.axes[0]??0;
-    // RT or A: go (accelerate while held); LT or B: brake.
-    return {throttle:down(7)||down(0),brake:down(6)||down(1),steer:Math.abs(x)>.35?Math.sign(x):0,pressed,pause};
+    for(const m of [this.panel,this.menu,this.reticle,this.farTarget,this.nearTarget])m.dispose(false,true);
+    for(const i of this.items)i.mesh.dispose(false,true);
   }
 }

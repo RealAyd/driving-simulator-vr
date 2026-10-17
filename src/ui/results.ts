@@ -46,7 +46,8 @@ export function renderResults(result:AttemptResult,eventTime:(id:string)=>number
   notes.hidden=result.notes.length===0;
   document.getElementById('results-meta')!.textContent=
     `Duration ${result.durationSeconds.toFixed(0)} s · rubric ${result.rubricVersion} (draft, not yet reviewed by an instructor; not DVSA criteria) · `+
-    (saveFailed?'this attempt could not be saved on this device'
+    (attemptsSaved<0?'parked familiarisation: not scored and not saved'
+      :saveFailed?'this attempt could not be saved on this device'
       :storage==='indexeddb'?`${attemptsSaved} attempt${attemptsSaved===1?'':'s'} saved on this device`:'results are not saved in this browser');
 }
 

@@ -41,8 +41,11 @@ export class HeadTracker{
   private yaw0=0;
   private stamps:number[]=[];
   private listening=false;
+  /** Readings that arrived without usable angles (counted, not used). */
+  invalidReadings=0;
+  private drift:{startedAt:number;yaw:number}|null=null;
   private readonly onOrientation=(e:DeviceOrientationEvent)=>{
-    if(e.alpha==null||e.beta==null||e.gamma==null)return;
+    if(e.alpha==null||e.beta==null||e.gamma==null||![e.alpha,e.beta,e.gamma].every(Number.isFinite)){this.invalidReadings++;return}
     this.raw={alpha:e.alpha,beta:e.beta,gamma:e.gamma};
     const now=performance.now();
     this.stamps.push(now);
@@ -74,7 +77,42 @@ export class HeadTracker{
     return last!==undefined&&performance.now()-last<500;
   }
 
-  get rate():number{return this.stamps.length}
+  get rate():number{
+    const now=performance.now();
+    return this.stamps.filter(t=>now-t<=1000).length;
+  }
+
+  /** Age of the newest reading, milliseconds (Infinity before any). A large age is stale tracking. */
+  get readingAge():number{
+    const last=this.stamps.at(-1);
+    return last===undefined?Infinity:performance.now()-last;
+  }
+
+  /**
+   * Orientation offset: how far (degrees) the head is from straight ahead
+   * right now. Immediately after Recentre it is 0; it is NOT a measure of lag
+   * or drift.
+   */
+  get offsetDeg():number{
+    const b=this.basis();
+    return b?Math.abs(yawOf(b.forward))*180/Math.PI:NaN;
+  }
+
+  /** Drift test: hold the head still; the yaw change per minute is sensor drift (Recentre does not cure it). */
+  startDriftTest():void{
+    const b=this.basis();
+    this.drift=b?{startedAt:performance.now(),yaw:yawOf(b.forward)}:null;
+  }
+
+  get driftDegPerMinute():number|null{
+    const b=this.basis();
+    if(!this.drift||!b)return null;
+    const minutes=(performance.now()-this.drift.startedAt)/60000;
+    if(minutes<1/60)return null;
+    let d=yawOf(b.forward)-this.drift.yaw;
+    d=Math.atan2(Math.sin(d),Math.cos(d));
+    return d*180/Math.PI/minutes;
+  }
 
   private deviceBasis():HeadBasis|null{
     if(!this.raw)return null;
@@ -152,7 +190,7 @@ export class PhoneViewer{
     const fov=profile.fovDeg*Math.PI/180;
     this.eyes.forEach((c,i)=>{
       const shift=i===0?l.shift.left:l.shift.right;
-      c.freezeProjectionMatrix(Matrix.PerspectiveFovRH(fov,l.aspect,c.minZ,c.maxZ).multiply(Matrix.Translation(shift,0,0)));
+      c.freezeProjectionMatrix(Matrix.PerspectiveFovRH(fov,l.aspect,c.minZ,c.maxZ).multiply(Matrix.Translation(shift,l.vshift,0)));
     });
     for(const p of this.lens??[])p.dispose();
     this.lens=null;
@@ -161,7 +199,7 @@ export class PhoneViewer{
       const p=new PostProcess(`viewer-lens-${i}`,'phoneViewerLens',['lensCentre','distortion','eyeAspect','lensScale'],null,1,c);
       const centre=i===0?l.centre.left:l.centre.right;
       p.onApply=effect=>{
-        effect.setFloat2('lensCentre',centre,.5);
+        effect.setFloat2('lensCentre',centre,l.vcentre);
         effect.setFloat2('distortion',profile.k1,profile.k2);
         effect.setFloat('eyeAspect',l.aspect);
         effect.setFloat('lensScale',l.scale);

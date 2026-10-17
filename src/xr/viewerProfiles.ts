@@ -21,6 +21,8 @@ export interface ViewerProfile{
   k2:number;
   /** Distance between the two eye viewpoints in the scene (interpupillary distance), metres. */
   ipd:number;
+  /** Moves both eye images up (+) or down on the screen, metres (calibration). */
+  verticalOffset?:number;
 }
 
 export const VIEWER_PROFILES:ViewerProfile[]=[
@@ -37,6 +39,9 @@ export interface EyeLayout{
   shift:{left:number;right:number};
   /** Lens centre in each eye's image, texture coordinates (0..1). */
   centre:{left:number;right:number};
+  /** Vertical shift of both images (projection space, + up) and the lens centre's vertical texture coordinate. */
+  vshift:number;
+  vcentre:number;
   /** Width ÷ height of one eye's image. */
   aspect:number;
   /** Shrinks the corrected image so its nearest side edge stays filled. */
@@ -44,7 +49,7 @@ export interface EyeLayout{
 }
 
 /** Lens geometry for one screen size (metres) and drawing-buffer aspect (width ÷ height of the whole screen). */
-export function eyeLayout(profile:ViewerProfile,screenWidth:number,screenAspect:number):EyeLayout{
+export function eyeLayout(profile:ViewerProfile,screenWidth:number,screenAspect:number,screenHeight=IPHONE_14_PRO_MAX.height):EyeLayout{
   const eyeWidth=screenWidth/2;
   // Lens centre relative to the centre of each half, as a fraction of the half's width.
   const offset=Math.max(-.4,Math.min(.4,(screenWidth/4-profile.lensSeparation/2)/eyeWidth));
@@ -56,6 +61,8 @@ export function eyeLayout(profile:ViewerProfile,screenWidth:number,screenAspect:
     // The left eye's lens is to the right of its half's centre (towards the middle of the screen), and vice versa.
     shift:{left:2*offset,right:-2*offset},
     centre:{left:.5+offset,right:.5-offset},
+    vshift:2*(profile.verticalOffset??0)/screenHeight,
+    vcentre:.5+(profile.verticalOffset??0)/screenHeight,
     aspect,
     scale
   };

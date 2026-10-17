@@ -1,5 +1,7 @@
 # Step 7: phone-viewer mode (cardboard-style headset) for iPhone 14 Pro Max
 
+> **Partly superseded by Step 9** (`STEP9-phone-viewer-controls.md`): the gaze-operated Go, Stop and signal buttons and the 15 mph auto-cruise described below were removed. Scored viewer driving now needs a checked physical controller; gaze is used only for parked familiarisation and calibration menus.
+
 Branch `rebuild/3d-judgement-simulator`. Production `main` unchanged. **Nothing here has been tried on an iPhone or in a headset yet.** Everything below was checked in headless Chromium with a simulated motion sensor and a simulated game controller, at the iPhone 14 Pro Max landscape size (932 × 430 CSS px, touch).
 
 ## Why not WebXR

@@ -107,5 +107,9 @@
   "end": {
     "zone": "end",
     "timeLimitSeconds": 240
+  },
+  "controllerDriving": {
+    "assistedSpeedMph": 20,
+    "accelerationLimit": 1.5
   }
 }

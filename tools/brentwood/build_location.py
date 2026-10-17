@@ -204,6 +204,7 @@ scenario = {
     'schemaVersion': 1,
     'id': 'brentwood-guided-traversal',
     'locationId': location['id'],
+    'controllerDriving': {'assistedSpeedMph': 18, 'accelerationLimit': 1.5},
     'title': 'Brentwood mini-roundabouts',
     'learningObjective': 'Approach and drive through two mini-roundabouts close together: plan your lane, '
                          'slow down, give way to traffic from the right, signal correctly and look again before the second one.',

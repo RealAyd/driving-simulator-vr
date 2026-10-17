@@ -22,6 +22,12 @@ body.viewer #hud,body.viewer .screen{display:none!important}
 .guide-option{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--soft);margin:12px 0 0}
 .guide-option input{margin-top:3px;width:18px;height:18px;flex:none}
 .guide-option b{color:var(--ink)}
+.viewer-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.controller-table{width:100%;border-collapse:collapse;font-size:13px}
+.controller-table td,.controller-table th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
+.controller-table .live.on{color:#4ade80;font-weight:700}
+.controller-table .tested{color:#4ade80}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
 .viewer-panel select{font:inherit;background:#1e293b;color:var(--ink);border:1px solid #64748b;border-radius:8px;padding:4px;max-width:100%}
 .screen{position:fixed;inset:0;display:grid;place-items:center;padding:var(--st) var(--sr) var(--sb) var(--sl);background:#0b1220d9;z-index:20;overflow-y:auto}
 body.phone .keys{display:none}
@@ -195,13 +201,31 @@ body.stationary [data-hold="throttle"]{opacity:.4}
       <label id="guide-option" class="guide-option" hidden><input type="checkbox" id="guide-toggle"> <span><b>Show the pull-out path</b> on the road. Useful while learning the controls; leave it off for an independent attempt.</span></label>
       <button id="start-practice" class="primary" type="button">Start practice</button>
       <fieldset id="viewer-mode" class="steering viewer-panel">
-        <legend>Phone viewer (headset, experimental)</legend>
-        <label>Headset <select id="viewer-profile"></select></label>
-        <button id="viewer-start" type="button" class="wide">Start in phone viewer</button>
-        <p class="unit">Asks for motion access, then shows a side-by-side picture for a phone headset. Put the phone in landscape in the headset and look straight ahead. Inside the headset: look at a dashboard button for about a second to press it (Start, Go, Stop, signals, Recentre), or use a Bluetooth game controller (RT/A go, LT/B brake, LB/RB signal, Y recentre, Menu pause) or keyboard. Tap the screen to pause and leave the viewer. For the full screen, add this page to the Home Screen and open it from there.</p>
+        <legend>Phone headset (experimental)</legend>
+        <p class="unit">Normal touch-screen practice above is unchanged. With the phone in a headset:</p>
+        <button id="viewer-familiarise" type="button" class="wide">Sit in the car (no controller needed)</button>
+        <p class="unit">Parked and not scored: look around, check the mirrors and practise shoulder checks. Menus work by looking at a button for a moment; tap the screen to leave.</p>
+        <button id="viewer-drive" type="button" class="wide" disabled>Drive with a controller (scored)</button>
+        <p class="unit">Moving, scored driving needs a physical controller that has passed the check: a Bluetooth game controller or keyboard. Accelerating, braking and signalling are never done by looking at buttons. <b>Do the check before putting the phone in the headset.</b></p>
+        <p id="viewer-drive-status" class="unit" role="status"></p>
+        <button id="controller-check-open" type="button">Check controller…</button>
+        <div class="viewer-row"><label>Viewer <select id="viewer-slot"></select></label> <button id="viewer-calibrate" type="button">Calibrate viewer…</button></div>
+        <p id="viewer-summary" class="unit"></p>
         <p id="viewer-status" class="unit" role="status"></p>
       </fieldset>
     </div>
+  </div>
+</section>
+
+<section id="screen-controller" class="screen" hidden aria-labelledby="controller-title">
+  <div class="card">
+    <h1 id="controller-title">Controller check</h1>
+    <p class="unit">Connect a Bluetooth game controller (or keyboard) to this iPhone, then press each control once. This screen shows exactly what Safari receives. If your controller uses a different layout, press <b>Set</b> and then the button you want. A headset remote that pairs over Bluetooth may not appear here at all: many act as a mouse or media keys, which a web page cannot read.</p>
+    <table class="controller-table"><thead><tr><th>Control</th><th>Bound to</th><th>Now</th><th>Check</th><th></th></tr></thead><tbody id="controller-actions"></tbody></table>
+    <p id="controller-raw" class="unit mono"></p>
+    <p id="controller-check-status" class="unit" role="status"></p>
+    <div class="viewer-row"><button id="controller-standard" type="button">Use the standard layout</button> <button id="controller-cancel" type="button">Cancel</button> <button id="controller-done" type="button" class="primary" disabled>Done</button></div>
+    <p class="unit">Accelerate is held: the car speeds up while you hold it, up to the exercise's assisted speed, and coasts when you let go. Brake acts the moment you press it. Pause opens a menu in the headset; only pressing Pause again resumes.</p>
   </div>
 </section>
 

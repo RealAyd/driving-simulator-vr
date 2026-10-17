@@ -33,6 +33,20 @@ export interface AttemptResult{
   notes:string[];
   durationSeconds:Seconds;
   finishedAt:string;
+  /** How the attempt was driven (recorded with every attempt). */
+  conditions?:AttemptConditions;
+}
+
+export interface AttemptConditions{
+  /** touch: phone screen controls; keyboard: desktop keys; phone-viewer-controller: headset with a checked physical controller; webxr: WebXR headset. */
+  controlMode:'touch'|'keyboard'|'phone-viewer-controller'|'phone-viewer-familiarisation'|'webxr';
+  steering:'assist'|'tilt'|'buttons';
+  /** Route guidance painted on the road. */
+  guidance:boolean;
+  /** Observation evidence came from head direction (phone viewer or WebXR), not view buttons. Not eye tracking. */
+  headDirectionEvidence:boolean;
+  /** The controller that passed the input check (phone viewer), if any. */
+  controller?:string;
 }
 
 /** Prefix for a practice note that describes something to work on (results show it differently). */

@@ -77,6 +77,15 @@ export const ScenarioSchema=z.object({
   guide:z.object({path:z.array(point).min(2),arrows:z.array(point).default([])}).strict().optional(),
   /** The learner's car cannot move (introductions and demonstrations). */
   stationary:z.boolean().default(false),
+  /**
+   * Driving with a physical controller in the phone viewer: Accelerate is
+   * held, and assisted speed and acceleration stay within these limits for
+   * this exercise (our draft design values, not official figures).
+   */
+  controllerDriving:z.object({
+    assistedSpeedMph:z.number().min(3).max(40),
+    accelerationLimit:z.number().min(.3).max(3)
+  }).strict().default({assistedSpeedMph:15,accelerationLimit:1.5}),
   /** Exercise offered next on the results screen. */
   next:z.object({scenarioId:z.string(),label:z.string()}).strict().optional(),
   /**

@@ -8,7 +8,7 @@ import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundab
 import brentwoodGuidedJson from '../../content/scenarios/brentwood-guided-traversal.json';
 import {
   INFO,degToRad,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
-  type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
+  type AttemptConditions,type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
 } from '../contracts';
 import {pedestrianVisual,vehicleVisual} from '../actors/actorVisuals';
 import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../actors/followingVehicle';
@@ -50,7 +50,10 @@ import {buildGuide} from '../world/guide';
 import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
-import {ViewerGamepad,ViewerHud,type ViewerCommand} from '../xr/viewerHud';
+import {ViewerHud,type GazeItem} from '../xr/viewerHud';
+import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBindings,saveBindings,type ControllerState,type DriveAction} from '../xr/controllerInput';
+import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
+import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
@@ -77,6 +80,8 @@ function byId<T extends HTMLElement>(id:string):T{
 /** Per-exercise road users, scoring and visuals; rebuilt whenever an exercise starts. */
 interface ExerciseRuntime{
   scenario:Scenario;
+  /** Parked practice in the phone viewer: not assessed, not saved. */
+  familiarisation:boolean;
   modules:SimModule[];
   runner:ScenarioRunner;
   zones:ZoneTracker;
@@ -194,11 +199,13 @@ export async function boot():Promise<void>{
     // Called once per fixed simulation step.
     const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
     // The driver's own button/key steering always overrides tilt and the assistance.
-    if(c.steer!==0)return c;
-    if(steeringMode==='tilt')return {...c,steer:tiltSteer};
-    if(steeringMode==='assist'&&runtime?.assist)return {...c,steer:runtime.assist.steer(vehicle.pose,vehicle.state.speed)};
-    return c;
+    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
+    // In the phone viewer only the checked physical controller drives the car.
+    const viewerDrive=viewerControls(steer);
+    lastControls=viewerDrive??{throttle:c.throttle,brake:c.brake,steer};
+    return lastControls;
   }};
+  let lastControls:Controls={throttle:0,brake:0,steer:0};
   vehicle=new VehicleController(spawn,controls,{
     surfaceHeightAt:(x,z)=>surfaceAt(place,x,z)?.height??null,
     groundHeight:0,
@@ -283,7 +290,11 @@ export async function boot():Promise<void>{
   const observation=new ObservationTracker(observationTargets,()=>vehicle.pose,pose=>head.eyeWorld(pose),pose=>head.lookWorld(pose),events);
 
   // ---- Exercise setup ----
-  function buildExercise(scenario:Scenario):ExerciseRuntime{
+  function buildExercise(source:Scenario,familiarisation=false):ExerciseRuntime{
+    // Familiarisation keeps the exercise's place and road users but the car stays parked and nothing is assessed.
+    const scenario:Scenario=familiarisation&&!source.stationary
+      ?{...source,stationary:true,rubricId:'none',end:{...source.end,completeAfterSeconds:source.end.completeAfterSeconds??180}}
+      :source;
     dynamicFootprints.length=0;
     const pedDef=scenario.actors.find((a):a is PedestrianActorDef=>a.kind==='pedestrian');
     const followerDef=scenario.actors.find((a):a is FollowingVehicleActorDef=>a.kind==='following-vehicle');
@@ -327,7 +338,7 @@ export async function boot():Promise<void>{
       followerGap:()=>follower?follower.gap:null,
       zones,crossing,pedestrian,now:()=>clock.time
     },events):null;
-    const routeJunctions=scenario.zones.some(z=>z.id==='rb1-entry')?[
+    const routeJunctions=!familiarisation&&scenario.zones.some(z=>z.id==='rb1-entry')?[
       {name:'Mini-roundabout 1',approachZone:'rb1-approach',entryZone:'rb1-entry',signal:'left' as const},
       {name:'Mini-roundabout 2',approachZone:'rb2-approach',entryZone:'rb2-entry',signal:null}
     ]:null;
@@ -346,7 +357,7 @@ export async function boot():Promise<void>{
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,modules,runner,zones,assist,pedestrian,follower,passers,
+      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.
@@ -374,6 +385,11 @@ export async function boot():Promise<void>{
         if(guided)base.notes.push('Route guidance was shown on the road (the pull-out path).');
         if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
         if(variant)base.notes.push(`${INFO}Timing this attempt: ${variant.label.toLowerCase()}.`);
+        const mode=controlMode();
+        if(mode==='phone-viewer-controller'||mode==='webxr')base.notes.push(`${INFO}Observations were recorded from your head direction (motion sensors), not eye tracking.`);
+        if(familiarisation)base.notes.push(`${INFO}Parked familiarisation in the phone viewer: not scored and not saved.`);
+        base.conditions={controlMode:mode,steering:steeringMode,guidance:guided,headDirectionEvidence:mode==='phone-viewer-controller'||mode==='webxr'||!!viewerMode,
+          ...(mode==='phone-viewer-controller'&&checkedDevice?{controller:checkedDevice}:{})};
         return base;
       },
       current:()=>assessor?assessor.current:movingOff?movingOff.current:[],
@@ -438,7 +454,9 @@ export async function boot():Promise<void>{
       lastResult=result;
       session.to('finished');
       let saved=0,saveFailed=false;
-      try{
+      // Parked familiarisation is kept apart from scored results: not saved.
+      if(runtime!.familiarisation)saved=-1;
+      else try{
         await store.save(result);
         saved=(await store.list(result.scenarioId)).length;
       }catch(error){
@@ -482,73 +500,197 @@ export async function boot():Promise<void>{
   const xr=new SeatedXr(scene,seatNode);
 
   // ---- Phone viewer: side-by-side stereo in a cardboard-style headset (no WebXR on iPhone) ----
+  // Three modes. Familiarisation: parked, not scored, menus by gaze, no controller needed.
+  // Driving: scored, needs a physical controller that passed the input check; nothing that
+  // moves the car or signals is ever done by gaze. Calibration: parked, adjusts the viewer.
   const headTracker=new HeadTracker();
   const viewer=new PhoneViewer(scene,camera);
   const viewerHud=new ViewerHud(scene,vehicleNode,head.seat.eye);
-  const gamepad=new ViewerGamepad();
-  /** Speed the car settles at after Go is looked at (no pedal to hold in a headset): 15 mph. */
-  const VIEWER_CRUISE_SPEED=6.7;
-  let viewerProfile=VIEWER_PROFILES[0]!;
-  let viewerStarting=false,viewerCruise=false,viewerHolding=false,viewerEnteredAt=0;
+  const localStore=(()=>{try{return window.localStorage}catch{return null}})();
+  const controller=new ControllerInput({
+    getGamepads:()=>typeof navigator.getGamepads==='function'?[...navigator.getGamepads()]:[],
+    addEventListener:(type,listener)=>window.addEventListener(type,listener as EventListener)
+  });
+  let updateControllerCheck=()=>{};
+  /** The device (controller id or 'keyboard') that passed the input check in this visit, or null. */
+  let checkedDevice:string|null=null;
+  let controllerState:ControllerState|null=null;
+  let viewerMode:'familiarisation'|'driving'|'calibration'|null=null;
+  /** Waiting for Start: simulated time stopped, the car held. */
+  let viewerStarting=false,viewerEnteredAt=0;
+  /** Why the exercise paused inside the headset (shown on the in-headset menu). */
+  let viewerPauseReason='';
+  /** Accelerate must be released and pressed again after a pause before it counts. */
+  let accelArmed=false;
+  /** How long Brake has been held on the pause menu (hold 2 s to exit). */
+  let exitHeld=0;
+  /** Diagnostics: simulated time a brake press was received, and when a simulation step first applied it. */
+  let brakeInputAt=-1,brakeAppliedAt=-1,brakeWasDown=false;
+  let wakeLock:{release():Promise<void>}|null=null;
   /** Time to put the phone in the headset before Start can be chosen, seconds. */
   const VIEWER_SETTLE=3;
-  let viewerVirtual={throttle:false,brake:false,left:false,right:false};
-  let wakeLock:{release():Promise<void>}|null=null;
-  const profileSelect=byId<HTMLSelectElement>('viewer-profile');
-  for(const p of VIEWER_PROFILES){const o=document.createElement('option');o.value=p.id;o.textContent=p.label;profileSelect.append(o)}
-  profileSelect.addEventListener('change',()=>{
-    viewerProfile=VIEWER_PROFILES.find(p=>p.id===profileSelect.value)??VIEWER_PROFILES[0]!;
-    viewer.setProfile(viewerProfile);
-  });
+  /** Head-tracking readings older than this pause the exercise (stale or stopped sensor), milliseconds. */
+  const TRACKING_STALE_MS=500;
+  let viewers=loadViewers(localStore);
+  let viewerSettings=activeSettings(viewers);
   const viewerStatus=byId('viewer-status');
-  const setViewerVirtual=(next:typeof viewerVirtual)=>{
-    for(const k of Object.keys(next) as Array<keyof typeof next>)if(next[k]!==viewerVirtual[k])input.setVirtual(k,next[k]);
-    viewerVirtual=next;
+  const slotSelect=byId<HTMLSelectElement>('viewer-slot');
+  for(const name of VIEWER_SLOTS){const o=document.createElement('option');o.value=name;o.textContent=name;slotSelect.append(o)}
+  slotSelect.value=viewers.active;
+  slotSelect.addEventListener('change',()=>{
+    viewers={...viewers,active:slotSelect.value};
+    viewerSettings=activeSettings(viewers);
+    saveViewers(localStore,viewers);
+    showViewerSummary();
+  });
+  const showViewerSummary=()=>{
+    const p=VIEWER_PROFILES.find(v=>v.id===viewerSettings.profileId)!;
+    byId('viewer-summary').textContent=`${p.label}; eye spacing ${viewerSettings.ipdMm} mm, image alignment ${viewerSettings.lensSeparationMm} mm${viewerSettings.verticalOffsetMm?`, vertical ${viewerSettings.verticalOffsetMm} mm`:''}. Lens presets are provisional: check them through your own holder.`;
   };
+  showViewerSummary();
+  const storeSettings=(s:ViewerSettings)=>{
+    viewerSettings=clampSettings(s);
+    viewers={...viewers,viewers:{...viewers.viewers,[viewers.active]:viewerSettings}};
+    saveViewers(localStore,viewers);
+    viewer.setProfile(applySettings(viewerSettings));
+    showViewerSummary();
+  };
+  const driveButton=byId<HTMLButtonElement>('viewer-drive');
+  let driveStatus='';
+  const refreshDriveButton=()=>{
+    const ready=!!checkedDevice&&!!controllerState?.connected&&controllerState.device===checkedDevice;
+    const text=ready?`Controller checked: ${checkedDevice}.`
+      :checkedDevice?'The checked controller is not connected now. Reconnect it (or check another).'
+      :'Not available yet: run the controller check first.';
+    if(text===driveStatus&&driveButton.disabled===!ready)return;
+    driveStatus=text;
+    driveButton.disabled=!ready;
+    byId('viewer-drive-status').textContent=text;
+  };
+
   const leaveViewer=()=>{
     if(!viewer.active)return;
     viewer.exit();
     viewerHud.setVisible(false);
+    viewerHud.setItems([]);
+    viewerHud.setMenu(null);
+    viewerHud.showTargets(false);
     document.body.classList.remove('viewer');
-    setViewerVirtual({throttle:false,brake:false,left:false,right:false});
-    viewerCruise=viewerHolding=viewerStarting=false;
+    viewerMode=null;
+    viewerStarting=false;
     void wakeLock?.release().catch(()=>{});
     wakeLock=null;
     head.recentre();
     engine.resize();
   };
-  // The tap that leaves the viewer must not also press whatever appears under the finger (Resume).
+  // A tap on the screen means the phone is out of the headset: pause and leave the viewer.
+  // The tap itself must not also press whatever appears under the finger (Resume).
   let swallowClicksUntil=0;
   document.addEventListener('click',event=>{if(performance.now()<swallowClicksUntil){event.stopPropagation();event.preventDefault()}},true);
   viewerTap=()=>{
     if(!viewer.active)return false;
     swallowClicksUntil=performance.now()+500;
-    pause();
+    if(session.state==='running')pause();
     leaveViewer();
     return true;
   };
-  const viewerCommand=(command:ViewerCommand)=>{
-    if(command==='start'){
-      if(!viewerStarting||performance.now()-viewerEnteredAt<VIEWER_SETTLE*1000)return;
-      viewerStarting=false;
-      viewerHud.setStarting(false);
-      headTracker.recentre();
-      clock.resume();
-      return;
-    }
-    if(viewerStarting)return;
-    if(command==='recentre')headTracker.recentre();
-    else if(command==='go'){
-      // Go does nothing in exercises where the car stays parked.
-      if(runtime?.scenario.stationary)return;
-      viewerCruise=!viewerCruise;
-      viewerHolding=false;
-    }else if(command==='stop'){viewerCruise=false;viewerHolding=true}
-    else onAction(command==='signal-left'?'indicator-left':'indicator-right');
+  /** Pauses inside the headset (the in-headset menu shows why) and drops any held acceleration. */
+  const viewerPause=(reason:string)=>{
+    viewerPauseReason=reason;
+    accelArmed=false;
+    exitHeld=0;
+    controller.clearHeld();
+    if(session.state==='running')pause();
   };
-  byId('viewer-start').addEventListener('click',()=>{
+  /** Resume from the in-headset menu: only by a deliberate action, and only when it is safe to. */
+  const viewerResume=()=>{
+    if(session.state!=='paused')return;
+    if(viewerMode==='driving'&&!(controllerState?.connected&&controllerState.device===checkedDevice))return;
+    if(headTracker.readingAge>TRACKING_STALE_MS)return;
+    viewerPauseReason='';
+    resume();
+  };
+
+  const controlMode=():AttemptConditions['controlMode']=>viewer.active&&viewerMode==='driving'?'phone-viewer-controller'
+    :viewer.active&&viewerMode==='familiarisation'?'phone-viewer-familiarisation':xr.active?'webxr':quality.id==='phone'?'touch':'keyboard';
+
+  // ---- Controller check: the driver shows each control working before scored viewer driving ----
+  const checkTested=new Set<DriveAction>();
+  let capturing:DriveAction|null=null;
+  let checkDevice:string|null=null;
+  const checkRows=new Map<DriveAction,{binding:HTMLElement;state:HTMLElement;tested:HTMLElement}>();
+  {
+    const table=byId('controller-actions');
+    for(const action of DRIVE_ACTIONS){
+      const row=document.createElement('tr');
+      const cell=(text='')=>{const td=document.createElement('td');td.textContent=text;row.append(td);return td};
+      cell(DRIVE_ACTION_LABEL[action]);
+      const binding=cell();
+      const state=cell('–');state.className='live';
+      const tested=cell('');tested.className='tested';
+      const remap=document.createElement('button');remap.type='button';remap.textContent='Set';remap.dataset.remap=action;
+      remap.addEventListener('click',()=>{capturing=action;controller.beginCapture();checkTested.delete(action)});
+      const td=document.createElement('td');td.append(remap);row.append(td);
+      table.append(row);
+      checkRows.set(action,{binding,state,tested});
+    }
+  }
+  const openControllerCheck=()=>{
+    byId('screen-controller').hidden=false;
+    checkTested.clear();
+    capturing=null;
+    checkDevice=null;
+  };
+  /** Live state of the check screen; called every frame while it is open. */
+  updateControllerCheck=()=>{
+    const st=controllerState!;
+    const pad=typeof navigator.getGamepads==='function'?[...navigator.getGamepads()].find(p=>p&&p.connected)??null:null;
+    // A newly seen device: load its saved bindings, or offer the standard layout if it reports one (nothing else is assumed).
+    const device=pad?.id??(st.raw.keys.length?'keyboard':null);
+    if(device&&checkDevice===null){
+      checkDevice=device;
+      controller.bindings={...(loadBindings(localStore,device)??controller.defaultsFor(pad))};
+      checkTested.clear();
+    }
+    if(capturing){
+      const b=controller.capture();
+      if(b){controller.bindings={...controller.bindings,[capturing]:b};capturing=null}
+    }
+    for(const action of DRIVE_ACTIONS){
+      const row=checkRows.get(action)!;
+      const bound=controller.bindings[action];
+      row.binding.textContent=capturing===action?'press the control now…':describeBinding(bound);
+      const on=!capturing&&!!bound&&st.values[action]>0;
+      if(on)checkTested.add(action);
+      row.state.textContent=on?'● received':'–';
+      row.state.classList.toggle('on',on);
+      row.tested.textContent=checkTested.has(action)?'✓ works':'';
+    }
+    const kinds=new Set(Object.values(controller.bindings).map(b=>b?.kind==='key'?'keyboard':'controller'));
+    const mixed=kinds.size>1;
+    const all=DRIVE_ACTIONS.every(a=>checkTested.has(a));
+    byId('controller-raw').textContent=`Controller: ${st.raw.id??'none detected'}${st.raw.mapping?` (layout reported: ${st.raw.mapping})`:''}. Buttons held: ${st.raw.buttons.join(', ')||'none'}. Axes: ${st.raw.axes.join(', ')||'–'}. Last keys: ${st.raw.keys.join(', ')||'none'}.`;
+    byId('controller-check-status').textContent=mixed?'Use one device for all six controls (all controller buttons, or all keys).'
+      :all?`All six controls work on ${st.device}. Press Done.`:'Press each control once to show it works (Set changes which button or key it uses).';
+    byId<HTMLButtonElement>('controller-done').disabled=!all||mixed||!st.connected;
+  };
+  byId('controller-check-open').addEventListener('click',openControllerCheck);
+  byId('controller-standard').addEventListener('click',()=>{controller.bindings={...controller.defaultsFor({id:'',connected:true,mapping:'standard',buttons:[],axes:[]})};checkTested.clear()});
+  byId('controller-cancel').addEventListener('click',()=>{capturing=null;controller.cancelCapture();byId('screen-controller').hidden=true;refreshDriveButton()});
+  byId('controller-done').addEventListener('click',()=>{
+    const st=controllerState;
+    if(!st?.device)return;
+    checkedDevice=st.device;
+    saveBindings(localStore,st.device,controller.bindings);
+    byId('screen-controller').hidden=true;
+    refreshDriveButton();
+  });
+
+  /** Enters the viewer: asks for motion access from the tap, keeps the screen awake. */
+  const enterViewer=(mode:'familiarisation'|'driving'|'calibration')=>{
     if(!chosen||session.state!=='ready')return;
-    const scenarioId=chosen.scenario;
+    if(mode==='driving'&&driveButton.disabled)return;
+    const scenarioId=chosen.scenario,introId=chosen.intro??null;
     // Both asked straight from the tap (nothing awaited first): iOS only allows them inside the user's gesture.
     const access=headTracker.requestAccess();
     const lock=(navigator as unknown as {wakeLock?:{request(type:'screen'):Promise<{release():Promise<void>}>}}).wakeLock?.request('screen').catch(()=>null);
@@ -562,32 +704,153 @@ export async function boot():Promise<void>{
       }
       viewerStatus.textContent='';
       wakeLock=(await lock)??null;
-      // Tilt steering needs the phone in the hands: use the assistance (or keys or a controller) instead.
-      if(steeringMode==='tilt')setSteeringMode('assist');
-      start(scenarioId);
-      if(session.state!=='running')return;
+      viewerMode=mode;
+      if(mode!=='calibration'){
+        // Tilt steering needs the phone in the hands: use the assistance (or the controller's stick) instead.
+        if(steeringMode==='tilt')setSteeringMode('assist');
+        start(mode==='familiarisation'?(introId??scenarioId):scenarioId,{familiarisation:mode==='familiarisation'});
+        if(session.state!=='running'){viewerMode=null;return}
+        // Nothing moves until the driver has the headset on, looks straight ahead and starts.
+        viewerStarting=true;
+        clock.pause();
+      }
+      viewerEnteredAt=performance.now();
+      accelArmed=false;
+      viewerPauseReason='';
       document.body.classList.add('viewer');
       engine.resize();
-      viewer.enter(viewerProfile);
+      viewer.enter(applySettings(viewerSettings));
       viewerHud.setVisible(true);
-      viewerHud.setStarting(true);
-      viewerStarting=true;
-      viewerEnteredAt=performance.now();
-      // Nothing moves until the driver has looked straight ahead and chosen Start.
-      clock.pause();
+      viewerHud.showTargets(mode==='calibration');
+      calibrationCentred=false;
     })();
-  });
-  window.addEventListener('keydown',event=>{if(viewerStarting&&(event.code==='Enter'||event.code==='Space'))viewerCommand('start')});
-  /** Head, eyes, controls and in-headset display, once per rendered frame. */
-  const updateViewer=(dt:number,pose:Pose)=>{
-    if(session.state!=='running'){leaveViewer();return}
-    // Until Start, straight ahead is wherever the head faces (the phone is being put in the headset).
-    if(viewerStarting){
-      headTracker.recentre();
-      viewerHud.setStarting(true,performance.now()-viewerEnteredAt>=VIEWER_SETTLE*1000);
+  };
+  byId('viewer-familiarise').addEventListener('click',()=>enterViewer('familiarisation'));
+  driveButton.addEventListener('click',()=>enterViewer('driving'));
+  byId('viewer-calibrate').addEventListener('click',()=>enterViewer('calibration'));
+
+  // In-headset layout (vehicle-local metres). The familiarisation Menu sits low on the centre of the
+  // dashboard, about 24° below and 29° left of straight ahead: no mirror, shoulder or road view is there.
+  const EYE=head.seat.eye;
+  const MENU_PANEL={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.35,w:.74,h:.42,px:511};
+  /** World height of text line i on the menu panel (lines 46 px apart from 62 px, on a 511 px panel). */
+  const menuLineY=(i:number)=>MENU_PANEL.y+MENU_PANEL.h/2-(62+i*46-12)/MENU_PANEL.px*MENU_PANEL.h;
+  const belowMenu=(ids:Array<[string,string]>,dwell:number):GazeItem[]=>ids.map(([id,label],i)=>({id,label,x:MENU_PANEL.x+(i-(ids.length-1)/2)*.22,y:MENU_PANEL.y-MENU_PANEL.h/2-.06,z:MENU_PANEL.z+.02,w:.19,h:.07,dwell}));
+  const FAMILIARISATION_MENU:GazeItem={id:'menu',label:'Menu',x:-.05,y:.82,z:-.66,w:.14,h:.06,dwell:1.5};
+  const START_ITEM:GazeItem={id:'start',label:'Start',x:EYE.x,y:EYE.y-.02,z:EYE.z-1.2,w:.2,h:.08,dwell:1.5};
+  const CAL_ROWS=[
+    {key:'ipdMm',label:'Eye spacing',unit:'mm'},
+    {key:'lensSeparationMm',label:'Image alignment (lens centres)',unit:'mm'},
+    {key:'verticalOffsetMm',label:'Vertical alignment',unit:'mm'},
+    {key:'profileId',label:'Lens profile',unit:''},
+    {key:'distortionScale',label:'Lens correction strength',unit:'%'},
+    {key:'fovDeg',label:'Field of view',unit:'°'}
+  ] as const;
+  let calRow=0,calibrationCentred=false;
+  const adjustSetting=(row:number,dir:-1|1)=>{
+    const r=CAL_ROWS[row]!;
+    const s={...viewerSettings};
+    if(r.key==='profileId'){
+      const i=VIEWER_PROFILES.findIndex(p=>p.id===s.profileId);
+      s.profileId=VIEWER_PROFILES[(i+dir+VIEWER_PROFILES.length)%VIEWER_PROFILES.length]!.id;
+    }else s[r.key]+=dir*SETTINGS_LIMITS[r.key].step;
+    storeSettings(s);
+  };
+  const calibrationItems=():GazeItem[]=>[
+    ...CAL_ROWS.flatMap((r,i)=>[
+      {id:`cal-${i}-minus`,label:'−',x:MENU_PANEL.x+.23,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.06,h:.04,dwell:.7},
+      {id:`cal-${i}-plus`,label:'+',x:MENU_PANEL.x+.31,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.06,h:.04,dwell:.7}
+    ]),
+    ...belowMenu([['cal-reset','Reset'],['cal-recentre','Recentre'],['cal-done','Done']],1.2)
+  ];
+  const viewerItem=(id:string)=>{
+    if(id==='start'){
+      if(performance.now()-viewerEnteredAt<VIEWER_SETTLE*1000)return;
+      viewerStarting=false;headTracker.recentre();clock.resume();return;
     }
+    if(id==='menu'){viewerPause('Menu');return}
+    if(id==='resume'){viewerResume();return}
+    if(id==='recentre'||id==='cal-recentre'){headTracker.recentre();headTracker.startDriftTest();return}
+    if(id==='exit'){endAttempt();return}
+    if(id==='cal-reset'){storeSettings(defaultSettings(viewerSettings.profileId));return}
+    if(id==='cal-done'){leaveViewer();return}
+    const m=/^cal-(\d)-(minus|plus)$/.exec(id);
+    if(m)adjustSetting(Number(m[1]),m[2]==='plus'?1:-1);
+  };
+
+  /** Controller input, once per rendered frame before simulation steps (so braking acts this frame). */
+  const pollController=()=>{
+    controllerState=controller.poll();
+    const brakeDown=controllerState.values.brake>0;
+    if(brakeDown&&!brakeWasDown)brakeInputAt=clock.time;
+    brakeWasDown=brakeDown;
+    if(!byId('screen-controller').hidden)updateControllerCheck();
+    if(!viewer.active||!viewerMode)return;
+    const c=controllerState;
+    const pressed=new Set(c.pressed);
+    if(viewerMode==='calibration'){
+      if(pressed.has('signal-left'))adjustSetting(calRow,-1);
+      if(pressed.has('signal-right'))adjustSetting(calRow,1);
+      if(pressed.has('accelerate'))calRow=(calRow+CAL_ROWS.length-1)%CAL_ROWS.length;
+      if(pressed.has('brake'))calRow=(calRow+1)%CAL_ROWS.length;
+      if(pressed.has('recentre')){headTracker.recentre();headTracker.startDriftTest()}
+      if(pressed.has('pause'))leaveViewer();
+      return;
+    }
+    const ours=viewerMode==='familiarisation'||(c.connected&&c.device===checkedDevice);
+    if(session.state==='paused'){
+      if(!ours)return;
+      if(pressed.has('pause'))viewerResume();
+      if(pressed.has('recentre'))headTracker.recentre();
+      exitHeld=c.values.brake>0?exitHeld+engine.getDeltaTime()/1000:0;
+      if(exitHeld>=2){exitHeld=0;endAttempt()}
+      return;
+    }
+    if(session.state!=='running')return;
+    if(viewerStarting){
+      if(viewerMode==='driving'&&pressed.has('recentre')&&headTracker.receiving){
+        viewerStarting=false;headTracker.recentre();clock.resume();
+      }
+      return;
+    }
+    // Safety: a lost controller or lost head tracking stops the exercise; nothing resumes by itself.
+    if(viewerMode==='driving'&&!(c.connected&&c.device===checkedDevice)){viewerPause('Controller disconnected');return}
+    if(headTracker.readingAge>TRACKING_STALE_MS){viewerPause('Head tracking stopped');return}
+    if(!ours)return;
+    if(pressed.has('pause')){viewerPause('Paused');return}
+    if(pressed.has('recentre'))headTracker.recentre();
+    if(viewerMode==='driving'){
+      if(pressed.has('signal-left'))onAction('indicator-left');
+      if(pressed.has('signal-right'))onAction('indicator-right');
+      if(c.values.accelerate===0)accelArmed=true;
+    }
+  };
+  /** Viewer driving controls for one simulation step: held Accelerate within the exercise's limits; Brake at once. */
+  const viewerControls=(steer:number):Controls|null=>{
+    if(!viewer.active||!viewerMode||viewerMode==='calibration')return null;
+    if(viewerMode!=='driving'||viewerStarting||!runtime)return {throttle:0,brake:1,steer:0};
+    const c=controllerState;
+    const brake=c?c.values.brake:0;
+    const accelerate=accelArmed&&c?c.values.accelerate:0;
+    const aid=runtime.scenario.controllerDriving;
+    const limit=aid.assistedSpeedMph/2.237,speed=vehicle.state.speed,p=vehicle.params;
+    // Full throttle would give p.acceleration·(1 − v/vmax): scale it to the exercise's acceleration limit.
+    let throttle=brake>0||accelerate===0?0:Math.min(1,accelerate*aid.accelerationLimit/Math.max(.1,p.acceleration*(1-speed/p.maxSpeed)));
+    if(speed>=limit)throttle=0;
+    else if(speed>limit-.5)throttle*=(limit-speed)/.5;
+    if(brake>0&&brakeAppliedAt<brakeInputAt)brakeAppliedAt=clock.time;
+    return {throttle,brake:brake>0?Math.max(.6,brake):0,steer};
+  };
+
+  /** Head, eyes and in-headset display, once per rendered frame. */
+  const updateViewer=(dt:number,pose:Pose)=>{
+    if(viewerMode!=='calibration'&&(session.state==='finished'||session.state==='ready')){leaveViewer();return}
+    // Until Start, straight ahead is wherever the head faces (the phone is being put in the headset).
+    if(viewerStarting)headTracker.recentre();
+    // Calibration: straight ahead is where the head faces when the first readings arrive (Recentre changes it).
+    if(viewerMode==='calibration'&&!calibrationCentred&&headTracker.receiving){calibrationCentred=true;headTracker.recentre();headTracker.startDriftTest()}
     const local=headTracker.basis()??{forward:{x:0,y:0,z:-1},up:{x:0,y:1,z:0}};
-    // The driver's head follows the real head: observation evidence is head direction.
+    // The driver's head follows the real head: observation evidence is head direction (not eye tracking).
     const {yaw,pitch}=yawPitch(local);
     head.release();
     head.yaw=Math.max(-head.seat.yawLimit,Math.min(head.seat.yawLimit,yaw));
@@ -598,31 +861,52 @@ export async function boot():Promise<void>{
     // The main camera follows too: mirrors render only while their glass is in its view.
     camera.position.set(eye.x,eye.y,eye.z);
     camera.setTarget(new Vector3(eye.x+forward.x,eye.y+forward.y,eye.z+forward.z));
-    const pad=gamepad.read();
-    if(pad.pause){viewerTap();return}
-    for(const command of pad.pressed)viewerCommand(command);
-    const gazed=viewerHud.update(dt,local);
-    if(gazed)viewerCommand(gazed);
-    if(pad.throttle)viewerHolding=false;
-    if(pad.brake)viewerCruise=false;
-    const stationary=!!runtime?.scenario.stationary;
-    setViewerVirtual({
-      throttle:!stationary&&!viewerStarting&&(pad.throttle||(viewerCruise&&vehicle.state.speed<VIEWER_CRUISE_SPEED)),
-      brake:viewerStarting||viewerHolding||pad.brake,
-      left:pad.steer<0,right:pad.steer>0
-    });
-    const signal=vehicle.indicators.state;
-    viewerHud.setLit('go',viewerCruise);
-    viewerHud.setLit('stop',viewerHolding);
-    viewerHud.setLit('signal-left',signal==='left');
-    viewerHud.setLit('signal-right',signal==='right');
-    const lit=vehicle.indicators.isLit(clock.time);
+
+    const settled=performance.now()-viewerEnteredAt>=VIEWER_SETTLE*1000;
+    const c=controllerState;
+    const signal=vehicle.indicators.state,lit=vehicle.indicators.isLit(clock.time);
+    const signalText=signal==='off'?'':`${signal==='left'?(lit?'◀':'◁'):(lit?'▶':'▷')} signal ${signal}`;
+    let items:GazeItem[]=[];
+    let menu:string[]|null=null;
+    if(viewerMode==='calibration'){
+      const s=viewerSettings,p=VIEWER_PROFILES.find(v=>v.id===s.profileId)!;
+      const value=(k:typeof CAL_ROWS[number]['key'])=>k==='profileId'?p.label.split(' (')[0]:k==='distortionScale'?`${Math.round(s[k]*100)}%`:k==='verticalOffsetMm'?`${s[k].toFixed(1)} mm`:k==='fovDeg'?`${s[k]}°`:`${s[k]} mm`;
+      const drift=headTracker.driftDegPerMinute;
+      menu=[`Viewer calibration: ${viewers.active} (presets are provisional)`,
+        ...CAL_ROWS.map((r,i)=>`${checkedDevice&&i===calRow?'▶ ':''}${r.label}: ${value(r.key)}`),
+        `Tracking ${headTracker.rate}/s, newest reading ${Number.isFinite(headTracker.readingAge)?Math.round(headTracker.readingAge):'–'} ms; offset ${Number.isFinite(headTracker.offsetDeg)?headTracker.offsetDeg.toFixed(1):'–'}°`,
+        `Drift (hold still): ${drift===null?'measuring…':`${drift.toFixed(1)}°/min`}. Lag: turn quickly and judge.`];
+      items=calibrationItems();
+    }else if(session.state==='paused'){
+      if(viewerMode==='driving'){
+        const ok=!!(c?.connected&&c.device===checkedDevice);
+        menu=[`Paused${viewerPauseReason&&viewerPauseReason!=='Paused'?`: ${viewerPauseReason.toLowerCase()}`:''}`,
+          ok?'Resume: press Pause':'Reconnect the checked controller to resume',
+          'Recentre: press Recentre','Exit: hold Brake for 2 seconds',
+          headTracker.readingAge>TRACKING_STALE_MS?'Head tracking has stopped: it must return before resuming':'',
+          'Traffic and timing are frozen while paused.'].filter(Boolean);
+      }else{
+        menu=['Paused (parked, not scored)','Look at a button below for a moment, or tap the screen to leave.'];
+        items=belowMenu([['resume','Resume'],['recentre','Recentre'],['exit','Exit']],1.5);
+      }
+    }else if(viewerStarting){
+      if(!headTracker.receiving)menu=['Waiting for head tracking…','Check that motion access is allowed.'];
+      else if(!settled)menu=['Put the phone in the headset…'];
+      else if(viewerMode==='driving')menu=['Look straight ahead','Then press Recentre to start.','Hold Accelerate to move; release to coast.',`Brake acts at once. Assisted speed up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`];
+      else{menu=['Look straight ahead at Start','Parked practice: look around, check the mirrors,','and practise shoulder checks. Not scored.'];items=[START_ITEM]}
+    }else if(viewerMode==='familiarisation')items=[FAMILIARISATION_MENU];
+    viewerHud.setItems(items);
+    viewerHud.setMenu(menu);
+    const fired=viewerHud.update(dt,local);
+    if(fired)viewerItem(fired);
+    const accel=viewerMode==='driving'&&c?c.values.accelerate>0&&accelArmed:false;
+    const braking=viewerMode==='driving'&&c?c.values.brake>0:false;
     viewerHud.setStatus([
-      `${Math.round(vehicle.state.speed*2.237)} mph   ${signal==='off'?'':`${signal==='left'?(lit?'◀':'◁'):(lit?'▶':'▷')} signal ${signal}`}   ${viewerCruise?'GO':viewerHolding?'STOP':''}`,
-      viewerStarting?(performance.now()-viewerEnteredAt<VIEWER_SETTLE*1000?'Put the phone in the headset…':'Look straight ahead at Start to begin'):(byId('hud-task').textContent||runtime?.scenario.title||''),
-      !headTracker.receiving?'No head-tracking readings: tap the screen to leave'
-        :gamepad.connected?'Controller: RT go · LT brake · LB/RB signal · Y recentre'
-        :'Look at a button for a second · tap screen to leave'
+      `${Math.round(vehicle.state.speed*2.237)} mph   ${signalText}`,
+      viewerMode==='calibration'?'Calibration (parked)'
+        :viewerMode==='familiarisation'?'Parked practice (not scored)'
+        :braking?'BRAKE':accel?'ACCELERATE (held)':vehicle.state.speed>.2?'Coasting (Accelerate released)':'Stopped',
+      viewerMode==='driving'?(byId('hud-task').textContent||runtime?.scenario.title||''):'Menu: look at it for a moment · tap screen to leave'
     ]);
   };
 
@@ -739,18 +1023,19 @@ export async function boot():Promise<void>{
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
   byId('exercise-back').addEventListener('click',()=>showExercise(null));
 
-  const start=(scenarioId:string)=>{
+  const start=(scenarioId:string,options:{familiarisation?:boolean}={})=>{
     if(session.state!=='ready')return;
     runtime?.dispose();
     const scenario=scenarios.get(scenarioId)!;
     useLocation(scenario.locationId);
-    runtime=buildExercise(scenario);
+    runtime=buildExercise(scenario,!!options.familiarisation);
     attachRunner();
     if(!session.to('running'))return;
     resetAttempt();
     byId('paused-title').textContent=scenario.title;
     clock.resume();
-    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,variant:runtime.variant?.id??null,guidance:!!scenario.guide&&showGuide});
+    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,variant:runtime.variant?.id??null,guidance:!!scenario.guide&&showGuide,
+      controlMode:options.familiarisation?'phone-viewer-familiarisation':controlMode(),scored:!options.familiarisation});
     events.emit('assist.changed',{enabled:steeringMode==='assist'&&!!runtime.assist,steering:steeringMode});
     canvas.focus();
   };
@@ -799,7 +1084,8 @@ export async function boot():Promise<void>{
     if(action==='recentre'){forwardView();xr.recentre();if(viewer.active)headTracker.recentre()}
     else vehicle.toggleIndicator(action==='indicator-left'?'left':'right',clock.time);
   };
-  input.onAction=onAction;
+  // In the phone viewer, keys act only through the controller check's bindings (so nothing acts twice).
+  input.onAction=action=>{if(!viewer.active)onAction(action)};
 
   byId('resume-button').addEventListener('click',resume);
   byId('restart-button').addEventListener('click',restart);
@@ -842,7 +1128,12 @@ export async function boot():Promise<void>{
   document.body.classList.toggle('phone',quality.id==='phone');
 
   // A hidden tab pauses; losing focus clears held controls (KeyboardInput).
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&session.state==='running')pause()});
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden)return;
+    // In the headset this also drops any held acceleration; it stays paused until resumed deliberately.
+    if(viewer.active)viewerPause('The page was hidden');
+    else if(session.state==='running')pause();
+  });
 
   // Seated VR for a WebXR headset (desktop). Phone-viewer VR is a separate feasibility task.
   const xrSupport=await detectXr();
@@ -887,6 +1178,8 @@ export async function boot():Promise<void>{
   const perf=new PerfProbe();
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
+    pollController();
+    if(!byId('exercise-detail').hidden)refreshDriveButton();
     if(session.state==='running'&&runtime){
       perf.record(engine.getDeltaTime());
       head.animate(dt);
@@ -966,7 +1259,12 @@ export async function boot():Promise<void>{
     /** Whether route guidance is painted on the road in this attempt. */
     guidanceShown:()=>!!scene.getTransformNodeByName('exercise-guide'),
     /** Phone viewer state, for tests and diagnostics. */
-    viewer:()=>({active:viewer.active,starting:viewerStarting,profile:viewerProfile.id,cruise:viewerCruise,holding:viewerHolding,gaze:viewerHud.gaze,receiving:headTracker.receiving,permission:headTracker.permission,gamepad:gamepad.connected,activeCameras:scene.activeCameras?.map(c=>c.name)??[]}),
+    viewer:()=>({active:viewer.active,mode:viewerMode,starting:viewerStarting,pauseReason:viewerPauseReason,settings:viewerSettings,slot:viewers.active,gaze:viewerHud.gaze,items:viewerHud.itemIds,
+      receiving:headTracker.receiving,readingAge:headTracker.readingAge,rate:headTracker.rate,offsetDeg:headTracker.offsetDeg,driftDegPerMinute:headTracker.driftDegPerMinute,invalidReadings:headTracker.invalidReadings,
+      permission:headTracker.permission,checkedDevice,controller:controllerState?{connected:controllerState.connected,device:controllerState.device,values:controllerState.values}:null,
+      accelArmed,brakeLatency:brakeAppliedAt>=brakeInputAt&&brakeInputAt>=0?brakeAppliedAt-brakeInputAt:null,activeCameras:scene.activeCameras?.map(c=>c.name)??[]}),
+    /** The controls applied in the last simulation step. */
+    lastControls:()=>({...lastControls}),
     scenery:()=>({...sceneryStats,carModels:[...carModels].filter(([,m])=>m).map(([id])=>id)}),
     /** Diagnostics: start counting draw calls (average per frame over the last second, all render passes including mirrors). */
     countDrawCalls:async()=>{
