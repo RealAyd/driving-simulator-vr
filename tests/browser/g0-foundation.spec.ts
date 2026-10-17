@@ -29,6 +29,22 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
   expect(await read(page,'session()')).toBe('running');
   await expect(page.locator('#hud')).toBeVisible();
 
+  // The briefing holds simulation time and counts down from 10 s.
+  await expect(page.locator('#briefing')).toBeVisible();
+  await expect(page.locator('#briefing-text')).toContainText('van is parked');
+  await page.keyboard.down('KeyW');
+  await page.waitForTimeout(1500);
+  await page.keyboard.up('KeyW');
+  expect(await read(page,'simTime()')).toBe(0);
+  expect((await read(page,'vehicle()')).speed).toBe(0);
+  const left=await read(page,'briefing()');
+  expect(left).toBeGreaterThan(7);
+  expect(left).toBeLessThan(9.6);
+  await page.screenshot({path:testInfo.outputPath('01b-briefing.png')});
+  await page.click('#briefing-go');
+  await expect(page.locator('#briefing')).toBeHidden();
+  await expect.poll(()=>read(page,'simTime()')).toBeGreaterThan(0);
+
   // Camera sits at the right-hand driver seat, about 1.2 m above the road, facing north.
   const cam=await read(page,'camera()');
   expect(cam.position[0]).toBeCloseTo(-1.6+.37,1);
@@ -97,6 +113,8 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   // Restart from the pause screen: back to spawn, events cleared to a single reset.
   await page.click('#restart-button');
+  await expect(page.locator('#briefing')).toBeVisible();
+  await page.click('#briefing-go');
   expect(await read(page,'session()')).toBe('running');
   const reset=await read(page,'vehicle()');
   expect(reset.position.z).toBeCloseTo(0,5);

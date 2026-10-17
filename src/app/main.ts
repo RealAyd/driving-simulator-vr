@@ -11,7 +11,7 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
-import {buildCockpit} from '../cockpit/cockpitModel';
+import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
 import {ALL_MIRRORS,Mirror} from '../cockpit/mirror';
 import {ObservationTracker,type ObservationSource,type ObservationTarget} from '../cockpit/observation';
 import {DriverHead} from '../cockpit/seat';
@@ -21,6 +21,7 @@ import {FixedStepClock} from '../engine/clock';
 import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
 import {KeyboardInput,type InputAction,type ViewTarget} from '../input/keyboard';
+import {TILT_SENSITIVITY,TiltSteering} from '../input/tilt';
 import {ScenarioRunner,type Outcome} from '../scenarios/scenarioRunner';
 import {ZoneTracker} from '../scenarios/zones';
 import {openAttemptStore} from '../storage/attempts';
@@ -38,6 +39,9 @@ import {EventLog} from './eventLog';
 import {Session} from './session';
 
 const LOOK_SENSITIVITY=.004;
+/** Seconds the briefing stays up, with the simulation held, before each attempt. */
+const BRIEFING_SECONDS=10;
+type SteeringMode='assist'|'tilt'|'buttons';
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** While a mirror view is held the view narrows, like focusing on the glass. */
@@ -111,13 +115,17 @@ export async function boot():Promise<void>{
 
   // ---- Learner car (single movement owner) with optional steering assistance ----
   let runtime:ExerciseRuntime|null=null;
-  let assistEnabled=quality.id==='phone';
+  let steeringMode:SteeringMode=quality.id==='phone'?'assist':'buttons';
+  const tilt=new TiltSteering();
+  let tiltSteer=0;
   const dynamicFootprints:DynamicFootprint[]=[];
   let vehicle!:VehicleController;
   const controls:ControlSource={read:()=>{
     const c=input.read();
-    // The driver's own steering always overrides the assistance.
-    if(assistEnabled&&runtime?.assist&&c.steer===0)return {...c,steer:runtime.assist.steer(vehicle.pose,vehicle.state.speed)};
+    // The driver's own button/key steering always overrides tilt and the assistance.
+    if(c.steer!==0)return c;
+    if(steeringMode==='tilt')return {...c,steer:tiltSteer};
+    if(steeringMode==='assist'&&runtime?.assist)return {...c,steer:runtime.assist.steer(vehicle.pose,vehicle.state.speed)};
     return c;
   }};
   vehicle=new VehicleController(spawn,controls,{
@@ -233,7 +241,8 @@ export async function boot():Promise<void>{
           scenarioId:scenario.id,rubricVersion:'none (practice)',outcome,findings:[],
           notes:practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
         };
-        if(assistEnabled&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
+        if(steeringMode==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
+        if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
         return base;
       },
       current:()=>assessor?assessor.current:[],
@@ -257,6 +266,29 @@ export async function boot():Promise<void>{
   // ---- Lifecycle ----
   let stoppedEarlyFor=0;
   let lastResult:AttemptResult|null=null;
+  // The briefing holds simulation time; views can still be tried while reading it.
+  let briefingLeft=0;
+  const briefingCount=byId('briefing-count');
+  const startBriefing=(scenario:Scenario)=>{
+    hud.setTask(scenario.briefing,false);
+    byId('briefing-text').textContent=scenario.briefing;
+    byId('briefing-steering').textContent={
+      assist:'Steering: assisted. You control speed with Go and Brake, plus signals and observations.',
+      tilt:'Steering: tilt the phone like a wheel. Hold it how you want to drive now; that position becomes straight ahead.',
+      buttons:'Steering: hold ◀ ▶ (or A/D, ←/→).'
+    }[steeringMode];
+    briefingLeft=BRIEFING_SECONDS;
+    briefingCount.textContent=String(BRIEFING_SECONDS);
+    byId('briefing').hidden=false;
+  };
+  const endBriefing=()=>{
+    if(byId('briefing').hidden)return;
+    briefingLeft=0;
+    byId('briefing').hidden=true;
+    input.clear();
+    if(steeringMode==='tilt')tilt.recentre();
+    canvas.focus();
+  };
   const resetAttempt=()=>{
     input.clear();
     vehicle.reset();
@@ -268,7 +300,7 @@ export async function boot():Promise<void>{
     clock.reset();
     events.clear();
     stoppedEarlyFor=0;
-    if(runtime)hud.setTask(runtime.scenario.briefing);
+    if(runtime)startBriefing(runtime.scenario);
   };
   const attachRunner=()=>{
     runtime!.runner.onEnded=async outcome=>{
@@ -306,9 +338,33 @@ export async function boot():Promise<void>{
 
   const xr=new SeatedXr(scene,seatNode);
 
-  const assistToggle=byId<HTMLInputElement>('assist-toggle');
-  assistToggle.checked=assistEnabled;
-  assistToggle.addEventListener('change',()=>{assistEnabled=assistToggle.checked});
+  // ---- Steering mode: assisted, tilt the phone, or buttons/keys ----
+  const tiltStatus=byId('tilt-status');
+  const steeringRadios=[...document.querySelectorAll<HTMLInputElement>('input[name="steering"]')];
+  const setSteeringMode=(mode:SteeringMode)=>{
+    steeringMode=mode;
+    for(const radio of steeringRadios)radio.checked=radio.value===mode;
+    byId('tilt-options').hidden=mode!=='tilt';
+    document.body.classList.toggle('tilt',mode==='tilt');
+    if(mode!=='tilt'&&tilt.status!=='off')tilt.disable();
+  };
+  for(const radio of steeringRadios)radio.addEventListener('change',async()=>{
+    const mode=radio.value as SteeringMode;
+    if(mode!=='tilt'){setSteeringMode(mode);tiltStatus.textContent='';return}
+    setSteeringMode('tilt');
+    tiltStatus.textContent='Asking for motion access…';
+    // Called straight from the tap, as iOS requires.
+    const status=await tilt.enable();
+    if(status==='active'){tiltStatus.textContent='Motion sensor working. Tilt the phone to see the wheel turn.';return}
+    setSteeringMode(quality.id==='phone'?'assist':'buttons');
+    tiltStatus.textContent=status==='denied'
+      ?'Motion access was refused, so tilt steering is off. If you are viewing this inside another page or app, it may block motion sensors.'
+      :'No motion sensor readings arrived in this browser, so tilt steering is off.';
+  });
+  const sensitivity=byId<HTMLSelectElement>('tilt-sensitivity');
+  sensitivity.addEventListener('change',()=>{tilt.tuning=TILT_SENSITIVITY[sensitivity.value as keyof typeof TILT_SENSITIVITY]});
+  setSteeringMode(steeringMode);
+  const wheelPreview=byId('tilt-preview');
 
   const start=(scenarioId:string)=>{
     if(session.state!=='ready')return;
@@ -319,7 +375,7 @@ export async function boot():Promise<void>{
     resetAttempt();
     clock.resume();
     events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id});
-    events.emit('assist.changed',{enabled:assistEnabled&&!!runtime.assist});
+    events.emit('assist.changed',{enabled:steeringMode==='assist'&&!!runtime.assist,steering:steeringMode});
     canvas.focus();
   };
   const pause=()=>{
@@ -374,6 +430,8 @@ export async function boot():Promise<void>{
   byId('hud-ind-left').addEventListener('click',()=>onAction('indicator-left'));
   byId('hud-ind-right').addEventListener('click',()=>onAction('indicator-right'));
   byId('hud-task-toggle').addEventListener('click',()=>hud.toggleTask());
+  byId('briefing-go').addEventListener('click',endBriefing);
+  byId('hud-tilt-centre').addEventListener('click',()=>tilt.recentre());
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-hold]')){
     const control=button.dataset.hold as 'throttle'|'brake'|'left'|'right';
     const set=(down:boolean)=>(event:Event)=>{event.preventDefault();input.setVirtual(control,down)};
@@ -405,16 +463,22 @@ export async function boot():Promise<void>{
   hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
   byId('location-label').textContent=`${place.name} — ${place.fidelity} layout, ${place.reviewStatus}.`;
 
+  const hudWheel=byId('hud-wheel');
   const perf=new PerfProbe();
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
     if(session.state==='running'&&runtime){
       perf.record(engine.getDeltaTime());
       head.animate(dt);
+      if(briefingLeft>0){
+        briefingLeft-=dt;
+        briefingCount.textContent=String(Math.max(1,Math.ceil(briefingLeft)));
+        if(briefingLeft<=0)endBriefing();
+      }
       const wantFov=heldView&&!heldView.endsWith('shoulder')?MIRROR_FOCUS_FOV:HORIZONTAL_FOV;
       camera.fov+=Math.max(-3*dt,Math.min(3*dt,wantFov-camera.fov));
       observation.source=observationSource();
-      clock.advance(dt,step);
+      if(briefingLeft<=0)clock.advance(dt,step);
       // Stopping unusually early: the pedestrian waits; prompt the learner on.
       const trigger=runtime.zones.stats.get('pedestrian-trigger');
       stoppedEarlyFor=trigger&&!trigger.entered&&vehicle.state.speed<.15?stoppedEarlyFor+dt:0;
@@ -431,6 +495,13 @@ export async function boot():Promise<void>{
       mirror.setActive(camera.isInFrustum(mirror.glass));
     }
     runtime?.renderVisuals();
+    tiltSteer=tilt.read(dt);
+    const wheelTurn=`rotate(${Math.round((steeringMode==='tilt'?tiltSteer:vehicle.state.steerAngle/.6)*120)}deg)`;
+    hudWheel.style.transform=wheelTurn;
+    // Turning right turns the wheel clockwise as the driver sees it.
+    cockpit.wheel.rotation.y=-vehicle.state.steerAngle*STEERING_RATIO;
+    if(session.state==='ready')wheelPreview.style.transform=wheelTurn;
+    if(tilt.stale)hud.setStatus('Motion sensor stopped sending readings.');
     hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     scene.render();
   });
@@ -454,7 +525,9 @@ export async function boot():Promise<void>{
     passers:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose}))??[],
     findings:()=>(runtime?.current()??[]).map(f=>({...(f as object)})),
     result:()=>lastResult,
-    assist:()=>assistEnabled,
+    assist:()=>steeringMode==='assist',
+    steering:()=>steeringMode,
+    briefing:()=>Math.max(0,briefingLeft),
     storage:store.kind,
     quality:quality.id,
     fps:()=>engine.getFps(),

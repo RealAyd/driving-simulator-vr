@@ -6,7 +6,10 @@ import type {SeatConfig} from './seat';
  * node so its transform comes from the vehicle pose only. The dashboard top
  * sits low enough that the road is visible from about 6 m ahead.
  */
-export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConfig):{root:TransformNode;dispose():void}{
+/** Steering-wheel turns per front-wheel angle, for display only. */
+export const STEERING_RATIO=4;
+
+export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConfig):{root:TransformNode;wheel:TransformNode;dispose():void}{
   const root=new TransformNode('cockpit',scene);
   root.parent=vehicleNode;
   const mat=(name:string,c:Color3)=>{
@@ -41,11 +44,27 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   box('roof-lining',1.76,.04,1.8,0,1.58,.35,trim);
   box('rear-panel',1.76,.65,.06,0,.62,1.2,trim);
 
-  const wheel=CreateTorus('steering-wheel',{diameter:.38,thickness:.035,tessellation:32},scene);
-  wheel.position.set(seat.eye.x,.93,-.5);
-  wheel.rotation.x=Math.PI/2-.45;
-  wheel.material=trim;
-  wheel.parent=root;
+  // Column tilted towards the driver; `wheel` spins about the column (local Y).
+  const column=new TransformNode('steering-column',scene);
+  column.position.set(seat.eye.x,.93,-.5);
+  column.rotation.x=Math.PI/2-.45;
+  column.parent=root;
+  const wheel=new TransformNode('steering-wheel',scene);
+  wheel.parent=column;
+  const rim=CreateTorus('steering-rim',{diameter:.38,thickness:.035,tessellation:32},scene);
+  rim.material=trim;
+  rim.parent=wheel;
+  // Local −Z is the top of the wheel as the driver sees it, +Z the bottom.
+  const part=(name:string,w:number,h:number,d:number,z:number,material:StandardMaterial)=>{
+    const mesh=CreateBox(name,{width:w,height:h,depth:d},scene);
+    mesh.position.z=z;
+    mesh.material=material;
+    mesh.parent=wheel;
+  };
+  part('steering-spoke-cross',.34,.02,.035,.01,trim);
+  part('steering-spoke-lower',.035,.02,.17,.09,trim);
+  part('steering-hub',.08,.04,.07,0,trim);
+  part('steering-top-mark',.03,.04,.025,-.185,mat('steering-mark',new Color3(.85,.55,.1)));
 
   // Slim A-pillars from the dashboard corners up and back to the roof.
   const base={y:.95,z:-1.12},top={y:1.56,z:-.55};
@@ -66,5 +85,5 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   body.material=paint;
   body.parent=root;
 
-  return {root,dispose:()=>root.dispose(false,true)};
+  return {root,wheel,dispose:()=>root.dispose(false,true)};
 }

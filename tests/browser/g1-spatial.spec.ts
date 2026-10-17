@@ -37,6 +37,7 @@ test('G1: interior mirror shows the real scene behind, correctly oriented, and u
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
   await page.click('#start-button');
+  await page.click('#briefing-go');
   await page.waitForTimeout(800);
 
   const rect=(await read(page,'mirrors()'))[0];
@@ -75,6 +76,7 @@ test('G1: road sits under the car, kerb raises it, and braking from 30 mph stops
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
   await page.click('#start-button');
+  await page.click('#briefing-go');
 
   const start=await read(page,'vehicle()');
   expect(start.position.y).toBeCloseTo(0,6);         // carriageway surface
@@ -118,6 +120,7 @@ test('G1: measured frame times (environment recorded)',async({page},testInfo)=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
   await page.click('#start-button');
+  await page.click('#briefing-go');
   await page.waitForTimeout(1000);
   await read(page,'resetPerf()');
   await page.keyboard.down('KeyW');

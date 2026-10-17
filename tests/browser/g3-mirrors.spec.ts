@@ -35,8 +35,9 @@ test('G3: phone layout, mirrors show the passing car, and only a shoulder check 
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   expect(await read(page,'quality')).toBe('phone');
-  await expect(page.locator('#assist-toggle')).toBeChecked();
+  await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
   await page.click('#start-mirror-check');
+  await page.click('#briefing-go');
   await expect(page.locator('#touch-controls')).toBeVisible();
   await expect(page.locator('[data-view]')).toHaveCount(5);
 

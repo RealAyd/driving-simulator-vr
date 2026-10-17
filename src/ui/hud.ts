@@ -41,10 +41,10 @@ export class Hud{
 
   private taskTimer=0;
 
-  /** Shows the task briefly, then folds it away so it does not cover the mirrors. */
-  setTask(text:string):void{
+  /** Shows the task briefly, then folds it away so it does not cover the mirrors. The Task button recalls it. */
+  setTask(text:string,show=true):void{
     $('hud-task').textContent=text;
-    this.showTask(true);
+    this.showTask(show);
   }
 
   toggleTask():void{

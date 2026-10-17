@@ -53,6 +53,7 @@ async function startExercise(page:Page){
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
   await expect(page.locator('#start-button')).toContainText('Zebra crossing');
   await page.click('#start-button');
+  await page.click('#briefing-go');
   expect(await read(page,'session()')).toBe('running');
 }
 
@@ -66,7 +67,7 @@ test('G2: a careful attempt (mirror check, slow approach, gives way) completes w
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   await startExercise(page);
-  await expect(page.locator('#hud-task')).toContainText('van is parked');
+  await expect(page.locator('#hud-task')).toContainText('van is parked');  // kept for the Task button
   const driver=new TestDriver(page);
 
   // Approach and pass the van at about 12 mph, into the restricted-view zone.
