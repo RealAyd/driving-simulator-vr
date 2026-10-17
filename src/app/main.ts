@@ -7,7 +7,7 @@ import movingOffRubric from '../../content/rubrics/moving-off.json';
 import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
 import brentwoodGuidedJson from '../../content/scenarios/brentwood-guided-traversal.json';
 import {
-  INFO,degToRad,localToWorld,parseLocation,parseScenario,
+  INFO,degToRad,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
   type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
 } from '../contracts';
 import {pedestrianVisual,vehicleVisual} from '../actors/actorVisuals';
@@ -48,6 +48,10 @@ import {StaticObstacles} from '../world/obstacles';
 import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
 import {SeatedXr,detectXr} from '../xr/xrSession';
+import {yawPitch} from '../xr/headOrientation';
+import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
+import {ViewerGamepad,ViewerHud,type ViewerCommand} from '../xr/viewerHud';
+import {VIEWER_PROFILES} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
 
@@ -267,7 +271,7 @@ export async function boot():Promise<void>{
   };
   input.onView=view=>view?holdView(view,'key'):heldBy==='key'&&holdView(null,'key');
   const observationSource=():ObservationSource=>
-    xr.active?'head direction':heldBy==='touch'?'touch view button':heldBy==='key'?'keyboard view key'
+    xr.active||viewer.active?'head direction':heldBy==='touch'?'touch view button':heldBy==='key'?'keyboard view key'
     :quality.id==='phone'?'swipe-controlled view':'mouse-controlled view';
   const observationTargets:ObservationTarget[]=[
     {id:'interior',position:pose=>localToWorld(pose,ALL_MIRRORS[0].glass),angularRadius:degToRad(9)},
@@ -449,7 +453,10 @@ export async function boot():Promise<void>{
   // Swipe/mouse look: drag to move the head relative to the seat. A swipe
   // takes over from a selected view (free look).
   let dragging:number|null=null,lastX=0,lastY=0;
+  /** In the phone viewer a tap on the screen pauses (and leaves the viewer) instead of looking around. */
+  let viewerTap:()=>boolean=()=>false;
   canvas.addEventListener('pointerdown',event=>{
+    if(viewerTap())return;
     dragging=event.pointerId;lastX=event.clientX;lastY=event.clientY;
     canvas.setPointerCapture(event.pointerId);
   });
@@ -470,6 +477,151 @@ export async function boot():Promise<void>{
   canvas.addEventListener('pointercancel',endDrag);
 
   const xr=new SeatedXr(scene,seatNode);
+
+  // ---- Phone viewer: side-by-side stereo in a cardboard-style headset (no WebXR on iPhone) ----
+  const headTracker=new HeadTracker();
+  const viewer=new PhoneViewer(scene,camera);
+  const viewerHud=new ViewerHud(scene,vehicleNode,head.seat.eye);
+  const gamepad=new ViewerGamepad();
+  /** Speed the car settles at after Go is looked at (no pedal to hold in a headset): 15 mph. */
+  const VIEWER_CRUISE_SPEED=6.7;
+  let viewerProfile=VIEWER_PROFILES[0]!;
+  let viewerStarting=false,viewerCruise=false,viewerHolding=false,viewerEnteredAt=0;
+  /** Time to put the phone in the headset before Start can be chosen, seconds. */
+  const VIEWER_SETTLE=3;
+  let viewerVirtual={throttle:false,brake:false,left:false,right:false};
+  let wakeLock:{release():Promise<void>}|null=null;
+  const profileSelect=byId<HTMLSelectElement>('viewer-profile');
+  for(const p of VIEWER_PROFILES){const o=document.createElement('option');o.value=p.id;o.textContent=p.label;profileSelect.append(o)}
+  profileSelect.addEventListener('change',()=>{
+    viewerProfile=VIEWER_PROFILES.find(p=>p.id===profileSelect.value)??VIEWER_PROFILES[0]!;
+    viewer.setProfile(viewerProfile);
+  });
+  const viewerStatus=byId('viewer-status');
+  const setViewerVirtual=(next:typeof viewerVirtual)=>{
+    for(const k of Object.keys(next) as Array<keyof typeof next>)if(next[k]!==viewerVirtual[k])input.setVirtual(k,next[k]);
+    viewerVirtual=next;
+  };
+  const leaveViewer=()=>{
+    if(!viewer.active)return;
+    viewer.exit();
+    viewerHud.setVisible(false);
+    document.body.classList.remove('viewer');
+    setViewerVirtual({throttle:false,brake:false,left:false,right:false});
+    viewerCruise=viewerHolding=viewerStarting=false;
+    void wakeLock?.release().catch(()=>{});
+    wakeLock=null;
+    head.recentre();
+    engine.resize();
+  };
+  // The tap that leaves the viewer must not also press whatever appears under the finger (Resume).
+  let swallowClicksUntil=0;
+  document.addEventListener('click',event=>{if(performance.now()<swallowClicksUntil){event.stopPropagation();event.preventDefault()}},true);
+  viewerTap=()=>{
+    if(!viewer.active)return false;
+    swallowClicksUntil=performance.now()+500;
+    pause();
+    leaveViewer();
+    return true;
+  };
+  const viewerCommand=(command:ViewerCommand)=>{
+    if(command==='start'){
+      if(!viewerStarting||performance.now()-viewerEnteredAt<VIEWER_SETTLE*1000)return;
+      viewerStarting=false;
+      viewerHud.setStarting(false);
+      headTracker.recentre();
+      clock.resume();
+      return;
+    }
+    if(viewerStarting)return;
+    if(command==='recentre')headTracker.recentre();
+    else if(command==='go'){
+      // Go does nothing in exercises where the car stays parked.
+      if(runtime?.scenario.stationary)return;
+      viewerCruise=!viewerCruise;
+      viewerHolding=false;
+    }else if(command==='stop'){viewerCruise=false;viewerHolding=true}
+    else onAction(command==='signal-left'?'indicator-left':'indicator-right');
+  };
+  byId('viewer-start').addEventListener('click',()=>{
+    if(!chosen||session.state!=='ready')return;
+    const scenarioId=chosen.scenario;
+    // Both asked straight from the tap (nothing awaited first): iOS only allows them inside the user's gesture.
+    const access=headTracker.requestAccess();
+    const lock=(navigator as unknown as {wakeLock?:{request(type:'screen'):Promise<{release():Promise<void>}>}}).wakeLock?.request('screen').catch(()=>null);
+    void (async()=>{
+      const permission=await access;
+      if(permission==='denied'||permission==='unsupported'){
+        viewerStatus.textContent=permission==='denied'
+          ?'Motion access was refused, so the view cannot follow your head. Allow motion access for this site (Safari: aA › Website Settings) and try again.'
+          :'This browser has no motion sensor support.';
+        return;
+      }
+      viewerStatus.textContent='';
+      wakeLock=(await lock)??null;
+      // Tilt steering needs the phone in the hands: use the assistance (or keys or a controller) instead.
+      if(steeringMode==='tilt')setSteeringMode('assist');
+      start(scenarioId);
+      if(session.state!=='running')return;
+      document.body.classList.add('viewer');
+      engine.resize();
+      viewer.enter(viewerProfile);
+      viewerHud.setVisible(true);
+      viewerHud.setStarting(true);
+      viewerStarting=true;
+      viewerEnteredAt=performance.now();
+      // Nothing moves until the driver has looked straight ahead and chosen Start.
+      clock.pause();
+    })();
+  });
+  window.addEventListener('keydown',event=>{if(viewerStarting&&(event.code==='Enter'||event.code==='Space'))viewerCommand('start')});
+  /** Head, eyes, controls and in-headset display, once per rendered frame. */
+  const updateViewer=(dt:number,pose:Pose)=>{
+    if(session.state!=='running'){leaveViewer();return}
+    // Until Start, straight ahead is wherever the head faces (the phone is being put in the headset).
+    if(viewerStarting){
+      headTracker.recentre();
+      viewerHud.setStarting(true,performance.now()-viewerEnteredAt>=VIEWER_SETTLE*1000);
+    }
+    const local=headTracker.basis()??{forward:{x:0,y:0,z:-1},up:{x:0,y:1,z:0}};
+    // The driver's head follows the real head: observation evidence is head direction.
+    const {yaw,pitch}=yawPitch(local);
+    head.release();
+    head.yaw=Math.max(-head.seat.yawLimit,Math.min(head.seat.yawLimit,yaw));
+    head.pitch=Math.max(-head.seat.pitchDown,Math.min(head.seat.pitchUp,pitch));
+    const eye=head.eyeWorld(pose);
+    const forward=localDirectionToWorld(pose.heading,local.forward);
+    viewer.update(eye,{forward,up:localDirectionToWorld(pose.heading,local.up)});
+    // The main camera follows too: mirrors render only while their glass is in its view.
+    camera.position.set(eye.x,eye.y,eye.z);
+    camera.setTarget(new Vector3(eye.x+forward.x,eye.y+forward.y,eye.z+forward.z));
+    const pad=gamepad.read();
+    if(pad.pause){viewerTap();return}
+    for(const command of pad.pressed)viewerCommand(command);
+    const gazed=viewerHud.update(dt,local);
+    if(gazed)viewerCommand(gazed);
+    if(pad.throttle)viewerHolding=false;
+    if(pad.brake)viewerCruise=false;
+    const stationary=!!runtime?.scenario.stationary;
+    setViewerVirtual({
+      throttle:!stationary&&!viewerStarting&&(pad.throttle||(viewerCruise&&vehicle.state.speed<VIEWER_CRUISE_SPEED)),
+      brake:viewerStarting||viewerHolding||pad.brake,
+      left:pad.steer<0,right:pad.steer>0
+    });
+    const signal=vehicle.indicators.state;
+    viewerHud.setLit('go',viewerCruise);
+    viewerHud.setLit('stop',viewerHolding);
+    viewerHud.setLit('signal-left',signal==='left');
+    viewerHud.setLit('signal-right',signal==='right');
+    const lit=vehicle.indicators.isLit(clock.time);
+    viewerHud.setStatus([
+      `${Math.round(vehicle.state.speed*2.237)} mph   ${signal==='off'?'':`${signal==='left'?(lit?'◀':'◁'):(lit?'▶':'▷')} signal ${signal}`}   ${viewerCruise?'GO':viewerHolding?'STOP':''}`,
+      viewerStarting?(performance.now()-viewerEnteredAt<VIEWER_SETTLE*1000?'Put the phone in the headset…':'Look straight ahead at Start to begin'):(byId('hud-task').textContent||runtime?.scenario.title||''),
+      !headTracker.receiving?'No head-tracking readings: tap the screen to leave'
+        :gamepad.connected?'Controller: RT go · LT brake · LB/RB signal · Y recentre'
+        :'Look at a button for a second · tap screen to leave'
+    ]);
+  };
 
   // ---- Steering mode: assisted, tilt the phone, or steer buttons/keys ----
   const tiltStatus=byId('tilt-status');
@@ -635,7 +787,7 @@ export async function boot():Promise<void>{
     if(action==='pause')return session.state==='running'?pause():session.state==='paused'?resume():undefined;
     if(action==='reset')return restart();
     if(session.state!=='running')return;
-    if(action==='recentre'){forwardView();xr.recentre()}
+    if(action==='recentre'){forwardView();xr.recentre();if(viewer.active)headTracker.recentre()}
     else vehicle.toggleIndicator(action==='indicator-left'?'left':'right',clock.time);
   };
   input.onAction=onAction;
@@ -739,8 +891,10 @@ export async function boot():Promise<void>{
     const alpha=session.state==='running'?clock.alpha:1;
     const pose=vehicle.interpolatedPose(alpha);
     applyPose(vehicleNode,pose);
+    if(viewer.active)updateViewer(dt,pose);
     const eye=head.eyeWorld(pose),look=head.lookWorld(pose);
-    if(overhead){
+    if(viewer.active&&!overhead){/* cameras placed by updateViewer */}
+    else if(overhead){
       camera.position.set(overhead.x,overhead.height,overhead.z+.01);
       const t=overhead.target;
       camera.setTarget(t?new Vector3(t.x,t.y,t.z):new Vector3(overhead.x,0,overhead.z));
@@ -771,7 +925,7 @@ export async function boot():Promise<void>{
     hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     scene.render();
   });
-  window.addEventListener('resize',()=>engine.resize());
+  window.addEventListener('resize',()=>{engine.resize();viewer.layout()});
 
   let instrumentation:import('@babylonjs/core/Instrumentation/sceneInstrumentation').SceneInstrumentation|null=null;
   // Read-only handle for automated browser tests and manual diagnostics.
@@ -797,6 +951,8 @@ export async function boot():Promise<void>{
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
     sceneryModels:()=>[...props.available],
+    /** Phone viewer state, for tests and diagnostics. */
+    viewer:()=>({active:viewer.active,starting:viewerStarting,profile:viewerProfile.id,cruise:viewerCruise,holding:viewerHolding,gaze:viewerHud.gaze,receiving:headTracker.receiving,permission:headTracker.permission,gamepad:gamepad.connected,activeCameras:scene.activeCameras?.map(c=>c.name)??[]}),
     scenery:()=>({...sceneryStats,carModels:[...carModels].filter(([,m])=>m).map(([id])=>id)}),
     /** Diagnostics: start counting draw calls (average per frame over the last second, all render passes including mirrors). */
     countDrawCalls:async()=>{

@@ -1,0 +1,62 @@
+/**
+ * Phone-viewer (cardboard-style headset) optics. Pure data and maths, unit-tested.
+ *
+ * Each eye gets half the screen. The headset's lenses sit `lensSeparation`
+ * apart, usually closer together than the centres of the two screen halves, so
+ * each eye's image is shifted towards the middle of the screen to sit under its
+ * lens. The lenses magnify with pincushion distortion; drawing each eye's image
+ * with the opposite (barrel) distortion makes straight lines look straight.
+ * The real values depend on the headset: these presets are starting points to
+ * adjust on the device, not measured headsets.
+ */
+export interface ViewerProfile{
+  id:string;
+  label:string;
+  /** Vertical field of view drawn for each eye, degrees. */
+  fovDeg:number;
+  /** Distance between the lens centres, metres. */
+  lensSeparation:number;
+  /** Radial distortion: r' = r(1 + k1 r² + k2 r⁴), r = 1 at the top and bottom of the eye's image. */
+  k1:number;
+  k2:number;
+  /** Distance between the two eye viewpoints in the scene (interpupillary distance), metres. */
+  ipd:number;
+}
+
+export const VIEWER_PROFILES:ViewerProfile[]=[
+  {id:'generic',label:'Typical phone headset (VR-box style, adjustable lenses)',fovDeg:85,lensSeparation:.062,k1:.22,k2:.24,ipd:.063},
+  {id:'cardboard',label:'Google Cardboard style (fixed lenses)',fovDeg:80,lensSeparation:.0639,k1:.34,k2:.55,ipd:.063},
+  {id:'flat',label:'No lens correction (stereo only; for checking alignment)',fovDeg:80,lensSeparation:.062,k1:0,k2:0,ipd:.063}
+];
+
+/** iPhone 14 Pro Max display in landscape (6.7 in, 2796 × 1290 px at 460 ppi): width and height, metres. */
+export const IPHONE_14_PRO_MAX={width:.1544,height:.0712};
+
+export interface EyeLayout{
+  /** Horizontal shift of each eye's image, as a fraction of the eye's half-width (projection space): + moves right. */
+  shift:{left:number;right:number};
+  /** Lens centre in each eye's image, texture coordinates (0..1). */
+  centre:{left:number;right:number};
+  /** Width ÷ height of one eye's image. */
+  aspect:number;
+  /** Shrinks the corrected image so its nearest side edge stays filled. */
+  scale:number;
+}
+
+/** Lens geometry for one screen size (metres) and drawing-buffer aspect (width ÷ height of the whole screen). */
+export function eyeLayout(profile:ViewerProfile,screenWidth:number,screenAspect:number):EyeLayout{
+  const eyeWidth=screenWidth/2;
+  // Lens centre relative to the centre of each half, as a fraction of the half's width.
+  const offset=Math.max(-.4,Math.min(.4,(screenWidth/4-profile.lensSeparation/2)/eyeWidth));
+  const aspect=screenAspect/2;
+  // r is measured in units of half the eye's height; the nearest side edge is (0.5 − offset) of the eye width away.
+  const edge=(.5-Math.abs(offset))*aspect*2;
+  const scale=1+profile.k1*edge**2+profile.k2*edge**4;
+  return {
+    // The left eye's lens is to the right of its half's centre (towards the middle of the screen), and vice versa.
+    shift:{left:2*offset,right:-2*offset},
+    centre:{left:.5+offset,right:.5-offset},
+    aspect,
+    scale
+  };
+}
