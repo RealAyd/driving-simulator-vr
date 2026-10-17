@@ -43,75 +43,90 @@ export function shapeSteer(angle:number,centre:number,tuning:TiltTuning):number{
   return Math.sign(lean)*(0.35*x+0.65*x*x);
 }
 
-export type TiltStatus='off'|'waiting'|'active'|'denied'|'unavailable';
+/** Outcome of asking for motion access. */
+export type TiltPermission='not-asked'|'granted'|'denied'|'not-required'|'unsupported';
 
 type OrientationPermission={requestPermission?:()=>Promise<'granted'|'denied'>};
 
-/** Owns the sensor listener, smoothing and calibration. */
+/** Owns the sensor listener, reading statistics, smoothing and calibration. */
 export class TiltSteering{
-  status:TiltStatus='off';
+  permission:TiltPermission='not-asked';
   tuning:TiltTuning=TILT_SENSITIVITY.normal;
+  /** True once the driver has set straight ahead (or it was set at the start of a drive). */
+  calibrated=false;
   private raw=0;
   private smoothed=0;
   private centre=0;
-  private needsCentre=true;
-  private lastReading=0;
+  private listening=false;
+  private readings:number[]=[];
   private readonly onOrientation=(event:DeviceOrientationEvent)=>{
     if(event.beta==null||event.gamma==null)return;
     this.raw=tiltAngle(event.beta,event.gamma,screenAngle());
-    this.lastReading=performance.now();
-    if(this.needsCentre){this.centre=this.raw;this.smoothed=this.raw;this.needsCentre=false}
-    if(this.status==='waiting')this.status='active';
+    const now=performance.now();
+    this.readings.push(now);
+    while(this.readings.length&&now-this.readings[0]!>1000)this.readings.shift();
+    if(this.readings.length===1&&!this.calibrated)this.smoothed=this.raw;
   };
 
   /**
-   * Must be called from a tap: iOS only grants motion access inside a user gesture.
-   * Resolves once readings arrive, or with the reason they did not.
+   * Asks for motion access. Call it directly from a tap handler with no await
+   * before it: iOS only shows the prompt inside the user's gesture.
    */
-  async enable():Promise<TiltStatus>{
-    if(typeof DeviceOrientationEvent==='undefined')return this.status='unavailable';
+  async requestAccess():Promise<TiltPermission>{
+    if(typeof DeviceOrientationEvent==='undefined')return this.permission='unsupported';
     const request=(DeviceOrientationEvent as unknown as OrientationPermission).requestPermission;
     if(request){
       try{
-        if(await request.call(DeviceOrientationEvent)!=='granted')return this.status='denied';
+        this.permission=await request.call(DeviceOrientationEvent)==='granted'?'granted':'denied';
       }catch{
         // Refused outright, e.g. inside an embedded frame that is not allowed motion access.
-        return this.status='denied';
+        this.permission='denied';
       }
+    }else this.permission='not-required';
+    if(this.permission!=='denied'&&!this.listening){
+      window.addEventListener('deviceorientation',this.onOrientation);
+      this.listening=true;
     }
-    this.status='waiting';
-    this.needsCentre=true;
-    window.addEventListener('deviceorientation',this.onOrientation);
-    // Desktop browsers expose the API but never deliver readings.
-    await new Promise(resolve=>setTimeout(resolve,1500));
-    if(this.status==='waiting'){this.disable();this.status='unavailable'}
-    return this.status;
+    return this.permission;
   }
 
-  disable():void{
-    window.removeEventListener('deviceorientation',this.onOrientation);
-    this.status='off';
-    this.smoothed=this.centre=this.raw=0;
+  /** Real sensor readings arrived within the last half second. */
+  get receiving():boolean{
+    const last=this.readings.at(-1);
+    return last!==undefined&&performance.now()-last<500;
   }
 
-  /** Makes the phone's current position the straight-ahead position. */
-  recentre():void{
+  /** Readings in the last second. */
+  get rate():number{
+    const now=performance.now();
+    return this.readings.filter(t=>now-t<=1000).length;
+  }
+
+  /** Current lean relative to straight ahead, degrees (positive = turned clockwise). */
+  get leanDegrees():number{
+    return (this.raw-this.centre)*180/Math.PI;
+  }
+
+  /** Makes the phone's current position straight ahead. */
+  calibrate():void{
     this.centre=this.raw;
     this.smoothed=this.raw;
+    this.calibrated=true;
   }
 
-  /** Smoothed steering −1..1; call once per frame. */
+  /** Smoothed steering −1..1; call once per frame. 0 when no readings are arriving. */
   read(dt:number):number{
-    if(this.status!=='active')return 0;
+    if(!this.receiving)return 0;
     // About 80 ms of smoothing: removes hand jitter without feeling laggy.
     this.smoothed+=(this.raw-this.smoothed)*(1-Math.exp(-dt/0.08));
     return shapeSteer(this.smoothed,this.centre,this.tuning);
   }
+}
 
-  /** True when the sensor has gone quiet (e.g. the page lost sensor access). */
-  get stale():boolean{
-    return this.status==='active'&&performance.now()-this.lastReading>1000;
-  }
+/** Landscape, by the screen orientation API where available. */
+export function isLandscape():boolean{
+  const type=screen.orientation?.type;
+  return type?type.startsWith('landscape'):innerWidth>innerHeight;
 }
 
 function screenAngle():number{

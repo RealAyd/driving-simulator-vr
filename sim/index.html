@@ -61,14 +61,22 @@ fieldset.steering{border:1px solid var(--line);border-radius:12px;margin:12px 0 
 .steering b{color:var(--ink)}
 .steering .unit{margin:0}
 #tilt-status.warn{color:#fcd34d;font-size:13px}
-.tilt-options{display:flex;gap:14px;align-items:center;padding-left:28px}
+.tilt-panel{padding-left:28px;display:grid;gap:8px}
+.tilt-steps{margin:0;padding-left:18px;display:grid;gap:6px;font-size:13px}
+.tilt-steps button{padding:6px 14px}
+.tilt-steps button:disabled{opacity:.45;cursor:default}
+#tilt-enable{background:#0e5260;border-color:#5bb6ca;font-weight:700}
+.tilt-state{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0;font-size:13px}
+.tilt-state dt{color:var(--soft)}
+.tilt-state dd{margin:0}
+.tilt-state .ok{color:#86efac}.tilt-state .bad{color:#fcd34d}
+.tilt-options{display:flex;gap:14px;align-items:center}
 .tilt-options select{font:inherit;background:#1e293b;color:var(--ink);border:1px solid #64748b;border-radius:8px;padding:4px}
 .wheel{width:44px;height:44px;flex:none}
 .wheel-rim{width:100%;height:100%;border:5px solid #94a3b8;border-radius:50%;position:relative;transition:transform 40ms linear}
 .wheel-rim span{position:absolute;left:50%;top:-5px;width:6px;height:12px;margin-left:-3px;background:#f59e0b;border-radius:3px}
 #hud-tilt{display:none;right:16px;bottom:144px;align-items:center;gap:8px;padding:6px 8px}
 body.tilt #hud-tilt{display:flex}
-body.tilt #touch-controls [data-hold="left"],body.tilt #touch-controls [data-hold="right"]{display:none}
 body.phone #hud-tilt{top:12px;bottom:auto;left:12px;right:auto}
 #hud-tilt button{padding:6px 10px;font-size:12px}
 #briefing{left:50%;top:12px;transform:translateX(-50%);width:min(520px,calc(100vw - 32px));max-height:calc(100% - 100px);overflow-y:auto;padding:16px 18px;border-color:#f59e0b;z-index:2}
@@ -119,12 +127,24 @@ body.phone #briefing #briefing-text{font-size:14px}
       <label><input type="radio" name="steering" value="assist"> <span><b>Assisted</b> keeps the car on the lane path; you control speed, signals and observations.</span></label>
       <label><input type="radio" name="steering" value="tilt"> <span><b>Tilt the phone</b> like a steering wheel (landscape).</span></label>
       <label><input type="radio" name="steering" value="buttons"> <span><b>Buttons or keys</b>: hold ◀ ▶.</span></label>
-      <div id="tilt-options" class="tilt-options" hidden>
-        <div class="wheel" aria-hidden="true"><div id="tilt-preview" class="wheel-rim"><span></span></div></div>
-        <label>Sensitivity <select id="tilt-sensitivity"><option value="gentle">Gentle</option><option value="normal" selected>Normal</option><option value="sharp">Sharp</option></select></label>
+      <div id="tilt-options" class="tilt-panel" hidden>
+        <ol class="tilt-steps">
+          <li><button id="tilt-enable" type="button">Enable tilt</button> <span class="unit">asks for motion access</span></li>
+          <li><button id="tilt-calibrate" type="button" disabled>Calibrate</button> <span id="tilt-calibrate-hint" class="unit">hold the phone in landscape as you will drive, then tap</span></li>
+        </ol>
+        <dl class="tilt-state" aria-live="polite">
+          <dt>Permission</dt><dd id="tilt-permission">not asked yet</dd>
+          <dt>Sensor</dt><dd id="tilt-readings">no readings</dd>
+          <dt>Screen</dt><dd id="tilt-landscape">–</dd>
+          <dt>Straight ahead</dt><dd id="tilt-calibrated">not calibrated</dd>
+        </dl>
+        <div class="tilt-options">
+          <div class="wheel" aria-hidden="true"><div id="tilt-preview" class="wheel-rim"><span></span></div></div>
+          <label>Sensitivity <select id="tilt-sensitivity"><option value="gentle">Gentle</option><option value="normal" selected>Normal</option><option value="sharp">Sharp</option></select></label>
+        </div>
       </div>
       <p id="tilt-status" class="unit" role="status"></p>
-      <p class="unit">◀ ▶ buttons and keys always override tilt and assistance.</p>
+      <p class="unit">◀ ▶ buttons stay on screen in every mode and always override tilt and assistance.</p>
     </fieldset>
     <p class="unit">Feedback uses a draft rubric that has not yet been reviewed by an instructor. It is not the DVSA marking scheme.</p>
     <div class="keys">
@@ -140,6 +160,7 @@ body.phone #briefing #briefing-text{font-size:14px}
     </div>
     <button id="xr-button" type="button" hidden style="width:100%;margin-top:8px">Enter VR (experimental, seated)</button>
     <p id="xr-status" class="unit"></p>
+    <p id="build-label" class="unit"></p>
   </div>
 </section>
 
@@ -181,6 +202,7 @@ body.phone #briefing #briefing-text{font-size:14px}
   <div id="hud-tilt" class="hud-panel">
     <div class="wheel" aria-hidden="true"><div id="hud-wheel" class="wheel-rim"><span></span></div></div>
     <button id="hud-tilt-centre" type="button">Centre</button>
+    <span id="hud-tilt-state" class="unit"></span>
   </div>
   <div id="hud-speedbox" class="hud-panel"><div id="hud-speed">0</div><div class="unit">mph</div></div>
   <div id="hud-indicators" class="hud-panel">

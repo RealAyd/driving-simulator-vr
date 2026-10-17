@@ -25,7 +25,7 @@ import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
 import {KeyboardInput,type InputAction,type ViewTarget} from '../input/keyboard';
 import {SteerRamp} from '../input/steerRamp';
-import {TILT_SENSITIVITY,TiltSteering} from '../input/tilt';
+import {TILT_SENSITIVITY,TiltSteering,isLandscape,type TiltPermission} from '../input/tilt';
 import {ScenarioRunner,type Outcome} from '../scenarios/scenarioRunner';
 import {ZoneTracker} from '../scenarios/zones';
 import {openAttemptStore} from '../storage/attempts';
@@ -311,7 +311,11 @@ export async function boot():Promise<void>{
     byId('briefing-text').textContent=scenario.briefing;
     byId('briefing-steering').textContent={
       assist:'Steering: assisted. You control speed with Go and Brake, plus signals and observations.',
-      tilt:'Steering: tilt the phone like a wheel. Hold it how you want to drive now; that position becomes straight ahead.',
+      tilt:!tilt.receiving
+        ?'Steering: tilt is selected but no sensor readings are arriving, so steer with ◀ ▶. Enable tilt on the start screen.'
+        :tilt.calibrated
+          ?'Steering: tilt the phone like a wheel (calibrated). ◀ ▶ still work, and Centre resets straight ahead.'
+          :'Steering: tilt the phone like a wheel. Hold it how you want to drive now; that position becomes straight ahead.',
       buttons:'Steering: hold ◀ ▶ (or A/D, ←/→).'
     }[steeringMode];
     briefingLeft=BRIEFING_SECONDS;
@@ -323,7 +327,8 @@ export async function boot():Promise<void>{
     briefingLeft=0;
     byId('briefing').hidden=true;
     input.clear();
-    if(steeringMode==='tilt')tilt.recentre();
+    // Calibrated on the start screen, or else where the phone is held as the drive begins.
+    if(steeringMode==='tilt'&&tilt.receiving&&!tilt.calibrated)tilt.calibrate();
     canvas.focus();
   };
   const resetAttempt=()=>{
@@ -385,25 +390,48 @@ export async function boot():Promise<void>{
     for(const radio of steeringRadios)radio.checked=radio.value===mode;
     byId('tilt-options').hidden=mode!=='tilt';
     document.body.classList.toggle('tilt',mode==='tilt');
-    if(mode!=='tilt'&&tilt.status!=='off')tilt.disable();
   };
-  for(const radio of steeringRadios)radio.addEventListener('change',async()=>{
-    const mode=radio.value as SteeringMode;
+  // Choosing tilt only shows the panel; access is asked by the Enable tilt button.
+  for(const radio of steeringRadios)radio.addEventListener('change',()=>setSteeringMode(radio.value as SteeringMode));
+  const PERMISSION_TEXT:Record<TiltPermission,string>={
+    'not-asked':'not asked yet',granted:'granted',denied:'refused',
+    'not-required':'not needed in this browser',unsupported:'no motion sensor support in this browser'
+  };
+  byId('tilt-enable').addEventListener('click',()=>{
     tiltStatus.classList.remove('warn');
-    if(mode!=='tilt'){setSteeringMode(mode);tiltStatus.textContent='';return}
-    setSteeringMode('tilt');
     tiltStatus.textContent='Asking for motion access…';
-    // Called straight from the tap, as iOS requires.
-    const status=await tilt.enable();
-    if(status==='active'){tiltStatus.textContent='Motion sensor working. Tilt the phone to see the wheel turn.';return}
-    setSteeringMode(quality.id==='phone'?'assist':'buttons');
-    tiltStatus.textContent=embedded
-      ?'Tilt steering is not available here: this preview runs inside another page (such as the claude.ai viewer), which does not pass on the motion sensor. It needs the simulator opened on its own.'
-      :status==='denied'
-        ?'Motion access was refused, so tilt steering is off. Allow motion access in Safari settings and try again.'
-        :'No motion sensor readings arrived in this browser, so tilt steering is off.';
-    tiltStatus.classList.add('warn');
+    // No await before this call: iOS shows its prompt only inside the tap.
+    void tilt.requestAccess().then(permission=>{
+      if(permission==='denied'||permission==='unsupported'){
+        tiltStatus.classList.add('warn');
+        tiltStatus.textContent=embedded
+          ?'Refused: this copy runs inside another page (such as the claude.ai viewer), which blocks motion sensors. Use the standalone preview link. ◀ ▶ still work.'
+          :permission==='denied'
+            ?'Motion access was refused. To allow it: close this tab, open the link again and tap Allow. ◀ ▶ still work.'
+            :'This browser has no motion sensor support. ◀ ▶ still work.';
+      }else tiltStatus.textContent='Waiting for sensor readings… then hold the phone in landscape and tap Calibrate.';
+    });
   });
+  byId('tilt-calibrate').addEventListener('click',()=>{
+    tilt.calibrate();
+    tiltStatus.classList.remove('warn');
+    tiltStatus.textContent='Straight ahead set. Turn the phone like a wheel: the wheel below should follow.';
+  });
+  /** Live tilt status on the start screen (called every frame while it is shown). */
+  const showTiltState=()=>{
+    const set=(id:string,text:string,ok:boolean|null)=>{
+      const el=byId(id);
+      if(el.textContent!==text)el.textContent=text;
+      el.className=ok===null?'':ok?'ok':'bad';
+    };
+    const p=tilt.permission;
+    set('tilt-permission',PERMISSION_TEXT[p],p==='not-asked'?null:p==='granted'||p==='not-required');
+    set('tilt-readings',tilt.receiving?`readings arriving (${tilt.rate}/s), lean ${tilt.leanDegrees>=0?'+':''}${tilt.leanDegrees.toFixed(0)}°`:p==='not-asked'?'no readings yet':'no readings',p==='not-asked'?null:tilt.receiving);
+    const landscape=isLandscape();
+    set('tilt-landscape',landscape?'landscape':'turn the phone to landscape',landscape);
+    set('tilt-calibrated',tilt.calibrated?'calibrated':'not calibrated',tilt.calibrated);
+    (byId('tilt-calibrate') as HTMLButtonElement).disabled=!(tilt.receiving&&landscape);
+  };
   const sensitivity=byId<HTMLSelectElement>('tilt-sensitivity');
   sensitivity.addEventListener('change',()=>{tilt.tuning=TILT_SENSITIVITY[sensitivity.value as keyof typeof TILT_SENSITIVITY]});
   setSteeringMode(steeringMode);
@@ -477,7 +505,7 @@ export async function boot():Promise<void>{
   byId('hud-ind-right').addEventListener('click',()=>onAction('indicator-right'));
   byId('hud-task-toggle').addEventListener('click',()=>hud.toggleTask());
   byId('briefing-go').addEventListener('click',endBriefing);
-  byId('hud-tilt-centre').addEventListener('click',()=>tilt.recentre());
+  byId('hud-tilt-centre').addEventListener('click',()=>tilt.calibrate());
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-hold]')){
     const control=button.dataset.hold as 'throttle'|'brake'|'left'|'right';
     const set=(down:boolean)=>(event:Event)=>{event.preventDefault();input.setVirtual(control,down)};
@@ -510,8 +538,10 @@ export async function boot():Promise<void>{
 
   hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
   byId('location-label').textContent='Draft preview. Each exercise names its location; layouts are unreviewed.';
+  byId('build-label').textContent=`Build ${__BUILD_COMMIT__}`;
 
   const hudWheel=byId('hud-wheel');
+  const hudTiltState=byId('hud-tilt-state');
   /** Diagnostics: a top-down camera for layout review screenshots. */
   let overhead:{x:number;z:number;height:number}|null=null;
   const perf=new PerfProbe();
@@ -555,8 +585,14 @@ export async function boot():Promise<void>{
     hudWheel.style.transform=wheelTurn;
     // Turning right turns the wheel clockwise as the driver sees it.
     cockpit.wheel.rotation.y=-vehicle.state.steerAngle*STEERING_RATIO;
-    if(session.state==='ready')wheelPreview.style.transform=wheelTurn;
-    if(tilt.stale)hud.setStatus('Motion sensor stopped sending readings.');
+    if(session.state==='ready'){
+      wheelPreview.style.transform=wheelTurn;
+      if(steeringMode==='tilt')showTiltState();
+    }
+    if(steeringMode==='tilt'){
+      const state=tilt.receiving?'tilt on':'no tilt readings: use ◀ ▶';
+      if(hudTiltState.textContent!==state)hudTiltState.textContent=state;
+    }
     hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     scene.render();
   });

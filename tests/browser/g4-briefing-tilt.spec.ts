@@ -26,35 +26,50 @@ test('G4: tilt steering turns the car with the phone, and the briefing holds the
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   testInfo.annotations.push({type:'screen angle',description:String(await page.evaluate(()=>screen.orientation?.angle))});
 
-  // Choose tilt: readings must arrive, or the choice falls back to assisted.
-  const feed=setInterval(()=>{void lean(page,0).catch(()=>{})},50);
+  // Choosing tilt shows the panel without asking for anything yet.
   await page.locator('input[name=steering][value=tilt]').check();
-  await expect(page.locator('#tilt-status')).toContainText('Motion sensor working',{timeout:5000});
-  clearInterval(feed);
   await expect(page.locator('#tilt-options')).toBeVisible();
-  await lean(page,15);
+  await expect(page.locator('#tilt-permission')).toHaveText('not asked yet');
+  await expect(page.locator('#tilt-calibrate')).toBeDisabled();
+
+  // Enable tilt (the tap asks for access), then real readings show up with a live rate.
+  const feed=setInterval(()=>{void lean(page,12).catch(()=>{})},40);
+  await page.click('#tilt-enable');
+  await expect(page.locator('#tilt-permission')).toHaveText(/granted|not needed/);
+  await expect(page.locator('#tilt-readings')).toContainText('readings arriving',{timeout:5000});
+  await expect(page.locator('#tilt-landscape')).toHaveText('landscape');
+  await expect(page.locator('#tilt-calibrated')).toHaveText('not calibrated');
+
+  // Calibrate with the phone held turned 12°: that becomes straight ahead.
+  await expect(page.locator('#tilt-calibrate')).toBeEnabled();
+  await page.click('#tilt-calibrate');
+  await expect(page.locator('#tilt-calibrated')).toHaveText('calibrated');
+  await expect(page.locator('#tilt-readings')).toContainText('lean +0°');
+  clearInterval(feed);
+  await lean(page,27);
   await page.waitForTimeout(300);
+  await expect(page.locator('#tilt-readings')).toContainText('lean +15°');
   await page.screenshot({path:testInfo.outputPath('g4-01-start-tilt.png')});
-  await lean(page,0);
+  await lean(page,12);
 
   await page.click('#start-mirror-check');
   await expect(page.locator('#briefing')).toBeVisible();
-  await expect(page.locator('#briefing-steering')).toContainText('tilt the phone');
+  await expect(page.locator('#briefing-steering')).toContainText('calibrated');
   await expect(page.locator('#hud-tilt')).toBeVisible();
-  await expect(page.locator('[data-hold=left]')).toBeHidden();
+  // Touch steering stays available as a fallback.
+  await expect(page.locator('[data-hold=left]')).toBeVisible();
   await page.screenshot({path:testInfo.outputPath('g4-02-briefing.png')});
   // Held: nothing moves while the briefing is up.
   await page.waitForTimeout(2000);
   expect(await read(page,'simTime()')).toBe(0);
   expect(await read(page,'briefing()')).toBeGreaterThan(6);
 
-  // Hold the phone tipped 12° and start: that becomes straight ahead.
+  // Still held at the calibrated 12°: straight ahead, and the calibration is kept at the start.
   await lean(page,12);
-  await page.waitForTimeout(200);
   await page.click('#briefing-go');
-  await lean(page,12);
-  await page.waitForTimeout(400);
+  for(let i=0;i<8;i++){await lean(page,12);await page.waitForTimeout(50)}
   expect(Math.abs((await read(page,'vehicle()')).steerAngle)).toBeLessThan(.02);
+  await expect(page.locator('#hud-tilt-state')).toHaveText('tilt on');
 
   // Turn the phone clockwise by 20° relative to that: the wheels turn right.
   for(let i=0;i<10;i++){await lean(page,32);await page.waitForTimeout(60)}
@@ -72,15 +87,25 @@ test('G4: tilt steering turns the car with the phone, and the briefing holds the
   expect(errors).toEqual([]);
 });
 
-test('G4: without sensor readings, choosing tilt falls back to assisted steering and says why',async({page})=>{
+test('G4: without sensor readings, tilt says so, cannot be calibrated, and ◀ ▶ remain for steering',async({page})=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  // Clicked rather than checked: the choice reverts as soon as no sensor is found.
-  await page.locator('input[name=steering][value=tilt]').click();
-  // Refused (browsers with the iOS-style permission) or silent (no sensor): either way, tilt switches off.
-  await expect(page.locator('#tilt-status')).toContainText('so tilt steering is off',{timeout:5000});
-  await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
-  expect(await read(page,'steering()')).toBe('assist');
+  await page.locator('input[name=steering][value=tilt]').check();
+  await page.click('#tilt-enable');
+  // Refused (browsers with the iOS-style permission) or silent (no sensor): no readings either way.
+  await expect(page.locator('#tilt-permission')).not.toHaveText('not asked yet');
+  await page.waitForTimeout(800);
+  await expect(page.locator('#tilt-readings')).toHaveText('no readings');
+  await expect(page.locator('#tilt-calibrate')).toBeDisabled();
+  await page.click('#start-mirror-check');
+  await expect(page.locator('#briefing-steering')).toContainText('no sensor readings are arriving');
+  await page.click('#briefing-go');
+  await expect(page.locator('#hud-tilt-state')).toHaveText('no tilt readings: use ◀ ▶');
+  await expect(page.locator('[data-hold=left]')).toBeVisible();
+  // The buttons still steer.
+  await page.locator('[data-hold=left]').dispatchEvent('pointerdown');
+  await expect.poll(async()=>(await read(page,'vehicle()')).steerAngle).toBeLessThan(-.1);
+  await page.locator('[data-hold=left]').dispatchEvent('pointerup');
 });
 
 test('G4: assisted steering in the mirror check keeps to the road through the bend, and after a manual correction',async({page},testInfo)=>{
