@@ -16,7 +16,7 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
-import {CAR_MODEL,CarModel,PropLibrary} from '../assets/models';
+import {CAR_MODEL,CarModel,PROP_ASSETS,PropLibrary} from '../assets/models';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
@@ -687,7 +687,7 @@ export async function boot():Promise<void>{
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
     byId('about-models').textContent=[
       carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple car shapes (model not loaded)',
-      props.available.size?`licensed scenery: ${[...props.available].join(', ')}`:'no licensed scenery in this build'
+      props.available.size?`scenery: ${[...props.available].map(id=>PROP_ASSETS[id]?.storage==='private'?`${id} (licensed, private)`:id).join(', ')}`:'no scenery models in this build'
     ].join('; ');
     byId('about-mirrors').textContent=`${mirrors.filter(m=>m.isActive).length} of 3 rendering now; ${quality.mirrorResolution} px, every ${quality.mirrorUpdateInterval} frame${quality.mirrorUpdateInterval===1?'':'s'} (every frame for the mirror you are looking at)`;
     byId('screen-about').hidden=false;
@@ -699,8 +699,8 @@ export async function boot():Promise<void>{
   const hudWheel=byId('hud-wheel');
   const hudTiltState=byId('hud-tilt-state');
   let mirrorsOn=true;
-  /** Diagnostics: a top-down camera for layout review screenshots. */
-  let overhead:{x:number;z:number;height:number}|null=null;
+  /** Diagnostics: a top-down camera (or one looking at `target`) for layout review screenshots. */
+  let overhead:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null=null;
   const perf=new PerfProbe();
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
@@ -722,7 +722,8 @@ export async function boot():Promise<void>{
     const eye=head.eyeWorld(pose),look=head.lookWorld(pose);
     if(overhead){
       camera.position.set(overhead.x,overhead.height,overhead.z+.01);
-      camera.setTarget(new Vector3(overhead.x,0,overhead.z));
+      const t=overhead.target;
+      camera.setTarget(t?new Vector3(t.x,t.y,t.z):new Vector3(overhead.x,0,overhead.z));
     }else{
       camera.position.set(eye.x,eye.y,eye.z);
       camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
@@ -775,7 +776,7 @@ export async function boot():Promise<void>{
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
     sceneryModels:()=>[...props.available],
-    overhead:(view:{x:number;z:number;height:number}|null)=>{overhead=view},
+    overhead:(view:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null)=>{overhead=view},
     variant:()=>runtime?.variant?.id??null,
     /** Diagnostics: switch mirror rendering off to measure what it costs. */
     mirrorsEnabled:(on:boolean)=>{mirrorsOn=on},

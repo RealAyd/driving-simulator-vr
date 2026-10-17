@@ -122,6 +122,7 @@ export interface PropAsset{
 }
 
 export const PROP_ASSETS:Record<string,PropAsset>={
+  'quaternius-downtown-building-small-1':{url:'assets/models/buildings/quaternius-downtown-building-small-1.glb',storage:'public'},
   'a3js-london-terrace-house-low':{url:'assets/licensed/a3js-london-terrace-house-low.glb',storage:'private'},
   'cadmando-traffic-lights':{url:'assets/licensed/cadmando-traffic-lights.glb',storage:'private'},
   supermarket:{url:'assets/licensed/supermarket.glb',storage:'private'}

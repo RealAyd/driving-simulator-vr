@@ -18,7 +18,8 @@
         "SportsCar",
         "SportsCar2",
         "Taxi"
-      ]
+      ],
+      "storage": "public"
     },
     {
       "id": "a3js-london-street-starter",
@@ -79,6 +80,29 @@
       "storage": "private",
       "contents": [
         "Supermarket building, 20.7 x 5.15 x 18.4 m"
+      ]
+    },
+    {
+      "id": "quaternius-downtown-city-megakit-standard",
+      "title": "Downtown City MegaKit (Standard, free version): UK street starter selection",
+      "author": "Quaternius",
+      "source": "Downtown_City_UK_Starter.zip supplied by the project owner, received 2026-10-17: a selection prepared from Downtown City MegaKit[Standard].zip (ten GLBs packed from the pack's glTF exports with textures downsampled to 512 px; ASSET_SELECTION.md, ASSET_MANIFEST.csv, ARCHIVE_INVENTORY.txt and licenses/License_Standard.txt included). The original MegaKit archive itself was not supplied here",
+      "licence": "CC0 1.0 Universal (public domain dedication), per licenses/License_Standard.txt (verbatim copy of the pack's licence). Applies to the Standard (free) version only, not the paid Source version",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "storage": "public",
+      "contents": [
+        "Building_Small_1",
+        "Brick_Plain_3",
+        "Brick_Inset_Window",
+        "Metal_FirstFloor_Window",
+        "Brick_Corner_Plain",
+        "Sidewalk_Straight_3m",
+        "Sidewalk_Corner_Round_3m",
+        "Prop_Bollard",
+        "Prop_Planter_Single",
+        "Prop_Drain"
       ]
     }
   ],
@@ -161,6 +185,28 @@
         "bytes": 91744
       },
       "build": "tools/assets/build-licensed.sh market model_for_supermarket.glb"
+    },
+    {
+      "id": "quaternius-downtown-building-small-1",
+      "file": "public/assets/models/buildings/quaternius-downtown-building-small-1.glb",
+      "storage": "public",
+      "pack": "quaternius-downtown-city-megakit-standard",
+      "sourceFile": "prepared/buildings/Building_Small_1.glb (from Exports/glTF (Godot)/Building_Small_1.gltf)",
+      "use": "Moving off safely: taller brick building on the east side, behind the supermarket (replaces the simple block house-e-2; its collision box is kept)",
+      "modifications": [
+        "Upstream (by the supplier's preparation): glTF + BIN + PNG packed into GLB; textures downsampled from 2048/1024 px to 512 px",
+        "Normal, occlusion and metal/roughness maps removed (not used by the simulator's StandardMaterial path); uniformly white vertex colours removed",
+        "Base colour maps re-encoded as JPEG (quality 82): 512 px; window interiors, marble floor and asphalt 256 px (tools/assets/slim-textures.mjs)",
+        "glTF-Transform 4.5.1: weld, dedup (identical materials merged), join, prune, quantize. No decimation; geometry, pivot and node transform otherwise unchanged",
+        "At load: PBR materials replaced with StandardMaterial of the same colours and textures"
+      ],
+      "stats": {
+        "triangles": 18344,
+        "materials": 10,
+        "textures": 9,
+        "bytes": 833892
+      },
+      "build": "TOOLS=<scratch folder> tools/assets/build-downtown.sh <extracted Downtown_City_UK_Starter folder> Building_Small_1"
     }
   ]
 }

@@ -9,6 +9,7 @@ Machine-readable register: `content/assets/register.json` (a unit test fails if 
 | LowPoly Cars (`Patreon.com.zip`) | Quaternius | CC0 1.0 (public domain), `License.txt` in the pack | Allowed | Converted GLBs in the repository; originals kept out | 2026-10-17 |
 | London Street Starter (`london-street-starter.zip`, free sample) | Assets for three.js (Adapt Progress Evolve Ltd), models by JSTOV | Assets for three.js Model Licence v2, `LICENCE.txt` in the pack | **Not allowed** as files (shipping inside a finished app or website is allowed) | **Private** | 2026-10-17 |
 | Street pack #145 (`street_pack.fbx`, `street_pack.blend`) | CADmando (file metadata) | **Unknown**: no licence supplied; some textures are web-sourced images (TfL map, sign photos) | Unknown, so treated as not allowed | **Private** | 2026-10-17 |
+| Downtown City MegaKit, Standard (`Downtown_City_UK_Starter.zip`: a prepared selection of ten GLBs with `ASSET_SELECTION.md`, `ASSET_MANIFEST.csv`, `ARCHIVE_INVENTORY.txt`) | Quaternius | CC0 1.0, `licenses/License_Standard.txt` (Standard/free version only) | Allowed | Converted GLB in the repository; ZIP kept out | 2026-10-17 |
 | Supermarket (`model_for_supermarket.glb`) | Unknown (three.js GLTFExporter export) | **Unknown**: no licence or receipt supplied | Unknown, so treated as not allowed | **Private** | 2026-10-17 |
 
 **Private** means the optimised GLB is built locally into `public/assets/licensed/` (git-ignored) by `tools/assets/build-licensed.sh`. It is never committed to this public repository and never deployed to the public staging site. The simulator loads it only if present; otherwise the simple shapes are shown and the About panel says "no licensed scenery in this build".
@@ -67,12 +68,27 @@ The pack has no vehicles or traffic lights.
 
 2,304 triangles, 12 materials after optimisation, 92 KB, 20.7 × 5.15 × 18.4 m. **Integrated (private)** on the east side of the Moving off safely street, shopfront facing the road.
 
-## Private models in use
+## Scenery models in use
 
-| File (git-ignored) | Placement | Replaces |
+| File | Placement | Replaces |
 |---|---|---|
 | `public/assets/licensed/a3js-london-terrace-house-low.glb` | Moving off safely, west side, facing the road | simple block `house-w-1` (collision kept) |
 | `public/assets/licensed/supermarket.glb` | Moving off safely, east side, facing the road | simple block `house-e-1` (collision kept) |
+| `public/assets/models/buildings/quaternius-downtown-building-small-1.glb` (**public**, CC0) | Moving off safely, east side behind the supermarket, facing the road | simple block `house-e-2` (collision kept) |
 | `public/assets/licensed/cadmando-traffic-lights.glb` | Brentwood, learner's near-side pavement before the High Street signal crossing, lamps facing the approach | nothing (added) |
 
 Placements are in each location's `models` list. Collision boxes, mirror rendering, controls and scoring do not depend on the models. Screenshots (local build with the private models): `docs/verification/assets/`.
+
+## Downtown City MegaKit, Standard (Quaternius, CC0): starter selection
+
+The supplied ZIP's three documents were read first and match its contents: ten prepared GLBs (packed from the MegaKit's glTF exports, textures reduced to 512 px), the CC0 licence text, and a preview contact sheet. The original MegaKit archive was not supplied here; the inventory lists 153 models in glTF and two FBX exports.
+
+| Model | Suitable | Notes |
+|---|---|---|
+| Building_Small_1 | **Yes, integrated (public)** | 12.5 × 17 × 14.5 m, about five storeys: a high-street building, tall for the moving-off residential street. 6.8 MB supplied → 834 KB (normal/ORM maps and blank vertex colours removed, JPEG base colours, quantised), 18,344 triangles kept (interior floors and fake-interior window planes not proven removable). Its road-facing side is away from the sun, so the brick reads dark |
+| Brick_Plain_3, Brick_Inset_Window, Metal_FirstFloor_Window, Brick_Corner_Plain | Yes, as modules | Façade pieces for building a UK high-street row; each supplied file is 1–2.7 MB only because of embedded textures (6–488 triangles) |
+| Sidewalk_Straight_3m, Sidewalk_Corner_Round_3m | Not yet | The simulator generates its own pavement and kerbs from the location; tiles would duplicate them |
+| Prop_Bollard, Prop_Planter_Single, Prop_Drain | Yes | Small (bollard 190 triangles, 17 KB after the same processing) |
+
+As the selection notes say: no bus shelter, bench, lamp post, bin, railing or UK signage in this pack; US road decals and four-lane roads rejected.
+Screenshots: `*-local-with-private.png` are a local build with the private models; `*-public-build.png` is the build CI and staging produce (private models absent, simple shapes in their place).

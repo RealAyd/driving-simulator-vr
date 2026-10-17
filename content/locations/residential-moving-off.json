@@ -211,6 +211,16 @@
       },
       "facingDeg": 270,
       "replacesBlock": "house-e-1"
+    },
+    {
+      "id": "downtown-east-2",
+      "asset": "quaternius-downtown-building-small-1",
+      "position": {
+        "x": 9.5,
+        "z": -34
+      },
+      "facingDeg": 270,
+      "replacesBlock": "house-e-2"
     }
   ]
 }

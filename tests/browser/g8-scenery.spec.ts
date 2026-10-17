@@ -26,11 +26,18 @@ test('G8: scenery models are optional; when present they replace the simple shap
     await expect(page.locator('#hud-left')).toBeVisible();
     return;
   }
-  for(const [name,yaw] of [['terrace-left',-.75],['supermarket-right',.6]] as const){
+  for(const [name,yaw] of [['terrace-left',-.75],['supermarket-right',.6],['downtown-right',.35]] as const){
     await read(page,`look(${yaw},.05)`);
     await page.waitForTimeout(600);
     await page.screenshot({path:testInfo.outputPath(`g8-${name}.png`)});
   }
+  // A street-level view from the far pavement, to check each model faces the road.
+  for(const [name,view] of [['street-east',{x:-5,z:-5,height:1.7,target:{x:14,y:4,z:-30}}],['street-west',{x:5,z:-25,height:1.7,target:{x:-12,y:3,z:-10}}]] as const){
+    await read(page,`overhead(${JSON.stringify(view)})`);
+    await page.waitForTimeout(600);
+    await page.screenshot({path:testInfo.outputPath(`g8-${name}.png`)});
+  }
+  await read(page,'overhead(null)');
   await read(page,'look(0,0)');
   await startExercise(page,'brentwood');
   await page.waitForTimeout(3000);
