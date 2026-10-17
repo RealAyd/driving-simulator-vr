@@ -73,7 +73,7 @@ describe('vehicle controller',()=>{
     for(let i=0;i<60;i++)v.fixedUpdate(DT);
     controls={throttle:0,brake:1,steer:0};
     for(let i=0;i<240;i++)v.fixedUpdate(DT);
-    expect(log.map(e=>e.type)).toEqual(['vehicle.moving','vehicle.stopped']);
+    expect(log.map(e=>e.type)).toEqual(['vehicle.moving','vehicle.braking','vehicle.stopped']);
     v.reset();
     expect(v.state.speed).toBe(0);
     expect(v.state.position).toEqual({x:-1.6,y:0,z:0});

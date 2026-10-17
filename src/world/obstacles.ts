@@ -1,7 +1,7 @@
 import {forwardFromHeading,rightFromHeading,degToRad,type Block,type Pose} from '../contracts';
 import type {CollisionQuery} from '../vehicle/vehicleController';
 
-interface Box{id:string;cx:number;cz:number;heading:number;halfW:number;halfD:number}
+export interface Box{id:string;cx:number;cz:number;heading:number;halfW:number;halfD:number}
 
 function corners(b:Box):Array<{x:number;z:number}>{
   const f=forwardFromHeading(b.heading),r=rightFromHeading(b.heading);

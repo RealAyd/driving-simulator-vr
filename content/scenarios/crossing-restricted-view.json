@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "crossing-restricted-view",
+  "locationId": "representative-residential-straight",
+  "title": "Zebra crossing beyond a parked van",
+  "learningObjective": "Approach a zebra crossing whose pavement is hidden by a parked vehicle at a speed that lets you stop, check your mirror before slowing, and give way to a pedestrian who steps onto the crossing.",
+  "briefing": "Drive along the road. A van is parked on your side before a zebra crossing, so you will need to pass it. A car is following you.",
+  "rubricId": "crossing-restricted-view",
+  "zones": [
+    {
+      "id": "restricted-approach",
+      "roadId": "main-street",
+      "from": 115,
+      "to": 143,
+      "label": "Approach past the parked van to the give-way line"
+    },
+    {
+      "id": "pedestrian-trigger",
+      "roadId": "main-street",
+      "from": 120,
+      "to": 150,
+      "label": "Close enough that the pedestrian starts to cross"
+    },
+    {
+      "id": "end",
+      "roadId": "main-street",
+      "from": 190,
+      "to": 400,
+      "label": "Clear of the crossing"
+    }
+  ],
+  "actors": [
+    {
+      "id": "pedestrian-1",
+      "kind": "pedestrian",
+      "waitAt": {
+        "x": -4.4,
+        "z": -106
+      },
+      "crossTo": {
+        "x": 4.4,
+        "z": -106
+      },
+      "walkSpeed": 1.3,
+      "prepareSeconds": 1.5,
+      "crossingId": "zebra-1"
+    },
+    {
+      "id": "following-car",
+      "kind": "following-vehicle",
+      "startBehind": 35,
+      "desiredSpeed": 13.4,
+      "headway": 1.5,
+      "colour": "#9aa3ad"
+    }
+  ],
+  "triggers": [
+    {
+      "id": "pedestrian-steps-out",
+      "when": {
+        "zoneEntered": "pedestrian-trigger"
+      },
+      "once": true,
+      "actions": [
+        {
+          "actor": "pedestrian-1",
+          "do": "start-crossing",
+          "delaySeconds": 0
+        }
+      ]
+    }
+  ],
+  "end": {
+    "zone": "end",
+    "timeLimitSeconds": 240
+  }
+}

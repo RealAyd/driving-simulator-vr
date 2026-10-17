@@ -2,13 +2,14 @@
  * Session lifecycle. Transitions are explicit so pause, restart and errors
  * cannot leave the simulation half-running.
  */
-export type SessionState='loading'|'ready'|'running'|'paused'|'error';
+export type SessionState='loading'|'ready'|'running'|'paused'|'finished'|'error';
 
 const ALLOWED:Record<SessionState,SessionState[]>={
   loading:['ready','error'],
   ready:['running','error'],
-  running:['paused','ready','error'],
+  running:['paused','ready','finished','error'],
   paused:['running','ready','error'],
+  finished:['running','ready','error'],
   error:[]
 };
 

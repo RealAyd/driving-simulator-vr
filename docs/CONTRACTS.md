@@ -54,10 +54,18 @@ See `MODULE_OWNERS` in `src/contracts/modules.ts`.
 | `src/assessment`, `src/ui`, `src/storage` | F Assessment and interface |
 | `tests/browser` | G QA |
 
+## Scenarios and assessment (G2)
+
+- Location (physical), scenario (what happens) and assessment (interpretation) are separate: `content/locations`, `content/scenarios`, `src/assessment`.
+- Zones are distance ranges along a road. A zone entry fires once per attempt. Triggers reference zones and actors by id; the schema rejects unknown ids.
+- Findings (`src/contracts/assessment.ts`) carry rule id, incident id, severity (`advice`/`minor`/`serious`/`dangerous`, training categories, not DVSA), event ids, explanation and rubric version. One incident = one finding; a more severe rule upgrades it.
+- Assessment reads events and state; it never changes the simulation. Rendering never changes assessment.
+- Observation sources are labelled honestly: "mouse-controlled view", "head direction"; never "eye tracking" unless the device provides it.
+
 ## Content schemas
 
 - `LocationSchema` (v1): roads (centreline polyline, lanes, pavement, kerb, markings), blocks (buildings, hedges, parked vehicles; `occludes` flag), spawn, fidelity, sources, review status. Unknown fields are rejected.
-- `ScenarioSchema` (v1, draft): zones by distance along a road, triggers that fire once per attempt by default.
+- `ScenarioSchema` (v1): zones, actors (pedestrian, following vehicle), triggers (`start-crossing` with delay), end zone and time limit, rubric id.
 
 ## Handoff checklist
 

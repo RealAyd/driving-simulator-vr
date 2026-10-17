@@ -4,7 +4,7 @@
   "name": "Representative residential road",
   "fidelity": "representative",
   "drivingSide": "left",
-  "description": "A plausible UK residential street used to prove the foundation: two-way road, pavements, houses set back and one parked van. Not a real location or test route.",
+  "description": "A plausible UK residential street with a zebra crossing just beyond a parked van, which hides the pavement where a pedestrian waits. Not a real location or test route.",
   "sources": [
     {
       "title": "Authored placeholder layout",
@@ -170,7 +170,7 @@
       "id": "parked-car-behind-left",
       "kind": "parked-vehicle",
       "position": {
-        "x": -2.5,
+        "x": -3.6,
         "z": 14
       },
       "size": {
@@ -202,5 +202,15 @@
     },
     "headingDeg": 0,
     "roadId": "main-street"
-  }
+  },
+  "crossings": [
+    {
+      "id": "zebra-1",
+      "roadId": "main-street",
+      "kind": "zebra",
+      "along": 146,
+      "width": 4,
+      "giveWayOffset": 1
+    }
+  ]
 }

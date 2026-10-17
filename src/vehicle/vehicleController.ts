@@ -3,9 +3,13 @@ import {Indicators} from './indicators';
 import {LEARNER_CAR,stepVehicle,type Controls,type VehicleParams,type VehicleState} from './kinematics';
 
 /** Answers the surface height under a point, or null where there is no road. */
+export type SurfaceKind='carriageway'|'pavement'|'none';
+
 export interface SurfaceQuery{
   surfaceHeightAt(x:number,z:number):number|null;
   groundHeight:number;
+  /** Optional classification used for surface-change events. */
+  surfaceKindAt?(x:number,z:number):SurfaceKind;
 }
 
 /** Answers whether a vehicle footprint at a pose overlaps an obstacle. */
@@ -34,6 +38,8 @@ export class VehicleController implements SimModule{
   private previous:VehicleState;
   private stopped=true;
   private colliding:string|null=null;
+  private braking=false;
+  surfaceKind:SurfaceKind='carriageway';
 
   constructor(
     private readonly spawn:Pose,
@@ -58,7 +64,12 @@ export class VehicleController implements SimModule{
 
   fixedUpdate(dt:Seconds):void{
     this.previous=this.state;
-    let next=stepVehicle(this.state,this.controls.read(),this.params,dt);
+    const controls=this.controls.read();
+    // Braking evidence: one event each time the driver starts braking while moving.
+    const brakingNow=controls.brake>0&&this.state.speed>1;
+    if(brakingNow&&!this.braking)this.events.emit('vehicle.braking',{speed:this.state.speed});
+    this.braking=controls.brake>0;
+    let next=stepVehicle(this.state,controls,this.params,dt);
     next={...next,position:{...next.position,y:this.heightAt(next.position.x,next.position.z)}};
 
     const hit=this.collisions.firstCollision(next,this.halfWidth,this.halfLength);
@@ -81,6 +92,13 @@ export class VehicleController implements SimModule{
       this.events.emit('vehicle.stopped',{x:next.position.x,z:next.position.z});
     }
     this.state=next;
+    if(this.surface.surfaceKindAt){
+      const kind=this.surface.surfaceKindAt(next.position.x,next.position.z);
+      if(kind!==this.surfaceKind){
+        this.events.emit('vehicle.surface.changed',{from:this.surfaceKind,to:kind});
+        this.surfaceKind=kind;
+      }
+    }
   }
 
   toggleIndicator(side:'left'|'right',time:Seconds):void{
@@ -113,6 +131,8 @@ export class VehicleController implements SimModule{
     this.previous=this.state;
     this.stopped=true;
     this.colliding=null;
+    this.braking=false;
+    this.surfaceKind='carriageway';
     this.indicators.reset();
   }
 

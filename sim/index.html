@@ -35,6 +35,17 @@ kbd{font:12px ui-monospace,monospace;background:#1f2937;border:1px solid #475569
 #touch-controls button{height:56px;border-radius:12px;padding:0}
 #hud-status{position:absolute;left:16px;top:16px;font-size:12px;color:var(--soft);background:var(--panel);border-radius:8px;padding:4px 8px}
 #error-message{white-space:pre-wrap;color:#fecaca;font:13px ui-monospace,monospace}
+#hud-task{position:absolute;left:50%;top:16px;transform:translateX(-50%);max-width:min(560px,70vw);text-align:center;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
+.results-card{max-height:calc(100vh - 32px);overflow-y:auto}
+.findings,.notes{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}
+.finding{border:1px solid var(--line);border-left-width:5px;border-radius:10px;padding:8px 12px;background:#0b1220}
+.finding p{margin:4px 0;color:var(--ink)}
+.finding small{color:#94a3b8;font-size:11px}
+.finding-head{display:flex;gap:8px;align-items:baseline;font-weight:700}
+.upgraded{font-weight:400;font-size:12px;color:#94a3b8}
+.sev-advice{border-left-color:#64748b}.sev-minor{border-left-color:#eab308}.sev-serious{border-left-color:#f97316}.sev-dangerous{border-left-color:#ef4444}
+.notes li{color:#a7f3d0;font-size:13px}.notes li::before{content:"✓ "}
+@media (max-width:600px){#hud-task{top:auto;bottom:150px;max-width:90vw}}
 @media (max-width:600px){#hud-top{top:auto;bottom:90px;right:16px}}
 </style>
 </head>
@@ -45,10 +56,11 @@ kbd{font:12px ui-monospace,monospace;background:#1f2937;border:1px solid #475569
 
 <section id="screen-start" class="screen" hidden>
   <div class="card">
-    <span class="badge">Foundation preview · G0</span>
+    <span class="badge">Preview · G2 first exercise</span>
     <h1>Driving Practice Simulator</h1>
     <p id="location-label"></p>
-    <p>One constructed world: road, car and cockpit share the same coordinates. This preview proves movement, camera and lifecycle only; there is no exercise or scoring yet.</p>
+    <p id="scenario-objective"></p>
+    <p class="unit">Feedback uses a draft rubric that has not yet been reviewed by an instructor. It is not the DVSA marking scheme.</p>
     <div class="keys">
       <span><kbd>W</kbd>/<kbd>↑</kbd></span><span>Accelerate</span>
       <span><kbd>S</kbd>/<kbd>↓</kbd>/<kbd>Space</kbd></span><span>Brake</span>
@@ -72,6 +84,17 @@ kbd{font:12px ui-monospace,monospace;background:#1f2937;border:1px solid #475569
   </div>
 </section>
 
+<section id="screen-results" class="screen" hidden aria-labelledby="results-title">
+  <div class="card results-card">
+    <h1 id="results-title">Results</h1>
+    <p id="results-summary"></p>
+    <ul id="results-findings" class="findings"></ul>
+    <ul id="results-notes" class="notes"></ul>
+    <p id="results-meta" class="unit"></p>
+    <button id="retry-button" class="primary" type="button">Try again</button>
+  </div>
+</section>
+
 <section id="screen-error" class="screen" hidden role="alert">
   <div class="card"><h1>Something went wrong</h1><p id="error-message"></p>
     <button id="error-reload" class="primary" type="button">Reload</button></div>
@@ -79,6 +102,7 @@ kbd{font:12px ui-monospace,monospace;background:#1f2937;border:1px solid #475569
 
 <div id="hud" hidden>
   <div id="hud-status"></div>
+  <div id="hud-task" role="status" aria-live="polite"></div>
   <div id="hud-speedbox" class="hud-panel"><div id="hud-speed">0</div><div class="unit">mph</div></div>
   <div id="hud-indicators" class="hud-panel">
     <button id="hud-ind-left" type="button" aria-label="Left indicator" class="ind-btn"><span id="ind-left" class="ind">◀</span></button>

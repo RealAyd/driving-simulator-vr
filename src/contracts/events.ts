@@ -11,6 +11,8 @@ export type SimEventType=
   |'session.reset'
   |'session.finished'
   |'vehicle.indicator.changed'
+  |'vehicle.braking'
+  |'vehicle.surface.changed'
   |'vehicle.stopped'
   |'vehicle.moving'
   |'vehicle.offroad'
@@ -19,7 +21,9 @@ export type SimEventType=
   |'zone.exited'
   |'observation.dwell'
   |'scenario.triggered'
-  |'actor.state.changed';
+  |'actor.state.changed'
+  |'exercise.ended'
+  |'assessment.finding';
 
 export interface SimEvent<T extends SimEventType=SimEventType,P=Record<string,unknown>>{
   id:string;

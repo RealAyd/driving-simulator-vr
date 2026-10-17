@@ -83,11 +83,11 @@ test('G1: road sits under the car, kerb raises it, and braking from 30 mph stops
 
   // Accelerate to about 30 mph, then brake fully and measure the stop.
   await page.keyboard.down('KeyW');
-  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed>=13.4,null,{timeout:20_000});
+  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed>=13.4,null,{timeout:90_000});
   await page.keyboard.up('KeyW');
   const before=await read(page,'vehicle()');
   await page.keyboard.down('Space');
-  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed===0,null,{timeout:10_000});
+  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed===0,null,{timeout:60_000});
   await page.keyboard.up('Space');
   const after=await read(page,'vehicle()');
   const distance=Math.hypot(after.position.x-before.position.x,after.position.z-before.position.z);

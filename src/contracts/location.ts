@@ -37,6 +37,18 @@ export const BlockSchema=z.object({
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 }).strict();
 
+export const CrossingSchema=z.object({
+  id:z.string().min(1),
+  roadId:z.string(),
+  kind:z.enum(['zebra']),
+  /** Distance of the crossing centre along the road centreline, metres. */
+  along:z.number(),
+  /** Width of the striped area measured along the road. */
+  width:z.number().min(2).max(10).default(4),
+  /** Distance from the stripes to each give-way line. */
+  giveWayOffset:z.number().min(0).max(3).default(1)
+}).strict();
+
 export const LocationSchema=z.object({
   schemaVersion:z.literal(1),
   id:z.string().regex(/^[a-z0-9-]+$/),
@@ -53,16 +65,20 @@ export const LocationSchema=z.object({
   reviewStatus:z.enum(['unreviewed','in-review','approved']),
   roads:z.array(RoadSchema).min(1),
   blocks:z.array(BlockSchema).default([]),
+  crossings:z.array(CrossingSchema).default([]),
   spawn:z.object({position:point,headingDeg:z.number(),roadId:z.string()}).strict()
 }).strict().superRefine((location,ctx)=>{
   const roadIds=new Set(location.roads.map(r=>r.id));
   if(roadIds.size!==location.roads.length)ctx.addIssue({code:'custom',message:'Road ids must be unique'});
   if(!roadIds.has(location.spawn.roadId))ctx.addIssue({code:'custom',message:`Spawn road "${location.spawn.roadId}" does not exist`});
+  for(const crossing of location.crossings)
+    if(!roadIds.has(crossing.roadId))ctx.addIssue({code:'custom',message:`Crossing "${crossing.id}" is on missing road "${crossing.roadId}"`});
 });
 
 export type Location=z.infer<typeof LocationSchema>;
 export type Road=z.infer<typeof RoadSchema>;
 export type Block=z.infer<typeof BlockSchema>;
+export type Crossing=z.infer<typeof CrossingSchema>;
 
 export function parseLocation(data:unknown):Location{
   const result=LocationSchema.safeParse(data);

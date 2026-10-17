@@ -21,6 +21,7 @@ export class Hud{
     $('screen-start').hidden=state!=='ready';
     $('screen-paused').hidden=state!=='paused';
     $('screen-error').hidden=state!=='error';
+    $('screen-results').hidden=state!=='finished';
     $('hud').hidden=state!=='running'&&state!=='paused';
     if(state==='error')$('error-message').textContent=error??'Unknown error';
   }
@@ -36,5 +37,9 @@ export class Hud{
 
   setStatus(text:string):void{
     this.status.textContent=text;
+  }
+
+  setTask(text:string):void{
+    $('hud-task').textContent=text;
   }
 }

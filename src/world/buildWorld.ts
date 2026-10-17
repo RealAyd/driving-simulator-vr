@@ -1,11 +1,11 @@
 import {
-  Color3,CreateBox,CreateGround,CreateRibbon,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
+  Color3,CreateBox,CreateCylinder,CreateGround,CreateRibbon,CreateSphere,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
   type Mesh,type Scene
 } from '../engine/babylon';
 import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
-import {roadHalfWidth} from './roadGeometry';
+import {pointAtAlong,roadHalfWidth} from './roadGeometry';
 
 export interface BuiltWorld{
   root:TransformNode;
@@ -104,6 +104,45 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
     else if(road.markings.centre==='hazard')markings(scene,road,0,6,3,.15,white,root,lineY);   // hazard warning line
     else if(road.markings.centre==='solid')markings(scene,road,0,0,0,.1,white,root,lineY);
     if(road.markings.edges)for(const side of [-1,1])markings(scene,road,side*(half-.2),0,0,.1,white,root,lineY);
+  }
+
+  // Zebra crossings: stripes parallel to traffic, broken give-way lines on
+  // both approaches and Belisha beacons on each pavement.
+  const black=material(scene,'beacon-black',new Color3(.05,.05,.05));
+  const amber=material(scene,'beacon-amber',new Color3(1,.6,.1));
+  amber.emissiveColor=new Color3(.9,.5,.05);
+  for(const crossing of location.crossings){
+    const road=location.roads.find(r=>r.id===crossing.roadId)!;
+    const half=roadHalfWidth(road);
+    const at=pointAtAlong(road,crossing.along);
+    const heading=Math.atan2(at.direction.x,-at.direction.z);
+    const rx=-at.direction.z,rz=at.direction.x; // right of travel
+    const y=road.surfaceHeight+.008;
+    const place=(mesh:Mesh,lateral:number,alongOffset:number,h:number)=>{
+      mesh.position.set(at.x+rx*lateral+at.direction.x*alongOffset,h,at.z+rz*lateral+at.direction.z*alongOffset);
+      mesh.rotation.y=rotationYFromHeading(heading);
+      mesh.parent=root;
+    };
+    for(let lateral=-half+.3;lateral<half;lateral+=1.2){
+      const stripe=CreateGround(`${crossing.id}-stripe-${lateral.toFixed(1)}`,{width:.6,height:crossing.width},scene);
+      stripe.material=white;
+      place(stripe,lateral+.3,0,y);
+    }
+    for(const side of [-1,1]){
+      const offset=side*(crossing.width/2+crossing.giveWayOffset);
+      for(let lateral=-half+.25;lateral<half-.2;lateral+=.9){
+        const dash=CreateGround(`${crossing.id}-giveway-${side}-${lateral.toFixed(1)}`,{width:.6,height:.2},scene);
+        dash.material=white;
+        place(dash,lateral+.3,offset,y);
+      }
+      const poleLateral=side*(half+.5);
+      const pole=CreateCylinder(`${crossing.id}-beacon-pole-${side}`,{height:2.6,diameter:.1},scene);
+      pole.material=black;
+      place(pole,poleLateral,-crossing.width/2-.3,road.surfaceHeight+road.kerbHeight+1.3);
+      const globe=CreateSphere(`${crossing.id}-beacon-${side}`,{diameter:.32},scene);
+      globe.material=amber;
+      place(globe,poleLateral,-crossing.width/2-.3,road.surfaceHeight+road.kerbHeight+2.7);
+    }
   }
 
   const occluders:Mesh[]=[];

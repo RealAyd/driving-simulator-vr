@@ -40,6 +40,22 @@ export function sampleRoad(road:Road,x:number,z:number):RoadSample{
   return best;
 }
 
+/** Point and travel direction at a distance along a road centreline. */
+export function pointAtAlong(road:Road,along:number):{x:number;z:number;direction:Vec2}{
+  let remaining=along;
+  for(let i=0;i<road.centreline.length-1;i++){
+    const a=road.centreline[i]!,b=road.centreline[i+1]!;
+    const length=Math.hypot(b.x-a.x,b.z-a.z);
+    const last=i===road.centreline.length-2;
+    if(remaining<=length||last){
+      const ux=(b.x-a.x)/length,uz=(b.z-a.z)/length;
+      return {x:a.x+ux*remaining,z:a.z+uz*remaining,direction:{x:ux,z:uz}};
+    }
+    remaining-=length;
+  }
+  throw new Error(`Road ${road.id} has no segments`);
+}
+
 export type SurfaceKind='carriageway'|'pavement';
 
 /**
