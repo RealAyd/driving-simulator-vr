@@ -22,7 +22,8 @@ async function startMovingOff(page:Page,variant:string){
 const tap=(page:Page,selector:string)=>page.locator(selector).dispatchEvent('pointerdown');
 const go=async(page:Page,down:boolean)=>page.locator('[data-hold=throttle]').dispatchEvent(down?'pointerdown':'pointerup');
 async function checkAll(page:Page){
-  for(const v of ['interior','right-door','right-shoulder','left-door','left-shoulder','forward']){
+  // Left side first and the right blind spot last: the last check before moving out is the freshest.
+  for(const v of ['left-shoulder','left-door','interior','right-door','right-shoulder','forward']){
     await tap(page,`[data-view=${v}]`);
     // Hold each view for 0.7 s of simulated time (a loaded machine renders slowly; observation dwell is simulated time).
     const t0=await read(page,'simTime()');
@@ -59,11 +60,11 @@ test('G6: the car stays parked until the learner moves off; waiting, checking ag
   await page.waitForTimeout(1500);
   expect(await read(page,'session()')).toBe('running');
   expect((await read(page,'vehicle()')).speed).toBe(0);
-  // Refresh the checks, signal and move off.
-  await checkAll(page);
+  // Signal, refresh the checks (right blind spot last) and move off straight away.
   await page.click('#hud-ind-right');
   await expect(page.locator('#hud-ind-right')).toHaveClass(/armed/);
   await page.screenshot({path:testInfo.outputPath('g6-02-signalling.png')});
+  await checkAll(page);
   await go(page,true);
   await expect(page.locator('#screen-results')).toBeVisible({timeout:120_000});
   await go(page,false);

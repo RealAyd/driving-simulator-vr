@@ -55,7 +55,7 @@ Downtown City MegaKit modules (CC0) were reviewed and not used here: they are co
 
 - Unit: 105 passed (`npx vitest run`), including the new street tests above and the existing moving-off decision tests.
 - Browser (headless Chromium, software rendering): 21 passed, 1 skipped (a diagnostic frame-time probe that runs only on request). Includes Moving off (conflict feedback with evidence; waiting and moving off when clear succeeds; pause, restart, exit), all mirror and shoulder views, tilt and touch controls, Zebra crossing and Brentwood unchanged.
-- Two browser tests were made robust to a slow machine without changing what they check: view checks now hold each view for 0.7 s of simulated time (the assessment measures dwell in simulated time), and tilt steering is polled until it builds up. Under four parallel workers they had failed for timing reasons only.
+- Two browser tests were made robust to a slow machine without changing what they check: view checks now hold each view for 0.7 s of simulated time (the assessment measures dwell in simulated time) and finish with the right blind spot just before moving off (the rubric's 4 s freshness window for that check is the strictest), and tilt steering is polled until it builds up. Under four parallel workers they had failed for timing reasons only.
 
 ## Cost (measured here, not on the iPhone)
 
