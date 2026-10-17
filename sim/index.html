@@ -19,6 +19,9 @@ html,body{margin:0;height:100%;background:#0f172a;color:var(--ink);font:15px/1.5
 [hidden]{display:none!important}
 /* Phone viewer: only the stereo picture; a tap anywhere pauses and leaves the viewer. */
 body.viewer #hud,body.viewer .screen{display:none!important}
+.guide-option{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--soft);margin:12px 0 0}
+.guide-option input{margin-top:3px;width:18px;height:18px;flex:none}
+.guide-option b{color:var(--ink)}
 .viewer-panel select{font:inherit;background:#1e293b;color:var(--ink);border:1px solid #64748b;border-radius:8px;padding:4px;max-width:100%}
 .screen{position:fixed;inset:0;display:grid;place-items:center;padding:var(--st) var(--sr) var(--sb) var(--sl);background:#0b1220d9;z-index:20;overflow-y:auto}
 body.phone .keys{display:none}
@@ -189,6 +192,7 @@ body.stationary [data-hold="throttle"]{opacity:.4}
         <p id="tilt-status" class="unit" role="status"></p>
         <p class="unit">With tilt, the Steer buttons stay on screen as a fallback and always take priority.</p>
       </fieldset>
+      <label id="guide-option" class="guide-option" hidden><input type="checkbox" id="guide-toggle"> <span><b>Show the pull-out path</b> on the road. Useful while learning the controls; leave it off for an independent attempt.</span></label>
       <button id="start-practice" class="primary" type="button">Start practice</button>
       <fieldset id="viewer-mode" class="steering viewer-panel">
         <legend>Phone viewer (headset, experimental)</legend>

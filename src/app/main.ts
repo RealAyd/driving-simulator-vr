@@ -303,7 +303,9 @@ export async function boot():Promise<void>{
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
       ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,carModel,2*p.size.halfLength))
     ];
-    const guide=scenario.guide?buildGuide(scene,scenario.guide.path,scenario.guide.arrows):null;
+    // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
+    const guided=!!scenario.guide&&showGuide;
+    const guide=guided?buildGuide(scene,scenario.guide!.path,scenario.guide!.arrows):null;
 
     const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
     const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):null;
@@ -369,6 +371,7 @@ export async function boot():Promise<void>{
           notes:route?route.notes():practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
         };
         if(steeringMode==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
+        if(guided)base.notes.push('Route guidance was shown on the road (the pull-out path).');
         if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
         if(variant)base.notes.push(`${INFO}Timing this attempt: ${variant.label.toLowerCase()}.`);
         return base;
@@ -708,6 +711,10 @@ export async function boot():Promise<void>{
     }));
   };
   /** Shows the scene of an exercise behind its settings, with the car at its start. */
+  /** Whether to paint the exercise's route guidance on the road (exercise screen option; off by default). */
+  let showGuide=false;
+  const guideToggle=byId<HTMLInputElement>('guide-toggle');
+  guideToggle.addEventListener('change',()=>{showGuide=guideToggle.checked});
   const preview=(scenario:Scenario)=>{
     useLocation(scenario.locationId);
     vehicle.setSpawn(scenario.start?{position:{x:scenario.start.position.x,y:0,z:scenario.start.position.z},heading:degToRad(scenario.start.headingDeg)}:spawnOf(place));
@@ -723,6 +730,8 @@ export async function boot():Promise<void>{
     byId('exercise-title').textContent=scenario.title;
     byId('exercise-objective').textContent=scenario.learningObjective;
     renderBriefing(byId('exercise-briefing'),scenario.briefing);
+    byId('guide-option').hidden=!scenario.guide;
+    showGuide=guideToggle.checked=false;
     byId('intro-option').hidden=!chosen.intro;
     preview(scenario);
   };
@@ -741,7 +750,7 @@ export async function boot():Promise<void>{
     resetAttempt();
     byId('paused-title').textContent=scenario.title;
     clock.resume();
-    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,variant:runtime.variant?.id??null});
+    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,variant:runtime.variant?.id??null,guidance:!!scenario.guide&&showGuide});
     events.emit('assist.changed',{enabled:steeringMode==='assist'&&!!runtime.assist,steering:steeringMode});
     canvas.focus();
   };
@@ -871,6 +880,8 @@ export async function boot():Promise<void>{
   const hudWheel=byId('hud-wheel');
   const hudTiltState=byId('hud-tilt-state');
   let mirrorsOn=true;
+  /** Diagnostics: render every mirror every frame, seen or not (to measure what each mirror shows). */
+  let allMirrorsLive=false;
   /** Diagnostics: a top-down camera (or one looking at `target`) for layout review screenshots. */
   let overhead:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null=null;
   const perf=new PerfProbe();
@@ -904,9 +915,9 @@ export async function boot():Promise<void>{
     }
     for(const mirror of mirrors){
       mirror.update(pose);
-      mirror.setActive(mirrorsOn&&camera.isInFrustum(mirror.glass));
+      mirror.setActive(mirrorsOn&&(allMirrorsLive||camera.isInFrustum(mirror.glass)));
       // The mirror being looked at updates every frame so approaching traffic stays readable.
-      mirror.setRefresh(heldView===mirror.spec.id?1:quality.mirrorUpdateInterval);
+      mirror.setRefresh(allMirrorsLive||heldView===mirror.spec.id?1:quality.mirrorUpdateInterval);
     }
     runtime?.renderVisuals();
     tiltSteer=tilt.read(dt);
@@ -914,6 +925,7 @@ export async function boot():Promise<void>{
     hudWheel.style.transform=wheelTurn;
     // Turning right turns the wheel clockwise as the driver sees it.
     cockpit.wheel.rotation.y=-vehicle.state.steerAngle*STEERING_RATIO;
+    cockpit.setInstruments(Math.round(vehicle.state.speed*2.237),vehicle.indicators.state,vehicle.indicators.isLit(clock.time));
     if(session.state==='ready'){
       wheelPreview.style.transform=wheelTurn;
       if(steeringMode==='tilt')showTiltState();
@@ -951,6 +963,8 @@ export async function boot():Promise<void>{
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
     sceneryModels:()=>[...props.available],
+    /** Whether route guidance is painted on the road in this attempt. */
+    guidanceShown:()=>!!scene.getTransformNodeByName('exercise-guide'),
     /** Phone viewer state, for tests and diagnostics. */
     viewer:()=>({active:viewer.active,starting:viewerStarting,profile:viewerProfile.id,cruise:viewerCruise,holding:viewerHolding,gaze:viewerHud.gaze,receiving:headTracker.receiving,permission:headTracker.permission,gamepad:gamepad.connected,activeCameras:scene.activeCameras?.map(c=>c.name)??[]}),
     scenery:()=>({...sceneryStats,carModels:[...carModels].filter(([,m])=>m).map(([id])=>id)}),
@@ -977,6 +991,21 @@ export async function boot():Promise<void>{
       overhead=view;
     },
     variant:()=>runtime?.variant?.id??null,
+    allMirrorsLive:(on:boolean)=>{allMirrorsLive=on},
+    /** Diagnostics: pixels of a colour ('yellow' cyclist, 'purple' car) in a mirror's own image, and their mean position across it (0 = driver's left). */
+    mirrorPixels:async(id:string,colour:'yellow'|'purple')=>{
+      const m=mirrors.find(x=>x.spec.id===id);
+      const data=await m?.texture.readPixels() as Uint8Array|undefined;
+      if(!m||!data)return null;
+      const w=m.texture.getSize().width;
+      let n=0,sx=0;
+      for(let i=0;i<data.length;i+=4){
+        const r=data[i]!,g=data[i+1]!,b=data[i+2]!;
+        if(colour==='purple'?r>90&&b>150&&g<90:r>140&&g>110&&b<80&&r>=g){n++;sx+=(i/4)%w}
+      }
+      // The image is mirrored on the glass (uScale −1), so the glass position is 1 − x.
+      return {n,x:n?1-sx/n/w:null};
+    },
     /** Diagnostics: switch mirror rendering off to measure what it costs. */
     mirrorsEnabled:(on:boolean)=>{mirrorsOn=on},
     /** Diagnostics: use this timing variation from the next attempt (null = random). */

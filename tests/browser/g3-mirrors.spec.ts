@@ -96,6 +96,9 @@ test('G3: all three mirrors are findable, unobstructed and show the purple car a
   // Behind and to the right of the car, so on the right of the interior mirror as the driver sees it.
   expect(inInterior.x).toBeGreaterThan(.5);
   expect(inRight.n).toBeGreaterThan(80);
+  // The same in the mirror's own image (independent of what is seen around the glass's rounded corners).
+  const inRightImage=await read(page,"mirrorPixels('right-door','purple')");
+  expect(inRightImage.n).toBeGreaterThan(80);
 
   // 2. Alongside: gone from the right mirror; the right shoulder check shows it.
   await read(page,'freezeTime(false)');
@@ -103,14 +106,15 @@ test('G3: all three mirrors are findable, unobstructed and show the purple car a
   await read(page,'freezeTime(true)');
   await read(page,"selectView('right-door')");
   await page.waitForTimeout(900);
-  const alongsideMirror=await count(page,await mirror(page,'right-door'),'purple');
+  // Counted in the mirror's own image: on screen, the real car is seen through the window around the glass.
+  const alongsideMirror=await read(page,"mirrorPixels('right-door','purple')");
   await read(page,"selectView('right-shoulder')");
   await page.waitForTimeout(1100);
   const shoulder=await count(page,{left:0,top:0,right:932,bottom:320},'purple');
   await page.screenshot({path:testInfo.outputPath('g3-03-right-shoulder.png')});
   testInfo.annotations.push({type:'purple car alongside',description:`right mirror ${alongsideMirror.n}, right shoulder ${shoulder.n}`});
   // Real mirror geometry: alongside, at most a sliver of its rear stays in the glass (no coverage is faked).
-  expect(alongsideMirror.n).toBeLessThan(inRight.n*.15);
+  expect(alongsideMirror.n).toBeLessThan(inRightImage.n*.15);
   expect(shoulder.n).toBeGreaterThan(1500);
 
   // 3. The cyclist approaching along the kerb from behind. Parked at the kerb, nothing can pass on your

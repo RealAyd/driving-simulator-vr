@@ -25,6 +25,7 @@ export {CreatePlane} from '@babylonjs/core/Meshes/Builders/planeBuilder';
 export {CreateSphere} from '@babylonjs/core/Meshes/Builders/sphereBuilder';
 export {CreateDisc} from '@babylonjs/core/Meshes/Builders/discBuilder';
 export {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
+export {Material} from '@babylonjs/core/Materials/material';
 export {RenderTargetTexture} from '@babylonjs/core/Materials/Textures/renderTargetTexture';
 export {DynamicTexture} from '@babylonjs/core/Materials/Textures/dynamicTexture';
 export {Texture} from '@babylonjs/core/Materials/Textures/texture';

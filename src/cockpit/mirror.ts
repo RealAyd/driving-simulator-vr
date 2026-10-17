@@ -1,6 +1,6 @@
 import {degToRad,localDirectionToWorld,localToWorld,type Pose,type Radians,type Vec3} from '../contracts';
 import {
-  Color3,CreateBox,CreatePlane,FreeCamera,Matrix,RenderTargetTexture,StandardMaterial,Vector3,
+  Color3,CreateBox,CreateCylinder,Mesh as MeshClass,VertexData,FreeCamera,Matrix,RenderTargetTexture,StandardMaterial,Vector3,
   type AbstractMesh,type Mesh,type Scene,type TransformNode
 } from '../engine/babylon';
 import type {QualityProfile} from '../engine/quality';
@@ -38,7 +38,8 @@ export const INTERIOR_MIRROR:Readonly<MirrorSpec>=Object.freeze({
   viewpoint:{x:0,y:1.33,z:-.64},
   viewYaw:Math.PI,
   horizontalFov:degToRad(24),
-  mount:{x:0,y:1.43,z:-.66}
+  // On the windscreen glass just below the header (the screen is at z −0.67 at this height).
+  mount:{x:0,y:1.41,z:-.67}
 });
 
 /**
@@ -53,7 +54,8 @@ export const RIGHT_DOOR_MIRROR:Readonly<MirrorSpec>=Object.freeze({
   viewpoint:{x:1.04,y:1.03,z:-.85},
   viewYaw:Math.PI-degToRad(8),
   horizontalFov:degToRad(18),
-  mount:{x:.89,y:.9,z:-.95}
+  // The sail in the front corner of the side window.
+  mount:{x:.89,y:1.0,z:-1.02}
 });
 
 /**
@@ -68,10 +70,28 @@ export const LEFT_DOOR_MIRROR:Readonly<MirrorSpec>=Object.freeze({
   viewpoint:{x:-1.04,y:1.03,z:-.85},
   viewYaw:Math.PI+degToRad(9),
   horizontalFov:degToRad(26),
-  mount:{x:-.89,y:.9,z:-.95}
+  mount:{x:-.89,y:1.0,z:-1.02}
 });
 
 export const ALL_MIRRORS=[INTERIOR_MIRROR,RIGHT_DOOR_MIRROR,LEFT_DOOR_MIRROR] as const;
+
+/** A flat rounded rectangle in the XY plane (like CreatePlane), UVs spanning its bounding box. */
+function roundedRect(name:string,width:number,height:number,radius:number,scene:Scene):Mesh{
+  const r=Math.min(radius,width/2,height/2),seg=6;
+  const outline:Array<[number,number]>=[];
+  const corner=(cx:number,cy:number,a0:number)=>{for(let i=0;i<=seg;i++){const a=a0+i/seg*Math.PI/2;outline.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r])}};
+  corner(width/2-r,height/2-r,0);corner(-width/2+r,height/2-r,Math.PI/2);corner(-width/2+r,-height/2+r,Math.PI);corner(width/2-r,-height/2+r,Math.PI*1.5);
+  const positions=[0,0,0],uvs=[.5,.5],normals=[0,0,-1],indices:number[]=[];
+  outline.forEach(([x,y],i)=>{
+    positions.push(x,y,0);uvs.push(x/width+.5,y/height+.5);normals.push(0,0,-1);
+    indices.push(0,i+1,(i+1)%outline.length+1);
+  });
+  const mesh=new MeshClass(name,scene);
+  const data=new VertexData();
+  data.positions=positions;data.uvs=uvs;data.normals=normals;data.indices=indices;
+  data.applyToMesh(mesh);
+  return mesh;
+}
 
 export class Mirror{
   readonly camera:FreeCamera;
@@ -79,6 +99,7 @@ export class Mirror{
   readonly glass:Mesh;
   private housing:Mesh|null=null;
   private arm:Mesh|null=null;
+  private shell:Mesh|null=null;
   private readonly material:StandardMaterial;
 
   constructor(
@@ -122,8 +143,10 @@ export class Mirror{
     this.material.emissiveTexture=this.texture;
     this.material.diffuseColor=Color3.Black();
     this.material.backFaceCulling=false;
+    // Rounded corners (cut into the geometry: no extra cost per frame).
+    const radius=spec.id==='interior'?spec.height*.45:.03;
 
-    this.glass=CreatePlane(`mirror-glass-${spec.id}`,{width:spec.width,height:spec.height},scene);
+    this.glass=roundedRect(`mirror-glass-${spec.id}`,spec.width,spec.height,radius,scene);
     this.glass.material=this.material;
     this.glass.parent=vehicleNode;
     this.glass.position.set(spec.glass.x,spec.glass.y,spec.glass.z);
@@ -134,13 +157,28 @@ export class Mirror{
     this.glass.rotation.x=Math.atan2(-toEye.y,Math.hypot(toEye.x,toEye.z));
     // Every mirror has a frame/housing fixed to the back of the glass, so it
     // turns with the glass and never covers it, and a stem or arm to its mount.
+    const interior=spec.id==='interior';
     const shell=new StandardMaterial(`mirror-housing-${spec.id}`,scene);
-    shell.diffuseColor=new Color3(.06,.06,.07);
-    const border=spec.id==='interior'?.024:.036;
-    this.housing=CreateBox(`mirror-housing-${spec.id}`,{width:spec.width+border,height:spec.height+border,depth:spec.id==='interior'?.03:.07},scene);
+    // Door mirror shells are body-coloured, as on most cars; a thin black rim frames every glass.
+    shell.diffuseColor=interior?new Color3(.08,.08,.09):new Color3(.7,.11,.11);
+    shell.specularColor=new Color3(.2,.2,.2);
+    const rimMaterial=new StandardMaterial(`mirror-rim-${spec.id}`,scene);
+    rimMaterial.diffuseColor=new Color3(.03,.03,.035);
+    const border=.012;
+    // A thin rim just behind the glass, with the same rounded shape.
+    this.housing=roundedRect(`mirror-housing-${spec.id}`,spec.width+border,spec.height+border,radius+border/2,scene);
     this.housing.parent=this.glass;
-    this.housing.position.z=spec.id==='interior'?-.018:-.04;
-    this.housing.material=shell;
+    this.housing.position.z=-.004;
+    rimMaterial.backFaceCulling=false;
+    this.housing.material=rimMaterial;
+    // Rounded shell behind the rim (flattened cylinder): a mirror body, not a slab.
+    const back=CreateCylinder(`mirror-shell-${spec.id}`,{diameter:1,height:1,tessellation:20},scene);
+    back.parent=this.glass;
+    back.rotation.x=Math.PI/2;
+    back.scaling.set(spec.width+border+.006,interior?.025:.05,spec.height+border+.004);
+    back.position.z=interior?-.022:-.035;
+    back.material=shell;
+    this.shell=back;
     // The arm meets the back of the housing (further from the eye than the
     // glass), so from the driver's seat it is hidden behind the mirror.
     const toward={x:spec.mount.x-spec.glass.x,y:spec.mount.y-spec.glass.y,z:spec.mount.z-spec.glass.z};
@@ -153,7 +191,7 @@ export class Mirror{
       z:spec.glass.z+toward.z/reach*inset+away.z/awayLen*.05
     },m=spec.mount;
     const length=Math.hypot(m.x-g.x,m.y-g.y,m.z-g.z);
-    const thick=spec.id==='interior'?.022:.04;
+    const thick=interior?.014:.026;
     this.arm=CreateBox(`mirror-arm-${spec.id}`,{width:thick,height:length,depth:thick},scene);
     this.arm.parent=vehicleNode;
     this.arm.position.set((g.x+m.x)/2,(g.y+m.y)/2,(g.z+m.z)/2);
@@ -197,6 +235,7 @@ export class Mirror{
     if(index>=0)this.scene.customRenderTargets.splice(index,1);
     this.housing?.dispose(false,true);
     this.arm?.dispose(false,true);
+    this.shell?.dispose(false,true);
     this.glass.dispose();
     this.material.dispose();
     this.texture.dispose();
