@@ -346,6 +346,7 @@ export async function boot():Promise<void>{
 
   // ---- Steering mode: assisted, tilt the phone, or buttons/keys ----
   const tiltStatus=byId('tilt-status');
+  const embedded=window.top!==window.self;
   const steeringRadios=[...document.querySelectorAll<HTMLInputElement>('input[name="steering"]')];
   const setSteeringMode=(mode:SteeringMode)=>{
     steeringMode=mode;
@@ -356,6 +357,7 @@ export async function boot():Promise<void>{
   };
   for(const radio of steeringRadios)radio.addEventListener('change',async()=>{
     const mode=radio.value as SteeringMode;
+    tiltStatus.classList.remove('warn');
     if(mode!=='tilt'){setSteeringMode(mode);tiltStatus.textContent='';return}
     setSteeringMode('tilt');
     tiltStatus.textContent='Asking for motion access…';
@@ -363,9 +365,12 @@ export async function boot():Promise<void>{
     const status=await tilt.enable();
     if(status==='active'){tiltStatus.textContent='Motion sensor working. Tilt the phone to see the wheel turn.';return}
     setSteeringMode(quality.id==='phone'?'assist':'buttons');
-    tiltStatus.textContent=status==='denied'
-      ?'Motion access was refused, so tilt steering is off. If you are viewing this inside another page or app, it may block motion sensors.'
-      :'No motion sensor readings arrived in this browser, so tilt steering is off.';
+    tiltStatus.textContent=embedded
+      ?'Tilt steering is not available here: this preview runs inside another page (such as the claude.ai viewer), which does not pass on the motion sensor. It needs the simulator opened on its own.'
+      :status==='denied'
+        ?'Motion access was refused, so tilt steering is off. Allow motion access in Safari settings and try again.'
+        :'No motion sensor readings arrived in this browser, so tilt steering is off.';
+    tiltStatus.classList.add('warn');
   });
   const sensitivity=byId<HTMLSelectElement>('tilt-sensitivity');
   sensitivity.addEventListener('change',()=>{tilt.tuning=TILT_SENSITIVITY[sensitivity.value as keyof typeof TILT_SENSITIVITY]});
@@ -449,6 +454,8 @@ export async function boot():Promise<void>{
     button.addEventListener('pointerdown',event=>{event.preventDefault();holdView(view,'touch')});
     for(const type of ['pointerup','pointerleave','pointercancel'])button.addEventListener(type,()=>{if(heldBy==='touch')holdView(null,'touch')});
   }
+  // iOS: a long press on a control must not start a text selection or the Copy/Look Up menu.
+  for(const type of ['contextmenu','selectstart'])byId('hud').addEventListener(type,event=>event.preventDefault());
   byId('touch-controls').hidden=quality.id!=='phone';
   document.body.classList.toggle('phone',quality.id==='phone');
 
