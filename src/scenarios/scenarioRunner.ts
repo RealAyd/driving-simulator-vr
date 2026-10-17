@@ -40,7 +40,7 @@ export class ScenarioRunner implements SimModule{
         if(action.do==='start-crossing')this.pedestrians.get(action.actor)?.requestCrossing(action.delaySeconds);
       }
     }
-    if(zoneId===this.scenario.end.zone)this.finish('completed');
+    if(this.scenario.end.zone!==undefined&&zoneId===this.scenario.end.zone)this.finish('completed');
   }
 
   fixedUpdate(dt:Seconds):void{

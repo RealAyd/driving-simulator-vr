@@ -23,7 +23,9 @@ export type SimEventType=
   |'scenario.triggered'
   |'actor.state.changed'
   |'exercise.ended'
-  |'assessment.finding';
+  |'assessment.finding'
+  |'assist.changed'
+  |'view.selected';
 
 export interface SimEvent<T extends SimEventType=SimEventType,P=Record<string,unknown>>{
   id:string;

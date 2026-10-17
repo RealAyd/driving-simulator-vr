@@ -1,7 +1,7 @@
 import type {EventSink,Pose,Seconds,SimModule,Vec3} from '../contracts';
 
 /** How the viewing direction was measured. Never claim eye tracking unless it is. */
-export type ObservationSource='mouse-controlled view'|'head direction';
+export type ObservationSource='mouse-controlled view'|'swipe-controlled view'|'touch view button'|'keyboard view key'|'head direction';
 
 export interface ObservationTarget{
   id:string;

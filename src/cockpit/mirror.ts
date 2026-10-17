@@ -1,6 +1,6 @@
 import {degToRad,localDirectionToWorld,localToWorld,type Pose,type Radians,type Vec3} from '../contracts';
 import {
-  Color3,CreatePlane,FreeCamera,Matrix,RenderTargetTexture,StandardMaterial,Vector3,
+  Color3,CreateBox,CreatePlane,FreeCamera,Matrix,RenderTargetTexture,StandardMaterial,Vector3,
   type AbstractMesh,type Mesh,type Scene,type TransformNode
 } from '../engine/babylon';
 import type {QualityProfile} from '../engine/quality';
@@ -34,10 +34,35 @@ export const INTERIOR_MIRROR:Readonly<MirrorSpec>=Object.freeze({
   horizontalFov:degToRad(24)
 });
 
+/** Driver's (right) door mirror: flat glass, aimed slightly outward. */
+export const RIGHT_DOOR_MIRROR:Readonly<MirrorSpec>=Object.freeze({
+  id:'right-door',
+  glass:{x:.99,y:1.02,z:-.67},
+  width:.17,
+  height:.11,
+  viewpoint:{x:1.02,y:1.02,z:-.66},
+  viewYaw:Math.PI-degToRad(12),
+  horizontalFov:degToRad(18)
+});
+
+/** Passenger (left) door mirror: convex glass, so a wider view. */
+export const LEFT_DOOR_MIRROR:Readonly<MirrorSpec>=Object.freeze({
+  id:'left-door',
+  glass:{x:-.99,y:1.02,z:-.67},
+  width:.17,
+  height:.11,
+  viewpoint:{x:-1.02,y:1.02,z:-.66},
+  viewYaw:Math.PI+degToRad(12),
+  horizontalFov:degToRad(26)
+});
+
+export const ALL_MIRRORS=[INTERIOR_MIRROR,RIGHT_DOOR_MIRROR,LEFT_DOOR_MIRROR] as const;
+
 export class Mirror{
   readonly camera:FreeCamera;
   readonly texture:RenderTargetTexture;
   readonly glass:Mesh;
+  private housing:Mesh|null=null;
   private readonly material:StandardMaterial;
 
   constructor(
@@ -86,7 +111,34 @@ export class Mirror{
     const toEye={x:driverEye.x-spec.glass.x,y:driverEye.y-spec.glass.y,z:driverEye.z-spec.glass.z};
     this.glass.rotation.y=Math.atan2(toEye.x,toEye.z);
     this.glass.rotation.x=Math.atan2(-toEye.y,Math.hypot(toEye.x,toEye.z));
+    // Door mirrors get a housing fixed to the back of the glass, so it turns
+    // with the glass and never covers it.
+    if(spec.id!=='interior'){
+      this.housing=CreateBox(`mirror-housing-${spec.id}`,{width:spec.width+.03,height:spec.height+.03,depth:.06},scene);
+      this.housing.parent=this.glass;
+      this.housing.position.z=-.035;
+      const shell=new StandardMaterial(`mirror-housing-${spec.id}`,scene);
+      shell.diffuseColor=new Color3(.09,.1,.12);
+      this.housing.material=shell;
+    }
   }
+
+  private active=true;
+
+  /**
+   * Renders the mirror only while its glass is on screen; a mirror nobody
+   * can see costs a whole extra render of the scene.
+   */
+  setActive(active:boolean):void{
+    if(active===this.active)return;
+    this.active=active;
+    const list=this.scene.customRenderTargets;
+    const index=list.indexOf(this.texture);
+    if(active&&index<0)list.push(this.texture);
+    if(!active&&index>=0)list.splice(index,1);
+  }
+
+  get isActive():boolean{return this.active}
 
   /** Moves the mirror camera with the car. Call once per rendered frame. */
   update(vehicle:Pose):void{
@@ -99,6 +151,7 @@ export class Mirror{
   dispose():void{
     const index=this.scene.customRenderTargets.indexOf(this.texture);
     if(index>=0)this.scene.customRenderTargets.splice(index,1);
+    this.housing?.dispose(false,true);
     this.glass.dispose();
     this.material.dispose();
     this.texture.dispose();

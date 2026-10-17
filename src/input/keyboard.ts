@@ -3,6 +3,9 @@ import type {ControlSource} from '../vehicle/vehicleController';
 
 export type InputAction='indicator-left'|'indicator-right'|'pause'|'reset'|'recentre';
 
+/** Held views: mirrors and over-the-shoulder checks. */
+export type ViewTarget='left-shoulder'|'left-door'|'interior'|'right-door'|'right-shoulder';
+
 const THROTTLE=['KeyW','ArrowUp'];
 const BRAKE=['KeyS','ArrowDown','Space'];
 const LEFT=['KeyA','ArrowLeft'];
@@ -16,6 +19,9 @@ const ACTIONS:Record<string,InputAction>={
   KeyC:'recentre'
 };
 const DRIVING_KEYS=new Set([...THROTTLE,...BRAKE,...LEFT,...RIGHT]);
+const VIEW_KEYS:Record<string,ViewTarget>={
+  KeyQ:'left-shoulder',Digit1:'left-door',Digit2:'interior',Digit3:'right-door',KeyE:'right-shoulder'
+};
 
 /**
  * Keyboard and on-screen button input. Held keys are cleared whenever the
@@ -27,10 +33,16 @@ export class KeyboardInput implements ControlSource{
   private readonly virtual=new Set<string>();
   private readonly listeners:Array<[EventTarget,string,EventListener]>=[];
   onAction:(action:InputAction)=>void=()=>{};
+  /** Called with a view while its key is held, and null on release. */
+  onView:(view:ViewTarget|null)=>void=()=>{};
 
   constructor(private readonly keyTarget:EventTarget,private readonly focusTarget:EventTarget,private readonly doc?:Document){
     this.listen(keyTarget,'keydown',event=>this.onKeyDown(event as KeyboardEvent));
-    this.listen(keyTarget,'keyup',event=>this.held.delete((event as KeyboardEvent).code));
+    this.listen(keyTarget,'keyup',event=>{
+      const code=(event as KeyboardEvent).code;
+      this.held.delete(code);
+      if(VIEW_KEYS[code])this.onView(null);
+    });
     this.listen(focusTarget,'blur',()=>this.clear());
     if(doc)this.listen(doc,'visibilitychange',()=>{if(doc.hidden)this.clear()});
   }
@@ -44,6 +56,12 @@ export class KeyboardInput implements ControlSource{
     if(DRIVING_KEYS.has(event.code)){
       this.held.add(event.code);
       event.preventDefault?.();
+      return;
+    }
+    const view=VIEW_KEYS[event.code];
+    if(view&&!event.repeat){
+      event.preventDefault?.();
+      this.onView(view);
       return;
     }
     const action=ACTIONS[event.code];

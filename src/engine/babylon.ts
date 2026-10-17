@@ -8,6 +8,7 @@ import '@babylonjs/core/Culling/ray';
 export {Engine} from '@babylonjs/core/Engines/engine';
 export {Scene} from '@babylonjs/core/scene';
 export {FreeCamera} from '@babylonjs/core/Cameras/freeCamera';
+export {Camera} from '@babylonjs/core/Cameras/camera';
 export {Matrix,Vector3} from '@babylonjs/core/Maths/math.vector';
 export {Color3,Color4} from '@babylonjs/core/Maths/math.color';
 export {TransformNode} from '@babylonjs/core/Meshes/transformNode';

@@ -36,6 +36,39 @@ export class DriverHead{
   recentre():void{
     this.yaw=0;
     this.pitch=0;
+    this.target=null;
+    this.returning=false;
+  }
+
+  /** Where a view button is turning the head to, or null. */
+  target:{yaw:Radians;pitch:Radians}|null=null;
+  private returning=false;
+
+  /** Starts a held view (mirror or shoulder), or ends it with null. */
+  hold(target:{yaw:Radians;pitch:Radians}|null):void{
+    this.returning=this.target!==null&&target===null;
+    this.target=target;
+  }
+
+  /**
+   * Turns the head toward a held view, or back to forward after one is
+   * released, at a natural rate. Does nothing otherwise, so swipe/mouse
+   * looking is never pulled back.
+   */
+  animate(dt:number,ratePerSecond=6):void{
+    if(!this.target&&!this.returning)return;
+    const goal=this.target??{yaw:0,pitch:0};
+    if(!this.target&&Math.abs(this.yaw)<1e-3&&Math.abs(this.pitch)<1e-3){this.returning=false;return}
+    const step=ratePerSecond*dt;
+    const move=(from:number,to:number)=>from+clamp(to-from,-step,step);
+    this.yaw=clamp(move(this.yaw,goal.yaw),-this.seat.yawLimit,this.seat.yawLimit);
+    this.pitch=clamp(move(this.pitch,goal.pitch),-this.seat.pitchDown,this.seat.pitchUp);
+  }
+
+  /** Head yaw/pitch that looks from the eye at a vehicle-local point. */
+  aimAt(local:Vec3):{yaw:Radians;pitch:Radians}{
+    const dx=local.x-this.seat.eye.x,dy=local.y-this.seat.eye.y,dz=local.z-this.seat.eye.z;
+    return {yaw:Math.atan2(dx,-dz),pitch:Math.atan2(dy,Math.hypot(dx,dz))};
   }
 
   /** World eye position for a vehicle pose. */

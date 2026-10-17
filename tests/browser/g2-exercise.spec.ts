@@ -51,7 +51,7 @@ class TestDriver{
 async function startExercise(page:Page){
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
-  await expect(page.locator('#scenario-objective')).toContainText('zebra crossing');
+  await expect(page.locator('#start-button')).toContainText('Zebra crossing');
   await page.click('#start-button');
   expect(await read(page,'session()')).toBe('running');
 }

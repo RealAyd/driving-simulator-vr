@@ -37,7 +37,21 @@ export const FollowingVehicleActorSchema=z.object({
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#9aa3ad')
 }).strict();
 
-export const ActorSchema=z.discriminatedUnion('kind',[PedestrianActorSchema,FollowingVehicleActorSchema]);
+/** A vehicle or cyclist driving a fixed lane path at constant speed (overtaking, filtering). */
+export const PassingVehicleActorSchema=z.object({
+  id:z.string().regex(/^[a-z0-9-]+$/),
+  kind:z.literal('passing-vehicle'),
+  /** Shape: car or cyclist. */
+  body:z.enum(['car','cyclist']).default('car'),
+  path:z.array(point).min(2),
+  speed:z.number().min(.5).max(31),
+  delaySeconds:z.number().min(0).max(120).default(0),
+  /** Start again from the beginning after reaching the end. */
+  repeat:z.boolean().default(false),
+  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/)
+}).strict();
+
+export const ActorSchema=z.discriminatedUnion('kind',[PedestrianActorSchema,FollowingVehicleActorSchema,PassingVehicleActorSchema]);
 
 export const ScenarioSchema=z.object({
   schemaVersion:z.literal(1),
@@ -46,7 +60,10 @@ export const ScenarioSchema=z.object({
   title:z.string(),
   learningObjective:z.string(),
   briefing:z.string(),
+  /** Rubric used for findings; 'none' for practice modes without scoring. */
   rubricId:z.string(),
+  /** Path that optional steering assistance follows (lane-level, scene metres). */
+  assistPath:z.array(point).min(2).optional(),
   zones:z.array(ZoneSchema).default([]),
   actors:z.array(ActorSchema).default([]),
   triggers:z.array(z.object({
@@ -61,14 +78,14 @@ export const ScenarioSchema=z.object({
     }).strict()).min(1)
   }).strict()).default([]),
   end:z.object({
-    /** The exercise completes when the learner enters this zone. */
-    zone:z.string(),
+    /** The exercise completes when the learner enters this zone (omit for timed practice). */
+    zone:z.string().optional(),
     timeLimitSeconds:z.number().min(30).max(900).default(180)
   }).strict()
 }).strict().superRefine((s,ctx)=>{
   const zones=new Set(s.zones.map(z=>z.id));
   const actors=new Set(s.actors.map(a=>a.id));
-  if(!zones.has(s.end.zone))ctx.addIssue({code:'custom',message:`End zone "${s.end.zone}" does not exist`});
+  if(s.end.zone!==undefined&&!zones.has(s.end.zone))ctx.addIssue({code:'custom',message:`End zone "${s.end.zone}" does not exist`});
   for(const t of s.triggers){
     if(!zones.has(t.when.zoneEntered))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing zone "${t.when.zoneEntered}"`});
     for(const a of t.actions)if(!actors.has(a.actor))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing actor "${a.actor}"`});
@@ -79,6 +96,7 @@ export type Scenario=z.infer<typeof ScenarioSchema>;
 export type Zone=z.infer<typeof ZoneSchema>;
 export type PedestrianActorDef=z.infer<typeof PedestrianActorSchema>;
 export type FollowingVehicleActorDef=z.infer<typeof FollowingVehicleActorSchema>;
+export type PassingVehicleActorDef=z.infer<typeof PassingVehicleActorSchema>;
 
 export function parseScenario(data:unknown):Scenario{
   const result=ScenarioSchema.safeParse(data);

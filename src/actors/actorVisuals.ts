@@ -29,14 +29,26 @@ export function pedestrianVisual(scene:Scene,ped:Pedestrian){
   };
 }
 
-/** Placeholder car body for other vehicles. */
-export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose){
+/** Placeholder body for other vehicles: a car, or a cyclist on a bicycle. */
+export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car'){
   const root=new TransformNode(`actor-${id}`,scene);
   const paint=mat(scene,`${id}-paint`,Color3.FromHexString(colour));
+  if(shape==='cyclist'){
+    const bike=CreateBox(`${id}-bike`,{width:.12,height:.7,depth:1.7},scene);
+    bike.position.y=.45;bike.material=mat(scene,`${id}-frame`,new Color3(.12,.12,.14));bike.parent=root;
+    const rider=CreateCylinder(`${id}-rider`,{height:.9,diameterTop:.36,diameterBottom:.3},scene);
+    rider.position.set(0,1.25,.1);rider.material=paint;rider.parent=root;
+    const helmet=CreateSphere(`${id}-helmet`,{diameter:.28},scene);
+    helmet.position.set(0,1.8,-.05);helmet.material=paint;helmet.parent=root;
+    return {update(){applyPose(root,pose())},dispose:()=>root.dispose(false,true)};
+  }
   const body=CreateBox(`${id}-body`,{width:1.8,height:.75,depth:4.3},scene);
   body.position.y=.6;body.material=paint;body.parent=root;
-  const cabin=CreateBox(`${id}-cabin`,{width:1.6,height:.55,depth:2.2},scene);
-  cabin.position.set(0,1.2,.25);cabin.material=mat(scene,`${id}-glass`,new Color3(.12,.14,.18));cabin.parent=root;
+  // Windows dark, roof in body colour, as on a real car.
+  const cabin=CreateBox(`${id}-cabin`,{width:1.6,height:.45,depth:2.2},scene);
+  cabin.position.set(0,1.18,.25);cabin.material=mat(scene,`${id}-glass`,new Color3(.12,.14,.18));cabin.parent=root;
+  const roof=CreateBox(`${id}-roof`,{width:1.62,height:.08,depth:2.0},scene);
+  roof.position.set(0,1.44,.3);roof.material=paint;roof.parent=root;
   return {
     update(){applyPose(root,pose())},
     dispose:()=>root.dispose(false,true)

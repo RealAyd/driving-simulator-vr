@@ -29,14 +29,17 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   // Full-width dashboard: top at 0.95 m, so the road is visible ~8 m ahead.
   box('dashboard',1.76,.22,.55,0,.84,-.98,trim);
   box('bonnet',1.7,.08,1.3,0,.78,-1.9,paint);
-  // Interior shell so nothing outside shows through the doors, floor or roof.
+  // Interior shell: doors and rear panel stop at the window line (0.95 m) so
+  // side and rear windows are open for mirror and shoulder checks.
   for(const side of [-1,1]){
     box(`door-${side}`,.06,.62,2.3,side*.88,.62,.05,trim);
+    box(`b-pillar-${side}`,.05,.62,.06,side*.87,1.26,.45,glassFrame);
+    box(`c-pillar-${side}`,.1,.62,.14,side*.82,1.26,1.15,glassFrame);
   }
   box('floor',1.76,.04,2.6,0,.3,.05,trim);
   box('front-bulkhead',1.76,.46,.05,0,.52,-1.24,trim);
-  box('roof-lining',1.76,.04,1.9,0,1.58,.45,trim);
-  box('rear-panel',1.76,1.3,.06,0,.95,1.2,trim);
+  box('roof-lining',1.76,.04,1.8,0,1.58,.35,trim);
+  box('rear-panel',1.76,.65,.06,0,.62,1.2,trim);
 
   const wheel=CreateTorus('steering-wheel',{diameter:.38,thickness:.035,tessellation:32},scene);
   wheel.position.set(seat.eye.x,.93,-.5);
@@ -44,15 +47,17 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   wheel.material=trim;
   wheel.parent=root;
 
-  // Thin A-pillars and a slim windscreen header frame the view.
+  // Slim A-pillars from the dashboard corners up and back to the roof.
+  const base={y:.95,z:-1.12},top={y:1.56,z:-.55};
+  const rise=top.y-base.y,run=top.z-base.z,length=Math.hypot(rise,run);
   for(const side of [-1,1]){
-    const pillar=CreateCylinder(`a-pillar-${side}`,{height:.78,diameter:.07},scene);
-    pillar.position.set(side*.82,1.24,-.86);
-    pillar.rotation.x=-.8;
+    const pillar=CreateCylinder(`a-pillar-${side}`,{height:length,diameter:.05},scene);
+    pillar.position.set(side*.78,(base.y+top.y)/2,(base.z+top.z)/2);
+    pillar.rotation.x=Math.atan2(run,rise);
     pillar.material=glassFrame;
     pillar.parent=root;
   }
-  box('windscreen-header',1.76,.05,.12,0,1.56,-.52,glassFrame);
+  box('windscreen-header',1.6,.04,.08,0,1.56,-.55,glassFrame);
 
   // Exterior body for other cameras (mirrors, later). Seen from inside, its
   // faces are back faces and are culled, so it does not block the driver.

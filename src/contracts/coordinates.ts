@@ -59,3 +59,11 @@ export function localToWorld(pose:Pose,local:Vec3):Vec3{
 export function localDirectionToWorld(heading:Radians,local:Vec3):Vec3{
   return localToWorld({position:{x:0,y:0,z:0},heading},local);
 }
+
+/** Converts a world point into a pose's local frame (+X right, -Z forward). */
+export function worldToLocal(pose:Pose,world:Vec3):Vec3{
+  const f=forwardFromHeading(pose.heading);
+  const r=rightFromHeading(pose.heading);
+  const dx=world.x-pose.position.x,dz=world.z-pose.position.z;
+  return {x:dx*r.x+dz*r.z,y:world.y-pose.position.y,z:-(dx*f.x+dz*f.z)};
+}

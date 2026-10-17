@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "id": "mirror-check",
+  "locationId": "representative-residential-straight",
+  "title": "Mirror and blind-spot check",
+  "learningObjective": "Learn what each mirror shows and where the blind spots are: a car overtaking on your right and a cyclist passing on your left disappear from the mirrors before they come into view, and only a shoulder check shows them.",
+  "briefing": "You are parked. Use the view buttons to check each mirror and over each shoulder as the magenta car and the yellow cyclist pass. End from the pause menu.",
+  "rubricId": "none",
+  "assistPath": [
+    {
+      "x": -1.6,
+      "z": 40
+    },
+    {
+      "x": -1.6,
+      "z": -160
+    }
+  ],
+  "zones": [],
+  "actors": [
+    {
+      "id": "overtaking-car",
+      "kind": "passing-vehicle",
+      "body": "car",
+      "path": [
+        {
+          "x": 1.5,
+          "z": 38
+        },
+        {
+          "x": 1.5,
+          "z": -70
+        }
+      ],
+      "speed": 3,
+      "delaySeconds": 1,
+      "repeat": true,
+      "colour": "#e81cc8"
+    },
+    {
+      "id": "cyclist",
+      "kind": "passing-vehicle",
+      "body": "cyclist",
+      "path": [
+        {
+          "x": -2.0,
+          "z": 30
+        },
+        {
+          "x": -2.0,
+          "z": 18
+        },
+        {
+          "x": -3.0,
+          "z": 8
+        },
+        {
+          "x": -3.0,
+          "z": -40
+        }
+      ],
+      "speed": 3,
+      "delaySeconds": 9,
+      "repeat": true,
+      "colour": "#facc15"
+    }
+  ],
+  "triggers": [],
+  "end": {
+    "timeLimitSeconds": 300
+  }
+}

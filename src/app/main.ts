@@ -1,31 +1,36 @@
 import locationJson from '../../content/locations/representative-residential-straight.json';
-import scenarioJson from '../../content/scenarios/crossing-restricted-view.json';
+import crossingJson from '../../content/scenarios/crossing-restricted-view.json';
+import mirrorCheckJson from '../../content/scenarios/mirror-check.json';
 import {
   degToRad,localToWorld,parseLocation,parseScenario,
-  type FollowingVehicleActorDef,type PedestrianActorDef,type Pose
+  type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
 } from '../contracts';
 import {pedestrianVisual,vehicleVisual} from '../actors/actorVisuals';
 import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../actors/followingVehicle';
+import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
+import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {buildCockpit} from '../cockpit/cockpitModel';
-import {INTERIOR_MIRROR,Mirror} from '../cockpit/mirror';
-import {ObservationTracker} from '../cockpit/observation';
+import {ALL_MIRRORS,Mirror} from '../cockpit/mirror';
+import {ObservationTracker,type ObservationSource,type ObservationTarget} from '../cockpit/observation';
 import {DriverHead} from '../cockpit/seat';
 import {applyPose,configureScene} from '../engine/babylonAdapter';
-import {Engine,FreeCamera,Matrix,Scene,TransformNode,Vector3} from '../engine/babylon';
+import {Camera,Engine,FreeCamera,Matrix,Scene,TransformNode,Vector3} from '../engine/babylon';
 import {FixedStepClock} from '../engine/clock';
 import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
-import {KeyboardInput,type InputAction} from '../input/keyboard';
-import {ScenarioRunner} from '../scenarios/scenarioRunner';
+import {KeyboardInput,type InputAction,type ViewTarget} from '../input/keyboard';
+import {ScenarioRunner,type Outcome} from '../scenarios/scenarioRunner';
 import {ZoneTracker} from '../scenarios/zones';
 import {openAttemptStore} from '../storage/attempts';
 import {Hud} from '../ui/hud';
 import {renderResults} from '../ui/results';
-import {VehicleController} from '../vehicle/vehicleController';
+import type {SimModule} from '../contracts';
+import {SteeringAssist} from '../vehicle/steeringAssist';
+import {VehicleController,type ControlSource} from '../vehicle/vehicleController';
 import {buildWorld} from '../world/buildWorld';
-import {CompositeCollisions,pointToBox} from '../world/collisions';
+import {CompositeCollisions,pointToBox,type DynamicFootprint} from '../world/collisions';
 import {StaticObstacles} from '../world/obstacles';
 import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {SeatedXr,detectXr} from '../xr/xrSession';
@@ -34,11 +39,37 @@ import {Session} from './session';
 
 const LOOK_SENSITIVITY=.004;
 const EARLY_STOP_HINT_SECONDS=8;
+const HORIZONTAL_FOV=degToRad(95);
+/** While a mirror view is held the view narrows, like focusing on the glass. */
+const MIRROR_FOCUS_FOV=degToRad(50);
+/**
+ * Vehicle-local points the shoulder checks look towards: sideways and back
+ * (about 110°), the area beside the car that the door mirrors do not cover.
+ */
+const SHOULDER_POINTS={left:{x:-1.8,y:1.1,z:.9},right:{x:2.4,y:1.1,z:.9}};
 
 function byId<T extends HTMLElement>(id:string):T{
   const el=document.getElementById(id);
   if(!el)throw new Error(`Missing #${id}`);
   return el as T;
+}
+
+/** Per-exercise road users, scoring and visuals; rebuilt whenever an exercise starts. */
+interface ExerciseRuntime{
+  scenario:Scenario;
+  modules:SimModule[];
+  runner:ScenarioRunner;
+  zones:ZoneTracker;
+  assist:SteeringAssist|null;
+  pedestrian:Pedestrian|null;
+  follower:FollowingVehicle|null;
+  passers:PassingVehicle[];
+  /** Records whether the vehicle step that just ran produced a collision. */
+  afterVehicleStep(firstNewEvent:number):void;
+  finish(outcome:Outcome):AttemptResult;
+  current():unknown[];
+  renderVisuals():void;
+  dispose():void;
 }
 
 export async function boot():Promise<void>{
@@ -65,8 +96,11 @@ export async function boot():Promise<void>{
   const scene=new Scene(engine);
   configureScene(scene);
   const place=parseLocation(locationJson);
-  const scenario=parseScenario(scenarioJson);
-  if(scenario.locationId!==place.id)throw new Error(`Scenario ${scenario.id} is for location ${scenario.locationId}, not ${place.id}`);
+  const scenarios=new Map([crossingJson,mirrorCheckJson].map(raw=>{
+    const s=parseScenario(raw);
+    if(s.locationId!==place.id)throw new Error(`Scenario ${s.id} is for location ${s.locationId}, not ${place.id}`);
+    return [s.id,s] as const;
+  }));
   const world=buildWorld(scene,place,quality);
   const store=await openAttemptStore();
 
@@ -75,123 +109,194 @@ export async function boot():Promise<void>{
   const input=new KeyboardInput(window,window,document);
   const spawn:Pose={position:{x:place.spawn.position.x,y:0,z:place.spawn.position.z},heading:degToRad(place.spawn.headingDeg)};
 
-  // ---- Road users (scenario actors) ----
-  const pedDef=scenario.actors.find((a):a is PedestrianActorDef=>a.kind==='pedestrian');
-  const followerDef=scenario.actors.find((a):a is FollowingVehicleActorDef=>a.kind==='following-vehicle');
-  if(!pedDef)throw new Error('This exercise needs a pedestrian actor');
-  const crossing=place.crossings.find(c=>c.id===pedDef.crossingId);
-  if(!crossing)throw new Error(`Crossing ${pedDef.crossingId} is not in location ${place.id}`);
-
-  // The learner car is created first: the pedestrian and following car read
-  // its pose, and its collision query reads theirs (through closures).
-  let follower:FollowingVehicle|null=null;
-  let pedestrian!:Pedestrian;
-  const collisions=new CompositeCollisions(new StaticObstacles(place.blocks),[
-    {id:pedDef.id,shape:()=>({kind:'circle',x:pedestrian.position.x,z:pedestrian.position.z,radius:PEDESTRIAN_RADIUS})},
-    ...(followerDef?[{id:followerDef.id,shape:()=>({kind:'box' as const,pose:follower!.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})}]:[])
-  ]);
-  const vehicle=new VehicleController(spawn,input,{
+  // ---- Learner car (single movement owner) with optional steering assistance ----
+  let runtime:ExerciseRuntime|null=null;
+  let assistEnabled=quality.id==='phone';
+  const dynamicFootprints:DynamicFootprint[]=[];
+  let vehicle!:VehicleController;
+  const controls:ControlSource={read:()=>{
+    const c=input.read();
+    // The driver's own steering always overrides the assistance.
+    if(assistEnabled&&runtime?.assist&&c.steer===0)return {...c,steer:runtime.assist.steer(vehicle.pose,vehicle.state.speed)};
+    return c;
+  }};
+  vehicle=new VehicleController(spawn,controls,{
     surfaceHeightAt:(x,z)=>surfaceAt(place,x,z)?.height??null,
     groundHeight:0,
     surfaceKindAt:(x,z)=>surfaceAt(place,x,z)?.kind??'none'
-  },collisions,events);
-  pedestrian=new Pedestrian(pedDef,events,(p,r)=>pointToBox(p.x,p.z,vehicle.pose,vehicle.halfWidth,vehicle.halfLength)<r);
-  follower=followerDef?new FollowingVehicle(followerDef,()=>vehicle.pose,()=>vehicle.state.speed):null;
+  },new CompositeCollisions(new StaticObstacles(place.blocks),dynamicFootprints),events);
 
-  // ---- Cockpit, mirror, camera ----
+  // ---- Cockpit, mirrors, camera ----
   const vehicleNode=new TransformNode('learner-car',scene);
   const head=new DriverHead();
   const cockpit=buildCockpit(scene,vehicleNode,head.seat);
   const seatNode=new TransformNode('driver-seat',scene);
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);
-  const mirrors=[new Mirror(scene,vehicleNode,cockpit.root,INTERIOR_MIRROR,quality,head.seat.eye)];
-  const pedVisual=pedestrianVisual(scene,pedestrian);
-  const followerVisual=follower?vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose):null;
+  const mirrors=ALL_MIRRORS.map(spec=>new Mirror(scene,vehicleNode,cockpit.root,spec,quality,head.seat.eye));
 
   const camera=new FreeCamera('driver-camera',Vector3.Zero(),scene);
   camera.inputs.clear();
   camera.minZ=.05;
   camera.maxZ=3000;
-  camera.fov=degToRad(65);
+  // Fix the horizontal field of view so wide phone screens (19.5:9) do not
+  // stretch the cockpit and squeeze the road.
+  camera.fovMode=Camera.FOVMODE_HORIZONTAL_FIXED;
+  camera.fov=HORIZONTAL_FOV;
   scene.activeCamera=camera;
 
-  // ---- Scenario, observation, assessment ----
-  const road=place.roads.find(r=>r.id===crossing.roadId)!;
-  const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
-  let lastCollision:string|null=null;
-  const runner=new ScenarioRunner(scenario,zones,new Map([[pedestrian.id,pedestrian]]),()=>{
-    const s=sampleRoad(road,vehicle.state.position.x,vehicle.state.position.z);
-    return {surface:vehicle.surfaceKind,heading:vehicle.state.heading,roadHeading:Math.atan2(s.direction.x,-s.direction.z),collidedWith:lastCollision};
-  },events);
-  const observation=new ObservationTracker(
-    [{id:'interior',position:pose=>localToWorld(pose,INTERIOR_MIRROR.glass),angularRadius:degToRad(9)}],
-    ()=>vehicle.pose,pose=>head.eyeWorld(pose),pose=>head.lookWorld(pose),events
-  );
-  const assessor=new Assessor({
-    events:()=>events.events,
-    learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength}),
-    followerGap:()=>follower?follower.gap:null,
-    zones,crossing,pedestrian,
-    now:()=>clock.time
-  },events);
+  // ---- Views: mirrors and shoulder checks ----
+  const viewAim:Record<ViewTarget,{yaw:number;pitch:number}>={
+    'interior':head.aimAt(ALL_MIRRORS[0].glass),
+    'right-door':head.aimAt(ALL_MIRRORS[1].glass),
+    'left-door':head.aimAt(ALL_MIRRORS[2].glass),
+    'right-shoulder':head.aimAt(SHOULDER_POINTS.right),
+    'left-shoulder':head.aimAt(SHOULDER_POINTS.left)
+  };
+  let heldBy:'touch'|'key'|null=null;
+  let heldView:ViewTarget|null=null;
+  const holdView=(view:ViewTarget|null,by:'touch'|'key')=>{
+    if(session.state!=='running')return;
+    heldBy=view?by:null;
+    heldView=view;
+    head.hold(view?viewAim[view]:null);
+    if(view)events.emit('view.selected',{view,by});
+  };
+  input.onView=view=>holdView(view,'key');
+  const observationSource=():ObservationSource=>
+    xr.active?'head direction':heldBy==='touch'?'touch view button':heldBy==='key'?'keyboard view key'
+    :quality.id==='phone'?'swipe-controlled view':'mouse-controlled view';
+  const observationTargets:ObservationTarget[]=[
+    {id:'interior',position:pose=>localToWorld(pose,ALL_MIRRORS[0].glass),angularRadius:degToRad(9)},
+    {id:'right-door',position:pose=>localToWorld(pose,ALL_MIRRORS[1].glass),angularRadius:degToRad(8)},
+    {id:'left-door',position:pose=>localToWorld(pose,ALL_MIRRORS[2].glass),angularRadius:degToRad(8)},
+    {id:'right-shoulder',position:pose=>localToWorld(pose,SHOULDER_POINTS.right),angularRadius:degToRad(20)},
+    {id:'left-shoulder',position:pose=>localToWorld(pose,SHOULDER_POINTS.left),angularRadius:degToRad(20)}
+  ];
+  const observation=new ObservationTracker(observationTargets,()=>vehicle.pose,pose=>head.eyeWorld(pose),pose=>head.lookWorld(pose),events);
 
-  // Fixed-step order (brief §10): controls → learner → road users → zones
-  // and triggers → observation → assessment. Rendering comes after.
-  const modules=[vehicle,pedestrian,...(follower?[follower]:[]),zones,runner,observation,assessor];
+  // ---- Exercise setup ----
+  function buildExercise(scenario:Scenario):ExerciseRuntime{
+    dynamicFootprints.length=0;
+    const pedDef=scenario.actors.find((a):a is PedestrianActorDef=>a.kind==='pedestrian');
+    const followerDef=scenario.actors.find((a):a is FollowingVehicleActorDef=>a.kind==='following-vehicle');
+    const pedestrian=pedDef?new Pedestrian(pedDef,events,(p,r)=>pointToBox(p.x,p.z,vehicle.pose,vehicle.halfWidth,vehicle.halfLength)<r):null;
+    const follower=followerDef?new FollowingVehicle(followerDef,()=>vehicle.pose,()=>vehicle.state.speed):null;
+    const passers=scenario.actors.filter((a):a is PassingVehicleActorDef=>a.kind==='passing-vehicle').map(d=>new PassingVehicle(d));
+    if(pedestrian){
+      dynamicFootprints.push({id:pedestrian.id,shape:()=>({kind:'circle',x:pedestrian.position.x,z:pedestrian.position.z,radius:PEDESTRIAN_RADIUS})});
+    }
+    if(follower){
+      dynamicFootprints.push({id:follower.id,shape:()=>({kind:'box',pose:follower.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})});
+    }
+    for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size})});
+    const visuals=[
+      ...(pedestrian?[pedestrianVisual(scene,pedestrian)]:[]),
+      ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose)]:[]),
+      ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body))
+    ];
+
+    const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
+    const road=place.roads[0]!;
+    let lastCollision:string|null=null;
+    const runner=new ScenarioRunner(scenario,zones,new Map(pedestrian?[[pedestrian.id,pedestrian]]:[]),()=>{
+      const s=sampleRoad(road,vehicle.state.position.x,vehicle.state.position.z);
+      return {surface:vehicle.surfaceKind,heading:vehicle.state.heading,roadHeading:Math.atan2(s.direction.x,-s.direction.z),collidedWith:lastCollision};
+    },events);
+
+    const crossing=pedestrian?place.crossings.find(c=>c.id===pedestrian.def.crossingId)??null:null;
+    const assessor=scenario.rubricId==='crossing-restricted-view'&&pedestrian&&crossing?new Assessor({
+      events:()=>events.events,
+      learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength}),
+      followerGap:()=>follower?follower.gap:null,
+      zones,crossing,pedestrian,now:()=>clock.time
+    },events):null;
+    const practice=assessor?null:new ViewPracticeSummary(passers,()=>vehicle.pose,()=>events.events,()=>clock.time);
+
+    const modules:SimModule[]=[
+      ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,
+      zones,runner,observation,...(assessor?[assessor]:[]),...(practice?[practice]:[])
+    ];
+    const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):null;
+    const names:Record<string,string>={'overtaking-car':'magenta car',cyclist:'cyclist'};
+    return {
+      scenario,modules,runner,zones,assist,pedestrian,follower,passers,
+      afterVehicleStep(firstNewEvent){
+        lastCollision=null;
+        for(let i=firstNewEvent;i<events.events.length;i++){
+          const e=events.events[i]!;
+          if(e.type==='vehicle.collision')lastCollision=String(e.payload['obstacleId']);
+        }
+      },
+      finish(outcome){
+        const base=assessor?assessor.finish(scenario.id,outcome,runner.elapsed):{
+          scenarioId:scenario.id,rubricVersion:'none (practice)',outcome,findings:[],
+          notes:practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
+        };
+        if(assistEnabled&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
+        return base;
+      },
+      current:()=>assessor?assessor.current:[],
+      renderVisuals(){for(const v of visuals)v.update()},
+      dispose(){
+        for(const v of visuals)v.dispose();
+        for(const m of modules)if(m!==observation)m.dispose();
+        dynamicFootprints.length=0;
+      }
+    };
+  }
+
   const step=(dt:number,time:number)=>{
+    if(!runtime)return;
     const before=events.events.length;
     vehicle.fixedUpdate(dt);
-    lastCollision=null;
-    for(let i=before;i<events.events.length;i++){
-      const e=events.events[i]!;
-      if(e.type==='vehicle.collision')lastCollision=String(e.payload['obstacleId']);
-    }
-    pedestrian.fixedUpdate(dt);
-    follower?.fixedUpdate(dt);
-    zones.fixedUpdate(dt);
-    runner.fixedUpdate(dt);
-    observation.fixedUpdate(dt,time);
-    assessor.fixedUpdate();
+    runtime.afterVehicleStep(before);
+    for(const m of runtime.modules)m.fixedUpdate?.(dt,time);
   };
 
   // ---- Lifecycle ----
   let stoppedEarlyFor=0;
-  let lastResult:ReturnType<Assessor['finish']>|null=null;
+  let lastResult:AttemptResult|null=null;
   const resetAttempt=()=>{
     input.clear();
-    for(const m of modules)m.reset();
+    vehicle.reset();
+    for(const m of runtime?.modules??[])m.reset();
     head.recentre();
+    heldBy=null;
+    heldView=null;
+    camera.fov=HORIZONTAL_FOV;
     clock.reset();
     events.clear();
-    lastCollision=null;
     stoppedEarlyFor=0;
-    hud.setTask(scenario.briefing);
+    if(runtime)hud.setTask(runtime.scenario.briefing);
   };
-  runner.onEnded=async outcome=>{
-    input.clear();
-    clock.pause();
-    const result=assessor.finish(scenario.id,outcome,runner.elapsed);
-    lastResult=result;
-    session.to('finished');
-    let saved=0;
-    try{
-      await store.save(result);
-      saved=(await store.list(scenario.id)).length;
-    }catch(error){
-      console.warn('[Driving Practice] could not save attempt',error);
-    }
-    renderResults(result,id=>events.events.find(e=>e.id===id)?.time,saved,store.kind);
+  const attachRunner=()=>{
+    runtime!.runner.onEnded=async outcome=>{
+      input.clear();
+      head.hold(null);
+      clock.pause();
+      const result=runtime!.finish(outcome);
+      lastResult=result;
+      session.to('finished');
+      let saved=0;
+      try{
+        await store.save(result);
+        saved=(await store.list(result.scenarioId)).length;
+      }catch(error){
+        console.warn('[Driving Practice] could not save attempt',error);
+      }
+      renderResults(result,id=>events.events.find(e=>e.id===id)?.time,saved,store.kind);
+    };
   };
 
-  // Mouse/touch look: drag to move the head relative to the seat.
+  // Swipe/mouse look: drag to move the head relative to the seat.
   let dragging:number|null=null,lastX=0,lastY=0;
   canvas.addEventListener('pointerdown',event=>{
     dragging=event.pointerId;lastX=event.clientX;lastY=event.clientY;
     canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener('pointermove',event=>{
-    if(event.pointerId!==dragging||session.state!=='running')return;
+    if(event.pointerId!==dragging||session.state!=='running'||head.target)return;
     head.look((event.clientX-lastX)*LOOK_SENSITIVITY,-(event.clientY-lastY)*LOOK_SENSITIVITY);
     lastX=event.clientX;lastY=event.clientY;
   });
@@ -201,17 +306,27 @@ export async function boot():Promise<void>{
 
   const xr=new SeatedXr(scene,seatNode);
 
-  const start=()=>{
+  const assistToggle=byId<HTMLInputElement>('assist-toggle');
+  assistToggle.checked=assistEnabled;
+  assistToggle.addEventListener('change',()=>{assistEnabled=assistToggle.checked});
+
+  const start=(scenarioId:string)=>{
+    if(session.state!=='ready')return;
+    runtime?.dispose();
+    runtime=buildExercise(scenarios.get(scenarioId)!);
+    attachRunner();
     if(!session.to('running'))return;
     resetAttempt();
     clock.resume();
-    events.emit('session.started',{locationId:place.id,scenarioId:scenario.id,quality:quality.id});
+    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id});
+    events.emit('assist.changed',{enabled:assistEnabled&&!!runtime.assist});
     canvas.focus();
   };
   const pause=()=>{
     if(!session.to('paused'))return;
     clock.pause();
     input.clear();
+    head.hold(null);heldBy=null;heldView=null;
     events.emit('session.paused');
   };
   const resume=()=>{
@@ -229,6 +344,16 @@ export async function boot():Promise<void>{
     if(wasPaused)resume();
     else if(wasFinished){session.to('running');clock.resume();canvas.focus()}
   };
+  const endAttempt=()=>{
+    if(session.state!=='paused'||!runtime)return;
+    session.to('running');
+    runtime.runner.finish(runtime.scenario.end.zone?'abandoned':'completed');
+  };
+  const backToMenu=()=>{
+    if(session.state!=='finished'&&session.state!=='paused')return;
+    clock.pause();
+    session.to('ready');
+  };
   const onAction=(action:InputAction)=>{
     if(action==='pause')return session.state==='running'?pause():session.state==='paused'?resume():undefined;
     if(action==='reset')return restart();
@@ -238,20 +363,30 @@ export async function boot():Promise<void>{
   };
   input.onAction=onAction;
 
-  byId('start-button').addEventListener('click',start);
+  byId('start-button').addEventListener('click',()=>start('crossing-restricted-view'));
+  byId('start-mirror-check').addEventListener('click',()=>start('mirror-check'));
   byId('resume-button').addEventListener('click',resume);
   byId('restart-button').addEventListener('click',restart);
+  byId('end-button').addEventListener('click',endAttempt);
   byId('retry-button').addEventListener('click',restart);
+  byId('menu-button').addEventListener('click',backToMenu);
   byId('hud-pause').addEventListener('click',pause);
   byId('hud-ind-left').addEventListener('click',()=>onAction('indicator-left'));
   byId('hud-ind-right').addEventListener('click',()=>onAction('indicator-right'));
+  byId('hud-task-toggle').addEventListener('click',()=>hud.toggleTask());
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-hold]')){
     const control=button.dataset.hold as 'throttle'|'brake'|'left'|'right';
     const set=(down:boolean)=>(event:Event)=>{event.preventDefault();input.setVirtual(control,down)};
     button.addEventListener('pointerdown',set(true));
     for(const type of ['pointerup','pointerleave','pointercancel'])button.addEventListener(type,set(false));
   }
+  for(const button of document.querySelectorAll<HTMLButtonElement>('[data-view]')){
+    const view=button.dataset.view as ViewTarget;
+    button.addEventListener('pointerdown',event=>{event.preventDefault();holdView(view,'touch')});
+    for(const type of ['pointerup','pointerleave','pointercancel'])button.addEventListener(type,()=>{if(heldBy==='touch')holdView(null,'touch')});
+  }
   byId('touch-controls').hidden=quality.id!=='phone';
+  document.body.classList.toggle('phone',quality.id==='phone');
 
   // A hidden tab pauses; losing focus clears held controls (KeyboardInput).
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&session.state==='running')pause()});
@@ -261,27 +396,29 @@ export async function boot():Promise<void>{
   byId('xr-status').textContent=xrSupport.available?'Headset detected · experimental seated VR':xrSupport.reason;
   xrButton.hidden=!xrSupport.available;
   xrButton.addEventListener('click',async()=>{
-    start();
-    observation.source='head direction';
+    start('crossing-restricted-view');
     try{await xr.enter()}
     catch(error){hud.setStatus(`VR could not start: ${(error as Error).message}`)}
   });
-  xr.onExit=()=>{observation.source='mouse-controlled view';if(session.state==='running')pause()};
+  xr.onExit=()=>{if(session.state==='running')pause()};
 
   hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
-  byId('location-label').textContent=`${scenario.title}. ${place.name} — ${place.fidelity} layout, ${place.reviewStatus}.`;
-  byId('scenario-objective').textContent=scenario.learningObjective;
+  byId('location-label').textContent=`${place.name} — ${place.fidelity} layout, ${place.reviewStatus}.`;
 
   const perf=new PerfProbe();
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
-    if(session.state==='running'){
+    if(session.state==='running'&&runtime){
       perf.record(engine.getDeltaTime());
+      head.animate(dt);
+      const wantFov=heldView&&!heldView.endsWith('shoulder')?MIRROR_FOCUS_FOV:HORIZONTAL_FOV;
+      camera.fov+=Math.max(-3*dt,Math.min(3*dt,wantFov-camera.fov));
+      observation.source=observationSource();
       clock.advance(dt,step);
       // Stopping unusually early: the pedestrian waits; prompt the learner on.
-      const pedTriggered=zones.stats.get('pedestrian-trigger')?.entered;
-      stoppedEarlyFor=vehicle.state.speed<.15&&!pedTriggered?stoppedEarlyFor+dt:0;
-      hud.setTask(stoppedEarlyFor>EARLY_STOP_HINT_SECONDS?'Continue along the road towards the crossing.':scenario.briefing);
+      const trigger=runtime.zones.stats.get('pedestrian-trigger');
+      stoppedEarlyFor=trigger&&!trigger.entered&&vehicle.state.speed<.15?stoppedEarlyFor+dt:0;
+      if(stoppedEarlyFor>EARLY_STOP_HINT_SECONDS&&stoppedEarlyFor-dt<=EARLY_STOP_HINT_SECONDS)hud.setTask('Continue along the road towards the crossing.');
     }
     const alpha=session.state==='running'?clock.alpha:1;
     const pose=vehicle.interpolatedPose(alpha);
@@ -289,9 +426,11 @@ export async function boot():Promise<void>{
     const eye=head.eyeWorld(pose),look=head.lookWorld(pose);
     camera.position.set(eye.x,eye.y,eye.z);
     camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
-    for(const mirror of mirrors)mirror.update(pose);
-    pedVisual.update();
-    followerVisual?.update();
+    for(const mirror of mirrors){
+      mirror.update(pose);
+      mirror.setActive(camera.isInFrustum(mirror.glass));
+    }
+    runtime?.renderVisuals();
     hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     scene.render();
   });
@@ -300,16 +439,22 @@ export async function boot():Promise<void>{
   // Read-only handle for automated browser tests and manual diagnostics.
   Object.defineProperty(window,'__drivingPractice',{value:Object.freeze({
     session:()=>session.state,
+    scenario:()=>runtime?.scenario.id??null,
     vehicle:()=>({...vehicle.state,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
     head:()=>({yaw:head.yaw,pitch:head.pitch}),
     look:(yaw:number,pitch:number)=>{head.recentre();head.look(yaw,pitch)},
+    holdView:(view:ViewTarget|null)=>holdView(view,'touch'),
+    /** Diagnostics: stop simulation time while views can still be turned, to compare views at one instant. */
+    freezeTime:(frozen:boolean)=>{if(session.state==='running')frozen?clock.pause():clock.resume()},
     camera:()=>({position:camera.position.asArray(),forward:camera.getForwardRay(1).direction.asArray()}),
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
-    pedestrian:()=>({state:pedestrian.state,position:{...pedestrian.position}}),
-    follower:()=>follower?{gap:follower.gap,speed:follower.speed,pose:follower.pose}:null,
-    findings:()=>assessor.current.map(f=>({...f})),
+    pedestrian:()=>runtime?.pedestrian?{state:runtime.pedestrian.state,position:{...runtime.pedestrian.position}}:null,
+    follower:()=>runtime?.follower?{gap:runtime.follower.gap,speed:runtime.follower.speed,pose:runtime.follower.pose}:null,
+    passers:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose}))??[],
+    findings:()=>(runtime?.current()??[]).map(f=>({...(f as object)})),
     result:()=>lastResult,
+    assist:()=>assistEnabled,
     storage:store.kind,
     quality:quality.id,
     fps:()=>engine.getFps(),
@@ -320,7 +465,7 @@ export async function boot():Promise<void>{
       const info=gl?.getExtension('WEBGL_debug_renderer_info');
       return {webgl:engine.webGLVersion,renderer:info&&gl?String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)):'unknown',size:[engine.getRenderWidth(),engine.getRenderHeight()]};
     },
-    /** On-screen rectangle of each mirror's glass, in CSS pixels. */
+    /** On-screen rectangle of each mirror's glass, in CSS pixels, and whether it is rendering. */
     mirrors:()=>mirrors.map(m=>{
       m.glass.computeWorldMatrix(true);
       const box=m.glass.getBoundingInfo().boundingBox.vectorsWorld;
@@ -328,14 +473,13 @@ export async function boot():Promise<void>{
       const ratio=canvas.clientWidth/engine.getRenderWidth();
       const points=box.map(v=>Vector3.Project(v,Matrix.IdentityReadOnly,scene.getTransformMatrix(),viewport));
       const xs=points.map(p=>p.x*ratio),ys=points.map(p=>p.y*ratio);
-      return {id:m.spec.id,left:Math.min(...xs),top:Math.min(...ys),right:Math.max(...xs),bottom:Math.max(...ys)};
+      return {id:m.spec.id,active:m.isActive,left:Math.min(...xs),top:Math.min(...ys),right:Math.max(...xs),bottom:Math.max(...ys)};
     })
   })});
 
   window.addEventListener('pagehide',()=>{
     input.dispose();xr.dispose();for(const mirror of mirrors)mirror.dispose();
-    pedVisual.dispose();followerVisual?.dispose();
-    for(const m of modules)m.dispose();
+    runtime?.dispose();observation.dispose();
     cockpit.dispose();world.dispose();scene.dispose();engine.dispose();
   });
 

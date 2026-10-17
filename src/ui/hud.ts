@@ -39,7 +39,21 @@ export class Hud{
     this.status.textContent=text;
   }
 
+  private taskTimer=0;
+
+  /** Shows the task briefly, then folds it away so it does not cover the mirrors. */
   setTask(text:string):void{
     $('hud-task').textContent=text;
+    this.showTask(true);
+  }
+
+  toggleTask():void{
+    this.showTask($('hud-task').hidden!==false);
+  }
+
+  private showTask(visible:boolean):void{
+    $('hud-task').hidden=!visible;
+    clearTimeout(this.taskTimer);
+    if(visible)this.taskTimer=window.setTimeout(()=>{$('hud-task').hidden=true},7000);
   }
 }
