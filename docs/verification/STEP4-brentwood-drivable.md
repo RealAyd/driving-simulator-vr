@@ -30,3 +30,12 @@ Branch `rebuild/3d-judgement-simulator`. Area-inspired, not an official test rou
 - Junction corners have no kerbs or pavement; road widths and lane counts are simplified; disc size estimated.
 - Buildings are plain walls from OSM outlines with assumed heights; no textures yet (assets step).
 - "Looked right" is judged from head direction (swipe or R shoulder), not eye tracking.
+
+## Device result: tilt steering (user test, 2026-10-17)
+
+- **Verified on the user's iPhone 14 Pro Max in Safari**, opened directly from the standalone staging site
+  https://realayd.github.io/driving-practice-preview/ (built from `rebuild/3d-judgement-simulator`, tilt commit `b32f37d`).
+- Motion access granted from the Enable tilt button; the Brentwood guided route was completed steering by tilt
+  (results: "You steered by tilting the phone", 32 s, completed). Reported by the user as "Tilt working".
+- Not yet reported: steering direction feel, best sensitivity, jitter, Centre behaviour. Tilt inside the claude.ai
+  viewer remains unavailable (the embedding frame blocks motion sensors).
