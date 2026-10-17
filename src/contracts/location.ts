@@ -78,6 +78,20 @@ export const BuildingSchema=z.object({
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 }).strict();
 
+/**
+ * A scenery model placed by asset id (src/assets/models.ts). Optional at run
+ * time: licensed models may be absent, and then the location looks as before.
+ */
+export const PlacedModelSchema=z.object({
+  id:z.string().min(1),
+  asset:z.string().min(1),
+  position:point,
+  /** Compass direction the model's front faces, degrees. */
+  facingDeg:z.number(),
+  /** Block whose simple box is hidden when the model is shown (its collision stays). */
+  replacesBlock:z.string().optional()
+}).strict();
+
 export const LocationSchema=z.object({
   /** v2 adds junctions, one-way roads, building outlines and trees. */
   schemaVersion:z.union([z.literal(1),z.literal(2)]),
@@ -99,6 +113,7 @@ export const LocationSchema=z.object({
   junctions:z.array(JunctionSchema).default([]),
   buildings:z.array(BuildingSchema).default([]),
   trees:z.array(point).default([]),
+  models:z.array(PlacedModelSchema).default([]),
   spawn:z.object({position:point,headingDeg:z.number(),roadId:z.string()}).strict()
 }).strict().superRefine((location,ctx)=>{
   const roadIds=new Set(location.roads.map(r=>r.id));
@@ -106,6 +121,9 @@ export const LocationSchema=z.object({
   if(!roadIds.has(location.spawn.roadId))ctx.addIssue({code:'custom',message:`Spawn road "${location.spawn.roadId}" does not exist`});
   for(const crossing of location.crossings)
     if(!roadIds.has(crossing.roadId))ctx.addIssue({code:'custom',message:`Crossing "${crossing.id}" is on missing road "${crossing.roadId}"`});
+  const blockIds=new Set(location.blocks.map(b=>b.id));
+  for(const model of location.models)
+    if(model.replacesBlock&&!blockIds.has(model.replacesBlock))ctx.addIssue({code:'custom',message:`Model "${model.id}" replaces missing block "${model.replacesBlock}"`});
   for(const junction of location.junctions)for(const entry of junction.entries)
     if(!roadIds.has(entry))ctx.addIssue({code:'custom',message:`Junction "${junction.id}" lists missing road "${entry}"`});
 });
@@ -116,6 +134,7 @@ export type Block=z.infer<typeof BlockSchema>;
 export type Crossing=z.infer<typeof CrossingSchema>;
 export type Junction=z.infer<typeof JunctionSchema>;
 export type Building=z.infer<typeof BuildingSchema>;
+export type PlacedModel=z.infer<typeof PlacedModelSchema>;
 
 export function parseLocation(data:unknown):Location{
   const result=LocationSchema.safeParse(data);

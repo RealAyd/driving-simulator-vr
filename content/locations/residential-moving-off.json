@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "residential-moving-off",
   "name": "Residential street, parked at the kerb",
   "fidelity": "representative",
@@ -190,5 +190,27 @@
     "headingDeg": 0,
     "roadId": "main-street"
   },
-  "crossings": []
+  "crossings": [],
+  "models": [
+    {
+      "id": "terrace-west-1",
+      "asset": "a3js-london-terrace-house-low",
+      "position": {
+        "x": -14.45,
+        "z": -10
+      },
+      "facingDeg": 90,
+      "replacesBlock": "house-w-1"
+    },
+    {
+      "id": "supermarket-east-1",
+      "asset": "supermarket",
+      "position": {
+        "x": 17.25,
+        "z": -15
+      },
+      "facingDeg": 270,
+      "replacesBlock": "house-e-1"
+    }
+  ]
 }

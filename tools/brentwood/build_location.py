@@ -161,6 +161,15 @@ for b in OSM['buildings']:
         buildings.append({'id': f"osm-{b['osmWay']}", 'height': round(3.2 * float(levels), 1) if levels else 9.0,
                           'footprint': [{'x': x, 'z': -y} for x, y in b['polygon']]})
 
+# Signal crossing: one example signal pole (licensed model, optional at run time) on the
+# eastbound learner's near-side pavement just before the crossing, lamps facing the approach.
+xing_s = round(min(((math.dist((-17.51, 15.85), point_at(poly('high-street'), s)[0]), s)
+                    for s in [i * .25 for i in range(int(L_high * 4))]))[1], 1)
+(pole_xz, pole_dir) = leg_end('high-street', -(LANE + .6), xing_s - 3.5 / 2 - .4)
+models = [{'id': 'high-street-signal-pole', 'asset': 'cadmando-traffic-lights',
+           'position': {'x': round(pole_xz[0], 2), 'z': round(pole_xz[1], 2)},
+           'facingDeg': round((math.degrees(math.atan2(pole_dir[0], -pole_dir[1])) + 180) % 360, 1)}]
+
 location = {
     'schemaVersion': 2,
     'id': 'brentwood-paired-mini-roundabouts',
@@ -183,12 +192,12 @@ location = {
     'roads': [{k: v for k, v in r.items() if k != '_osm'} for r in roads],
     'blocks': blocks,
     'crossings': [{'id': 'high-street-signals', 'roadId': 'high-street', 'kind': 'signal',
-                   'along': round(min(((math.dist((-17.51, 15.85), point_at(poly('high-street'), s)[0]), s)
-                                       for s in [i * .25 for i in range(int(L_high * 4))]))[1], 1),
+                   'along': xing_s,
                    'width': 3.5, 'giveWayOffset': 1.7}],
     'junctions': junctions,
     'buildings': buildings,
     'trees': trees,
+    'models': models,
     'spawn': {'position': {'x': round(spawn_xz[0], 2), 'z': round(spawn_xz[1], 2)},
               'headingDeg': round(spawn_heading, 1), 'roadId': 'high-street'},
 }

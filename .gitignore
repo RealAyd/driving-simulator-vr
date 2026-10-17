@@ -6,3 +6,4 @@ playwright-report/
 # Original asset packs (ZIPs, Blend/FBX/OBJ sources) stay outside the repository; see content/assets/register.json.
 assets-incoming/
 *.zip
+public/assets/licensed/

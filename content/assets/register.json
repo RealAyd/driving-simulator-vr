@@ -1,5 +1,5 @@
 {
-  "note": "Every model shipped in public/assets must have an entry here. Original packs and ZIPs are not stored in the repository.",
+  "note": "Every model shipped in public/assets/models (public repository) and every optional model in src/assets/models.ts PROP_ASSETS must have an entry here. storage 'private' models are built into the git-ignored public/assets/licensed/ and are never committed or deployed to the public staging site. Original packs and ZIPs are not stored in the repository.",
   "packs": [
     {
       "id": "quaternius-lowpoly-cars",
@@ -10,7 +10,76 @@
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "redistributionAllowed": true,
       "attributionRequired": false,
-      "contents": ["Cop", "NormalCar1", "NormalCar2", "SUV", "SportsCar", "SportsCar2", "Taxi"]
+      "contents": [
+        "Cop",
+        "NormalCar1",
+        "NormalCar2",
+        "SUV",
+        "SportsCar",
+        "SportsCar2",
+        "Taxi"
+      ]
+    },
+    {
+      "id": "a3js-london-street-starter",
+      "title": "London Street Starter (free sample)",
+      "author": "Assets for three.js (Adapt Progress Evolve Limited); models by JSTOV",
+      "source": "london-street-starter.zip supplied by the project owner, received 2026-10-17",
+      "licence": "Assets for three.js Model Licence, version 2 (1 October 2026), LICENCE.txt in the pack: use and ship inside finished products (including websites that download the models to display them); may not share or give away the model files as assets, including in a public repository whose purpose is to redistribute them; no use for training 3D-generating systems",
+      "licenceUrl": null,
+      "redistributionAllowed": false,
+      "attributionRequired": false,
+      "storage": "private",
+      "contents": [
+        "Terrace house (london-residential-benchmark) high/medium/low",
+        "Restaurant shopfront high/medium/low",
+        "Gate",
+        "Railing",
+        "Café table",
+        "Café chair",
+        "A-board",
+        "Planter",
+        "Ground, example scene and catalogue files"
+      ]
+    },
+    {
+      "id": "cadmando-street-pack",
+      "title": "Street pack (#145)",
+      "author": "CADmando (per file metadata)",
+      "source": "street_pack.fbx and street_pack.blend supplied by the project owner, received 2026-10-17",
+      "licence": "Unknown: no licence file supplied. Textures packed in the .blend include web-sourced images (a TfL bus route map, a screenshot, 'images.jpg', red-route, telephone and junction sign images) whose rights are unclear; asphalt and wood textures appear to be Poly Haven (CC0)",
+      "licenceUrl": null,
+      "redistributionAllowed": null,
+      "attributionRequired": null,
+      "storage": "private",
+      "contents": [
+        "Bin",
+        "Bus Stop",
+        "Clearway Sign",
+        "Crosswalk",
+        "Drain",
+        "Junction sign",
+        "Phone box",
+        "Postbox",
+        "Streetsign",
+        "Telegraph pole (2)",
+        "Traffic Lights",
+        "Wheelie Bin"
+      ]
+    },
+    {
+      "id": "supermarket-glb",
+      "title": "Supermarket (model_for_supermarket.glb)",
+      "author": "Unknown (exported with three.js GLTFExporter r180)",
+      "source": "model_for_supermarket.glb supplied by the project owner, received 2026-10-17",
+      "licence": "Unknown: no licence or receipt supplied",
+      "licenceUrl": null,
+      "redistributionAllowed": null,
+      "attributionRequired": null,
+      "storage": "private",
+      "contents": [
+        "Supermarket building, 20.7 x 5.15 x 18.4 m"
+      ]
     }
   ],
   "models": [
@@ -25,8 +94,73 @@
         "glTF-Transform 4.5.1: weld, dedup, join (one primitive per material), prune, quantize (KHR_mesh_quantization)",
         "At load: glTF PBR materials replaced with StandardMaterial of the same colour (cheaper on phones, lit like the rest of the scene); body material 'Blue' recoloured per road user; turned 180° and scaled uniformly to the 4.3 m collision length"
       ],
-      "stats": {"triangles": 2954, "materials": 6, "bytes": 113240},
-      "build": "tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar1"
+      "stats": {
+        "triangles": 2954,
+        "materials": 6,
+        "bytes": 113240
+      },
+      "build": "tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar1",
+      "storage": "public"
+    },
+    {
+      "id": "a3js-london-terrace-house-low",
+      "file": "public/assets/licensed/a3js-london-terrace-house-low.glb",
+      "storage": "private",
+      "pack": "a3js-london-street-starter",
+      "sourceFile": "buildings-uncompressed/london-residential-benchmark/low-london-residential-benchmark.glb",
+      "use": "Moving off safely: house on the west side (replaces the simple block house-w-1; its collision box is kept)",
+      "modifications": [
+        "Lowest detail level, uncompressed copy (no meshopt decoder needed)",
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize (KHR_mesh_quantization)",
+        "At load: PBR materials replaced with StandardMaterial of the same colours and textures"
+      ],
+      "stats": {
+        "triangles": 4846,
+        "materials": 21,
+        "textures": 8,
+        "bytes": 256592
+      },
+      "build": "tools/assets/build-licensed.sh london <extracted pack folder>"
+    },
+    {
+      "id": "cadmando-traffic-lights",
+      "file": "public/assets/licensed/cadmando-traffic-lights.glb",
+      "storage": "private",
+      "pack": "cadmando-street-pack",
+      "sourceFile": "street_pack.fbx, object 'Traffic Lights'",
+      "use": "Brentwood: one signal pole on the learner's near side before the High Street signal crossing. Lamps are fixed as modelled (green lit); signals are not simulated",
+      "modifications": [
+        "FBX converted to glTF with FBX2glTF 0.9.7",
+        "Only the 'Traffic Lights' object kept, centred, base at ground level (tools/assets/extract-object.mjs)",
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize",
+        "At load: PBR materials replaced with StandardMaterial of the same colours (emissive kept)"
+      ],
+      "stats": {
+        "triangles": 3736,
+        "materials": 8,
+        "textures": 0,
+        "bytes": 79424
+      },
+      "build": "tools/assets/build-licensed.sh street <street_pack.glb from FBX2glTF>"
+    },
+    {
+      "id": "supermarket",
+      "file": "public/assets/licensed/supermarket.glb",
+      "storage": "private",
+      "pack": "supermarket-glb",
+      "sourceFile": "model_for_supermarket.glb",
+      "use": "Moving off safely: supermarket on the east side, shopfront facing the road (replaces the simple block house-e-1; its collision box is kept)",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize",
+        "At load: PBR materials replaced with StandardMaterial of the same colours"
+      ],
+      "stats": {
+        "triangles": 2304,
+        "materials": 12,
+        "textures": 0,
+        "bytes": 91744
+      },
+      "build": "tools/assets/build-licensed.sh market model_for_supermarket.glb"
     }
   ]
 }

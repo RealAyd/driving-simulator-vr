@@ -16,7 +16,7 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
-import {CAR_MODEL,CarModel} from '../assets/models';
+import {CAR_MODEL,CarModel,PropLibrary} from '../assets/models';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
@@ -127,11 +127,21 @@ export async function boot():Promise<void>{
     world.dispose();
     place=locations.get(id)!;
     world=buildWorld(scene,place,quality);
+    placeModels();
     staticObstacles=new StaticObstacles(place.blocks);
     vehicle.setSpawn(spawnOf(place));
     hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
     showCredit();
   };
+  // Scenery models for the location; any that are unavailable leave the simple shapes in place.
+  const props=new PropLibrary(scene);
+  const placeModels=()=>{
+    const root=world.root;
+    for(const m of place.models)void props.place(root,m.asset,`model-${m.id}`,m.position.x,m.position.z,m.facingDeg).then(node=>{
+      if(node&&m.replacesBlock)scene.getMeshByName(m.replacesBlock)?.setEnabled(false);
+    });
+  };
+  placeModels();
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
   const showCredit=()=>{
     const osm=place.sources.some(source=>source.licence.includes('ODbL'));
@@ -675,7 +685,10 @@ export async function boot():Promise<void>{
     byId('about-quality').textContent=`${quality.id} (render scale 1/${quality.hardwareScaling}, ${engine.getRenderWidth()}×${engine.getRenderHeight()} px)`;
     const p=perf.stats();
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
-    byId('about-models').textContent=carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple shapes (model not loaded)';
+    byId('about-models').textContent=[
+      carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple car shapes (model not loaded)',
+      props.available.size?`licensed scenery: ${[...props.available].join(', ')}`:'no licensed scenery in this build'
+    ].join('; ');
     byId('about-mirrors').textContent=`${mirrors.filter(m=>m.isActive).length} of 3 rendering now; ${quality.mirrorResolution} px, every ${quality.mirrorUpdateInterval} frame${quality.mirrorUpdateInterval===1?'':'s'} (every frame for the mirror you are looking at)`;
     byId('screen-about').hidden=false;
   };
@@ -761,6 +774,7 @@ export async function boot():Promise<void>{
     steering:()=>steeringMode,
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
+    sceneryModels:()=>[...props.available],
     overhead:(view:{x:number;z:number;height:number}|null)=>{overhead=view},
     variant:()=>runtime?.variant?.id??null,
     /** Diagnostics: switch mirror rendering off to measure what it costs. */
