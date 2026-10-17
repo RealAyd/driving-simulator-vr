@@ -48,8 +48,10 @@ test('G4: tilt on the exercise screen: enable, live status, calibrate, then the 
   await page.click('#tilt-calibrate');
   await expect(page.locator('#tilt-calibrated')).toHaveText('calibrated');
   clearInterval(feed);
-  await lean(page,27);
+  // Keep readings coming (a single event goes stale on a slow runner, which correctly shows "no readings").
+  const feed27=setInterval(()=>{void lean(page,27).catch(()=>{})},40);
   await expect(page.locator('#tilt-readings')).toContainText('lean +15°');
+  clearInterval(feed27);
   await page.locator('#tilt-options').scrollIntoViewIfNeeded();
   await page.screenshot({path:testInfo.outputPath('g4-01-tilt-settings.png')});
 
