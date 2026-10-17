@@ -70,9 +70,10 @@ describe('fixed step clock',()=>{
 });
 
 describe('quality profiles',()=>{
-  it('honours ?quality= and otherwise picks phone for small touch screens',()=>{
+  it('honours ?quality= and otherwise picks phone for any touch screen',()=>{
     expect(pickQualityProfile('?quality=phone',false,1920).id).toBe('phone');
     expect(pickQualityProfile('',true,400).id).toBe('phone');
+    expect(pickQualityProfile('',true,932).id).toBe('phone'); // iPhone 14 Pro Max landscape
     expect(pickQualityProfile('',false,1280).id).toBe('desktop');
   });
 });

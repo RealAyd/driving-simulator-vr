@@ -21,8 +21,12 @@ export const QUALITY_PROFILES:Record<QualityProfileId,QualityProfile>={
   phone:{id:'phone',hardwareScaling:1.5,antialias:false,mirrorResolution:256,mirrorUpdateInterval:2,decorativeDetail:'reduced'}
 };
 
-export function pickQualityProfile(search:string,coarsePointer:boolean,viewportWidth:number):QualityProfile{
+/**
+ * Touch screens get the phone profile at any width: an iPhone 14 Pro Max in
+ * landscape is 932 CSS px wide, wider than a small laptop window.
+ */
+export function pickQualityProfile(search:string,coarsePointer:boolean,_viewportWidth:number):QualityProfile{
   const requested=new URLSearchParams(search).get('quality');
   if(requested==='desktop'||requested==='phone')return QUALITY_PROFILES[requested];
-  return QUALITY_PROFILES[coarsePointer&&viewportWidth<900?'phone':'desktop'];
+  return QUALITY_PROFILES[coarsePointer?'phone':'desktop'];
 }
