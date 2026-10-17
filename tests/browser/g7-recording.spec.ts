@@ -1,3 +1,4 @@
+import {writeFileSync} from 'node:fs';
 import {expect,test,type Page} from '@playwright/test';
 
 // iPhone 14 Pro Max in landscape (CSS pixels), touch input.
@@ -21,17 +22,20 @@ async function startMovingOff(page:Page,variant:string){
 }
 const tap=(page:Page,selector:string)=>page.locator(selector).dispatchEvent('pointerdown');
 const go=async(page:Page,down:boolean)=>page.locator('[data-hold=throttle]').dispatchEvent(down?'pointerdown':'pointerup');
-  // Frames are captured while the scene plays (no ffmpeg here) and assembled into a GIF afterwards.
+  // Frames are saved while the scene plays; assemble them with ffmpeg afterwards (Playwright's own video needs its bundled ffmpeg).
   test('G7: recording: the purple car and the cyclist pass while the learner checks each view',async({page},testInfo)=>{
     test.setTimeout(400_000);
     await startMovingOff(page,'car-then-cyclist');
-    let frame=0,recording=true;
-    const capture=(async()=>{
-      while(recording){
-        await page.screenshot({path:testInfo.outputPath(`frame-${String(frame++).padStart(4,'0')}.png`)});
-        await page.waitForTimeout(150);
-      }
-    })();
+    // Chrome's screencast streams every rendered frame (with timestamps) for a real-time video.
+    const cdp=await page.context().newCDPSession(page);
+    let frame=0;
+    const times:number[]=[];
+    cdp.on('Page.screencastFrame',async f=>{
+      writeFileSync(testInfo.outputPath(`frame-${String(frame++).padStart(5,'0')}.jpg`),Buffer.from(f.data,'base64'));
+      times.push(f.metadata.timestamp??0);
+      await cdp.send('Page.screencastFrameAck',{sessionId:f.sessionId}).catch(()=>{});
+    });
+    await cdp.send('Page.startScreencast',{format:'jpeg',quality:80,everyNthFrame:1});
     await waitFor(page,`${z('purple-car')}<45`);
     await tap(page,'[data-view=interior]');
     await waitFor(page,`${z('purple-car')}<22`);
@@ -47,7 +51,8 @@ const go=async(page:Page,down:boolean)=>page.locator('[data-hold=throttle]').dis
     await waitFor(page,`${z('cyclist')}<-6`);
     await tap(page,'[data-view=forward]');
     await page.waitForTimeout(1500);
-    recording=false;
-    await capture;
-    testInfo.annotations.push({type:'frames',description:String(frame)});
+    await cdp.send('Page.stopScreencast');
+    const seconds=times.length>1?times.at(-1)!-times[0]!:0;
+    writeFileSync(testInfo.outputPath('timing.json'),JSON.stringify({frames:frame,seconds}));
+    testInfo.annotations.push({type:'frames',description:`${frame} frames over ${seconds.toFixed(1)} s`});
   });
