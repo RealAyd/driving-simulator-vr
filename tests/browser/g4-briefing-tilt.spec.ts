@@ -17,8 +17,11 @@ const lean=(page:Page,deg:number)=>page.evaluate(d=>{
 test('G4: tilt steering turns the car with the phone, and the briefing holds the start for 10 s',async({page},testInfo)=>{
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
-  // Some headless builds have no orientation API at all; give them a stand-in so readings can be fed.
-  await page.addInitScript(()=>{if(!('DeviceOrientationEvent' in window))(window as any).DeviceOrientationEvent=class extends Event{}});
+  // Headless builds either lack the orientation API or refuse its permission; stand in for an allowed phone.
+  await page.addInitScript(()=>{
+    if(!('DeviceOrientationEvent' in window))(window as any).DeviceOrientationEvent=class extends Event{};
+    if('requestPermission' in DeviceOrientationEvent)(DeviceOrientationEvent as any).requestPermission=async()=>'granted';
+  });
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   testInfo.annotations.push({type:'screen angle',description:String(await page.evaluate(()=>screen.orientation?.angle))});
@@ -74,7 +77,8 @@ test('G4: without sensor readings, choosing tilt falls back to assisted steering
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // Clicked rather than checked: the choice reverts as soon as no sensor is found.
   await page.locator('input[name=steering][value=tilt]').click();
-  await expect(page.locator('#tilt-status')).toContainText('No motion sensor readings',{timeout:5000});
+  // Refused (browsers with the iOS-style permission) or silent (no sensor): either way, tilt switches off.
+  await expect(page.locator('#tilt-status')).toContainText('so tilt steering is off',{timeout:5000});
   await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
   expect(await read(page,'steering()')).toBe('assist');
 });
