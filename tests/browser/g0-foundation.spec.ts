@@ -22,7 +22,7 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
-  await expect(page.locator('#location-label')).toContainText('representative layout');
+  await expect(page.locator('#location-label')).toContainText('Draft preview');
   await page.screenshot({path:testInfo.outputPath('01-start.png')});
 
   await page.click('#start-button');

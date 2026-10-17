@@ -20,6 +20,7 @@ export {CreateTorus} from '@babylonjs/core/Meshes/Builders/torusBuilder';
 export {CreateCylinder} from '@babylonjs/core/Meshes/Builders/cylinderBuilder';
 export {CreatePlane} from '@babylonjs/core/Meshes/Builders/planeBuilder';
 export {CreateSphere} from '@babylonjs/core/Meshes/Builders/sphereBuilder';
+export {CreateDisc} from '@babylonjs/core/Meshes/Builders/discBuilder';
 export {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
 export {RenderTargetTexture} from '@babylonjs/core/Materials/Textures/renderTargetTexture';
 export {HemisphericLight} from '@babylonjs/core/Lights/hemisphericLight';

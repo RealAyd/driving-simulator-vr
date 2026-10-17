@@ -10,6 +10,10 @@ export const Fidelity=z.enum(['representative','geographically-inspired','review
 
 export const RoadSchema=z.object({
   id:z.string().min(1),
+  /** Street name shown in feedback; several road pieces may share it. */
+  name:z.string().optional(),
+  /** One-way roads carry traffic only along the centreline direction. */
+  oneway:z.boolean().default(false),
   /** Polyline along the road centre, in local metres. At least two points. */
   centreline:z.array(point).min(2),
   /** Running lanes; UK two-way roads have one each way. */
@@ -40,7 +44,8 @@ export const BlockSchema=z.object({
 export const CrossingSchema=z.object({
   id:z.string().min(1),
   roadId:z.string(),
-  kind:z.enum(['zebra']),
+  /** Signal crossings are drawn with stop lines and studs; their lights are not simulated yet. */
+  kind:z.enum(['zebra','signal']),
   /** Distance of the crossing centre along the road centreline, metres. */
   along:z.number(),
   /** Width of the striped area measured along the road. */
@@ -49,8 +54,33 @@ export const CrossingSchema=z.object({
   giveWayOffset:z.number().min(0).max(3).default(1)
 }).strict();
 
+/**
+ * A junction where road ends meet. Roads stop at `radius` from the centre;
+ * the junction surface, painted disc and give-way lines fill the space.
+ */
+export const JunctionSchema=z.object({
+  id:z.string().regex(/^[a-z0-9-]+$/),
+  kind:z.enum(['mini-roundabout']),
+  position:point,
+  /** Clear area around the centre, metres. */
+  radius:z.number().min(3).max(20),
+  /** Painted central disc that traffic passes around (clockwise in the UK). */
+  discDiameter:z.number().min(1).max(5).default(3),
+  /** Roads whose centrelines end here and carry traffic into the junction (give-way lines). */
+  entries:z.array(z.string()).default([])
+}).strict();
+
+/** Building outline extruded as walls only (never seen from above at driver height). */
+export const BuildingSchema=z.object({
+  id:z.string().min(1),
+  footprint:z.array(point).min(3),
+  height:z.number().min(2).max(60),
+  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
+}).strict();
+
 export const LocationSchema=z.object({
-  schemaVersion:z.literal(1),
+  /** v2 adds junctions, one-way roads, building outlines and trees. */
+  schemaVersion:z.union([z.literal(1),z.literal(2)]),
   id:z.string().regex(/^[a-z0-9-]+$/),
   name:z.string().min(1),
   fidelity:Fidelity,
@@ -66,6 +96,9 @@ export const LocationSchema=z.object({
   roads:z.array(RoadSchema).min(1),
   blocks:z.array(BlockSchema).default([]),
   crossings:z.array(CrossingSchema).default([]),
+  junctions:z.array(JunctionSchema).default([]),
+  buildings:z.array(BuildingSchema).default([]),
+  trees:z.array(point).default([]),
   spawn:z.object({position:point,headingDeg:z.number(),roadId:z.string()}).strict()
 }).strict().superRefine((location,ctx)=>{
   const roadIds=new Set(location.roads.map(r=>r.id));
@@ -73,12 +106,16 @@ export const LocationSchema=z.object({
   if(!roadIds.has(location.spawn.roadId))ctx.addIssue({code:'custom',message:`Spawn road "${location.spawn.roadId}" does not exist`});
   for(const crossing of location.crossings)
     if(!roadIds.has(crossing.roadId))ctx.addIssue({code:'custom',message:`Crossing "${crossing.id}" is on missing road "${crossing.roadId}"`});
+  for(const junction of location.junctions)for(const entry of junction.entries)
+    if(!roadIds.has(entry))ctx.addIssue({code:'custom',message:`Junction "${junction.id}" lists missing road "${entry}"`});
 });
 
 export type Location=z.infer<typeof LocationSchema>;
 export type Road=z.infer<typeof RoadSchema>;
 export type Block=z.infer<typeof BlockSchema>;
 export type Crossing=z.infer<typeof CrossingSchema>;
+export type Junction=z.infer<typeof JunctionSchema>;
+export type Building=z.infer<typeof BuildingSchema>;
 
 export function parseLocation(data:unknown):Location{
   const result=LocationSchema.safeParse(data);

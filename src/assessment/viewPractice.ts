@@ -1,4 +1,4 @@
-import {worldToLocal,type Pose,type Seconds,type SimEvent,type SimModule} from '../contracts';
+import {IMPROVE,worldToLocal,type Pose,type Seconds,type SimEvent,type SimModule} from '../contracts';
 import type {PassingVehicle} from '../actors/passingVehicle';
 
 /**
@@ -71,12 +71,12 @@ export class ViewPracticeSummary implements SimModule{
     }
     out.push(used.size
       ?'Views used: '+[...used].map(([v,s])=>`${v} (${[...s].join(', ')})`).join('; ')+'.'
-      :'No mirror or shoulder views were used.');
+      :IMPROVE+'No mirror or shoulder views were used.');
     for(const [id,list] of this.visits){
       for(const v of list){
         out.push(v.checked
           ?`You checked over your ${v.side} shoulder while the ${names[id]??id} was in your ${v.side} blind spot.`
-          :`The ${names[id]??id} passed through your ${v.side} blind spot without a ${v.side} shoulder check.`);
+          :IMPROVE+`The ${names[id]??id} passed through your ${v.side} blind spot without a ${v.side} shoulder check.`);
       }
     }
     out.push('Looking at a mirror shows where you pointed the view, not what you noticed.');

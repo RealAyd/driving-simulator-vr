@@ -1,6 +1,8 @@
 import locationJson from '../../content/locations/representative-residential-straight.json';
 import crossingJson from '../../content/scenarios/crossing-restricted-view.json';
 import mirrorCheckJson from '../../content/scenarios/mirror-check.json';
+import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
+import brentwoodGuidedJson from '../../content/scenarios/brentwood-guided-traversal.json';
 import {
   degToRad,localToWorld,parseLocation,parseScenario,
   type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
@@ -10,6 +12,7 @@ import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../acto
 import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
+import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
 import {ALL_MIRRORS,Mirror} from '../cockpit/mirror';
@@ -101,19 +104,39 @@ export async function boot():Promise<void>{
 
   const scene=new Scene(engine);
   configureScene(scene);
-  const place=parseLocation(locationJson);
-  const scenarios=new Map([crossingJson,mirrorCheckJson].map(raw=>{
+  const locations=new Map([locationJson,brentwoodJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
+  const scenarios=new Map([crossingJson,mirrorCheckJson,brentwoodGuidedJson].map(raw=>{
     const s=parseScenario(raw);
-    if(s.locationId!==place.id)throw new Error(`Scenario ${s.id} is for location ${s.locationId}, not ${place.id}`);
+    if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
     return [s.id,s] as const;
   }));
-  const world=buildWorld(scene,place,quality);
+  // The world is rebuilt when an exercise takes place somewhere else.
+  let place=locations.get(parseLocation(locationJson).id)!;
+  let world=buildWorld(scene,place,quality);
+  let staticObstacles=new StaticObstacles(place.blocks);
+  const spawnOf=(l:typeof place):Pose=>({position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)});
+  const useLocation=(id:string)=>{
+    if(place.id===id)return;
+    world.dispose();
+    place=locations.get(id)!;
+    world=buildWorld(scene,place,quality);
+    staticObstacles=new StaticObstacles(place.blocks);
+    vehicle.setSpawn(spawnOf(place));
+    hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
+    showCredit();
+  };
+  // ODbL requires the OpenStreetMap credit wherever its map data is shown.
+  const showCredit=()=>{
+    const osm=place.sources.some(source=>source.licence.includes('ODbL'));
+    byId('hud-credit').hidden=!osm;
+    byId('hud-credit').textContent=osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'';
+  };
   const store=await openAttemptStore();
 
   const clock=new FixedStepClock(SIM_STEP);
   const events=new EventLog(()=>clock.time);
   const input=new KeyboardInput(window,window,document);
-  const spawn:Pose={position:{x:place.spawn.position.x,y:0,z:place.spawn.position.z},heading:degToRad(place.spawn.headingDeg)};
+  const spawn=spawnOf(place);
 
   // ---- Learner car (single movement owner) with optional steering assistance ----
   let runtime:ExerciseRuntime|null=null;
@@ -137,7 +160,7 @@ export async function boot():Promise<void>{
     surfaceHeightAt:(x,z)=>surfaceAt(place,x,z)?.height??null,
     groundHeight:0,
     surfaceKindAt:(x,z)=>surfaceAt(place,x,z)?.kind??'none'
-  },new CompositeCollisions(new StaticObstacles(place.blocks),dynamicFootprints),events);
+  },new CompositeCollisions({firstCollision:(pose,w,l)=>staticObstacles.firstCollision(pose,w,l)},dynamicFootprints),events);
 
   // ---- Cockpit, mirrors, camera ----
   const vehicleNode=new TransformNode('learner-car',scene);
@@ -210,12 +233,17 @@ export async function boot():Promise<void>{
     ];
 
     const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
+    const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):null;
     const road=place.roads[0]!;
     let lastCollision:string|null=null;
     const runner=new ScenarioRunner(scenario,zones,new Map(pedestrian?[[pedestrian.id,pedestrian]]:[]),()=>{
-      const s=sampleRoad(road,vehicle.state.position.x,vehicle.state.position.z);
-      return {surface:vehicle.surfaceKind,heading:vehicle.state.heading,roadHeading:Math.atan2(s.direction.x,-s.direction.z),collidedWith:lastCollision};
+      const {x,z}=vehicle.state.position;
+      // Wrong way is judged against the exercise route where there is one (junctions join several roads).
+      const s=sampleRoad(road,x,z);
+      const roadHeading=assist?assist.headingAt(x,z):Math.atan2(s.direction.x,-s.direction.z);
+      return {surface:vehicle.surfaceKind,heading:vehicle.state.heading,roadHeading,collidedWith:lastCollision};
     },events);
+    runner.onMessage=text=>hud.setTask(text);
 
     const crossing=pedestrian?place.crossings.find(c=>c.id===pedestrian.def.crossingId)??null:null;
     const assessor=scenario.rubricId==='crossing-restricted-view'&&pedestrian&&crossing?new Assessor({
@@ -224,13 +252,17 @@ export async function boot():Promise<void>{
       followerGap:()=>follower?follower.gap:null,
       zones,crossing,pedestrian,now:()=>clock.time
     },events):null;
-    const practice=assessor?null:new ViewPracticeSummary(passers,()=>vehicle.pose,()=>events.events,()=>clock.time);
+    const routeJunctions=scenario.zones.some(z=>z.id==='rb1-entry')?[
+      {name:'Mini-roundabout 1',approachZone:'rb1-approach',entryZone:'rb1-entry',signal:'left' as const},
+      {name:'Mini-roundabout 2',approachZone:'rb2-approach',entryZone:'rb2-entry',signal:null}
+    ]:null;
+    const route=routeJunctions?new RouteSummary(routeJunctions,zones,()=>heldView==='right-door'?0:head.yaw,()=>events.events):null;
+    const practice=assessor||route?null:new ViewPracticeSummary(passers,()=>vehicle.pose,()=>events.events,()=>clock.time);
 
     const modules:SimModule[]=[
       ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,
-      zones,runner,observation,...(assessor?[assessor]:[]),...(practice?[practice]:[])
+      zones,runner,observation,...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[])
     ];
-    const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):null;
     const names:Record<string,string>={'overtaking-car':'magenta car',cyclist:'cyclist'};
     return {
       scenario,modules,runner,zones,assist,pedestrian,follower,passers,
@@ -244,7 +276,7 @@ export async function boot():Promise<void>{
       finish(outcome){
         const base=assessor?assessor.finish(scenario.id,outcome,runner.elapsed):{
           scenarioId:scenario.id,rubricVersion:'none (practice)',outcome,findings:[],
-          notes:practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
+          notes:route?route.notes():practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
         };
         if(steeringMode==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
         if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
@@ -380,7 +412,9 @@ export async function boot():Promise<void>{
   const start=(scenarioId:string)=>{
     if(session.state!=='ready')return;
     runtime?.dispose();
-    runtime=buildExercise(scenarios.get(scenarioId)!);
+    const scenario=scenarios.get(scenarioId)!;
+    useLocation(scenario.locationId);
+    runtime=buildExercise(scenario);
     attachRunner();
     if(!session.to('running'))return;
     resetAttempt();
@@ -432,6 +466,7 @@ export async function boot():Promise<void>{
 
   byId('start-button').addEventListener('click',()=>start('crossing-restricted-view'));
   byId('start-mirror-check').addEventListener('click',()=>start('mirror-check'));
+  byId('start-brentwood').addEventListener('click',()=>start('brentwood-guided-traversal'));
   byId('resume-button').addEventListener('click',resume);
   byId('restart-button').addEventListener('click',restart);
   byId('end-button').addEventListener('click',endAttempt);
@@ -474,9 +509,11 @@ export async function boot():Promise<void>{
   xr.onExit=()=>{if(session.state==='running')pause()};
 
   hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
-  byId('location-label').textContent=`${place.name} — ${place.fidelity} layout, ${place.reviewStatus}.`;
+  byId('location-label').textContent='Draft preview. Each exercise names its location; layouts are unreviewed.';
 
   const hudWheel=byId('hud-wheel');
+  /** Diagnostics: a top-down camera for layout review screenshots. */
+  let overhead:{x:number;z:number;height:number}|null=null;
   const perf=new PerfProbe();
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
@@ -501,8 +538,13 @@ export async function boot():Promise<void>{
     const pose=vehicle.interpolatedPose(alpha);
     applyPose(vehicleNode,pose);
     const eye=head.eyeWorld(pose),look=head.lookWorld(pose);
-    camera.position.set(eye.x,eye.y,eye.z);
-    camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
+    if(overhead){
+      camera.position.set(overhead.x,overhead.height,overhead.z+.01);
+      camera.setTarget(new Vector3(overhead.x,0,overhead.z));
+    }else{
+      camera.position.set(eye.x,eye.y,eye.z);
+      camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
+    }
     for(const mirror of mirrors){
       mirror.update(pose);
       mirror.setActive(camera.isInFrustum(mirror.glass));
@@ -540,6 +582,8 @@ export async function boot():Promise<void>{
     result:()=>lastResult,
     assist:()=>steeringMode==='assist',
     steering:()=>steeringMode,
+    location:()=>place.id,
+    overhead:(view:{x:number;z:number;height:number}|null)=>{overhead=view},
     briefing:()=>Math.max(0,briefingLeft),
     storage:store.kind,
     quality:quality.id,

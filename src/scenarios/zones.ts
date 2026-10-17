@@ -1,5 +1,5 @@
 import type {EventSink,Location,Seconds,SimModule,Zone} from '../contracts';
-import {sampleRoad} from '../world/roadGeometry';
+import {roadHalfWidth,sampleRoad} from '../world/roadGeometry';
 
 export interface ZoneStats{
   zoneId:string;
@@ -38,7 +38,12 @@ export class ZoneTracker implements SimModule{
 
   fixedUpdate(_dt:Seconds):void{
     const {x,z,speed}=this.learner();
-    for(const road of this.location.roads)this.along.set(road.id,sampleRoad(road,x,z).along);
+    // Only roads the learner is actually on count; elsewhere 'along' is undefined.
+    for(const road of this.location.roads){
+      const sample=sampleRoad(road,x,z);
+      if(sample.distance<=roadHalfWidth(road)+road.pavementWidth)this.along.set(road.id,sample.along);
+      else this.along.delete(road.id);
+    }
     for(const zone of this.zones){
       const s=this.stats.get(zone.id)!;
       const along=this.along.get(zone.roadId);

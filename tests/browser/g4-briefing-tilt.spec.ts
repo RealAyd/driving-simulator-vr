@@ -107,8 +107,11 @@ test('G4: assisted steering in the mirror check keeps to the road through the be
     const v=await read(page,'vehicle()');
     testInfo.annotations.push({type:'car',description:`t=${(await read(page,'simTime()')).toFixed(1)} x=${v.position.x.toFixed(2)} z=${v.position.z.toFixed(1)} v=${v.speed.toFixed(1)} ${v.surface} ${await read(page,'session()')}`});
     return v.position.z;
-  },{timeout:200_000,intervals:[5000]}).toBeLessThan(-300);
+  },{timeout:200_000,intervals:[1000]}).toBeLessThan(-250);
+  // Stop well before the end of the modelled road (about 340 m).
   await go.dispatchEvent('pointerup');
+  await page.locator('[data-hold=brake]').dispatchEvent('pointerdown');
+  await expect.poll(async()=>(await read(page,'vehicle()')).speed,{timeout:60_000}).toBe(0);
   const car=await read(page,'vehicle()');
   await page.screenshot({path:testInfo.outputPath('g4-04-after-bend.png')});
   expect(await read(page,'session()')).toBe('running');

@@ -49,6 +49,13 @@ export class SteeringAssist{
     return {x:a.x+(b.x-a.x)*k,z:a.z+(b.z-a.z)*k};
   }
 
+  /** Direction of travel along the path nearest to (x, z), as a heading (radians). */
+  headingAt(x:number,z:number):number{
+    const s=this.progress(x,z);
+    const a=this.pointAt(s-1),b=this.pointAt(s+1);
+    return Math.atan2(b.x-a.x,-(b.z-a.z));
+  }
+
   /** Normalised steering input (-1 left … +1 right) for the current pose and speed. */
   steer(pose:Pose,speed:number):number{
     if(speed<.3)return 0;

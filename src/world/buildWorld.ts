@@ -1,11 +1,11 @@
 import {
-  Color3,CreateBox,CreateCylinder,CreateGround,CreateRibbon,CreateSphere,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
-  type Mesh,type Scene
+  Color3,CreateBox,CreateCylinder,CreateDisc,CreateGround,CreateRibbon,CreateSphere,Mesh,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
+  type Scene
 } from '../engine/babylon';
 import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
-import {pointAtAlong,roadHalfWidth} from './roadGeometry';
+import {onOtherCarriageway,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
 
 export interface BuiltWorld{
   root:TransformNode;
@@ -23,43 +23,66 @@ function material(scene:Scene,name:string,color:Color3,specular=.05):StandardMat
   return m;
 }
 
-/** Offsets a centreline sideways; positive offset is to the right of travel. */
-function offsetLine(road:Road,offset:number,y:number):Vector3[]{
-  const pts=road.centreline;
-  return pts.map((p,i)=>{
-    const a=pts[Math.max(0,i-1)]!,b=pts[Math.min(pts.length-1,i+1)]!;
-    const len=Math.hypot(b.x-a.x,b.z-a.z)||1;
-    const ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;
-    return new Vector3(p.x+(-uz)*offset,y,p.z+ux*offset);
-  });
+/** Dashed or solid line markings laid along a centreline offset (not yet parented). */
+function markings(scene:Scene,road:Road,offset:number,dash:number,gap:number,width:number,y:number):Mesh[]{
+  const out:Mesh[]=[];
+  const end=road.centreline.at(-1)!;
+  const total=sampleRoad(road,end.x,end.z).along;
+  // Solid lines are laid in short pieces so they follow curves.
+  const piece=gap>0?dash:1,step=gap>0?dash+gap:1;
+  for(let s=0;s<total;s+=step){
+    const l=Math.min(piece,total-s);
+    const p=pointAtAlong(road,s+l/2);
+    const line=CreateGround(`marking-${road.id}-${offset}-${s.toFixed(1)}`,{width,height:l+(gap>0?0:.05)},scene);
+    line.position.set(p.x+(-p.direction.z)*offset,y,p.z+p.direction.x*offset);
+    line.rotation.y=rotationYFromHeading(Math.atan2(p.direction.x,-p.direction.z));
+    out.push(line);
+  }
+  return out;
 }
 
-function strip(scene:Scene,name:string,road:Road,from:number,to:number,y:number,mat:StandardMaterial,parent:TransformNode):Mesh{
-  const mesh=CreateRibbon(name,{pathArray:[offsetLine(road,from,y),offsetLine(road,to,y)],sideOrientation:2},scene);
-  mesh.material=mat;
-  mesh.parent=parent;
-  return mesh;
-}
+interface Sample{x:number;z:number;rx:number;rz:number;along:number}
 
-/** Dashed or solid line markings laid along a centreline offset. */
-function markings(scene:Scene,road:Road,offset:number,dash:number,gap:number,width:number,mat:StandardMaterial,parent:TransformNode,y:number){
-  const pts=road.centreline;
+/** Centreline points at most `step` apart, each with the right-of-travel unit vector. */
+function resample(road:Road,step=1):Sample[]{
+  const pts=road.centreline,out:Sample[]=[];
+  let along=0;
   for(let i=0;i<pts.length-1;i++){
     const a=pts[i]!,b=pts[i+1]!;
     const len=Math.hypot(b.x-a.x,b.z-a.z);
+    if(len===0)continue;
     const ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;
-    const heading=Math.atan2(ux,-uz);
-    const step=gap>0?dash+gap:len;
-    for(let s=0;s<len;s+=step){
-      const l=Math.min(gap>0?dash:len,len-s);
-      const c=s+l/2;
-      const line=CreateGround(`marking-${road.id}-${offset}-${i}-${s}`,{width,height:l},scene);
-      line.position.set(a.x+ux*c+(-uz)*offset,y,a.z+uz*c+ux*offset);
-      line.rotation.y=rotationYFromHeading(heading);
-      line.material=mat;
-      line.parent=parent;
-    }
+    const n=Math.max(1,Math.ceil(len/step));
+    for(let k=0;k<n;k++)out.push({x:a.x+ux*len*k/n,z:a.z+uz*len*k/n,rx:-uz,rz:ux,along:along+len*k/n});
+    along+=len;
+    if(i===pts.length-2)out.push({x:b.x,z:b.z,rx:-uz,rz:ux,along});
   }
+  // Average directions at the original corners so offset edges do not kink.
+  for(let i=1;i<out.length-1;i++){
+    const p=out[i-1]!,q=out[i+1]!;
+    const dx=q.x-p.x,dz=q.z-p.z,l=Math.hypot(dx,dz)||1;
+    out[i]={...out[i]!,rx:-dz/l,rz:dx/l};
+  }
+  return out;
+}
+
+const at=(s:Sample,offset:number,y:number)=>new Vector3(s.x+s.rx*offset,y,s.z+s.rz*offset);
+
+/** Ribbons between two offsets, one per run of samples that `keep` accepts. */
+function strips(scene:Scene,name:string,samples:Sample[],from:number,to:number,y0:number,y1:number,keep:(s:Sample)=>boolean,parent:TransformNode):Mesh[]{
+  const meshes:Mesh[]=[];
+  let run:Sample[]=[];
+  const flush=()=>{
+    if(run.length>=2){
+      const mesh=CreateRibbon(`${name}-${meshes.length}`,{pathArray:[run.map(s=>at(s,from,y0)),run.map(s=>at(s,to,y1))],sideOrientation:2},scene);
+      mesh.parent=parent;
+      meshes.push(mesh);
+    }
+    run=[];
+  };
+  for(const s of samples){if(keep(s))run.push(s);else flush()}
+  flush();
+  return meshes;
 }
 
 export function buildWorld(scene:Scene,location:Location,quality:QualityProfile):BuiltWorld{
@@ -85,25 +108,70 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   ground.material=grass;
   ground.parent=root;
 
+  // Static meshes are merged per material at the end to keep draw calls low on phones.
+  const byMaterial=new Map<StandardMaterial,Mesh[]>();
+  const add=(mat:StandardMaterial,...meshes:Mesh[])=>{
+    for(const m of meshes)m.material=mat;
+    byMaterial.set(mat,[...(byMaterial.get(mat)??[]),...meshes]);
+  };
+  const inJunction=(x:number,z:number,extra=0)=>location.junctions.some(j=>Math.hypot(x-j.position.x,z-j.position.z)<=j.radius+extra);
+
   for(const road of location.roads){
     const half=roadHalfWidth(road);
     const y=road.surfaceHeight;
-    strip(scene,`carriageway-${road.id}`,road,-half,half,y,tarmac,root);
+    const samples=resample(road);
+    add(tarmac,...strips(scene,`carriageway-${road.id}`,samples,-half,half,y,y,s=>!inJunction(s.x,s.z,-.5),root));
     for(const side of [-1,1]){
-      const inner=side*half,outer=side*(half+road.pavementWidth);
-      strip(scene,`pavement-${road.id}-${side}`,road,inner,outer,y+road.kerbHeight,pavement,root);
-      // Kerb face between carriageway and raised pavement.
-      const face=CreateRibbon(`kerb-${road.id}-${side}`,{
-        pathArray:[offsetLine(road,inner,y),offsetLine(road,inner,y+road.kerbHeight)],sideOrientation:2
-      },scene);
-      face.material=kerb;
-      face.parent=root;
+      const inner=side*half,outer=side*(half+road.pavementWidth),mid=(inner+outer)/2;
+      // No pavement across another road, a junction, or the gap between paired one-way roads.
+      const keep=(s:Sample)=>{
+        const p=at(s,mid,0),q=at(s,outer,0),k=at(s,inner+side*.2,0);
+        return !inJunction(s.x,s.z,road.pavementWidth)&&![p,q,k].some(v=>onOtherCarriageway(location,v.x,v.z,road.id,.2));
+      };
+      if(road.pavementWidth>0)add(pavement,...strips(scene,`pavement-${road.id}-${side}`,samples,inner,outer,y+road.kerbHeight,y+road.kerbHeight,keep,root));
+      if(road.pavementWidth>0)add(kerb,...strips(scene,`kerb-${road.id}-${side}`,samples,inner,inner,y,y+road.kerbHeight,keep,root));
     }
     const lineY=y+.006;
-    if(road.markings.centre==='dashed')markings(scene,road,0,3,6,.1,white,root,lineY);        // UK centre line: short dash, long gap
-    else if(road.markings.centre==='hazard')markings(scene,road,0,6,3,.15,white,root,lineY);   // hazard warning line
-    else if(road.markings.centre==='solid')markings(scene,road,0,0,0,.1,white,root,lineY);
-    if(road.markings.edges)for(const side of [-1,1])markings(scene,road,side*(half-.2),0,0,.1,white,root,lineY);
+    const lines=(offset:number,dash:number,gap:number,width:number)=>{
+      for(const line of markings(scene,road,offset,dash,gap,width,lineY))
+        if(inJunction(line.position.x,line.position.z,.5)||onOtherCarriageway(location,line.position.x,line.position.z,road.id))line.dispose();
+        else{line.parent=root;add(white,line)}
+    };
+    if(road.markings.centre==='dashed')lines(0,3,6,.1);        // UK centre/lane line: short dash, long gap
+    else if(road.markings.centre==='hazard')lines(0,6,3,.15);  // hazard warning line
+    else if(road.markings.centre==='solid')lines(0,0,0,.1);
+    if(road.markings.edges)for(const side of [-1,1])lines(side*(half-.2),0,0,.1);
+  }
+
+  // Mini-roundabouts: junction surface, painted disc, give-way lines on each entry.
+  for(const j of location.junctions){
+    const surface=CreateDisc(`${j.id}-surface`,{radius:j.radius,tessellation:48},scene);
+    surface.rotation.x=Math.PI/2;
+    surface.position.set(j.position.x,.001,j.position.z);
+    surface.parent=root;
+    add(tarmac,surface);
+    const disc=CreateDisc(`${j.id}-disc`,{radius:j.discDiameter/2,tessellation:32},scene);
+    disc.rotation.x=Math.PI/2;
+    disc.position.set(j.position.x,.012,j.position.z);
+    disc.parent=root;
+    add(white,disc);
+    for(const roadId of j.entries){
+      const road=location.roads.find(r=>r.id===roadId)!;
+      const half=roadHalfWidth(road);
+      const end=road.centreline.at(-1)!;
+      const stop=pointAtAlong(road,sampleRoad(road,end.x,end.z).along-j.radius);
+      const heading=Math.atan2(stop.direction.x,-stop.direction.z);
+      const rx=-stop.direction.z,rz=stop.direction.x;
+      // Two-way roads: only the half carrying traffic into the junction (left of travel).
+      const to=road.oneway?half:0;
+      for(const row of [-.15,-.55])for(let lateral=-half+.1;lateral<to-.3;lateral+=.9){
+        const dash=CreateGround(`${j.id}-${roadId}-giveway-${row}-${lateral.toFixed(1)}`,{width:.6,height:.2},scene);
+        dash.position.set(stop.x+rx*(lateral+.3)+stop.direction.x*row,.012,stop.z+rz*(lateral+.3)+stop.direction.z*row);
+        dash.rotation.y=rotationYFromHeading(heading);
+        dash.parent=root;
+        add(white,dash);
+      }
+    }
   }
 
   // Zebra crossings: stripes parallel to traffic, broken give-way lines on
@@ -123,6 +191,22 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
       mesh.rotation.y=rotationYFromHeading(heading);
       mesh.parent=root;
     };
+    if(crossing.kind==='signal'){
+      // Studs along both edges and a stop line on each approach; the lights are not simulated yet.
+      for(const edge of [-1,1])for(let lateral=-half+.3;lateral<half;lateral+=.8){
+        const stud=CreateGround(`${crossing.id}-stud-${edge}-${lateral.toFixed(1)}`,{width:.12,height:.12},scene);
+        place(stud,lateral,edge*crossing.width/2,y);
+        add(kerb,stud);
+      }
+      for(const side of [-1,1]){
+        // Traffic towards the crossing from this side drives on its left: side −1 (behind) uses the left half.
+        const from=side<0?-half:0,to=side<0?0:half;
+        const line=CreateGround(`${crossing.id}-stop-${side}`,{width:to-from-.2,height:.3},scene);
+        place(line,(from+to)/2,side*(crossing.width/2+crossing.giveWayOffset),y);
+        add(white,line);
+      }
+      continue;
+    }
     for(let lateral=-half+.3;lateral<half;lateral+=1.2){
       const stripe=CreateGround(`${crossing.id}-stripe-${lateral.toFixed(1)}`,{width:.6,height:crossing.width},scene);
       stripe.material=white;
@@ -167,6 +251,45 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
     box.material=mat;
     box.parent=root;
     if(block.occludes)occluders.push(box);
+  }
+
+  // Buildings: walls only, extruded from their outlines (roofs are never seen from the driver's seat).
+  const wallMaterials=new Map<string,StandardMaterial>();
+  const facade=['#a8806a','#c9b79c','#8f6b5a','#d8cfc0','#9a8e84','#b98f74'];
+  location.buildings.forEach((b,i)=>{
+    const colour=b.colour??facade[i%facade.length]!;
+    let mat=wallMaterials.get(colour);
+    if(!mat){mat=material(scene,`facade-${colour}`,Color3.FromHexString(colour));wallMaterials.set(colour,mat)}
+    const ring=[...b.footprint];
+    const first=ring[0]!,last=ring.at(-1)!;
+    if(first.x!==last.x||first.z!==last.z)ring.push(first);
+    const walls=CreateRibbon(`building-${b.id}`,{pathArray:[ring.map(p=>new Vector3(p.x,0,p.z)),ring.map(p=>new Vector3(p.x,b.height,p.z))],sideOrientation:2},scene);
+    walls.parent=root;
+    add(mat,walls);
+  });
+
+  // Trees: trunk and a simple crown, decorative only.
+  if(location.trees.length>0){
+    const bark=material(scene,'bark',new Color3(.33,.25,.18));
+    const leaves=material(scene,'leaves',new Color3(.22,.4,.2));
+    location.trees.forEach((t,i)=>{
+      const trunk=CreateCylinder(`tree-${i}-trunk`,{height:3,diameter:.35,tessellation:8},scene);
+      trunk.position.set(t.x,1.5,t.z);
+      trunk.parent=root;
+      add(bark,trunk);
+      const crown=CreateSphere(`tree-${i}-crown`,{diameter:4.5,segments:6},scene);
+      crown.position.set(t.x,4.6,t.z);
+      crown.scaling.y=1.15;
+      crown.parent=root;
+      add(leaves,crown);
+    });
+  }
+
+  // One draw call per material for everything static.
+  for(const [mat,meshes] of byMaterial){
+    if(meshes.length<2)continue;
+    const merged=Mesh.MergeMeshes(meshes,true,true);
+    if(merged){merged.name=`merged-${mat.name}`;merged.material=mat;merged.parent=root;merged.freezeWorldMatrix()}
   }
 
   return {

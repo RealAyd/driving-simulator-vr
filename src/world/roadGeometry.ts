@@ -8,6 +8,8 @@ export interface RoadSample{
   lateral:number;
   /** Unit direction of the centreline segment. */
   direction:Vec2;
+  /** Straight-line distance to the centreline (beyond the ends, to the end point). */
+  distance:number;
 }
 
 export function roadHalfWidth(road:Road):number{
@@ -32,7 +34,7 @@ export function sampleRoad(road:Road,x:number,z:number):RoadSample{
       bestDistance=distance;
       // Right of travel direction (ux,uz) is (-uz,ux) in this convention.
       const lateral=(x-px)*(-uz)+(z-pz)*ux;
-      best={roadId:road.id,along:along+t,lateral,direction:{x:ux,z:uz}};
+      best={roadId:road.id,along:along+t,lateral,direction:{x:ux,z:uz},distance};
     }
     along+=length;
   }
@@ -64,13 +66,22 @@ export type SurfaceKind='carriageway'|'pavement';
  */
 export function surfaceAt(location:Location,x:number,z:number):{height:number;kind:SurfaceKind;roadId:string}|null{
   let result:{height:number;kind:SurfaceKind;roadId:string}|null=null;
+  for(const junction of location.junctions)
+    if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius)
+      return {height:0,kind:'carriageway',roadId:junction.id};
   for(const road of location.roads){
-    const sample=sampleRoad(road,x,z);
-    const offset=Math.abs(sample.lateral);
+    const offset=sampleRoad(road,x,z).distance;
     const half=roadHalfWidth(road);
     if(offset<=half)return {height:road.surfaceHeight,kind:'carriageway',roadId:road.id};
     if(offset<=half+road.pavementWidth&&!result)
       result={height:road.surfaceHeight+road.kerbHeight,kind:'pavement',roadId:road.id};
   }
   return result;
+}
+
+/** True when (x, z) is on any carriageway or junction other than `exceptRoadId`. */
+export function onOtherCarriageway(location:Location,x:number,z:number,exceptRoadId:string,margin=0):boolean{
+  for(const junction of location.junctions)
+    if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius+margin)return true;
+  return location.roads.some(road=>road.id!==exceptRoadId&&sampleRoad(road,x,z).distance<=roadHalfWidth(road)+margin);
 }

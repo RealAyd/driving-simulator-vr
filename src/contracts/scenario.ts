@@ -71,11 +71,15 @@ export const ScenarioSchema=z.object({
     when:z.object({zoneEntered:z.string()}).strict(),
     /** Fires once per attempt unless explicitly re-armable. */
     once:z.boolean().default(true),
-    actions:z.array(z.object({
-      actor:z.string(),
-      do:z.enum(['start-crossing']),
-      delaySeconds:z.number().min(0).max(30).default(0)
-    }).strict()).min(1)
+    actions:z.array(z.discriminatedUnion('do',[
+      z.object({
+        do:z.literal('start-crossing'),
+        actor:z.string(),
+        delaySeconds:z.number().min(0).max(30).default(0)
+      }).strict(),
+      /** Guidance shown to the learner (guided exercises). */
+      z.object({do:z.literal('show-message'),text:z.string().min(1)}).strict()
+    ])).min(1)
   }).strict()).default([]),
   end:z.object({
     /** The exercise completes when the learner enters this zone (omit for timed practice). */
@@ -88,7 +92,7 @@ export const ScenarioSchema=z.object({
   if(s.end.zone!==undefined&&!zones.has(s.end.zone))ctx.addIssue({code:'custom',message:`End zone "${s.end.zone}" does not exist`});
   for(const t of s.triggers){
     if(!zones.has(t.when.zoneEntered))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing zone "${t.when.zoneEntered}"`});
-    for(const a of t.actions)if(!actors.has(a.actor))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing actor "${a.actor}"`});
+    for(const a of t.actions)if(a.do==='start-crossing'&&!actors.has(a.actor))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing actor "${a.actor}"`});
   }
 });
 

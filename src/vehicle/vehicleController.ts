@@ -42,7 +42,7 @@ export class VehicleController implements SimModule{
   surfaceKind:SurfaceKind='carriageway';
 
   constructor(
-    private readonly spawn:Pose,
+    private spawn:Pose,
     private readonly controls:ControlSource,
     private readonly surface:SurfaceQuery,
     private readonly collisions:CollisionQuery,
@@ -124,6 +124,11 @@ export class VehicleController implements SimModule{
       },
       heading:a.heading+dh*alpha
     };
+  }
+
+  /** Moves the start position (a different location); takes effect on the next reset. */
+  setSpawn(spawn:Pose):void{
+    this.spawn=spawn;
   }
 
   reset():void{

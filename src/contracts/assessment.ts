@@ -34,3 +34,6 @@ export interface AttemptResult{
   durationSeconds:Seconds;
   finishedAt:string;
 }
+
+/** Prefix for a practice note that describes something to work on (results show it differently). */
+export const IMPROVE='To improve: ';

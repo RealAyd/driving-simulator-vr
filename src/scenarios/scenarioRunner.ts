@@ -18,6 +18,8 @@ export class ScenarioRunner implements SimModule{
   private readonly fired=new Set<string>();
   private offRoute=0;
   onEnded:(outcome:Outcome)=>void=()=>{};
+  /** Guidance messages from triggers. */
+  onMessage:(text:string)=>void=()=>{};
 
   constructor(
     readonly scenario:Scenario,
@@ -38,6 +40,7 @@ export class ScenarioRunner implements SimModule{
       this.events.emit('scenario.triggered',{triggerId:trigger.id,zoneEventId:eventId});
       for(const action of trigger.actions){
         if(action.do==='start-crossing')this.pedestrians.get(action.actor)?.requestCrossing(action.delaySeconds);
+        else this.onMessage(action.text);
       }
     }
     if(this.scenario.end.zone!==undefined&&zoneId===this.scenario.end.zone)this.finish('completed');

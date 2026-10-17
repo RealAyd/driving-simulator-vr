@@ -45,6 +45,7 @@ kbd{font:12px ui-monospace,monospace;background:#1f2937;border:1px solid #475569
 .choices{display:grid;gap:8px;margin-top:12px}
 .choices .primary{margin-top:0;text-align:left;display:grid;gap:2px}
 .choices small{font-weight:400;font-size:12px;color:#d1fae5}
+.primary.brentwood{background:#7c3aed;border-color:#a78bfa}
 .primary.secondary{background:#0e5260;border-color:#5bb6ca}
 .toggle{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;color:var(--soft)}
 .toggle input{margin-top:3px;width:18px;height:18px;flex:none}
@@ -82,6 +83,7 @@ body.phone #briefing p{margin:4px 0;font-size:13px}
 body.phone #briefing #briefing-text{font-size:14px}
 .briefing-foot{margin-top:6px}
 #briefing-go{background:var(--green);border-color:var(--green);font-weight:700}
+#hud-credit{position:absolute;left:50%;top:1px;transform:translateX(-50%);font-size:9px;color:#e2e8f0;opacity:.75;text-shadow:0 0 3px #000;white-space:nowrap}
 #hud-task{position:absolute;left:50%;top:16px;transform:translateX(-50%);max-width:min(560px,70vw);text-align:center;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
 .results-card{max-height:calc(100vh - 32px);overflow-y:auto}
 .findings,.notes{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}
@@ -92,6 +94,7 @@ body.phone #briefing #briefing-text{font-size:14px}
 .upgraded{font-weight:400;font-size:12px;color:#94a3b8}
 .sev-advice{border-left-color:#64748b}.sev-minor{border-left-color:#eab308}.sev-serious{border-left-color:#f97316}.sev-dangerous{border-left-color:#ef4444}
 .notes li{color:#a7f3d0;font-size:13px}.notes li::before{content:"✓ "}
+.notes li.improve{color:#fcd34d}.notes li.improve::before{content:"→ "}
 @media (max-width:600px){#hud-task{top:auto;bottom:150px;max-width:90vw}}
 @media (max-width:600px){#hud-top{top:auto;bottom:90px;right:16px}}
 </style>
@@ -107,6 +110,7 @@ body.phone #briefing #briefing-text{font-size:14px}
     <h1>Driving Practice Simulator</h1>
     <p id="location-label"></p>
     <div class="choices">
+      <button id="start-brentwood" class="primary brentwood" type="button">Brentwood mini-roundabouts: guided route<small>High Street → left at the first mini-roundabout → ahead at the second into Shenfield Road. Quiet traffic. Area-inspired, not an official test route.</small></button>
       <button id="start-button" class="primary" type="button">Zebra crossing exercise<small>Pass a parked van and give way to a pedestrian. Scored with a draft rubric.</small></button>
       <button id="start-mirror-check" class="primary secondary" type="button">Mirror and blind-spot check<small>Stay parked while a car and a cyclist pass. Practise each view.</small></button>
     </div>
@@ -166,6 +170,7 @@ body.phone #briefing #briefing-text{font-size:14px}
 
 <div id="hud" hidden>
   <div id="hud-status"></div>
+  <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
   <div id="briefing" class="hud-panel" role="dialog" aria-labelledby="briefing-title" hidden>
     <h2 id="briefing-title">Get ready</h2>

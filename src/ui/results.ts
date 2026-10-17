@@ -1,4 +1,4 @@
-import type {AttemptResult,Severity} from '../contracts';
+import {IMPROVE,type AttemptResult,type Severity} from '../contracts';
 
 const OUTCOME_TEXT:Record<AttemptResult['outcome'],string>={
   completed:'Exercise finished',
@@ -36,7 +36,12 @@ export function renderResults(result:AttemptResult,eventTime:(id:string)=>number
     list.append(item);
   }
   const notes=document.getElementById('results-notes')!;
-  notes.replaceChildren(...result.notes.map(n=>el('li',n)));
+  // Notes starting with IMPROVE are things to work on; the rest are things done well.
+  notes.replaceChildren(...result.notes.map(n=>{
+    const item=el('li',n.startsWith(IMPROVE)?n.slice(IMPROVE.length):n);
+    if(n.startsWith(IMPROVE))item.classList.add('improve');
+    return item;
+  }));
   notes.hidden=result.notes.length===0;
   document.getElementById('results-meta')!.textContent=
     `Duration ${result.durationSeconds.toFixed(0)} s · rubric ${result.rubricVersion} (draft, not yet reviewed by an instructor; not DVSA criteria) · `+
