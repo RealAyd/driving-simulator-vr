@@ -1,27 +1,10 @@
-import {Color3,StandardMaterial,TransformNode,type AbstractMesh,type Scene} from '../engine/babylon';
+import {Color3,Mesh,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
+import {VertexBuffer} from '@babylonjs/core/Buffers/buffer';
 import type {AssetContainer} from '@babylonjs/core/assetContainer';
 import type {BaseTexture} from '@babylonjs/core/Materials/Textures/baseTexture';
 
-/** A vehicle model shipped in public/assets (see content/assets/register.json). */
-export interface CarModelSpec{
-  id:string;
-  /** Relative to the page. */
-  url:string;
-  /** Material that is the body paint, recoloured per road user. */
-  paintMaterial:string;
-  /** Turn needed to face the simulator's forward (-Z); the model faces +Z. */
-  yawOffset:number;
-  /** Model length in its own units (metres), to scale to a collision length. */
-  length:number;
-}
-
-export const CAR_MODEL:CarModelSpec={
-  id:'quaternius-normal-car-1',
-  url:'assets/models/vehicles/quaternius-normal-car-1.glb',
-  paintMaterial:'Blue',
-  yawOffset:Math.PI,
-  length:4.22
-};
+import {CAR_MODELS,type CarModelId,type CarModelSpec} from './carSpecs';
+export {CAR_MODEL,CAR_MODELS,type CarModelSpec} from './carSpecs';
 
 /** The glTF PBR material properties we carry over (Babylon's PBRMaterial). */
 interface GltfMaterial{
@@ -86,8 +69,10 @@ export class CarModel{
   private constructor(private readonly container:AssetContainer,readonly spec:CarModelSpec){}
 
   /** Loads the model, or resolves null (callers fall back to simple shapes). */
-  static async load(scene:Scene,spec:CarModelSpec):Promise<CarModel|null>{
-    const container=await loadModel(scene,spec.url);
+  static async load(scene:Scene,spec:CarModelSpec,variant:'full'|'parked'='full'):Promise<CarModel|null>{
+    const url=variant==='parked'?spec.parkedUrl:spec.url;
+    if(!url)return null;
+    const container=await loadModel(scene,url);
     return container?new CarModel(container,spec):null;
   }
 
@@ -108,6 +93,109 @@ export class CarModel{
     }
     return holder;
   }
+
+  /** Adds this model's triangles, posed in the world and with colours baked in (body in `colour`), to `target`. */
+  bakeInto(target:BakedGeometry,scene:Scene,colour:string,x:number,y:number,z:number,heading:number):void{
+    const entries=this.container.instantiateModelsToScene(name=>`bake-${name}`,false,{doNotInstantiate:true});
+    const holder=new TransformNode('bake',scene);
+    holder.position.set(x,y,z);
+    holder.rotation.y=-heading+this.spec.yawOffset;
+    for(const root of entries.rootNodes)root.parent=holder;
+    const paint=Color3.FromHexString(colour);
+    const p=new Vector3(),n=new Vector3();
+    for(const mesh of holder.getChildMeshes(false)){
+      if(!(mesh instanceof Mesh)||mesh.getTotalVertices()===0)continue;
+      const world=mesh.computeWorldMatrix(true);
+      const positions=mesh.getVerticesData(VertexBuffer.PositionKind)!,normals=mesh.getVerticesData(VertexBuffer.NormalKind),indices=mesh.getIndices()!;
+      const c=mesh.material?.name===this.spec.paintMaterial?paint:(mesh.material as StandardMaterial|null)?.diffuseColor??Color3.Gray();
+      const base=target.positions.length/3;
+      if(normals){
+        for(let i=0;i<positions.length;i+=3){
+          Vector3.TransformCoordinatesFromFloatsToRef(positions[i]!,positions[i+1]!,positions[i+2]!,world,p);
+          Vector3.TransformNormalFromFloatsToRef(normals[i]!,normals[i+1]!,normals[i+2]!,world,n);n.normalize();
+          target.positions.push(p.x,p.y,p.z);target.normals.push(n.x,n.y,n.z);target.colors.push(c.r,c.g,c.b,1);
+        }
+        for(const i of indices)target.indices.push(base+i);
+        continue;
+      }
+      // No normals (simplified parked-car models): one flat normal per triangle, as the low-poly originals.
+      const w:number[]=[];
+      for(let i=0;i<positions.length;i+=3){
+        Vector3.TransformCoordinatesFromFloatsToRef(positions[i]!,positions[i+1]!,positions[i+2]!,world,p);
+        w.push(p.x,p.y,p.z);
+      }
+      for(let t=0;t<indices.length;t+=3){
+        const [a,b2,d]=[indices[t]!*3,indices[t+1]!*3,indices[t+2]!*3];
+        const e1=new Vector3(w[b2]!-w[a]!,w[b2+1]!-w[a+1]!,w[b2+2]!-w[a+2]!),e2=new Vector3(w[d]!-w[a]!,w[d+1]!-w[a+1]!,w[d+2]!-w[a+2]!);
+        Vector3.CrossToRef(e1,e2,n);n.normalize();
+        const v0=target.positions.length/3;
+        for(const k of [a,b2,d]){target.positions.push(w[k]!,w[k+1]!,w[k+2]!);target.normals.push(n.x,n.y,n.z);target.colors.push(c.r,c.g,c.b,1)}
+        target.indices.push(v0,v0+1,v0+2);
+      }
+    }
+    entries.dispose();
+    holder.dispose();
+  }
+}
+
+export interface BakedGeometry{positions:number[];normals:number[];colors:number[];indices:number[]}
+
+/** Loads every parked-car model once (null where one cannot load). */
+export async function loadCarModels(scene:Scene):Promise<Map<CarModelId,CarModel|null>>{
+  const ids=Object.keys(CAR_MODELS) as CarModelId[];
+  const models=await Promise.all(ids.map(id=>CarModel.load(scene,CAR_MODELS[id],'parked')));
+  return new Map(ids.map((id,i)=>[id,models[i]!]));
+}
+
+export interface ParkedCar{model:CarModelId;colour:string;x:number;y:number;z:number;heading:number}
+
+/**
+ * All parked cars of a location as one static mesh with one material (colours
+ * baked into the vertices): a single draw call however many cars there are.
+ * A car whose model is missing is drawn as a plain box of the same size.
+ */
+export function bakeParkedCars(scene:Scene,parent:TransformNode,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>):Mesh[]{
+  if(cars.length===0)return [];
+  const material=new StandardMaterial('parked-cars',scene);
+  material.specularColor=new Color3(.22,.22,.22);
+  material.backFaceCulling=false;
+  // One mesh per 200 m section (like the street), so each view draws only the cars in front of it.
+  const sections=new Map<string,ParkedCar[]>();
+  for(const car of cars){
+    const key=`${Math.floor(car.x/200)},${Math.floor(car.z/200)}`;
+    sections.set(key,[...(sections.get(key)??[]),car]);
+  }
+  return [...sections].map(([key,list])=>bakeSection(scene,parent,`parked-cars-${key}`,list,models,material));
+}
+
+function bakeSection(scene:Scene,parent:TransformNode,name:string,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>,material:StandardMaterial):Mesh{
+  const g:BakedGeometry={positions:[],normals:[],colors:[],indices:[]};
+  for(const car of cars){
+    const model=models.get(car.model);
+    if(model){model.bakeInto(g,scene,car.colour,car.x,car.y,car.z,car.heading);continue}
+    const spec=CAR_MODELS[car.model];
+    const box=VertexData.CreateBox({width:spec.width,depth:spec.length,height:spec.height*.85});
+    const c=Color3.FromHexString(car.colour),base=g.positions.length/3;
+    const cos=Math.cos(car.heading),sin=Math.sin(car.heading);
+    for(let i=0;i<box.positions!.length;i+=3){
+      const [x,y,z]=[box.positions![i]!,box.positions![i+1]!+spec.height*.425,box.positions![i+2]!];
+      // Local −Z is the car's forward; turn clockwise by the heading.
+      g.positions.push(car.x+x*cos-z*sin,car.y+y,car.z+x*sin+z*cos);
+      const [nx,ny,nz]=[box.normals![i]!,box.normals![i+1]!,box.normals![i+2]!];
+      g.normals.push(nx*cos-nz*sin,ny,nx*sin+nz*cos);
+      g.colors.push(c.r,c.g,c.b,1);
+    }
+    for(const i of box.indices!)g.indices.push(base+i);
+  }
+  const mesh=new Mesh(name,scene);
+  const data=new VertexData();
+  data.positions=g.positions;data.normals=g.normals;data.colors=g.colors;data.indices=g.indices;
+  data.applyToMesh(mesh,false);
+  mesh.material=material;
+  mesh.parent=parent;
+  mesh.isPickable=false;
+  mesh.freezeWorldMatrix();
+  return mesh;
 }
 
 /** Static scenery models by asset id (content/assets/register.json). */

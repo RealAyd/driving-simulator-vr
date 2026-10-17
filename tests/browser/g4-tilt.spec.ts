@@ -64,11 +64,14 @@ test('G4: tilt on the exercise screen: enable, live status, calibrate, then the 
   await expect(page.locator('#hud-tilt-state')).toHaveText('tilt on');
 
   // Turn the phone clockwise by 20° relative to that: the wheels turn right; anticlockwise: left.
-  for(let i=0;i<10;i++){await lean(page,32);await page.waitForTimeout(60)}
-  expect((await read(page,'vehicle()')).steerAngle).toBeGreaterThan(.2);
+  // Steering builds up over simulated time: keep the phone turned until it has (a loaded machine renders slowly).
+  let feedTurn=setInterval(()=>{void lean(page,32).catch(()=>{})},60);
+  await expect.poll(async()=>(await read(page,'vehicle()')).steerAngle,{timeout:10_000}).toBeGreaterThan(.2);
+  clearInterval(feedTurn);
   await page.screenshot({path:testInfo.outputPath('g4-02-tilt-right.png')});
-  for(let i=0;i<15;i++){await lean(page,-8);await page.waitForTimeout(60)}
-  expect((await read(page,'vehicle()')).steerAngle).toBeLessThan(-.2);
+  feedTurn=setInterval(()=>{void lean(page,-8).catch(()=>{})},60);
+  await expect.poll(async()=>(await read(page,'vehicle()')).steerAngle,{timeout:10_000}).toBeLessThan(-.2);
+  clearInterval(feedTurn);
   // Centre re-zeroes on the current position.
   await page.click('#hud-tilt-centre');
   for(let i=0;i<15;i++){await lean(page,-8);await page.waitForTimeout(60)}

@@ -132,7 +132,7 @@
       "storage": "private",
       "pack": "a3js-london-street-starter",
       "sourceFile": "buildings-uncompressed/london-residential-benchmark/low-london-residential-benchmark.glb",
-      "use": "Moving off safely: house on the west side (replaces the simple block house-w-1; its collision box is kept)",
+      "use": "Not placed (private, not deployable to the public preview). Was trialled on the Moving off street; replaced by project-owned houses so the public preview is complete.",
       "modifications": [
         "Lowest detail level, uncompressed copy (no meshopt decoder needed)",
         "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize (KHR_mesh_quantization)",
@@ -152,7 +152,7 @@
       "storage": "private",
       "pack": "cadmando-street-pack",
       "sourceFile": "street_pack.fbx, object 'Traffic Lights'",
-      "use": "Brentwood: one signal pole on the learner's near side before the High Street signal crossing. Lamps are fixed as modelled (green lit); signals are not simulated",
+      "use": "Not placed (private, not deployable to the public preview). Removed from Brentwood: signals are not simulated, and a signal that never changes would mislead the learner.",
       "modifications": [
         "FBX converted to glTF with FBX2glTF 0.9.7",
         "Only the 'Traffic Lights' object kept, centred, base at ground level (tools/assets/extract-object.mjs)",
@@ -173,7 +173,7 @@
       "storage": "private",
       "pack": "supermarket-glb",
       "sourceFile": "model_for_supermarket.glb",
-      "use": "Moving off safely: supermarket on the east side, shopfront facing the road (replaces the simple block house-e-1; its collision box is kept)",
+      "use": "Not placed (private, not deployable to the public preview). Removed from the residential Moving off street, where a supermarket does not belong.",
       "modifications": [
         "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize",
         "At load: PBR materials replaced with StandardMaterial of the same colours"
@@ -192,7 +192,7 @@
       "storage": "public",
       "pack": "quaternius-downtown-city-megakit-standard",
       "sourceFile": "prepared/buildings/Building_Small_1.glb (from Exports/glTF (Godot)/Building_Small_1.gltf)",
-      "use": "Moving off safely: taller brick building on the east side, behind the supermarket (replaces the simple block house-e-2; its collision box is kept)",
+      "use": "Not placed at present: a five-storey high-street building, unsuitable for the residential Moving off street. Kept for a future high-street location",
       "modifications": [
         "Upstream (by the supplier's preparation): glTF + BIN + PNG packed into GLB; textures downsampled from 2048/1024 px to 512 px",
         "Normal, occlusion and metal/roughness maps removed (not used by the simulator's StandardMaterial path); uniformly white vertex colours removed",
@@ -207,6 +207,63 @@
         "bytes": 833892
       },
       "build": "TOOLS=<scratch folder> tools/assets/build-downtown.sh <extracted Downtown_City_UK_Starter folder> Building_Small_1"
+    },
+    {
+      "id": "quaternius-normal-car-1-parked",
+      "file": "public/assets/models/vehicles/quaternius-normal-car-1-parked.glb",
+      "storage": "public",
+      "pack": "quaternius-lowpoly-cars",
+      "sourceFile": "OBJ/NormalCar1.obj + NormalCar1.mtl",
+      "use": "Parked cars on the Moving off street (kerbside and on drives), recoloured per car and baked into one static mesh per 200 m section",
+      "modifications": [
+        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0; glTF-Transform 4.5.1 weld, dedup, join, prune",
+        "Simplified for static parked cars: normals removed so flat-shaded faces share vertices, then meshoptimizer 0.22.0 simplify (ratio 0.2, error 0.01); glTF-Transform quantize",
+        "At load: flat normals rebuilt per triangle; material colours baked into vertex colours; body colour replaced per car; placed at native size (the collision box is the model's size)"
+      ],
+      "stats": {
+        "triangles": 718,
+        "materials": 6,
+        "bytes": 13048
+      },
+      "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar1"
+    },
+    {
+      "id": "quaternius-normal-car-2-parked",
+      "file": "public/assets/models/vehicles/quaternius-normal-car-2-parked.glb",
+      "storage": "public",
+      "pack": "quaternius-lowpoly-cars",
+      "sourceFile": "OBJ/NormalCar2.obj + NormalCar2.mtl",
+      "use": "Parked cars on the Moving off street (kerbside and on drives), recoloured per car and baked into one static mesh per 200 m section",
+      "modifications": [
+        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0; glTF-Transform 4.5.1 weld, dedup, join, prune",
+        "Simplified for static parked cars: normals removed so flat-shaded faces share vertices, then meshoptimizer 0.22.0 simplify (ratio 0.2, error 0.01); glTF-Transform quantize",
+        "At load: flat normals rebuilt per triangle; material colours baked into vertex colours; body colour replaced per car; placed at native size (the collision box is the model's size)"
+      ],
+      "stats": {
+        "triangles": 824,
+        "materials": 7,
+        "bytes": 15016
+      },
+      "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar2"
+    },
+    {
+      "id": "quaternius-suv-parked",
+      "file": "public/assets/models/vehicles/quaternius-suv-parked.glb",
+      "storage": "public",
+      "pack": "quaternius-lowpoly-cars",
+      "sourceFile": "OBJ/SUV.obj + SUV.mtl",
+      "use": "Parked cars on the Moving off street (kerbside and on drives), recoloured per car and baked into one static mesh per 200 m section",
+      "modifications": [
+        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0; glTF-Transform 4.5.1 weld, dedup, join, prune",
+        "Simplified for static parked cars: normals removed so flat-shaded faces share vertices, then meshoptimizer 0.22.0 simplify (ratio 0.2, error 0.01); glTF-Transform quantize",
+        "At load: flat normals rebuilt per triangle; material colours baked into vertex colours; body colour replaced per car; placed at native size (the collision box is the model's size)"
+      ],
+      "stats": {
+        "triangles": 749,
+        "materials": 6,
+        "bytes": 13560
+      },
+      "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> SUV"
     }
   ]
 }

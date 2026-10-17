@@ -4,12 +4,12 @@
   "name": "Residential street, parked at the kerb",
   "fidelity": "representative",
   "drivingSide": "left",
-  "description": "A plausible UK residential street with the learner parked at the left kerb, a parked car about 9 m ahead and room behind for traffic to approach. Not a real location or test route.",
+  "description": "A plausible UK residential street of 1930s-style semis and Victorian-style terraces, with the learner parked at the left kerb, a parked car about 13 m ahead and room behind for traffic to approach. Not a real location or test route.",
   "sources": [
     {
       "title": "Authored placeholder layout",
       "licence": "Project-owned",
-      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements). No external data used."
+      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements, 3.5\u20136 m front gardens). Houses, gardens and street furniture are project-owned geometry generated from the streetscape below; parked cars use Quaternius LowPoly Cars (CC0). No external map data used."
     }
   ],
   "reviewStatus": "unreviewed",
@@ -19,6 +19,10 @@
       "centreline": [
         {
           "x": 0,
+          "z": 330
+        },
+        {
+          "x": 0,
           "z": 120
         },
         {
@@ -26,12 +30,64 @@
           "z": -160
         },
         {
-          "x": 12,
-          "z": -260
+          "x": 1.38,
+          "z": -180.32
         },
         {
-          "x": 40,
-          "z": -340
+          "x": 3.17,
+          "z": -200.96
+        },
+        {
+          "x": 5.47,
+          "z": -221.44
+        },
+        {
+          "x": 8.38,
+          "z": -241.28
+        },
+        {
+          "x": 12.0,
+          "z": -260.0
+        },
+        {
+          "x": 16.38,
+          "z": -277.84
+        },
+        {
+          "x": 21.47,
+          "z": -295.12
+        },
+        {
+          "x": 27.17,
+          "z": -311.48
+        },
+        {
+          "x": 33.38,
+          "z": -326.56
+        },
+        {
+          "x": 40.0,
+          "z": -340.0
+        },
+        {
+          "x": 47.23,
+          "z": -351.4
+        },
+        {
+          "x": 55.14,
+          "z": -361.0
+        },
+        {
+          "x": 63.42,
+          "z": -369.4
+        },
+        {
+          "x": 71.81,
+          "z": -377.2
+        },
+        {
+          "x": 80.0,
+          "z": -385.0
         }
       ],
       "lanes": {
@@ -49,137 +105,130 @@
   ],
   "blocks": [
     {
-      "id": "house-w-1",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -10
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-w-2",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -30
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-w-3",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -50
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-w-4",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -70
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-e-1",
-      "kind": "building",
-      "position": {
-        "x": 12,
-        "z": -15
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-e-2",
-      "kind": "building",
-      "position": {
-        "x": 12,
-        "z": -35
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-e-3",
-      "kind": "building",
-      "position": {
-        "x": 12,
-        "z": -55
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "hedge-w",
-      "kind": "hedge",
-      "position": {
-        "x": -6.6,
-        "z": -40
-      },
-      "size": {
-        "width": 0.8,
-        "depth": 70,
-        "height": 1.2
-      },
-      "occludes": true
-    },
-    {
       "id": "parked-car-ahead",
       "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-1",
+      "colour": "#c9ccd1",
       "position": {
         "x": -2.15,
         "z": -13
       },
       "size": {
-        "width": 1.8,
-        "depth": 4.2,
-        "height": 1.5
-      },
-      "colour": "#4b5563"
+        "width": 1.81,
+        "depth": 4.22,
+        "height": 1.18
+      }
     },
     {
       "id": "parked-car-far-behind",
       "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-2",
+      "colour": "#8e1f1f",
       "position": {
-        "x": 2.4,
+        "x": 2.36,
         "z": 60
       },
       "size": {
-        "width": 1.8,
-        "depth": 4.2,
-        "height": 1.5
+        "width": 1.64,
+        "depth": 3.31,
+        "height": 1.15
       },
-      "colour": "#0f766e"
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-behind-east",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-2",
+      "colour": "#1f2f4f",
+      "position": {
+        "x": 2.36,
+        "z": 92
+      },
+      "size": {
+        "width": 1.64,
+        "depth": 3.31,
+        "height": 1.15
+      },
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-behind-west",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-1",
+      "colour": "#3f444b",
+      "position": {
+        "x": -2.145,
+        "z": 100
+      },
+      "size": {
+        "width": 1.81,
+        "depth": 4.22,
+        "height": 1.18
+      }
+    },
+    {
+      "id": "parked-car-ahead-east-1",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-suv",
+      "colour": "#f1f1ee",
+      "position": {
+        "x": 2.02,
+        "z": -48
+      },
+      "size": {
+        "width": 2.12,
+        "depth": 4.2,
+        "height": 1.53
+      },
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-ahead-east-2",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-1",
+      "colour": "#2f4a3a",
+      "position": {
+        "x": 2.145,
+        "z": -70
+      },
+      "size": {
+        "width": 1.81,
+        "depth": 4.22,
+        "height": 1.18
+      },
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-ahead-east-3",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-1",
+      "colour": "#6d737b",
+      "position": {
+        "x": 2.145,
+        "z": -112
+      },
+      "size": {
+        "width": 1.81,
+        "depth": 4.22,
+        "height": 1.18
+      },
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-ahead-east-4",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-2",
+      "colour": "#17191c",
+      "position": {
+        "x": 2.36,
+        "z": -128
+      },
+      "size": {
+        "width": 1.64,
+        "depth": 3.31,
+        "height": 1.15
+      },
+      "headingDeg": 180
     }
   ],
   "spawn": {
@@ -191,36 +240,149 @@
     "roadId": "main-street"
   },
   "crossings": [],
-  "models": [
-    {
-      "id": "terrace-west-1",
-      "asset": "a3js-london-terrace-house-low",
-      "position": {
-        "x": -14.45,
-        "z": -10
+  "models": [],
+  "streetscape": {
+    "roadId": "main-street",
+    "seed": 3,
+    "noDrivesAt": [
+      {
+        "x": -2.15,
+        "z": 0
+      }
+    ],
+    "frontages": [
+      {
+        "side": "left",
+        "from": 4,
+        "to": 206.0,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "red-brick",
+          "brown-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
       },
-      "facingDeg": 90,
-      "replacesBlock": "house-w-1"
-    },
-    {
-      "id": "supermarket-east-1",
-      "asset": "supermarket",
-      "position": {
-        "x": 17.25,
-        "z": -15
+      {
+        "side": "left",
+        "from": 208.0,
+        "to": 299.0,
+        "styles": [
+          "semi-bay",
+          "semi-bay",
+          "semi"
+        ],
+        "palettes": [
+          "red-brick",
+          "render-cream",
+          "brown-brick"
+        ],
+        "setback": 6
       },
-      "facingDeg": 270,
-      "replacesBlock": "house-e-1"
-    },
-    {
-      "id": "downtown-east-2",
-      "asset": "quaternius-downtown-building-small-1",
-      "position": {
-        "x": 9.5,
-        "z": -34
+      {
+        "side": "left",
+        "from": 301.0,
+        "to": 394.0,
+        "styles": [
+          "semi-bay",
+          "semi"
+        ],
+        "palettes": [
+          "brown-brick",
+          "red-brick",
+          "render-white"
+        ],
+        "setback": 6
       },
-      "facingDeg": 270,
-      "replacesBlock": "house-e-2"
-    }
-  ]
+      {
+        "side": "left",
+        "from": 396.0,
+        "to": 488.0,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "buff-brick",
+          "red-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
+      },
+      {
+        "side": "left",
+        "from": 490.0,
+        "to": 640.0,
+        "styles": [
+          "semi",
+          "detached"
+        ],
+        "palettes": [
+          "render-cream",
+          "red-brick"
+        ],
+        "setback": 6.5
+      },
+      {
+        "side": "right",
+        "from": 4,
+        "to": 206.0,
+        "styles": [
+          "semi",
+          "semi-bay"
+        ],
+        "palettes": [
+          "brown-brick",
+          "render-cream"
+        ],
+        "setback": 6
+      },
+      {
+        "side": "right",
+        "from": 208.0,
+        "to": 328.0,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "red-brick",
+          "buff-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
+      },
+      {
+        "side": "right",
+        "from": 330.0,
+        "to": 450.0,
+        "styles": [
+          "semi-bay",
+          "detached",
+          "semi"
+        ],
+        "palettes": [
+          "render-white",
+          "red-brick",
+          "brown-brick"
+        ],
+        "setback": 6
+      },
+      {
+        "side": "right",
+        "from": 452.0,
+        "to": 640.0,
+        "styles": [
+          "detached",
+          "semi"
+        ],
+        "palettes": [
+          "red-brick",
+          "render-cream"
+        ],
+        "setback": 7
+      }
+    ],
+    "carsOnDrives": 0.3
+  }
 }

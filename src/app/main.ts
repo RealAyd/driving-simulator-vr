@@ -16,7 +16,8 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
-import {CAR_MODEL,CarModel,PROP_ASSETS,PropLibrary} from '../assets/models';
+import {CAR_MODEL,CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
+import type {CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
@@ -40,6 +41,8 @@ import type {SimModule} from '../contracts';
 import {SteeringAssist} from '../vehicle/steeringAssist';
 import {VehicleController,type ControlSource} from '../vehicle/vehicleController';
 import {buildWorld} from '../world/buildWorld';
+import {layoutStreetscape} from '../world/streetscape';
+import {buildStreetscape} from '../world/streetscapeMesh';
 import {CompositeCollisions,pointToBox,type DynamicFootprint} from '../world/collisions';
 import {StaticObstacles} from '../world/obstacles';
 import {sampleRoad,surfaceAt} from '../world/roadGeometry';
@@ -128,7 +131,7 @@ export async function boot():Promise<void>{
     place=locations.get(id)!;
     world=buildWorld(scene,place,quality);
     placeModels();
-    staticObstacles=new StaticObstacles(place.blocks);
+    dressLocation();
     vehicle.setSpawn(spawnOf(place));
     hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
     showCredit();
@@ -142,6 +145,21 @@ export async function boot():Promise<void>{
     });
   };
   placeModels();
+  // Houses, gardens and street furniture (streetscape) and parked cars; collisions match what is drawn.
+  let carModels=new Map<CarModelId,CarModel|null>();
+  let sceneryStats={houses:0,parkedCars:0,colliders:0};
+  const dressLocation=()=>{
+    const layout=layoutStreetscape(place);
+    const parked:ParkedCar[]=[
+      ...place.blocks.filter(b=>b.vehicleModel).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
+      ...(layout?.cars??[]).map(c=>({model:c.model,colour:c.colour,x:c.x,y:c.y,z:c.z,heading:c.heading}))
+    ];
+    if(layout)buildStreetscape(scene,layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})));
+    bakeParkedCars(scene,world.root,parked,carModels);
+    const colliders=[...place.blocks,...(layout?.colliders??[])];
+    staticObstacles=new StaticObstacles(colliders);
+    sceneryStats={houses:layout?.houses.length??0,parkedCars:parked.length,colliders:colliders.length};
+  };
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
   const showCredit=()=>{
     const osm=place.sources.some(source=>source.licence.includes('ODbL'));
@@ -149,8 +167,10 @@ export async function boot():Promise<void>{
     byId('hud-credit').textContent=osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'';
   };
   const store=await openAttemptStore();
-  // Other road users' car model (content/assets/register.json); simple shapes if it cannot load.
-  const carModel=await CarModel.load(scene,CAR_MODEL);
+  // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
+  const [loadedParked,carModel]=await Promise.all([loadCarModels(scene),CarModel.load(scene,CAR_MODEL)]);
+  carModels=loadedParked;
+  dressLocation();
 
   const clock=new FixedStepClock(SIM_STEP);
   const events=new EventLog(()=>clock.time);
@@ -753,6 +773,7 @@ export async function boot():Promise<void>{
   });
   window.addEventListener('resize',()=>engine.resize());
 
+  let instrumentation:import('@babylonjs/core/Instrumentation/sceneInstrumentation').SceneInstrumentation|null=null;
   // Read-only handle for automated browser tests and manual diagnostics.
   Object.defineProperty(window,'__drivingPractice',{value:Object.freeze({
     session:()=>session.state,
@@ -776,7 +797,29 @@ export async function boot():Promise<void>{
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
     sceneryModels:()=>[...props.available],
-    overhead:(view:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null)=>{overhead=view},
+    scenery:()=>({...sceneryStats,carModels:[...carModels].filter(([,m])=>m).map(([id])=>id)}),
+    /** Diagnostics: start counting draw calls (average per frame over the last second, all render passes including mirrors). */
+    countDrawCalls:async()=>{
+      if(!instrumentation){const {SceneInstrumentation}=await import('@babylonjs/core/Instrumentation/sceneInstrumentation');instrumentation=new SceneInstrumentation(scene)}
+    },
+    /** Diagnostics: show or hide meshes whose names start with `prefix` (to measure what they cost). */
+    showMeshes:(prefix:string,on:boolean)=>{for(const m of scene.meshes)if(m.name.startsWith(prefix))m.setEnabled(on)},
+    /** Diagnostics: switch the distance haze. */
+    fog:(on:boolean)=>{scene.fogEnabled=on},
+    /** Diagnostics: what the scene costs (meshes, triangles, draw calls). */
+    sceneStats:()=>{
+      const meshes=scene.meshes.filter(m=>m.isEnabled()&&m.isVisible&&m.getTotalVertices()>0);
+      return {meshes:meshes.length,activeMeshes:scene.getActiveMeshes().length,vertices:scene.getTotalVertices(),triangles:meshes.reduce((n,m)=>n+(m.getTotalIndices()/3),0),drawCalls:instrumentation?.drawCallsCounter.current??null,materials:scene.materials.length,textures:scene.textures.length,
+        heaviest:meshes.map(m=>[m.name,m.getTotalIndices()/3] as const).sort((a,b)=>b[1]-a[1]).slice(0,8),
+        trianglesBy:Object.fromEntries(['streetscape','parked-cars'].map(p=>[p,meshes.filter(m=>m.name.startsWith(p)).reduce((n,m)=>n+m.getTotalIndices()/3,0)]))};
+    },
+    overhead:(view:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null)=>{
+      const label=byId('hud-view-label');
+      // Screenshots from this camera must not be mistaken for a driver's view.
+      if(view&&!overhead)label.dataset.driverView=label.textContent??'';
+      label.textContent=view?'Diagnostic camera (not a driver view)':label.dataset.driverView??label.textContent;
+      overhead=view;
+    },
     variant:()=>runtime?.variant?.id??null,
     /** Diagnostics: switch mirror rendering off to measure what it costs. */
     mirrorsEnabled:(on:boolean)=>{mirrorsOn=on},

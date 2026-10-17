@@ -28,3 +28,19 @@ for m in "${MODELS[@]}"; do
   echo "$m -> public/assets/models/vehicles/$slug.glb ($(stat -c %s "$OUT/$slug.glb") bytes)"
 done
 rm -rf "$TMP"
+
+# Only NormalCar1's full model is shipped (moving road users); the others are shipped as parked versions only.
+# Parked-car versions (about a quarter of the triangles) for static parked cars only:
+#   PARKED=1 TOOLS=<scratch folder with @gltf-transform/* 4.5.1 and meshoptimizer 0.22.0> tools/assets/build-quaternius-cars.sh <OBJ folder> NormalCar1 NormalCar2 SUV
+# Normals are dropped so flat-shaded faces share vertices and can be merged (flat normals are rebuilt when the cars are baked);
+# meshoptimizer simplify, ratio 0.2, error 0.01. tools/assets/simplify.mjs.
+if [ "${PARKED:-}" = 1 ]; then
+  cp "$ROOT/tools/assets/simplify.mjs" "$TOOLS/"
+  for m in "${MODELS[@]}"; do
+    slug="quaternius-$(echo "$m" | sed -E 's/([a-z])([A-Z0-9])/\1-\2/g' | tr 'A-Z' 'a-z')"
+    t="$(mktemp -d)"
+    node "$TOOLS/simplify.mjs" "$OUT/$slug.glb" "$t/s.glb" .2 .01
+    npx -y @gltf-transform/cli@4.5.1 quantize "$t/s.glb" "$OUT/$slug-parked.glb" >/dev/null
+    echo "$m -> $slug-parked.glb ($(stat -c %s "$OUT/$slug-parked.glb") bytes)"; rm -rf "$t"
+  done
+fi

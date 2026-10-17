@@ -135,8 +135,8 @@
   {
    "id": "moved-off",
    "roadId": "main-street",
-   "from": 144,
-   "to": 160,
+   "from": 354,
+   "to": 370,
    "label": "Driving in the lane past the parked car ahead"
   }
  ],

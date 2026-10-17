@@ -1,6 +1,6 @@
 import {
   Color3,CreateBox,CreateCylinder,CreateDisc,CreateGround,CreateRibbon,CreateSphere,Mesh,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
-  type Scene
+  Scene
 } from '../engine/babylon';
 import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
@@ -43,8 +43,11 @@ function markings(scene:Scene,road:Road,offset:number,dash:number,gap:number,wid
 
 interface Sample{x:number;z:number;rx:number;rz:number;along:number}
 
-/** Centreline points at most `step` apart, each with the right-of-travel unit vector. */
-function resample(road:Road,step=1):Sample[]{
+/**
+ * Centreline points with the right-of-travel unit vector: at most `step` apart
+ * where `dense` says detail is needed (junctions, other roads), else `sparse`.
+ */
+function resample(road:Road,dense:(x:number,z:number)=>boolean,step=1,sparse=8):Sample[]{
   const pts=road.centreline,out:Sample[]=[];
   let along=0;
   for(let i=0;i<pts.length-1;i++){
@@ -52,7 +55,10 @@ function resample(road:Road,step=1):Sample[]{
     const len=Math.hypot(b.x-a.x,b.z-a.z);
     if(len===0)continue;
     const ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;
-    const n=Math.max(1,Math.ceil(len/step));
+    // Coarse first, then fine wherever a coarse piece touches something that needs detail.
+    const coarse=Math.max(1,Math.ceil(len/sparse));
+    const needsDetail=Array.from({length:coarse+1},(_,k)=>dense(a.x+ux*len*k/coarse,a.z+uz*len*k/coarse)).some(Boolean);
+    const n=needsDetail?Math.max(1,Math.ceil(len/step)):coarse;
     for(let k=0;k<n;k++)out.push({x:a.x+ux*len*k/n,z:a.z+uz*len*k/n,rx:-uz,rz:ux,along:along+len*k/n});
     along+=len;
     if(i===pts.length-2)out.push({x:b.x,z:b.z,rx:-uz,rz:ux,along});
@@ -87,6 +93,11 @@ function strips(scene:Scene,name:string,samples:Sample[],from:number,to:number,y
 
 export function buildWorld(scene:Scene,location:Location,quality:QualityProfile):BuiltWorld{
   scene.clearColor.set(SKY.r,SKY.g,SKY.b,1);
+  // Light haze: distant houses fade into the sky rather than ending against it (mirrors included).
+  scene.fogMode=Scene.FOGMODE_LINEAR;
+  scene.fogColor=SKY.clone();
+  scene.fogStart=180;
+  scene.fogEnd=650;
   scene.ambientColor=new Color3(.3,.3,.3);
   const root=new TransformNode(`location-${location.id}`,scene);
 
@@ -119,7 +130,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   for(const road of location.roads){
     const half=roadHalfWidth(road);
     const y=road.surfaceHeight;
-    const samples=resample(road);
+    const samples=resample(road,(x,z)=>inJunction(x,z,road.pavementWidth+8)||onOtherCarriageway(location,x,z,road.id,road.pavementWidth+8));
     add(tarmac,...strips(scene,`carriageway-${road.id}`,samples,-half,half,y,y,s=>!inJunction(s.x,s.z,-.5),root));
     for(const side of [-1,1]){
       const inner=side*half,outer=side*(half+road.pavementWidth),mid=(inner+outer)/2;
@@ -239,6 +250,8 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   const blockMaterials=new Map<string,StandardMaterial>();
   for(const block of location.blocks){
     if(quality.decorativeDetail==='reduced'&&!block.occludes)continue;
+    // Parked cars with a model are drawn by bakeParkedCars (src/assets/models.ts).
+    if(block.vehicleModel)continue;
     const key=block.colour??block.kind;
     let mat=blockMaterials.get(key);
     if(!mat){

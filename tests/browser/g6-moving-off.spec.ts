@@ -24,7 +24,9 @@ const go=async(page:Page,down:boolean)=>page.locator('[data-hold=throttle]').dis
 async function checkAll(page:Page){
   for(const v of ['interior','right-door','right-shoulder','left-door','left-shoulder','forward']){
     await tap(page,`[data-view=${v}]`);
-    await page.waitForTimeout(700);
+    // Hold each view for 0.7 s of simulated time (a loaded machine renders slowly; observation dwell is simulated time).
+    const t0=await read(page,'simTime()');
+    await page.waitForFunction(t=>(window as any).__drivingPractice.simTime()>t+.7,t0,{polling:50,timeout:30_000});
   }
 }
 

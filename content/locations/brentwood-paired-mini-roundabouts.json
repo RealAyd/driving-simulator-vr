@@ -2526,17 +2526,6 @@
    "z": -22.98
   }
  ],
- "models": [
-  {
-   "id": "high-street-signal-pole",
-   "asset": "cadmando-traffic-lights",
-   "position": {
-    "x": -20.93,
-    "z": 13.17
-   },
-   "facingDeg": 246.9
-  }
- ],
  "spawn": {
   "position": {
    "x": -29.27,

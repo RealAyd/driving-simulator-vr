@@ -31,6 +31,8 @@ export const RoadSchema=z.object({
 export const BlockSchema=z.object({
   id:z.string().min(1),
   kind:z.enum(['building','wall','hedge','parked-vehicle']),
+  /** Parked vehicles: the car model shown (src/assets/models.ts CAR_MODELS); its size must match `size`. */
+  vehicleModel:z.string().optional(),
   position:point,
   /** Clockwise from north, degrees. */
   headingDeg:z.number().default(0),
@@ -92,6 +94,41 @@ export const PlacedModelSchema=z.object({
   replacesBlock:z.string().optional()
 }).strict();
 
+export const HouseStyle=z.enum(['terrace','semi','semi-bay','detached']);
+export const HousePalette=z.enum(['red-brick','brown-brick','buff-brick','render-cream','render-white']);
+
+/**
+ * A row of houses along one side of a road, generated from a few reusable
+ * variants (src/world/streetscape.ts). Styles and palettes repeat in the
+ * order given, so a street reads as planned rather than random.
+ */
+export const FrontageSchema=z.object({
+  side:z.enum(['left','right']),
+  /** Distances along the road centreline, metres. */
+  from:z.number(),
+  to:z.number(),
+  styles:z.array(HouseStyle).min(1),
+  palettes:z.array(HousePalette).min(1),
+  /** Front garden depth from the back of the pavement to the house front. */
+  setback:z.number().min(1.5).max(15).default(6),
+  backGarden:z.number().min(4).max(30).default(14)
+}).strict();
+
+export const StreetscapeSchema=z.object({
+  roadId:z.string(),
+  /** Seed for door colours, boundaries, bins and cars on drives. */
+  seed:z.number().int().default(1),
+  frontages:z.array(FrontageSchema).min(1),
+  /** Street lights alternate sides at this spacing (0 = none). */
+  lampSpacing:z.number().min(0).default(32),
+  /** Road gullies in the gutter on both sides at this spacing (0 = none). */
+  drainSpacing:z.number().min(0).default(24),
+  /** Share of drives with a car on them. */
+  carsOnDrives:z.number().min(0).max(1).default(.45),
+  /** Kerbside spots where a car is parked (e.g. the learner's start): no drive or dropped kerb within 4 m. */
+  noDrivesAt:z.array(point).default([])
+}).strict();
+
 export const LocationSchema=z.object({
   /** v2 adds junctions, one-way roads, building outlines and trees. */
   schemaVersion:z.union([z.literal(1),z.literal(2)]),
@@ -114,6 +151,7 @@ export const LocationSchema=z.object({
   buildings:z.array(BuildingSchema).default([]),
   trees:z.array(point).default([]),
   models:z.array(PlacedModelSchema).default([]),
+  streetscape:StreetscapeSchema.optional(),
   spawn:z.object({position:point,headingDeg:z.number(),roadId:z.string()}).strict()
 }).strict().superRefine((location,ctx)=>{
   const roadIds=new Set(location.roads.map(r=>r.id));
@@ -124,6 +162,7 @@ export const LocationSchema=z.object({
   const blockIds=new Set(location.blocks.map(b=>b.id));
   for(const model of location.models)
     if(model.replacesBlock&&!blockIds.has(model.replacesBlock))ctx.addIssue({code:'custom',message:`Model "${model.id}" replaces missing block "${model.replacesBlock}"`});
+  if(location.streetscape&&!roadIds.has(location.streetscape.roadId))ctx.addIssue({code:'custom',message:`Streetscape road "${location.streetscape.roadId}" does not exist`});
   for(const junction of location.junctions)for(const entry of junction.entries)
     if(!roadIds.has(entry))ctx.addIssue({code:'custom',message:`Junction "${junction.id}" lists missing road "${entry}"`});
 });
@@ -135,6 +174,8 @@ export type Crossing=z.infer<typeof CrossingSchema>;
 export type Junction=z.infer<typeof JunctionSchema>;
 export type Building=z.infer<typeof BuildingSchema>;
 export type PlacedModel=z.infer<typeof PlacedModelSchema>;
+export type Streetscape=z.infer<typeof StreetscapeSchema>;
+export type Frontage=z.infer<typeof FrontageSchema>;
 
 export function parseLocation(data:unknown):Location{
   const result=LocationSchema.safeParse(data);
