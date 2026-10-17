@@ -1,19 +1,14 @@
 import {describe,expect,it} from 'vitest';
-import {readdirSync,statSync,readFileSync} from 'node:fs';
-import {join} from 'node:path';
 import register from '../../content/assets/register.json';
+import gitignore from '../../.gitignore?raw';
 
-/** All shipped model files under public/assets/models. */
-function shipped(dir='public/assets/models'):string[]{
-  return readdirSync(dir).flatMap(name=>{
-    const path=join(dir,name);
-    return statSync(path).isDirectory()?shipped(path):[path];
-  });
-}
+// Every shipped model file, as data URLs (so sizes can be checked without Node APIs).
+const shipped=import.meta.glob('/public/assets/models/**/*',{query:'?inline',import:'default',eager:true}) as Record<string,string>;
+const files=Object.keys(shipped).map(path=>path.slice(1));
+const bytes=(dataUrl:string)=>Math.floor(dataUrl.slice(dataUrl.indexOf(',')+1).length*3/4);
 
 describe('asset register',()=>{
   it('lists every shipped model, each from a pack whose licence allows public redistribution',()=>{
-    const files=shipped();
     expect(files.length).toBeGreaterThan(0);
     for(const file of files){
       const entry=register.models.find(m=>m.file===file);
@@ -24,12 +19,12 @@ describe('asset register',()=>{
     }
   });
 
-  it('keeps shipped models small enough for a phone, with no original archives in the repository',()=>{
-    for(const file of shipped()){
-      expect(file).toMatch(/\.glb$/);
-      expect(statSync(file).size,file).toBeLessThan(1_000_000);
+  it('keeps shipped models small enough for a phone, with original archives kept out of the repository',()=>{
+    for(const [path,data] of Object.entries(shipped)){
+      expect(path).toMatch(/\.glb$/);
+      expect(bytes(data),path).toBeLessThan(1_000_000);
     }
-    const tracked=readFileSync('.gitignore','utf8');
-    expect(tracked).toMatch(/assets-incoming/);
+    expect(gitignore).toMatch(/assets-incoming/);
+    expect(gitignore).toMatch(/\*\.zip/);
   });
 });
