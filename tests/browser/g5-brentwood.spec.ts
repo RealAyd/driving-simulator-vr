@@ -11,10 +11,11 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await expect(page.locator('#start-brentwood')).toContainText('not an official test route');
-  await page.click('#start-brentwood');
+  await expect(page.locator('[data-exercise=brentwood]')).toContainText('not an official test route');
+  await page.click('[data-exercise=brentwood]');
+  await expect(page.locator('#exercise-briefing')).toContainText('turn LEFT');
+  await page.click('#start-practice');
   expect(await read(page,'location()')).toBe('brentwood-paired-mini-roundabouts');
-  await expect(page.locator('#briefing-text')).toContainText('turn LEFT');
   await expect(page.locator('#hud-credit')).toContainText('© OpenStreetMap contributors');
 
   // Layout review shots from above (diagnostic camera), then the driver's view at the start.
@@ -25,7 +26,6 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
   await page.waitForTimeout(800);
   await page.screenshot({path:testInfo.outputPath('g5-02-overhead-junctions.png')});
   await read(page,'overhead(null)');
-  await page.click('#briefing-go');
   await page.waitForTimeout(800);
   await page.screenshot({path:testInfo.outputPath('g5-03-start-s0.png')});
 
@@ -61,8 +61,10 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
 
   // Back to the menu and into an exercise elsewhere: the world is rebuilt and the car starts there.
   await page.click('#menu-button');
-  await page.click('#start-mirror-check');
+  await page.click('[data-exercise=zebra]');
+  await page.click('#start-practice');
   expect(await read(page,'location()')).toBe('representative-residential-straight');
+  expect(await read(page,'passers()')).toEqual([]);
   await expect(page.locator('#hud-credit')).toBeHidden();
   const car=await read(page,'vehicle()');
   expect(car.position.z).toBeCloseTo(0,3);

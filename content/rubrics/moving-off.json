@@ -1,0 +1,32 @@
+{
+  "id": "moving-off",
+  "version": "0.1-draft",
+  "reviewStatus": "unreviewed",
+  "note": "Training heuristics for this prototype. Not DVSA criteria; needs review by an instructor. No single observation order is required.",
+  "moveOffSpeed": 0.3,
+  "observationAreas": [
+    {
+      "id": "behind",
+      "label": "behind (a mirror)",
+      "views": ["interior", "right-door", "left-door"],
+      "recentSeconds": 8
+    },
+    {
+      "id": "right-blind-spot",
+      "label": "your right blind spot (right shoulder)",
+      "views": ["right-shoulder"],
+      "recentSeconds": 4
+    },
+    {
+      "id": "left-side",
+      "label": "your left side, where cyclists come along the kerb (left mirror or left shoulder)",
+      "views": ["left-door", "left-shoulder"],
+      "recentSeconds": 8
+    }
+  ],
+  "alongsideMarginMetres": 1,
+  "closePassMetres": 0.6,
+  "signalRelevantWithinSeconds": 8,
+  "signalRelevantWithinMetres": 60,
+  "harshAvoidingDecel": 4
+}

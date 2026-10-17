@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "id": "residential-moving-off",
+  "name": "Residential street, parked at the kerb",
+  "fidelity": "representative",
+  "drivingSide": "left",
+  "description": "A plausible UK residential street with the learner parked at the left kerb, a parked car about 9 m ahead and room behind for traffic to approach. Not a real location or test route.",
+  "sources": [
+    {
+      "title": "Authored placeholder layout",
+      "licence": "Project-owned",
+      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements). No external data used."
+    }
+  ],
+  "reviewStatus": "unreviewed",
+  "roads": [
+    {
+      "id": "main-street",
+      "centreline": [
+        {
+          "x": 0,
+          "z": 120
+        },
+        {
+          "x": 0,
+          "z": -160
+        },
+        {
+          "x": 12,
+          "z": -260
+        },
+        {
+          "x": 40,
+          "z": -340
+        }
+      ],
+      "lanes": {
+        "count": 2,
+        "width": 3.2
+      },
+      "surfaceHeight": 0,
+      "pavementWidth": 2,
+      "kerbHeight": 0.12,
+      "markings": {
+        "centre": "dashed",
+        "edges": false
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "house-w-1",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -10
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-w-2",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -30
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-w-3",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -50
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-w-4",
+      "kind": "building",
+      "position": {
+        "x": -12,
+        "z": -70
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-e-1",
+      "kind": "building",
+      "position": {
+        "x": 12,
+        "z": -15
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-e-2",
+      "kind": "building",
+      "position": {
+        "x": 12,
+        "z": -35
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "house-e-3",
+      "kind": "building",
+      "position": {
+        "x": 12,
+        "z": -55
+      },
+      "size": {
+        "width": 8,
+        "depth": 9,
+        "height": 7
+      }
+    },
+    {
+      "id": "hedge-w",
+      "kind": "hedge",
+      "position": {
+        "x": -6.6,
+        "z": -40
+      },
+      "size": {
+        "width": 0.8,
+        "depth": 70,
+        "height": 1.2
+      },
+      "occludes": true
+    },
+    {
+      "id": "parked-car-ahead",
+      "kind": "parked-vehicle",
+      "position": {
+        "x": -2.15,
+        "z": -13
+      },
+      "size": {
+        "width": 1.8,
+        "depth": 4.2,
+        "height": 1.5
+      },
+      "colour": "#4b5563"
+    },
+    {
+      "id": "parked-car-far-behind",
+      "kind": "parked-vehicle",
+      "position": {
+        "x": 2.4,
+        "z": 60
+      },
+      "size": {
+        "width": 1.8,
+        "depth": 4.2,
+        "height": 1.5
+      },
+      "colour": "#0f766e"
+    }
+  ],
+  "spawn": {
+    "position": {
+      "x": -2.15,
+      "z": 0
+    },
+    "headingDeg": 0,
+    "roadId": "main-street"
+  },
+  "crossings": []
+}

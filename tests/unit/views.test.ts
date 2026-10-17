@@ -8,7 +8,7 @@ import {KeyboardInput} from '../../src/input/keyboard';
 import {LEARNER_CAR,steerLimit,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
 import {SteeringAssist} from '../../src/vehicle/steeringAssist';
 import {SteerRamp} from '../../src/input/steerRamp';
-import mirrorCheck from '../../content/scenarios/mirror-check.json';
+import movingOffIntro from '../../content/scenarios/moving-off-intro.json';
 import crossing from '../../content/scenarios/crossing-restricted-view.json';
 import location from '../../content/locations/representative-residential-straight.json';
 import {parseLocation} from '../../src/contracts';
@@ -42,8 +42,8 @@ describe('steering assistance (pure pursuit)',()=>{
     expect(s.position.z).toBeLessThan(-145);
     expect(Math.abs(s.position.x+1.6)).toBeLessThan(.6); // back in the left lane
   });
-  it.each([['mirror-check',mirrorCheck],['crossing',crossing]])('keeps the car on the road all the way to the end in %s, round the bend',(_,raw)=>{
-    // Regression: the mirror-check path used to run into the parked van and stop before the bend.
+  it.each([['crossing',crossing]])('keeps the car on the road all the way to the end in %s, round the bend',(_,raw)=>{
+    // Regression: an earlier exercise's path ran into the parked van and stopped before the bend.
     const place=parseLocation(location),road=place.roads[0]!;
     let closest=Infinity;
     const assist=new SteeringAssist(parseScenario(raw).assistPath!,LEARNER_CAR);
@@ -124,7 +124,7 @@ describe('blind spots',()=>{
 
 describe('passing vehicles',()=>{
   it('drive their path at constant speed after the delay and repeat',()=>{
-    const def=parseScenario(mirrorCheck).actors.find(a=>a.id==='overtaking-car');
+    const def=parseScenario(movingOffIntro).actors.find(a=>a.id==='purple-car');
     if(def?.kind!=='passing-vehicle')throw new Error('missing actor');
     const car=new PassingVehicle(def);
     const z0=car.pose.position.z;

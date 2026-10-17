@@ -48,7 +48,11 @@ export const PassingVehicleActorSchema=z.object({
   delaySeconds:z.number().min(0).max(120).default(0),
   /** Start again from the beginning after reaching the end. */
   repeat:z.boolean().default(false),
-  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/)
+  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  /** Slows or stops for the learner's car when it moves into this road user's path. */
+  yieldsToLearner:z.boolean().default(false),
+  /** Name used in feedback, e.g. "purple car". */
+  name:z.string().optional()
 }).strict();
 
 export const ActorSchema=z.discriminatedUnion('kind',[PedestrianActorSchema,FollowingVehicleActorSchema,PassingVehicleActorSchema]);
@@ -64,11 +68,32 @@ export const ScenarioSchema=z.object({
   rubricId:z.string(),
   /** Path that optional steering assistance follows (lane-level, scene metres). */
   assistPath:z.array(point).min(2).optional(),
+  /** Start position for this exercise instead of the location's default (e.g. a parking place). */
+  start:z.object({position:point,headingDeg:z.number()}).strict().optional(),
+  /**
+   * Painted guide for the intended manoeuvre: chevrons along `path` and
+   * arrows showing the traffic direction.
+   */
+  guide:z.object({path:z.array(point).min(2),arrows:z.array(point).default([])}).strict().optional(),
+  /** The learner's car cannot move (introductions and demonstrations). */
+  stationary:z.boolean().default(false),
+  /** Exercise offered next on the results screen. */
+  next:z.object({scenarioId:z.string(),label:z.string()}).strict().optional(),
+  /**
+   * Timing variations: one is picked for each attempt, so success does not
+   * depend on memorising when road users appear.
+   */
+  variants:z.array(z.object({
+    id:z.string(),
+    label:z.string(),
+    actors:z.record(z.string(),z.object({delaySeconds:z.number().min(0).max(120),speed:z.number().min(.5).max(31).optional()}).strict())
+  }).strict()).default([]),
   zones:z.array(ZoneSchema).default([]),
   actors:z.array(ActorSchema).default([]),
   triggers:z.array(z.object({
     id:z.string(),
-    when:z.object({zoneEntered:z.string()}).strict(),
+    /** A zone being entered, or a time after the start (guided introductions). */
+    when:z.union([z.object({zoneEntered:z.string()}).strict(),z.object({atSeconds:z.number().min(0)}).strict()]),
     /** Fires once per attempt unless explicitly re-armable. */
     once:z.boolean().default(true),
     actions:z.array(z.discriminatedUnion('do',[
@@ -84,14 +109,18 @@ export const ScenarioSchema=z.object({
   end:z.object({
     /** The exercise completes when the learner enters this zone (omit for timed practice). */
     zone:z.string().optional(),
+    /** Completes after this long (introductions with nothing to reach). */
+    completeAfterSeconds:z.number().min(5).max(600).optional(),
     timeLimitSeconds:z.number().min(30).max(900).default(180)
   }).strict()
 }).strict().superRefine((s,ctx)=>{
   const zones=new Set(s.zones.map(z=>z.id));
   const actors=new Set(s.actors.map(a=>a.id));
   if(s.end.zone!==undefined&&!zones.has(s.end.zone))ctx.addIssue({code:'custom',message:`End zone "${s.end.zone}" does not exist`});
+  for(const v of s.variants)for(const id of Object.keys(v.actors))
+    if(!actors.has(id))ctx.addIssue({code:'custom',message:`Variant "${v.id}" uses missing actor "${id}"`});
   for(const t of s.triggers){
-    if(!zones.has(t.when.zoneEntered))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing zone "${t.when.zoneEntered}"`});
+    if('zoneEntered' in t.when&&!zones.has(t.when.zoneEntered))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing zone "${(t.when as {zoneEntered:string}).zoneEntered}"`});
     for(const a of t.actions)if(a.do==='start-crossing'&&!actors.has(a.actor))ctx.addIssue({code:'custom',message:`Trigger "${t.id}" uses missing actor "${a.actor}"`});
   }
 });

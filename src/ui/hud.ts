@@ -28,10 +28,14 @@ export class Hud{
 
   update(speedMps:number,indicator:IndicatorState,lit:boolean,fps:number):void{
     this.speed.textContent=String(Math.round(mpsToMph(speedMps)));
-    this.left.classList.toggle('lit',indicator==='left'&&lit);
-    this.right.classList.toggle('lit',indicator==='right'&&lit);
-    this.left.classList.toggle('armed',indicator==='left');
-    this.right.classList.toggle('armed',indicator==='right');
+    // The signal buttons show the active state: amber while on, bright while lit.
+    const l=this.left.parentElement!,r=this.right.parentElement!;
+    l.classList.toggle('lit',indicator==='left'&&lit);
+    r.classList.toggle('lit',indicator==='right'&&lit);
+    l.classList.toggle('armed',indicator==='left');
+    r.classList.toggle('armed',indicator==='right');
+    l.setAttribute('aria-pressed',String(indicator==='left'));
+    r.setAttribute('aria-pressed',String(indicator==='right'));
     this.fps.textContent=`${Math.round(fps)} fps`;
   }
 

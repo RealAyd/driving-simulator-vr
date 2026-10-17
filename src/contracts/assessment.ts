@@ -37,3 +37,5 @@ export interface AttemptResult{
 
 /** Prefix for a practice note that describes something to work on (results show it differently). */
 export const IMPROVE='To improve: ';
+/** Prefix for a neutral explanatory note (neither praise nor something to improve). */
+export const INFO='Note: ';

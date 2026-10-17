@@ -44,6 +44,12 @@ export class DriverHead{
   target:{yaw:Radians;pitch:Radians}|null=null;
   private returning=false;
 
+  /** Stops turning towards a view and leaves the head where it is (free look takes over). */
+  release():void{
+    this.target=null;
+    this.returning=false;
+  }
+
   /** Starts a held view (mirror or shoulder), or ends it with null. */
   hold(target:{yaw:Radians;pitch:Radians}|null):void{
     this.returning=this.target!==null&&target===null;

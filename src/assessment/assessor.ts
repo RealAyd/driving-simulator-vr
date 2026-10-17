@@ -1,5 +1,5 @@
 import {
-  mpsToMph,SEVERITY_ORDER,type AttemptResult,type Crossing,type EventSink,type Finding,type Pose,
+  mpsToMph,type AttemptResult,type Crossing,type EventSink,type Finding,type Pose,
   type Seconds,type Severity,type SimEvent,type SimModule
 } from '../contracts';
 import type {Pedestrian} from '../actors/pedestrian';
@@ -7,6 +7,7 @@ import {PEDESTRIAN_RADIUS} from '../actors/pedestrian';
 import {pointToBox} from '../world/collisions';
 import type {ZoneTracker} from '../scenarios/zones';
 import {CROSSING_RUBRIC as R} from './rubric';
+import {FindingLog} from './findingLog';
 
 export interface AssessorInputs{
   events:()=>readonly SimEvent[];
@@ -27,36 +28,19 @@ const mph=(v:number)=>Math.round(mpsToMph(v));
  */
 export class Assessor implements SimModule{
   readonly id='assessment';
-  private readonly findings=new Map<string,Finding>();
+  private readonly log:FindingLog;
   private readonly notes:string[]=[];
   private cursor=0;
-  private counter=0;
   private firstApproachBrake:SimEvent|null=null;
   private conflictSeen=false;
 
-  constructor(private readonly input:AssessorInputs,private readonly sink:EventSink){}
+  constructor(private readonly input:AssessorInputs,sink:EventSink){
+    this.log=new FindingLog(R.version,sink,input.now);
+  }
 
   /** Adds a finding, or upgrades the existing finding for the same incident. */
   record(ruleId:string,incidentId:string,severity:Severity,eventIds:string[],explanation:string):Finding{
-    const existing=this.findings.get(incidentId);
-    if(existing){
-      for(const id of eventIds)if(!existing.eventIds.includes(id))existing.eventIds.push(id);
-      if(SEVERITY_ORDER[severity]>SEVERITY_ORDER[existing.severity]){
-        existing.upgradedFrom=existing.severity;
-        existing.severity=severity;
-        existing.ruleId=ruleId;
-        existing.explanation=explanation;
-        this.sink.emit('assessment.finding',{findingId:existing.id,incidentId,severity,upgraded:true});
-      }
-      return existing;
-    }
-    const finding:Finding={
-      id:`finding-${++this.counter}`,ruleId,incidentId,severity,eventIds:[...eventIds],explanation,
-      rubricVersion:R.version,time:this.input.now()
-    };
-    this.findings.set(incidentId,finding);
-    this.sink.emit('assessment.finding',{findingId:finding.id,incidentId,severity,ruleId});
-    return finding;
+    return this.log.record(ruleId,incidentId,severity,eventIds,explanation);
   }
 
   private inApproachZone():boolean{
@@ -160,19 +144,18 @@ export class Assessor implements SimModule{
     if(outcome==='left-route')this.record('route.left','route','advice',[],'The exercise ended because the car left the road or turned back.');
     if(outcome==='time-limit')this.record('route.time','time','advice',[],'The exercise ended at its time limit before reaching the end of the road.');
 
-    const findings=[...this.findings.values()].sort((a,b)=>SEVERITY_ORDER[b.severity]-SEVERITY_ORDER[a.severity]||a.time-b.time);
+    const findings=this.log.sorted();
     return {scenarioId,rubricVersion:R.version,outcome,findings,notes:[...this.notes],durationSeconds:duration,finishedAt:new Date().toISOString()};
   }
 
   get current():Finding[]{
-    return [...this.findings.values()];
+    return this.log.current;
   }
 
   reset():void{
-    this.findings.clear();
+    this.log.reset();
     this.notes.length=0;
     this.cursor=0;
-    this.counter=0;
     this.firstApproachBrake=null;
     this.conflictSeen=false;
   }

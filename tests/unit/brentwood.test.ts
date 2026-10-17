@@ -57,6 +57,6 @@ describe('Brentwood paired mini-roundabouts (area-inspired)',()=>{
   it('places the hints before each roundabout and the finish after both',()=>{
     const ids=guided.zones.map(z=>z.id);
     expect(ids).toEqual(['rb1-approach','rb1-entry','rb2-approach','rb2-entry','finish']);
-    expect(guided.triggers.map(t=>t.when.zoneEntered)).toEqual(['rb1-approach','rb2-approach']);
+    expect(guided.triggers.map(t=>'zoneEntered' in t.when?t.when.zoneEntered:null)).toEqual(['rb1-approach','rb2-approach']);
   });
 });

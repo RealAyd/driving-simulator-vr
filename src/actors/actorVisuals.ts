@@ -30,7 +30,8 @@ export function pedestrianVisual(scene:Scene,ped:Pedestrian){
 }
 
 /** Placeholder body for other vehicles: a car, or a cyclist on a bicycle. */
-export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car'){
+/** `visible`: hidden until the road user sets off, so a waiting actor never sits in the road. */
+export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car',visible:()=>boolean=()=>true){
   const root=new TransformNode(`actor-${id}`,scene);
   const paint=mat(scene,`${id}-paint`,Color3.FromHexString(colour));
   if(shape==='cyclist'){
@@ -40,7 +41,7 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
     rider.position.set(0,1.25,.1);rider.material=paint;rider.parent=root;
     const helmet=CreateSphere(`${id}-helmet`,{diameter:.28},scene);
     helmet.position.set(0,1.8,-.05);helmet.material=paint;helmet.parent=root;
-    return {update(){applyPose(root,pose())},dispose:()=>root.dispose(false,true)};
+    return {update(){root.setEnabled(visible());applyPose(root,pose())},dispose:()=>root.dispose(false,true)};
   }
   const body=CreateBox(`${id}-body`,{width:1.8,height:.75,depth:4.3},scene);
   body.position.y=.6;body.material=paint;body.parent=root;
@@ -50,7 +51,7 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
   const roof=CreateBox(`${id}-roof`,{width:1.62,height:.08,depth:2.0},scene);
   roof.position.set(0,1.44,.3);roof.material=paint;roof.parent=root;
   return {
-    update(){applyPose(root,pose())},
+    update(){root.setEnabled(visible());applyPose(root,pose())},
     dispose:()=>root.dispose(false,true)
   };
 }

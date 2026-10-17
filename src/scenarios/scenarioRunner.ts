@@ -33,22 +33,26 @@ export class ScenarioRunner implements SimModule{
 
   private onZone(zoneId:string,eventId:string):void{
     if(this.ended)return;
-    for(const trigger of this.scenario.triggers){
-      if(trigger.when.zoneEntered!==zoneId)continue;
-      if(trigger.once&&this.fired.has(trigger.id))continue;
-      this.fired.add(trigger.id);
-      this.events.emit('scenario.triggered',{triggerId:trigger.id,zoneEventId:eventId});
-      for(const action of trigger.actions){
-        if(action.do==='start-crossing')this.pedestrians.get(action.actor)?.requestCrossing(action.delaySeconds);
-        else this.onMessage(action.text);
-      }
-    }
+    for(const trigger of this.scenario.triggers)
+      if('zoneEntered' in trigger.when&&trigger.when.zoneEntered===zoneId)this.fire(trigger,{zoneEventId:eventId});
     if(this.scenario.end.zone!==undefined&&zoneId===this.scenario.end.zone)this.finish('completed');
+  }
+
+  private fire(trigger:Scenario['triggers'][number],payload:Record<string,unknown>):void{
+    if(trigger.once&&this.fired.has(trigger.id))return;
+    this.fired.add(trigger.id);
+    this.events.emit('scenario.triggered',{triggerId:trigger.id,...payload});
+    for(const action of trigger.actions){
+      if(action.do==='start-crossing')this.pedestrians.get(action.actor)?.requestCrossing(action.delaySeconds);
+      else this.onMessage(action.text);
+    }
   }
 
   fixedUpdate(dt:Seconds):void{
     if(this.ended)return;
     this.elapsed+=dt;
+    for(const trigger of this.scenario.triggers)
+      if('atSeconds' in trigger.when&&this.elapsed>=trigger.when.atSeconds)this.fire(trigger,{atSeconds:trigger.when.atSeconds});
     const l=this.learner();
     // Any collision ends the attempt: there is no reverse gear, so a car
     // pressed against an obstacle could not otherwise continue.
@@ -57,6 +61,7 @@ export class ScenarioRunner implements SimModule{
     const wrongWay=Math.abs(headingDelta(l.heading,l.roadHeading))>WRONG_WAY_RADIANS;
     this.offRoute=l.surface==='none'||wrongWay?this.offRoute+dt:0;
     if(this.offRoute>=OFF_ROUTE_SECONDS)return this.finish('left-route');
+    if(this.scenario.end.completeAfterSeconds!==undefined&&this.elapsed>=this.scenario.end.completeAfterSeconds)return this.finish('completed');
     if(this.elapsed>=this.scenario.end.timeLimitSeconds)return this.finish('time-limit');
   }
 

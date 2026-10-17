@@ -1,0 +1,182 @@
+{
+ "schemaVersion": 1,
+ "id": "moving-off-intro",
+ "locationId": "residential-moving-off",
+ "title": "Introduction: mirrors and blind spots",
+ "learningObjective": "Learn what each view control shows before the moving-off exercise. Not assessed.",
+ "briefing": "Optional guided introduction (not assessed)\n\nYou stay parked. Road users pass so you can see where each view looks. Tap a view to look there; tap it again, or tap Forward, to look ahead. You can also swipe to look around.\n\nInterior mirror: straight behind. Right mirror and Left mirror: behind on each side. Right shoulder and Left shoulder: the blind spots beside and behind you that the mirrors do not show.",
+ "rubricId": "none",
+ "start": {
+  "position": {
+   "x": -2.15,
+   "z": 0
+  },
+  "headingDeg": 0
+ },
+ "stationary": true,
+ "next": {
+  "scenarioId": "moving-off-safely",
+  "label": "Start Moving off safely"
+ },
+ "zones": [],
+ "actors": [
+  {
+   "id": "purple-car",
+   "kind": "passing-vehicle",
+   "body": "car",
+   "name": "purple car",
+   "path": [
+    {
+     "x": 0.4,
+     "z": 115
+    },
+    {
+     "x": 0.4,
+     "z": -18
+    },
+    {
+     "x": -1.6,
+     "z": -36
+    },
+    {
+     "x": -1.6,
+     "z": -150
+    }
+   ],
+   "speed": 9,
+   "delaySeconds": 6,
+   "repeat": true,
+   "colour": "#9333ea",
+   "yieldsToLearner": false
+  },
+  {
+   "id": "cyclist",
+   "kind": "passing-vehicle",
+   "body": "cyclist",
+   "name": "yellow cyclist",
+   "path": [
+    {
+     "x": -2.4,
+     "z": 80
+    },
+    {
+     "x": -2.4,
+     "z": 12
+    },
+    {
+     "x": -1.6,
+     "z": 8
+    },
+    {
+     "x": -0.1,
+     "z": 3.5
+    },
+    {
+     "x": -0.1,
+     "z": -20
+    },
+    {
+     "x": -1.2,
+     "z": -25
+    },
+    {
+     "x": -2.4,
+     "z": -29
+    },
+    {
+     "x": -2.4,
+     "z": -150
+    }
+   ],
+   "speed": 4.5,
+   "delaySeconds": 14,
+   "repeat": true,
+   "colour": "#facc15",
+   "yieldsToLearner": false
+  }
+ ],
+ "triggers": [
+  {
+   "id": "hint-1",
+   "when": {
+    "atSeconds": 1
+   },
+   "once": true,
+   "actions": [
+    {
+     "do": "show-message",
+     "text": "Tap Interior mirror: it shows the road straight behind you."
+    }
+   ]
+  },
+  {
+   "id": "hint-2",
+   "when": {
+    "atSeconds": 7
+   },
+   "once": true,
+   "actions": [
+    {
+     "do": "show-message",
+     "text": "The purple car is coming from behind on your right. Tap Right mirror to find it."
+    }
+   ]
+  },
+  {
+   "id": "hint-3",
+   "when": {
+    "atSeconds": 15
+   },
+   "once": true,
+   "actions": [
+    {
+     "do": "show-message",
+     "text": "Now tap Right shoulder: as it comes alongside, the mirror no longer shows it."
+    }
+   ]
+  },
+  {
+   "id": "hint-4",
+   "when": {
+    "atSeconds": 21
+   },
+   "once": true,
+   "actions": [
+    {
+     "do": "show-message",
+     "text": "The yellow cyclist is coming from behind on your left, near the kerb. Tap Left mirror."
+    }
+   ]
+  },
+  {
+   "id": "hint-5",
+   "when": {
+    "atSeconds": 30
+   },
+   "once": true,
+   "actions": [
+    {
+     "do": "show-message",
+     "text": "Watch the cyclist move out to pass you on the right. Tap Right shoulder, then Forward."
+    }
+   ]
+  },
+  {
+   "id": "hint-6",
+   "when": {
+    "atSeconds": 45
+   },
+   "once": true,
+   "actions": [
+    {
+     "do": "show-message",
+     "text": "They repeat. Practise each view; the introduction finishes on its own."
+    }
+   ]
+  }
+ ],
+ "end": {
+  "completeAfterSeconds": 75,
+  "timeLimitSeconds": 120
+ }
+}

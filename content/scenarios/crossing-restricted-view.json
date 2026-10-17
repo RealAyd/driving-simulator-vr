@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "id": "crossing-restricted-view",
   "locationId": "representative-residential-straight",
-  "title": "Zebra crossing beyond a parked van",
+  "title": "Zebra crossing",
   "learningObjective": "Approach a zebra crossing whose pavement is hidden by a parked vehicle at a speed that lets you stop, check your mirror before slowing, and give way to a pedestrian who steps onto the crossing.",
-  "briefing": "Drive along the road. A van is parked on your side before a zebra crossing, so you will need to pass it. A car is following you.",
+  "briefing": "Approach the zebra crossing\n\nDrive along the road. A van is parked on your side before a zebra crossing, so you will need to pass it. It hides the pavement, where someone may be waiting to cross.\n\nA car is following you, so check your mirror before you slow down.\n\nGive way to anyone who steps onto the crossing. The exercise ends once you have driven past the crossing to the end of the road section.",
   "rubricId": "crossing-restricted-view",
   "assistPath": [
     {

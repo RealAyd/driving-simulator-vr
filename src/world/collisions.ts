@@ -7,6 +7,8 @@ export interface DynamicFootprint{
   id:string;
   /** Oriented rectangle (vehicles) or a circle (pedestrians). */
   shape():{kind:'box';pose:Pose;halfWidth:number;halfLength:number}|{kind:'circle';x:number;z:number;radius:number};
+  /** False while the road user is not in the scene yet (waiting to set off). */
+  active?():boolean;
 }
 
 /** Distance from a point to an oriented rectangle (0 inside). */
@@ -25,6 +27,7 @@ export class CompositeCollisions implements CollisionQuery{
 
   firstCollision(pose:Pose,halfWidth:number,halfLength:number):string|null{
     for(const actor of this.dynamic){
+      if(actor.active&&!actor.active())continue;
       const s=actor.shape();
       if(s.kind==='circle'){
         if(pointToBox(s.x,s.z,pose,halfWidth,halfLength)<s.radius)return actor.id;

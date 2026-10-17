@@ -25,7 +25,11 @@ export type SimEventType=
   |'exercise.ended'
   |'assessment.finding'
   |'assist.changed'
-  |'view.selected';
+  |'view.selected'
+  /** A road user braked or stopped because the learner's car was in its path. */
+  |'actor.avoiding'
+  /** A road user drew level with and passed the learner's car. */
+  |'actor.passed';
 
 export interface SimEvent<T extends SimEventType=SimEventType,P=Record<string,unknown>>{
   id:string;

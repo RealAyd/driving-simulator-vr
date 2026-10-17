@@ -22,27 +22,21 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
-  await expect(page.locator('#location-label')).toContainText('Draft preview');
+  await expect(page.locator('#location-label')).toContainText('Choose an exercise');
+  // Three clearly named exercises.
+  await expect(page.locator('[data-exercise]')).toHaveText([/^Brentwood mini-roundabouts/,/^Zebra crossing/,/^Moving off safely/]);
   await page.screenshot({path:testInfo.outputPath('01-start.png')});
 
-  await page.click('#start-button');
+  // The exercise screen shows its own title, objective and briefing; nothing runs until Start practice.
+  await page.click('[data-exercise=zebra]');
+  await expect(page.locator('#exercise-title')).toHaveText('Zebra crossing');
+  await expect(page.locator('#exercise-briefing')).toContainText('van is parked');
+  expect(await read(page,'session()')).toBe('ready');
+  await page.screenshot({path:testInfo.outputPath('01b-exercise.png')});
+  await page.click('#start-practice');
   expect(await read(page,'session()')).toBe('running');
   await expect(page.locator('#hud')).toBeVisible();
-
-  // The briefing holds simulation time and counts down from 10 s.
-  await expect(page.locator('#briefing')).toBeVisible();
-  await expect(page.locator('#briefing-text')).toContainText('van is parked');
-  await page.keyboard.down('KeyW');
-  await page.waitForTimeout(1500);
-  await page.keyboard.up('KeyW');
-  expect(await read(page,'simTime()')).toBe(0);
-  expect((await read(page,'vehicle()')).speed).toBe(0);
-  const left=await read(page,'briefing()');
-  expect(left).toBeGreaterThan(7);
-  expect(left).toBeLessThan(9.6);
-  await page.screenshot({path:testInfo.outputPath('01b-briefing.png')});
-  await page.click('#briefing-go');
-  await expect(page.locator('#briefing')).toBeHidden();
+  await expect(page.locator('#paused-title')).toHaveText('Zebra crossing');
   await expect.poll(()=>read(page,'simTime()')).toBeGreaterThan(0);
 
   // Camera sits at the right-hand driver seat, about 1.2 m above the road, facing north.
@@ -81,7 +75,8 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
   // Indicator on and off.
   await page.keyboard.press('BracketLeft');
   expect((await read(page,'vehicle()')).indicator).toBe('left');
-  await expect(page.locator('#ind-left')).toHaveClass(/armed/);
+  await expect(page.locator('#hud-ind-left')).toHaveClass(/armed/);
+  await expect(page.locator('#hud-ind-left')).toHaveAttribute('aria-pressed','true');
   await page.keyboard.press('BracketLeft');
   expect((await read(page,'vehicle()')).indicator).toBe('off');
 
@@ -113,8 +108,6 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   // Restart from the pause screen: back to spawn, events cleared to a single reset.
   await page.click('#restart-button');
-  await expect(page.locator('#briefing')).toBeVisible();
-  await page.click('#briefing-go');
   expect(await read(page,'session()')).toBe('running');
   const reset=await read(page,'vehicle()');
   expect(reset.position.z).toBeCloseTo(0,5);

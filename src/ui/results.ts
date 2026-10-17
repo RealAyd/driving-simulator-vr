@@ -1,11 +1,11 @@
-import {IMPROVE,type AttemptResult,type Severity} from '../contracts';
+import {IMPROVE,INFO,type AttemptResult,type Severity} from '../contracts';
 
 const OUTCOME_TEXT:Record<AttemptResult['outcome'],string>={
-  completed:'Exercise finished',
-  collision:'Exercise stopped: collision',
-  'left-route':'Exercise stopped: left the route',
-  'time-limit':'Exercise stopped: time limit',
-  abandoned:'Exercise abandoned'
+  completed:'Exercise completed',
+  collision:'Stopped: collision (unsafe)',
+  'left-route':'Stopped: the car left the route',
+  'time-limit':'Stopped: time limit reached',
+  abandoned:'You exited the exercise'
 };
 const SEVERITY_TEXT:Record<Severity,string>={advice:'Advice',minor:'Minor',serious:'Serious',dangerous:'Dangerous'};
 
@@ -17,7 +17,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string,className?
 }
 
 /** Renders an attempt result. Text only (no innerHTML), so content cannot inject markup. */
-export function renderResults(result:AttemptResult,eventTime:(id:string)=>number|undefined,attemptsSaved:number,storage:'indexeddb'|'memory'):void{
+export function renderResults(result:AttemptResult,eventTime:(id:string)=>number|undefined,attemptsSaved:number,storage:'indexeddb'|'memory',saveFailed=false):void{
   document.getElementById('results-title')!.textContent=OUTCOME_TEXT[result.outcome];
   const worst=result.findings[0]?.severity;
   document.getElementById('results-summary')!.textContent=
@@ -38,13 +38,15 @@ export function renderResults(result:AttemptResult,eventTime:(id:string)=>number
   const notes=document.getElementById('results-notes')!;
   // Notes starting with IMPROVE are things to work on; the rest are things done well.
   notes.replaceChildren(...result.notes.map(n=>{
-    const item=el('li',n.startsWith(IMPROVE)?n.slice(IMPROVE.length):n);
-    if(n.startsWith(IMPROVE))item.classList.add('improve');
+    const kind=n.startsWith(IMPROVE)?'improve':n.startsWith(INFO)?'info':null;
+    const item=el('li',kind==='improve'?n.slice(IMPROVE.length):kind==='info'?n.slice(INFO.length):n);
+    if(kind)item.classList.add(kind);
     return item;
   }));
   notes.hidden=result.notes.length===0;
   document.getElementById('results-meta')!.textContent=
     `Duration ${result.durationSeconds.toFixed(0)} s · rubric ${result.rubricVersion} (draft, not yet reviewed by an instructor; not DVSA criteria) · `+
-    (storage==='indexeddb'?`${attemptsSaved} attempt${attemptsSaved===1?'':'s'} saved on this device`:'results are not saved in this browser');
+    (saveFailed?'this attempt could not be saved on this device'
+      :storage==='indexeddb'?`${attemptsSaved} attempt${attemptsSaved===1?'':'s'} saved on this device`:'results are not saved in this browser');
 }
 

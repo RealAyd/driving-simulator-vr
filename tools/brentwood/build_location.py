@@ -200,7 +200,7 @@ scenario = {
     'schemaVersion': 1,
     'id': 'brentwood-guided-traversal',
     'locationId': location['id'],
-    'title': 'Brentwood mini-roundabouts: guided route',
+    'title': 'Brentwood mini-roundabouts',
     'learningObjective': 'Approach and drive through two mini-roundabouts close together: plan your lane, '
                          'slow down, give way to traffic from the right, signal correctly and look again before the second one.',
     'briefing': 'High Street, Brentwood (area-inspired, not an official test route). Follow the road to the '
