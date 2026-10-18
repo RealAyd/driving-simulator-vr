@@ -18,7 +18,7 @@ export function pedestrianVisual(scene:Scene,ped:Pedestrian){
   body.position.y=.95;body.material=mat(scene,`${ped.id}-coat`,new Color3(.12,.2,.38));body.parent=root;
   const legs=CreateBox(`${ped.id}-legs`,{width:.3,height:.45,depth:.2},scene);
   legs.position.y=.22;legs.material=mat(scene,`${ped.id}-trousers`,new Color3(.15,.15,.17));legs.parent=root;
-  const head=CreateSphere(`${ped.id}-head`,{diameter:.24},scene);
+  const head=CreateSphere(`${ped.id}-head`,{diameter:.24,segments:8},scene);
   head.position.y=1.62;head.material=mat(scene,`${ped.id}-skin`,new Color3(.78,.6,.48));head.parent=root;
   return {
     update(){
@@ -47,7 +47,7 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
     bike.position.y=.45;bike.material=mat(scene,`${id}-frame`,new Color3(.12,.12,.14));bike.parent=root;
     const rider=CreateCylinder(`${id}-rider`,{height:.9,diameterTop:.36,diameterBottom:.3},scene);
     rider.position.set(0,1.25,.1);rider.material=paint;rider.parent=root;
-    const helmet=CreateSphere(`${id}-helmet`,{diameter:.28},scene);
+    const helmet=CreateSphere(`${id}-helmet`,{diameter:.28,segments:8},scene);
     helmet.position.set(0,1.8,-.05);helmet.material=paint;helmet.parent=root;
     return {update(){root.setEnabled(visible());applyPose(root,pose())},dispose:()=>root.dispose(false,true)};
   }

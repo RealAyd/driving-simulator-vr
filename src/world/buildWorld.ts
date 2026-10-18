@@ -237,7 +237,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
       const pole=CreateCylinder(`${crossing.id}-beacon-pole-${side}`,{height:2.6,diameter:.1},scene);
       pole.material=black;
       place(pole,poleLateral,-crossing.width/2-.3,road.surfaceHeight+road.kerbHeight+1.3);
-      const globe=CreateSphere(`${crossing.id}-beacon-${side}`,{diameter:.32},scene);
+      const globe=CreateSphere(`${crossing.id}-beacon-${side}`,{diameter:.32,segments:8},scene);
       globe.material=amber;
       place(globe,poleLateral,-crossing.width/2-.3,road.surfaceHeight+road.kerbHeight+2.7);
     }

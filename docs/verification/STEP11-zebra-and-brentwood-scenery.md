@@ -12,7 +12,7 @@ Each exercise was finished and verified separately: the zebra street first (layo
   - terraces, semis and detached houses, front and back gardens, walls, hedges and fences;
   - paths and drives, cars on drives, street lights, gullies, trees and bins.
 - Parked cars use the CC0 LowPoly Cars models, with collision boxes the size of each model.
-- The road now continues 290 m behind the start, so the mirrors and shoulder views show a street rather than the road's end. It also runs further on round the bend, which is smoothed.
+- The road now continues 290 m behind the start, with houses for the first 160 m (into the haze), so the mirrors and shoulder views show a street rather than the road's end. It also runs further on round the bend, which is smoothed.
 - Distances along the road moved by +290 m with it. The crossing, the zones and the pedestrian are at exactly the same places on the ground (unit-tested).
 
 **What did not change (the lesson)**
@@ -75,11 +75,17 @@ Screenshots (`step11/brentwood-*`): forward (signals green), interior mirror, do
 
 ## Performance (software rendering in this container: not an iPhone)
 
+In one CI run the zebra drive tests slowed to under 1 fps and timed out, although the same tests had passed in the run before. The zebra street was therefore trimmed:
+- houses now run from about 160 m behind the start (the haze begins at 180 m) to about 100 m past the end of the exercise;
+- the beacons, the pedestrian's head and the cyclist's helmet were reduced from 4,624-triangle spheres to low-poly ones.
+
+This took the scene from 83,600 to 50,100 triangles and from 12.8 to 16.0 fps in this container.
+
 Forward view with mirrors, stationary, 932 × 430, SwiftShader:
 
 | Scene | Houses/buildings | Triangles | Vertices | Meshes | Colliders | Average fps | p50 / p95 frame |
 |---|---|---|---|---|---|---|---|
-| Zebra street | 74 houses, 20 parked cars | 83,600 | 151,400 | 94 | 1,364 | 12.8 | 73.5 / 134.6 ms |
+| Zebra street | 48 houses, 12 parked cars | 50,100 | | 88 | 869 | 16.0 | about 60 / 100 ms |
 | Brentwood | 32 buildings | 25,100 | 36,100 | 55 | 249 | 22.0 | 43.7 / 78.6 ms |
 | Moving off (step 8, for comparison) | 70+ houses | about 63,000 | | | | 12–14 | |
 

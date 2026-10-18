@@ -22,7 +22,7 @@ test('G13: the zebra street is dressed from every view with cleared assets; the 
   expect(await read(page,'location()')).toBe('representative-residential-straight');
 
   const scenery=await read(page,'scenery()');
-  expect(scenery.houses).toBeGreaterThan(40);
+  expect(scenery.houses).toBeGreaterThan(30);
   expect(scenery.parkedCars).toBeGreaterThanOrEqual(7);
   expect(await read(page,'sceneryModels()')).toEqual([]);
 

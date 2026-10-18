@@ -238,22 +238,7 @@
     "frontages": [
       {
         "side": "left",
-        "from": 4,
-        "to": 150,
-        "styles": [
-          "semi-bay",
-          "semi"
-        ],
-        "palettes": [
-          "brown-brick",
-          "render-cream",
-          "red-brick"
-        ],
-        "setback": 6
-      },
-      {
-        "side": "left",
-        "from": 152,
+        "from": 170,
         "to": 330,
         "styles": [
           "terrace"
@@ -284,7 +269,7 @@
       {
         "side": "left",
         "from": 472,
-        "to": 640,
+        "to": 580,
         "styles": [
           "terrace"
         ],
@@ -297,21 +282,7 @@
       },
       {
         "side": "right",
-        "from": 4,
-        "to": 180,
-        "styles": [
-          "terrace"
-        ],
-        "palettes": [
-          "buff-brick",
-          "red-brick"
-        ],
-        "setback": 3.5,
-        "backGarden": 12
-      },
-      {
-        "side": "right",
-        "from": 182,
+        "from": 170,
         "to": 360,
         "styles": [
           "semi",
@@ -342,7 +313,7 @@
       {
         "side": "right",
         "from": 502,
-        "to": 640,
+        "to": 580,
         "styles": [
           "semi-bay",
           "semi"

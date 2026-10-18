@@ -49,13 +49,14 @@ function pedestrianVisible(z:number,x:number,obstacles:Block[]):number{
 
 describe('zebra street: layout',()=>{
   it('is a full street on both sides, continuing behind the learner (mirrors) and beyond the crossing',()=>{
-    expect(layout.houses.length).toBeGreaterThan(40);
+    expect(layout.houses.length).toBeGreaterThan(30);
     expect(new Set(layout.houses.map(h=>h.style)).size).toBeGreaterThanOrEqual(4);
     for(const side of [-1,1]){
       const near=layout.houses.filter(h=>Math.sign(h.frame.ox)===side&&h.frame.oz<20&&h.frame.oz>-130);
       expect(near.length,`side ${side}`).toBeGreaterThanOrEqual(6);
     }
-    expect(Math.max(...layout.houses.map(h=>h.frame.oz))).toBeGreaterThan(200);
+    // Houses run about 160 m behind the start (the haze begins at 180 m) and about 100 m past the end of the exercise.
+    expect(Math.max(...layout.houses.map(h=>h.frame.oz))).toBeGreaterThan(150);
   });
 
   it('keeps houses, gardens and street furniture off the carriageway',()=>{
