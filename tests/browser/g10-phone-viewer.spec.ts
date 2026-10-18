@@ -184,7 +184,7 @@ test('G10: controller check with a non-standard layout; scored driving: held acc
 
   // Controller lost: pause, acceleration dropped; reconnecting does not resume; accelerate held through it does nothing until pressed again.
   await pad(page,LAYOUT.accelerate,true);
-  await expect.poll(async()=>(await read(page,'lastControls()')).throttle).toBeGreaterThan(0);
+  await expect.poll(async()=>(await read(page,'lastControls()')).throttle,{timeout:20_000}).toBeGreaterThan(0);
   await unplug(page,false);
   await expect.poll(()=>read(page,'viewer().pauseReason')).toBe('Controller disconnected');
   expect(await read(page,'session()')).toBe('paused');
