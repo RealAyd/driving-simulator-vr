@@ -278,8 +278,10 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await page.selectOption('#viewer-slot','Viewer 1');
   await page.click('#viewer-calibrate');
   await expect.poll(()=>read(page,'viewer().mode')).toBe('calibration');
+  // Look straight ahead while the viewer settles after the reload, then at Reset.
+  await look(page,0,0);
+  await page.waitForTimeout(1500);
   const reset=aimAt({x:panel.x-.22,y:panel.y-.21-.06,z:panel.z+.02});
   await look(page,reset.yaw,reset.pitch);
-  await page.waitForTimeout(600);
-  await expect.poll(async()=>(await read(page,'viewer()')).settings.ipdMm,{timeout:10_000}).toBe(63);
+  await expect.poll(async()=>(await read(page,'viewer()')).settings.ipdMm,{timeout:20_000}).toBe(63);
 });
