@@ -55,6 +55,31 @@ export const PassingVehicleActorSchema=z.object({
   name:z.string().optional()
 }).strict();
 
+/**
+ * A background bus along one road: it may wait at its first stop, then drives
+ * its lane, stops at each call (front of the bus at the stop's flag) with
+ * controlled braking, and at the end either stays or leaves the scene. Never
+ * assessed and never an exercise decision; it is a solid road user that slows
+ * for the learner's car rather than driving into it.
+ */
+export const BusRunSchema=z.object({
+  id:z.string().regex(/^[a-z0-9-]+$/),
+  roadId:z.string(),
+  /** Travels along the road's centreline direction ('with', in its left lane) or against it. */
+  direction:z.enum(['with','against']),
+  /** Distances along the road (centreline metres) where the front of the bus starts and finishes. */
+  from:z.number().min(0),
+  to:z.number().min(0),
+  /** Stops on the way: where the front of the bus halts, and for how long. */
+  calls:z.array(z.object({at:z.number().min(0),dwellSeconds:z.number().min(0).max(120)}).strict()).default([]),
+  /** Seconds standing at `from` before pulling away. */
+  startDwellSeconds:z.number().min(0).max(120).default(0),
+  cruiseMph:z.number().min(5).max(40),
+  /** At `to`: 'stay' (stands there) or 'leave' (gone from the scene, as if out of sight). */
+  end:z.enum(['stay','leave']),
+  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#e9ebee')
+}).strict();
+
 export const ActorSchema=z.discriminatedUnion('kind',[PedestrianActorSchema,FollowingVehicleActorSchema,PassingVehicleActorSchema]);
 
 export const ScenarioSchema=z.object({
@@ -106,6 +131,8 @@ export const ScenarioSchema=z.object({
   }).strict()).default([]),
   zones:z.array(ZoneSchema).default([]),
   actors:z.array(ActorSchema).default([]),
+  /** Background buses (scenery that moves; never assessed). */
+  buses:z.array(BusRunSchema).default([]),
   triggers:z.array(z.object({
     id:z.string(),
     /** A zone being entered, or a time after the start (guided introductions). */
@@ -146,6 +173,7 @@ export type Zone=z.infer<typeof ZoneSchema>;
 export type PedestrianActorDef=z.infer<typeof PedestrianActorSchema>;
 export type FollowingVehicleActorDef=z.infer<typeof FollowingVehicleActorSchema>;
 export type PassingVehicleActorDef=z.infer<typeof PassingVehicleActorSchema>;
+export type BusRunDef=z.infer<typeof BusRunSchema>;
 
 export function parseScenario(data:unknown):Scenario{
   const result=ScenarioSchema.safeParse(data);

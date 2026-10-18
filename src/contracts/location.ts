@@ -12,6 +12,10 @@ export const RoadSchema=z.object({
   id:z.string().min(1),
   /** Street name shown in feedback; several road pieces may share it. */
   name:z.string().optional(),
+  /** Speed limit in mph where a reference gives one (shown in the location label; never used for scoring). */
+  speedLimitMph:z.number().int().min(5).max(70).optional(),
+  /** Where the speed limit comes from (for example an OpenStreetMap way's maxspeed tag). */
+  speedLimitSource:z.string().optional(),
   /** One-way roads carry traffic only along the centreline direction. */
   oneway:z.boolean().default(false),
   /** Polyline along the road centre, in local metres. At least two points. */
@@ -98,7 +102,7 @@ export const BuildingSchema=z.object({
   heightSource:z.enum(['map-levels','reference-estimated','estimated']).default('estimated'),
   /** What the building is used for (map data): shops get shopfronts; car parks open decks; others windows. */
   use:z.enum(['shop','residential','office','civic','church','school','parking','utility','other']).default('other'),
-  /** Optional name from map data (shown in review documents only; never drawn on the building). */
+  /** Optional name from map data: drawn as plain lettering on a shop's fascia (signage.ts), and shown in review documents. */
   name:z.string().optional(),
   /**
    * 'map': the outline is from map data (OpenStreetMap). 'reference': from a
@@ -134,7 +138,12 @@ export const FurnitureSchema=z.object({
   position:point,
   /** Compass direction the flag faces (towards the road), degrees. */
   facingDeg:z.number().default(0),
-  source:z.string().optional()
+  source:z.string().optional(),
+  /** Stop name and indicator from the reference (for example "High Street", "Stop C"), drawn on the flag. */
+  name:z.string().optional(),
+  indicator:z.string().optional(),
+  /** A shelter is mapped at this stop. */
+  shelter:z.boolean().default(false)
 }).strict();
 
 /**
@@ -191,6 +200,8 @@ export const LocationSchema=z.object({
   schemaVersion:z.union([z.literal(1),z.literal(2)]),
   id:z.string().regex(/^[a-z0-9-]+$/),
   name:z.string().min(1),
+  /** Town shown in the location label (real places only; omitted for representative streets). */
+  placeName:z.string().optional(),
   fidelity:Fidelity,
   drivingSide:z.enum(['left','right']),
   description:z.string().default(''),

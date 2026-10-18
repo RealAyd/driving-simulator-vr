@@ -755,7 +755,11 @@ for f in OSM['features']:
     pos = (q[0] + -uz * side * lateral, q[1] + ux * side * lateral)
     facing = math.degrees(math.atan2(-(-uz * side), (ux * side))) % 360
     furniture.append({'kind': 'bus-stop', 'position': {'x': round(pos[0], 2), 'z': round(pos[1], 2)},
-                      'facingDeg': round(facing, 1), 'source': f"OSM node {f['osmNode']} ({f['name']})"})
+                      'facingDeg': round(facing, 1), 'source': f"OSM node {f['osmNode']} ({f['name']})",
+                      **({'name': f['name']} if f.get('name') else {}),
+                      # NaPTAN's indicator ("Stop C"); "SE-bound" style indicators are directions, not stop names.
+                      **({'indicator': f['indicator']} if f.get('indicator') and 'bound' not in f['indicator'] else {}),
+                      'shelter': bool(f.get('shelter'))})
 
 # Signal crossing position. Its lights are not simulated, so no signal heads are drawn:
 # a decorative signal that never changes would mislead the learner.
@@ -763,16 +767,31 @@ def along_of(rid, xz):
     line = poly(rid)
     return round(min(((math.dist(xz, point_at(line, s)[0]), s) for s in [i * .25 for i in range(int(length(line) * 4))]))[1], 1)
 xing_s = along_of('high-street', (-17.51, 15.85))
+# Where each High Street stop's flag stands, as distance along the High Street (for the background buses).
+stop_along = {f['indicator']: along_of('high-street', (f['position']['x'], f['position']['z']))
+              for f in furniture if f.get('indicator') and f['source'].endswith('(High Street)')}
 # The High Street signal crossings behind the start (OSM nodes 1763175237 and 1763175242).
 xing_west = along_of('high-street', (-99.17, 55.57))
 xing_west2 = along_of('high-street', (-266.3, 125.5))
 # OSM: the High Street west of node 1763175237 (way 671087285) has no lane markings.
 ROADS['high-street']['markings']['centreFrom'] = xing_west
 
+# Speed limits from the OSM ways' maxspeed tags (shown in the location label only; no sign positions are mapped).
+import re as _re
+for r in roads:
+    ways = [int(w) for w in _re.findall(r'\d{6,}', r['_osm'])]
+    limits = {WAYS[w].get('maxspeed') for w in ways if w in WAYS}
+    if len(limits) == 1 and (limit := limits.pop()) and limit.endswith(' mph'):
+        r['speedLimitMph'] = int(limit.split()[0])
+        r['speedLimitSource'] = 'OpenStreetMap maxspeed, ' + ('ways ' if len(ways) > 1 else 'way ') + ', '.join(map(str, ways))
+    elif limits - {None}:
+        print('mixed speed limits on', r['id'], limits)
+
 location = {
     'schemaVersion': 2,
     'id': 'brentwood-paired-mini-roundabouts',
     'name': 'Brentwood paired mini-roundabouts (area-inspired)',
+    'placeName': 'Brentwood',
     'fidelity': 'geographically-inspired',
     'drivingSide': 'left',
     'description': 'Area-inspired layout of the paired mini-roundabouts at High Street, Ingrave Road, '
@@ -829,6 +848,15 @@ scenario = {
     'controllerDriving': {'assistedSpeedMph': 18, 'accelerationLimit': 1.5},
     # The High Street signal crossings are real. This exercise simulates no pedestrian phase, so in this exercise
     # only their lights stay green (the briefing says so). Other exercises draw no heads unless they set a state.
+    # Background buses on the High Street behind the start (never assessed; generic, unbranded: several
+    # operators serve these stops). Westbound: waits at Coach Stop E, then pulls away west and leaves.
+    # Eastbound: comes up from the west, calls at Stop C, then stops at Stop B and stays.
+    'buses': [
+        {'id': 'bus-westbound', 'roadId': 'high-street', 'direction': 'against', 'from': stop_along['Coach Stop E'], 'to': 12.0,
+         'startDwellSeconds': 16, 'cruiseMph': 17, 'end': 'leave'},
+        {'id': 'bus-eastbound', 'roadId': 'high-street', 'direction': 'with', 'from': 40.0, 'to': stop_along['Stop B'],
+         'calls': [{'at': stop_along['Stop C'], 'dwellSeconds': 12}], 'cruiseMph': 17, 'end': 'stay'},
+    ],
     'signals': {'high-street-signals': 'green', 'high-street-signals-west': 'green', 'high-street-signals-west-2': 'green'},
     'title': 'Brentwood mini-roundabouts',
     'learningObjective': 'Approach and drive through two mini-roundabouts close together: plan your lane, '

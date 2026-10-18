@@ -4,6 +4,8 @@
  */
 // Side effect: enables camera.getForwardRay() used for diagnostics and tests.
 import '@babylonjs/core/Culling/ray';
+// Side effect: thin instances (background people).
+import '@babylonjs/core/Meshes/thinInstanceMesh';
 
 export {Engine} from '@babylonjs/core/Engines/engine';
 export {Scene} from '@babylonjs/core/scene';

@@ -2,6 +2,7 @@
  "schemaVersion": 2,
  "id": "brentwood-paired-mini-roundabouts",
  "name": "Brentwood paired mini-roundabouts (area-inspired)",
+ "placeName": "Brentwood",
  "fidelity": "geographically-inspired",
  "drivingSide": "left",
  "description": "Area-inspired layout of the paired mini-roundabouts at High Street, Ingrave Road, Wilson's Corner, Shenfield Road and Ongar Road, Brentwood. Not an official test route. Road centrelines from OpenStreetMap; lane counts and widths simplified; building outlines from OpenStreetMap (\"map\") and, where it has none, Microsoft machine-detected outlines via Overture Maps (\"reference\"); buildings marked approximate are placeholders placed on the evidence recorded with each; pavement widths to the shop fronts derived from map data; gardens, landscaped open land, roof styles and street lights are representative; traffic signals are not simulated (an exercise may hold them at green).",
@@ -1347,7 +1348,9 @@
      "left": 2.0,
      "right": 2.0
     }
-   ]
+   ],
+   "speedLimitMph": 20,
+   "speedLimitSource": "OpenStreetMap maxspeed, ways 671087285, 820165999, 1307620631, 1307620632, 1307620630, 820166003"
   },
   {
    "id": "ingrave-in",
@@ -1562,7 +1565,9 @@
      "left": 2.0,
      "right": 2.0
     }
-   ]
+   ],
+   "speedLimitMph": 30,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 829734450"
   },
   {
    "id": "ingrave-out",
@@ -1777,7 +1782,9 @@
      "left": 2.0,
      "right": 2.0
     }
-   ]
+   ],
+   "speedLimitMph": 30,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 793487376"
   },
   {
    "id": "link-north",
@@ -2128,7 +2135,9 @@
    "markings": {
     "centre": "dashed",
     "edges": false
-   }
+   },
+   "speedLimitMph": 30,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 793487371"
   },
   {
    "id": "shenfield-out",
@@ -2324,7 +2333,9 @@
    "markings": {
     "centre": "dashed",
     "edges": false
-   }
+   },
+   "speedLimitMph": 30,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 424647832"
   },
   {
    "id": "ongar-in",
@@ -2597,7 +2608,9 @@
      "left": 2.0,
      "right": 2.0
     }
-   ]
+   ],
+   "speedLimitMph": 30,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 1304276721"
   },
   {
    "id": "ongar-road",
@@ -2727,7 +2740,9 @@
    "markings": {
     "centre": "dashed",
     "edges": false
-   }
+   },
+   "speedLimitMph": 30,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 725959965"
   },
   {
    "id": "moores-place",
@@ -3274,7 +3289,9 @@
      "left": 2.0,
      "right": 2.0
     }
-   ]
+   ],
+   "speedLimitMph": 20,
+   "speedLimitSource": "OpenStreetMap maxspeed, way 49218144"
   }
  ],
  "blocks": [
@@ -40800,7 +40817,10 @@
     "z": 35.96
    },
    "facingDeg": 154.0,
-   "source": "OSM node 474891824 (High Street)"
+   "source": "OSM node 474891824 (High Street)",
+   "name": "High Street",
+   "indicator": "Stop C",
+   "shelter": true
   },
   {
    "kind": "bus-stop",
@@ -40809,7 +40829,10 @@
     "z": 28.29
    },
    "facingDeg": 154.0,
-   "source": "OSM node 474891825 (High Street)"
+   "source": "OSM node 474891825 (High Street)",
+   "name": "High Street",
+   "indicator": "Stop B",
+   "shelter": true
   },
   {
    "kind": "bus-stop",
@@ -40818,7 +40841,10 @@
     "z": 29.66
    },
    "facingDeg": 334.1,
-   "source": "OSM node 474893273 (High Street)"
+   "source": "OSM node 474893273 (High Street)",
+   "name": "High Street",
+   "indicator": "Coach Stop E",
+   "shelter": true
   },
   {
    "kind": "bus-stop",
@@ -40827,7 +40853,10 @@
     "z": 43.16
    },
    "facingDeg": 334.0,
-   "source": "OSM node 474894520 (High Street)"
+   "source": "OSM node 474894520 (High Street)",
+   "name": "High Street",
+   "indicator": "Stop F",
+   "shelter": true
   },
   {
    "kind": "bus-stop",
@@ -40836,7 +40865,10 @@
     "z": 20.97
    },
    "facingDeg": 154.0,
-   "source": "OSM node 474894536 (High Street)"
+   "source": "OSM node 474894536 (High Street)",
+   "name": "High Street",
+   "indicator": "Stop A",
+   "shelter": true
   },
   {
    "kind": "bus-stop",
@@ -40845,7 +40877,9 @@
     "z": 52.45
    },
    "facingDeg": 230.7,
-   "source": "OSM node 474895676 (Wilsons Corner)"
+   "source": "OSM node 474895676 (Wilsons Corner)",
+   "name": "Wilsons Corner",
+   "shelter": false
   }
  ],
  "townLampSpacing": 30,

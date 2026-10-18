@@ -93,6 +93,7 @@ body.phone #hud-status{display:none}
 #hud-task{position:absolute;left:50%;top:calc(var(--st) + 4px);transform:translateX(-50%);max-width:calc(100vw - 2 * (var(--sr) + 205px));text-align:center;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
 .hud-pill{position:absolute;left:var(--sl);top:var(--st);font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
 .hud-pill.mirror{border-color:#5eead4;color:#5eead4}
+#hud-place{position:absolute;left:var(--sl);top:calc(var(--st) + 26px);font-size:11px;color:#e2e8f0;background:rgba(15,23,42,.55);border-radius:6px;padding:2px 8px;white-space:nowrap;max-width:45vw;overflow:hidden;text-overflow:ellipsis}
 #hud-top{right:var(--sr);top:var(--st);display:flex;gap:6px;align-items:center;font-size:11px;color:var(--soft)}
 #hud-top button{min-height:34px}
 #hud-tilt{display:none;align-items:center;gap:6px}
@@ -280,6 +281,7 @@ body.stationary [data-hold="throttle"]{opacity:.4}
   <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
   <div id="hud-view-label" class="hud-pill" aria-live="polite">View: Forward</div>
+  <div id="hud-place"></div>
   <div id="hud-top" class="hud-panel">
     <div id="hud-tilt"><div class="wheel" aria-hidden="true"><div id="hud-wheel" class="wheel-rim"><span></span></div></div><button id="hud-tilt-centre" type="button">Centre</button><span id="hud-tilt-state" class="unit"></span></div>
     <button id="hud-task-toggle" type="button">Task</button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>

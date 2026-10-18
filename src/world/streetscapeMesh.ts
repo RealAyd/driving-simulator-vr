@@ -1,7 +1,7 @@
 import {Color3,Mesh,StandardMaterial,VertexData,type Scene,type TransformNode} from '../engine/babylon';
 import type {Vec2} from '../contracts';
 import {BAY,EAVES,framePoint,type Frame,type House,type HouseUnit,type StreetLayout,type Strip} from './streetscape';
-import type {BusStop,Obelisk,TownArea,TownBuilding} from './townscape';
+import type {Obelisk,TownArea,TownBuilding} from './townscape';
 import {brickTexture,detailTexture,REGIONS,roofTexture,type Region} from './sceneryTextures';
 
 /**
@@ -11,11 +11,11 @@ import {brickTexture,detailTexture,REGIONS,roofTexture,type Region} from './scen
  * (plus the same again in each mirror that is rendering).
  */
 
-type V3=[number,number,number];
-type RGB=[number,number,number];
+export type V3=[number,number,number];
+export type RGB=[number,number,number];
 
-const hex=(h:string):RGB=>{const c=Color3.FromHexString(h);return [c.r,c.g,c.b]};
-const COLOURS={
+export const hex=(h:string):RGB=>{const c=Color3.FromHexString(h);return [c.r,c.g,c.b]};
+export const COLOURS={
   'red-brick':[.74,.42,.32],'brown-brick':[.6,.42,.33],'buff-brick':[.8,.7,.56],
   'render-cream':[.92,.88,.79],'render-white':[.95,.95,.92],
   slate:[.46,.48,.53],clay:[.66,.4,.32],
@@ -27,7 +27,9 @@ const COLOURS={
 } satisfies Record<string,RGB>;
 const BRICK_TILE=.9,ROOF_TILE=1,STOREY=3.2;
 
-class Geometry{
+export class Geometry{
+  /** Texture coordinate of a plain white texel, for flat-coloured faces. */
+  constructor(private readonly flatUV:[number,number]=[(REGIONS.flat.u0+REGIONS.flat.u1)/2,(REGIONS.flat.v0+REGIONS.flat.v1)/2]){}
   readonly positions:number[]=[];
   readonly normals:number[]=[];
   readonly uvs:number[]=[];
@@ -78,9 +80,8 @@ class Geometry{
   }
 
   /** A flat-coloured polygon (the white texel of the detail sheet). */
-  flat(points:V3[],colour:RGB,outward?:V3):void{
-    const u=(REGIONS.flat.u0+REGIONS.flat.u1)/2,v=(REGIONS.flat.v0+REGIONS.flat.v1)/2;
-    this.polygon(points,points.map(()=>[u,v] as [number,number]),colour,outward);
+  flat(points:V3[],colour:RGB,outward?:V3,twoSided=false):void{
+    this.polygon(points,points.map(()=>this.flatUV),colour,outward,twoSided);
   }
 
   mesh(name:string,scene:Scene,material:StandardMaterial,parent:TransformNode):Mesh|null{
@@ -99,7 +100,7 @@ class Geometry{
 }
 
 /** A box on the ground given a centre, a forward direction, size and colour; `uv` maps each face. */
-function box(g:Geometry,c:Vec2,y:number,f:Vec2,width:number,depth:number,height:number,face:(g:Geometry,q:[V3,V3,V3,V3],out:V3,w:number,h:number)=>void,top=true){
+export function box(g:Geometry,c:Vec2,y:number,f:Vec2,width:number,depth:number,height:number,face:(g:Geometry,q:[V3,V3,V3,V3],out:V3,w:number,h:number)=>void,top=true){
   const a={x:-f.z,z:f.x};
   const P=(u:number,v:number,h:number):V3=>[c.x+a.x*u+f.x*v,y+h,c.z+a.z*u+f.z*v];
   const W=width/2,D=depth/2;
@@ -109,7 +110,7 @@ function box(g:Geometry,c:Vec2,y:number,f:Vec2,width:number,depth:number,height:
   face(g,[P(-W,-D,0),P(-W,D,0),P(-W,D,height),P(-W,-D,height)],[-a.x,0,-a.z],depth,height);
   if(top)face(g,[P(-W,-D,height),P(W,-D,height),P(W,D,height),P(-W,D,height)],[0,1,0],width,depth);
 }
-const flatFace=(colour:RGB)=>(g:Geometry,q:[V3,V3,V3,V3],out:V3)=>g.flat(q,colour,out);
+export const flatFace=(colour:RGB)=>(g:Geometry,q:[V3,V3,V3,V3],out:V3)=>g.flat(q,colour,out);
 const regionFace=(r:Region,colour:RGB)=>(g:Geometry,q:[V3,V3,V3,V3],out:V3)=>g.regionQuad(q,r,colour,out);
 /** Brick faces tiled by their size in metres. */
 const brickFace=(colour:RGB)=>(g:Geometry,q:[V3,V3,V3,V3],out:V3,w:number,h:number)=>g.polygon(q,[[0,0],[w/BRICK_TILE,0],[w/BRICK_TILE,h/BRICK_TILE],[0,h/BRICK_TILE]],colour,out);
@@ -265,7 +266,7 @@ function boundary(b:Builders,s:Strip):void{
 }
 
 /** A tapering n-sided prism (tree trunks, lamp columns). */
-function prism(g:Geometry,x:number,z:number,y:number,height:number,r0:number,r1:number,colour:RGB,sides=6){
+export function prism(g:Geometry,x:number,z:number,y:number,height:number,r0:number,r1:number,colour:RGB,sides=6){
   for(let i=0;i<sides;i++){
     const a0=i/sides*Math.PI*2,a1=(i+1)/sides*Math.PI*2,am=(a0+a1)/2;
     g.flat([[x+Math.cos(a0)*r0,y,z+Math.sin(a0)*r0],[x+Math.cos(a1)*r0,y,z+Math.sin(a1)*r0],[x+Math.cos(a1)*r1,y+height,z+Math.sin(a1)*r1],[x+Math.cos(a0)*r1,y+height,z+Math.sin(a0)*r1]],colour,[Math.cos(am),0,Math.sin(am)]);
@@ -433,16 +434,6 @@ function pitchedRoof(b:Builders,t:TownBuilding,colour:RGB,brick:boolean):void{
   }
 }
 
-function busStop(g:Geometry,s:BusStop):void{
-  prism(g,s.x,s.z,s.y,2.9,.05,.05,COLOURS.lamp,6);
-  const f={x:Math.sin(s.heading),z:-Math.cos(s.heading)},a={x:-f.z,z:f.x};
-  // Flag across the pole, edge-on to the road, readable to traffic in both directions.
-  box(g,{x:s.x+a.x*.05,z:s.z+a.z*.05},s.y+2.25,a,.04,.42,.55,flatFace(COLOURS.signWhite));
-  box(g,{x:s.x+a.x*.05,z:s.z+a.z*.05},s.y+2.62,a,.045,.42,.14,flatFace(COLOURS.busRed));
-  // Timetable case.
-  box(g,{x:s.x+a.x*.04,z:s.z+a.z*.04},s.y+1.2,a,.06,.36,.5,flatFace(COLOURS.lamp));
-}
-
 function obelisk(g:Geometry,m:Obelisk):void{
   const c=hex(m.colour),w=m.width;
   box(g,m,m.y,{x:0,z:-1},w,w,.4,flatFace(c.map(v=>v*.9) as RGB));
@@ -568,7 +559,6 @@ export function buildStreetscape(scene:Scene,layout:StreetLayout|null,parent:Tra
     // Ground areas just above the paving: grass and gardens, car parks, then access routes on top.
     const AREA={grass:{c:COLOURS.lawn,y:-.045},garden:{c:COLOURS.lawn,y:-.045},green:{c:COLOURS.lawn,y:-.045},parking:{c:COLOURS.carPark,y:-.035},access:{c:COLOURS.accessPath,y:-.025},street:{c:COLOURS.street,y:-.015}} as const;
     for(const a of layout.town.areas)flatArea(at(a.polygon[0]!.x,a.polygon[0]!.z).detail,a.polygon,AREA[a.kind].y,AREA[a.kind].c);
-    for(const s of layout.town.busStops)busStop(at(s.x,s.z).detail,s);
     for(const m of layout.town.obelisks)obelisk(at(m.x,m.z).detail,m);
   }
   for(const c of [...parked,...vans]){

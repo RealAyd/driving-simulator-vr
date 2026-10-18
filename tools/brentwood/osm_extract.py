@@ -53,7 +53,7 @@ for w in osm.iter('way'):
         continue
     if tg.get('highway') in DRIVABLE:
         roads.append({'osmWay': int(w.get('id')), 'name': tg.get('name'), 'ref': tg.get('ref'),
-                      'highway': tg['highway'], 'oneway': tg.get('oneway') == 'yes',
+                      'highway': tg['highway'], 'oneway': tg.get('oneway') == 'yes', 'maxspeed': tg.get('maxspeed'),
                       'lanes': int(tg['lanes']) if tg.get('lanes', '').isdigit() else None,
                       'points': pts})
     elif 'building' in tg:
@@ -100,6 +100,8 @@ for n in osm.iter('node'):
         kind = 'poi-' + (business_kind(tg) or 'address')
     if kind:
         f = {'osmNode': int(n.get('id')), 'kind': kind, 'name': tg.get('name'), 'x': p[0], 'y': p[1]}
+        if kind == 'bus-stop':
+            f.update({'localRef': tg.get('local_ref'), 'indicator': tg.get('naptan:Indicator'), 'shelter': tg.get('shelter') == 'yes'})
         if kind.startswith('poi-') and tg.get('addr:housenumber'):
             f['address'] = f"{tg['addr:housenumber']} {tg.get('addr:street', '')}".strip()
         features.append(f)

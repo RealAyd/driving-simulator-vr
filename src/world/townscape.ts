@@ -6,7 +6,7 @@ import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad
  * Town-centre scenery from map data: building outlines become brick or
  * render walls with windows on each storey, a flat roof behind a parapet and,
  * where a business is mapped in the building, shopfronts on the walls that
- * face a road (generic glazing and a plain fascia: no names or signs). Map
+ * face a road (generic glazing and a plain fascia; shop names are added by signage.ts). Map
  * trees, mapped bus stops, grass and car-park areas, and street lights at a
  * typical spacing (representative: lights are not mapped here). Pure data,
  * like streetscape.ts, so the drawn walls and their colliders come from the
@@ -38,7 +38,18 @@ export interface TownBuilding{
   y:number;
 }
 export interface TownArea{kind:'grass'|'parking'|'garden'|'green'|'access'|'street';polygon:Vec2[]}
-export interface BusStop{x:number;z:number;heading:number;y:number}
+export interface BusStop{
+  id:string;
+  /** The pole, at the back of the kerb. */
+  x:number;z:number;y:number;
+  /** Compass heading the flag faces (towards the road). */
+  heading:number;
+  /** Direction of the traffic the stop serves (unit vector), and the outward normal from the kerb (away from the road). */
+  traffic:Vec2;out:Vec2;
+  /** Pavement width behind the pole's kerb, metres. */
+  pavement:number;
+  name?:string;indicator?:string;shelter:boolean;
+}
 export interface Obelisk{id:string;x:number;z:number;width:number;height:number;colour:string;y:number}
 export interface TownLayout{buildings:TownBuilding[];areas:TownArea[];busStops:BusStop[];obelisks:Obelisk[]}
 
@@ -145,8 +156,19 @@ export function layoutTownscape(location:Location):StreetLayout|null{
   for(const [i,f] of location.furniture.entries()){
     if(f.kind!=='bus-stop')continue;
     const surface=surfaceAt(location,f.position.x,f.position.z);
-    town.busStops.push({x:f.position.x,z:f.position.z,heading:f.facingDeg*Math.PI/180,y:surface?surface.height:0});
-    out.colliders.push({id:`bus-stop-${i}`,kind:'wall',position:f.position,headingDeg:0,size:{width:.2,depth:.2,height:2.9},occludes:false,shape:'box'});
+    // The road beside the stop: traffic on this side runs with the kerb on its left (UK).
+    const road=location.roads.reduce((best,r)=>{
+      const s=sampleRoad(r,f.position.x,f.position.z);
+      return !best||s.distance<best.s.distance?{r,s}:best;
+    },null as null|{r:Location['roads'][number];s:ReturnType<typeof sampleRoad>})!;
+    const side=Math.sign(road.s.lateral)||1;
+    const dir=road.s.direction;
+    // Lateral is positive to the right of the centreline direction; on that side traffic runs against it (driving on the left).
+    const traffic=location.drivingSide==='left'&&side>0&&!road.r.oneway?{x:-dir.x,z:-dir.z}:dir;
+    const outN={x:-dir.z*side,z:dir.x*side};
+    town.busStops.push({id:`bus-stop-${i}`,x:f.position.x,z:f.position.z,heading:f.facingDeg*Math.PI/180,y:surface?surface.height:0,
+      traffic,out:outN,pavement:pavementWidthAt(road.r,road.s.along,side),...(f.name?{name:f.name}:{}),...(f.indicator?{indicator:f.indicator}:{}),shelter:f.shelter});
+    out.colliders.push({id:`bus-stop-${i}`,kind:'wall',position:f.position,headingDeg:0,size:{width:.2,depth:.2,height:3.1},occludes:false,shape:'box'});
   }
   for(const block of location.blocks)if(block.shape==='obelisk')
     town.obelisks.push({id:block.id,x:block.position.x,z:block.position.z,width:block.size.width,height:block.size.height,colour:block.colour??'#b9b4a8',y:0});

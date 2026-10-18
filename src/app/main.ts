@@ -10,7 +10,13 @@ import {
   INFO,degToRad,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
   type AttemptConditions,type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
 } from '../contracts';
-import {pedestrianVisual,vehicleVisual} from '../actors/actorVisuals';
+import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
+import {Bus,BUS_SIZE} from '../actors/bus';
+import {layoutCrowd,personPose,type Person} from '../world/crowd';
+import {PeopleRenderer} from '../world/peopleMesh';
+import {layoutSignage,type SignPlan} from '../world/signage';
+import {placeLabel,type PlaceLabel} from '../world/placeLabel';
+import {buildSignage,type BuiltSignage} from '../world/signageMesh';
 import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../actors/followingVehicle';
 import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
@@ -91,6 +97,7 @@ interface ExerciseRuntime{
   pedestrian:Pedestrian|null;
   follower:FollowingVehicle|null;
   passers:PassingVehicle[];
+  buses:Bus[];
   /** Timing variation in use this attempt, if the scenario has any. */
   readonly variant:Scenario['variants'][number]|null;
   chooseVariant(forced?:string|null):void;
@@ -159,6 +166,10 @@ export async function boot():Promise<void>{
   // Houses, gardens and street furniture (streetscape) and parked cars; collisions match what is drawn.
   let carModels=new Map<CarModelId,CarModel|null>();
   let sceneryStats={houses:0,parkedCars:0,colliders:0};
+  let signPlan:SignPlan={panels:[],shelters:[],colliders:[]};
+  let signage:BuiltSignage|null=null;
+  let crowd:Person[]=[];
+  let people!:PeopleRenderer;
   const dressLocation=()=>{
     const layout=layoutStreetscape(place)??layoutTownscape(place);
     const parked:ParkedCar[]=[
@@ -168,7 +179,13 @@ export async function boot():Promise<void>{
     const vans=place.blocks.filter(b=>b.vehicleModel===PANEL_VAN.id).map(b=>({x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg),width:b.size.width,length:b.size.depth,height:b.size.height,colour:b.colour??'#e9e9e4'}));
     if(layout||vans.length>0)buildStreetscape(scene,layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
     bakeParkedCars(scene,world.root,parked,carModels);
-    const colliders=[...place.blocks,...(layout?.colliders??[])];
+    signPlan=layoutSignage(place,layout);
+    signage=buildSignage(scene,signPlan,world.root);
+    // Background people on the pavements (scenery: no colliders, never in the road, never assessed).
+    crowd=layoutCrowd(place,layout,signPlan);
+    people=new PeopleRenderer(scene,world.root);
+    for(const p of crowd)people.add({id:p.id,look:p.look,pose:t=>personPose(p,t)});
+    const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
     staticObstacles=new StaticObstacles(colliders);
     sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
   };
@@ -312,10 +329,16 @@ export async function boot():Promise<void>{
       dynamicFootprints.push({id:follower.id,shape:()=>({kind:'box',pose:follower.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})});
     }
     for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started});
+    // Background buses: solid road users that slow for the learner; never assessed.
+    const buses=scenario.buses.map(d=>new Bus(d,place,learnerFootprint));
+    for(const b of buses)dynamicFootprints.push({id:b.id,shape:()=>({kind:'box',pose:b.pose,halfWidth:BUS_SIZE.halfWidth,halfLength:BUS_SIZE.halfLength}),active:()=>b.visible});
+    const figures=pedestrian?[pedestrianFigure(pedestrian,(x,z)=>surfaceAt(place,x,z)?.height??0)]:[];
+    for(const f of figures)people.add(f);
     const visuals=[
-      ...(pedestrian?[pedestrianVisual(scene,pedestrian)]:[]),
+
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
-      ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,carModel,2*p.size.halfLength))
+      ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,carModel,2*p.size.halfLength)),
+      ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
     const guided=!!scenario.guide&&showGuide;
@@ -357,13 +380,13 @@ export async function boot():Promise<void>{
     const practice=assessor||route||movingOff?null:new ViewPracticeSummary(passers,()=>vehicle.pose,()=>events.events,()=>clock.time);
 
     const modules:SimModule[]=[
-      ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,
+      ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,
       zones,runner,observation,...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
     ];
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,
+      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.
@@ -402,6 +425,7 @@ export async function boot():Promise<void>{
       renderVisuals(){for(const v of visuals)v.update()},
       dispose(){
         for(const v of visuals)v.dispose();
+        for(const f of figures)people.remove(f.id);
         guide?.dispose();
         signals.dispose();
         for(const m of modules)if(m!==observation)m.dispose();
@@ -1183,6 +1207,8 @@ export async function boot():Promise<void>{
   /** Diagnostics: a top-down camera (or one looking at `target`) for layout review screenshots. */
   let overhead:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null=null;
   const perf=new PerfProbe();
+  const hudPlace=byId('hud-place');
+  let placeTimer=0,lastPlace:PlaceLabel|null=null;
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
     pollController();
@@ -1220,6 +1246,7 @@ export async function boot():Promise<void>{
       mirror.setRefresh(allMirrorsLive||heldView===mirror.spec.id?1:quality.mirrorUpdateInterval);
     }
     runtime?.renderVisuals();
+    people.update(clock.time,vehicle.state.position);
     tiltSteer=tilt.read(dt);
     const wheelTurn=`rotate(${Math.round((steeringMode==='tilt'?tiltSteer:vehicle.state.steerAngle/.6)*120)}deg)`;
     hudWheel.style.transform=wheelTurn;
@@ -1235,6 +1262,13 @@ export async function boot():Promise<void>{
       if(hudTiltState.textContent!==state)hudTiltState.textContent=state;
     }
     hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
+    // Location label: the street the car is on (a few times a second; the DOM only changes with the street).
+    if((placeTimer-=dt)<=0){
+      placeTimer=.25;
+      const label=placeLabel(place,vehicle.state.position.x,vehicle.state.position.z,lastPlace?.road??null);
+      if(label.text!==lastPlace?.text){hudPlace.textContent=label.text;hudPlace.title=label.title}
+      lastPlace=label;
+    }
     scene.render();
   });
   window.addEventListener('resize',()=>{engine.resize();viewer.layout()});
@@ -1243,6 +1277,12 @@ export async function boot():Promise<void>{
   // Read-only handle for automated browser tests and manual diagnostics.
   Object.defineProperty(window,'__drivingPractice',{value:Object.freeze({
     session:()=>session.state,
+    /** Diagnostics (review screenshots): put the car at a point on the road, stationary. Not a driving feature. */
+    placeCar:(x:number,z:number,headingDeg:number)=>{vehicle.setSpawn({position:{x,y:0,z},heading:degToRad(headingDeg)});vehicle.reset()},
+    /** Diagnostics: background people (where each is at the current simulated time) and the figures drawn. */
+    people:()=>({drawn:people.ids(),crowd:crowd.map(p=>({id:p.id,kind:p.kind,...personPose(p,clock.time)}))}),
+    /** The location label as shown. */
+    place:()=>lastPlace,
     scenario:()=>runtime?.scenario.id??null,
     vehicle:()=>({...vehicle.state,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
     head:()=>({yaw:head.yaw,pitch:head.pitch}),
@@ -1282,6 +1322,9 @@ export async function boot():Promise<void>{
     /** Diagnostics: switch the distance haze. */
     fog:(on:boolean)=>{scene.fogEnabled=on},
     /** Diagnostics: what the scene costs (meshes, triangles, draw calls). */
+    /** Diagnostics: signs placed in this location (kind, text, position, how placed). */
+    signage:()=>({sheet:signage?.sheet??null,shelters:signPlan.shelters.map(s=>({id:s.id,x:s.x,z:s.z})),
+      panels:signPlan.panels.map(p=>({id:p.id,kind:p.face.kind,text:'text' in p.face?p.face.text:'name' in p.face?p.face.name:null,x:+p.x.toFixed(2),z:+p.z.toFixed(2),y:+p.y.toFixed(2),normal:p.normal,width:+p.width.toFixed(2),placement:p.placement}))}),
     sceneStats:()=>{
       const meshes=scene.meshes.filter(m=>m.isEnabled()&&m.isVisible&&m.getTotalVertices()>0);
       return {meshes:meshes.length,activeMeshes:scene.getActiveMeshes().length,vertices:scene.getTotalVertices(),triangles:meshes.reduce((n,m)=>n+(m.getTotalIndices()/3),0),drawCalls:instrumentation?.drawCallsCounter.current??null,materials:scene.materials.length,textures:scene.textures.length,
@@ -1322,6 +1365,7 @@ export async function boot():Promise<void>{
     /** Same as tapping a view button (or Forward). */
     selectView:(view:ViewTarget|'forward')=>selectView(view),
     viewLabel:()=>byId('hud-view-label').textContent,
+    buses:()=>runtime?.buses.map(b=>({id:b.id,pose:b.pose,speed:b.speed,state:b.state,visible:b.visible,indicating:b.indicating}))??[],
     passersDetail:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose,speed:p.speed,started:p.started}))??[],
     storage:store.kind,
     quality:quality.id,

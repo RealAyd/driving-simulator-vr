@@ -6,6 +6,33 @@
   "assistedSpeedMph": 18,
   "accelerationLimit": 1.5
  },
+ "buses": [
+  {
+   "id": "bus-westbound",
+   "roadId": "high-street",
+   "direction": "against",
+   "from": 340.2,
+   "to": 12.0,
+   "startDwellSeconds": 16,
+   "cruiseMph": 17,
+   "end": "leave"
+  },
+  {
+   "id": "bus-eastbound",
+   "roadId": "high-street",
+   "direction": "with",
+   "from": 40.0,
+   "to": 328.2,
+   "calls": [
+    {
+     "at": 310.5,
+     "dwellSeconds": 12
+    }
+   ],
+   "cruiseMph": 17,
+   "end": "stay"
+  }
+ ],
  "signals": {
   "high-street-signals": "green",
   "high-street-signals-west": "green",

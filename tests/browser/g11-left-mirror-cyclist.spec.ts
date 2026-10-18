@@ -63,8 +63,12 @@ test('G11: left mirror coverage of the cyclist: measured along its whole approac
   // It grows in the mirror as it closes (more pixels from 25–40 m than from 50–80 m).
   const mean=(list:Row[])=>list.reduce((n,r)=>n+r.left,0)/Math.max(1,list.length);
   expect(mean(at(25,40))).toBeGreaterThan(mean(at(50,80)));
-  // Close behind and in line with the car (3–12 m) it is hidden from the left mirror by the car itself, and in the interior mirror.
-  const close=at(3,12).filter(r=>r.lateral<-.1);
+  // Close behind and in line with the car (3–10 m behind, within the car's width) it is hidden from the left mirror by
+  // the car itself, and in the interior mirror. (Step 14: the rider is now a human figure leaning forward to the bars,
+  // its head and shoulders about 0.3 m further forward than the old cylinder, so it leaves the left mirror's inner
+  // edge about 10.5 m behind instead of 12 m. The window was 3–12 m with the cyclist left of the car's centre line;
+  // the cyclist starts to move out at 10 m, so in-line samples are now those within the car's width.)
+  const close=at(3,10).filter(r=>r.lateral<.5);
   expect(close.length).toBeGreaterThan(0);
   // Hidden: at most a stray pixel or two at the edge of the car's body (the right mirror also reads a constant 1 px).
   expect(close.every(r=>r.left<=2)).toBe(true);
