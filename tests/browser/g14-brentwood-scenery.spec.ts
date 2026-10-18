@@ -37,7 +37,10 @@ test('G14: Brentwood scenery is dressed from every view with cleared assets; the
     ['approach-rb1-eye-height',{x:-6,z:15.5,height:1.2,target:{x:8,y:1,z:8}}],
     ['link-to-rb2-eye-height',{x:9.5,z:3,height:1.2,target:{x:17,y:1,z:-9}}],
     ['memorial-and-shenfield-road',{x:24,z:-14,height:1.6,target:{x:38.6,y:3,z:-7.8}}],
-    ['high-street-shopfronts',{x:-24,z:24,height:1.6,target:{x:-8,y:3,z:30}}]
+    ['high-street-shopfronts',{x:-24,z:24,height:1.6,target:{x:-8,y:3,z:30}}],
+    ['high-street-behind-start-eye-height',{x:-27,z:20,height:1.2,target:{x:-110,y:1.5,z:58}}],
+    ['overhead-high-street-west',{x:-120,z:50,height:90}],
+    ['approximate-buildings-west-crossing',{x:-92,z:57,height:1.6,target:{x:-150,y:3,z:66}}]
   ] as const){
     await read(page,`overhead(${JSON.stringify(view)})`);
     await page.waitForTimeout(1200);

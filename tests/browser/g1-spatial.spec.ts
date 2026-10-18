@@ -113,7 +113,10 @@ test('G1: road sits under the car, kerb raises it, and braking from 30 mph stops
   expect(kerb.position.y).toBeCloseTo(.12,6);
 });
 
-test('G1: measured frame times (environment recorded)',async({page},testInfo)=>{
+// Rendering smoke test only: it proves frames keep rendering while driving the dressed street. It is not a
+// performance test. Software-rendering frame times are written to test-results/g1-perf.json for the
+// performance report (docs/verification/PERFORMANCE.md); phone performance needs the real-iPhone acceptance check.
+test('G1: rendering smoke test: frames keep rendering while driving (software frame times recorded, not judged)',async({page},testInfo)=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
   await page.click('[data-exercise=zebra]');
@@ -126,9 +129,9 @@ test('G1: measured frame times (environment recorded)',async({page},testInfo)=>{
   const perf=await read(page,'perf()');
   const renderer=await read(page,'renderer()');
   const report={measuredAt:new Date().toISOString(),userAgent:await page.evaluate(()=>navigator.userAgent),renderer,quality:await read(page,'quality'),perf};
-  testInfo.annotations.push({type:'perf',description:JSON.stringify(report)});
+  testInfo.annotations.push({type:'software-rendering frame times (not an iPhone)',description:JSON.stringify(report)});
   mkdirSync('test-results',{recursive:true});
   writeFileSync('test-results/g1-perf.json',JSON.stringify(report,null,2));
-  // Only checks that it renders: the numbers are recorded above (CI software rendering can be about 1 fps).
+  // Smoke check: at least a few frames rendered (CI software rendering can be about 1 fps).
   expect(perf.frames).toBeGreaterThanOrEqual(3);
 });

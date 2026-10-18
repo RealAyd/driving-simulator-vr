@@ -38,6 +38,8 @@ Screenshots (`step11/zebra-*`): forward, interior mirror, left and right mirrors
 
 ## Brentwood paired mini-roundabouts
 
+> Partly superseded by `STEP12-brentwood-scene-completed.md`: the High Street now continues behind the start, pavements reach the shop fronts, approximate buildings fill empty frontages, and shopfronts are limited to shops (not offices or surgeries).
+
 **What changed**
 
 - **Buildings:**

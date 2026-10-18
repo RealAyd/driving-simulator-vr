@@ -4,7 +4,7 @@
  "name": "Brentwood paired mini-roundabouts (area-inspired)",
  "fidelity": "geographically-inspired",
  "drivingSide": "left",
- "description": "Area-inspired layout of the paired mini-roundabouts at High Street, Ingrave Road, Wilson's Corner, Shenfield Road and Ongar Road, Brentwood. Not an official test route. Road centrelines and building outlines from OpenStreetMap; lane counts and widths simplified; traffic signals not simulated.",
+ "description": "Area-inspired layout of the paired mini-roundabouts at High Street, Ingrave Road, Wilson's Corner, Shenfield Road and Ongar Road, Brentwood. Not an official test route. Road centrelines and building outlines from OpenStreetMap; lane counts and widths simplified; pavement widths to the shop fronts derived from map data; buildings marked approximate are placeholders where the map has no outline; traffic signals are not simulated (an exercise may hold them at green).",
  "sources": [
   {
    "title": "OpenStreetMap",
@@ -26,16 +26,208 @@
    "oneway": false,
    "centreline": [
     {
-     "x": -66.34,
-     "z": 39.23
+     "x": -228.01,
+     "z": 112.92
     },
     {
-     "x": -65.38,
-     "z": 38.76
+     "x": -227.36,
+     "z": 112.66
     },
     {
-     "x": -63.45,
-     "z": 37.82
+     "x": -226.06,
+     "z": 112.14
+    },
+    {
+     "x": -224.12,
+     "z": 111.37
+    },
+    {
+     "x": -221.52,
+     "z": 110.33
+    },
+    {
+     "x": -218.36,
+     "z": 109.05
+    },
+    {
+     "x": -214.63,
+     "z": 107.52
+    },
+    {
+     "x": -210.32,
+     "z": 105.74
+    },
+    {
+     "x": -205.46,
+     "z": 103.71
+    },
+    {
+     "x": -198.8,
+     "z": 100.73
+    },
+    {
+     "x": -190.34,
+     "z": 96.8
+    },
+    {
+     "x": -180.11,
+     "z": 91.92
+    },
+    {
+     "x": -168.07,
+     "z": 86.08
+    },
+    {
+     "x": -158.93,
+     "z": 81.66
+    },
+    {
+     "x": -152.68,
+     "z": 78.66
+    },
+    {
+     "x": -149.31,
+     "z": 77.06
+    },
+    {
+     "x": -148.82,
+     "z": 76.89
+    },
+    {
+     "x": -147.34,
+     "z": 76.34
+    },
+    {
+     "x": -144.84,
+     "z": 75.41
+    },
+    {
+     "x": -141.35,
+     "z": 74.12
+    },
+    {
+     "x": -136.84,
+     "z": 72.45
+    },
+    {
+     "x": -132.09,
+     "z": 70.57
+    },
+    {
+     "x": -127.07,
+     "z": 68.48
+    },
+    {
+     "x": -121.81,
+     "z": 66.17
+    },
+    {
+     "x": -116.28,
+     "z": 63.64
+    },
+    {
+     "x": -111.98,
+     "z": 61.67
+    },
+    {
+     "x": -108.9,
+     "z": 60.26
+    },
+    {
+     "x": -107.04,
+     "z": 59.39
+    },
+    {
+     "x": -106.4,
+     "z": 59.08
+    },
+    {
+     "x": -105.79,
+     "z": 58.79
+    },
+    {
+     "x": -105.21,
+     "z": 58.51
+    },
+    {
+     "x": -104.65,
+     "z": 58.24
+    },
+    {
+     "x": -104.13,
+     "z": 57.98
+    },
+    {
+     "x": -103.47,
+     "z": 57.66
+    },
+    {
+     "x": -102.69,
+     "z": 57.28
+    },
+    {
+     "x": -101.78,
+     "z": 56.84
+    },
+    {
+     "x": -100.73,
+     "z": 56.33
+    },
+    {
+     "x": -99.7,
+     "z": 55.82
+    },
+    {
+     "x": -98.68,
+     "z": 55.3
+    },
+    {
+     "x": -97.66,
+     "z": 54.78
+    },
+    {
+     "x": -96.66,
+     "z": 54.26
+    },
+    {
+     "x": -95.63,
+     "z": 53.72
+    },
+    {
+     "x": -94.59,
+     "z": 53.17
+    },
+    {
+     "x": -93.53,
+     "z": 52.6
+    },
+    {
+     "x": -92.46,
+     "z": 52.03
+    },
+    {
+     "x": -90.12,
+     "z": 50.85
+    },
+    {
+     "x": -86.52,
+     "z": 49.07
+    },
+    {
+     "x": -81.65,
+     "z": 46.69
+    },
+    {
+     "x": -75.53,
+     "z": 43.7
+    },
+    {
+     "x": -69.97,
+     "z": 41.0
+    },
+    {
+     "x": -64.98,
+     "z": 38.57
     },
     {
      "x": -60.56,
@@ -179,8 +371,536 @@
    "kerbHeight": 0.12,
    "markings": {
     "centre": "dashed",
-    "edges": false
-   }
+    "edges": false,
+    "centreFrom": 141.0
+   },
+   "pavementProfile": [
+    {
+     "along": 0.0,
+     "left": 3.4,
+     "right": 2.0
+    },
+    {
+     "along": 2.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 5.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 7.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 10.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 12.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 15.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 17.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 20.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 22.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 25.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 27.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 30.0,
+     "left": 5.3,
+     "right": 2.0
+    },
+    {
+     "along": 32.5,
+     "left": 5.4,
+     "right": 2.0
+    },
+    {
+     "along": 35.0,
+     "left": 5.7,
+     "right": 2.0
+    },
+    {
+     "along": 37.5,
+     "left": 6.0,
+     "right": 2.0
+    },
+    {
+     "along": 40.0,
+     "left": 6.4,
+     "right": 2.0
+    },
+    {
+     "along": 42.5,
+     "left": 6.7,
+     "right": 2.0
+    },
+    {
+     "along": 45.0,
+     "left": 7.0,
+     "right": 2.0
+    },
+    {
+     "along": 47.5,
+     "left": 7.2,
+     "right": 10.1
+    },
+    {
+     "along": 50.0,
+     "left": 7.5,
+     "right": 10.1
+    },
+    {
+     "along": 52.5,
+     "left": 7.4,
+     "right": 10.2
+    },
+    {
+     "along": 55.0,
+     "left": 7.3,
+     "right": 10.2
+    },
+    {
+     "along": 57.5,
+     "left": 7.4,
+     "right": 10.3
+    },
+    {
+     "along": 60.0,
+     "left": 7.6,
+     "right": 10.4
+    },
+    {
+     "along": 62.5,
+     "left": 7.8,
+     "right": 10.5
+    },
+    {
+     "along": 65.0,
+     "left": 8.0,
+     "right": 10.6
+    },
+    {
+     "along": 67.5,
+     "left": 8.2,
+     "right": 10.7
+    },
+    {
+     "along": 70.0,
+     "left": 8.3,
+     "right": 10.6
+    },
+    {
+     "along": 72.5,
+     "left": 8.4,
+     "right": 10.5
+    },
+    {
+     "along": 75.0,
+     "left": 8.6,
+     "right": 10.5
+    },
+    {
+     "along": 77.5,
+     "left": 8.7,
+     "right": 2.0
+    },
+    {
+     "along": 80.0,
+     "left": 8.9,
+     "right": 2.0
+    },
+    {
+     "along": 82.5,
+     "left": 9.1,
+     "right": 2.0
+    },
+    {
+     "along": 85.0,
+     "left": 9.2,
+     "right": 2.0
+    },
+    {
+     "along": 87.5,
+     "left": 9.9,
+     "right": 2.0
+    },
+    {
+     "along": 90.0,
+     "left": 10.1,
+     "right": 2.0
+    },
+    {
+     "along": 92.5,
+     "left": 10.4,
+     "right": 2.0
+    },
+    {
+     "along": 95.0,
+     "left": 10.7,
+     "right": 2.0
+    },
+    {
+     "along": 97.5,
+     "left": 11.1,
+     "right": 2.0
+    },
+    {
+     "along": 100.0,
+     "left": 11.5,
+     "right": 2.0
+    },
+    {
+     "along": 102.5,
+     "left": 11.7,
+     "right": 2.0
+    },
+    {
+     "along": 105.0,
+     "left": 11.9,
+     "right": 2.0
+    },
+    {
+     "along": 107.5,
+     "left": 12.2,
+     "right": 2.0
+    },
+    {
+     "along": 110.0,
+     "left": 12.4,
+     "right": 2.0
+    },
+    {
+     "along": 112.5,
+     "left": 12.6,
+     "right": 2.0
+    },
+    {
+     "along": 115.0,
+     "left": 12.8,
+     "right": 2.0
+    },
+    {
+     "along": 117.5,
+     "left": 12.9,
+     "right": 2.0
+    },
+    {
+     "along": 120.0,
+     "left": 13.0,
+     "right": 8.6
+    },
+    {
+     "along": 122.5,
+     "left": 13.1,
+     "right": 2.0
+    },
+    {
+     "along": 125.0,
+     "left": 13.2,
+     "right": 2.0
+    },
+    {
+     "along": 127.5,
+     "left": 13.3,
+     "right": 2.0
+    },
+    {
+     "along": 130.0,
+     "left": 13.4,
+     "right": 2.0
+    },
+    {
+     "along": 132.5,
+     "left": 13.6,
+     "right": 2.0
+    },
+    {
+     "along": 135.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 137.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 140.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 142.5,
+     "left": 2.0,
+     "right": 8.3
+    },
+    {
+     "along": 145.0,
+     "left": 2.0,
+     "right": 8.4
+    },
+    {
+     "along": 147.5,
+     "left": 2.0,
+     "right": 8.6
+    },
+    {
+     "along": 150.0,
+     "left": 2.0,
+     "right": 8.8
+    },
+    {
+     "along": 152.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 155.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 157.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 160.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 162.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 165.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 167.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 170.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 172.5,
+     "left": 2.0,
+     "right": 14.3
+    },
+    {
+     "along": 175.0,
+     "left": 2.0,
+     "right": 9.2
+    },
+    {
+     "along": 177.5,
+     "left": 2.0,
+     "right": 9.4
+    },
+    {
+     "along": 180.0,
+     "left": 14.3,
+     "right": 9.5
+    },
+    {
+     "along": 182.5,
+     "left": 14.3,
+     "right": 9.6
+    },
+    {
+     "along": 185.0,
+     "left": 14.4,
+     "right": 9.7
+    },
+    {
+     "along": 187.5,
+     "left": 14.3,
+     "right": 9.9
+    },
+    {
+     "along": 190.0,
+     "left": 14.2,
+     "right": 9.5
+    },
+    {
+     "along": 192.5,
+     "left": 14.2,
+     "right": 9.1
+    },
+    {
+     "along": 195.0,
+     "left": 14.1,
+     "right": 9.2
+    },
+    {
+     "along": 197.5,
+     "left": 14.0,
+     "right": 9.5
+    },
+    {
+     "along": 200.0,
+     "left": 13.9,
+     "right": 9.8
+    },
+    {
+     "along": 202.5,
+     "left": 13.8,
+     "right": 10.1
+    },
+    {
+     "along": 205.0,
+     "left": 13.6,
+     "right": 10.4
+    },
+    {
+     "along": 207.5,
+     "left": 13.5,
+     "right": 10.7
+    },
+    {
+     "along": 210.0,
+     "left": 13.4,
+     "right": 11.0
+    },
+    {
+     "along": 212.5,
+     "left": 13.2,
+     "right": 11.2
+    },
+    {
+     "along": 215.0,
+     "left": 13.0,
+     "right": 11.4
+    },
+    {
+     "along": 217.5,
+     "left": 12.8,
+     "right": 11.6
+    },
+    {
+     "along": 220.0,
+     "left": 12.6,
+     "right": 11.8
+    },
+    {
+     "along": 222.5,
+     "left": 12.5,
+     "right": 12.0
+    },
+    {
+     "along": 225.0,
+     "left": 12.4,
+     "right": 12.2
+    },
+    {
+     "along": 227.5,
+     "left": 12.2,
+     "right": 12.3
+    },
+    {
+     "along": 230.0,
+     "left": 12.2,
+     "right": 12.4
+    },
+    {
+     "along": 232.5,
+     "left": 12.3,
+     "right": 12.5
+    },
+    {
+     "along": 235.0,
+     "left": 12.4,
+     "right": 12.6
+    },
+    {
+     "along": 237.5,
+     "left": 12.4,
+     "right": 12.7
+    },
+    {
+     "along": 240.0,
+     "left": 12.5,
+     "right": 12.8
+    },
+    {
+     "along": 242.5,
+     "left": 12.5,
+     "right": 2.0
+    },
+    {
+     "along": 245.0,
+     "left": 12.9,
+     "right": 2.0
+    },
+    {
+     "along": 247.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 250.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 252.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 255.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 257.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 258.6,
+     "left": 2.0,
+     "right": 2.0
+    }
+   ]
   },
   {
    "id": "ingrave-in",
@@ -278,7 +998,124 @@
    "markings": {
     "centre": "dashed",
     "edges": false
-   }
+   },
+   "pavementProfile": [
+    {
+     "along": 0.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 2.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 5.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 7.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 10.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 12.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 15.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 17.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 20.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 22.5,
+     "left": 6.9,
+     "right": 2.0
+    },
+    {
+     "along": 25.0,
+     "left": 6.3,
+     "right": 2.0
+    },
+    {
+     "along": 27.5,
+     "left": 6.0,
+     "right": 2.0
+    },
+    {
+     "along": 30.0,
+     "left": 5.7,
+     "right": 2.0
+    },
+    {
+     "along": 32.5,
+     "left": 5.3,
+     "right": 2.0
+    },
+    {
+     "along": 35.0,
+     "left": 4.9,
+     "right": 2.0
+    },
+    {
+     "along": 37.5,
+     "left": 4.5,
+     "right": 2.0
+    },
+    {
+     "along": 40.0,
+     "left": 4.0,
+     "right": 2.0
+    },
+    {
+     "along": 42.5,
+     "left": 8.0,
+     "right": 2.0
+    },
+    {
+     "along": 45.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 47.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 50.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 52.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 54.8,
+     "left": 2.0,
+     "right": 2.0
+    }
+   ]
   },
   {
    "id": "ingrave-out",
@@ -458,7 +1295,64 @@
    "markings": {
     "centre": "dashed",
     "edges": false
-   }
+   },
+   "pavementProfile": [
+    {
+     "along": 0.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 2.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 5.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 7.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 10.0,
+     "left": 11.0,
+     "right": 2.0
+    },
+    {
+     "along": 12.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 15.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 17.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 20.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 22.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 22.8,
+     "left": 2.0,
+     "right": 2.0
+    }
+   ]
   },
   {
    "id": "link-south",
@@ -1062,7 +1956,84 @@
    "markings": {
     "centre": "none",
     "edges": false
-   }
+   },
+   "pavementProfile": [
+    {
+     "along": 0.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 2.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 5.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 7.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 10.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 12.5,
+     "left": 3.4,
+     "right": 2.0
+    },
+    {
+     "along": 15.0,
+     "left": 3.3,
+     "right": 2.0
+    },
+    {
+     "along": 17.5,
+     "left": 3.2,
+     "right": 2.0
+    },
+    {
+     "along": 20.0,
+     "left": 3.1,
+     "right": 2.0
+    },
+    {
+     "along": 22.5,
+     "left": 3.3,
+     "right": 2.0
+    },
+    {
+     "along": 25.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 27.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 30.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 32.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 33.0,
+     "left": 2.0,
+     "right": 2.0
+    }
+   ]
   },
   {
    "id": "ongar-road",
@@ -1193,6 +2164,372 @@
     "centre": "dashed",
     "edges": false
    }
+  },
+  {
+   "id": "moores-place",
+   "name": "Moores Place",
+   "oneway": true,
+   "centreline": [
+    {
+     "x": -106.46,
+     "z": 63.0
+    },
+    {
+     "x": -106.02,
+     "z": 63.9
+    },
+    {
+     "x": -105.58,
+     "z": 64.8
+    },
+    {
+     "x": -104.92,
+     "z": 66.15
+    },
+    {
+     "x": -104.33,
+     "z": 67.35
+    },
+    {
+     "x": -103.67,
+     "z": 68.7
+    },
+    {
+     "x": -103.01,
+     "z": 70.04
+    },
+    {
+     "x": -102.57,
+     "z": 70.94
+    },
+    {
+     "x": -101.91,
+     "z": 72.29
+    },
+    {
+     "x": -101.25,
+     "z": 73.64
+    },
+    {
+     "x": -100.59,
+     "z": 74.98
+    },
+    {
+     "x": -100.16,
+     "z": 75.88
+    },
+    {
+     "x": -99.72,
+     "z": 76.78
+    },
+    {
+     "x": -99.28,
+     "z": 77.68
+    },
+    {
+     "x": -98.62,
+     "z": 79.03
+    },
+    {
+     "x": -97.96,
+     "z": 80.37
+    },
+    {
+     "x": -97.52,
+     "z": 81.27
+    },
+    {
+     "x": -97.08,
+     "z": 82.17
+    },
+    {
+     "x": -96.42,
+     "z": 83.52
+    },
+    {
+     "x": -95.76,
+     "z": 84.86
+    },
+    {
+     "x": -95.32,
+     "z": 85.76
+    },
+    {
+     "x": -94.88,
+     "z": 86.66
+    },
+    {
+     "x": -94.22,
+     "z": 88.01
+    },
+    {
+     "x": -93.56,
+     "z": 89.36
+    }
+   ],
+   "lanes": {
+    "count": 1,
+    "width": 4.0
+   },
+   "surfaceHeight": 0,
+   "pavementWidth": 2.0,
+   "kerbHeight": 0.12,
+   "markings": {
+    "centre": "none",
+    "edges": false
+   },
+   "pavementProfile": [
+    {
+     "along": 0.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 2.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 5.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 7.5,
+     "left": 5.3,
+     "right": 9.9
+    },
+    {
+     "along": 10.0,
+     "left": 5.3,
+     "right": 9.9
+    },
+    {
+     "along": 12.5,
+     "left": 5.2,
+     "right": 9.9
+    },
+    {
+     "along": 15.0,
+     "left": 5.2,
+     "right": 9.9
+    },
+    {
+     "along": 17.5,
+     "left": 5.1,
+     "right": 9.9
+    },
+    {
+     "along": 20.0,
+     "left": 5.0,
+     "right": 2.0
+    },
+    {
+     "along": 22.5,
+     "left": 5.0,
+     "right": 2.0
+    },
+    {
+     "along": 25.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 27.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 29.3,
+     "left": 2.0,
+     "right": 2.0
+    }
+   ]
+  },
+  {
+   "id": "saint-thomas-road",
+   "name": "Saint Thomas Road",
+   "oneway": true,
+   "centreline": [
+    {
+     "x": -115.56,
+     "z": 99.35
+    },
+    {
+     "x": -116.0,
+     "z": 98.45
+    },
+    {
+     "x": -116.67,
+     "z": 97.11
+    },
+    {
+     "x": -117.11,
+     "z": 96.21
+    },
+    {
+     "x": -117.55,
+     "z": 95.31
+    },
+    {
+     "x": -118.0,
+     "z": 94.42
+    },
+    {
+     "x": -118.44,
+     "z": 93.52
+    },
+    {
+     "x": -119.1,
+     "z": 92.18
+    },
+    {
+     "x": -119.55,
+     "z": 91.28
+    },
+    {
+     "x": -119.99,
+     "z": 90.38
+    },
+    {
+     "x": -120.65,
+     "z": 89.04
+    },
+    {
+     "x": -121.32,
+     "z": 87.7
+    },
+    {
+     "x": -121.98,
+     "z": 86.35
+    },
+    {
+     "x": -122.43,
+     "z": 85.45
+    },
+    {
+     "x": -123.09,
+     "z": 84.11
+    },
+    {
+     "x": -123.54,
+     "z": 83.21
+    },
+    {
+     "x": -124.2,
+     "z": 81.87
+    },
+    {
+     "x": -124.64,
+     "z": 80.97
+    },
+    {
+     "x": -125.31,
+     "z": 79.63
+    },
+    {
+     "x": -125.75,
+     "z": 78.73
+    },
+    {
+     "x": -126.2,
+     "z": 77.83
+    },
+    {
+     "x": -126.86,
+     "z": 76.49
+    },
+    {
+     "x": -127.43,
+     "z": 75.33
+    },
+    {
+     "x": -127.88,
+     "z": 74.43
+    },
+    {
+     "x": -128.54,
+     "z": 73.09
+    }
+   ],
+   "lanes": {
+    "count": 1,
+    "width": 4.0
+   },
+   "surfaceHeight": 0,
+   "pavementWidth": 2.0,
+   "kerbHeight": 0.12,
+   "markings": {
+    "centre": "none",
+    "edges": false
+   },
+   "pavementProfile": [
+    {
+     "along": 0.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 2.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 5.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 7.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 10.0,
+     "left": 2.0,
+     "right": 2.8
+    },
+    {
+     "along": 12.5,
+     "left": 2.0,
+     "right": 2.8
+    },
+    {
+     "along": 15.0,
+     "left": 2.0,
+     "right": 2.8
+    },
+    {
+     "along": 17.5,
+     "left": 2.0,
+     "right": 2.8
+    },
+    {
+     "along": 20.0,
+     "left": 2.0,
+     "right": 2.8
+    },
+    {
+     "along": 22.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 25.0,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 27.5,
+     "left": 2.0,
+     "right": 2.0
+    },
+    {
+     "along": 29.3,
+     "left": 2.0,
+     "right": 2.0
+    }
+   ]
   }
  ],
  "blocks": [
@@ -1218,7 +2555,15 @@
    "id": "high-street-signals",
    "roadId": "high-street",
    "kind": "signal",
-   "along": 54.2,
+   "along": 232.0,
+   "width": 3.5,
+   "giveWayOffset": 1.7
+  },
+  {
+   "id": "high-street-signals-west",
+   "roadId": "high-street",
+   "kind": "signal",
+   "along": 141.0,
    "width": 3.5,
    "giveWayOffset": 1.7
   }
@@ -1256,6 +2601,178 @@
   }
  ],
  "buildings": [
+  {
+   "id": "osm-156883790",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -248.35,
+     "z": 135.0
+    },
+    {
+     "x": -250.45,
+     "z": 128.62
+    },
+    {
+     "x": -241.48,
+     "z": 125.66
+    },
+    {
+     "x": -239.38,
+     "z": 132.03
+    },
+    {
+     "x": -248.35,
+     "z": 135.0
+    }
+   ],
+   "name": "Nest Cr\u00eaperie"
+  },
+  {
+   "id": "osm-156883797",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -279.97,
+     "z": 138.97
+    },
+    {
+     "x": -262.32,
+     "z": 171.41
+    },
+    {
+     "x": -250.22,
+     "z": 200.78
+    },
+    {
+     "x": -245.69,
+     "z": 209.25
+    },
+    {
+     "x": -248.42,
+     "z": 210.51
+    },
+    {
+     "x": -241.03,
+     "z": 229.5
+    },
+    {
+     "x": -265.67,
+     "z": 238.49
+    },
+    {
+     "x": -255.4,
+     "z": 267.66
+    },
+    {
+     "x": -221.32,
+     "z": 255.54
+    },
+    {
+     "x": -220.82,
+     "z": 257.43
+    },
+    {
+     "x": -216.59,
+     "z": 255.7
+    },
+    {
+     "x": -221.97,
+     "z": 239.29
+    },
+    {
+     "x": -199.29,
+     "z": 230.38
+    },
+    {
+     "x": -193.66,
+     "z": 246.16
+    },
+    {
+     "x": -163.52,
+     "z": 235.39
+    },
+    {
+     "x": -164.38,
+     "z": 232.22
+    },
+    {
+     "x": -160.83,
+     "z": 230.83
+    },
+    {
+     "x": -175.15,
+     "z": 192.03
+    },
+    {
+     "x": -187.95,
+     "z": 196.36
+    },
+    {
+     "x": -194.4,
+     "z": 178.47
+    },
+    {
+     "x": -189.25,
+     "z": 177.02
+    },
+    {
+     "x": -199.71,
+     "z": 142.18
+    },
+    {
+     "x": -212.27,
+     "z": 147.03
+    },
+    {
+     "x": -213.54,
+     "z": 143.65
+    },
+    {
+     "x": -228.75,
+     "z": 148.56
+    },
+    {
+     "x": -217.59,
+     "z": 185.98
+    },
+    {
+     "x": -223.38,
+     "z": 188.8
+    },
+    {
+     "x": -227.29,
+     "z": 189.58
+    },
+    {
+     "x": -247.36,
+     "z": 149.84
+    },
+    {
+     "x": -250.64,
+     "z": 142.76
+    },
+    {
+     "x": -255.3,
+     "z": 130.4
+    },
+    {
+     "x": -268.11,
+     "z": 134.52
+    },
+    {
+     "x": -279.97,
+     "z": 138.97
+    }
+   ],
+   "name": "The Baytree Centre"
+  },
   {
    "id": "osm-170237627",
    "height": 10.2,
@@ -1455,7 +2972,7 @@
    "height": 10.2,
    "levels": 3,
    "heightSource": "estimated",
-   "use": "shop",
+   "use": "office",
    "footprint": [
     {
      "x": 122.39,
@@ -1661,7 +3178,7 @@
    "height": 10.2,
    "levels": 3,
    "heightSource": "estimated",
-   "use": "shop",
+   "use": "office",
    "footprint": [
     {
      "x": 72.65,
@@ -1714,6 +3231,43 @@
     {
      "x": 72.65,
      "z": -117.34
+    }
+   ]
+  },
+  {
+   "id": "osm-652919377",
+   "height": 13.4,
+   "levels": 4,
+   "heightSource": "map-levels",
+   "use": "residential",
+   "footprint": [
+    {
+     "x": -250.23,
+     "z": 50.81
+    },
+    {
+     "x": -234.39,
+     "z": 45.46
+    },
+    {
+     "x": -231.27,
+     "z": 54.72
+    },
+    {
+     "x": -238.57,
+     "z": 57.19
+    },
+    {
+     "x": -232.39,
+     "z": 75.49
+    },
+    {
+     "x": -240.93,
+     "z": 78.37
+    },
+    {
+     "x": -250.23,
+     "z": 50.81
     }
    ]
   },
@@ -1774,6 +3328,258 @@
      "z": -72.78
     }
    ]
+  },
+  {
+   "id": "osm-1144034766",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -149.85,
+     "z": 11.29
+    },
+    {
+     "x": -135.33,
+     "z": 38.68
+    },
+    {
+     "x": -128.68,
+     "z": 51.25
+    },
+    {
+     "x": -139.5,
+     "z": 56.98
+    },
+    {
+     "x": -152.92,
+     "z": 64.1
+    },
+    {
+     "x": -174.1,
+     "z": 24.13
+    },
+    {
+     "x": -149.85,
+     "z": 11.29
+    }
+   ],
+   "name": "Marks & Spencer"
+  },
+  {
+   "id": "osm-1144035494",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -222.84,
+     "z": 47.79
+    },
+    {
+     "x": -206.07,
+     "z": 40.83
+    },
+    {
+     "x": -201.93,
+     "z": 49.76
+    },
+    {
+     "x": -203.33,
+     "z": 50.48
+    },
+    {
+     "x": -187.35,
+     "z": 83.1
+    },
+    {
+     "x": -195.5,
+     "z": 88.2
+    },
+    {
+     "x": -200.93,
+     "z": 91.59
+    },
+    {
+     "x": -203.66,
+     "z": 93.3
+    },
+    {
+     "x": -222.84,
+     "z": 47.79
+    }
+   ],
+   "name": "Boots"
+  },
+  {
+   "id": "osm-1144035960",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -172.47,
+     "z": 75.21
+    },
+    {
+     "x": -189.33,
+     "z": 43.97
+    },
+    {
+     "x": -194.15,
+     "z": 45.74
+    },
+    {
+     "x": -201.12,
+     "z": 34.23
+    },
+    {
+     "x": -208.17,
+     "z": 35.85
+    },
+    {
+     "x": -201.93,
+     "z": 49.76
+    },
+    {
+     "x": -203.33,
+     "z": 50.48
+    },
+    {
+     "x": -187.35,
+     "z": 83.1
+    },
+    {
+     "x": -181.6,
+     "z": 80.62
+    },
+    {
+     "x": -172.47,
+     "z": 75.21
+    }
+   ],
+   "name": "Superdrug"
+  },
+  {
+   "id": "osm-1144051115",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -180.54,
+     "z": 39.65
+    },
+    {
+     "x": -163.2,
+     "z": 70.12
+    },
+    {
+     "x": -159.84,
+     "z": 68.21
+    },
+    {
+     "x": -155.21,
+     "z": 65.58
+    },
+    {
+     "x": -172.55,
+     "z": 35.11
+    },
+    {
+     "x": -180.54,
+     "z": 39.65
+    }
+   ],
+   "name": "Lloyds Bank"
+  },
+  {
+   "id": "osm-1144052132",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -189.33,
+     "z": 43.97
+    },
+    {
+     "x": -180.54,
+     "z": 39.65
+    },
+    {
+     "x": -163.2,
+     "z": 70.12
+    },
+    {
+     "x": -170.29,
+     "z": 74.04
+    },
+    {
+     "x": -172.47,
+     "z": 75.21
+    },
+    {
+     "x": -189.33,
+     "z": 43.97
+    }
+   ],
+   "name": "Clintons"
+  },
+  {
+   "id": "osm-1144053021",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -158.28,
+     "z": 117.88
+    },
+    {
+     "x": -165.84,
+     "z": 121.45
+    },
+    {
+     "x": -158.35,
+     "z": 137.3
+    },
+    {
+     "x": -138.76,
+     "z": 128.04
+    },
+    {
+     "x": -142.77,
+     "z": 119.97
+    },
+    {
+     "x": -154.64,
+     "z": 95.1
+    },
+    {
+     "x": -159.95,
+     "z": 97.93
+    },
+    {
+     "x": -166.22,
+     "z": 100.72
+    },
+    {
+     "x": -160.9,
+     "z": 112.74
+    },
+    {
+     "x": -158.28,
+     "z": 117.88
+    }
+   ],
+   "name": "Iceland"
   },
   {
    "id": "osm-1144094695",
@@ -1925,6 +3731,40 @@
    "name": "KFC"
   },
   {
+   "id": "osm-1144103085",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
+   "footprint": [
+    {
+     "x": -154.64,
+     "z": 95.1
+    },
+    {
+     "x": -129.25,
+     "z": 82.98
+    },
+    {
+     "x": -118.92,
+     "z": 104.62
+    },
+    {
+     "x": -117.38,
+     "z": 107.85
+    },
+    {
+     "x": -142.77,
+     "z": 119.97
+    },
+    {
+     "x": -154.64,
+     "z": 95.1
+    }
+   ],
+   "name": "Royal Mail Brentwood HQ"
+  },
+  {
    "id": "osm-1247362491",
    "height": 10.2,
    "levels": 3,
@@ -2070,7 +3910,7 @@
    "height": 10.2,
    "levels": 3,
    "heightSource": "estimated",
-   "use": "shop",
+   "use": "office",
    "footprint": [
     {
      "x": -64.85,
@@ -2100,7 +3940,7 @@
    "height": 10.2,
    "levels": 3,
    "heightSource": "estimated",
-   "use": "shop",
+   "use": "office",
    "footprint": [
     {
      "x": -59.84,
@@ -2222,6 +4062,112 @@
     }
    ],
    "name": "Dogs Trust"
+  },
+  {
+   "id": "osm-1395780077",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -166.22,
+     "z": 100.72
+    },
+    {
+     "x": -160.9,
+     "z": 112.74
+    },
+    {
+     "x": -172.37,
+     "z": 117.82
+    },
+    {
+     "x": -177.69,
+     "z": 105.8
+    },
+    {
+     "x": -166.22,
+     "z": 100.72
+    }
+   ],
+   "name": "Percy Ingle"
+  },
+  {
+   "id": "osm-1396482468",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -236.43,
+     "z": 108.87
+    },
+    {
+     "x": -239.42,
+     "z": 100.02
+    },
+    {
+     "x": -243.02,
+     "z": 91.51
+    },
+    {
+     "x": -242.37,
+     "z": 91.27
+    },
+    {
+     "x": -246.57,
+     "z": 79.44
+    },
+    {
+     "x": -258.66,
+     "z": 83.46
+    },
+    {
+     "x": -254.32,
+     "z": 94.96
+    },
+    {
+     "x": -247.97,
+     "z": 113.01
+    },
+    {
+     "x": -236.43,
+     "z": 108.87
+    }
+   ],
+   "name": "Tesco Express"
+  },
+  {
+   "id": "osm-1408938605",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -119.95,
+     "z": 78.87
+    },
+    {
+     "x": -113.8,
+     "z": 75.84
+    },
+    {
+     "x": -109.43,
+     "z": 84.73
+    },
+    {
+     "x": -115.59,
+     "z": 87.74
+    },
+    {
+     "x": -119.95,
+     "z": 78.87
+    }
+   ],
+   "name": "Caff\u00e8 Nero"
   },
   {
    "id": "osm-1408939552",
@@ -2466,6 +4412,65 @@
    "name": "Navateet"
   },
   {
+   "id": "osm-1411050532",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -128.68,
+     "z": 51.25
+    },
+    {
+     "x": -118.6,
+     "z": 46.2
+    },
+    {
+     "x": -125.7,
+     "z": 33.32
+    },
+    {
+     "x": -135.33,
+     "z": 38.68
+    },
+    {
+     "x": -128.68,
+     "z": 51.25
+    }
+   ]
+  },
+  {
+   "id": "osm-1411050533",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
+   "footprint": [
+    {
+     "x": -118.6,
+     "z": 46.2
+    },
+    {
+     "x": -113.55,
+     "z": 43.41
+    },
+    {
+     "x": -120.64,
+     "z": 30.54
+    },
+    {
+     "x": -125.7,
+     "z": 33.32
+    },
+    {
+     "x": -118.6,
+     "z": 46.2
+    }
+   ],
+   "name": "Taro"
+  },
+  {
    "id": "osm-1411050534",
    "height": 10.2,
    "levels": 3,
@@ -2551,9 +4556,359 @@
     }
    ],
    "name": "Giggling Squid"
+  },
+  {
+   "id": "approx-high-street-0",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": -99.25,
+     "z": 49.18
+    },
+    {
+     "x": -91.13,
+     "z": 44.99
+    },
+    {
+     "x": -93.79,
+     "z": 39.61
+    },
+    {
+     "x": -102.03,
+     "z": 43.87
+    }
+   ]
+  },
+  {
+   "id": "approx-high-street-1",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": -89.34,
+     "z": 44.1
+    },
+    {
+     "x": -81.23,
+     "z": 40.14
+    },
+    {
+     "x": -83.86,
+     "z": 34.75
+    },
+    {
+     "x": -92.0,
+     "z": 38.73
+    }
+   ]
+  },
+  {
+   "id": "approx-high-street-2",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": -85.99,
+     "z": 59.72
+    },
+    {
+     "x": -79.82,
+     "z": 52.14
+    },
+    {
+     "x": -75.43,
+     "z": 61.12
+    },
+    {
+     "x": -81.49,
+     "z": 68.65
+    }
+   ]
+  },
+  {
+   "id": "approx-high-street-3",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": -78.02,
+     "z": 51.26
+    },
+    {
+     "x": -67.79,
+     "z": 51.75
+    },
+    {
+     "x": -63.42,
+     "z": 60.74
+    },
+    {
+     "x": -73.63,
+     "z": 60.25
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-4",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 56.16,
+     "z": -40.03
+    },
+    {
+     "x": 63.73,
+     "z": -44.89
+    },
+    {
+     "x": 58.34,
+     "z": -53.31
+    },
+    {
+     "x": 50.76,
+     "z": -48.45
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-5",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 65.42,
+     "z": -45.97
+    },
+    {
+     "x": 72.99,
+     "z": -50.82
+    },
+    {
+     "x": 67.6,
+     "z": -59.24
+    },
+    {
+     "x": 60.02,
+     "z": -54.39
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-6",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 74.68,
+     "z": -51.9
+    },
+    {
+     "x": 82.26,
+     "z": -56.76
+    },
+    {
+     "x": 76.86,
+     "z": -65.18
+    },
+    {
+     "x": 69.28,
+     "z": -60.32
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-7",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 83.94,
+     "z": -57.83
+    },
+    {
+     "x": 91.52,
+     "z": -62.69
+    },
+    {
+     "x": 86.12,
+     "z": -71.11
+    },
+    {
+     "x": 78.55,
+     "z": -66.26
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-8",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 93.2,
+     "z": -63.77
+    },
+    {
+     "x": 100.77,
+     "z": -68.62
+    },
+    {
+     "x": 95.36,
+     "z": -77.03
+    },
+    {
+     "x": 87.81,
+     "z": -72.19
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-9",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 62.3,
+     "z": -30.43
+    },
+    {
+     "x": 69.88,
+     "z": -35.29
+    },
+    {
+     "x": 75.27,
+     "z": -26.87
+    },
+    {
+     "x": 67.7,
+     "z": -22.01
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-10",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 71.56,
+     "z": -36.37
+    },
+    {
+     "x": 79.15,
+     "z": -41.22
+    },
+    {
+     "x": 83.46,
+     "z": -34.49
+    },
+    {
+     "x": 75.88,
+     "z": -29.63
+    }
+   ]
+  },
+  {
+   "id": "approx-shenfield-road-11",
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": 80.83,
+     "z": -42.3
+    },
+    {
+     "x": 88.4,
+     "z": -47.16
+    },
+    {
+     "x": 93.8,
+     "z": -38.73
+    },
+    {
+     "x": 86.23,
+     "z": -33.88
+    }
+   ]
+  },
+  {
+   "id": "approx-ongar-road-12",
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
+   "source": "approximate",
+   "footprint": [
+    {
+     "x": -13.23,
+     "z": -42.42
+    },
+    {
+     "x": -18.18,
+     "z": -49.85
+    },
+    {
+     "x": -24.82,
+     "z": -45.38
+    },
+    {
+     "x": -19.92,
+     "z": -38.04
+    }
+   ]
   }
  ],
  "trees": [
+  {
+   "x": -170.04,
+   "z": 96.08
+  },
+  {
+   "x": -146.87,
+   "z": 83.75
+  },
+  {
+   "x": -115.61,
+   "z": 49.58
+  },
   {
    "x": -98.27,
    "z": 61.53
@@ -2687,39 +5042,116 @@
    ]
   },
   {
+   "kind": "grass",
+   "polygon": [
+    {
+     "x": -248.35,
+     "z": 135.0
+    },
+    {
+     "x": -250.45,
+     "z": 128.62
+    },
+    {
+     "x": -245.57,
+     "z": 146.49
+    },
+    {
+     "x": -243.83,
+     "z": 148.23
+    },
+    {
+     "x": -241.14,
+     "z": 148.91
+    },
+    {
+     "x": -235.19,
+     "z": 146.92
+    },
+    {
+     "x": -228.38,
+     "z": 144.52
+    },
+    {
+     "x": -226.22,
+     "z": 143.84
+    },
+    {
+     "x": -221.57,
+     "z": 142.07
+    },
+    {
+     "x": -217.65,
+     "z": 140.56
+    },
+    {
+     "x": -222.64,
+     "z": 127.54
+    },
+    {
+     "x": -225.95,
+     "z": 119.01
+    },
+    {
+     "x": -236.52,
+     "z": 123.59
+    },
+    {
+     "x": -239.38,
+     "z": 132.03
+    },
+    {
+     "x": -248.35,
+     "z": 135.0
+    }
+   ]
+  },
+  {
    "kind": "parking",
    "polygon": [
     {
-     "x": -37.49,
-     "z": 138.92
+     "x": -159.67,
+     "z": 154.43
     },
     {
-     "x": -40.41,
-     "z": 142.2
+     "x": -166.02,
+     "z": 139.48
     },
     {
-     "x": -40.28,
-     "z": 146.61
+     "x": -160.1,
+     "z": 136.02
     },
     {
-     "x": -38.7,
-     "z": 150.77
+     "x": -140.83,
+     "z": 173.73
     },
     {
-     "x": -8.02,
-     "z": 135.63
+     "x": -146.75,
+     "z": 173.68
     },
     {
-     "x": -10.21,
-     "z": 131.57
+     "x": -151.37,
+     "z": 174.23
     },
     {
-     "x": -19.66,
-     "z": 129.51
+     "x": -164.3,
+     "z": 175.13
     },
     {
-     "x": -37.49,
-     "z": 138.92
+     "x": -166.97,
+     "z": 169.8
+    },
+    {
+     "x": -165.89,
+     "z": 161.73
+    },
+    {
+     "x": -162.69,
+     "z": 156.62
+    },
+    {
+     "x": -159.67,
+     "z": 154.43
     }
    ]
   },
@@ -2847,6 +5279,42 @@
   {
    "kind": "bus-stop",
    "position": {
+    "x": -52.32,
+    "z": 28.29
+   },
+   "facingDeg": 154.0,
+   "source": "OSM node 474891825 (High Street)"
+  },
+  {
+   "kind": "bus-stop",
+   "position": {
+    "x": -38.25,
+    "z": 29.66
+   },
+   "facingDeg": 334.1,
+   "source": "OSM node 474893273 (High Street)"
+  },
+  {
+   "kind": "bus-stop",
+   "position": {
+    "x": -65.96,
+    "z": 43.16
+   },
+   "facingDeg": 334.0,
+   "source": "OSM node 474894520 (High Street)"
+  },
+  {
+   "kind": "bus-stop",
+   "position": {
+    "x": -37.3,
+    "z": 20.97
+   },
+   "facingDeg": 154.0,
+   "source": "OSM node 474894536 (High Street)"
+  },
+  {
+   "kind": "bus-stop",
+   "position": {
     "x": 37.27,
     "z": 52.45
    },
@@ -2857,8 +5325,8 @@
  "townLampSpacing": 30,
  "spawn": {
   "position": {
-   "x": -29.27,
-   "z": 19.4
+   "x": -29.29,
+   "z": 19.41
   },
   "headingDeg": 64.4,
   "roadId": "high-street"

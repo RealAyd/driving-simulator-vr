@@ -16,6 +16,19 @@ export function roadHalfWidth(road:Road):number{
   return road.lanes.count*road.lanes.width/2;
 }
 
+/** Pavement width at `along` on one side (−1 left, +1 right of travel): the profile where there is one. */
+export function pavementWidthAt(road:Road,along:number,side:number):number{
+  const p=road.pavementProfile;
+  if(!p||p.length===0)return road.pavementWidth;
+  const w=(i:number)=>side<0?p[i]!.left:p[i]!.right;
+  if(along<=p[0]!.along)return w(0);
+  for(let i=1;i<p.length;i++)if(along<=p[i]!.along){
+    const t=(along-p[i-1]!.along)/(p[i]!.along-p[i-1]!.along||1);
+    return w(i-1)+(w(i)-w(i-1))*t;
+  }
+  return w(p.length-1);
+}
+
 /** Projects a point onto a road centreline (closest segment). */
 export function sampleRoad(road:Road,x:number,z:number):RoadSample{
   let best:RoadSample|null=null;
@@ -70,10 +83,12 @@ export function surfaceAt(location:Location,x:number,z:number):{height:number;ki
     if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius)
       return {height:0,kind:'carriageway',roadId:junction.id};
   for(const road of location.roads){
-    const offset=sampleRoad(road,x,z).distance;
+    const s=sampleRoad(road,x,z),offset=s.distance;
     const half=roadHalfWidth(road);
     if(offset<=half)return {height:road.surfaceHeight,kind:'carriageway',roadId:road.id};
-    if(offset<=half+road.pavementWidth&&!result)
+    // A widened pavement stops short of other carriageways (as drawn in buildWorld).
+    const width=pavementWidthAt(road,s.along,Math.sign(s.lateral)||1);
+    if(offset<=half+width&&!result&&(offset<=half+road.pavementWidth||!onOtherCarriageway(location,x,z,road.id,.4)))
       result={height:road.surfaceHeight+road.kerbHeight,kind:'pavement',roadId:road.id};
   }
   return result;

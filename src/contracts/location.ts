@@ -21,11 +21,20 @@ export const RoadSchema=z.object({
   /** Road surface height in metres. Flat sections only in schema v1. */
   surfaceHeight:z.number().default(0),
   pavementWidth:z.number().min(0).max(6).default(2),
+  /**
+   * Where the pavement is wider than `pavementWidth` (a town centre's wide
+   * pavements up to the shop fronts): widths left and right of the travel
+   * direction at stations along the road, interpolated between stations and
+   * held beyond the first and last. Derived from map data, not surveyed.
+   */
+  pavementProfile:z.array(z.object({along:z.number(),left:z.number().min(0).max(16),right:z.number().min(0).max(16)}).strict()).optional(),
   kerbHeight:z.number().min(0).max(0.25).default(0.12),
   markings:z.object({
     centre:z.enum(['none','dashed','hazard','solid']).default('dashed'),
+    /** Centre markings start this far along the road (map data says the road before it has no lane markings). */
+    centreFrom:z.number().min(0).default(0),
     edges:z.boolean().default(false)
-  }).strict().default({centre:'dashed',edges:false})
+  }).strict().default({centre:'dashed',centreFrom:0,edges:false})
 }).strict();
 
 export const BlockSchema=z.object({
@@ -91,6 +100,12 @@ export const BuildingSchema=z.object({
   use:z.enum(['shop','residential','office','civic','church','school','parking','utility','other']).default('other'),
   /** Optional name from map data (shown in review documents only; never drawn on the building). */
   name:z.string().optional(),
+  /**
+   * 'map': the outline is from map data. 'approximate': our placeholder where
+   * the map has no outline but the street is built up (documented with the
+   * location; position, size and use are not from any survey).
+   */
+  source:z.enum(['map','approximate']).default('map'),
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 }).strict();
 

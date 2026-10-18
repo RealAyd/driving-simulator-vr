@@ -33,3 +33,11 @@ Kerb lines at the junction corners, lane arrows, signs and real road widths are 
 ## 2026-10-18: scenery from the same extract
 
 `osm_extract.py` now also records each building's `building` tag and whether a business is mapped on it or inside it (shop, office, craft, or a café/bank/restaurant-type amenity). `build_location.py` uses this to choose each building's use (for example, shopfronts only for mapped businesses) and estimates storeys where `building:levels` is missing (`heightSource: estimated`). OSM grass, park and car-park areas and bus stops beside a modelled road are included. Street lights are not mapped here; lights in the scene are representative. No new data was downloaded for the scene. A wider survey for the practice-area proposal (OSM API, 2026-10-18) is described in `PRACTICE-AREA-PROPOSAL.md`.
+
+## 2026-10-18 (later): scene completed
+
+- `osm_extract.py` now keeps the High Street about 250 m west of the junctions (to the edge of the downloaded bbox), footways, service roads and other non-drivable ways (`paths`), and land-use areas.
+- Businesses are split into shops (shop, café, restaurant, bank, pharmacy, pub) and offices (office, craft, healthcare, surgeries).
+- `build_location.py` derives the pavement widths up to shop fronts and places the approximate buildings. It also adds the side-road mouths (ways 25901703, 25901704) and the second signal crossing (node 1763175237). See `docs/verification/STEP12-brentwood-scene-completed.md`.
+- Review plan: `docs/brentwood/location-review.svg` (`tools/brentwood/render_location_review.py`).
+- Same OSM download (2026-10-17); no new data.

@@ -8,6 +8,64 @@
  "units": "metres east (x) and north (y) of the origin",
  "roads": [
   {
+   "osmWay": 23353905,
+   "name": "William Hunter Way",
+   "ref": null,
+   "highway": "tertiary",
+   "oneway": false,
+   "lanes": 2,
+   "points": [
+    [
+     -280.52,
+     -49.15
+    ],
+    [
+     -273.27,
+     -44.83
+    ],
+    [
+     -261.31,
+     -41.53
+    ],
+    [
+     -251.49,
+     -38.63
+    ],
+    [
+     -231.32,
+     -33.51
+    ],
+    [
+     -194.09,
+     -23.43
+    ],
+    [
+     -183.75,
+     -19.06
+    ],
+    [
+     -180.6,
+     -17.72
+    ],
+    [
+     -176.33,
+     -15.21
+    ],
+    [
+     -170.48,
+     -12.33
+    ],
+    [
+     -153.77,
+     -4.56
+    ],
+    [
+     -146.96,
+     -0.02
+    ]
+   ]
+  },
+  {
    "osmWay": 23353931,
    "name": "William Hunter Way",
    "ref": null,
@@ -58,6 +116,32 @@
     [
      -64.81,
      49.46
+    ]
+   ]
+  },
+  {
+   "osmWay": 23361885,
+   "name": "Saint Thomas Road",
+   "ref": null,
+   "highway": "residential",
+   "oneway": false,
+   "lanes": null,
+   "points": [
+    [
+     3.67,
+     -270.11
+    ],
+    [
+     -24.85,
+     -193.42
+    ],
+    [
+     -41.71,
+     -154.95
+    ],
+    [
+     -46.09,
+     -140.66
     ]
    ]
   },
@@ -756,6 +840,24 @@
    ]
   },
   {
+   "osmWay": 734881557,
+   "name": "Saint Thomas Road",
+   "ref": null,
+   "highway": "residential",
+   "oneway": false,
+   "lanes": null,
+   "points": [
+    [
+     -46.09,
+     -140.66
+    ],
+    [
+     -65.66,
+     -148.88
+    ]
+   ]
+  },
+  {
    "osmWay": 734881559,
    "name": "William Hunter Way",
    "ref": null,
@@ -1428,11 +1530,576 @@
  ],
  "buildings": [
   {
+   "osmWay": 147247984,
+   "name": "Sainsbury's",
+   "levels": "2",
+   "building": "retail",
+   "business": "shop",
+   "polygon": [
+    [
+     -259.9,
+     126.63
+    ],
+    [
+     -262.92,
+     123.63
+    ],
+    [
+     -264.38,
+     118.47
+    ],
+    [
+     -264.57,
+     113.28
+    ],
+    [
+     -263.51,
+     109.79
+    ],
+    [
+     -261.74,
+     106.08
+    ],
+    [
+     -264.53,
+     104.97
+    ],
+    [
+     -228.8,
+     43.47
+    ],
+    [
+     -224.46,
+     46.02
+    ],
+    [
+     -170.02,
+     77.92
+    ],
+    [
+     -166.19,
+     78.6
+    ],
+    [
+     -162.35,
+     80.34
+    ],
+    [
+     -156.34,
+     84.46
+    ],
+    [
+     -138.12,
+     94.37
+    ],
+    [
+     -166.33,
+     141.59
+    ],
+    [
+     -170.77,
+     149.16
+    ],
+    [
+     -175.36,
+     153.8
+    ],
+    [
+     -194.73,
+     142.58
+    ],
+    [
+     -202.84,
+     155.15
+    ],
+    [
+     -205.16,
+     158.49
+    ],
+    [
+     -207.54,
+     160.96
+    ],
+    [
+     -211.61,
+     161.34
+    ],
+    [
+     -212.61,
+     161.0
+    ],
+    [
+     -218.11,
+     159.35
+    ],
+    [
+     -235.48,
+     154.14
+    ],
+    [
+     -239.82,
+     151.84
+    ],
+    [
+     -240.86,
+     149.04
+    ],
+    [
+     -241.37,
+     145.78
+    ],
+    [
+     -241.12,
+     143.94
+    ],
+    [
+     -246.94,
+     140.6
+    ],
+    [
+     -244.55,
+     136.28
+    ],
+    [
+     -259.9,
+     126.63
+    ]
+   ],
+   "shopPoints": 1,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 148525687,
+   "name": "St Thomas of Canterbury",
+   "levels": null,
+   "building": "church",
+   "business": null,
+   "polygon": [
+    [
+     -78.71,
+     -174.91
+    ],
+    [
+     -55.53,
+     -164.54
+    ],
+    [
+     -54.84,
+     -166.08
+    ],
+    [
+     -45.42,
+     -161.87
+    ],
+    [
+     -38.88,
+     -176.51
+    ],
+    [
+     -40.98,
+     -177.44
+    ],
+    [
+     -39.35,
+     -181.07
+    ],
+    [
+     -42.35,
+     -182.41
+    ],
+    [
+     -42.89,
+     -181.2
+    ],
+    [
+     -46.69,
+     -182.9
+    ],
+    [
+     -45.48,
+     -185.63
+    ],
+    [
+     -43.23,
+     -184.61
+    ],
+    [
+     -39.32,
+     -193.37
+    ],
+    [
+     -62.02,
+     -203.52
+    ],
+    [
+     -65.98,
+     -194.65
+    ],
+    [
+     -75.51,
+     -198.91
+    ],
+    [
+     -84.45,
+     -178.89
+    ],
+    [
+     -85.52,
+     -179.36
+    ],
+    [
+     -88.82,
+     -171.98
+    ],
+    [
+     -81.48,
+     -168.71
+    ],
+    [
+     -78.71,
+     -174.91
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 156883790,
+   "name": "Nest Cr\u00eaperie",
+   "levels": null,
+   "building": "yes",
+   "business": "shop",
+   "polygon": [
+    [
+     -248.35,
+     -135.0
+    ],
+    [
+     -250.45,
+     -128.62
+    ],
+    [
+     -241.48,
+     -125.66
+    ],
+    [
+     -239.38,
+     -132.03
+    ],
+    [
+     -248.35,
+     -135.0
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 156883797,
+   "name": "The Baytree Centre",
+   "levels": null,
+   "building": "retail",
+   "business": null,
+   "polygon": [
+    [
+     -279.97,
+     -138.97
+    ],
+    [
+     -262.32,
+     -171.41
+    ],
+    [
+     -250.22,
+     -200.78
+    ],
+    [
+     -245.69,
+     -209.25
+    ],
+    [
+     -248.42,
+     -210.51
+    ],
+    [
+     -241.03,
+     -229.5
+    ],
+    [
+     -265.67,
+     -238.49
+    ],
+    [
+     -255.4,
+     -267.66
+    ],
+    [
+     -221.32,
+     -255.54
+    ],
+    [
+     -220.82,
+     -257.43
+    ],
+    [
+     -216.59,
+     -255.7
+    ],
+    [
+     -221.97,
+     -239.29
+    ],
+    [
+     -199.29,
+     -230.38
+    ],
+    [
+     -193.66,
+     -246.16
+    ],
+    [
+     -163.52,
+     -235.39
+    ],
+    [
+     -164.38,
+     -232.22
+    ],
+    [
+     -160.83,
+     -230.83
+    ],
+    [
+     -175.15,
+     -192.03
+    ],
+    [
+     -187.95,
+     -196.36
+    ],
+    [
+     -194.4,
+     -178.47
+    ],
+    [
+     -189.25,
+     -177.02
+    ],
+    [
+     -199.71,
+     -142.18
+    ],
+    [
+     -212.27,
+     -147.03
+    ],
+    [
+     -213.54,
+     -143.65
+    ],
+    [
+     -228.75,
+     -148.56
+    ],
+    [
+     -217.59,
+     -185.98
+    ],
+    [
+     -223.38,
+     -188.8
+    ],
+    [
+     -227.29,
+     -189.58
+    ],
+    [
+     -247.36,
+     -149.84
+    ],
+    [
+     -250.64,
+     -142.76
+    ],
+    [
+     -255.3,
+     -130.4
+    ],
+    [
+     -268.11,
+     -134.52
+    ],
+    [
+     -279.97,
+     -138.97
+    ]
+   ],
+   "shopPoints": 8,
+   "officePoints": 1
+  },
+  {
+   "osmWay": 157027874,
+   "name": "Cathedral Parish Hall",
+   "levels": null,
+   "building": "yes",
+   "business": null,
+   "polygon": [
+    [
+     25.84,
+     -154.12
+    ],
+    [
+     32.33,
+     -150.78
+    ],
+    [
+     33.26,
+     -147.63
+    ],
+    [
+     48.83,
+     -140.03
+    ],
+    [
+     54.77,
+     -151.15
+    ],
+    [
+     30.7,
+     -164.24
+    ],
+    [
+     25.84,
+     -154.12
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 157027875,
+   "name": "Cathedral Church of St Mary and St Helen",
+   "levels": null,
+   "building": "cathedral",
+   "business": null,
+   "polygon": [
+    [
+     44.55,
+     -179.68
+    ],
+    [
+     54.41,
+     -196.91
+    ],
+    [
+     60.9,
+     -193.03
+    ],
+    [
+     64.41,
+     -200.81
+    ],
+    [
+     69.98,
+     -198.03
+    ],
+    [
+     70.72,
+     -199.51
+    ],
+    [
+     84.07,
+     -191.36
+    ],
+    [
+     82.58,
+     -188.77
+    ],
+    [
+     88.15,
+     -185.43
+    ],
+    [
+     74.43,
+     -162.25
+    ],
+    [
+     62.56,
+     -168.74
+    ],
+    [
+     60.52,
+     -167.07
+    ],
+    [
+     57.93,
+     -166.89
+    ],
+    [
+     56.45,
+     -168.18
+    ],
+    [
+     55.52,
+     -170.41
+    ],
+    [
+     56.45,
+     -172.45
+    ],
+    [
+     44.55,
+     -179.68
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 157027879,
+   "name": null,
+   "levels": null,
+   "building": "yes",
+   "business": null,
+   "polygon": [
+    [
+     20.18,
+     -176.41
+    ],
+    [
+     24.13,
+     -183.61
+    ],
+    [
+     33.5,
+     -178.48
+    ],
+    [
+     37.86,
+     -186.44
+    ],
+    [
+     44.79,
+     -182.64
+    ],
+    [
+     36.48,
+     -167.47
+    ],
+    [
+     20.18,
+     -176.41
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
    "osmWay": 170237627,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      92.42,
@@ -1471,14 +2138,15 @@
      12.77
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 170237721,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      65.03,
@@ -1501,14 +2169,15 @@
      8.72
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 198164870,
    "name": null,
    "levels": null,
    "building": "school",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      105.99,
@@ -1539,14 +2208,15 @@
      -126.45
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 198166444,
    "name": "Brentwood School Chapel",
    "levels": null,
    "building": "school",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      88.27,
@@ -1569,14 +2239,15 @@
      -136.66
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 198166747,
    "name": null,
    "levels": null,
    "building": "garage",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      56.33,
@@ -1599,14 +2270,15 @@
      -65.45
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 198167231,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      121.9,
@@ -1633,14 +2305,15 @@
      29.99
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 198167670,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      109.96,
@@ -1679,14 +2352,15 @@
      -18.28
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 200576404,
    "name": "Brentwood Telephone Exchange",
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      15.56,
@@ -1725,14 +2399,15 @@
      92.54
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 228077346,
    "name": null,
    "levels": null,
    "building": "residential",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      129.21,
@@ -1763,14 +2438,15 @@
      64.58
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 228077369,
    "name": null,
    "levels": null,
    "building": "residential",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      123.49,
@@ -1805,14 +2481,15 @@
      62.61
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 228077510,
    "name": "The New Surgery",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "office",
    "polygon": [
     [
      122.39,
@@ -1847,14 +2524,15 @@
      62.87
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 233336095,
    "name": "Ingrave House",
    "levels": null,
    "building": "apartments",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -15.51,
@@ -1893,14 +2571,15 @@
      -82.98
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 243825554,
    "name": "Sawyers Church",
    "levels": null,
    "building": "church",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      81.54,
@@ -1923,14 +2602,15 @@
      131.75
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 547041904,
    "name": "Sainsbury's Customer Parking",
    "levels": "2",
    "building": "parking",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -170.77,
@@ -2041,14 +2721,15 @@
      149.16
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 551333853,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "office",
    "polygon": [
     [
      72.65,
@@ -2103,14 +2784,54 @@
      117.34
     ]
    ],
-   "businessPoints": 1
+   "shopPoints": 0,
+   "officePoints": 1
+  },
+  {
+   "osmWay": 652919377,
+   "name": null,
+   "levels": "4",
+   "building": "residential",
+   "business": null,
+   "polygon": [
+    [
+     -250.23,
+     -50.81
+    ],
+    [
+     -234.39,
+     -45.46
+    ],
+    [
+     -231.27,
+     -54.72
+    ],
+    [
+     -238.57,
+     -57.19
+    ],
+    [
+     -232.39,
+     -75.49
+    ],
+    [
+     -240.93,
+     -78.37
+    ],
+    [
+     -250.23,
+     -50.81
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 891315367,
    "name": null,
    "levels": null,
    "building": "school",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      125.84,
@@ -2149,14 +2870,15 @@
      -98.99
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 909595877,
    "name": null,
    "levels": null,
    "building": "substation",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      3.74,
@@ -2179,14 +2901,15 @@
      71.72
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 909595878,
    "name": null,
    "levels": null,
    "building": "apartments",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -16.96,
@@ -2209,14 +2932,15 @@
      72.78
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1144034766,
    "name": "Marks & Spencer",
    "levels": null,
    "building": "retail",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -149.85,
@@ -2247,14 +2971,234 @@
      -11.29
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1144035494,
+   "name": "Boots",
+   "levels": null,
+   "building": "retail",
+   "business": "shop",
+   "polygon": [
+    [
+     -222.84,
+     -47.79
+    ],
+    [
+     -206.07,
+     -40.83
+    ],
+    [
+     -201.93,
+     -49.76
+    ],
+    [
+     -203.33,
+     -50.48
+    ],
+    [
+     -187.35,
+     -83.1
+    ],
+    [
+     -195.5,
+     -88.2
+    ],
+    [
+     -200.93,
+     -91.59
+    ],
+    [
+     -203.66,
+     -93.3
+    ],
+    [
+     -222.84,
+     -47.79
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1144035960,
+   "name": "Superdrug",
+   "levels": null,
+   "building": "retail",
+   "business": "shop",
+   "polygon": [
+    [
+     -172.47,
+     -75.21
+    ],
+    [
+     -189.33,
+     -43.97
+    ],
+    [
+     -194.15,
+     -45.74
+    ],
+    [
+     -201.12,
+     -34.23
+    ],
+    [
+     -208.17,
+     -35.85
+    ],
+    [
+     -201.93,
+     -49.76
+    ],
+    [
+     -203.33,
+     -50.48
+    ],
+    [
+     -187.35,
+     -83.1
+    ],
+    [
+     -181.6,
+     -80.62
+    ],
+    [
+     -172.47,
+     -75.21
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1144051115,
+   "name": "Lloyds Bank",
+   "levels": null,
+   "building": "yes",
+   "business": "shop",
+   "polygon": [
+    [
+     -180.54,
+     -39.65
+    ],
+    [
+     -163.2,
+     -70.12
+    ],
+    [
+     -159.84,
+     -68.21
+    ],
+    [
+     -155.21,
+     -65.58
+    ],
+    [
+     -172.55,
+     -35.11
+    ],
+    [
+     -180.54,
+     -39.65
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1144052132,
+   "name": "Clintons",
+   "levels": null,
+   "building": "yes",
+   "business": "shop",
+   "polygon": [
+    [
+     -189.33,
+     -43.97
+    ],
+    [
+     -180.54,
+     -39.65
+    ],
+    [
+     -163.2,
+     -70.12
+    ],
+    [
+     -170.29,
+     -74.04
+    ],
+    [
+     -172.47,
+     -75.21
+    ],
+    [
+     -189.33,
+     -43.97
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1144053021,
+   "name": "Iceland",
+   "levels": null,
+   "building": "retail",
+   "business": "shop",
+   "polygon": [
+    [
+     -158.28,
+     -117.88
+    ],
+    [
+     -165.84,
+     -121.45
+    ],
+    [
+     -158.35,
+     -137.3
+    ],
+    [
+     -138.76,
+     -128.04
+    ],
+    [
+     -142.77,
+     -119.97
+    ],
+    [
+     -154.64,
+     -95.1
+    ],
+    [
+     -159.95,
+     -97.93
+    ],
+    [
+     -166.22,
+     -100.72
+    ],
+    [
+     -160.9,
+     -112.74
+    ],
+    [
+     -158.28,
+     -117.88
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1144094695,
    "name": null,
    "levels": null,
    "building": "apartments",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -128.43,
@@ -2301,14 +3245,15 @@
      0.21
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1144101066,
    "name": "Halifax",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -64.17,
@@ -2343,14 +3288,15 @@
      -52.33
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1144101704,
    "name": "KFC",
    "levels": null,
    "building": "retail",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -47.66,
@@ -2397,14 +3343,15 @@
      -44.15
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1144103085,
    "name": "Royal Mail Brentwood HQ",
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -154.64,
@@ -2431,14 +3378,46 @@
      -95.1
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1144103086,
+   "name": "Royal Mail",
+   "levels": null,
+   "building": "yes",
+   "business": null,
+   "polygon": [
+    [
+     -102.71,
+     -144.53
+    ],
+    [
+     -95.61,
+     -160.39
+    ],
+    [
+     -124.56,
+     -173.36
+    ],
+    [
+     -131.67,
+     -157.5
+    ],
+    [
+     -102.71,
+     -144.53
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 1
   },
   {
    "osmWay": 1247362491,
    "name": null,
    "levels": null,
    "building": "retail",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -34.48,
@@ -2477,14 +3456,15 @@
      -39.51
     ]
    ],
-   "businessPoints": 7
+   "shopPoints": 6,
+   "officePoints": 1
   },
   {
    "osmWay": 1247362492,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      7.91,
@@ -2515,14 +3495,15 @@
      -49.0
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1334003525,
    "name": "Greggs",
    "levels": null,
    "building": "retail",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -46.73,
@@ -2545,14 +3526,46 @@
      -10.71
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1337147959,
+   "name": "Memorial Hall",
+   "levels": null,
+   "building": "yes",
+   "business": null,
+   "polygon": [
+    [
+     123.83,
+     -147.69
+    ],
+    [
+     139.89,
+     -136.41
+    ],
+    [
+     145.86,
+     -144.92
+    ],
+    [
+     129.8,
+     -156.18
+    ],
+    [
+     123.83,
+     -147.69
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1387913020,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -16.96,
@@ -2575,14 +3588,15 @@
      72.78
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1387914270,
    "name": "Ongar Road Dental Surgery",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "office",
    "polygon": [
     [
      -64.85,
@@ -2605,14 +3619,15 @@
      105.22
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1387914513,
    "name": "Landons Solicitors",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "office",
    "polygon": [
     [
      -59.84,
@@ -2643,14 +3658,15 @@
      99.23
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1388828192,
    "name": "Saffron Building Society",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -46.73,
@@ -2673,14 +3689,15 @@
      -10.71
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1388829599,
    "name": "Rossi",
    "levels": null,
    "building": "restaurant",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -45.76,
@@ -2703,14 +3720,15 @@
      -0.06
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1388829600,
    "name": "Dogs Trust",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -35.66,
@@ -2733,14 +3751,93 @@
      4.16
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1395780077,
+   "name": "Percy Ingle",
+   "levels": null,
+   "building": "yes",
+   "business": "shop",
+   "polygon": [
+    [
+     -166.22,
+     -100.72
+    ],
+    [
+     -160.9,
+     -112.74
+    ],
+    [
+     -172.37,
+     -117.82
+    ],
+    [
+     -177.69,
+     -105.8
+    ],
+    [
+     -166.22,
+     -100.72
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1396482468,
+   "name": "Tesco Express",
+   "levels": null,
+   "building": "yes",
+   "business": "shop",
+   "polygon": [
+    [
+     -236.43,
+     -108.87
+    ],
+    [
+     -239.42,
+     -100.02
+    ],
+    [
+     -243.02,
+     -91.51
+    ],
+    [
+     -242.37,
+     -91.27
+    ],
+    [
+     -246.57,
+     -79.44
+    ],
+    [
+     -258.66,
+     -83.46
+    ],
+    [
+     -254.32,
+     -94.96
+    ],
+    [
+     -247.97,
+     -113.01
+    ],
+    [
+     -236.43,
+     -108.87
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1408938605,
    "name": "Caff\u00e8 Nero",
    "levels": null,
    "building": "cafe",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -119.95,
@@ -2763,14 +3860,15 @@
      -78.87
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1408939552,
    "name": "Vodafone",
    "levels": null,
    "building": "residential",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -90.68,
@@ -2801,14 +3899,15 @@
      -64.58
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1408939553,
    "name": "Specsavers",
    "levels": null,
    "building": "residential",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -86.49,
@@ -2839,14 +3938,15 @@
      -73.69
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1410143153,
    "name": "The Beauty Bar",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -40.55,
@@ -2869,14 +3969,15 @@
      2.2
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1410199072,
    "name": "Cut 'N' Shave",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -7.23,
@@ -2899,14 +4000,15 @@
      18.42
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1410199073,
    "name": "Brentwood Mini Market",
    "levels": null,
    "building": "retail",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -16.05,
@@ -2929,14 +4031,15 @@
      12.88
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1410199074,
    "name": "PizzaExpress",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -11.87,
@@ -2967,14 +4070,15 @@
      4.13
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1411040044,
    "name": "Navateet",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -26.86,
@@ -3005,14 +4109,15 @@
      -2.72
     ]
    ],
-   "businessPoints": 1
+   "shopPoints": 1,
+   "officePoints": 0
   },
   {
    "osmWay": 1411050532,
    "name": null,
    "levels": null,
    "building": "retail",
-   "business": false,
+   "business": null,
    "polygon": [
     [
      -128.68,
@@ -3035,14 +4140,15 @@
      -51.25
     ]
    ],
-   "businessPoints": 1
+   "shopPoints": 1,
+   "officePoints": 0
   },
   {
    "osmWay": 1411050533,
    "name": "Taro",
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -118.6,
@@ -3065,14 +4171,15 @@
      -46.2
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1411050534,
    "name": null,
    "levels": null,
    "building": "yes",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -72.56,
@@ -3103,14 +4210,15 @@
      -22.42
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
   },
   {
    "osmWay": 1411050763,
    "name": "Giggling Squid",
    "levels": null,
    "building": "retail",
-   "business": true,
+   "business": "shop",
    "polygon": [
     [
      -52.16,
@@ -3153,10 +4261,126 @@
      -13.04
     ]
    ],
-   "businessPoints": 0
+   "shopPoints": 0,
+   "officePoints": 0
+  },
+  {
+   "osmWay": 1493514536,
+   "name": null,
+   "levels": "2",
+   "building": "house",
+   "business": null,
+   "polygon": [
+    [
+     -134.66,
+     -185.73
+    ],
+    [
+     -136.17,
+     -182.66
+    ],
+    [
+     -125.06,
+     -177.39
+    ],
+    [
+     -123.62,
+     -180.46
+    ],
+    [
+     -134.66,
+     -185.73
+    ]
+   ],
+   "shopPoints": 0,
+   "officePoints": 0
   }
  ],
  "areas": [
+  {
+   "osmWay": 25967131,
+   "kind": "parking",
+   "polygon": [
+    [
+     -288.25,
+     -18.53
+    ],
+    [
+     -288.44,
+     -16.89
+    ],
+    [
+     -246.68,
+     -8.76
+    ],
+    [
+     -238.19,
+     -27.92
+    ],
+    [
+     -275.73,
+     -38.03
+    ],
+    [
+     -284.7,
+     -37.95
+    ],
+    [
+     -286.5,
+     -29.68
+    ],
+    [
+     -288.25,
+     -18.53
+    ]
+   ]
+  },
+  {
+   "osmWay": 652895466,
+   "kind": "parking",
+   "polygon": [
+    [
+     -184.49,
+     63.9
+    ],
+    [
+     -222.55,
+     41.28
+    ],
+    [
+     -193.19,
+     -12.53
+    ],
+    [
+     -150.06,
+     11.91
+    ],
+    [
+     -139.38,
+     20.91
+    ],
+    [
+     -132.21,
+     36.08
+    ],
+    [
+     -142.61,
+     52.34
+    ],
+    [
+     -157.2,
+     43.94
+    ],
+    [
+     -169.22,
+     37.03
+    ],
+    [
+     -184.49,
+     63.9
+    ]
+   ]
+  },
   {
    "osmWay": 656969909,
    "kind": "parking",
@@ -3200,6 +4424,72 @@
    ]
   },
   {
+   "osmWay": 692779989,
+   "kind": "park",
+   "polygon": [
+    [
+     -248.35,
+     -135.0
+    ],
+    [
+     -250.45,
+     -128.62
+    ],
+    [
+     -245.57,
+     -146.49
+    ],
+    [
+     -243.83,
+     -148.23
+    ],
+    [
+     -241.14,
+     -148.91
+    ],
+    [
+     -235.19,
+     -146.92
+    ],
+    [
+     -228.38,
+     -144.52
+    ],
+    [
+     -226.22,
+     -143.84
+    ],
+    [
+     -221.57,
+     -142.07
+    ],
+    [
+     -217.65,
+     -140.56
+    ],
+    [
+     -222.64,
+     -127.54
+    ],
+    [
+     -225.95,
+     -119.01
+    ],
+    [
+     -236.52,
+     -123.59
+    ],
+    [
+     -239.38,
+     -132.03
+    ],
+    [
+     -248.35,
+     -135.0
+    ]
+   ]
+  },
+  {
    "osmWay": 734881553,
    "kind": "parking",
    "polygon": [
@@ -3234,6 +4524,56 @@
     [
      -37.49,
      -138.92
+    ]
+   ]
+  },
+  {
+   "osmWay": 834825657,
+   "kind": "parking",
+   "polygon": [
+    [
+     -159.67,
+     -154.43
+    ],
+    [
+     -166.02,
+     -139.48
+    ],
+    [
+     -160.1,
+     -136.02
+    ],
+    [
+     -140.83,
+     -173.73
+    ],
+    [
+     -146.75,
+     -173.68
+    ],
+    [
+     -151.37,
+     -174.23
+    ],
+    [
+     -164.3,
+     -175.13
+    ],
+    [
+     -166.97,
+     -169.8
+    ],
+    [
+     -165.89,
+     -161.73
+    ],
+    [
+     -162.69,
+     -156.62
+    ],
+    [
+     -159.67,
+     -154.43
     ]
    ]
   },
@@ -3360,13 +4700,3657 @@
    ]
   }
  ],
+ "paths": [
+  {
+   "osmWay": 25901576,
+   "highway": "footway",
+   "name": "Millennium Walk",
+   "area": false,
+   "points": [
+    [
+     -176.57,
+     -25.19
+    ],
+    [
+     -152.55,
+     -67.83
+    ],
+    [
+     -148.1,
+     -76.62
+    ]
+   ]
+  },
+  {
+   "osmWay": 25901790,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     14.84,
+     66.29
+    ],
+    [
+     17.53,
+     70.11
+    ],
+    [
+     18.76,
+     72.36
+    ],
+    [
+     19.79,
+     76.22
+    ],
+    [
+     18.94,
+     80.86
+    ],
+    [
+     16.43,
+     86.32
+    ],
+    [
+     9.79,
+     97.34
+    ],
+    [
+     24.0,
+     106.99
+    ],
+    [
+     25.48,
+     111.99
+    ],
+    [
+     26.31,
+     118.2
+    ],
+    [
+     20.2,
+     128.31
+    ],
+    [
+     12.7,
+     139.12
+    ]
+   ]
+  },
+  {
+   "osmWay": 25967082,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -51.19,
+     -282.23
+    ],
+    [
+     -91.97,
+     -193.89
+    ],
+    [
+     -97.03,
+     -182.93
+    ],
+    [
+     -92.97,
+     -174.84
+    ],
+    [
+     -85.94,
+     -168.09
+    ],
+    [
+     -88.2,
+     -156.85
+    ]
+   ]
+  },
+  {
+   "osmWay": 147247990,
+   "highway": "cycleway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -197.66,
+     -12.23
+    ],
+    [
+     -200.1,
+     -10.9
+    ],
+    [
+     -201.8,
+     -9.63
+    ],
+    [
+     -205.15,
+     -4.64
+    ],
+    [
+     -211.38,
+     4.62
+    ],
+    [
+     -222.98,
+     26.05
+    ],
+    [
+     -225.32,
+     31.74
+    ],
+    [
+     -228.48,
+     35.4
+    ],
+    [
+     -233.35,
+     37.7
+    ],
+    [
+     -236.31,
+     39.99
+    ],
+    [
+     -239.35,
+     42.54
+    ],
+    [
+     -242.83,
+     46.83
+    ],
+    [
+     -246.58,
+     53.5
+    ],
+    [
+     -252.85,
+     74.5
+    ],
+    [
+     -270.07,
+     104.47
+    ],
+    [
+     -271.58,
+     109.38
+    ],
+    [
+     -272.01,
+     114.51
+    ],
+    [
+     -271.64,
+     118.78
+    ],
+    [
+     -269.79,
+     123.93
+    ],
+    [
+     -267.71,
+     128.22
+    ],
+    [
+     -263.22,
+     133.65
+    ],
+    [
+     -253.62,
+     139.92
+    ],
+    [
+     -251.34,
+     142.45
+    ],
+    [
+     -250.84,
+     146.4
+    ],
+    [
+     -249.87,
+     156.12
+    ]
+   ]
+  },
+  {
+   "osmWay": 147764894,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -13.64,
+     -125.27
+    ],
+    [
+     -13.09,
+     -118.24
+    ],
+    [
+     -12.1,
+     -109.74
+    ],
+    [
+     -13.89,
+     -103.97
+    ],
+    [
+     -27.91,
+     -81.45
+    ]
+   ]
+  },
+  {
+   "osmWay": 147764898,
+   "highway": "service",
+   "name": "Ongar Place",
+   "area": false,
+   "points": [
+    [
+     -20.84,
+     34.65
+    ],
+    [
+     -52.48,
+     19.57
+    ],
+    [
+     -54.93,
+     19.07
+    ],
+    [
+     -57.3,
+     19.02
+    ],
+    [
+     -59.9,
+     19.51
+    ],
+    [
+     -62.36,
+     20.74
+    ],
+    [
+     -64.32,
+     22.56
+    ],
+    [
+     -66.75,
+     25.56
+    ],
+    [
+     -72.13,
+     34.38
+    ]
+   ]
+  },
+  {
+   "osmWay": 147764900,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     19.79,
+     76.22
+    ],
+    [
+     38.29,
+     80.47
+    ]
+   ]
+  },
+  {
+   "osmWay": 156883775,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -141.07,
+     -186.46
+    ],
+    [
+     -142.74,
+     -182.8
+    ],
+    [
+     -143.18,
+     -181.84
+    ],
+    [
+     -144.98,
+     -177.88
+    ],
+    [
+     -146.75,
+     -173.68
+    ],
+    [
+     -147.83,
+     -171.13
+    ],
+    [
+     -155.52,
+     -154.08
+    ],
+    [
+     -161.01,
+     -139.47
+    ]
+   ]
+  },
+  {
+   "osmWay": 198167128,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     98.58,
+     -141.63
+    ],
+    [
+     123.93,
+     -182.6
+    ]
+   ]
+  },
+  {
+   "osmWay": 199417577,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     47.88,
+     31.31
+    ],
+    [
+     51.39,
+     27.11
+    ],
+    [
+     60.98,
+     11.86
+    ],
+    [
+     107.25,
+     37.16
+    ]
+   ]
+  },
+  {
+   "osmWay": 199417578,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     107.25,
+     37.16
+    ],
+    [
+     95.68,
+     58.59
+    ]
+   ]
+  },
+  {
+   "osmWay": 199417625,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     148.81,
+     -31.33
+    ],
+    [
+     146.22,
+     -26.83
+    ],
+    [
+     122.64,
+     11.56
+    ],
+    [
+     111.48,
+     29.7
+    ],
+    [
+     107.25,
+     37.16
+    ]
+   ]
+  },
+  {
+   "osmWay": 547041901,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -145.5,
+     29.12
+    ],
+    [
+     -160.1,
+     20.93
+    ],
+    [
+     -174.28,
+     12.42
+    ],
+    [
+     -188.13,
+     4.37
+    ],
+    [
+     -210.2,
+     43.67
+    ],
+    [
+     -196.48,
+     51.43
+    ],
+    [
+     -182.02,
+     59.62
+    ]
+   ]
+  },
+  {
+   "osmWay": 547041902,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -174.28,
+     12.42
+    ],
+    [
+     -196.48,
+     51.43
+    ]
+   ]
+  },
+  {
+   "osmWay": 547041903,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -160.1,
+     20.93
+    ],
+    [
+     -169.22,
+     37.03
+    ],
+    [
+     -173.19,
+     44.03
+    ],
+    [
+     -182.02,
+     59.62
+    ]
+   ]
+  },
+  {
+   "osmWay": 547041908,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -98.94,
+     107.86
+    ],
+    [
+     -96.37,
+     109.29
+    ],
+    [
+     -75.74,
+     74.83
+    ]
+   ]
+  },
+  {
+   "osmWay": 547041911,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -228.48,
+     35.4
+    ],
+    [
+     -229.55,
+     37.39
+    ],
+    [
+     -229.12,
+     39.27
+    ],
+    [
+     -227.91,
+     40.82
+    ],
+    [
+     -226.14,
+     41.82
+    ],
+    [
+     -170.3,
+     72.0
+    ]
+   ]
+  },
+  {
+   "osmWay": 554821568,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -127.87,
+     46.99
+    ],
+    [
+     -133.08,
+     49.52
+    ],
+    [
+     -136.23,
+     49.79
+    ],
+    [
+     -138.64,
+     48.91
+    ],
+    [
+     -141.14,
+     46.52
+    ],
+    [
+     -142.72,
+     43.58
+    ],
+    [
+     -143.83,
+     36.72
+    ],
+    [
+     -145.5,
+     29.12
+    ]
+   ]
+  },
+  {
+   "osmWay": 554821570,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -72.15,
+     128.16
+    ],
+    [
+     -79.92,
+     120.6
+    ],
+    [
+     -82.02,
+     117.08
+    ],
+    [
+     -85.6,
+     111.94
+    ],
+    [
+     -87.73,
+     110.0
+    ],
+    [
+     -90.5,
+     107.92
+    ],
+    [
+     -94.13,
+     110.56
+    ],
+    [
+     -99.56,
+     112.4
+    ],
+    [
+     -101.73,
+     112.09
+    ],
+    [
+     -105.29,
+     110.74
+    ],
+    [
+     -112.43,
+     106.73
+    ],
+    [
+     -130.78,
+     95.88
+    ],
+    [
+     -136.6,
+     91.91
+    ],
+    [
+     -158.14,
+     79.34
+    ],
+    [
+     -164.73,
+     75.61
+    ],
+    [
+     -170.3,
+     72.0
+    ]
+   ]
+  },
+  {
+   "osmWay": 554821571,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -90.5,
+     107.92
+    ],
+    [
+     -83.19,
+     95.12
+    ],
+    [
+     -80.65,
+     90.69
+    ],
+    [
+     -69.42,
+     73.24
+    ],
+    [
+     -62.13,
+     61.93
+    ],
+    [
+     -59.45,
+     57.9
+    ]
+   ]
+  },
+  {
+   "osmWay": 554821572,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -55.33,
+     51.88
+    ],
+    [
+     -54.31,
+     50.55
+    ],
+    [
+     -48.43,
+     55.16
+    ],
+    [
+     -47.44,
+     53.99
+    ]
+   ]
+  },
+  {
+   "osmWay": 652403584,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -182.02,
+     59.62
+    ],
+    [
+     -128.14,
+     91.12
+    ],
+    [
+     -130.78,
+     95.88
+    ],
+    [
+     -156.99,
+     143.12
+    ],
+    [
+     -157.18,
+     146.24
+    ],
+    [
+     -155.24,
+     147.87
+    ],
+    [
+     -152.29,
+     148.77
+    ],
+    [
+     -149.65,
+     147.7
+    ],
+    [
+     -139.46,
+     141.74
+    ],
+    [
+     -129.47,
+     132.55
+    ],
+    [
+     -112.43,
+     106.73
+    ],
+    [
+     -111.15,
+     104.8
+    ],
+    [
+     -114.7,
+     98.76
+    ],
+    [
+     -93.66,
+     60.83
+    ],
+    [
+     -74.69,
+     72.32
+    ],
+    [
+     -75.74,
+     74.83
+    ]
+   ]
+  },
+  {
+   "osmWay": 652403585,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -173.19,
+     44.03
+    ],
+    [
+     -132.0,
+     65.75
+    ],
+    [
+     -128.35,
+     67.67
+    ],
+    [
+     -122.8,
+     70.6
+    ],
+    [
+     -117.24,
+     73.53
+    ],
+    [
+     -128.14,
+     91.12
+    ]
+   ]
+  },
+  {
+   "osmWay": 652403586,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -93.66,
+     60.83
+    ],
+    [
+     -105.67,
+     53.44
+    ],
+    [
+     -117.24,
+     73.53
+    ]
+   ]
+  },
+  {
+   "osmWay": 652403587,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -128.14,
+     91.12
+    ],
+    [
+     -114.7,
+     98.76
+    ],
+    [
+     -98.94,
+     107.86
+    ]
+   ]
+  },
+  {
+   "osmWay": 652403588,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -128.35,
+     67.67
+    ],
+    [
+     -128.82,
+     65.57
+    ],
+    [
+     -128.63,
+     64.01
+    ],
+    [
+     -128.29,
+     62.9
+    ],
+    [
+     -127.75,
+     60.76
+    ],
+    [
+     -127.22,
+     56.83
+    ],
+    [
+     -127.85,
+     52.61
+    ],
+    [
+     -127.87,
+     46.99
+    ]
+   ]
+  },
+  {
+   "osmWay": 723854098,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -127.87,
+     46.99
+    ],
+    [
+     -125.03,
+     44.77
+    ],
+    [
+     -123.1,
+     42.29
+    ],
+    [
+     -121.78,
+     40.88
+    ],
+    [
+     -120.5,
+     39.42
+    ],
+    [
+     -116.27,
+     35.39
+    ]
+   ]
+  },
+  {
+   "osmWay": 725955867,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -123.3,
+     31.44
+    ],
+    [
+     -123.62,
+     33.25
+    ],
+    [
+     -123.76,
+     35.29
+    ],
+    [
+     -124.45,
+     37.96
+    ],
+    [
+     -124.76,
+     39.22
+    ],
+    [
+     -125.37,
+     40.54
+    ],
+    [
+     -127.87,
+     46.99
+    ]
+   ]
+  },
+  {
+   "osmWay": 725959953,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     78.88,
+     -135.69
+    ],
+    [
+     72.09,
+     -140.05
+    ],
+    [
+     70.83,
+     -141.79
+    ],
+    [
+     71.08,
+     -143.95
+    ],
+    [
+     72.38,
+     -146.7
+    ],
+    [
+     75.48,
+     -152.82
+    ],
+    [
+     91.24,
+     -179.26
+    ],
+    [
+     94.25,
+     -183.99
+    ],
+    [
+     96.41,
+     -188.48
+    ],
+    [
+     97.95,
+     -192.09
+    ]
+   ]
+  },
+  {
+   "osmWay": 725959960,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     59.54,
+     -135.24
+    ],
+    [
+     61.44,
+     -138.95
+    ],
+    [
+     63.51,
+     -141.71
+    ],
+    [
+     66.09,
+     -142.82
+    ],
+    [
+     68.93,
+     -143.17
+    ],
+    [
+     70.83,
+     -141.79
+    ]
+   ]
+  },
+  {
+   "osmWay": 725959961,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     68.93,
+     -143.17
+    ],
+    [
+     65.53,
+     -145.8
+    ],
+    [
+     62.33,
+     -148.31
+    ],
+    [
+     57.75,
+     -150.87
+    ],
+    [
+     17.23,
+     -172.06
+    ]
+   ]
+  },
+  {
+   "osmWay": 734881549,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -116.65,
+     -302.39
+    ],
+    [
+     -121.38,
+     -301.81
+    ],
+    [
+     -125.77,
+     -300.81
+    ],
+    [
+     -129.19,
+     -299.23
+    ],
+    [
+     -131.17,
+     -296.97
+    ],
+    [
+     -132.53,
+     -293.83
+    ],
+    [
+     -133.6,
+     -290.22
+    ],
+    [
+     -134.92,
+     -283.71
+    ],
+    [
+     -135.79,
+     -277.82
+    ],
+    [
+     -136.35,
+     -270.59
+    ],
+    [
+     -140.29,
+     -257.72
+    ],
+    [
+     -144.49,
+     -251.46
+    ],
+    [
+     -148.41,
+     -245.02
+    ],
+    [
+     -152.15,
+     -238.21
+    ],
+    [
+     -154.97,
+     -234.13
+    ],
+    [
+     -157.92,
+     -227.36
+    ],
+    [
+     -159.45,
+     -223.22
+    ],
+    [
+     -161.93,
+     -216.96
+    ],
+    [
+     -172.68,
+     -189.02
+    ],
+    [
+     -174.12,
+     -184.4
+    ],
+    [
+     -175.38,
+     -181.74
+    ],
+    [
+     -177.46,
+     -176.09
+    ],
+    [
+     -180.2,
+     -169.38
+    ],
+    [
+     -183.73,
+     -162.13
+    ],
+    [
+     -192.98,
+     -140.19
+    ]
+   ]
+  },
+  {
+   "osmWay": 734881554,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -20.28,
+     -125.07
+    ],
+    [
+     -21.16,
+     -119.06
+    ],
+    [
+     -24.97,
+     -112.21
+    ],
+    [
+     -27.27,
+     -107.05
+    ],
+    [
+     -30.26,
+     -105.03
+    ],
+    [
+     -32.01,
+     -104.24
+    ],
+    [
+     -34.56,
+     -103.29
+    ],
+    [
+     -36.66,
+     -104.97
+    ],
+    [
+     -43.38,
+     -108.16
+    ],
+    [
+     -50.11,
+     -111.33
+    ],
+    [
+     -58.19,
+     -115.77
+    ]
+   ]
+  },
+  {
+   "osmWay": 734881555,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -34.56,
+     -103.29
+    ],
+    [
+     -37.58,
+     -101.37
+    ],
+    [
+     -42.18,
+     -96.74
+    ],
+    [
+     -46.7,
+     -89.97
+    ],
+    [
+     -54.13,
+     -75.69
+    ]
+   ]
+  },
+  {
+   "osmWay": 734881556,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     0.19,
+     -61.17
+    ],
+    [
+     -6.2,
+     -64.24
+    ],
+    [
+     -11.95,
+     -67.3
+    ],
+    [
+     -17.07,
+     -69.82
+    ],
+    [
+     -23.5,
+     -73.35
+    ],
+    [
+     -26.69,
+     -74.96
+    ],
+    [
+     -28.34,
+     -78.27
+    ],
+    [
+     -27.91,
+     -81.45
+    ]
+   ]
+  },
+  {
+   "osmWay": 735803395,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     109.51,
+     67.45
+    ],
+    [
+     67.46,
+     129.54
+    ]
+   ]
+  },
+  {
+   "osmWay": 887912738,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -264.45,
+     -130.86
+    ],
+    [
+     -253.16,
+     -127.29
+    ],
+    [
+     -245.21,
+     -150.69
+    ],
+    [
+     -241.74,
+     -157.61
+    ],
+    [
+     -237.66,
+     -165.11
+    ],
+    [
+     -232.12,
+     -169.11
+    ],
+    [
+     -229.35,
+     -174.08
+    ],
+    [
+     -223.38,
+     -188.8
+    ]
+   ]
+  },
+  {
+   "osmWay": 887912739,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -245.21,
+     -150.69
+    ],
+    [
+     -241.14,
+     -148.91
+    ],
+    [
+     -235.19,
+     -146.92
+    ],
+    [
+     -226.22,
+     -143.84
+    ],
+    [
+     -221.57,
+     -142.07
+    ],
+    [
+     -217.65,
+     -140.56
+    ],
+    [
+     -222.64,
+     -127.54
+    ],
+    [
+     -225.95,
+     -119.01
+    ],
+    [
+     -226.4,
+     -117.7
+    ]
+   ]
+  },
+  {
+   "osmWay": 888667283,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -144.98,
+     -177.88
+    ],
+    [
+     -147.36,
+     -177.7
+    ],
+    [
+     -151.28,
+     -177.41
+    ],
+    [
+     -161.71,
+     -180.75
+    ],
+    [
+     -167.95,
+     -182.69
+    ],
+    [
+     -174.12,
+     -184.4
+    ]
+   ]
+  },
+  {
+   "osmWay": 888673190,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -45.27,
+     93.81
+    ],
+    [
+     -50.62,
+     88.82
+    ],
+    [
+     -69.42,
+     73.24
+    ]
+   ]
+  },
+  {
+   "osmWay": 888676960,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -20.84,
+     34.65
+    ],
+    [
+     -11.66,
+     39.94
+    ],
+    [
+     -9.45,
+     36.67
+    ]
+   ]
+  },
+  {
+   "osmWay": 909595880,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -9.64,
+     47.33
+    ],
+    [
+     8.81,
+     60.09
+    ],
+    [
+     14.84,
+     66.29
+    ]
+   ]
+  },
+  {
+   "osmWay": 909595881,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     20.2,
+     128.31
+    ],
+    [
+     6.29,
+     131.55
+    ],
+    [
+     1.66,
+     138.32
+    ],
+    [
+     -10.48,
+     130.26
+    ]
+   ]
+  },
+  {
+   "osmWay": 971530203,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     136.18,
+     134.39
+    ],
+    [
+     91.39,
+     108.05
+    ]
+   ]
+  },
+  {
+   "osmWay": 971530205,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -31.07,
+     69.46
+    ],
+    [
+     -25.53,
+     77.45
+    ],
+    [
+     -9.19,
+     88.35
+    ],
+    [
+     -6.52,
+     90.88
+    ],
+    [
+     -5.14,
+     93.48
+    ],
+    [
+     -4.84,
+     95.67
+    ],
+    [
+     -5.45,
+     98.86
+    ],
+    [
+     -22.97,
+     124.17
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137369089,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -59.45,
+     57.9
+    ],
+    [
+     -57.27,
+     54.71
+    ],
+    [
+     -55.33,
+     51.88
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137369090,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -47.44,
+     53.99
+    ],
+    [
+     -45.14,
+     51.26
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137376522,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -180.6,
+     -17.72
+    ],
+    [
+     -179.23,
+     -20.61
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137376523,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -180.6,
+     -17.72
+    ],
+    [
+     -182.32,
+     -14.87
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137376525,
+   "highway": "cycleway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -197.06,
+     -14.32
+    ],
+    [
+     -196.66,
+     -15.7
+    ],
+    [
+     -195.55,
+     -19.59
+    ],
+    [
+     -195.45,
+     -20.07
+    ],
+    [
+     -194.09,
+     -23.43
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137376526,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -182.32,
+     -14.87
+    ],
+    [
+     -183.26,
+     -13.17
+    ],
+    [
+     -184.36,
+     -13.48
+    ],
+    [
+     -188.88,
+     -13.38
+    ],
+    [
+     -193.31,
+     -13.0
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137376527,
+   "highway": "cycleway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -197.66,
+     -12.23
+    ],
+    [
+     -197.06,
+     -14.32
+    ]
+   ]
+  },
+  {
+   "osmWay": 1137376528,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -193.31,
+     -13.0
+    ],
+    [
+     -197.66,
+     -12.23
+    ]
+   ]
+  },
+  {
+   "osmWay": 1144104125,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -107.29,
+     -116.07
+    ],
+    [
+     -113.13,
+     -118.59
+    ],
+    [
+     -148.95,
+     -133.94
+    ],
+    [
+     -131.53,
+     -171.76
+    ]
+   ]
+  },
+  {
+   "osmWay": 1304276717,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     39.25,
+     32.91
+    ],
+    [
+     42.46,
+     28.03
+    ],
+    [
+     45.67,
+     23.18
+    ],
+    [
+     47.92,
+     19.77
+    ]
+   ]
+  },
+  {
+   "osmWay": 1304276718,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     15.47,
+     -40.6
+    ],
+    [
+     20.74,
+     -38.12
+    ],
+    [
+     26.72,
+     -35.31
+    ],
+    [
+     30.64,
+     -33.46
+    ]
+   ]
+  },
+  {
+   "osmWay": 1304276734,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -9.45,
+     36.67
+    ],
+    [
+     -4.6,
+     39.72
+    ],
+    [
+     0.82,
+     43.11
+    ]
+   ]
+  },
+  {
+   "osmWay": 1370746523,
+   "highway": "service",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     111.48,
+     29.7
+    ],
+    [
+     157.77,
+     52.69
+    ]
+   ]
+  },
+  {
+   "osmWay": 1409907491,
+   "highway": "footway",
+   "name": "Millennium Walk",
+   "area": false,
+   "points": [
+    [
+     -179.23,
+     -20.61
+    ],
+    [
+     -177.84,
+     -23.03
+    ]
+   ]
+  },
+  {
+   "osmWay": 1409907492,
+   "highway": "footway",
+   "name": "Millennium Walk",
+   "area": false,
+   "points": [
+    [
+     -177.84,
+     -23.03
+    ],
+    [
+     -176.57,
+     -25.19
+    ]
+   ]
+  },
+  {
+   "osmWay": 1434160104,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -101.59,
+     -50.61
+    ],
+    [
+     -107.45,
+     -53.52
+    ],
+    [
+     -111.4,
+     -45.74
+    ],
+    [
+     -112.65,
+     -43.06
+    ],
+    [
+     -119.45,
+     -29.63
+    ],
+    [
+     -122.11,
+     -22.33
+    ],
+    [
+     -127.49,
+     -10.61
+    ],
+    [
+     -135.23,
+     6.07
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654908,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -267.44,
+     -121.29
+    ],
+    [
+     -247.71,
+     -115.17
+    ],
+    [
+     -229.42,
+     -108.3
+    ],
+    [
+     -202.23,
+     -97.57
+    ],
+    [
+     -182.69,
+     -87.84
+    ],
+    [
+     -164.0,
+     -74.08
+    ],
+    [
+     -152.55,
+     -67.83
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654909,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -20.17,
+     -9.75
+    ],
+    [
+     -17.51,
+     -15.85
+    ],
+    [
+     -15.08,
+     -22.19
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654910,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -20.17,
+     -9.75
+    ],
+    [
+     -37.4,
+     -10.44
+    ],
+    [
+     -58.1,
+     -18.86
+    ],
+    [
+     -79.65,
+     -28.6
+    ],
+    [
+     -97.26,
+     -37.78
+    ],
+    [
+     -111.4,
+     -45.74
+    ],
+    [
+     -133.56,
+     -57.94
+    ],
+    [
+     -152.55,
+     -67.83
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654911,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -101.59,
+     -50.61
+    ],
+    [
+     -99.17,
+     -55.57
+    ],
+    [
+     -96.57,
+     -60.65
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654912,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -226.4,
+     -117.7
+    ],
+    [
+     -218.92,
+     -114.95
+    ],
+    [
+     -203.93,
+     -111.48
+    ],
+    [
+     -189.25,
+     -106.46
+    ],
+    [
+     -152.18,
+     -88.22
+    ],
+    [
+     -126.86,
+     -76.49
+    ],
+    [
+     -104.77,
+     -66.45
+    ],
+    [
+     -96.57,
+     -60.65
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654913,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     -253.16,
+     -127.29
+    ],
+    [
+     -226.4,
+     -117.7
+    ]
+   ]
+  },
+  {
+   "osmWay": 1456654914,
+   "highway": "footway",
+   "name": null,
+   "area": false,
+   "points": [
+    [
+     39.25,
+     32.91
+    ],
+    [
+     29.33,
+     25.96
+    ],
+    [
+     23.54,
+     22.63
+    ],
+    [
+     19.68,
+     21.75
+    ],
+    [
+     16.21,
+     23.18
+    ],
+    [
+     13.08,
+     25.41
+    ],
+    [
+     8.79,
+     32.09
+    ],
+    [
+     0.82,
+     43.11
+    ]
+   ]
+  }
+ ],
+ "landuse": [
+  {
+   "osmWay": 156867366,
+   "kind": "retail",
+   "polygon": [
+    [
+     -543.1,
+     -147.44
+    ],
+    [
+     -553.21,
+     -160.2
+    ],
+    [
+     -562.65,
+     -172.47
+    ],
+    [
+     -567.85,
+     -169.01
+    ],
+    [
+     -585.42,
+     -190.36
+    ],
+    [
+     -591.14,
+     -195.57
+    ],
+    [
+     -595.02,
+     -199.02
+    ],
+    [
+     -602.06,
+     -203.73
+    ],
+    [
+     -600.38,
+     -207.14
+    ],
+    [
+     -612.25,
+     -213.81
+    ],
+    [
+     -613.87,
+     -210.92
+    ],
+    [
+     -625.99,
+     -216.37
+    ],
+    [
+     -611.67,
+     -254.73
+    ],
+    [
+     -587.7,
+     -246.03
+    ],
+    [
+     -560.79,
+     -235.42
+    ],
+    [
+     -556.24,
+     -248.2
+    ],
+    [
+     -555.84,
+     -249.23
+    ],
+    [
+     -554.23,
+     -253.44
+    ],
+    [
+     -548.56,
+     -298.39
+    ],
+    [
+     -537.59,
+     -306.66
+    ],
+    [
+     -536.2,
+     -319.37
+    ],
+    [
+     -529.38,
+     -316.69
+    ],
+    [
+     -525.94,
+     -326.52
+    ],
+    [
+     -523.95,
+     -326.09
+    ],
+    [
+     -516.92,
+     -339.97
+    ],
+    [
+     -509.5,
+     -361.61
+    ],
+    [
+     -501.58,
+     -381.48
+    ],
+    [
+     -493.56,
+     -401.84
+    ],
+    [
+     -491.14,
+     -401.75
+    ],
+    [
+     -485.38,
+     -401.29
+    ],
+    [
+     -480.19,
+     -399.43
+    ],
+    [
+     -474.27,
+     -397.55
+    ],
+    [
+     -469.45,
+     -396.01
+    ],
+    [
+     -491.61,
+     -339.16
+    ],
+    [
+     -509.15,
+     -294.15
+    ],
+    [
+     -515.48,
+     -272.22
+    ],
+    [
+     -518.77,
+     -263.51
+    ],
+    [
+     -525.05,
+     -243.91
+    ],
+    [
+     -505.43,
+     -239.87
+    ],
+    [
+     -464.02,
+     -230.94
+    ],
+    [
+     -454.98,
+     -228.37
+    ],
+    [
+     -452.24,
+     -238.99
+    ],
+    [
+     -449.34,
+     -248.92
+    ],
+    [
+     -442.51,
+     -272.26
+    ],
+    [
+     -431.7,
+     -270.16
+    ],
+    [
+     -431.1,
+     -267.06
+    ],
+    [
+     -425.8,
+     -262.33
+    ],
+    [
+     -430.27,
+     -244.53
+    ],
+    [
+     -398.88,
+     -233.64
+    ],
+    [
+     -395.69,
+     -232.48
+    ],
+    [
+     -378.92,
+     -227.13
+    ],
+    [
+     -367.44,
+     -223.84
+    ],
+    [
+     -366.57,
+     -227.34
+    ],
+    [
+     -361.2,
+     -239.95
+    ],
+    [
+     -351.82,
+     -237.4
+    ],
+    [
+     -347.62,
+     -249.55
+    ],
+    [
+     -345.71,
+     -249.01
+    ],
+    [
+     -341.35,
+     -263.29
+    ],
+    [
+     -337.84,
+     -259.69
+    ],
+    [
+     -329.32,
+     -256.53
+    ],
+    [
+     -326.51,
+     -258.94
+    ],
+    [
+     -328.26,
+     -260.08
+    ],
+    [
+     -324.33,
+     -268.56
+    ],
+    [
+     -315.49,
+     -269.55
+    ],
+    [
+     -298.33,
+     -261.35
+    ],
+    [
+     -305.92,
+     -241.36
+    ],
+    [
+     -294.67,
+     -237.39
+    ],
+    [
+     -294.46,
+     -231.51
+    ],
+    [
+     -302.23,
+     -203.92
+    ],
+    [
+     -292.36,
+     -199.31
+    ],
+    [
+     -275.58,
+     -230.39
+    ],
+    [
+     -263.54,
+     -260.87
+    ],
+    [
+     -170.01,
+     -226.08
+    ],
+    [
+     -167.1,
+     -192.43
+    ],
+    [
+     -137.99,
+     -179.69
+    ],
+    [
+     -126.05,
+     -174.47
+    ],
+    [
+     -122.57,
+     -172.95
+    ],
+    [
+     -118.05,
+     -177.38
+    ],
+    [
+     -93.68,
+     -167.69
+    ],
+    [
+     -90.84,
+     -162.52
+    ],
+    [
+     -89.17,
+     -158.27
+    ],
+    [
+     -89.24,
+     -153.91
+    ],
+    [
+     -17.17,
+     -120.26
+    ],
+    [
+     -16.24,
+     -113.11
+    ],
+    [
+     -17.62,
+     -106.6
+    ],
+    [
+     -34.08,
+     -77.83
+    ],
+    [
+     -25.23,
+     -69.76
+    ],
+    [
+     2.14,
+     -56.32
+    ],
+    [
+     5.36,
+     -61.69
+    ],
+    [
+     15.29,
+     -56.15
+    ],
+    [
+     17.57,
+     -59.49
+    ],
+    [
+     27.35,
+     -53.38
+    ],
+    [
+     34.87,
+     -42.98
+    ],
+    [
+     49.5,
+     -36.44
+    ],
+    [
+     60.11,
+     -30.25
+    ],
+    [
+     58.03,
+     -26.49
+    ],
+    [
+     60.83,
+     -24.8
+    ],
+    [
+     57.68,
+     -19.24
+    ],
+    [
+     58.83,
+     -18.63
+    ],
+    [
+     47.75,
+     2.16
+    ],
+    [
+     44.52,
+     7.24
+    ],
+    [
+     41.26,
+     13.05
+    ],
+    [
+     62.72,
+     27.77
+    ],
+    [
+     59.23,
+     35.23
+    ],
+    [
+     95.68,
+     58.59
+    ],
+    [
+     109.51,
+     67.45
+    ],
+    [
+     99.08,
+     76.01
+    ],
+    [
+     87.08,
+     94.64
+    ],
+    [
+     -0.13,
+     47.4
+    ],
+    [
+     -4.49,
+     54.72
+    ],
+    [
+     -16.96,
+     72.78
+    ],
+    [
+     -23.97,
+     80.42
+    ],
+    [
+     -28.88,
+     80.58
+    ],
+    [
+     -38.92,
+     97.23
+    ],
+    [
+     -36.19,
+     99.22
+    ],
+    [
+     -31.26,
+     106.52
+    ],
+    [
+     -72.19,
+     153.58
+    ],
+    [
+     -84.77,
+     142.46
+    ],
+    [
+     -91.25,
+     149.79
+    ],
+    [
+     -72.25,
+     166.72
+    ],
+    [
+     -124.26,
+     220.29
+    ],
+    [
+     -134.87,
+     210.57
+    ],
+    [
+     -165.19,
+     244.93
+    ],
+    [
+     -172.36,
+     261.25
+    ],
+    [
+     -176.77,
+     260.51
+    ],
+    [
+     -181.73,
+     259.09
+    ],
+    [
+     -227.58,
+     245.89
+    ],
+    [
+     -223.88,
+     228.6
+    ],
+    [
+     -210.03,
+     230.08
+    ],
+    [
+     -205.34,
+     215.49
+    ],
+    [
+     -198.58,
+     191.88
+    ],
+    [
+     -213.69,
+     185.13
+    ],
+    [
+     -248.3,
+     175.51
+    ],
+    [
+     -245.39,
+     139.15
+    ],
+    [
+     -262.42,
+     127.47
+    ],
+    [
+     -266.43,
+     120.79
+    ],
+    [
+     -267.86,
+     115.86
+    ],
+    [
+     -267.28,
+     110.93
+    ],
+    [
+     -228.48,
+     35.4
+    ],
+    [
+     -225.32,
+     31.74
+    ],
+    [
+     -222.98,
+     26.05
+    ],
+    [
+     -211.38,
+     4.62
+    ],
+    [
+     -205.15,
+     -4.64
+    ],
+    [
+     -201.8,
+     -9.63
+    ],
+    [
+     -192.38,
+     -23.62
+    ],
+    [
+     -194.09,
+     -23.43
+    ],
+    [
+     -231.32,
+     -33.51
+    ],
+    [
+     -251.49,
+     -38.63
+    ],
+    [
+     -261.31,
+     -41.53
+    ],
+    [
+     -273.27,
+     -44.83
+    ],
+    [
+     -280.52,
+     -49.15
+    ],
+    [
+     -288.81,
+     -57.99
+    ],
+    [
+     -295.09,
+     -64.89
+    ],
+    [
+     -308.57,
+     -73.3
+    ],
+    [
+     -340.68,
+     -86.7
+    ],
+    [
+     -346.55,
+     -88.29
+    ],
+    [
+     -361.17,
+     -91.0
+    ],
+    [
+     -375.48,
+     -94.19
+    ],
+    [
+     -397.64,
+     -98.96
+    ],
+    [
+     -395.99,
+     -108.04
+    ],
+    [
+     -392.39,
+     -137.18
+    ],
+    [
+     -409.39,
+     -138.27
+    ],
+    [
+     -415.26,
+     -138.53
+    ],
+    [
+     -422.18,
+     -139.44
+    ],
+    [
+     -426.09,
+     -129.49
+    ],
+    [
+     -430.79,
+     -131.12
+    ],
+    [
+     -435.08,
+     -126.89
+    ],
+    [
+     -441.18,
+     -126.1
+    ],
+    [
+     -445.16,
+     -129.14
+    ],
+    [
+     -451.64,
+     -136.89
+    ],
+    [
+     -466.17,
+     -130.83
+    ],
+    [
+     -468.66,
+     -113.92
+    ],
+    [
+     -478.94,
+     -115.28
+    ],
+    [
+     -475.48,
+     -138.82
+    ],
+    [
+     -500.14,
+     -141.98
+    ],
+    [
+     -517.18,
+     -152.3
+    ],
+    [
+     -503.85,
+     -186.38
+    ],
+    [
+     -518.12,
+     -192.0
+    ],
+    [
+     -524.05,
+     -194.33
+    ],
+    [
+     -543.1,
+     -147.44
+    ]
+   ]
+  },
+  {
+   "osmWay": 823157553,
+   "kind": "residential",
+   "polygon": [
+    [
+     -39.51,
+     -277.09
+    ],
+    [
+     -26.68,
+     -273.1
+    ],
+    [
+     40.47,
+     -252.02
+    ],
+    [
+     -8.02,
+     -135.63
+    ],
+    [
+     -38.7,
+     -150.77
+    ],
+    [
+     -45.65,
+     -153.74
+    ],
+    [
+     -30.73,
+     -191.85
+    ],
+    [
+     -72.1,
+     -209.86
+    ],
+    [
+     -40.49,
+     -274.56
+    ],
+    [
+     -39.51,
+     -277.09
+    ]
+   ]
+  },
+  {
+   "osmWay": 909595875,
+   "kind": "commercial",
+   "polygon": [
+    [
+     36.51,
+     152.74
+    ],
+    [
+     12.7,
+     139.12
+    ],
+    [
+     9.86,
+     137.49
+    ],
+    [
+     2.74,
+     150.68
+    ],
+    [
+     -19.98,
+     133.38
+    ],
+    [
+     -10.93,
+     120.46
+    ],
+    [
+     3.41,
+     99.94
+    ],
+    [
+     6.42,
+     95.55
+    ],
+    [
+     -8.32,
+     85.68
+    ],
+    [
+     4.15,
+     64.13
+    ],
+    [
+     7.53,
+     66.11
+    ],
+    [
+     10.74,
+     68.28
+    ],
+    [
+     11.43,
+     68.57
+    ],
+    [
+     14.84,
+     66.29
+    ],
+    [
+     18.47,
+     62.35
+    ],
+    [
+     48.32,
+     76.82
+    ],
+    [
+     41.46,
+     89.06
+    ],
+    [
+     65.1,
+     103.52
+    ],
+    [
+     50.14,
+     129.26
+    ],
+    [
+     36.51,
+     152.74
+    ]
+   ]
+  },
+  {
+   "osmWay": 1450429329,
+   "kind": "residential",
+   "polygon": [
+    [
+     -473.57,
+     -66.09
+    ],
+    [
+     -446.62,
+     -82.29
+    ],
+    [
+     -397.81,
+     -12.97
+    ],
+    [
+     -382.87,
+     51.31
+    ],
+    [
+     -350.25,
+     43.59
+    ],
+    [
+     -337.19,
+     45.33
+    ],
+    [
+     -308.29,
+     48.06
+    ],
+    [
+     -297.45,
+     -1.54
+    ],
+    [
+     -288.44,
+     -16.89
+    ],
+    [
+     -246.68,
+     -8.76
+    ],
+    [
+     -227.49,
+     -0.58
+    ],
+    [
+     -273.79,
+     104.64
+    ],
+    [
+     -276.03,
+     113.31
+    ],
+    [
+     -274.22,
+     124.7
+    ],
+    [
+     -267.86,
+     133.94
+    ],
+    [
+     -258.68,
+     139.34
+    ],
+    [
+     -254.01,
+     142.38
+    ],
+    [
+     -265.42,
+     171.18
+    ],
+    [
+     -213.69,
+     185.13
+    ],
+    [
+     -198.58,
+     191.88
+    ],
+    [
+     -205.34,
+     215.49
+    ],
+    [
+     -210.03,
+     230.08
+    ],
+    [
+     -223.88,
+     228.6
+    ],
+    [
+     -227.58,
+     245.89
+    ],
+    [
+     -181.73,
+     259.09
+    ],
+    [
+     -189.65,
+     275.12
+    ],
+    [
+     -201.23,
+     292.63
+    ],
+    [
+     -227.56,
+     322.57
+    ],
+    [
+     -248.32,
+     346.21
+    ],
+    [
+     -272.6,
+     373.63
+    ],
+    [
+     -299.2,
+     409.05
+    ],
+    [
+     -309.3,
+     421.56
+    ],
+    [
+     -319.22,
+     414.88
+    ],
+    [
+     -347.61,
+     425.12
+    ],
+    [
+     -350.65,
+     416.46
+    ],
+    [
+     -361.96,
+     346.76
+    ],
+    [
+     -362.61,
+     333.31
+    ],
+    [
+     -361.86,
+     228.41
+    ],
+    [
+     -362.23,
+     217.65
+    ],
+    [
+     -321.36,
+     216.07
+    ],
+    [
+     -319.96,
+     172.79
+    ],
+    [
+     -325.16,
+     162.87
+    ],
+    [
+     -359.61,
+     160.92
+    ],
+    [
+     -363.11,
+     159.39
+    ],
+    [
+     -366.34,
+     157.53
+    ],
+    [
+     -368.15,
+     154.96
+    ],
+    [
+     -370.72,
+     149.48
+    ],
+    [
+     -375.67,
+     117.55
+    ],
+    [
+     -383.08,
+     98.08
+    ],
+    [
+     -397.08,
+     61.57
+    ],
+    [
+     -404.87,
+     46.55
+    ],
+    [
+     -444.63,
+     -18.89
+    ],
+    [
+     -473.57,
+     -66.09
+    ]
+   ]
+  },
+  {
+   "osmWay": 1450429330,
+   "kind": "residential",
+   "polygon": [
+    [
+     -398.48,
+     526.83
+    ],
+    [
+     -381.79,
+     515.71
+    ],
+    [
+     -364.55,
+     499.96
+    ],
+    [
+     -352.31,
+     485.13
+    ],
+    [
+     -333.96,
+     467.24
+    ],
+    [
+     -310.88,
+     439.9
+    ],
+    [
+     -302.64,
+     447.04
+    ],
+    [
+     -292.34,
+     432.58
+    ],
+    [
+     -284.74,
+     409.78
+    ],
+    [
+     -234.32,
+     430.26
+    ],
+    [
+     -206.94,
+     369.08
+    ],
+    [
+     -187.35,
+     329.56
+    ],
+    [
+     -171.92,
+     336.31
+    ],
+    [
+     -151.03,
+     294.86
+    ],
+    [
+     -143.0,
+     304.18
+    ],
+    [
+     -128.86,
+     312.54
+    ],
+    [
+     -117.62,
+     293.25
+    ],
+    [
+     -32.46,
+     199.75
+    ],
+    [
+     -77.28,
+     159.9
+    ],
+    [
+     -39.37,
+     118.13
+    ],
+    [
+     -19.98,
+     133.38
+    ],
+    [
+     2.74,
+     150.68
+    ],
+    [
+     9.86,
+     137.49
+    ],
+    [
+     12.7,
+     139.12
+    ],
+    [
+     36.51,
+     152.74
+    ],
+    [
+     50.14,
+     129.26
+    ],
+    [
+     71.44,
+     144.4
+    ],
+    [
+     111.27,
+     172.72
+    ],
+    [
+     114.62,
+     175.1
+    ],
+    [
+     115.84,
+     172.58
+    ],
+    [
+     120.78,
+     162.43
+    ],
+    [
+     126.23,
+     152.6
+    ],
+    [
+     131.63,
+     142.96
+    ],
+    [
+     181.61,
+     172.26
+    ],
+    [
+     137.02,
+     234.13
+    ],
+    [
+     123.47,
+     260.38
+    ],
+    [
+     102.34,
+     300.04
+    ],
+    [
+     118.28,
+     331.92
+    ],
+    [
+     134.97,
+     340.83
+    ],
+    [
+     147.21,
+     319.69
+    ],
+    [
+     302.86,
+     420.59
+    ],
+    [
+     324.25,
+     434.46
+    ],
+    [
+     299.58,
+     475.02
+    ],
+    [
+     275.25,
+     493.86
+    ],
+    [
+     244.73,
+     480.91
+    ],
+    [
+     158.36,
+     443.58
+    ],
+    [
+     92.36,
+     414.38
+    ],
+    [
+     88.47,
+     429.15
+    ],
+    [
+     79.4,
+     463.57
+    ],
+    [
+     68.8,
+     503.83
+    ],
+    [
+     46.58,
+     533.46
+    ],
+    [
+     10.95,
+     580.95
+    ],
+    [
+     2.29,
+     574.1
+    ],
+    [
+     -19.43,
+     556.91
+    ],
+    [
+     -44.29,
+     537.23
+    ],
+    [
+     -64.32,
+     517.53
+    ],
+    [
+     -68.16,
+     513.75
+    ],
+    [
+     -70.51,
+     518.51
+    ],
+    [
+     -79.7,
+     535.97
+    ],
+    [
+     -84.61,
+     545.01
+    ],
+    [
+     -98.96,
+     578.34
+    ],
+    [
+     -120.67,
+     629.86
+    ],
+    [
+     -326.71,
+     544.45
+    ],
+    [
+     -344.37,
+     587.14
+    ],
+    [
+     -353.47,
+     607.6
+    ],
+    [
+     -355.02,
+     609.57
+    ],
+    [
+     -355.4,
+     610.82
+    ],
+    [
+     -355.74,
+     611.96
+    ],
+    [
+     -356.0,
+     612.83
+    ],
+    [
+     -360.31,
+     629.88
+    ],
+    [
+     -368.98,
+     654.38
+    ],
+    [
+     -375.47,
+     690.97
+    ],
+    [
+     -378.0,
+     723.15
+    ],
+    [
+     -377.26,
+     771.97
+    ],
+    [
+     -379.09,
+     880.91
+    ],
+    [
+     -381.15,
+     904.54
+    ],
+    [
+     -384.57,
+     952.63
+    ],
+    [
+     -390.15,
+     999.87
+    ],
+    [
+     -397.69,
+     1039.37
+    ],
+    [
+     -407.37,
+     1101.32
+    ],
+    [
+     -413.55,
+     1142.59
+    ],
+    [
+     -410.15,
+     1156.94
+    ],
+    [
+     -423.06,
+     1178.61
+    ],
+    [
+     -439.19,
+     1193.37
+    ],
+    [
+     -508.79,
+     1135.19
+    ],
+    [
+     -534.28,
+     1123.91
+    ],
+    [
+     -532.96,
+     1111.98
+    ],
+    [
+     -515.44,
+     1053.78
+    ],
+    [
+     -507.01,
+     1021.91
+    ],
+    [
+     -502.01,
+     996.43
+    ],
+    [
+     -482.91,
+     899.58
+    ],
+    [
+     -430.63,
+     906.07
+    ],
+    [
+     -427.58,
+     875.21
+    ],
+    [
+     -475.41,
+     869.64
+    ],
+    [
+     -463.26,
+     791.24
+    ],
+    [
+     -451.31,
+     728.22
+    ],
+    [
+     -441.48,
+     684.76
+    ],
+    [
+     -428.13,
+     638.23
+    ],
+    [
+     -410.52,
+     583.65
+    ],
+    [
+     -404.68,
+     559.74
+    ],
+    [
+     -403.02,
+     535.55
+    ],
+    [
+     -401.9,
+     531.65
+    ],
+    [
+     -398.48,
+     526.83
+    ]
+   ]
+  }
+ ],
  "features": [
+  {
+   "osmNode": 252893611,
+   "kind": "traffic-signals",
+   "name": null,
+   "x": -183.75,
+   "y": -19.06
+  },
   {
    "osmNode": 252894243,
    "kind": "crossing-uncontrolled",
    "name": null,
    "x": -45.14,
    "y": 51.26
+  },
+  {
+   "osmNode": 282542445,
+   "kind": "crossing-traffic_signals",
+   "name": null,
+   "x": -180.6,
+   "y": -17.72
   },
   {
    "osmNode": 474891824,
@@ -3397,6 +8381,13 @@
    "y": -37.4
   },
   {
+   "osmNode": 474894428,
+   "kind": "bus-stop",
+   "name": "Queen's Road",
+   "x": 84.96,
+   "y": -155.3
+  },
+  {
    "osmNode": 474894520,
    "kind": "bus-stop",
    "name": "High Street",
@@ -3423,6 +8414,13 @@
    "name": null,
    "x": -64.81,
    "y": 49.46
+  },
+  {
+   "osmNode": 1691065645,
+   "kind": "crossing-zebra",
+   "name": null,
+   "x": -251.49,
+   "y": -38.63
   },
   {
    "osmNode": 1763175237,
@@ -3537,6 +8535,13 @@
    "y": -13.94
   },
   {
+   "osmNode": 10602390167,
+   "kind": "traffic-signals",
+   "name": null,
+   "x": -176.33,
+   "y": -15.21
+  },
+  {
    "osmNode": 12078611301,
    "kind": "traffic-signals",
    "name": null,
@@ -3577,6 +8582,20 @@
    "name": null,
    "x": -2.25,
    "y": 36.22
+  },
+  {
+   "osmNode": 12344153929,
+   "kind": "tree",
+   "name": null,
+   "x": -170.04,
+   "y": -96.08
+  },
+  {
+   "osmNode": 12344153930,
+   "kind": "tree",
+   "name": null,
+   "x": -146.87,
+   "y": -83.75
   },
   {
    "osmNode": 12344153931,
@@ -3654,6 +8673,69 @@
    "name": null,
    "x": -28.51,
    "y": -31.83
+  },
+  {
+   "osmNode": 12925004721,
+   "kind": "tree",
+   "name": null,
+   "x": -240.34,
+   "y": -29.99
+  },
+  {
+   "osmNode": 12925004723,
+   "kind": "tree",
+   "name": null,
+   "x": -191.35,
+   "y": -39.59
+  },
+  {
+   "osmNode": 12925004724,
+   "kind": "tree",
+   "name": null,
+   "x": -180.93,
+   "y": -8.71
+  },
+  {
+   "osmNode": 12925004725,
+   "kind": "tree",
+   "name": null,
+   "x": -172.29,
+   "y": -4.35
+  },
+  {
+   "osmNode": 12925004726,
+   "kind": "tree",
+   "name": null,
+   "x": -165.7,
+   "y": -1.58
+  },
+  {
+   "osmNode": 12925004727,
+   "kind": "tree",
+   "name": null,
+   "x": -158.11,
+   "y": 2.59
+  },
+  {
+   "osmNode": 12925004728,
+   "kind": "tree",
+   "name": null,
+   "x": -149.7,
+   "y": 7.95
+  },
+  {
+   "osmNode": 12925004729,
+   "kind": "tree",
+   "name": null,
+   "x": -143.05,
+   "y": 12.25
+  },
+  {
+   "osmNode": 12925004730,
+   "kind": "tree",
+   "name": null,
+   "x": -136.64,
+   "y": 15.18
   },
   {
    "osmNode": 12925004731,

@@ -13,7 +13,10 @@ SRC = ROOT / 'content/sources/brentwood-2026-10-17.osm'
 ORIGIN = (51.6213112, 0.3055506)
 KX = 111320 * math.cos(math.radians(ORIGIN[0]))
 KY = 111320
-EXTENT = 130  # metres around the origin
+# Area kept (metres east and north of the origin): the junctions, and the High Street about 250 m to the west
+# (behind the learner's start), up to the edge of the downloaded bbox (x about -245).
+EXTENT_X = (-260, 130)
+EXTENT_Y = (-180, 130)
 
 osm = ET.parse(SRC).getroot()
 nodes = {n.get('id'): (float(n.get('lat')), float(n.get('lon'))) for n in osm.iter('node')}
@@ -21,11 +24,19 @@ tags = lambda e: {t.get('k'): t.get('v') for t in e.findall('tag')}
 def xy(i):
     lat, lon = nodes[i]
     return [round((lon - ORIGIN[1]) * KX, 2), round((lat - ORIGIN[0]) * KY, 2)]
-near = lambda p, r=EXTENT: abs(p[0]) <= r and abs(p[1]) <= r
+near = lambda p: EXTENT_X[0] <= p[0] <= EXTENT_X[1] and EXTENT_Y[0] <= p[1] <= EXTENT_Y[1]
 
 DRIVABLE = {'primary', 'secondary', 'tertiary', 'residential', 'unclassified'}
-BUSINESS = ('shop', 'office', 'craft')
-BUSINESS_AMENITY = {'cafe', 'fast_food', 'restaurant', 'bank', 'pharmacy', 'pub', 'bar', 'dentist', 'doctors', 'theatre', 'studio', 'dojo'}
+# Businesses with a shop front (shops, cafés, restaurants, banks, pharmacies, pubs) and other businesses
+# (offices, surgeries, studios), which have ordinary windows.
+SHOP_AMENITY = {'cafe', 'fast_food', 'restaurant', 'bank', 'pharmacy', 'pub', 'bar'}
+OFFICE_AMENITY = {'dentist', 'doctors', 'clinic', 'theatre', 'studio', 'dojo'}
+def business_kind(tg):
+    if 'shop' in tg or tg.get('amenity') in SHOP_AMENITY:
+        return 'shop'
+    if 'office' in tg or 'craft' in tg or 'healthcare' in tg or tg.get('amenity') in OFFICE_AMENITY:
+        return 'office'
+    return None
 
 def inside(p, poly):
     """Point in polygon (ray casting)."""
@@ -34,7 +45,7 @@ def inside(p, poly):
         if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
             hit = not hit
     return hit
-roads, buildings, areas = [], [], []
+roads, buildings, areas, paths, landuse = [], [], [], [], []
 for w in osm.iter('way'):
     tg = tags(w)
     ids = [nd.get('ref') for nd in w.findall('nd') if nd.get('ref') in nodes]
@@ -49,20 +60,28 @@ for w in osm.iter('way'):
     elif 'building' in tg:
         buildings.append({'osmWay': int(w.get('id')), 'name': tg.get('name'), 'levels': tg.get('building:levels'),
                           'building': tg['building'],
-                          # A shop, café, bank, office etc. mapped on the building itself.
-                          'business': any(k in tg for k in BUSINESS) or tg.get('amenity') in BUSINESS_AMENITY,
+                          # A shop, café, bank, office etc. mapped on the building itself: 'shop', 'office' or None.
+                          'business': business_kind(tg),
                           'polygon': pts})
+    elif 'highway' in tg:
+        # Footways, service roads, steps and other ways we do not drive on: kept so that approximate
+        # buildings are never placed across them.
+        paths.append({'osmWay': int(w.get('id')), 'highway': tg['highway'], 'name': tg.get('name'),
+                      'area': tg.get('area') == 'yes', 'points': pts})
+    elif tg.get('landuse') in ('retail', 'commercial', 'residential'):
+        landuse.append({'osmWay': int(w.get('id')), 'kind': tg['landuse'], 'polygon': pts})
     elif tg.get('amenity') == 'parking' or tg.get('landuse') in ('grass',) or tg.get('leisure') == 'park':
         areas.append({'osmWay': int(w.get('id')), 'kind': tg.get('amenity') or tg.get('landuse') or tg.get('leisure'), 'polygon': pts})
 
 # Businesses mapped as points inside a building outline (most shops in OSM are mapped this way).
 business_points = []
 for n in osm.iter('node'):
-    tg = tags(n)
-    if any(k in tg for k in BUSINESS) or tg.get('amenity') in BUSINESS_AMENITY:
-        business_points.append(xy(n.get('id')))
+    kind = business_kind(tags(n))
+    if kind:
+        business_points.append((xy(n.get('id')), kind))
 for b in buildings:
-    b['businessPoints'] = sum(1 for p in business_points if inside(p, b['polygon']))
+    b['shopPoints'] = sum(1 for p, kind in business_points if kind == 'shop' and inside(p, b['polygon']))
+    b['officePoints'] = sum(1 for p, kind in business_points if kind == 'office' and inside(p, b['polygon']))
 
 features = []
 for n in osm.iter('node'):
@@ -85,7 +104,7 @@ out = {
     'licence': 'Data © OpenStreetMap contributors, available under the Open Database Licence (ODbL) 1.0. https://www.openstreetmap.org/copyright',
     'origin': {'lat': ORIGIN[0], 'lng': ORIGIN[1]},
     'units': 'metres east (x) and north (y) of the origin',
-    'roads': roads, 'buildings': buildings, 'areas': areas, 'features': features,
+    'roads': roads, 'buildings': buildings, 'areas': areas, 'paths': paths, 'landuse': landuse, 'features': features,
 }
 (ROOT / 'docs/brentwood/layout-osm.json').write_text(json.dumps(out, indent=1))
-print(f'{len(roads)} road ways, {len(buildings)} buildings, {len(areas)} areas, {len(features)} features')
+print(f'{len(roads)} road ways, {len(buildings)} buildings, {len(areas)} areas, {len(paths)} paths, {len(landuse)} landuse, {len(features)} features')

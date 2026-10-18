@@ -5,9 +5,11 @@ import {StaticObstacles} from '../../src/world/obstacles';
 import {pointToBox} from '../../src/world/collisions';
 import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
 import {SteeringAssist} from '../../src/vehicle/steeringAssist';
-import {sampleRoad,surfaceAt} from '../../src/world/roadGeometry';
+import {pavementWidthAt,roadHalfWidth,sampleRoad,surfaceAt} from '../../src/world/roadGeometry';
 import locationJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
 import guidedJson from '../../content/scenarios/brentwood-guided-traversal.json';
+import crossingJson from '../../content/scenarios/crossing-restricted-view.json';
+import movingOffJson from '../../content/scenarios/moving-off-safely.json';
 
 const DT=1/60;
 const place=parseLocation(locationJson);
@@ -122,5 +124,48 @@ describe('Brentwood scenery (map buildings, trees, lights): matches the road lay
       expect(surfaceAt(place,l.x,l.z)?.kind,`${l.x.toFixed(1)}, ${l.z.toFixed(1)}`).toBe('pavement');
       for(const j of place.junctions)expect(Math.hypot(l.x-j.position.x,l.z-j.position.z)).toBeGreaterThan(j.radius+3.9);
     }
+  });
+});
+
+describe('Brentwood scene completeness: street behind the start, pavements to the shop fronts, approximate buildings',()=>{
+  const high=place.roads.find(r=>r.id==='high-street')!;
+  const town=layoutTownscape(place)!.town!;
+
+  it('the High Street runs on about 200 m behind the start (so the mirrors show the street, not its end)',()=>{
+    expect(sampleRoad(high,place.spawn.position.x,place.spawn.position.z).along).toBeGreaterThan(190);
+    // OSM: no lane markings west of the second signal crossing; the centre line starts there.
+    const west=place.crossings.find(c=>c.id==='high-street-signals-west')!;
+    expect(high.markings.centreFrom).toBeCloseTo(west.along,1);
+  });
+
+  it('pavements reach the shop fronts: every shopfront wall meets the back of the pavement somewhere along it (within 1 m)',()=>{
+    for(const b of town.buildings)for(const w of b.walls)if(w.shopfront){
+      let best=Infinity;
+      for(let t=0;t<=1;t+=.05){
+        const p={x:w.a.x+(w.b.x-w.a.x)*t,z:w.a.z+(w.b.z-w.a.z)*t};
+        for(const r of place.roads){const s=sampleRoad(r,p.x,p.z);best=Math.min(best,s.distance-roadHalfWidth(r)-pavementWidthAt(r,s.along,Math.sign(s.lateral)||1))}
+      }
+      expect(best,`${b.id}`).toBeLessThan(1);
+    }
+  });
+
+  it('approximate buildings are labelled as such, have estimated heights and no shopfronts, and stand off every road and pavement',()=>{
+    const approx=place.buildings.filter(b=>b.source==='approximate');
+    expect(approx.length).toBeGreaterThan(0);
+    for(const b of approx){
+      expect(b.heightSource,b.id).toBe('estimated');
+      expect(b.use,b.id).toBe('other');
+      for(const p of b.footprint)expect(surfaceAt(place,p.x,p.z),`${b.id}`).toBeNull();
+      expect(town.buildings.find(t=>t.id===b.id)!.walls.some(w=>w.shopfront)).toBe(false);
+    }
+    // OSM outlines keep source 'map'.
+    expect(place.buildings.filter(b=>b.id.startsWith('osm-')).every(b=>b.source==='map')).toBe(true);
+  });
+
+  it('signal heads are held green only by this exercise; the zebra and Moving off exercises set no signals',()=>{
+    expect(guided.signals).toEqual({'high-street-signals':'green','high-street-signals-west':'green'});
+    expect(guided.briefing).toContain('pedestrian crossing phases are not simulated');
+    expect(parseScenario(crossingJson).signals).toEqual({});
+    expect(parseScenario(movingOffJson).signals).toEqual({});
   });
 });

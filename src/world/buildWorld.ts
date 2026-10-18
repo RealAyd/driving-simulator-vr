@@ -5,7 +5,7 @@ import {
 import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
-import {onOtherCarriageway,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
+import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
 
 export interface BuiltWorld{
   root:TransformNode;
@@ -30,7 +30,7 @@ function markings(scene:Scene,road:Road,offset:number,dash:number,gap:number,wid
   const total=sampleRoad(road,end.x,end.z).along;
   // Solid lines are laid in short pieces so they follow curves.
   const piece=gap>0?dash:1,step=gap>0?dash+gap:1;
-  for(let s=0;s<total;s+=step){
+  for(let s=offset===0?road.markings.centreFrom:0;s<total;s+=step){
     const l=Math.min(piece,total-s);
     const p=pointAtAlong(road,s+l/2);
     const line=CreateGround(`marking-${road.id}-${offset}-${s.toFixed(1)}`,{width,height:l+(gap>0?0:.05)},scene);
@@ -75,12 +75,13 @@ function resample(road:Road,dense:(x:number,z:number)=>boolean,step=1,sparse=8):
 const at=(s:Sample,offset:number,y:number)=>new Vector3(s.x+s.rx*offset,y,s.z+s.rz*offset);
 
 /** Ribbons between two offsets, one per run of samples that `keep` accepts. */
-function strips(scene:Scene,name:string,samples:Sample[],from:number,to:number,y0:number,y1:number,keep:(s:Sample)=>boolean,parent:TransformNode):Mesh[]{
+function strips(scene:Scene,name:string,samples:Sample[],fromOffset:number|((s:Sample)=>number),toOffset:number|((s:Sample)=>number),y0:number,y1:number,keep:(s:Sample)=>boolean,parent:TransformNode):Mesh[]{
+  const from=typeof fromOffset==='number'?()=>fromOffset:fromOffset,to=typeof toOffset==='number'?()=>toOffset:toOffset;
   const meshes:Mesh[]=[];
   let run:Sample[]=[];
   const flush=()=>{
     if(run.length>=2){
-      const mesh=CreateRibbon(`${name}-${meshes.length}`,{pathArray:[run.map(s=>at(s,from,y0)),run.map(s=>at(s,to,y1))],sideOrientation:2},scene);
+      const mesh=CreateRibbon(`${name}-${meshes.length}`,{pathArray:[run.map(s=>at(s,from(s),y0)),run.map(s=>at(s,to(s),y1))],sideOrientation:2},scene);
       mesh.parent=parent;
       meshes.push(mesh);
     }
@@ -133,17 +134,31 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   for(const road of location.roads){
     const half=roadHalfWidth(road);
     const y=road.surfaceHeight;
-    const samples=resample(road,(x,z)=>inJunction(x,z,road.pavementWidth+8)||onOtherCarriageway(location,x,z,road.id,road.pavementWidth+8));
+    const samples=resample(road,(x,z)=>inJunction(x,z,road.pavementWidth+8)||onOtherCarriageway(location,x,z,road.id,road.pavementWidth+8),1,road.pavementProfile?4:8);
     add(tarmac,...strips(scene,`carriageway-${road.id}`,samples,-half,half,y,y,s=>!inJunction(s.x,s.z,-.5),root));
     for(const side of [-1,1]){
-      const inner=side*half,outer=side*(half+road.pavementWidth),mid=(inner+outer)/2;
+      // A wide pavement (profile) stops short of any other carriageway or junction it would reach.
+      const widths=new Map<Sample,number>();
+      const width=(s:Sample)=>{
+        let w=widths.get(s);
+        if(w!==undefined)return w;
+        w=pavementWidthAt(road,s.along,side);
+        if(w>road.pavementWidth)for(let d=road.pavementWidth;d<=w;d+=.5){
+          const v=at(s,side*(half+d),0);
+          if(onOtherCarriageway(location,v.x,v.z,road.id,.4)||inJunction(v.x,v.z,.4)){w=Math.max(road.pavementWidth,d-.5);break}
+        }
+        widths.set(s,w);
+        return w;
+      };
+      const inner=side*half,outer=(s:Sample)=>side*(half+width(s));
       // No pavement across another road, a junction, or the gap between paired one-way roads.
       const keep=(s:Sample)=>{
-        const p=at(s,mid,0),q=at(s,outer,0),k=at(s,inner+side*.2,0);
-        return !inJunction(s.x,s.z,road.pavementWidth)&&![p,q,k].some(v=>onOtherCarriageway(location,v.x,v.z,road.id,.2));
+        const base=Math.min(width(s),road.pavementWidth);
+        const p=at(s,side*(half+base/2),0),q=at(s,side*(half+base),0),k=at(s,inner+side*.2,0);
+        return width(s)>0&&!inJunction(s.x,s.z,road.pavementWidth)&&![p,q,k].some(v=>onOtherCarriageway(location,v.x,v.z,road.id,.2));
       };
-      if(road.pavementWidth>0)add(pavement,...strips(scene,`pavement-${road.id}-${side}`,samples,inner,outer,y+road.kerbHeight,y+road.kerbHeight,keep,root));
-      if(road.pavementWidth>0)add(kerb,...strips(scene,`kerb-${road.id}-${side}`,samples,inner,inner,y,y+road.kerbHeight,keep,root));
+      add(pavement,...strips(scene,`pavement-${road.id}-${side}`,samples,inner,outer,y+road.kerbHeight,y+road.kerbHeight,keep,root));
+      add(kerb,...strips(scene,`kerb-${road.id}-${side}`,samples,inner,inner,y,y+road.kerbHeight,keep,root));
     }
     const lineY=y+.006;
     const lines=(offset:number,dash:number,gap:number,width:number)=>{

@@ -1,6 +1,6 @@
 import {headingFromDirection,type Block,type Building,type Location,type Vec2} from '../contracts';
 import type {Palette,StreetLayout,Tree} from './streetscape';
-import {onOtherCarriageway,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
+import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 
 /**
  * Town-centre scenery from map data: building outlines become brick or
@@ -41,8 +41,8 @@ export interface TownLayout{buildings:TownBuilding[];areas:TownArea[];busStops:B
 
 const STOREY=3.2;
 const WALL=.3;
-/** Furthest a wall can be behind the modelled pavement and still count as facing the road, metres. */
-const FACING_GAP=14;
+/** Furthest a wall can be behind the pavement (widened to shop fronts where mapped) and still count as facing the road, metres. */
+const FACING_GAP=6;
 const FASCIAS=['#1f2a37','#14261c','#3b1f24','#22252a','#2b3a55','#4a3b2a','#0f3d3e'];
 
 /** Point in polygon (ray casting). */
@@ -105,11 +105,11 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       let n={x:-(c.z-a.z)/len,z:(c.x-a.x)/len};
       const mid={x:(a.x+c.x)/2,z:(a.z+c.z)/2};
       if(insidePolygon({x:mid.x+n.x*.05,z:mid.z+n.z*.05},ring))n={x:-n.x,z:-n.z};
-      // Faces a road: a carriageway is in front of this wall and close. The modelled pavements (2 m) are narrower
-      // than the real town-centre pavements, so shop fronts are up to 14 m behind them (paved ground between).
+      // Faces a road: a carriageway is in front of this wall, with at most a small forecourt between the wall and
+      // the back of the pavement (pavements are widened to the shop fronts where map data shows them).
       const facesRoad=location.roads.some(road=>{
         const s=sampleRoad(road,mid.x,mid.z);
-        const gap=s.distance-roadHalfWidth(road)-road.pavementWidth;
+        const gap=s.distance-roadHalfWidth(road)-pavementWidthAt(road,s.along,Math.sign(s.lateral)||1);
         if(gap>FACING_GAP)return false;
         const p=pointAtAlong(road,s.along);
         const toRoad={x:(p.x-mid.x)/(s.distance||1),z:(p.z-mid.z)/(s.distance||1)};
@@ -160,7 +160,7 @@ export function layoutTownscape(location:Location):StreetLayout|null{
     };
     const clear=(along:number,side:number,lateral:number)=>{
       const p=at(along,side*lateral);
-      const outer=at(along,side*(half+road.pavementWidth));
+      const outer=at(along,side*(half+Math.min(road.pavementWidth,pavementWidthAt(road,along,side))));
       if(nearJunction(p,4))return null;
       if(onOtherCarriageway(location,p.x,p.z,road.id,.4)||onOtherCarriageway(location,outer.x,outer.z,road.id,.2))return null;
       if(crossingsOn(road.id).some(c=>Math.abs(c.along-along)<c.width/2+5))return null;
