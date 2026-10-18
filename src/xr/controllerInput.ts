@@ -59,6 +59,8 @@ export class ControllerInput{
   private readonly keys=new Set<string>();
   private lastKeys:string[]=[];
   private previous:Record<DriveAction,boolean>=Object.fromEntries(DRIVE_ACTIONS.map(a=>[a,false])) as Record<DriveAction,boolean>;
+  /** Actions held at the last poll. */
+  private held:Record<DriveAction,boolean>=Object.fromEntries(DRIVE_ACTIONS.map(a=>[a,false])) as Record<DriveAction,boolean>;
   /** While capturing for a remap: inputs already held when capture began are ignored until released. */
   private captureBaseline:Set<string>|null=null;
   private keyboardSeen=false;
@@ -96,7 +98,7 @@ export class ControllerInput{
     const pad=this.pad();
     const values=Object.fromEntries(DRIVE_ACTIONS.map(a=>[a,this.value(this.bindings[a],pad)])) as Record<DriveAction,number>;
     const pressed=DRIVE_ACTIONS.filter(a=>values[a]>0&&!this.previous[a]);
-    for(const a of DRIVE_ACTIONS)this.previous[a]=values[a]>0;
+    for(const a of DRIVE_ACTIONS){this.previous[a]=values[a]>0;this.held[a]=values[a]>0}
     const usesPad=Object.values(this.bindings).some(b=>b&&b.kind!=='key');
     const device=usesPad?pad?.id??null:this.usesKeyboard?(this.keyboardSeen?'keyboard':null):pad?.id??(this.keyboardSeen?'keyboard':null);
     return {
@@ -144,9 +146,13 @@ export class ControllerInput{
     return pad?.mapping==='standard'?{...STANDARD_BINDINGS}:{};
   }
 
+  /**
+   * After a pause: an input held now must be released before it counts again. Inputs not held count as soon as
+   * they are pressed (marking every input as held would swallow a press made before the next poll).
+   */
   clearHeld():void{
-    this.keys.clear();
-    for(const a of DRIVE_ACTIONS)this.previous[a]=true;   // a press must be released before it counts again
+    const pad=this.pad();
+    for(const a of DRIVE_ACTIONS)this.previous[a]=this.held[a]||this.value(this.bindings[a],pad)>0;
   }
 }
 

@@ -76,6 +76,15 @@ describe('phone viewer: controller input (no layout assumed)',()=>{
     expect(c.poll().pressed).toEqual(['pause']);
   });
 
+  it('after a pause, a control that was not held counts as soon as it is pressed (even before the next poll)',()=>{
+    const f=fakeEnv();
+    const c=new ControllerInput(f.env,{accelerate:{kind:'button',index:7}});
+    c.poll();
+    c.clearHeld();
+    f.press(7);
+    expect(c.poll().pressed).toEqual(['accelerate']);
+  });
+
   it('bindings are saved per device',()=>{
     const mem=new Map<string,string>();
     const storage={getItem:(k:string)=>mem.get(k)??null,setItem:(k:string,v:string)=>{mem.set(k,v)}};
