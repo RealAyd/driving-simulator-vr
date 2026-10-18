@@ -13,7 +13,10 @@ Experiment branch `experiment/babylon-photorealistic-tiles`. The root `index.htm
 - `content/locations/brentwood-paired-mini-roundabouts.json`: OSM-derived centreline, two junctions rb1 (7.87,7.89), rb2 (16.83,-9.01), spawn (-29.26,19.4), heading 64.4°. Exercise described as geographically inspired; do not treat as survey-grade.
 - `docs/brentwood/layout-osm.json`: confirmed OSM origin 51.6213112, 0.3055506; existing converter uses approximate flat-earth x east / z south mapping.
 
-## No live tile results yet
+> **Superseded by results:** live tiles were integrated and measured; see
+> `babylon-photorealistic-tiles-results.md`. The audit below is kept as written.
+
+## No live tile results yet (at the time of this audit)
 The experimental `src/experiments/tiles/geospatial.ts` provides a reversible WGS84 ECEF -> local basis, with **explicit ellipsoid reference height**. No reference altitude has been surveyed. The 0m in authored roads is relative, not a WGS84 altitude.
 
 ## Renderer viability

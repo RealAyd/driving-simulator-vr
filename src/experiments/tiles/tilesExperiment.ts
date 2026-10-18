@@ -95,7 +95,7 @@ export class TilesExperiment{
           apiKey:this.config.apiKey,
           heightEllipsoid:this.fixedHeight??INITIAL_HEIGHT_ESTIMATE,
           errorTarget:this.errorTarget??(this.quality.id==='phone'?24:16),
-          maxCachedTiles:this.quality.id==='phone'?350:700
+          maxCachedTiles:this.quality.id==='phone'?1500:3000
         });
         this.tiles.extraCameras=()=>this.mirrorsSelectTiles?this.mirrorCameras():[];
         this.tiles.visible=this.place?.id===TILES_LOCATION;
@@ -104,6 +104,8 @@ export class TilesExperiment{
       });
     }
     if(this.tiles)this.tiles.visible=here;
+    // The Google logo is fetched only when tiles are in use (constructed mode contacts no Google host).
+    if(this.active&&here)for(const img of document.querySelectorAll<HTMLImageElement>('.tiles-credit img[data-src]'))if(!img.getAttribute('src'))img.src=img.dataset.src!;
     this.hideTimer=0;
   }
 

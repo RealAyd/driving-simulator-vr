@@ -33,7 +33,7 @@ const AuthBase=GoogleCloudAuthPlugin as unknown as new(options:{apiToken:string;
 interface TilesRendererInternals{
   scene:Scene;
   group:TransformNode;
-  stats:{visible:number;active:number;inCache:number;downloading:number;parsing:number;failed:number;queued:number};
+  stats:{visible:number;active:number;inCache:number;downloading:number;parsing:number;failed:number;queued:number;refused:number};
   errorTarget:number;
   readonly loadProgress:number;
   lruCache:{maxSize:number;minSize:number};
@@ -110,7 +110,8 @@ export interface PhotorealTilesOptions{
   heightEllipsoid:number;
   /** Screen-space error target in pixels (higher = coarser, fewer downloads). */
   errorTarget:number;
-  /** Tiles kept in memory before unused ones are released. */
+  /** Tiles kept in memory before unused ones are released. Too low and finer tiles are refused
+   * (the street stays coarse) and evicted tiles are downloaded again; the library default is 8000. */
   maxCachedTiles:number;
 }
 
@@ -202,7 +203,7 @@ export class PhotorealTiles{
     return {
       material:sample?{kind:sample.getClassName(),unlit:!!sample.unlit}:null,
       heightEllipsoid:this.height,errorTarget:this.tiles.errorTarget,loadProgress:this.tiles.loadProgress,
-      visible:s.visible,active:s.active,inCache:s.inCache,downloading:s.downloading,parsing:s.parsing,failed:s.failed,queued:s.queued,
+      visible:s.visible,active:s.active,inCache:s.inCache,downloading:s.downloading,parsing:s.parsing,failed:s.failed,queued:s.queued,refused:s.refused,
       meshes,triangles,cameras:1+this.extraCameras().length,network:{...this.auth.net}
     };
   }

@@ -1,0 +1,691 @@
+{
+  "conditions": {
+    "renderer": {
+      "webgl": 2,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    "viewport": "1280x720",
+    "deviceScaleFactor": 1,
+    "quality": "desktop",
+    "note": "Headless Chromium, software WebGL (SwiftShader) unless --gpu. Not an iPhone or headset measurement.",
+    "date": "2026-10-18T18:29:23.230Z"
+  },
+  "modes": {
+    "tiles": {
+      "readyMs": 1164,
+      "settledMs": 33997,
+      "stationary": {
+        "perf": {
+          "frames": 7,
+          "averageFps": 1.2631275036990954,
+          "p50Ms": 872.5,
+          "p95Ms": 894.9000000003725,
+          "worstMs": 938.5
+        },
+        "scene": {
+          "meshes": 390,
+          "activeMeshes": 215,
+          "vertices": 2094227,
+          "triangles": 640120,
+          "drawCalls": 943,
+          "materials": 911,
+          "textures": 853,
+          "heaviest": [
+            [
+              "node0",
+              7341
+            ],
+            [
+              "node0",
+              7160
+            ],
+            [
+              "node0",
+              7051
+            ],
+            [
+              "node0",
+              6398
+            ],
+            [
+              "node0",
+              6162
+            ],
+            [
+              "node0_primitive0",
+              5467
+            ],
+            [
+              "node0_primitive0",
+              5157
+            ],
+            [
+              "node0_primitive0",
+              5116
+            ]
+          ],
+          "trianglesBy": {
+            "streetscape": 0,
+            "parked-cars": 0
+          }
+        }
+      },
+      "noMirrors": {
+        "perf": {
+          "frames": 9,
+          "averageFps": 1.4843402107763555,
+          "p50Ms": 602.7999999998137,
+          "p95Ms": 899.3999999999069,
+          "worstMs": 905.8999999999069
+        },
+        "scene": {
+          "meshes": 236,
+          "activeMeshes": 211,
+          "vertices": 2215735,
+          "triangles": 270347,
+          "drawCalls": 210,
+          "materials": 984,
+          "textures": 926,
+          "heaviest": [
+            [
+              "node0",
+              6398
+            ],
+            [
+              "node0_primitive0",
+              4256
+            ],
+            [
+              "node0_primitive0",
+              4228
+            ],
+            [
+              "node0_primitive0",
+              4070
+            ],
+            [
+              "node0_primitive0",
+              4038
+            ],
+            [
+              "node0_primitive0",
+              3990
+            ],
+            [
+              "node0_primitive0",
+              3904
+            ],
+            [
+              "node0_primitive0",
+              3895
+            ]
+          ],
+          "trianglesBy": {
+            "streetscape": 0,
+            "parked-cars": 0
+          }
+        }
+      },
+      "tiles": {
+        "mode": "tiles",
+        "active": true,
+        "problem": null,
+        "calibration": {
+          "offset": -3.610693966038525e-10,
+          "heightEllipsoid": 152.5047851774906,
+          "samples": [
+            {
+              "x": -168.07,
+              "z": 86.08,
+              "y": -0.08324548730706738
+            },
+            {
+              "x": -144.84,
+              "z": 75.41,
+              "y": 0.09061029667833509
+            },
+            {
+              "x": -116.28,
+              "z": 63.64,
+              "y": -0.08080532537968566
+            },
+            {
+              "x": -105.21,
+              "z": 58.51,
+              "y": -0.13323680381347458
+            },
+            {
+              "x": -100.73,
+              "z": 56.33,
+              "y": -0.062053116361767025
+            },
+            {
+              "x": -94.59,
+              "z": 53.17,
+              "y": 0.018347824866225437
+            },
+            {
+              "x": -75.53,
+              "z": 43.7,
+              "y": 0.1489451253066818
+            },
+            {
+              "x": -48.89,
+              "z": 30.73,
+              "y": 1.5016894394648261e-9
+            },
+            {
+              "x": -30.2,
+              "z": 21.62,
+              "y": -0.12632879911370765
+            },
+            {
+              "x": -21.43,
+              "z": 17.51,
+              "y": -0.18332437260636425
+            },
+            {
+              "x": -14.64,
+              "z": 14.66,
+              "y": -0.04081430169179612
+            },
+            {
+              "x": -3.79,
+              "z": 10.55,
+              "y": 0.07589880322632325
+            },
+            {
+              "x": 7.87,
+              "z": 7.89,
+              "y": 0.2903985210339215
+            },
+            {
+              "x": 16.83,
+              "z": -9.01,
+              "y": 0.13220772807017056
+            }
+          ],
+          "at": 29052.69999999972
+        },
+        "calibrations": [
+          {
+            "offset": 7.005,
+            "heightEllipsoid": 152.505,
+            "at": 22349,
+            "visible": 209
+          },
+          {
+            "offset": 0,
+            "heightEllipsoid": 152.505,
+            "at": 29053,
+            "visible": 214
+          }
+        ],
+        "calibrationDone": true,
+        "initialHeightEstimate": 145.5,
+        "fixedHeight": null,
+        "mirrorsSelectTiles": true,
+        "stats": {
+          "material": {
+            "kind": "PBRMaterial",
+            "unlit": true
+          },
+          "heightEllipsoid": 152.5047851774906,
+          "errorTarget": 16,
+          "loadProgress": 0.743421052631579,
+          "visible": 213,
+          "active": 362,
+          "inCache": 1419,
+          "downloading": 0,
+          "parsing": 75,
+          "failed": 0,
+          "queued": 3,
+          "refused": 0,
+          "meshes": 533,
+          "triangles": 620876,
+          "cameras": 3,
+          "network": {
+            "requests": 1417,
+            "bytes": 127726301,
+            "errors": 0,
+            "lastError": null,
+            "rootStatus": 200,
+            "firstContentAt": 1281.1999999997206
+          }
+        },
+        "attributions": "Google; Airbus"
+      },
+      "tileSurface": [
+        {
+          "x": -168.07,
+          "z": 86.08,
+          "y": null
+        },
+        {
+          "x": -144.84,
+          "z": 75.41,
+          "y": null
+        },
+        {
+          "x": -116.28,
+          "z": 63.64,
+          "y": null
+        },
+        {
+          "x": -105.21,
+          "z": 58.51,
+          "y": null
+        },
+        {
+          "x": -100.73,
+          "z": 56.33,
+          "y": null
+        },
+        {
+          "x": -94.59,
+          "z": 53.17,
+          "y": null
+        },
+        {
+          "x": -75.53,
+          "z": 43.7,
+          "y": null
+        },
+        {
+          "x": -48.89,
+          "z": 30.73,
+          "y": null
+        },
+        {
+          "x": -30.2,
+          "z": 21.62,
+          "y": -0.12632879911370765
+        },
+        {
+          "x": -21.43,
+          "z": 17.51,
+          "y": -0.18332437260636425
+        },
+        {
+          "x": -14.64,
+          "z": 14.66,
+          "y": -0.04081430169179612
+        },
+        {
+          "x": -3.79,
+          "z": 10.55,
+          "y": 0.07589880322632325
+        },
+        {
+          "x": 7.87,
+          "z": 7.89,
+          "y": 0.2903985210339215
+        },
+        {
+          "x": 16.83,
+          "z": -9.01,
+          "y": 0.13220772807017056
+        }
+      ],
+      "drive": {
+        "perf": {
+          "frames": 124,
+          "averageFps": 1.135532175395766,
+          "p50Ms": 872.6000000000931,
+          "p95Ms": 1058.2999999998137,
+          "worstMs": 1721.8999999999069
+        },
+        "samples": [
+          {
+            "t": 0,
+            "x": -29.3,
+            "z": 19.4,
+            "speed": 0,
+            "downloading": 0,
+            "visible": 125
+          },
+          {
+            "t": 0.25,
+            "x": -29.2,
+            "z": 19.4,
+            "speed": 0.6,
+            "downloading": 0,
+            "visible": 214
+          },
+          {
+            "t": 0.5,
+            "x": -29,
+            "z": 19.3,
+            "speed": 1.3,
+            "downloading": 0,
+            "visible": 214
+          },
+          {
+            "t": 0.75,
+            "x": -28.6,
+            "z": 19.1,
+            "speed": 1.9,
+            "downloading": 0,
+            "visible": 213
+          },
+          {
+            "t": 1,
+            "x": -28.1,
+            "z": 18.9,
+            "speed": 2.5,
+            "downloading": 0,
+            "visible": 212
+          },
+          {
+            "t": 1.25,
+            "x": -27.5,
+            "z": 18.6,
+            "speed": 3.1,
+            "downloading": 0,
+            "visible": 211
+          },
+          {
+            "t": 1.5,
+            "x": -26.7,
+            "z": 18.2,
+            "speed": 3.7,
+            "downloading": 0,
+            "visible": 212
+          },
+          {
+            "t": 1.75,
+            "x": -25.8,
+            "z": 17.8,
+            "speed": 4.2,
+            "downloading": 0,
+            "visible": 211
+          },
+          {
+            "t": 2,
+            "x": -24.8,
+            "z": 17.3,
+            "speed": 4.8,
+            "downloading": 0,
+            "visible": 213
+          },
+          {
+            "t": 2.25,
+            "x": -23.6,
+            "z": 16.8,
+            "speed": 5.3,
+            "downloading": 0,
+            "visible": 214
+          },
+          {
+            "t": 2.5,
+            "x": -22.4,
+            "z": 16.2,
+            "speed": 5.9,
+            "downloading": 0,
+            "visible": 215
+          },
+          {
+            "t": 2.75,
+            "x": -21,
+            "z": 15.6,
+            "speed": 6.4,
+            "downloading": 0,
+            "visible": 214
+          },
+          {
+            "t": 3,
+            "x": -19.4,
+            "z": 14.9,
+            "speed": 6.9,
+            "downloading": 0,
+            "visible": 213
+          },
+          {
+            "t": 3.25,
+            "x": -17.9,
+            "z": 14.2,
+            "speed": 6.8,
+            "downloading": 0,
+            "visible": 219
+          },
+          {
+            "t": 3.5,
+            "x": -16.3,
+            "z": 13.6,
+            "speed": 6.7,
+            "downloading": 0,
+            "visible": 221
+          },
+          {
+            "t": 3.75,
+            "x": -14.8,
+            "z": 12.9,
+            "speed": 6.6,
+            "downloading": 0,
+            "visible": 220
+          },
+          {
+            "t": 4,
+            "x": -13.2,
+            "z": 12.3,
+            "speed": 6.6,
+            "downloading": 0,
+            "visible": 221
+          },
+          {
+            "t": 4.25,
+            "x": -11.7,
+            "z": 11.7,
+            "speed": 6.5,
+            "downloading": 0,
+            "visible": 221
+          },
+          {
+            "t": 4.5,
+            "x": -10.2,
+            "z": 11.1,
+            "speed": 6.4,
+            "downloading": 0,
+            "visible": 216
+          },
+          {
+            "t": 4.75,
+            "x": -8.7,
+            "z": 10.6,
+            "speed": 6.3,
+            "downloading": 0,
+            "visible": 214
+          },
+          {
+            "t": 5,
+            "x": -7.3,
+            "z": 10.1,
+            "speed": 6.2,
+            "downloading": 0,
+            "visible": 215
+          },
+          {
+            "t": 5.25,
+            "x": -5.8,
+            "z": 9.6,
+            "speed": 6.1,
+            "downloading": 0,
+            "visible": 210
+          },
+          {
+            "t": 5.5,
+            "x": -4.3,
+            "z": 9.1,
+            "speed": 6,
+            "downloading": 0,
+            "visible": 212
+          },
+          {
+            "t": 5.75,
+            "x": -2.9,
+            "z": 8.7,
+            "speed": 5.9,
+            "downloading": 0,
+            "visible": 211
+          },
+          {
+            "t": 6,
+            "x": -1.5,
+            "z": 8.3,
+            "speed": 5.9,
+            "downloading": 0,
+            "visible": 211
+          },
+          {
+            "t": 6.25,
+            "x": -0.1,
+            "z": 7.7,
+            "speed": 5.8,
+            "downloading": 0,
+            "visible": 224
+          },
+          {
+            "t": 6.58,
+            "x": 1.5,
+            "z": 6.9,
+            "speed": 5.7,
+            "downloading": 0,
+            "visible": 215
+          },
+          {
+            "t": 6.92,
+            "x": 3,
+            "z": 5.7,
+            "speed": 5.5,
+            "downloading": 0,
+            "visible": 195
+          },
+          {
+            "t": 7.17,
+            "x": 3.9,
+            "z": 4.6,
+            "speed": 5.4,
+            "downloading": 0,
+            "visible": 173
+          },
+          {
+            "t": 7.42,
+            "x": 4.6,
+            "z": 3.5,
+            "speed": 5.4,
+            "downloading": 0,
+            "visible": 158
+          },
+          {
+            "t": 7.67,
+            "x": 5.1,
+            "z": 2.3,
+            "speed": 5.3,
+            "downloading": 0,
+            "visible": 159
+          },
+          {
+            "t": 8,
+            "x": 5.7,
+            "z": 0.6,
+            "speed": 5.2,
+            "downloading": 0,
+            "visible": 160
+          },
+          {
+            "t": 8.25,
+            "x": 6.1,
+            "z": -0.6,
+            "speed": 5.1,
+            "downloading": 0,
+            "visible": 158
+          },
+          {
+            "t": 8.5,
+            "x": 6.5,
+            "z": -1.8,
+            "speed": 5,
+            "downloading": 0,
+            "visible": 164
+          },
+          {
+            "t": 8.75,
+            "x": 7,
+            "z": -3,
+            "speed": 5.5,
+            "downloading": 0,
+            "visible": 175
+          },
+          {
+            "t": 9,
+            "x": 7.6,
+            "z": -4.3,
+            "speed": 6.1,
+            "downloading": 0,
+            "visible": 185
+          },
+          {
+            "t": 9.25,
+            "x": 8.5,
+            "z": -5.6,
+            "speed": 6.6,
+            "downloading": 0,
+            "visible": 199
+          },
+          {
+            "t": 9.5,
+            "x": 9.5,
+            "z": -6.9,
+            "speed": 6.5,
+            "downloading": 0,
+            "visible": 198
+          },
+          {
+            "t": 9.75,
+            "x": 10.6,
+            "z": -8,
+            "speed": 6.4,
+            "downloading": 0,
+            "visible": 211
+          },
+          {
+            "t": 10,
+            "x": 11.8,
+            "z": -9.1,
+            "speed": 6.3,
+            "downloading": 0,
+            "visible": 214
+          }
+        ],
+        "tilesBefore": {
+          "requests": 1050,
+          "bytes": 93616173,
+          "errors": 0,
+          "lastError": null,
+          "rootStatus": 200,
+          "firstContentAt": 1281.1999999997206
+        },
+        "tilesAfter": {
+          "requests": 1417,
+          "bytes": 127726301,
+          "errors": 0,
+          "lastError": null,
+          "rootStatus": 200,
+          "firstContentAt": 1281.1999999997206
+        }
+      },
+      "memory": {
+        "usedJSHeapMB": 279
+      },
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "about": ""
+    }
+  }
+}
