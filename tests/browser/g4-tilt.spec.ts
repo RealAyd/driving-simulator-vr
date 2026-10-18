@@ -74,8 +74,10 @@ test('G4: tilt on the exercise screen: enable, live status, calibrate, then the 
   clearInterval(feedTurn);
   // Centre re-zeroes on the current position.
   await page.click('#hud-tilt-centre');
-  for(let i=0;i<15;i++){await lean(page,-8);await page.waitForTimeout(60)}
-  expect(Math.abs((await read(page,'vehicle()')).steerAngle)).toBeLessThan(.05);
+  // Keep holding the same lean: the wheel returns to centre (waited for, not timed: slow machines render few frames).
+  feedTurn=setInterval(()=>{void lean(page,-8).catch(()=>{})},60);
+  await expect.poll(async()=>Math.abs((await read(page,'vehicle()')).steerAngle),{timeout:20_000}).toBeLessThan(.05);
+  clearInterval(feedTurn);
   // The Steer buttons override tilt.
   await page.locator('[data-hold=right]').dispatchEvent('pointerdown');
   await expect.poll(async()=>(await read(page,'vehicle()')).steerAngle).toBeGreaterThan(.1);

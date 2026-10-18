@@ -1,7 +1,7 @@
 import {expect,test,type Page} from '@playwright/test';
 
 // Full drives at software-rendering frame rates take minutes of real time.
-test.setTimeout(300_000);
+test.setTimeout(480_000);
 
 type Car={position:{x:number;z:number};heading:number;speed:number};
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
