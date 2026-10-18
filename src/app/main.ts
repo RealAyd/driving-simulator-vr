@@ -63,6 +63,7 @@ import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBin
 import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
 import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
+import {TILES_LOCATION,TilesExperiment,pickSceneryMode,type SceneryMode} from '../experiments/tiles/tilesExperiment';
 import {EventLog} from './eventLog';
 import {Session} from './session';
 
@@ -121,9 +122,13 @@ export async function boot():Promise<void>{
 
   const canvas=byId<HTMLCanvasElement>('sim-canvas');
   const quality=pickQualityProfile(location.search,matchMedia('(pointer: coarse)').matches,innerWidth);
+  // Experiment: Google tiles need 64-bit matrices (ECEF coordinates are millions of metres).
+  const tilesKey:string=import.meta.env.VITE_GOOGLE_MAPS_BROWSER_KEY??'';
+  const sceneryMode:SceneryMode=pickSceneryMode(location.search);
+  const tilesWanted=sceneryMode!=='constructed'&&!!tilesKey;
   let engine:Engine;
   try{
-    engine=new Engine(canvas,quality.antialias,{stencil:true,preserveDrawingBuffer:false},true);
+    engine=new Engine(canvas,quality.antialias,{stencil:true,preserveDrawingBuffer:false,useHighPrecisionMatrix:tilesWanted},true);
   }catch(error){
     session.fail('This browser could not start 3D graphics (WebGL). Try an up-to-date Chrome, Edge, Safari or Firefox.');
     throw error;
@@ -150,8 +155,9 @@ export async function boot():Promise<void>{
     world=buildWorld(scene,place,quality);
     placeModels();
     dressLocation();
+    tilesExp.apply(place,world.root);
     vehicle.setSpawn(spawnOf(place));
-    hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
+    hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality${sceneryMode==='constructed'?'':` · scenery: ${tilesExp.active?sceneryMode:'constructed (tiles unavailable)'}`}`);
     showCredit();
   };
   // Scenery models for the location; any that are unavailable leave the simple shapes in place.
@@ -182,7 +188,8 @@ export async function boot():Promise<void>{
     signPlan=layoutSignage(place,layout);
     signage=buildSignage(scene,signPlan,world.root);
     // Background people on the pavements (scenery: no colliders, never in the road, never assessed).
-    crowd=layoutCrowd(place,layout,signPlan);
+    // With Google tiles the captured scene has its own people.
+    crowd=tilesWanted&&place.id===TILES_LOCATION?[]:layoutCrowd(place,layout,signPlan);
     people=new PeopleRenderer(scene,world.root);
     for(const p of crowd)people.add({id:p.id,look:p.look,pose:t=>personPose(p,t)});
     const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
@@ -250,6 +257,11 @@ export async function boot():Promise<void>{
   camera.fovMode=Camera.FOVMODE_HORIZONTAL_FIXED;
   camera.fov=HORIZONTAL_FOV;
   scene.activeCamera=camera;
+
+  // Experiment: Google Photorealistic 3D Tiles as optional scenery (?scenery=tiles|hybrid).
+  const tilesExp=new TilesExperiment(scene,camera,quality,{apiKey:tilesKey,search:location.search});
+  tilesExp.mirrorCameras=()=>mirrors.filter(m=>m.isActive).map(m=>m.camera);
+  tilesExp.apply(place,world.root);
 
   // ---- Views: mirrors and shoulder checks ----
   const viewAim:Record<ViewTarget,{yaw:number;pitch:number}>={
@@ -1050,6 +1062,15 @@ export async function boot():Promise<void>{
     byId('intro-option').hidden=!chosen.intro;
     preview(scenario);
   };
+  // Experiment: the scenery is chosen at start-up (64-bit matrices), so changing it reloads the page.
+  const scenerySelect=byId<HTMLSelectElement>('scenery-select');
+  scenerySelect.value=sceneryMode;
+  byId('scenery-note').textContent=tilesExp.problem??(sceneryMode==='constructed'?'':'Google tiles are shown only in the Brentwood exercise.');
+  scenerySelect.addEventListener('change',()=>{
+    const url=new URL(location.href);
+    if(scenerySelect.value==='constructed')url.searchParams.delete('scenery');else url.searchParams.set('scenery',scenerySelect.value);
+    location.assign(url.href);
+  });
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-exercise]'))
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
   byId('exercise-back').addEventListener('click',()=>showExercise(null));
@@ -1178,7 +1199,7 @@ export async function boot():Promise<void>{
   });
   xr.onExit=()=>{if(session.state==='running')pause()};
 
-  hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
+  hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality${sceneryMode==='constructed'?'':` · scenery: ${tilesExp.active?sceneryMode:'constructed (tiles unavailable)'}`}`);
 
   // ---- About this build ----
   const openAbout=()=>{
@@ -1192,6 +1213,7 @@ export async function boot():Promise<void>{
       carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple car shapes (model not loaded)',
       props.available.size?`scenery: ${[...props.available].map(id=>PROP_ASSETS[id]?.storage==='private'?`${id} (licensed, private)`:id).join(', ')}`:'no scenery models in this build'
     ].join('; ');
+    byId('about-scenery').textContent=tilesExp.describe();
     byId('about-mirrors').textContent=`${mirrors.filter(m=>m.isActive).length} of 3 rendering now; ${quality.mirrorResolution} px, every ${quality.mirrorUpdateInterval} frame${quality.mirrorUpdateInterval===1?'':'s'} (every frame for the mirror you are looking at)`;
     byId('screen-about').hidden=false;
   };
@@ -1269,6 +1291,7 @@ export async function boot():Promise<void>{
       if(label.text!==lastPlace?.text){hudPlace.textContent=label.text;hudPlace.title=label.title}
       lastPlace=label;
     }
+    tilesExp.update(dt);
     scene.render();
   });
   window.addEventListener('resize',()=>{engine.resize();viewer.layout()});
@@ -1325,6 +1348,12 @@ export async function boot():Promise<void>{
     /** Diagnostics: signs placed in this location (kind, text, position, how placed). */
     signage:()=>({sheet:signage?.sheet??null,shelters:signPlan.shelters.map(s=>({id:s.id,x:s.x,z:s.z})),
       panels:signPlan.panels.map(p=>({id:p.id,kind:p.face.kind,text:'text' in p.face?p.face.text:'name' in p.face?p.face.name:null,x:+p.x.toFixed(2),z:+p.z.toFixed(2),y:+p.y.toFixed(2),normal:p.normal,width:+p.width.toFixed(2),placement:p.placement}))}),
+    /** Experiment: tiles state, calibration and network use (no key or request URLs). */
+    tiles:()=>tilesExp.diagnostics(),
+    /** Experiment: tile surface height (scene y) below each point. */
+    tilesSurface:(points?:{x:number;z:number}[])=>tilesExp.surface(points),
+    /** Experiment: whether the mirror cameras also choose tile detail. */
+    tilesMirrorSelection:(on:boolean)=>{tilesExp.mirrorsSelectTiles=on},
     sceneStats:()=>{
       const meshes=scene.meshes.filter(m=>m.isEnabled()&&m.isVisible&&m.getTotalVertices()>0);
       return {meshes:meshes.length,activeMeshes:scene.getActiveMeshes().length,vertices:scene.getTotalVertices(),triangles:meshes.reduce((n,m)=>n+(m.getTotalIndices()/3),0),drawCalls:instrumentation?.drawCallsCounter.current??null,materials:scene.materials.length,textures:scene.textures.length,
@@ -1392,7 +1421,7 @@ export async function boot():Promise<void>{
   window.addEventListener('pagehide',()=>{
     input.dispose();xr.dispose();for(const mirror of mirrors)mirror.dispose();
     runtime?.dispose();observation.dispose();
-    cockpit.dispose();world.dispose();scene.dispose();engine.dispose();
+    cockpit.dispose();tilesExp.dispose();world.dispose();scene.dispose();engine.dispose();
   });
 
   session.to('ready');

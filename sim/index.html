@@ -89,6 +89,17 @@ fieldset.steering{border:1px solid var(--line);border-radius:12px;margin:12px 0 
 #hud button{border-radius:10px;padding:0 8px;font-size:12px;line-height:1.1;min-height:40px}
 #hud-status{position:absolute;left:var(--sl);bottom:calc(var(--sb) + 100px);font-size:11px;color:var(--soft);background:var(--panel);border-radius:8px;padding:3px 8px}
 body.phone #hud-status{display:none}
+/* Experiment: Google tiles attribution (logo bottom left, data credits beside it). */
+.tiles-credit{position:absolute;left:var(--sl,8px);bottom:2px;display:flex;align-items:center;gap:6px;font-size:9px;color:#f1f5f9;text-shadow:0 0 3px #000;pointer-events:none;max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:5}
+.tiles-credit img{display:block;font:bold 11px sans-serif;color:#fff}
+#tiles-credit-stereo{display:none}
+body.viewer #tiles-credit-stereo:not([hidden]){display:block;position:fixed;inset:0;pointer-events:none;z-index:20}
+#tiles-credit-stereo .tiles-credit{left:auto;bottom:22%;max-width:36vw;transform:translateX(-50%)}
+#tiles-credit-stereo .tiles-credit:first-child{left:25%}
+#tiles-credit-stereo .tiles-credit:last-child{left:75%}
+.scenery-option{display:grid;gap:4px;margin:10px 0}
+.scenery-option select{font:inherit;background:#1e293b;color:var(--ink);border:1px solid #64748b;border-radius:8px;padding:4px}
+.scenery-option small{color:#94a3b8}
 #hud-credit{position:absolute;left:50%;top:1px;transform:translateX(-50%);font-size:9px;color:#e2e8f0;opacity:.75;text-shadow:0 0 3px #000;white-space:nowrap}
 #hud-task{position:absolute;left:50%;top:calc(var(--st) + 4px);transform:translateX(-50%);max-width:calc(100vw - 2 * (var(--sr) + 205px));text-align:center;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
 .hud-pill{position:absolute;left:var(--sl);top:var(--st);font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
@@ -150,6 +161,15 @@ body.stationary [data-hold="throttle"]{opacity:.4}
         <button class="primary choice-brentwood" type="button" data-exercise="brentwood">Brentwood mini-roundabouts<small>Drive through two mini-roundabouts close together: plan your lane, slow down, give way to the right. Area-inspired, not an official test route.</small></button>
         <button class="primary choice-zebra" type="button" data-exercise="zebra">Zebra crossing<small>Pass a parked van with a car following you, then give way to a pedestrian at the crossing.</small></button>
         <button class="primary choice-moving-off" type="button" data-exercise="moving-off">Moving off safely<small>From a parked position: check all round, decide whether moving would affect anyone, and move off at a safe moment.</small></button>
+      </div>
+      <div class="scenery-option">
+        <label for="scenery-select">Scenery (experiment)</label>
+        <select id="scenery-select">
+          <option value="constructed">Constructed (normal)</option>
+          <option value="tiles">Google photorealistic tiles</option>
+          <option value="hybrid">Google tiles + our road surface</option>
+        </select>
+        <small id="scenery-note"></small>
       </div>
       <div class="keys">
         <span><kbd>W</kbd>/<kbd>↑</kbd></span><span>Go</span>
@@ -239,6 +259,7 @@ body.stationary [data-hold="throttle"]{opacity:.4}
       <dt>Built</dt><dd id="about-built"></dd>
       <dt>Device profile</dt><dd id="about-quality"></dd>
       <dt>Performance</dt><dd id="about-perf">start an exercise to measure</dd>
+      <dt>Scenery</dt><dd id="about-scenery"></dd>
       <dt>Mirrors</dt><dd id="about-mirrors"></dd>
       <dt>Models</dt><dd id="about-models"></dd>
     </dl>
@@ -276,9 +297,15 @@ body.stationary [data-hold="throttle"]{opacity:.4}
     <button id="error-reload" class="primary" type="button">Reload</button></div>
 </section>
 
+<!-- Experiment: Google logo and data credits for the tiles, inside each eye of the phone viewer. -->
+<div id="tiles-credit-stereo" hidden>
+  <div class="tiles-credit"><img src="https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png" alt="Google" height="12"><span class="tiles-data"></span></div>
+  <div class="tiles-credit"><img src="https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png" alt="Google" height="12"><span class="tiles-data"></span></div>
+</div>
 <div id="hud" hidden>
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
+  <div id="tiles-credit" class="tiles-credit" hidden><img src="https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png" alt="Google" height="14"><span class="tiles-data"></span></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
   <div id="hud-view-label" class="hud-pill" aria-live="polite">View: Forward</div>
   <div id="hud-place"></div>

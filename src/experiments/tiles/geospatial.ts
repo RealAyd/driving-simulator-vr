@@ -44,3 +44,34 @@ export function localToEcef(local:Triple,ref:Reference):Triple{
 export function approximateLocalToGeo(x:number,z:number):{lat:number;lon:number}{
   return {lat:BRENTWOOD_ORIGIN.lat-z/111320,lon:BRENTWOOD_ORIGIN.lon+x/(111320*Math.cos(BRENTWOOD_ORIGIN.lat*R))};
 }
+
+/**
+ * Scale from true tangent-plane metres to the scene's x/z, which the OSM extraction
+ * (tools/brentwood/build_location.py) made with a constant 111 320 m per degree.
+ * About 0.2 % in x and 0.05 % in z at Brentwood: 0.7 m at the west end of High Street.
+ */
+export function sceneScale(ref:Pick<Reference,'lat'>=BRENTWOOD_ORIGIN):{x:number;z:number}{
+  const s=Math.sin(ref.lat*R),w=1-E2*s*s;
+  const n=A/Math.sqrt(w),m=A*(1-E2)/Math.pow(w,1.5);
+  return {x:111320/(n*R),z:111320/(m*R)};
+}
+
+/**
+ * ECEF -> scene, as a Babylon (row-vector) 4x4 in row-major order: scene = [ecef,1] * M.
+ * Rotation and translation only (the tangent frame at the reference); sceneScale() is
+ * applied by a parent node. Needs 64-bit matrices: the translation is about 6.4e6 m.
+ */
+export function ecefToSceneMatrix(ref:Reference):number[]{
+  const phi=ref.lat*R,lambda=ref.lon*R;
+  const cp=Math.cos(phi),sp=Math.sin(phi),cl=Math.cos(lambda),sl=Math.sin(lambda);
+  // Rows: scene x (east), y (up), z (south) in ECEF components.
+  const rows:Triple[]=[[-sl,cl,0],[cp*cl,cp*sl,sp],[sp*cl,sp*sl,-cp]];
+  const o=geodeticToEcef(ref.lat,ref.lon,ref.heightEllipsoid);
+  const t=rows.map(r=>-(r[0]*o[0]+r[1]*o[1]+r[2]*o[2]));
+  return [
+    rows[0]![0],rows[1]![0],rows[2]![0],0,
+    rows[0]![1],rows[1]![1],rows[2]![1],0,
+    rows[0]![2],rows[1]![2],rows[2]![2],0,
+    t[0]!,t[1]!,t[2]!,1
+  ];
+}
