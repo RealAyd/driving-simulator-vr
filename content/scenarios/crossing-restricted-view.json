@@ -9,7 +9,7 @@
   "assistPath": [
     {
       "x": -1.6,
-      "z": 40
+      "z": 330
     },
     {
       "x": -1.6,
@@ -29,37 +29,89 @@
     },
     {
       "x": -1.6,
-      "z": -160
+      "z": -160.01
     },
     {
-      "x": 10.4,
-      "z": -260.2
+      "x": -0.22,
+      "z": -180.44
     },
     {
-      "x": 38.5,
-      "z": -340.5
+      "x": 1.58,
+      "z": -201.12
+    },
+    {
+      "x": 3.88,
+      "z": -221.65
+    },
+    {
+      "x": 6.8,
+      "z": -241.55
+    },
+    {
+      "x": 10.44,
+      "z": -260.34
+    },
+    {
+      "x": 14.84,
+      "z": -278.26
+    },
+    {
+      "x": 19.95,
+      "z": -295.61
+    },
+    {
+      "x": 25.67,
+      "z": -312.05
+    },
+    {
+      "x": 31.92,
+      "z": -327.22
+    },
+    {
+      "x": 38.6,
+      "z": -340.78
+    },
+    {
+      "x": 45.93,
+      "z": -352.34
+    },
+    {
+      "x": 53.95,
+      "z": -362.07
+    },
+    {
+      "x": 62.3,
+      "z": -370.55
+    },
+    {
+      "x": 70.71,
+      "z": -378.37
+    },
+    {
+      "x": 78.9,
+      "z": -386.16
     }
   ],
   "zones": [
     {
       "id": "restricted-approach",
       "roadId": "main-street",
-      "from": 115,
-      "to": 143,
+      "from": 405,
+      "to": 433,
       "label": "Approach past the parked van to the give-way line"
     },
     {
       "id": "pedestrian-trigger",
       "roadId": "main-street",
-      "from": 120,
-      "to": 150,
+      "from": 410,
+      "to": 440,
       "label": "Close enough that the pedestrian starts to cross"
     },
     {
       "id": "end",
       "roadId": "main-street",
-      "from": 190,
-      "to": 400,
+      "from": 480,
+      "to": 760,
       "label": "Clear of the crossing"
     }
   ],

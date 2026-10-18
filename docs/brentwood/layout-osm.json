@@ -1431,6 +1431,8 @@
    "osmWay": 170237627,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      92.42,
@@ -1468,12 +1470,15 @@
      92.42,
      12.77
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 170237721,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      65.03,
@@ -1495,12 +1500,15 @@
      65.03,
      8.72
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 198164870,
    "name": null,
    "levels": null,
+   "building": "school",
+   "business": false,
    "polygon": [
     [
      105.99,
@@ -1530,12 +1538,15 @@
      105.99,
      -126.45
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 198166444,
    "name": "Brentwood School Chapel",
    "levels": null,
+   "building": "school",
+   "business": false,
    "polygon": [
     [
      88.27,
@@ -1557,12 +1568,15 @@
      88.27,
      -136.66
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 198166747,
    "name": null,
    "levels": null,
+   "building": "garage",
+   "business": false,
    "polygon": [
     [
      56.33,
@@ -1584,12 +1598,15 @@
      56.33,
      -65.45
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 198167231,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      121.9,
@@ -1615,12 +1632,15 @@
      121.9,
      29.99
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 198167670,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      109.96,
@@ -1658,12 +1678,15 @@
      109.96,
      -18.28
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 200576404,
    "name": "Brentwood Telephone Exchange",
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      15.56,
@@ -1701,12 +1724,15 @@
      15.56,
      92.54
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 228077346,
    "name": null,
    "levels": null,
+   "building": "residential",
+   "business": false,
    "polygon": [
     [
      129.21,
@@ -1736,12 +1762,15 @@
      129.21,
      64.58
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 228077369,
    "name": null,
    "levels": null,
+   "building": "residential",
+   "business": false,
    "polygon": [
     [
      123.49,
@@ -1775,12 +1804,15 @@
      123.49,
      62.61
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 228077510,
    "name": "The New Surgery",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      122.39,
@@ -1814,12 +1846,15 @@
      122.39,
      62.87
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 233336095,
    "name": "Ingrave House",
    "levels": null,
+   "building": "apartments",
+   "business": false,
    "polygon": [
     [
      -15.51,
@@ -1857,12 +1892,15 @@
      -15.51,
      -82.98
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 243825554,
    "name": "Sawyers Church",
    "levels": null,
+   "building": "church",
+   "business": false,
    "polygon": [
     [
      81.54,
@@ -1884,12 +1922,15 @@
      81.54,
      131.75
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 547041904,
    "name": "Sainsbury's Customer Parking",
    "levels": "2",
+   "building": "parking",
+   "business": false,
    "polygon": [
     [
      -170.77,
@@ -1999,12 +2040,15 @@
      -170.77,
      149.16
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 551333853,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      72.65,
@@ -2058,12 +2102,15 @@
      72.65,
      117.34
     ]
-   ]
+   ],
+   "businessPoints": 1
   },
   {
    "osmWay": 891315367,
    "name": null,
    "levels": null,
+   "building": "school",
+   "business": false,
    "polygon": [
     [
      125.84,
@@ -2101,12 +2148,15 @@
      125.84,
      -98.99
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 909595877,
    "name": null,
    "levels": null,
+   "building": "substation",
+   "business": false,
    "polygon": [
     [
      3.74,
@@ -2128,12 +2178,15 @@
      3.74,
      71.72
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 909595878,
    "name": null,
    "levels": null,
+   "building": "apartments",
+   "business": false,
    "polygon": [
     [
      -16.96,
@@ -2155,12 +2208,15 @@
      -16.96,
      72.78
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1144034766,
    "name": "Marks & Spencer",
    "levels": null,
+   "building": "retail",
+   "business": true,
    "polygon": [
     [
      -149.85,
@@ -2190,12 +2246,15 @@
      -149.85,
      -11.29
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1144094695,
    "name": null,
    "levels": null,
+   "building": "apartments",
+   "business": false,
    "polygon": [
     [
      -128.43,
@@ -2241,12 +2300,15 @@
      -128.43,
      0.21
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1144101066,
    "name": "Halifax",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -64.17,
@@ -2280,12 +2342,15 @@
      -64.17,
      -52.33
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1144101704,
    "name": "KFC",
    "levels": null,
+   "building": "retail",
+   "business": true,
    "polygon": [
     [
      -47.66,
@@ -2331,12 +2396,15 @@
      -47.66,
      -44.15
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1144103085,
    "name": "Royal Mail Brentwood HQ",
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      -154.64,
@@ -2362,12 +2430,15 @@
      -154.64,
      -95.1
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1247362491,
    "name": null,
    "levels": null,
+   "building": "retail",
+   "business": false,
    "polygon": [
     [
      -34.48,
@@ -2405,12 +2476,15 @@
      -34.48,
      -39.51
     ]
-   ]
+   ],
+   "businessPoints": 7
   },
   {
    "osmWay": 1247362492,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      7.91,
@@ -2440,12 +2514,15 @@
      7.91,
      -49.0
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1334003525,
    "name": "Greggs",
    "levels": null,
+   "building": "retail",
+   "business": true,
    "polygon": [
     [
      -46.73,
@@ -2467,12 +2544,15 @@
      -46.73,
      -10.71
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1387913020,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": false,
    "polygon": [
     [
      -16.96,
@@ -2494,12 +2574,15 @@
      -16.96,
      72.78
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1387914270,
    "name": "Ongar Road Dental Surgery",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -64.85,
@@ -2521,12 +2604,15 @@
      -64.85,
      105.22
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1387914513,
    "name": "Landons Solicitors",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -59.84,
@@ -2556,12 +2642,15 @@
      -59.84,
      99.23
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1388828192,
    "name": "Saffron Building Society",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -46.73,
@@ -2583,12 +2672,15 @@
      -46.73,
      -10.71
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1388829599,
    "name": "Rossi",
    "levels": null,
+   "building": "restaurant",
+   "business": false,
    "polygon": [
     [
      -45.76,
@@ -2610,12 +2702,15 @@
      -45.76,
      -0.06
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1388829600,
    "name": "Dogs Trust",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -35.66,
@@ -2637,12 +2732,15 @@
      -35.66,
      4.16
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1408938605,
    "name": "Caff\u00e8 Nero",
    "levels": null,
+   "building": "cafe",
+   "business": true,
    "polygon": [
     [
      -119.95,
@@ -2664,12 +2762,15 @@
      -119.95,
      -78.87
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1408939552,
    "name": "Vodafone",
    "levels": null,
+   "building": "residential",
+   "business": true,
    "polygon": [
     [
      -90.68,
@@ -2699,12 +2800,15 @@
      -90.68,
      -64.58
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1408939553,
    "name": "Specsavers",
    "levels": null,
+   "building": "residential",
+   "business": true,
    "polygon": [
     [
      -86.49,
@@ -2734,12 +2838,15 @@
      -86.49,
      -73.69
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1410143153,
    "name": "The Beauty Bar",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -40.55,
@@ -2761,12 +2868,15 @@
      -40.55,
      2.2
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1410199072,
    "name": "Cut 'N' Shave",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -7.23,
@@ -2788,12 +2898,15 @@
      -7.23,
      18.42
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1410199073,
    "name": "Brentwood Mini Market",
    "levels": null,
+   "building": "retail",
+   "business": true,
    "polygon": [
     [
      -16.05,
@@ -2815,12 +2928,15 @@
      -16.05,
      12.88
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1410199074,
    "name": "PizzaExpress",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -11.87,
@@ -2850,12 +2966,15 @@
      -11.87,
      4.13
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1411040044,
    "name": "Navateet",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -26.86,
@@ -2885,12 +3004,15 @@
      -26.86,
      -2.72
     ]
-   ]
+   ],
+   "businessPoints": 1
   },
   {
    "osmWay": 1411050532,
    "name": null,
    "levels": null,
+   "building": "retail",
+   "business": false,
    "polygon": [
     [
      -128.68,
@@ -2912,12 +3034,15 @@
      -128.68,
      -51.25
     ]
-   ]
+   ],
+   "businessPoints": 1
   },
   {
    "osmWay": 1411050533,
    "name": "Taro",
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -118.6,
@@ -2939,12 +3064,15 @@
      -118.6,
      -46.2
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1411050534,
    "name": null,
    "levels": null,
+   "building": "yes",
+   "business": true,
    "polygon": [
     [
      -72.56,
@@ -2974,12 +3102,15 @@
      -72.56,
      -22.42
     ]
-   ]
+   ],
+   "businessPoints": 0
   },
   {
    "osmWay": 1411050763,
    "name": "Giggling Squid",
    "levels": null,
+   "building": "retail",
+   "business": true,
    "polygon": [
     [
      -52.16,
@@ -3021,7 +3152,8 @@
      -52.16,
      -13.04
     ]
-   ]
+   ],
+   "businessPoints": 0
   }
  ],
  "areas": [

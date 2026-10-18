@@ -1199,6 +1199,7 @@
   {
    "id": "william-hunter-memorial",
    "kind": "wall",
+   "shape": "obelisk",
    "position": {
     "x": 38.64,
     "z": -7.84
@@ -1209,7 +1210,7 @@
     "height": 7
    },
    "occludes": true,
-   "colour": "#9ca3af"
+   "colour": "#b9b4a8"
   }
  ],
  "crossings": [
@@ -1257,7 +1258,10 @@
  "buildings": [
   {
    "id": "osm-170237627",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
    "footprint": [
     {
      "x": 92.42,
@@ -1299,7 +1303,10 @@
   },
   {
    "id": "osm-170237721",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
    "footprint": [
     {
      "x": 65.03,
@@ -1325,7 +1332,10 @@
   },
   {
    "id": "osm-198166747",
-   "height": 9.0,
+   "height": 3.6,
+   "levels": 1,
+   "heightSource": "estimated",
+   "use": "utility",
    "footprint": [
     {
      "x": 56.33,
@@ -1351,7 +1361,10 @@
   },
   {
    "id": "osm-198167670",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
    "footprint": [
     {
      "x": 109.96,
@@ -1393,7 +1406,10 @@
   },
   {
    "id": "osm-200576404",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
    "footprint": [
     {
      "x": 15.56,
@@ -1431,11 +1447,15 @@
      "x": 15.56,
      "z": -92.54
     }
-   ]
+   ],
+   "name": "Brentwood Telephone Exchange"
   },
   {
    "id": "osm-228077510",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": 122.39,
@@ -1469,11 +1489,15 @@
      "x": 122.39,
      "z": -62.87
     }
-   ]
+   ],
+   "name": "The New Surgery"
   },
   {
    "id": "osm-233336095",
-   "height": 9.0,
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "residential",
    "footprint": [
     {
      "x": -15.51,
@@ -1511,11 +1535,15 @@
      "x": -15.51,
      "z": 82.98
     }
-   ]
+   ],
+   "name": "Ingrave House"
   },
   {
    "id": "osm-547041904",
-   "height": 6.4,
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "map-levels",
+   "use": "parking",
    "footprint": [
     {
      "x": -170.77,
@@ -1625,11 +1653,15 @@
      "x": -170.77,
      "z": -149.16
     }
-   ]
+   ],
+   "name": "Sainsbury's Customer Parking"
   },
   {
    "id": "osm-551333853",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": 72.65,
@@ -1687,7 +1719,10 @@
   },
   {
    "id": "osm-909595877",
-   "height": 9.0,
+   "height": 3.6,
+   "levels": 1,
+   "heightSource": "estimated",
+   "use": "utility",
    "footprint": [
     {
      "x": 3.74,
@@ -1713,7 +1748,10 @@
   },
   {
    "id": "osm-909595878",
-   "height": 9.0,
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "residential",
    "footprint": [
     {
      "x": -16.96,
@@ -1739,7 +1777,10 @@
   },
   {
    "id": "osm-1144094695",
-   "height": 9.0,
+   "height": 7.0,
+   "levels": 2,
+   "heightSource": "estimated",
+   "use": "residential",
    "footprint": [
     {
      "x": -128.43,
@@ -1789,7 +1830,10 @@
   },
   {
    "id": "osm-1144101066",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -64.17,
@@ -1823,11 +1867,15 @@
      "x": -64.17,
      "z": 52.33
     }
-   ]
+   ],
+   "name": "Halifax"
   },
   {
    "id": "osm-1144101704",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -47.66,
@@ -1873,11 +1921,15 @@
      "x": -47.66,
      "z": 44.15
     }
-   ]
+   ],
+   "name": "KFC"
   },
   {
    "id": "osm-1247362491",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -34.48,
@@ -1919,7 +1971,10 @@
   },
   {
    "id": "osm-1247362492",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
    "footprint": [
     {
      "x": 7.91,
@@ -1953,7 +2008,10 @@
   },
   {
    "id": "osm-1334003525",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -46.73,
@@ -1975,11 +2033,15 @@
      "x": -46.73,
      "z": 10.71
     }
-   ]
+   ],
+   "name": "Greggs"
   },
   {
    "id": "osm-1387913020",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "other",
    "footprint": [
     {
      "x": -16.96,
@@ -2005,7 +2067,10 @@
   },
   {
    "id": "osm-1387914270",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -64.85,
@@ -2027,11 +2092,15 @@
      "x": -64.85,
      "z": -105.22
     }
-   ]
+   ],
+   "name": "Ongar Road Dental Surgery"
   },
   {
    "id": "osm-1387914513",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -59.84,
@@ -2061,11 +2130,15 @@
      "x": -59.84,
      "z": -99.23
     }
-   ]
+   ],
+   "name": "Landons Solicitors"
   },
   {
    "id": "osm-1388828192",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -46.73,
@@ -2087,11 +2160,15 @@
      "x": -46.73,
      "z": 10.71
     }
-   ]
+   ],
+   "name": "Saffron Building Society"
   },
   {
    "id": "osm-1388829599",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -45.76,
@@ -2113,11 +2190,15 @@
      "x": -45.76,
      "z": 0.06
     }
-   ]
+   ],
+   "name": "Rossi"
   },
   {
    "id": "osm-1388829600",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -35.66,
@@ -2139,11 +2220,15 @@
      "x": -35.66,
      "z": -4.16
     }
-   ]
+   ],
+   "name": "Dogs Trust"
   },
   {
    "id": "osm-1408939552",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -90.68,
@@ -2173,11 +2258,15 @@
      "x": -90.68,
      "z": 64.58
     }
-   ]
+   ],
+   "name": "Vodafone"
   },
   {
    "id": "osm-1408939553",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -86.49,
@@ -2207,11 +2296,15 @@
      "x": -86.49,
      "z": 73.69
     }
-   ]
+   ],
+   "name": "Specsavers"
   },
   {
    "id": "osm-1410143153",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -40.55,
@@ -2233,11 +2326,15 @@
      "x": -40.55,
      "z": -2.2
     }
-   ]
+   ],
+   "name": "The Beauty Bar"
   },
   {
    "id": "osm-1410199072",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -7.23,
@@ -2259,11 +2356,15 @@
      "x": -7.23,
      "z": -18.42
     }
-   ]
+   ],
+   "name": "Cut 'N' Shave"
   },
   {
    "id": "osm-1410199073",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -16.05,
@@ -2285,11 +2386,15 @@
      "x": -16.05,
      "z": -12.88
     }
-   ]
+   ],
+   "name": "Brentwood Mini Market"
   },
   {
    "id": "osm-1410199074",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -11.87,
@@ -2319,11 +2424,15 @@
      "x": -11.87,
      "z": -4.13
     }
-   ]
+   ],
+   "name": "PizzaExpress"
   },
   {
    "id": "osm-1411040044",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -26.86,
@@ -2353,11 +2462,15 @@
      "x": -26.86,
      "z": 2.72
     }
-   ]
+   ],
+   "name": "Navateet"
   },
   {
    "id": "osm-1411050534",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -72.56,
@@ -2391,7 +2504,10 @@
   },
   {
    "id": "osm-1411050763",
-   "height": 9.0,
+   "height": 10.2,
+   "levels": 3,
+   "heightSource": "estimated",
+   "use": "shop",
    "footprint": [
     {
      "x": -52.16,
@@ -2433,7 +2549,8 @@
      "x": -52.16,
      "z": 13.04
     }
-   ]
+   ],
+   "name": "Giggling Squid"
   }
  ],
  "trees": [
@@ -2526,6 +2643,218 @@
    "z": -22.98
   }
  ],
+ "ground": "paved",
+ "areas": [
+  {
+   "kind": "parking",
+   "polygon": [
+    {
+     "x": -89.02,
+     "z": 98.64
+    },
+    {
+     "x": -84.0,
+     "z": 96.5
+    },
+    {
+     "x": -87.81,
+     "z": 88.25
+    },
+    {
+     "x": -78.83,
+     "z": 84.06
+    },
+    {
+     "x": -72.89,
+     "z": 94.98
+    },
+    {
+     "x": -75.68,
+     "z": 96.8
+    },
+    {
+     "x": -70.99,
+     "z": 105.5
+    },
+    {
+     "x": -82.69,
+     "z": 111.89
+    },
+    {
+     "x": -89.02,
+     "z": 98.64
+    }
+   ]
+  },
+  {
+   "kind": "parking",
+   "polygon": [
+    {
+     "x": -37.49,
+     "z": 138.92
+    },
+    {
+     "x": -40.41,
+     "z": 142.2
+    },
+    {
+     "x": -40.28,
+     "z": 146.61
+    },
+    {
+     "x": -38.7,
+     "z": 150.77
+    },
+    {
+     "x": -8.02,
+     "z": 135.63
+    },
+    {
+     "x": -10.21,
+     "z": 131.57
+    },
+    {
+     "x": -19.66,
+     "z": 129.51
+    },
+    {
+     "x": -37.49,
+     "z": 138.92
+    }
+   ]
+  },
+  {
+   "kind": "grass",
+   "polygon": [
+    {
+     "x": -94.33,
+     "z": -113.35
+    },
+    {
+     "x": -80.47,
+     "z": -125.64
+    },
+    {
+     "x": -66.14,
+     "z": -109.48
+    },
+    {
+     "x": -83.19,
+     "z": -95.12
+    },
+    {
+     "x": -90.5,
+     "z": -107.92
+    },
+    {
+     "x": -94.33,
+     "z": -113.35
+    }
+   ]
+  },
+  {
+   "kind": "grass",
+   "polygon": [
+    {
+     "x": -63.76,
+     "z": -78.04
+    },
+    {
+     "x": -50.62,
+     "z": -88.82
+    },
+    {
+     "x": -49.43,
+     "z": -84.59
+    },
+    {
+     "x": -49.37,
+     "z": -79.35
+    },
+    {
+     "x": -50.36,
+     "z": -74.99
+    },
+    {
+     "x": -54.53,
+     "z": -67.91
+    },
+    {
+     "x": -62.13,
+     "z": -61.93
+    },
+    {
+     "x": -69.42,
+     "z": -73.24
+    },
+    {
+     "x": -63.76,
+     "z": -78.04
+    }
+   ]
+  },
+  {
+   "kind": "grass",
+   "polygon": [
+    {
+     "x": -10.93,
+     "z": -120.46
+    },
+    {
+     "x": 4.35,
+     "z": -129.23
+    },
+    {
+     "x": 15.84,
+     "z": -126.92
+    },
+    {
+     "x": 22.51,
+     "z": -116.25
+    },
+    {
+     "x": 22.14,
+     "z": -113.38
+    },
+    {
+     "x": 21.22,
+     "z": -110.6
+    },
+    {
+     "x": 19.73,
+     "z": -107.82
+    },
+    {
+     "x": 7.96,
+     "z": -99.94
+    },
+    {
+     "x": 5.55,
+     "z": -99.66
+    },
+    {
+     "x": 3.41,
+     "z": -99.94
+    },
+    {
+     "x": -10.93,
+     "z": -120.46
+    }
+   ]
+  }
+ ],
+ "furniture": [
+  {
+   "kind": "bus-stop",
+   "position": {
+    "x": 37.27,
+    "z": 52.45
+   },
+   "facingDeg": 230.7,
+   "source": "OSM node 474895676 (Wilsons Corner)"
+  }
+ ],
+ "townLampSpacing": 30,
  "spawn": {
   "position": {
    "x": -29.27,

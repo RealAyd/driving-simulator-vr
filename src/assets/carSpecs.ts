@@ -28,3 +28,9 @@ export const CAR_MODEL:CarModelSpec=CAR_MODELS['quaternius-normal-car-1'];
 
 /** Paint colours for parked cars: everyday colours, none purple or yellow (those identify the exercise's road users). */
 export const PARKED_CAR_COLOURS=['#c9ccd1','#3f444b','#f1f1ee','#1f2f4f','#8e1f1f','#17191c','#2f4a3a','#6d737b'] as const;
+
+/**
+ * A plain white panel van drawn from project-owned geometry (src/world/streetscapeMesh.ts):
+ * no free model with a clear licence was found. Its body fills exactly its collision box.
+ */
+export const PANEL_VAN={id:'project-panel-van',length:5.3,width:2.0,height:2.3} as const;

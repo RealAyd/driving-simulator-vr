@@ -29,3 +29,7 @@ OpenStreetMap became reachable after the environment's allowed domains were upda
 | Signal crossing, High Street | node 8906638846 | studs and stop lines only; the lights are **not simulated** yet |
 
 Kerb lines at the junction corners, lane arrows, signs and real road widths are not in the data and are not modelled. The start point is the first Street View position (S0) moved onto the eastbound lane.
+
+## 2026-10-18: scenery from the same extract
+
+`osm_extract.py` now also records each building's `building` tag and whether a business is mapped on it or inside it (shop, office, craft, or a café/bank/restaurant-type amenity). `build_location.py` uses this to choose each building's use (for example, shopfronts only for mapped businesses) and estimates storeys where `building:levels` is missing (`heightSource: estimated`). OSM grass, park and car-park areas and bus stops beside a modelled road are included. Street lights are not mapped here; lights in the scene are representative. No new data was downloaded for the scene. A wider survey for the practice-area proposal (OSM API, 2026-10-18) is described in `PRACTICE-AREA-PROPOSAL.md`.

@@ -75,6 +75,13 @@ export const ScenarioSchema=z.object({
    * arrows showing the traffic direction.
    */
   guide:z.object({path:z.array(point).min(2),arrows:z.array(point).default([])}).strict().optional(),
+  /**
+   * Traffic signals at the location's signal crossings, as this exercise runs
+   * them. Heads are drawn only for crossings listed here, showing this state,
+   * so what the learner sees always matches what the exercise does. 'green':
+   * no pedestrian phase is simulated, the lights stay at green throughout.
+   */
+  signals:z.record(z.string(),z.enum(['green'])).default({}),
   /** The learner's car cannot move (introductions and demonstrations). */
   stationary:z.boolean().default(false),
   /**

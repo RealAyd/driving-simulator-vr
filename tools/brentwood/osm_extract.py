@@ -24,6 +24,16 @@ def xy(i):
 near = lambda p, r=EXTENT: abs(p[0]) <= r and abs(p[1]) <= r
 
 DRIVABLE = {'primary', 'secondary', 'tertiary', 'residential', 'unclassified'}
+BUSINESS = ('shop', 'office', 'craft')
+BUSINESS_AMENITY = {'cafe', 'fast_food', 'restaurant', 'bank', 'pharmacy', 'pub', 'bar', 'dentist', 'doctors', 'theatre', 'studio', 'dojo'}
+
+def inside(p, poly):
+    """Point in polygon (ray casting)."""
+    x, y, hit = p[0], p[1], False
+    for (x1, y1), (x2, y2) in zip(poly, poly[1:] + poly[:1]):
+        if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+            hit = not hit
+    return hit
 roads, buildings, areas = [], [], []
 for w in osm.iter('way'):
     tg = tags(w)
@@ -37,9 +47,22 @@ for w in osm.iter('way'):
                       'lanes': int(tg['lanes']) if tg.get('lanes', '').isdigit() else None,
                       'points': pts})
     elif 'building' in tg:
-        buildings.append({'osmWay': int(w.get('id')), 'name': tg.get('name'), 'levels': tg.get('building:levels'), 'polygon': pts})
+        buildings.append({'osmWay': int(w.get('id')), 'name': tg.get('name'), 'levels': tg.get('building:levels'),
+                          'building': tg['building'],
+                          # A shop, café, bank, office etc. mapped on the building itself.
+                          'business': any(k in tg for k in BUSINESS) or tg.get('amenity') in BUSINESS_AMENITY,
+                          'polygon': pts})
     elif tg.get('amenity') == 'parking' or tg.get('landuse') in ('grass',) or tg.get('leisure') == 'park':
         areas.append({'osmWay': int(w.get('id')), 'kind': tg.get('amenity') or tg.get('landuse') or tg.get('leisure'), 'polygon': pts})
+
+# Businesses mapped as points inside a building outline (most shops in OSM are mapped this way).
+business_points = []
+for n in osm.iter('node'):
+    tg = tags(n)
+    if any(k in tg for k in BUSINESS) or tg.get('amenity') in BUSINESS_AMENITY:
+        business_points.append(xy(n.get('id')))
+for b in buildings:
+    b['businessPoints'] = sum(1 for p in business_points if inside(p, b['polygon']))
 
 features = []
 for n in osm.iter('node'):

@@ -17,7 +17,7 @@ import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODEL,CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
-import type {CarModelId} from '../assets/carSpecs';
+import {PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
@@ -42,11 +42,13 @@ import {SteeringAssist} from '../vehicle/steeringAssist';
 import {VehicleController,type ControlSource} from '../vehicle/vehicleController';
 import {buildWorld} from '../world/buildWorld';
 import {layoutStreetscape} from '../world/streetscape';
+import {layoutTownscape} from '../world/townscape';
 import {buildStreetscape} from '../world/streetscapeMesh';
 import {CompositeCollisions,pointToBox,type DynamicFootprint} from '../world/collisions';
 import {StaticObstacles} from '../world/obstacles';
 import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
+import {buildSignalHeads} from '../world/signals';
 import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
@@ -158,16 +160,17 @@ export async function boot():Promise<void>{
   let carModels=new Map<CarModelId,CarModel|null>();
   let sceneryStats={houses:0,parkedCars:0,colliders:0};
   const dressLocation=()=>{
-    const layout=layoutStreetscape(place);
+    const layout=layoutStreetscape(place)??layoutTownscape(place);
     const parked:ParkedCar[]=[
-      ...place.blocks.filter(b=>b.vehicleModel).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
+      ...place.blocks.filter(b=>b.vehicleModel&&b.vehicleModel in CAR_MODELS).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
       ...(layout?.cars??[]).map(c=>({model:c.model,colour:c.colour,x:c.x,y:c.y,z:c.z,heading:c.heading}))
     ];
-    if(layout)buildStreetscape(scene,layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})));
+    const vans=place.blocks.filter(b=>b.vehicleModel===PANEL_VAN.id).map(b=>({x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg),width:b.size.width,length:b.size.depth,height:b.size.height,colour:b.colour??'#e9e9e4'}));
+    if(layout||vans.length>0)buildStreetscape(scene,layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
     bakeParkedCars(scene,world.root,parked,carModels);
     const colliders=[...place.blocks,...(layout?.colliders??[])];
     staticObstacles=new StaticObstacles(colliders);
-    sceneryStats={houses:layout?.houses.length??0,parkedCars:parked.length,colliders:colliders.length};
+    sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
   };
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
   const showCredit=()=>{
@@ -317,6 +320,9 @@ export async function boot():Promise<void>{
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
     const guided=!!scenario.guide&&showGuide;
     const guide=guided?buildGuide(scene,scenario.guide!.path,scenario.guide!.arrows):null;
+    const signals=buildSignalHeads(scene,place,scenario.signals);
+    // Signal poles are solid, like lamp columns.
+    for(const pole of signals.poles)dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
 
     const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
     const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):null;
@@ -397,6 +403,7 @@ export async function boot():Promise<void>{
       dispose(){
         for(const v of visuals)v.dispose();
         guide?.dispose();
+        signals.dispose();
         for(const m of modules)if(m!==observation)m.dispose();
         dynamicFootprints.length=0;
       }
@@ -1291,7 +1298,7 @@ export async function boot():Promise<void>{
     variant:()=>runtime?.variant?.id??null,
     allMirrorsLive:(on:boolean)=>{allMirrorsLive=on},
     /** Diagnostics: pixels of a colour ('yellow' cyclist, 'purple' car) in a mirror's own image, and their mean position across it (0 = driver's left). */
-    mirrorPixels:async(id:string,colour:'yellow'|'purple')=>{
+    mirrorPixels:async(id:string,colour:'yellow'|'purple'|'red'|'blue')=>{
       const m=mirrors.find(x=>x.spec.id===id);
       const data=await m?.texture.readPixels() as Uint8Array|undefined;
       if(!m||!data)return null;
@@ -1299,11 +1306,15 @@ export async function boot():Promise<void>{
       let n=0,sx=0;
       for(let i=0;i<data.length;i+=4){
         const r=data[i]!,g=data[i+1]!,b=data[i+2]!;
-        if(colour==='purple'?r>90&&b>150&&g<90:r>140&&g>110&&b<80&&r>=g){n++;sx+=(i/4)%w}
+        // Red and blue are strict (car paint), so brick, clay roofs and sky do not count.
+        const hit=colour==='purple'?r>90&&b>150&&g<90:colour==='red'?r>110&&g<45&&b<45:colour==='blue'?b>110&&r<50&&g<95&&b>g+40:r>140&&g>110&&b<80&&r>=g;
+        if(hit){n++;sx+=(i/4)%w}
       }
       // The image is mirrored on the glass (uScale −1), so the glass position is 1 − x.
       return {n,x:n?1-sx/n/w:null};
     },
+    /** Diagnostics: the static collider (scenery, parked vehicle) a box at this pose would touch, or null. */
+    staticObstacleAt:(x:number,z:number,heading:number,halfWidth:number,halfLength:number)=>staticObstacles.firstCollision({position:{x,y:0,z},heading},halfWidth,halfLength),
     /** Diagnostics: switch mirror rendering off to measure what it costs. */
     mirrorsEnabled:(on:boolean)=>{mirrorsOn=on},
     /** Diagnostics: use this timing variation from the next attempt (null = random). */

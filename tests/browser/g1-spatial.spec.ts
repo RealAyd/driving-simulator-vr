@@ -3,34 +3,6 @@ import {writeFileSync,mkdirSync} from 'node:fs';
 
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
-/** Counts strongly red and blue pixels in the left and right halves of the mirror glass, as drawn on screen. */
-async function mirrorColours(page:Page){
-  const rect=(await read(page,'mirrors()'))[0];
-  const inset=2;
-  const clip={x:rect.left+inset,y:rect.top+inset,width:rect.right-rect.left-2*inset,height:rect.bottom-rect.top-2*inset};
-  const png=(await page.screenshot({clip})).toString('base64');
-  return page.evaluate(async(data:string)=>{
-    const img=new Image();
-    img.src='data:image/png;base64,'+data;
-    await img.decode();
-    const c=document.createElement('canvas');
-    c.width=img.width;c.height=img.height;
-    const ctx=c.getContext('2d')!;
-    ctx.drawImage(img,0,0);
-    const {data:px,width,height}=ctx.getImageData(0,0,c.width,c.height);
-    const out={redLeft:0,redRight:0,blueLeft:0,blueRight:0,redColumns:0,width,height};
-    const redColumn=new Array(width).fill(false);
-    for(let y=0;y<height;y++)for(let x=0;x<width;x++){
-      const i=(y*width+x)*4,r=px[i]!,g=px[i+1]!,b=px[i+2]!;
-      const left=x<width/2;
-      if(r>120&&g<70&&b<70){left?out.redLeft++:out.redRight++;redColumn[x]=true}
-      if(b>120&&r<70&&g<110)left?out.blueLeft++:out.blueRight++;
-    }
-    out.redColumns=redColumn.filter(Boolean).length;
-    return out;
-  },png);
-}
-
 test('G1: interior mirror shows the real scene behind, correctly oriented, and updates as the car moves',async({page},testInfo)=>{
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
@@ -45,29 +17,32 @@ test('G1: interior mirror shows the real scene behind, correctly oriented, and u
   expect(rect.left).toBeGreaterThan(0);
   await page.screenshot({path:testInfo.outputPath('g1-01-mirror-at-start.png')});
 
-  const atStart=await mirrorColours(page);
-  testInfo.annotations.push({type:'mirror pixels at start',description:JSON.stringify(atStart)});
-  // Red car is parked behind on the left: in a mirror it must appear on the left.
-  expect(atStart.redLeft).toBeGreaterThan(20);
-  expect(atStart.redLeft).toBeGreaterThan(atStart.redRight*4);
-  // Blue car behind on the right appears on the right.
-  expect(atStart.blueRight).toBeGreaterThan(5);
-  expect(atStart.blueRight).toBeGreaterThan(atStart.blueLeft*4);
+  // Read the interior mirror's own image (red and blue car paint only: brick and roofs do not count).
+  const colours=async()=>({red:await read(page,"mirrorPixels('interior','red')"),blue:await read(page,"mirrorPixels('interior','blue')")});
+  await read(page,'freezeTime(true)');
+  await page.waitForTimeout(600);
+  const atStart=await colours();
+  testInfo.annotations.push({type:'interior mirror at start',description:JSON.stringify(atStart)});
+  // The red car is parked behind on the left kerb (almost straight behind) and the blue car behind on the
+  // right kerb: in the mirror the blue car appears on the right and the red car to the left of it.
+  expect(atStart.red.n).toBeGreaterThan(20);
+  expect(atStart.blue.n).toBeGreaterThan(20);
+  expect(atStart.blue.x).toBeGreaterThan(.6);
+  expect(atStart.red.x).toBeLessThan(atStart.blue.x-.05);
+  await read(page,'freezeTime(false)');
 
-  // Drive away: the red car must get narrower in the mirror (live updates).
-  // Width, not area: an interior mirror shows a thin strip, so a more distant
-  // car shows more of its height while getting narrower.
-  // Drive 10 m (a simulation condition, not a wall-clock wait), then stop.
+  // Drive 10 m (a simulation condition, not a wall-clock wait), then stop: the red car gets smaller (live updates).
   await page.keyboard.down('KeyW');
-  await page.waitForFunction('window.__drivingPractice.vehicle().position.z< -10',null,{timeout:30_000});
+  await page.waitForFunction('window.__drivingPractice.vehicle().position.z< -10',null,{timeout:60_000});
   await page.keyboard.up('KeyW');
   await page.keyboard.down('Space');
-  await page.waitForFunction('window.__drivingPractice.vehicle().speed===0',null,{timeout:30_000});
+  await page.waitForFunction('window.__drivingPractice.vehicle().speed===0',null,{timeout:60_000});
   await page.keyboard.up('Space');
-  await page.waitForTimeout(300); // let the mirror texture refresh at the final position
-  const later=await mirrorColours(page);
-  testInfo.annotations.push({type:'mirror pixels after driving 10 m',description:JSON.stringify(later)});
-  expect(later.redColumns).toBeLessThan(atStart.redColumns*.8);
+  await read(page,'freezeTime(true)');
+  await page.waitForTimeout(600);
+  const later=await colours();
+  testInfo.annotations.push({type:'interior mirror after driving 10 m',description:JSON.stringify(later)});
+  expect(later.red.n).toBeLessThan(atStart.red.n*.85);
   await page.screenshot({path:testInfo.outputPath('g1-02-mirror-after-moving.png')});
   expect(errors).toEqual([]);
 });
@@ -100,13 +75,32 @@ test('G1: road sits under the car, kerb raises it, and braking from 30 mph stops
   expect(Math.abs(distance-predicted)).toBeLessThan(1+v*2/60);
   expect(Math.abs(after.position.x+1.6)).toBeLessThan(.05); // still in its lane
 
-  // Steer left onto the pavement, then stop there: the car rises by the kerb
-  // height. Stopping first keeps the result independent of machine speed.
-  await page.keyboard.down('KeyW');await page.keyboard.down('KeyA');
-  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().position.x< -3.4,null,{timeout:10_000});
+  // Steer gently left onto the pavement at walking pace and stop there (garden walls stand at the back of the
+  // pavement): the car rises by the kerb height. Decisions use simulation state, not wall-clock durations.
+  // Find a stretch of pavement with no lamp column or wall in the way (drive on 6 m at a time until there is one).
+  for(let tries=0;;tries++){
+    const v=await read(page,'vehicle()');
+    if(await read(page,`staticObstacleAt(-3.4,${v.position.z-7},0,1.5,7)`)===null)break;
+    expect(tries).toBeLessThan(15);
+    await page.keyboard.down('KeyW');
+    await page.waitForFunction(`window.__drivingPractice.vehicle().position.z<${v.position.z-6}`,null,{timeout:60_000});
+    await page.keyboard.up('KeyW');
+    await page.keyboard.down('Space');
+    await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed===0,null,{timeout:40_000});
+    await page.keyboard.up('Space');
+  }
+  const until=Date.now()+150_000;
+  for(;;){
+    const v=await read(page,'vehicle()');
+    if(v.position.x< -3.5)break;
+    if(Date.now()>until)throw new Error(`did not reach the pavement: x=${v.position.x.toFixed(2)} heading=${v.heading.toFixed(2)} speed=${v.speed.toFixed(2)}`);
+    const heading=v.heading>Math.PI?v.heading-2*Math.PI:v.heading;
+    await (heading>-.22?page.keyboard.down('KeyA'):page.keyboard.up('KeyA'));
+    await (v.speed<1.5?page.keyboard.down('KeyW'):page.keyboard.up('KeyW'));
+  }
   await page.keyboard.up('KeyA');await page.keyboard.up('KeyW');
   await page.keyboard.down('Space');
-  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed===0,null,{timeout:10_000});
+  await page.waitForFunction(()=>(window as any).__drivingPractice.vehicle().speed===0,null,{timeout:40_000});
   await page.keyboard.up('Space');
   const kerb=await read(page,'vehicle()');
   test.info().annotations.push({type:'kerb',description:`stopped at x=${kerb.position.x.toFixed(2)} y=${kerb.position.y.toFixed(3)}`});

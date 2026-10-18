@@ -9,10 +9,10 @@ const road=location.roads[0]!;
 
 describe('road geometry',()=>{
   it('reports positive lateral offset to the right of travel',()=>{
-    // Centreline runs north (-Z) from z=40; east (+X) is to the right.
+    // Centreline runs north (-Z) from z=330; east (+X) is to the right.
     expect(sampleRoad(road,2,-10).lateral).toBeCloseTo(2,9);
     expect(sampleRoad(road,-2,-10).lateral).toBeCloseTo(-2,9);
-    expect(sampleRoad(road,0,-10).along).toBeCloseTo(50,9);
+    expect(sampleRoad(road,0,-10).along).toBeCloseTo(340,9);
   });
   it('distinguishes carriageway, raised pavement and off-road ground',()=>{
     expect(surfaceAt(location,-1.6,0)).toMatchObject({kind:'carriageway',height:0});

@@ -39,6 +39,8 @@ export const BlockSchema=z.object({
   size:z.object({width:z.number().positive(),depth:z.number().positive(),height:z.number().positive()}).strict(),
   /** Blocks driver sight lines (true) or is decorative only. */
   occludes:z.boolean().default(true),
+  /** How it is drawn: a plain box, or a stone obelisk on a plinth (a memorial) filling the same box. */
+  shape:z.enum(['box','obelisk']).default('box'),
   /** Optional display colour, #rrggbb. */
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 }).strict();
@@ -72,12 +74,39 @@ export const JunctionSchema=z.object({
   entries:z.array(z.string()).default([])
 }).strict();
 
-/** Building outline extruded as walls only (never seen from above at driver height). */
+/**
+ * Building outline (from map data) drawn with brick or render walls, windows
+ * on each storey, a flat roof and, where a business is mapped, shopfronts on
+ * the ground floor facing the road (src/world/townscape.ts).
+ */
 export const BuildingSchema=z.object({
   id:z.string().min(1),
   footprint:z.array(point).min(3),
   height:z.number().min(2).max(60),
+  /** Storeys (from map data where given, otherwise estimated: see heightSource). */
+  levels:z.number().int().min(1).max(20).optional(),
+  /** Where the height comes from: map data (building:levels) or our estimate from the building's use. */
+  heightSource:z.enum(['map-levels','estimated']).default('estimated'),
+  /** What the building is used for (map data): shops get shopfronts; car parks open decks; others windows. */
+  use:z.enum(['shop','residential','office','civic','church','school','parking','utility','other']).default('other'),
+  /** Optional name from map data (shown in review documents only; never drawn on the building). */
+  name:z.string().optional(),
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
+}).strict();
+
+/** A ground area from map data: grass or a park, or a surface car park. */
+export const AreaSchema=z.object({
+  kind:z.enum(['grass','parking']),
+  polygon:z.array(point).min(3)
+}).strict();
+
+/** Street furniture placed from map data (a bus stop pole where one is mapped). */
+export const FurnitureSchema=z.object({
+  kind:z.enum(['bus-stop']),
+  position:point,
+  /** Compass direction the flag faces (towards the road), degrees. */
+  facingDeg:z.number().default(0),
+  source:z.string().optional()
 }).strict();
 
 /**
@@ -150,6 +179,12 @@ export const LocationSchema=z.object({
   junctions:z.array(JunctionSchema).default([]),
   buildings:z.array(BuildingSchema).default([]),
   trees:z.array(point).default([]),
+  /** Ground between roads and buildings: grass (residential verges) or paving (a town centre). */
+  ground:z.enum(['grass','paved']).default('grass'),
+  areas:z.array(AreaSchema).default([]),
+  furniture:z.array(FurnitureSchema).default([]),
+  /** Street lights along every road at this spacing, in town layouts without a streetscape (0 = none). */
+  townLampSpacing:z.number().min(0).default(0),
   models:z.array(PlacedModelSchema).default([]),
   streetscape:StreetscapeSchema.optional(),
   spawn:z.object({position:point,headingDeg:z.number(),roadId:z.string()}).strict()

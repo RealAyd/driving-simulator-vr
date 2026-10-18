@@ -110,11 +110,14 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   const tarmac=material(scene,'tarmac',new Color3(.24,.25,.27));
   const pavement=material(scene,'pavement',new Color3(.58,.57,.55));
   const kerb=material(scene,'kerb',new Color3(.7,.7,.68));
-  const grass=material(scene,'grass',new Color3(.33,.47,.27));
+  // The ground between roads and buildings: grass verges, or paving in a town centre.
+  const grass=material(scene,'grass',location.ground==='paved'?new Color3(.6,.59,.56):new Color3(.33,.47,.27));
   const white=material(scene,'road-white',new Color3(.95,.95,.93));
   white.emissiveColor=new Color3(.25,.25,.25);
 
-  const ground=CreateGround('verge',{width:2000,height:2000},scene);
+  // Subdivided: one huge two-triangle plane loses depth precision where it is clipped near the camera, and the grass
+  // 2 cm below then shows through the road (seen in software rendering from some viewpoints).
+  const ground=CreateGround('verge',{width:2000,height:2000,subdivisions:40},scene);
   ground.position.y=-.02;
   ground.material=grass;
   ground.parent=root;
@@ -250,8 +253,8 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   const blockMaterials=new Map<string,StandardMaterial>();
   for(const block of location.blocks){
     if(quality.decorativeDetail==='reduced'&&!block.occludes)continue;
-    // Parked cars with a model are drawn by bakeParkedCars (src/assets/models.ts).
-    if(block.vehicleModel)continue;
+    // Parked vehicles with a model and shaped blocks (memorials) are drawn with the scenery.
+    if(block.vehicleModel||block.shape!=='box')continue;
     const key=block.colour??block.kind;
     let mat=blockMaterials.get(key);
     if(!mat){
@@ -266,37 +269,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
     if(block.occludes)occluders.push(box);
   }
 
-  // Buildings: walls only, extruded from their outlines (roofs are never seen from the driver's seat).
-  const wallMaterials=new Map<string,StandardMaterial>();
-  const facade=['#a8806a','#c9b79c','#8f6b5a','#d8cfc0','#9a8e84','#b98f74'];
-  location.buildings.forEach((b,i)=>{
-    const colour=b.colour??facade[i%facade.length]!;
-    let mat=wallMaterials.get(colour);
-    if(!mat){mat=material(scene,`facade-${colour}`,Color3.FromHexString(colour));wallMaterials.set(colour,mat)}
-    const ring=[...b.footprint];
-    const first=ring[0]!,last=ring.at(-1)!;
-    if(first.x!==last.x||first.z!==last.z)ring.push(first);
-    const walls=CreateRibbon(`building-${b.id}`,{pathArray:[ring.map(p=>new Vector3(p.x,0,p.z)),ring.map(p=>new Vector3(p.x,b.height,p.z))],sideOrientation:2},scene);
-    walls.parent=root;
-    add(mat,walls);
-  });
-
-  // Trees: trunk and a simple crown, decorative only.
-  if(location.trees.length>0){
-    const bark=material(scene,'bark',new Color3(.33,.25,.18));
-    const leaves=material(scene,'leaves',new Color3(.22,.4,.2));
-    location.trees.forEach((t,i)=>{
-      const trunk=CreateCylinder(`tree-${i}-trunk`,{height:3,diameter:.35,tessellation:8},scene);
-      trunk.position.set(t.x,1.5,t.z);
-      trunk.parent=root;
-      add(bark,trunk);
-      const crown=CreateSphere(`tree-${i}-crown`,{diameter:4.5,segments:6},scene);
-      crown.position.set(t.x,4.6,t.z);
-      crown.scaling.y=1.15;
-      crown.parent=root;
-      add(leaves,crown);
-    });
-  }
+  // Buildings, map trees, areas and street furniture are drawn with the scenery (townscape.ts, streetscapeMesh.ts).
 
   // One draw call per material for everything static.
   for(const [mat,meshes] of byMaterial){

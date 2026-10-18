@@ -79,6 +79,18 @@ None at present. The trial placements (London terrace house, supermarket, Downto
 - a supermarket and a five-storey block do not belong in this residential street;
 - signals are not simulated, and a signal head that never changes would mislead the learner.
 
+**Zebra crossing street (2026-10-18):** the same project-owned streetscape and CC0 parked cars. The parked van is project-owned geometry (`panelVan` in `streetscapeMesh.ts`): no free van model with a clear licence was found, and its body fills exactly the van's existing 2.0 × 5.3 × 2.3 m collision box, so the hazard it creates is unchanged.
+
+**Brentwood mini-roundabouts (2026-10-18):** project-owned geometry generated from the OpenStreetMap building outlines (`src/world/townscape.ts`), not models:
+- brick, render, stone or concrete walls with storey windows and a flat roof behind a parapet;
+- generic shopfronts with no names, logos or signage, only where OSM maps a business;
+- the William Hunter memorial as an obelisk;
+- a bus-stop pole and flag;
+- street lights and trees in the streetscape style;
+- signal heads (`src/world/signals.ts`).
+
+The Downtown MegaKit façade modules (CC0) were considered. They would need cutting to arbitrary OSM outlines, and their American shopfronts would not suit Brentwood, so they are not used. No new third-party assets.
+
 The Moving off street is now project-owned geometry (`src/world/streetscape.ts`, `streetscapeMesh.ts`, textures drawn at load in `sceneryTextures.ts`) plus the CC0 parked cars. The optional-model mechanism (a location's `models` list, private files in `public/assets/licensed/`) remains for later use. Earlier trial screenshots: `docs/verification/assets/`.
 
 ## Downtown City MegaKit, Standard (Quaternius, CC0): starter selection

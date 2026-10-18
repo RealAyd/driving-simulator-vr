@@ -1,15 +1,15 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "representative-residential-straight",
   "name": "Representative residential road",
   "fidelity": "representative",
   "drivingSide": "left",
-  "description": "A plausible UK residential street with a zebra crossing just beyond a parked van, which hides the pavement where a pedestrian waits. Not a real location or test route.",
+  "description": "A plausible UK residential street of terraces and semi-detached houses with a zebra crossing just beyond a parked van, which hides the pavement where a pedestrian waits. Not a real location or test route.",
   "sources": [
     {
       "title": "Authored placeholder layout",
       "licence": "Project-owned",
-      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements). No external data used."
+      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements, 3.5–6.5 m front gardens). Houses, gardens, street furniture and the panel van are project-owned geometry (the van from src/world/streetscapeMesh.ts); parked cars use Quaternius LowPoly Cars (CC0). No external map data used."
     }
   ],
   "reviewStatus": "unreviewed",
@@ -19,19 +19,75 @@
       "centreline": [
         {
           "x": 0,
-          "z": 40
+          "z": 330
+        },
+        {
+          "x": 0,
+          "z": 120
         },
         {
           "x": 0,
           "z": -160
         },
         {
-          "x": 12,
-          "z": -260
+          "x": 1.38,
+          "z": -180.32
         },
         {
-          "x": 40,
-          "z": -340
+          "x": 3.17,
+          "z": -200.96
+        },
+        {
+          "x": 5.47,
+          "z": -221.44
+        },
+        {
+          "x": 8.38,
+          "z": -241.28
+        },
+        {
+          "x": 12.0,
+          "z": -260.0
+        },
+        {
+          "x": 16.38,
+          "z": -277.84
+        },
+        {
+          "x": 21.47,
+          "z": -295.12
+        },
+        {
+          "x": 27.17,
+          "z": -311.48
+        },
+        {
+          "x": 33.38,
+          "z": -326.56
+        },
+        {
+          "x": 40.0,
+          "z": -340.0
+        },
+        {
+          "x": 47.23,
+          "z": -351.4
+        },
+        {
+          "x": 55.14,
+          "z": -361.0
+        },
+        {
+          "x": 63.42,
+          "z": -369.4
+        },
+        {
+          "x": 71.81,
+          "z": -377.2
+        },
+        {
+          "x": 80.0,
+          "z": -385.0
         }
       ],
       "lanes": {
@@ -49,111 +105,6 @@
   ],
   "blocks": [
     {
-      "id": "house-w-1",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -10
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-w-2",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -30
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-w-3",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -50
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-w-4",
-      "kind": "building",
-      "position": {
-        "x": -12,
-        "z": -70
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-e-1",
-      "kind": "building",
-      "position": {
-        "x": 12,
-        "z": -15
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-e-2",
-      "kind": "building",
-      "position": {
-        "x": 12,
-        "z": -35
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "house-e-3",
-      "kind": "building",
-      "position": {
-        "x": 12,
-        "z": -55
-      },
-      "size": {
-        "width": 8,
-        "depth": 9,
-        "height": 7
-      }
-    },
-    {
-      "id": "hedge-w",
-      "kind": "hedge",
-      "position": {
-        "x": -6.6,
-        "z": -40
-      },
-      "size": {
-        "width": 0.8,
-        "depth": 70,
-        "height": 1.2
-      },
-      "occludes": true
-    },
-    {
       "id": "parked-van",
       "kind": "parked-vehicle",
       "position": {
@@ -164,35 +115,102 @@
         "width": 2.0,
         "depth": 5.3,
         "height": 2.3
-      }
+      },
+      "vehicleModel": "project-panel-van",
+      "colour": "#e9e9e4"
     },
     {
       "id": "parked-car-behind-left",
       "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-1",
+      "colour": "#c81e1e",
       "position": {
-        "x": -3.6,
-        "z": 14
+        "x": -2.15,
+        "z": 62
       },
       "size": {
-        "width": 1.8,
-        "depth": 4.2,
-        "height": 1.5
+        "width": 1.81,
+        "depth": 4.22,
+        "height": 1.18
+      }
+    },
+    {
+      "id": "parked-car-behind-left-2",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-2",
+      "colour": "#3f444b",
+      "position": {
+        "x": -2.36,
+        "z": 131
       },
-      "colour": "#c81e1e"
+      "size": {
+        "width": 1.64,
+        "depth": 3.31,
+        "height": 1.15
+      }
+    },
+    {
+      "id": "parked-car-behind-left-3",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-suv",
+      "colour": "#f1f1ee",
+      "position": {
+        "x": -2.02,
+        "z": 176
+      },
+      "size": {
+        "width": 2.12,
+        "depth": 4.2,
+        "height": 1.53
+      }
     },
     {
       "id": "parked-car-behind-right",
       "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-1",
+      "colour": "#1e4fc8",
       "position": {
-        "x": 2.5,
+        "x": 2.15,
         "z": 40
       },
       "size": {
-        "width": 1.8,
-        "depth": 4.2,
-        "height": 1.5
+        "width": 1.81,
+        "depth": 4.22,
+        "height": 1.18
       },
-      "colour": "#1e4fc8"
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-behind-right-2",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-suv",
+      "colour": "#6d737b",
+      "position": {
+        "x": 2.02,
+        "z": 74
+      },
+      "size": {
+        "width": 2.12,
+        "depth": 4.2,
+        "height": 1.53
+      },
+      "headingDeg": 180
+    },
+    {
+      "id": "parked-car-behind-right-3",
+      "kind": "parked-vehicle",
+      "vehicleModel": "quaternius-normal-car-2",
+      "colour": "#17191c",
+      "position": {
+        "x": 2.36,
+        "z": 150
+      },
+      "size": {
+        "width": 1.64,
+        "depth": 3.31,
+        "height": 1.15
+      },
+      "headingDeg": 180
     }
   ],
   "spawn": {
@@ -208,9 +226,133 @@
       "id": "zebra-1",
       "roadId": "main-street",
       "kind": "zebra",
-      "along": 146,
+      "along": 436,
       "width": 4,
       "giveWayOffset": 1
     }
-  ]
+  ],
+  "streetscape": {
+    "roadId": "main-street",
+    "seed": 11,
+    "carsOnDrives": 0.3,
+    "frontages": [
+      {
+        "side": "left",
+        "from": 4,
+        "to": 150,
+        "styles": [
+          "semi-bay",
+          "semi"
+        ],
+        "palettes": [
+          "brown-brick",
+          "render-cream",
+          "red-brick"
+        ],
+        "setback": 6
+      },
+      {
+        "side": "left",
+        "from": 152,
+        "to": 330,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "red-brick",
+          "buff-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
+      },
+      {
+        "side": "left",
+        "from": 332,
+        "to": 470,
+        "styles": [
+          "semi",
+          "semi-bay",
+          "semi"
+        ],
+        "palettes": [
+          "red-brick",
+          "render-white",
+          "brown-brick"
+        ],
+        "setback": 6
+      },
+      {
+        "side": "left",
+        "from": 472,
+        "to": 640,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "brown-brick",
+          "red-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
+      },
+      {
+        "side": "right",
+        "from": 4,
+        "to": 180,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "buff-brick",
+          "red-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
+      },
+      {
+        "side": "right",
+        "from": 182,
+        "to": 360,
+        "styles": [
+          "semi",
+          "detached",
+          "semi-bay"
+        ],
+        "palettes": [
+          "render-cream",
+          "red-brick",
+          "brown-brick"
+        ],
+        "setback": 6.5
+      },
+      {
+        "side": "right",
+        "from": 362,
+        "to": 500,
+        "styles": [
+          "terrace"
+        ],
+        "palettes": [
+          "red-brick",
+          "brown-brick"
+        ],
+        "setback": 3.5,
+        "backGarden": 12
+      },
+      {
+        "side": "right",
+        "from": 502,
+        "to": 640,
+        "styles": [
+          "semi-bay",
+          "semi"
+        ],
+        "palettes": [
+          "brown-brick",
+          "render-cream"
+        ],
+        "setback": 6
+      }
+    ]
+  }
 }

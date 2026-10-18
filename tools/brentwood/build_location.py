@@ -152,14 +152,77 @@ route = [{'x': round(x, 2), 'z': round(z, 2)} for x, z in route]
 # Trees and the William Hunter memorial near the junctions.
 trees = [{'x': f['x'], 'z': -f['y']} for f in OSM['features'] if f['kind'] == 'tree' and abs(f['x']) < 110 and abs(f['y']) < 110]
 memorial = next(f for f in OSM['features'] if f['kind'] == 'memorial')
-blocks = [{'id': 'william-hunter-memorial', 'kind': 'wall', 'position': {'x': memorial['x'], 'z': -memorial['y']},
-           'size': {'width': 1.6, 'depth': 1.6, 'height': 7}, 'occludes': True, 'colour': '#9ca3af'}]
+# The memorial is an obelisk; its size here is an estimate (not surveyed).
+blocks = [{'id': 'william-hunter-memorial', 'kind': 'wall', 'shape': 'obelisk', 'position': {'x': memorial['x'], 'z': -memorial['y']},
+           'size': {'width': 1.6, 'depth': 1.6, 'height': 7}, 'occludes': True, 'colour': '#b9b4a8'}]
+
+# Building use from OSM tags; storeys from building:levels where mapped, otherwise estimated from the use.
+USE = {'retail': 'shop', 'restaurant': 'shop', 'cafe': 'shop', 'office': 'office', 'school': 'school',
+       'church': 'church', 'cathedral': 'church', 'parking': 'parking', 'garage': 'utility', 'substation': 'utility',
+       'residential': 'residential', 'apartments': 'residential', 'house': 'residential', 'terrace': 'residential'}
+ESTIMATED_LEVELS = {'shop': 3, 'office': 3, 'other': 3, 'residential': 2, 'school': 2, 'church': 1, 'parking': 2, 'utility': 1, 'civic': 2}
+STOREY = 3.2
+def building_use(b):
+    use = USE.get(b['building'], 'other')
+    if (b['business'] or b['businessPoints'] > 0) and use not in ('school', 'church', 'parking'):
+        use = 'shop'
+    return use
+
 buildings = []
 for b in OSM['buildings']:
     if any(abs(x - 5) < 110 and abs(y) < 110 for x, y in b['polygon']):
-        levels = b.get('levels')
-        buildings.append({'id': f"osm-{b['osmWay']}", 'height': round(3.2 * float(levels), 1) if levels else 9.0,
-                          'footprint': [{'x': x, 'z': -y} for x, y in b['polygon']]})
+        use = building_use(b)
+        mapped = b.get('levels')
+        levels = int(float(mapped)) if mapped else ESTIMATED_LEVELS[use]
+        if use == 'church':
+            height = 10.0                       # tall single volume (estimate)
+        elif use == 'utility':
+            height = 3.6
+        else:
+            height = round(STOREY * levels + .6, 1)   # storeys plus a parapet
+        entry = {'id': f"osm-{b['osmWay']}", 'height': height, 'levels': levels,
+                 'heightSource': 'map-levels' if mapped else 'estimated', 'use': use,
+                 'footprint': [{'x': x, 'z': -y} for x, y in b['polygon']]}
+        if b.get('name'):
+            entry['name'] = b['name']
+        buildings.append(entry)
+
+areas = [{'kind': 'parking' if a['kind'] == 'parking' else 'grass', 'polygon': [{'x': x, 'z': -y} for x, y in a['polygon']]}
+         for a in OSM['areas'] if any(abs(x - 5) < 130 and abs(y) < 130 for x, y in a['polygon'])]
+
+def nearest_on_roads(p):
+    """(distance to centreline, road, point on centreline, unit direction) of the nearest modelled road."""
+    best = None
+    for r in roads:
+        line = poly(r['id'])
+        for a, b in zip(line, line[1:]):
+            dx, dz = b[0] - a[0], b[1] - a[1]
+            l2 = dx * dx + dz * dz or 1
+            t = max(0, min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dz) / l2))
+            q = (a[0] + dx * t, a[1] + dz * t)
+            d = math.dist(p, q)
+            if best is None or d < best[0]:
+                l = math.sqrt(l2)
+                best = (d, r, q, (dx / l, dz / l))
+    return best
+
+# Bus stops mapped in OSM beside a road we model: a pole at the back of the kerb, flag facing the road.
+furniture, skipped_stops = [], []
+for f in OSM['features']:
+    if f['kind'] != 'bus-stop':
+        continue
+    p = (f['x'], -f['y'])
+    d, r, q, (ux, uz) = nearest_on_roads(p)
+    half = r['lanes']['count'] * r['lanes']['width'] / 2
+    if d > half + r['pavementWidth'] + 4:
+        skipped_stops.append(f"{f['osmNode']} ({f['name']}, {d:.0f} m from {r['id']})")
+        continue
+    side = 1 if (p[0] - q[0]) * -uz + (p[1] - q[1]) * ux > 0 else -1
+    lateral = half + .5
+    pos = (q[0] + -uz * side * lateral, q[1] + ux * side * lateral)
+    facing = math.degrees(math.atan2(-(-uz * side), (ux * side))) % 360
+    furniture.append({'kind': 'bus-stop', 'position': {'x': round(pos[0], 2), 'z': round(pos[1], 2)},
+                      'facingDeg': round(facing, 1), 'source': f"OSM node {f['osmNode']} ({f['name']})"})
 
 # Signal crossing position. Its lights are not simulated, so no signal heads are drawn:
 # a decorative signal that never changes would mislead the learner.
@@ -193,6 +256,11 @@ location = {
     'junctions': junctions,
     'buildings': buildings,
     'trees': trees,
+    'ground': 'paved',
+    'areas': areas,
+    'furniture': furniture,
+    # Street lights are not mapped in OSM here: placed at a typical spacing (representative, not surveyed).
+    'townLampSpacing': 30,
     'spawn': {'position': {'x': round(spawn_xz[0], 2), 'z': round(spawn_xz[1], 2)},
               'headingDeg': round(spawn_heading, 1), 'roadId': 'high-street'},
 }
@@ -205,6 +273,8 @@ scenario = {
     'id': 'brentwood-guided-traversal',
     'locationId': location['id'],
     'controllerDriving': {'assistedSpeedMph': 18, 'accelerationLimit': 1.5},
+    # The High Street signal crossing is real; this exercise simulates no pedestrian phase, so its lights stay green.
+    'signals': {'high-street-signals': 'green'},
     'title': 'Brentwood mini-roundabouts',
     'learningObjective': 'Approach and drive through two mini-roundabouts close together: plan your lane, '
                          'slow down, give way to traffic from the right, signal correctly and look again before the second one.',
@@ -235,5 +305,6 @@ scenario = {
 
 (ROOT / 'content/locations/brentwood-paired-mini-roundabouts.json').write_text(json.dumps(location, indent=1) + '\n')
 (ROOT / 'content/scenarios/brentwood-guided-traversal.json').write_text(json.dumps(scenario, indent=1) + '\n')
+print('bus stops placed:', len(furniture), '; not beside a modelled road:', ', '.join(skipped_stops) or 'none')
 print(f'roads {len(roads)}, buildings {len(buildings)}, trees {len(trees)}, route points {len(route)}, '
       f'spawn {location["spawn"]}, High St {L_high:.1f} m, link {L_link:.1f} m')

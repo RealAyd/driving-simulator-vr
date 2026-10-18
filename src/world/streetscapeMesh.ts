@@ -1,6 +1,7 @@
 import {Color3,Mesh,StandardMaterial,VertexData,type Scene,type TransformNode} from '../engine/babylon';
 import type {Vec2} from '../contracts';
 import {BAY,EAVES,framePoint,type Frame,type House,type HouseUnit,type StreetLayout,type Strip} from './streetscape';
+import type {BusStop,Obelisk,TownArea,TownBuilding} from './townscape';
 import {brickTexture,detailTexture,REGIONS,roofTexture,type Region} from './sceneryTextures';
 
 /**
@@ -20,9 +21,11 @@ const COLOURS={
   slate:[.46,.48,.53],clay:[.66,.4,.32],
   stone:[.84,.82,.76],hedge:[.42,.58,.33],leaves:[.38,.55,.3],fence:[.6,.47,.35],
   lawn:[.46,.62,.36],path:[.86,.84,.79],drive:[.7,.66,.62],bark:[.36,.28,.22],
-  lamp:[.36,.4,.4],lantern:[.88,.88,.84],wallBrick:[.68,.42,.33],grate:[1,1,1],shadow:[.16,.16,.17]
+  lamp:[.36,.4,.4],lantern:[.88,.88,.84],wallBrick:[.68,.42,.33],grate:[1,1,1],shadow:[.16,.16,.17],
+  ashlar:[.8,.77,.7],concrete:[.72,.71,.68],felt:[.3,.31,.33],glass:[.16,.2,.24],opening:[.1,.11,.12],carPark:[.33,.34,.36],
+  signWhite:[.93,.93,.9],busRed:[.75,.12,.1]
 } satisfies Record<string,RGB>;
-const BRICK_TILE=.9,ROOF_TILE=1;
+const BRICK_TILE=.9,ROOF_TILE=1,STOREY=3.2;
 
 class Geometry{
   readonly positions:number[]=[];
@@ -284,7 +287,189 @@ function crown(g:Geometry,x:number,y:number,z:number,rx:number,ry:number,colour:
   }
 }
 
+/** Triangles of a simple polygon in the ground plane (ear clipping); indices into `ring`. */
+export function triangulate(ring:readonly Vec2[]):number[]{
+  const area=ring.reduce((s,p,i)=>{const q=ring[(i+1)%ring.length]!;return s+p.x*q.z-q.x*p.z},0)/2;
+  const idx=ring.map((_,i)=>i);
+  if(area<0)idx.reverse();
+  const cross=(a:Vec2,b:Vec2,c:Vec2)=>(b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x);
+  const inTri=(p:Vec2,a:Vec2,b:Vec2,c:Vec2)=>cross(a,b,p)>=0&&cross(b,c,p)>=0&&cross(c,a,p)>=0;
+  const out:number[]=[];
+  let guard=0;
+  while(idx.length>3&&guard++<10000){
+    let clipped=false;
+    for(let i=0;i<idx.length;i++){
+      const ia=idx[(i+idx.length-1)%idx.length]!,ib=idx[i]!,ic=idx[(i+1)%idx.length]!;
+      const a=ring[ia]!,b=ring[ib]!,c=ring[ic]!;
+      if(cross(a,b,c)<=1e-9)continue;
+      if(idx.some(j=>j!==ia&&j!==ib&&j!==ic&&inTri(ring[j]!,a,b,c)))continue;
+      out.push(ia,ib,ic);idx.splice(i,1);clipped=true;break;
+    }
+    if(!clipped)break;
+  }
+  if(idx.length===3)out.push(idx[0]!,idx[1]!,idx[2]!);
+  return out;
+}
+
+/** A flat, horizontal polygon (any simple shape) at height y, facing up. */
+function flatArea(g:Geometry,ring:readonly Vec2[],y:number,colour:RGB):void{
+  const tris=triangulate(ring);
+  for(let i=0;i<tris.length;i+=3)g.flat([tris[i]!,tris[i+1]!,tris[i+2]!].map(k=>[ring[k]!.x,y,ring[k]!.z] as V3),colour,[0,1,0]);
+}
+
+/**
+ * A town building from its outline: walls (brick tiled in metres, or render, stone or concrete), a parapet
+ * and flat roof, windows on each storey, and shopfronts on the ground floor where the layout says so.
+ */
+function townBuilding(b:Builders,t:TownBuilding):void{
+  const y0=t.y,H=y0+t.height;
+  const brick=t.palette.endsWith('brick');
+  const colour:RGB=t.palette==='stone'?COLOURS.ashlar:t.palette==='concrete'?COLOURS.concrete:COLOURS[t.palette];
+  let u=0;
+  for(const w of t.walls){
+    const len=Math.hypot(w.b.x-w.a.x,w.b.z-w.a.z);
+    const dir={x:(w.b.x-w.a.x)/len,z:(w.b.z-w.a.z)/len};
+    const o:V3=[w.out.x,0,w.out.z];
+    // Point `s` metres along the wall, `off` metres in front of it, at height h.
+    const P=(s:number,h:number,off=0):V3=>[w.a.x+dir.x*s+w.out.x*off,h,w.a.z+dir.z*s+w.out.z*off];
+    const q=(s0:number,s1:number,h0:number,h1:number,off:number):[V3,V3,V3,V3]=>[P(s0,h0,off),P(s1,h0,off),P(s1,h1,off),P(s0,h1,off)];
+    const quad=q(0,len,y0,H,0);
+    if(brick)b.brick.polygon(quad,[[u/BRICK_TILE,0],[(u+len)/BRICK_TILE,0],[(u+len)/BRICK_TILE,t.height/BRICK_TILE],[u/BRICK_TILE,t.height/BRICK_TILE]],colour,o);
+    else b.detail.flat(quad,colour,o);
+    u+=len;
+    // Parapet coping.
+    b.detail.flat(q(0,len,H-.22,H,.04),COLOURS.stone,o);
+    if(t.use==='utility'||len<1.6)continue;
+    const f=.02;
+    if(t.use==='parking'){
+      // Open decks: a dark opening along each level, with the deck edge between.
+      for(let l=0;l<t.levels;l++)b.detail.flat(q(.4,len-.4,y0+l*3+1.05,y0+l*3+2.5,f),COLOURS.opening,o);
+      continue;
+    }
+    if(t.use==='church'){
+      const n=Math.floor(len/4);
+      for(let i=0;i<n;i++){const s=(i+.5)*len/n;b.detail.regionQuad(q(s-.55,s+.55,y0+2.2,y0+6.6,f),REGIONS.window,[1,1,1],o)}
+      continue;
+    }
+    const bays=Math.floor((len-.8)/2.8);
+    if(bays<1)continue;
+    const windowAt=(s:number,sill:number)=>{
+      b.detail.regionQuad(q(s-.6,s+.6,sill,sill+1.45,f),REGIONS.window,[1,1,1],o);
+      b.detail.flat(q(s-.68,s+.68,sill-.08,sill,.06),COLOURS.stone,o);
+    };
+    for(let level=0;level<t.levels;level++){
+      const sill=y0+level*STOREY+.95;
+      if(sill+1.6>H-.2)break;
+      if(level===0&&w.shopfront)continue;
+      for(let i=0;i<bays;i++)windowAt((i+.5)*len/bays,sill);
+    }
+    if(w.shopfront){
+      // Shop units about 5.5 m wide: stall riser, glazing with mullions, a door, a fascia and cornice.
+      const units=Math.max(1,Math.round(len/5.5)),uw=len/units;
+      const fascia=hex(t.fascia);
+      b.detail.flat(q(.1,len-.1,y0+2.85,y0+3.5,.06),fascia,o);
+      b.detail.flat(q(.05,len-.05,y0+3.5,y0+3.62,.1),COLOURS.stone,o);
+      for(let k=0;k<units;k++){
+        const s0=k*uw+.2,s1=(k+1)*uw-.2;
+        const doorLeft=k%2===0;
+        const d0=doorLeft?s0+.15:s1-1.15,d1=d0+1;
+        b.detail.regionQuad(q(d0,d1,y0,y0+2.3,f),REGIONS.door,fascia,o);
+        const g0=doorLeft?d1+.1:s0,g1=doorLeft?s1:d0-.1;
+        if(g1-g0<.4)continue;
+        b.detail.flat(q(g0,g1,y0,y0+.5,f),fascia,o);
+        b.detail.flat(q(g0,g1,y0+.5,y0+2.7,f),COLOURS.glass,o);
+        const panes=Math.max(1,Math.round((g1-g0)/1.6));
+        for(let m=1;m<panes;m++){const s=g0+(g1-g0)*m/panes;b.detail.flat(q(s-.04,s+.04,y0+.5,y0+2.7,f+.01),fascia,o)}
+      }
+      // Pilasters at the ends of each unit.
+      for(let k=0;k<=units;k++){const s=Math.min(len-.12,Math.max(.12,k*uw));b.detail.flat(q(s-.12,s+.12,y0,y0+2.85,.05),COLOURS.stone,o)}
+    }
+  }
+  // Flat roof (seen from above and in distant mirror views).
+  flatArea(b.detail,t.ring,H-.25,COLOURS.felt);
+}
+
+function busStop(g:Geometry,s:BusStop):void{
+  prism(g,s.x,s.z,s.y,2.9,.05,.05,COLOURS.lamp,6);
+  const f={x:Math.sin(s.heading),z:-Math.cos(s.heading)},a={x:-f.z,z:f.x};
+  // Flag across the pole, edge-on to the road, readable to traffic in both directions.
+  box(g,{x:s.x+a.x*.05,z:s.z+a.z*.05},s.y+2.25,a,.04,.42,.55,flatFace(COLOURS.signWhite));
+  box(g,{x:s.x+a.x*.05,z:s.z+a.z*.05},s.y+2.62,a,.045,.42,.14,flatFace(COLOURS.busRed));
+  // Timetable case.
+  box(g,{x:s.x+a.x*.04,z:s.z+a.z*.04},s.y+1.2,a,.06,.36,.5,flatFace(COLOURS.lamp));
+}
+
+function obelisk(g:Geometry,m:Obelisk):void{
+  const c=hex(m.colour),w=m.width;
+  box(g,m,m.y,{x:0,z:-1},w,w,.4,flatFace(c.map(v=>v*.9) as RGB));
+  box(g,m,m.y+.4,{x:0,z:-1},w*.75,w*.75,1.0,flatFace(c));
+  // Tapering shaft (square) and a pointed top, within the block's height.
+  const shaft=m.height-1.4-.55;
+  prism(g,m.x,m.z,m.y+1.4,shaft,w*.3,w*.2,c,4);
+  prism(g,m.x,m.z,m.y+1.4+shaft,.55,w*.2,.01,c,4);
+}
+
 export interface ParkedFootprint{x:number;z:number;y:number;heading:number;width:number;length:number}
+/** A parked panel van (project-owned geometry), filling its width × length × height box. */
+export interface VanFootprint extends ParkedFootprint{height:number;colour:string}
+
+/**
+ * A panel van from a side profile extruded across its width: tall load box,
+ * sloping windscreen, short bonnet; cab windows, rear door windows, bumpers,
+ * lamps and wheels. Everything stays inside the van's box (its collider).
+ */
+function panelVan(g:Geometry,v:VanFootprint):void{
+  const f={x:Math.sin(v.heading),z:-Math.cos(v.heading)},a={x:-f.z,z:f.x};
+  const W=v.width/2,L=v.length/2,H=v.height;
+  const P=(u:number,along:number,h:number):V3=>[v.x+a.x*u+f.x*along,v.y+h,v.z+a.z*u+f.z*along];
+  const body=hex(v.colour),glass:RGB=[.1,.12,.14],trim:RGB=[.16,.16,.17],tyre:RGB=[.07,.07,.07];
+  // Side profile (along, height), front at +L: convex, so each side is one polygon.
+  const clear=.32;
+  const profile:Array<[number,number]>=[[-L,clear],[L,clear],[L,1.02],[L-.38,1.2],[L-1.15,H-.04],[L-1.3,H],[-L,H]];
+  for(const side of [-1,1]){
+    const pts=profile.map(([s,h])=>P(side*W,s,h));
+    g.flat(side>0?pts:[...pts].reverse(),body,[a.x*side,0,a.z*side]);
+  }
+  for(let i=0;i<profile.length;i++){
+    const [s0,h0]=profile[i]!,[s1,h1]=profile[(i+1)%profile.length]!;
+    // Outward normal of this edge in the (along, height) plane.
+    const ds=s1-s0,dh=h1-h0,l=Math.hypot(ds,dh)||1;
+    const ns=dh/l,nh=-ds/l;
+    const out:V3=[f.x*ns,nh,f.z*ns];
+    const windscreen=i===3;
+    g.flat([P(-W,s0,h0),P(W,s0,h0),P(W,s1,h1),P(-W,s1,h1)],i===0?trim:body,out);
+    if(windscreen){
+      const t0=.08,t1=.9,inset=.12;
+      const q=(t:number)=>[s0+ds*t,h0+dh*t] as const;
+      const [a0,b0]=q(t0),[a1,b1]=q(t1);
+      const o=.012;
+      g.flat([P(-W+inset,a0+ns*o,b0+nh*o),P(W-inset,a0+ns*o,b0+nh*o),P(W-inset,a1+ns*o,b1+nh*o),P(-W+inset,a1+ns*o,b1+nh*o)],glass,out);
+    }
+  }
+  // Cab side windows (below the roof, behind the windscreen pillar) and a dark rear-door seam with two small windows.
+  for(const side of [-1,1]){
+    const u=side*(W+.01),out:V3=[a.x*side,0,a.z*side];
+    const win=[P(u,L-1.95,1.38),P(u,L-.62,1.38),P(u,L-1.13,2.06),P(u,L-1.95,2.06)];
+    g.flat(side>0?win:[...win].reverse(),glass,out);
+    const seam=[P(u,L-2.0,clear+.15),P(u,L-1.97,clear+.15),P(u,L-1.97,H-.1),P(u,L-2.0,H-.1)];
+    g.flat(side>0?seam:[...seam].reverse(),trim,out);
+  }
+  const back:V3=[-f.x,0,-f.z],front:V3=[f.x,0,f.z];
+  for(const u of [-.5,.5])g.flat([P(u+.36,-L-.01,1.45),P(u-.36,-L-.01,1.45),P(u-.36,-L-.01,2.05),P(u+.36,-L-.01,2.05)],glass,back);
+  g.flat([P(.012,-L-.012,clear+.2),P(-.012,-L-.012,clear+.2),P(-.012,-L-.012,H-.08),P(.012,-L-.012,H-.08)],trim,back);
+  // Bumpers and lamps.
+  box(g,{x:v.x+f.x*(L-.09),z:v.z+f.z*(L-.09)},v.y+clear-.02,f,v.width,.18,.3,flatFace(trim));
+  box(g,{x:v.x-f.x*(L-.09),z:v.z-f.z*(L-.09)},v.y+clear-.02,f,v.width,.18,.3,flatFace(trim));
+  for(const side of [-1,1]){
+    g.flat([P(side*(W-.08),L+.012,.78),P(side*(W-.42),L+.012,.78),P(side*(W-.42),L+.012,.95),P(side*(W-.08),L+.012,.95)],[.92,.92,.86],front);
+    g.flat([P(side*(W-.06),-L-.012,.62),P(side*(W-.26),-L-.012,.62),P(side*(W-.26),-L-.012,1.1),P(side*(W-.06),-L-.012,1.1)],[.62,.08,.07],back);
+  }
+  // Wheels: dark blocks under the body, flush with its sides.
+  for(const s of [L-.95,-L+1.05])for(const side of [-1,1]){
+    const c={x:v.x+a.x*side*(W-.13)+f.x*s,z:v.z+a.z*side*(W-.13)+f.z*s};
+    box(g,c,v.y,f,.25,.68,.68,flatFace(tyre));
+  }
+}
 
 export interface BuiltStreetscape{meshes:Mesh[];dispose():void}
 
@@ -292,7 +477,7 @@ export interface BuiltStreetscape{meshes:Mesh[];dispose():void}
 const CHUNK=200;
 
 /** Builds the street's meshes under `parent`. `parked` adds a soft ground shadow under each parked car. */
-export function buildStreetscape(scene:Scene,layout:StreetLayout,parent:TransformNode,parked:ParkedFootprint[]):BuiltStreetscape{
+export function buildStreetscape(scene:Scene,layout:StreetLayout|null,parent:TransformNode,parked:ParkedFootprint[],vans:VanFootprint[]=[]):BuiltStreetscape{
   const chunks=new Map<string,Builders>();
   const at=(x:number,z:number):Builders=>{
     const key=`${Math.floor(x/CHUNK)},${Math.floor(z/CHUNK)}`;
@@ -300,39 +485,47 @@ export function buildStreetscape(scene:Scene,layout:StreetLayout,parent:Transfor
     if(!b){b={brick:new Geometry(),roof:new Geometry(),detail:new Geometry()};chunks.set(key,b)}
     return b;
   };
-  for(const h of layout.houses)house(at(h.frame.ox,h.frame.oz),h);
-  for(const s of layout.strips)boundary(at((s.a.x+s.b.x)/2,(s.a.z+s.b.z)/2),s);
-  for(const p of layout.pads){
+  const street=layout??{houses:[],strips:[],pads:[],lamps:[],trees:[],bins:[],drains:[]};
+  for(const h of street.houses)house(at(h.frame.ox,h.frame.oz),h);
+  for(const s of street.strips)boundary(at((s.a.x+s.b.x)/2,(s.a.z+s.b.z)/2),s);
+  for(const p of street.pads){
     const b=at(p.corners[0].x,p.corners[0].z);
     const y=p.y;
     const pts=p.corners.map(c=>[c.x,y,c.z] as V3);
     b.detail.regionQuad(pts as [V3,V3,V3,V3],REGIONS.paving,p.kind==='path'?COLOURS.path:COLOURS.drive,[0,1,0]);
   }
-  for(const l of layout.lamps){
+  for(const l of street.lamps){
     const b=at(l.x,l.z);
     prism(b.detail,l.x,l.z,l.y,6,.09,.06,COLOURS.lamp);
     const f={x:Math.sin(l.heading),z:-Math.cos(l.heading)};
     box(b.detail,{x:l.x+f.x*.35,z:l.z+f.z*.35},l.y+5.9,f,.08,.75,.08,flatFace(COLOURS.lamp));
     box(b.detail,{x:l.x+f.x*.8,z:l.z+f.z*.8},l.y+5.78,f,.26,.6,.14,flatFace(COLOURS.lantern));
   }
-  for(const t of layout.trees){
+  for(const t of street.trees){
     const b=at(t.x,t.z);
     prism(b.detail,t.x,t.z,t.y,t.height*.55,.16*t.radius/2,.1*t.radius/2,COLOURS.bark,4);
     crown(b.detail,t.x,t.y+t.height-t.radius*.95,t.z,t.radius,t.radius*1.05,COLOURS.leaves);
   }
-  for(const bin of layout.bins){
+  for(const bin of street.bins){
     const b=at(bin.x,bin.z);
     const f={x:Math.sin(bin.heading),z:-Math.cos(bin.heading)};
     box(b.detail,bin,bin.y,f,.58,.72,1,flatFace(hex(bin.colour)));
     box(b.detail,bin,bin.y+1,f,.62,.78,.05,flatFace(hex(bin.colour).map(c=>c*.8) as RGB));
   }
-  for(const d of layout.drains){
+  for(const d of street.drains){
     const b=at(d.x,d.z);
     const f={x:Math.sin(d.heading),z:-Math.cos(d.heading)},a={x:-f.z,z:f.x};
     const P=(u:number,v:number):V3=>[d.x+a.x*u+f.x*v,d.y,d.z+a.z*u+f.z*v];
     b.detail.regionQuad([P(-.2,-.25),P(.2,-.25),P(.2,.25),P(-.2,.25)],REGIONS.grate,COLOURS.grate,[0,1,0]);
   }
-  for(const c of parked){
+  for(const v of vans)panelVan(at(v.x,v.z).detail,v);
+  if(layout?.town){
+    for(const t of layout.town.buildings)townBuilding(at(t.ring[0]!.x,t.ring[0]!.z),t);
+    for(const a of layout.town.areas)flatArea(at(a.polygon[0]!.x,a.polygon[0]!.z).detail,a.polygon,-.012,a.kind==='grass'?COLOURS.lawn:COLOURS.carPark);
+    for(const s of layout.town.busStops)busStop(at(s.x,s.z).detail,s);
+    for(const m of layout.town.obelisks)obelisk(at(m.x,m.z).detail,m);
+  }
+  for(const c of [...parked,...vans]){
     const b=at(c.x,c.z);
     const f={x:Math.sin(c.heading),z:-Math.cos(c.heading)},a={x:-f.z,z:f.x};
     const P=(u:number,v:number):V3=>[c.x+a.x*u+f.x*v,c.y+.004,c.z+a.z*u+f.z*v];

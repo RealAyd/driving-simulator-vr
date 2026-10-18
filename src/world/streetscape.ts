@@ -1,6 +1,7 @@
 import {headingFromDirection,type Block,type Frontage,type Location,type Road,type Vec2} from '../contracts';
 import {CAR_MODELS,PARKED_CAR_COLOURS,type CarModelId} from '../assets/carSpecs';
 import {pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
+import type {TownLayout} from './townscape';
 
 /**
  * Residential streetscape layout: houses from a few reusable variants, front
@@ -58,6 +59,8 @@ export interface StreetLayout{
   cars:DriveCar[];
   /** Simple collision boxes matching what is drawn (houses, bays, boundaries, lamp columns, cars on drives). */
   colliders:Block[];
+  /** Town-centre buildings, areas and furniture from map data (townscape.ts). */
+  town?:TownLayout;
 }
 
 /** Variant dimensions (metres). */
@@ -100,7 +103,7 @@ function roadPoint(road:Road,total:number,along:number){
 const roadLength=(road:Road)=>road.centreline.slice(1).reduce((s,p,i)=>s+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
 
 function box(id:string,kind:Block['kind'],c:Vec2,heading:number,width:number,depth:number,height:number):Block{
-  return {id,kind,position:{x:c.x,z:c.z},headingDeg:heading*180/Math.PI,size:{width,depth,height},occludes:kind!=='hedge'};
+  return {id,kind,position:{x:c.x,z:c.z},headingDeg:heading*180/Math.PI,size:{width,depth,height},occludes:kind!=='hedge',shape:'box'};
 }
 
 export function layoutStreetscape(location:Location):StreetLayout|null{
@@ -276,12 +279,15 @@ export function layoutStreetscape(location:Location):StreetLayout|null{
     strip('fence',at(end,side,pavementBack+.3),at(end,side,rearLateral),`f${fi}-end-b`,1.8);
   });
 
+  const crossingSpans=location.crossings.filter(c=>c.roadId===road.id).map(c=>({from:c.along-c.width/2-8,to:c.along+c.width/2+8}));
   // Street lights at the kerb edge, alternating sides, clear of paths and drives.
   if(spec.lampSpacing>0){
     let side=-1;
     for(let s=spec.frontages.reduce((m,f)=>Math.min(m,f.from),Infinity)+6;s<total-4;s+=spec.lampSpacing){
       let along=s;
       for(let tries=0;tries<6&&openings.some(o=>o.side===side&&along>o.from-.6&&along<o.to+.6);tries++)along+=1.5;
+      // Not on a crossing's approach: the beacons stand there, and a column must not hide someone waiting to cross.
+      if(crossingSpans.some(c=>along>c.from&&along<c.to)){side=-side;continue}
       const c=at(along,side,half+.45);
       const p=roadPoint(road,total,along);
       const heading=headingFromDirection({x:-p.r.x*side,z:-p.r.z*side});

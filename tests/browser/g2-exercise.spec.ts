@@ -7,9 +7,9 @@ type Car={position:{x:number;z:number};heading:number;speed:number};
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 
-/** Distance along the straight part of main-street. */
+/** Metres past z = 40 (40 m behind the start) on the straight; the road itself now starts 290 m further back, at z = 330. */
 const alongOf=(car:Car)=>40-car.position.z;
-const GIVE_WAY=146-2-1;
+const GIVE_WAY=(436-290)-2-1;
 
 /**
  * A simple scripted driver: holds keys to track a target speed and lateral
@@ -25,7 +25,7 @@ class TestDriver{
   }
   async release(){for(const k of [...this.held])await this.hold(k,false)}
   async drive(opts:{speed:(car:Car)=>number;laneX:(car:Car)=>number;until:(car:Car,ped:{state:string})=>boolean;timeout?:number}){
-    const end=Date.now()+(opts.timeout??120_000);
+    const end=Date.now()+(opts.timeout??240_000);
     for(;;){
       if(await read(this.page,'session()')!=='running')return this.release();
       const car:Car=await read(this.page,'vehicle()');

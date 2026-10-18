@@ -1,5 +1,8 @@
 import {describe,expect,it} from 'vitest';
-import {degToRad,parseLocation,parseScenario} from '../../src/contracts';
+import {degToRad,parseLocation,parseScenario,type Block} from '../../src/contracts';
+import {layoutTownscape} from '../../src/world/townscape';
+import {StaticObstacles} from '../../src/world/obstacles';
+import {pointToBox} from '../../src/world/collisions';
 import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
 import {SteeringAssist} from '../../src/vehicle/steeringAssist';
 import {sampleRoad,surfaceAt} from '../../src/world/roadGeometry';
@@ -58,5 +61,66 @@ describe('Brentwood paired mini-roundabouts (area-inspired)',()=>{
     const ids=guided.zones.map(z=>z.id);
     expect(ids).toEqual(['rb1-approach','rb1-entry','rb2-approach','rb2-entry','finish']);
     expect(guided.triggers.map(t=>'zoneEntered' in t.when?t.when.zoneEntered:null)).toEqual(['rb1-approach','rb2-approach']);
+  });
+});
+
+describe('Brentwood scenery (map buildings, trees, lights): matches the road layout and keeps the route clear',()=>{
+  const layout=layoutTownscape(place)!;
+  const town=layout.town!;
+  const wallPoints=(c:Block)=>{
+    const h=degToRad(c.headingDeg),f={x:Math.sin(h),z:-Math.cos(h)};
+    const out:Array<{x:number;z:number}>=[];
+    for(let s=-c.size.depth/2;s<=c.size.depth/2;s+=.25)out.push({x:c.position.x+f.x*s,z:c.position.z+f.z*s});
+    return out;
+  };
+
+  it('draws every map building, with its use, storeys and whether its height is mapped or estimated',()=>{
+    expect(town.buildings.length).toBe(place.buildings.length);
+    expect(place.buildings.every(b=>b.levels!==undefined)).toBe(true);
+    expect(place.buildings.filter(b=>b.heightSource==='map-levels').length).toBeGreaterThan(0);
+    expect(place.ground).toBe('paved');
+  });
+
+  it('puts shopfronts only on buildings with a mapped business, and only on walls facing a road',()=>{
+    for(const b of town.buildings)for(const w of b.walls)if(w.shopfront){
+      expect(b.use,b.id).toBe('shop');
+      expect(w.facesRoad,b.id).toBe(true);
+    }
+    expect(town.buildings.filter(b=>b.walls.some(w=>w.shopfront)).length).toBeGreaterThan(5);
+  });
+
+  it('has no building wall, tree, street light or bus stop on a carriageway or a mini-roundabout',()=>{
+    const bad:string[]=[];
+    for(const c of layout.colliders){
+      const points=c.id.includes('-wall-')?wallPoints(c):[c.position];
+      if(points.some(p=>surfaceAt(place,p.x,p.z)?.kind==='carriageway'))bad.push(c.id);
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('the guided route and the lead car\'s path touch no scenery collider',()=>{
+    const obstacles=new StaticObstacles([...place.blocks,...layout.colliders]);
+    const assist=new SteeringAssist(guided.assistPath!,LEARNER_CAR);
+    let s:VehicleState={position:{x:place.spawn.position.x,y:0,z:place.spawn.position.z},heading:degToRad(place.spawn.headingDeg),speed:4,steerAngle:0};
+    for(let t=0;t<40;t+=DT){
+      const nearJunction=place.junctions.some(j=>Math.hypot(s.position.x-j.position.x,s.position.z-j.position.z)<14);
+      const want=nearJunction?4.5:9;
+      s=stepVehicle(s,{throttle:s.speed<want?.4:0,brake:s.speed>want+.5?.3:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+      expect(obstacles.firstCollision({position:s.position,heading:s.heading},.9,2.2),`at ${s.position.x.toFixed(1)}, ${s.position.z.toFixed(1)}`).toBeNull();
+    }
+    const lead=guided.actors.find(a=>a.kind==='passing-vehicle')!;
+    if(lead.kind!=='passing-vehicle')return;
+    for(const p of lead.path)for(const c of layout.colliders){
+      const g=pointToBox(p.x,p.z,{position:{x:c.position.x,y:0,z:c.position.z},heading:degToRad(c.headingDeg)},c.size.width/2,c.size.depth/2);
+      expect(g-.9,`${c.id}`).toBeGreaterThan(.2);
+    }
+  });
+
+  it('street lights stand on a pavement, clear of junctions and the signal crossing',()=>{
+    expect(layout.lamps.length).toBeGreaterThan(4);
+    for(const l of layout.lamps){
+      expect(surfaceAt(place,l.x,l.z)?.kind,`${l.x.toFixed(1)}, ${l.z.toFixed(1)}`).toBe('pavement');
+      for(const j of place.junctions)expect(Math.hypot(l.x-j.position.x,l.z-j.position.z)).toBeGreaterThan(j.radius+3.9);
+    }
   });
 });

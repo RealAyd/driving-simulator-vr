@@ -18,7 +18,7 @@ const scenario=parseScenario(rawScenario);
 const pedDef=scenario.actors.find((a):a is PedestrianActorDef=>a.kind==='pedestrian')!;
 const crossing=location.crossings[0]!;
 /** z coordinate for a distance along the straight part of main-street. */
-const zAt=(along:number)=>40-along;
+const zAt=(along:number)=>330-along;
 
 function harness(){
   let t=0;
@@ -86,28 +86,28 @@ describe('pedestrian',()=>{
 describe('zones and triggers',()=>{
   it('fires the pedestrian trigger once, even while the car sits in the zone',()=>{
     const h=harness();
-    h.car.z=zAt(125);
+    h.car.z=zAt(415);
     h.tick(3);
-    h.car.z=zAt(100); // leaves the zone backwards (e.g. after a restart)
+    h.car.z=zAt(390); // leaves the zone backwards (e.g. after a restart)
     h.tick(.5);
-    h.car.z=zAt(125);
+    h.car.z=zAt(415);
     h.tick(1);
     expect(h.events.events.filter(e=>e.type==='scenario.triggered')).toHaveLength(1);
     expect(h.ped.state).not.toBe('waiting');
   });
   it('does not start the pedestrian if the learner stops early',()=>{
     const h=harness();
-    h.car.z=zAt(100);
+    h.car.z=zAt(390);
     h.tick(30);
     expect(h.ped.state).toBe('waiting');
     expect(h.runner.ended).toBeNull();
   });
   it('re-arms triggers after reset',()=>{
     const h=harness();
-    h.car.z=zAt(125);h.tick(.5);
+    h.car.z=zAt(415);h.tick(.5);
     h.ped.reset();h.zones.reset();h.runner.reset();h.events.clear();
-    h.car.z=zAt(100);h.tick(.1);
-    h.car.z=zAt(125);h.tick(.1);
+    h.car.z=zAt(390);h.tick(.1);
+    h.car.z=zAt(415);h.tick(.1);
     expect(h.events.events.filter(e=>e.type==='scenario.triggered')).toHaveLength(1);
   });
   it('ends the attempt on any collision, since the car cannot reverse away',()=>{
@@ -124,7 +124,7 @@ describe('zones and triggers',()=>{
   });
   it('ends as completed in the end zone and on the time limit otherwise',()=>{
     const done=harness();
-    done.car.z=zAt(200);done.tick(.1);
+    done.car.z=zAt(490);done.tick(.1);
     expect(done.runner.ended).toBe('completed');
     const slow=harness();
     slow.tick(scenario.end.timeLimitSeconds+1);
@@ -136,7 +136,7 @@ describe('assessment',()=>{
   /** Drives along the road at `speed`, stopping for the pedestrian if `yields`. */
   function drive(h:ReturnType<typeof harness>,speed:number,yields:boolean){
     const giveWay=crossing.along-crossing.width/2-crossing.giveWayOffset;
-    let along=40;
+    let along=330;
     h.tick(240,()=>{
       const frontAt=along+2.15;
       const pedOnCrossing=h.ped.state==='preparing'||h.ped.state==='crossing';
@@ -144,7 +144,7 @@ describe('assessment',()=>{
       h.car.speed=mustStop?0:speed;
       along+=h.car.speed*DT;
       h.car.z=zAt(along);
-      h.car.x=along>100&&along<150?1.2:-1.6; // pass the van in the right lane
+      h.car.x=along>390&&along<440?1.2:-1.6; // pass the van in the right lane
     });
     return h.assessor.finish(scenario.id,h.runner.ended??'abandoned',h.runner.elapsed);
   }
@@ -185,7 +185,7 @@ describe('assessment',()=>{
     for(const [gap,severity] of [[15,'minor'],[null,'advice']] as const){
       const h=harness();
       h.setGap(gap);
-      h.car.z=zAt(130);h.tick(.1);
+      h.car.z=zAt(420);h.tick(.1);
       h.events.emit('vehicle.braking',{speed:8});
       h.tick(.1);
       expect(h.assessor.current.find(f=>f.ruleId==='observation.mirror-before-braking')?.severity).toBe(severity);
@@ -194,7 +194,7 @@ describe('assessment',()=>{
 
   it('a mirror glance shortly before braking counts as checking',()=>{
     const h=harness();
-    h.car.z=zAt(130);h.tick(.1);
+    h.car.z=zAt(420);h.tick(.1);
     h.events.emit('observation.dwell',{target:'interior',source:'mouse-controlled view'});
     h.tick(1);
     h.events.emit('vehicle.braking',{speed:8});
