@@ -8,7 +8,8 @@
  },
  "signals": {
   "high-street-signals": "green",
-  "high-street-signals-west": "green"
+  "high-street-signals-west": "green",
+  "high-street-signals-west-2": "green"
  },
  "title": "Brentwood mini-roundabouts",
  "learningObjective": "Approach and drive through two mini-roundabouts close together: plan your lane, slow down, give way to traffic from the right, signal correctly and look again before the second one.",
@@ -16,79 +17,79 @@
  "rubricId": "none",
  "assistPath": [
   {
-   "x": -42.79,
-   "z": 25.98
+   "x": -42.76,
+   "z": 25.96
   },
   {
-   "x": -40.92,
-   "z": 25.07
+   "x": -40.89,
+   "z": 25.05
   },
   {
-   "x": -39.05,
-   "z": 24.16
+   "x": -39.02,
+   "z": 24.14
   },
   {
-   "x": -37.18,
-   "z": 23.25
+   "x": -37.15,
+   "z": 23.23
   },
   {
-   "x": -35.31,
-   "z": 22.33
+   "x": -35.28,
+   "z": 22.32
   },
   {
-   "x": -33.43,
-   "z": 21.42
+   "x": -33.41,
+   "z": 21.41
   },
   {
-   "x": -31.57,
-   "z": 20.51
+   "x": -31.55,
+   "z": 20.5
   },
   {
-   "x": -29.69,
-   "z": 19.6
+   "x": -29.67,
+   "z": 19.59
   },
   {
-   "x": -27.81,
-   "z": 18.7
+   "x": -27.79,
+   "z": 18.69
   },
   {
-   "x": -25.91,
+   "x": -25.89,
    "z": 17.79
   },
   {
-   "x": -24.02,
-   "z": 16.93
+   "x": -24.0,
+   "z": 16.92
   },
   {
-   "x": -22.11,
-   "z": 16.06
+   "x": -22.09,
+   "z": 16.05
   },
   {
-   "x": -20.17,
-   "z": 15.23
+   "x": -20.15,
+   "z": 15.22
   },
   {
-   "x": -18.23,
+   "x": -18.22,
    "z": 14.42
   },
   {
-   "x": -16.31,
+   "x": -16.3,
    "z": 13.61
   },
   {
-   "x": -14.4,
+   "x": -14.39,
    "z": 12.82
   },
   {
-   "x": -12.5,
-   "z": 12.02
+   "x": -12.49,
+   "z": 12.01
   },
   {
-   "x": -10.59,
+   "x": -10.58,
    "z": 11.19
   },
   {
-   "x": -8.56,
+   "x": -8.55,
    "z": 10.36
   },
   {
@@ -104,7 +105,7 @@
    "z": 8.56
   },
   {
-   "x": -0.37,
+   "x": -0.36,
    "z": 8.06
   },
   {
@@ -416,15 +417,15 @@
   {
    "id": "rb1-approach",
    "roadId": "high-street",
-   "from": 228.6,
-   "to": 248.6,
+   "from": 361.6,
+   "to": 381.6,
    "label": "Approaching mini-roundabout 1"
   },
   {
    "id": "rb1-entry",
    "roadId": "high-street",
-   "from": 248.6,
-   "to": 258.6,
+   "from": 381.6,
+   "to": 391.6,
    "label": "Entering mini-roundabout 1"
   },
   {
@@ -464,7 +465,7 @@
      "z": 8.56
     },
     {
-     "x": -0.37,
+     "x": -0.36,
      "z": 8.06
     },
     {

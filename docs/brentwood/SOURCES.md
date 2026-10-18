@@ -41,3 +41,11 @@ Kerb lines at the junction corners, lane arrows, signs and real road widths are 
 - `build_location.py` derives the pavement widths up to shop fronts and places the approximate buildings. It also adds the side-road mouths (ways 25901703, 25901704) and the second signal crossing (node 1763175237). See `docs/verification/STEP12-brentwood-scene-completed.md`.
 - Review plan: `docs/brentwood/location-review.svg` (`tools/brentwood/render_location_review.py`).
 - Same OSM download (2026-10-17); no new data.
+
+## 2026-10-18 (step 13): wider extract and Microsoft outlines
+
+- **New OSM extract:** `content/sources/brentwood-2026-10-18.osm` (API 0.6 map call, bbox 0.2960,51.6175,0.3120,51.6250, downloaded 2026-10-18, ODbL). It replaces `brentwood-2026-10-17.osm` (still in git history) and covers the whole dressed area and its background.
+- **Extra data kept:** `osm_extract.py` now also keeps businesses and addresses mapped as points (`poi-*` features) and the `service` tag of service roads (parking aisles).
+- **Microsoft outlines:** `content/sources/overture-buildings-brentwood-2026-09-23.1.json`, from Overture Maps release 2026-09-23.1, buildings theme, read with `tools/brentwood/overture_extract.py`. Only Microsoft ML Buildings outlines with no OSM equivalent are kept. ODbL 1.0; attribution: © OpenStreetMap contributors, Overture Maps Foundation, Microsoft.
+- **Generator dependency:** `build_location.py` now needs shapely (`pip install shapely`). It also writes `docs/brentwood/open-areas.json`.
+- **Provenance:** see `docs/verification/STEP13-brentwood-surroundings.md`.

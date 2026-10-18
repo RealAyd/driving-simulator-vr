@@ -23,7 +23,7 @@ const COLOURS={
   lawn:[.46,.62,.36],path:[.86,.84,.79],drive:[.7,.66,.62],bark:[.36,.28,.22],
   lamp:[.36,.4,.4],lantern:[.88,.88,.84],wallBrick:[.68,.42,.33],grate:[1,1,1],shadow:[.16,.16,.17],
   ashlar:[.8,.77,.7],concrete:[.72,.71,.68],felt:[.3,.31,.33],glass:[.16,.2,.24],opening:[.1,.11,.12],carPark:[.33,.34,.36],
-  signWhite:[.93,.93,.9],busRed:[.75,.12,.1]
+  signWhite:[.93,.93,.9],busRed:[.75,.12,.1],accessPath:[.5,.5,.5],street:[.26,.27,.29]
 } satisfies Record<string,RGB>;
 const BRICK_TILE=.9,ROOF_TILE=1,STOREY=3.2;
 
@@ -323,6 +323,7 @@ function flatArea(g:Geometry,ring:readonly Vec2[],y:number,colour:RGB):void{
  */
 function townBuilding(b:Builders,t:TownBuilding):void{
   const y0=t.y,H=y0+t.height;
+  const pitched=t.roof==='pitched'&&t.ring.length===4&&t.walls.length===4;
   const brick=t.palette.endsWith('brick');
   const colour:RGB=t.palette==='stone'?COLOURS.ashlar:t.palette==='concrete'?COLOURS.concrete:COLOURS[t.palette];
   let u=0;
@@ -337,9 +338,9 @@ function townBuilding(b:Builders,t:TownBuilding):void{
     if(brick)b.brick.polygon(quad,[[u/BRICK_TILE,0],[(u+len)/BRICK_TILE,0],[(u+len)/BRICK_TILE,t.height/BRICK_TILE],[u/BRICK_TILE,t.height/BRICK_TILE]],colour,o);
     else b.detail.flat(quad,colour,o);
     u+=len;
-    // Parapet coping.
-    b.detail.flat(q(0,len,H-.22,H,.04),COLOURS.stone,o);
-    if(t.use==='utility'||len<1.6)continue;
+    // Parapet coping (flat roofs).
+    if(!pitched)b.detail.flat(q(0,len,H-.22,H,.04),COLOURS.stone,o);
+    if(t.use==='utility'||t.detail==='low'||len<1.6)continue;
     const f=.02;
     if(t.use==='parking'){
       // Open decks: a dark opening along each level, with the deck edge between.
@@ -385,8 +386,51 @@ function townBuilding(b:Builders,t:TownBuilding):void{
       for(let k=0;k<=units;k++){const s=Math.min(len-.12,Math.max(.12,k*uw));b.detail.flat(q(s-.12,s+.12,y0,y0+2.85,.05),COLOURS.stone,o)}
     }
   }
+  if(pitched){pitchedRoof(b,t,colour,brick);return}
   // Flat roof (seen from above and in distant mirror views).
   flatArea(b.detail,t.ring,H-.25,COLOURS.felt);
+}
+
+/** A gable roof on a four-sided outline: ridge along the longer sides, gable ends in the wall material. */
+function pitchedRoof(b:Builders,t:TownBuilding,colour:RGB,brick:boolean):void{
+  const r=t.ring,H=t.y+t.height;
+  const len=(i:number)=>Math.hypot(r[(i+1)%4]!.x-r[i]!.x,r[(i+1)%4]!.z-r[i]!.z);
+  // Long sides are edges k and k+2.
+  const k=len(0)+len(2)>=len(1)+len(3)?0:1;
+  const a=r[k]!,bq=r[(k+1)%4]!,c=r[(k+2)%4]!,d=r[(k+3)%4]!;
+  const short=Math.min(len(k+1),len((k+3)%4));
+  const rise=Math.min(3.2,Math.max(1.6,short*.35));
+  const m1={x:(bq.x+c.x)/2,z:(bq.z+c.z)/2},m3={x:(d.x+a.x)/2,z:(d.z+a.z)/2};
+  const V=(p:{x:number;z:number},h:number):V3=>[p.x,h,p.z];
+  const roofColour=COLOURS[t.roofColour];
+  const plane=(pts:V3[],outV:V3)=>{
+    const [p0,p1]=[pts[0]!,pts[1]!];
+    const e=[p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]],el=Math.hypot(...e)||1;
+    const uvs=pts.map(p=>{
+      const dd=[p[0]-p0[0],p[1]-p0[1],p[2]-p0[2]];
+      const u=(dd[0]!*e[0]!+dd[1]!*e[1]!+dd[2]!*e[2]!)/el;
+      const v=Math.hypot(dd[0]!-u*e[0]!/el,dd[1]!-u*e[1]!/el,dd[2]!-u*e[2]!/el);
+      return [u/ROOF_TILE,v/ROOF_TILE] as [number,number];
+    });
+    b.roof.polygon(pts,uvs,roofColour,outV);
+  };
+  const outOf=(p:{x:number;z:number},q:{x:number;z:number})=>{
+    // Horizontal normal of edge p→q pointing away from the outline's centre.
+    const cx=(a.x+bq.x+c.x+d.x)/4,cz=(a.z+bq.z+c.z+d.z)/4;
+    let nx=-(q.z-p.z),nz=q.x-p.x;
+    const l=Math.hypot(nx,nz)||1;nx/=l;nz/=l;
+    if(nx*((p.x+q.x)/2-cx)+nz*((p.z+q.z)/2-cz)<0){nx=-nx;nz=-nz}
+    return [nx,nz] as const;
+  };
+  const [n0x,n0z]=outOf(a,bq),[n2x,n2z]=outOf(c,d);
+  plane([V(a,H),V(bq,H),V(m1,H+rise),V(m3,H+rise)],[n0x,1,n0z]);
+  plane([V(c,H),V(d,H),V(m3,H+rise),V(m1,H+rise)],[n2x,1,n2z]);
+  for(const [p,q,m] of [[bq,c,m1],[d,a,m3]] as const){
+    const [nx,nz]=outOf(p,q);
+    const pts:V3[]=[V(p,H),V(q,H),V(m,H+rise)];
+    if(brick){const w=Math.hypot(q.x-p.x,q.z-p.z);b.brick.polygon(pts,[[0,0],[w/BRICK_TILE,0],[w/2/BRICK_TILE,rise/BRICK_TILE]],colour,[nx,0,nz])}
+    else b.detail.flat(pts,colour,[nx,0,nz]);
+  }
 }
 
 function busStop(g:Geometry,s:BusStop):void{
@@ -521,7 +565,9 @@ export function buildStreetscape(scene:Scene,layout:StreetLayout|null,parent:Tra
   for(const v of vans)panelVan(at(v.x,v.z).detail,v);
   if(layout?.town){
     for(const t of layout.town.buildings)townBuilding(at(t.ring[0]!.x,t.ring[0]!.z),t);
-    for(const a of layout.town.areas)flatArea(at(a.polygon[0]!.x,a.polygon[0]!.z).detail,a.polygon,-.012,a.kind==='grass'?COLOURS.lawn:COLOURS.carPark);
+    // Ground areas just above the paving: grass and gardens, car parks, then access routes on top.
+    const AREA={grass:{c:COLOURS.lawn,y:-.045},garden:{c:COLOURS.lawn,y:-.045},green:{c:COLOURS.lawn,y:-.045},parking:{c:COLOURS.carPark,y:-.035},access:{c:COLOURS.accessPath,y:-.025},street:{c:COLOURS.street,y:-.015}} as const;
+    for(const a of layout.town.areas)flatArea(at(a.polygon[0]!.x,a.polygon[0]!.z).detail,a.polygon,AREA[a.kind].y,AREA[a.kind].c);
     for(const s of layout.town.busStops)busStop(at(s.x,s.z).detail,s);
     for(const m of layout.town.obelisks)obelisk(at(m.x,m.z).detail,m);
   }

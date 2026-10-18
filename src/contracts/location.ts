@@ -95,23 +95,36 @@ export const BuildingSchema=z.object({
   /** Storeys (from map data where given, otherwise estimated: see heightSource). */
   levels:z.number().int().min(1).max(20).optional(),
   /** Where the height comes from: map data (building:levels) or our estimate from the building's use. */
-  heightSource:z.enum(['map-levels','estimated']).default('estimated'),
+  heightSource:z.enum(['map-levels','reference-estimated','estimated']).default('estimated'),
   /** What the building is used for (map data): shops get shopfronts; car parks open decks; others windows. */
   use:z.enum(['shop','residential','office','civic','church','school','parking','utility','other']).default('other'),
   /** Optional name from map data (shown in review documents only; never drawn on the building). */
   name:z.string().optional(),
   /**
-   * 'map': the outline is from map data. 'approximate': our placeholder where
-   * the map has no outline but the street is built up (documented with the
-   * location; position, size and use are not from any survey).
+   * 'map': the outline is from map data (OpenStreetMap). 'reference': from a
+   * licensed reference where the map has none (machine-detected outlines,
+   * documented with the location). 'approximate': our placeholder where the
+   * street is built up but neither has an outline (position, size and use
+   * are not from any survey).
    */
-  source:z.enum(['map','approximate']).default('map'),
+  source:z.enum(['map','reference','approximate']).default('map'),
+  /** Why an approximate building is there (a mapped business or address point, or a gap in a built-up frontage). */
+  evidence:z.string().optional(),
+  /** Roof drawn: flat behind a parapet, or pitched (a gable along the longer side; four-sided outlines only). */
+  roof:z.enum(['flat','pitched']).default('flat'),
+  /** 'low': a background building (far from the modelled roads) drawn with walls and roof only, no windows. */
+  detail:z.enum(['full','low']).default('full'),
   colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 }).strict();
 
-/** A ground area from map data: grass or a park, or a surface car park. */
+/**
+ * A ground area: grass or a park and a surface car park (map data); a garden
+ * around houses and an access route (footway, service road) are drawn from
+ * map data and our estimate (see the location's description). A street is
+ * the carriageway of a mapped road not driven in the exercise (surface only).
+ */
 export const AreaSchema=z.object({
-  kind:z.enum(['grass','parking']),
+  kind:z.enum(['grass','parking','garden','green','access','street']),
   polygon:z.array(point).min(3)
 }).strict();
 

@@ -1,7 +1,7 @@
 """Extracts the Brentwood paired mini-roundabouts from an OpenStreetMap export.
 
-Input:  content/sources/brentwood-2026-10-17.osm (OSM API 0.6 map call,
-        bbox 0.3020,51.6195,0.3090,51.6232, downloaded 2026-10-17).
+Input:  content/sources/brentwood-2026-10-18.osm (OSM API 0.6 map call,
+        bbox 0.2960,51.6175,0.3120,51.6250, downloaded 2026-10-18).
 Output: docs/brentwood/layout-osm.json (metres east/north of the review origin).
 
 Data © OpenStreetMap contributors, ODbL 1.0. Run: python3 tools/brentwood/osm_extract.py
@@ -9,14 +9,13 @@ Data © OpenStreetMap contributors, ODbL 1.0. Run: python3 tools/brentwood/osm_e
 import json, math, pathlib, xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SRC = ROOT / 'content/sources/brentwood-2026-10-17.osm'
+SRC = ROOT / 'content/sources/brentwood-2026-10-18.osm'
 ORIGIN = (51.6213112, 0.3055506)
 KX = 111320 * math.cos(math.radians(ORIGIN[0]))
 KY = 111320
-# Area kept (metres east and north of the origin): the junctions, and the High Street about 250 m to the west
-# (behind the learner's start), up to the edge of the downloaded bbox (x about -245).
-EXTENT_X = (-260, 130)
-EXTENT_Y = (-180, 130)
+# Area kept (metres east and north of the origin): the whole download (bbox 0.2960,51.6175,0.3120,51.6250).
+EXTENT_X = (-655, 440)
+EXTENT_Y = (-420, 405)
 
 osm = ET.parse(SRC).getroot()
 nodes = {n.get('id'): (float(n.get('lat')), float(n.get('lon'))) for n in osm.iter('node')}
@@ -66,7 +65,7 @@ for w in osm.iter('way'):
     elif 'highway' in tg:
         # Footways, service roads, steps and other ways we do not drive on: kept so that approximate
         # buildings are never placed across them.
-        paths.append({'osmWay': int(w.get('id')), 'highway': tg['highway'], 'name': tg.get('name'),
+        paths.append({'osmWay': int(w.get('id')), 'highway': tg['highway'], 'service': tg.get('service'), 'name': tg.get('name'),
                       'area': tg.get('area') == 'yes', 'points': pts})
     elif tg.get('landuse') in ('retail', 'commercial', 'residential'):
         landuse.append({'osmWay': int(w.get('id')), 'kind': tg['landuse'], 'polygon': pts})
@@ -96,11 +95,17 @@ for n in osm.iter('node'):
     elif tg.get('highway') == 'bus_stop': kind = 'bus-stop'
     elif tg.get('historic') == 'memorial': kind = 'memorial'
     elif tg.get('natural') == 'tree': kind = 'tree'
+    elif business_kind(tg) or 'addr:housenumber' in tg:
+        # A business or an address mapped as a point: evidence that a building stands there.
+        kind = 'poi-' + (business_kind(tg) or 'address')
     if kind:
-        features.append({'osmNode': int(n.get('id')), 'kind': kind, 'name': tg.get('name'), 'x': p[0], 'y': p[1]})
+        f = {'osmNode': int(n.get('id')), 'kind': kind, 'name': tg.get('name'), 'x': p[0], 'y': p[1]}
+        if kind.startswith('poi-') and tg.get('addr:housenumber'):
+            f['address'] = f"{tg['addr:housenumber']} {tg.get('addr:street', '')}".strip()
+        features.append(f)
 
 out = {
-    'source': 'OpenStreetMap API 0.6 map call, bbox 0.3020,51.6195,0.3090,51.6232, downloaded 2026-10-17',
+    'source': 'OpenStreetMap API 0.6 map call, bbox 0.2960,51.6175,0.3120,51.6250, downloaded 2026-10-18',
     'licence': 'Data © OpenStreetMap contributors, available under the Open Database Licence (ODbL) 1.0. https://www.openstreetmap.org/copyright',
     'origin': {'lat': ORIGIN[0], 'lng': ORIGIN[1]},
     'units': 'metres east (x) and north (y) of the origin',

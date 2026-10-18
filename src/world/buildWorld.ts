@@ -119,7 +119,8 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   // Subdivided: one huge two-triangle plane loses depth precision where it is clipped near the camera, and the grass
   // 2 cm below then shows through the road (seen in software rendering from some viewpoints).
   const ground=CreateGround('verge',{width:2000,height:2000,subdivisions:40},scene);
-  ground.position.y=-.02;
+  // A paved town ground sits a little lower, so the areas drawn on it (gardens, car parks, paths) stay clearly above it.
+  ground.position.y=location.ground==='paved'?-.06:-.02;
   ground.material=grass;
   ground.parent=root;
 

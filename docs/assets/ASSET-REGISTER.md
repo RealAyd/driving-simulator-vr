@@ -89,6 +89,8 @@ None at present. The trial placements (London terrace house, supermarket, Downto
 - street lights and trees in the streetscape style;
 - signal heads (`src/world/signals.ts`).
 
+**Brentwood surroundings (step 13):** still project-owned geometry. Building outlines now come from OpenStreetMap and, where it has none, from Microsoft ML Buildings via Overture Maps (ODbL, map data rather than assets). Neither is a model or texture; both are credited in the location's sources. See `docs/verification/STEP13-brentwood-surroundings.md`.
+
 The Downtown MegaKit façade modules (CC0) were considered. They would need cutting to arbitrary OSM outlines, and their American shopfronts would not suit Brentwood, so they are not used. No new third-party assets.
 
 The Moving off street is now project-owned geometry (`src/world/streetscape.ts`, `streetscapeMesh.ts`, textures drawn at load in `sceneryTextures.ts`) plus the CC0 parked cars. The optional-model mechanism (a location's `models` list, private files in `public/assets/licensed/`) remains for later use. Earlier trial screenshots: `docs/verification/assets/`.

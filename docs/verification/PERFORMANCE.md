@@ -16,9 +16,10 @@ Measured 2026-10-18 in this container. Sources: G13 (zebra), G14 (Brentwood) and
 | Moving off (step 8) | about 63,000 | | | | 12–14 | |
 | Zebra crossing street | 50,100 | | 88 | 869 | 16.0 | about 60 / 100 ms |
 | Brentwood mini-roundabouts (60 buildings, 13 of them approximate; street extended behind) | 38,400 | 59,200 | 67 | 429 | 18.7 | 53 / 90 ms |
+| Brentwood, step 13 (287 buildings, 157 of them background in low detail; ground areas) | 65,400 | 115,000 | 110 | 2,063 | 19.7–22.5 | 51 / 64–73 ms |
 | Phone viewer, Moving off (step 9) | | | | | about 9.9 | |
 
-- **Downloads** (public preview, uncompressed): about 2.2 MB per visit, of which models are 155 KB (CC0 parked cars). No private or licensed files are requested.
+- **Downloads** (public preview, uncompressed): about 2.4 MB per visit, of which models are 155 KB (CC0 parked cars). The main script is 1.05 MB (gzip 275 KB), including the Brentwood location data (0.45 MB). No private or licensed files are requested.
 - **One area at a time:** only one exercise area is loaded at once. The world is rebuilt when the exercise's location changes.
 - **CI runners:** in CI, the dressed streets have rendered at about 1 fps on some runs, so browser tests wait on simulated time and allow long timeouts.
 

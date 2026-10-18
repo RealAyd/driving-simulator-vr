@@ -247,8 +247,11 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   const panel={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.35};
   const rowY=(i:number)=>panel.y+.21-(62+i*46-12)/511*.42;
   const plus=aimAt({x:panel.x+.31,y:rowY(1),z:panel.z+.02});
+  // Look straight ahead while the viewer settles, then at "+" (as for Reset below).
+  await look(page,0,0);
+  await page.waitForTimeout(1500);
   await look(page,plus.yaw,plus.pitch);
-  await expect.poll(async()=>(await read(page,'viewer()')).settings.ipdMm,{timeout:10_000}).toBe(64);
+  await expect.poll(async()=>(await read(page,'viewer()')).settings.ipdMm,{timeout:20_000}).toBe(64);
   await look(page,0,0);
   await page.screenshot({path:testInfo.outputPath('g10-07-calibration.png')});
   // Offset: after Recentre, 0° (this is not lag and not drift).

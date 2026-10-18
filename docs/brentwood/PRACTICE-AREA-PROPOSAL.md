@@ -51,7 +51,7 @@ What the map data does not tell us: lane markings and widths (mostly not mapped)
 ## 4. Location 1: existing paired mini-roundabouts (being finished now)
 
 - **Connections and spacing:** approach directions and spacing are checked against OSM. The two mini-roundabouts are 19.1 m apart (unit-tested), with the High Street approach from the west. The learner turns left at the first into Wilson's Corner, then goes ahead at the second into Shenfield Road.
-- **What has been built, and its review status:** see `docs/verification/STEP12-brentwood-scene-completed.md`.
+- **What has been built, and its review status:** see `docs/verification/STEP12-brentwood-scene-completed.md` and `STEP13-brentwood-surroundings.md` (surroundings filled from OSM and Microsoft outlines, with provenance).
   - The High Street continues about 220 m behind the start, with its two side-road mouths and second signal crossing.
   - Pavements are widened to the shop fronts (derived from OSM).
   - Approximate buildings fill frontages that OSM leaves empty, and are labelled as such.

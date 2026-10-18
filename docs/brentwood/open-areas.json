@@ -1,0 +1,302 @@
+{
+ "note": "Open land within 75 m of the modelled roads that neither OSM nor the Microsoft outlines explain; drawnAs green = landscaped grass (representative), paving = forecourt/yard. Check against imagery.",
+ "patches": [
+  {
+   "x": 45,
+   "z": 43,
+   "lat": 51.620926,
+   "lon": 0.306201,
+   "area": 6861,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.620926&mlon=0.306201#map=19/51.620926/0.306201"
+  },
+  {
+   "x": -91,
+   "z": 110,
+   "lat": 51.620325,
+   "lon": 0.304233,
+   "area": 3950,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.620325&mlon=0.304233#map=19/51.620325/0.304233"
+  },
+  {
+   "x": -89,
+   "z": 4,
+   "lat": 51.621274,
+   "lon": 0.304263,
+   "area": 2396,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.621274&mlon=0.304263#map=19/51.621274/0.304263"
+  },
+  {
+   "x": 99,
+   "z": -105,
+   "lat": 51.622251,
+   "lon": 0.306981,
+   "area": 1954,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622251&mlon=0.306981#map=19/51.622251/0.306981"
+  },
+  {
+   "x": -223,
+   "z": 67,
+   "lat": 51.620711,
+   "lon": 0.302321,
+   "area": 1635,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.620711&mlon=0.302321#map=19/51.620711/0.302321"
+  },
+  {
+   "x": -403,
+   "z": 136,
+   "lat": 51.620094,
+   "lon": 0.299719,
+   "area": 1111,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.620094&mlon=0.299719#map=19/51.620094/0.299719"
+  },
+  {
+   "x": -309,
+   "z": 201,
+   "lat": 51.619508,
+   "lon": 0.301075,
+   "area": 1063,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619508&mlon=0.301075#map=19/51.619508/0.301075"
+  },
+  {
+   "x": -177,
+   "z": 142,
+   "lat": 51.620035,
+   "lon": 0.302986,
+   "area": 1057,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.620035&mlon=0.302986#map=19/51.620035/0.302986"
+  },
+  {
+   "x": -401,
+   "z": 223,
+   "lat": 51.619311,
+   "lon": 0.299751,
+   "area": 923,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619311&mlon=0.299751#map=19/51.619311/0.299751"
+  },
+  {
+   "x": 86,
+   "z": -80,
+   "lat": 51.62203,
+   "lon": 0.306796,
+   "area": 822,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622030&mlon=0.306796#map=19/51.622030/0.306796"
+  },
+  {
+   "x": -323,
+   "z": 103,
+   "lat": 51.620389,
+   "lon": 0.300876,
+   "area": 809,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.620389&mlon=0.300876#map=19/51.620389/0.300876"
+  },
+  {
+   "x": 81,
+   "z": -33,
+   "lat": 51.621611,
+   "lon": 0.306721,
+   "area": 695,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.621611&mlon=0.306721#map=19/51.621611/0.306721"
+  },
+  {
+   "x": -43,
+   "z": -47,
+   "lat": 51.621737,
+   "lon": 0.30493,
+   "area": 689,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.621737&mlon=0.304930#map=19/51.621737/0.304930"
+  },
+  {
+   "x": 52,
+   "z": 113,
+   "lat": 51.620293,
+   "lon": 0.306309,
+   "area": 606,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.620293&mlon=0.306309#map=19/51.620293/0.306309"
+  },
+  {
+   "x": -138,
+   "z": 18,
+   "lat": 51.621151,
+   "lon": 0.303561,
+   "area": 605,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.621151&mlon=0.303561#map=19/51.621151/0.303561"
+  },
+  {
+   "x": -130,
+   "z": 144,
+   "lat": 51.620017,
+   "lon": 0.303674,
+   "area": 564,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.620017&mlon=0.303674#map=19/51.620017/0.303674"
+  },
+  {
+   "x": -412,
+   "z": 177,
+   "lat": 51.619721,
+   "lon": 0.299592,
+   "area": 554,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619721&mlon=0.299592#map=19/51.619721/0.299592"
+  },
+  {
+   "x": -288,
+   "z": 179,
+   "lat": 51.619706,
+   "lon": 0.301389,
+   "area": 554,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619706&mlon=0.301389#map=19/51.619706/0.301389"
+  },
+  {
+   "x": 166,
+   "z": -63,
+   "lat": 51.621878,
+   "lon": 0.307948,
+   "area": 544,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.621878&mlon=0.307948#map=19/51.621878/0.307948"
+  },
+  {
+   "x": -41,
+   "z": 119,
+   "lat": 51.620238,
+   "lon": 0.304951,
+   "area": 509,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.620238&mlon=0.304951#map=19/51.620238/0.304951"
+  },
+  {
+   "x": 3,
+   "z": -94,
+   "lat": 51.622158,
+   "lon": 0.305596,
+   "area": 491,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622158&mlon=0.305596#map=19/51.622158/0.305596"
+  },
+  {
+   "x": -419,
+   "z": 205,
+   "lat": 51.619473,
+   "lon": 0.299481,
+   "area": 447,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619473&mlon=0.299481#map=19/51.619473/0.299481"
+  },
+  {
+   "x": -78,
+   "z": -53,
+   "lat": 51.621791,
+   "lon": 0.304422,
+   "area": 346,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.621791&mlon=0.304422#map=19/51.621791/0.304422"
+  },
+  {
+   "x": -15,
+   "z": -21,
+   "lat": 51.621503,
+   "lon": 0.305334,
+   "area": 340,
+   "drawnAs": "green",
+   "map": "https://www.openstreetmap.org/?mlat=51.621503&mlon=0.305334#map=19/51.621503/0.305334"
+  },
+  {
+   "x": -230,
+   "z": 166,
+   "lat": 51.619818,
+   "lon": 0.302229,
+   "area": 326,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619818&mlon=0.302229#map=19/51.619818/0.302229"
+  },
+  {
+   "x": -54,
+   "z": -97,
+   "lat": 51.622182,
+   "lon": 0.304773,
+   "area": 323,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622182&mlon=0.304773#map=19/51.622182/0.304773"
+  },
+  {
+   "x": 26,
+   "z": -81,
+   "lat": 51.622041,
+   "lon": 0.305929,
+   "area": 311,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622041&mlon=0.305929#map=19/51.622041/0.305929"
+  },
+  {
+   "x": 154,
+   "z": -122,
+   "lat": 51.622407,
+   "lon": 0.307786,
+   "area": 302,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622407&mlon=0.307786#map=19/51.622407/0.307786"
+  },
+  {
+   "x": 175,
+   "z": -47,
+   "lat": 51.621729,
+   "lon": 0.308077,
+   "area": 293,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.621729&mlon=0.308077#map=19/51.621729/0.308077"
+  },
+  {
+   "x": -147,
+   "z": 154,
+   "lat": 51.619928,
+   "lon": 0.303429,
+   "area": 286,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.619928&mlon=0.303429#map=19/51.619928/0.303429"
+  },
+  {
+   "x": -28,
+   "z": -123,
+   "lat": 51.622417,
+   "lon": 0.305148,
+   "area": 255,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.622417&mlon=0.305148#map=19/51.622417/0.305148"
+  },
+  {
+   "x": -377,
+   "z": 132,
+   "lat": 51.620127,
+   "lon": 0.300093,
+   "area": 226,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.620127&mlon=0.300093#map=19/51.620127/0.300093"
+  },
+  {
+   "x": -45,
+   "z": -74,
+   "lat": 51.621975,
+   "lon": 0.3049,
+   "area": 217,
+   "drawnAs": "paving",
+   "map": "https://www.openstreetmap.org/?mlat=51.621975&mlon=0.304900#map=19/51.621975/0.304900"
+  }
+ ]
+}

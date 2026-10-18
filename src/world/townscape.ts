@@ -32,14 +32,18 @@ export interface TownBuilding{
   palette:Palette|'stone'|'concrete';
   /** Fascia paint for shopfronts. */
   fascia:string;
+  roof:'flat'|'pitched';
+  detail:'full'|'low';
+  roofColour:'slate'|'clay';
   y:number;
 }
-export interface TownArea{kind:'grass'|'parking';polygon:Vec2[]}
+export interface TownArea{kind:'grass'|'parking'|'garden'|'green'|'access'|'street';polygon:Vec2[]}
 export interface BusStop{x:number;z:number;heading:number;y:number}
 export interface Obelisk{id:string;x:number;z:number;width:number;height:number;colour:string;y:number}
 export interface TownLayout{buildings:TownBuilding[];areas:TownArea[];busStops:BusStop[];obelisks:Obelisk[]}
 
 const STOREY=3.2;
+const roadLength=(road:Location['roads'][number])=>road.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
 const WALL=.3;
 /** Furthest a wall can be behind the pavement (widened to shop fronts where mapped) and still count as facing the road, metres. */
 const FACING_GAP=6;
@@ -109,6 +113,8 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       // the back of the pavement (pavements are widened to the shop fronts where map data shows them).
       const facesRoad=location.roads.some(road=>{
         const s=sampleRoad(road,mid.x,mid.z);
+        // Only a road that runs past the wall (not one that ends before it).
+        if(s.along<=.01||s.along>=roadLength(road)-.01)return false;
         const gap=s.distance-roadHalfWidth(road)-pavementWidthAt(road,s.along,Math.sign(s.lateral)||1);
         if(gap>FACING_GAP)return false;
         const p=pointAtAlong(road,s.along);
@@ -120,7 +126,7 @@ export function layoutTownscape(location:Location):StreetLayout|null{
         headingDeg:headingFromDirection({x:c.x-a.x,z:c.z-a.z})*180/Math.PI,size:{width:WALL,depth:len,height:b.height},occludes:true,shape:'box'});
     }
     town.buildings.push({id:b.id,use:b.use,ring,walls,height:b.height,levels:b.levels??Math.max(1,Math.round((b.height-.6)/STOREY)),
-      palette:paletteFor(b),fascia:FASCIAS[hash(b.id)%FASCIAS.length]!,y:-.02});
+      palette:paletteFor(b),fascia:FASCIAS[hash(b.id)%FASCIAS.length]!,roof:b.roof,detail:b.detail,roofColour:hash(b.id)%3===0?'clay':'slate',y:-.02});
   }
   const inBuilding=(p:Vec2,margin:number)=>location.buildings.some(b=>insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin);
 

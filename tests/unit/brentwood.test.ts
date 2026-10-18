@@ -138,34 +138,81 @@ describe('Brentwood scene completeness: street behind the start, pavements to th
     expect(high.markings.centreFrom).toBeCloseTo(west.along,1);
   });
 
-  it('pavements reach the shop fronts: every shopfront wall meets the back of the pavement somewhere along it (within 1 m)',()=>{
+  it('pavements reach the shop fronts: every shopfront wall meets the back of the pavement somewhere along it (within 2 m: a shop recessed behind its neighbour keeps a small forecourt)',()=>{
     for(const b of town.buildings)for(const w of b.walls)if(w.shopfront){
       let best=Infinity;
       for(let t=0;t<=1;t+=.05){
         const p={x:w.a.x+(w.b.x-w.a.x)*t,z:w.a.z+(w.b.z-w.a.z)*t};
         for(const r of place.roads){const s=sampleRoad(r,p.x,p.z);best=Math.min(best,s.distance-roadHalfWidth(r)-pavementWidthAt(r,s.along,Math.sign(s.lateral)||1))}
       }
-      expect(best,`${b.id}`).toBeLessThan(1);
+      expect(best,`${b.id}`).toBeLessThan(2);
     }
   });
 
-  it('approximate buildings are labelled as such, have estimated heights and no shopfronts, and stand off every road and pavement',()=>{
+  it('approximate buildings are labelled with their evidence, have estimated heights, and stand off every road and pavement; only those based on a mapped business have shopfronts',()=>{
     const approx=place.buildings.filter(b=>b.source==='approximate');
-    expect(approx.length).toBeGreaterThan(0);
+    expect(approx.length).toBeGreaterThan(5);
     for(const b of approx){
       expect(b.heightSource,b.id).toBe('estimated');
-      expect(b.use,b.id).toBe('other');
+      expect(b.evidence,b.id).toBeTruthy();
       for(const p of b.footprint)expect(surfaceAt(place,p.x,p.z),`${b.id}`).toBeNull();
-      expect(town.buildings.find(t=>t.id===b.id)!.walls.some(w=>w.shopfront)).toBe(false);
+      const shopfronts=town.buildings.find(t=>t.id===b.id)!.walls.some(w=>w.shopfront);
+      if(shopfronts)expect(b.evidence,b.id).toMatch(/OSM node/);
     }
-    // OSM outlines keep source 'map'.
+    // OSM outlines keep source 'map'; Microsoft outlines are 'reference' with reference-estimated heights.
     expect(place.buildings.filter(b=>b.id.startsWith('osm-')).every(b=>b.source==='map')).toBe(true);
+    const ml=place.buildings.filter(b=>b.source==='reference');
+    expect(ml.length).toBeGreaterThan(20);
+    expect(ml.every(b=>b.id.startsWith('ml-')&&b.heightSource==='reference-estimated')).toBe(true);
+    for(const b of ml)for(const p of b.footprint)expect(surfaceAt(place,p.x,p.z)?.kind,`${b.id}`).not.toBe('carriageway');
   });
 
   it('signal heads are held green only by this exercise; the zebra and Moving off exercises set no signals',()=>{
-    expect(guided.signals).toEqual({'high-street-signals':'green','high-street-signals-west':'green'});
+    // Every High Street signal crossing (map data) is held green by this exercise; no other signals exist.
+    expect(guided.signals).toEqual(Object.fromEntries(place.crossings.filter(c=>c.kind==='signal').map(c=>[c.id,'green'])));
+    expect(place.crossings.filter(c=>c.kind==='signal').length).toBe(3);
     expect(guided.briefing).toContain('pedestrian crossing phases are not simulated');
     expect(parseScenario(crossingJson).signals).toEqual({});
     expect(parseScenario(movingOffJson).signals).toEqual({});
+  });
+});
+
+describe('Brentwood: buildings that are not from map data never hide traffic at the mini-roundabouts',()=>{
+  const cross=(a:{x:number;z:number},b:{x:number;z:number},c:{x:number;z:number},d:{x:number;z:number})=>{
+    const o=(p:typeof a,q:typeof a,r:typeof a)=>(q.x-p.x)*(r.z-p.z)-(q.z-p.z)*(r.x-p.x);
+    return o(a,b,c)*o(a,b,d)<0&&o(c,d,a)*o(c,d,b)<0;
+  };
+  const blocks=(b:{footprint:Array<{x:number;z:number}>},e:{x:number;z:number},t:{x:number;z:number})=>
+    b.footprint.some((p,i)=>cross(e,t,p,b.footprint[(i+1)%b.footprint.length]!));
+  const lanePoint=(roadId:string,along:number,lateral:number)=>{
+    const r=place.roads.find(x=>x.id===roadId)!;
+    const pts=r.centreline;let acc=0;
+    for(let i=0;i<pts.length-1;i++){
+      const a=pts[i]!,b=pts[i+1]!,l=Math.hypot(b.x-a.x,b.z-a.z);
+      if(acc+l>=along){const t=(along-acc)/l,ux=(b.x-a.x)/l,uz=(b.z-a.z)/l;return {x:a.x+ux*l*t-uz*lateral,z:a.z+uz*l*t+ux*lateral}}
+      acc+=l;
+    }
+    return pts.at(-1)!;
+  };
+  const roadLength=(id:string)=>{const r=place.roads.find(x=>x.id===id)!;return r.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-r.centreline[i]!.x,p.z-r.centreline[i]!.z),0)};
+  // Approaches: the learner's lane on the High Street before rb1, and on Wilson's Corner before rb2.
+  // Traffic from the right: Ingrave Road into rb1, Shenfield Road into rb2.
+  const cases=[
+    {from:'high-street',lane:-1.6,to:'ingrave-in',toLane:-1.6},
+    {from:'link-north',lane:-1.6,to:'shenfield-in',toLane:-1.6}
+  ];
+  it.each(cases)('$from approach: sightlines to $to are not reduced by reference or approximate buildings',({from,lane,to,toLane})=>{
+    const mapped=place.buildings.filter(b=>b.source==='map');
+    const added=place.buildings.filter(b=>b.source!=='map');
+    const L=roadLength(from),T=roadLength(to);
+    let checked=0;
+    for(let s=Math.max(0,L-35);s<=L-6;s+=1.5)for(let u=Math.max(0,T-45);u<=T-4;u+=1.5){
+      const e=lanePoint(from,s,lane),t=lanePoint(to,u,toLane);
+      if(mapped.some(b=>blocks(b,e,t)))continue;
+      checked++;
+      const hidden=added.find(b=>blocks(b,e,t));
+      expect(hidden?.id,`from ${from} ${s.toFixed(1)} to ${to} ${u.toFixed(1)}`).toBeUndefined();
+    }
+    expect(checked).toBeGreaterThan(50);
   });
 });
