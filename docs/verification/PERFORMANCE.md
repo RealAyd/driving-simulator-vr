@@ -9,7 +9,7 @@ The browser test G1 "rendering smoke test" only checks that frames keep renderin
 
 ## 1. Scene cost (software rendering, 932 × 430, forward view with mirrors, stationary)
 
-Measured 2026-10-18 in this container. Sources: G13 (zebra), G14 (Brentwood) and the step 8 measurement (Moving off).
+Measured 2026-10-18 in this container. Sources: G13 (zebra), G14 (Brentwood), the step 8 measurement (Moving off) and, for step 14, `PERF_PROBE=1 npx playwright test perf-probe` (all three exercises, same conditions before and after).
 
 | Scene | Triangles | Vertices | Meshes | Colliders | Average fps | p50 / p95 frame |
 |---|---|---|---|---|---|---|
@@ -17,6 +17,9 @@ Measured 2026-10-18 in this container. Sources: G13 (zebra), G14 (Brentwood) and
 | Zebra crossing street | 50,100 | | 88 | 869 | 16.0 | about 60 / 100 ms |
 | Brentwood mini-roundabouts (60 buildings, 13 of them approximate; street extended behind) | 38,400 | 59,200 | 67 | 429 | 18.7 | 53 / 90 ms |
 | Brentwood, step 13 (287 buildings, 157 of them background in low detail; ground areas) | 65,400 | 115,000 | 110 | 2,063 | 19.7–22.5 | 51 / 64–73 ms |
+| Step 14 before → after (two runs each; people are instances and not in the triangle count), Moving off | 67,060 → 67,156 | | | | 18.0–18.9 → 18.7–20.4 | |
+| Step 14, zebra | 50,070 → 49,658 | | 88 | | 19.2–20.1 → 20.3–22.0 | |
+| Step 14, Brentwood (signs, 38 shop names, about 36 people, 2 buses) | 65,372 → 67,278 | | 118 | | 17.5–17.8 → 14.7–17.0 (interior mirror 14.3–14.7 → 13.0–14.3) | |
 | Phone viewer, Moving off (step 9) | | | | | about 9.9 | |
 
 - **Downloads** (public preview, uncompressed): about 2.4 MB per visit, of which models are 155 KB (CC0 parked cars). The main script is 1.05 MB (gzip 275 KB), including the Brentwood location data (0.45 MB). No private or licensed files are requested.

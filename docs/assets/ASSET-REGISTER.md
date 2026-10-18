@@ -108,3 +108,20 @@ The supplied ZIP's three documents were read first and match its contents: ten p
 
 As the selection notes say: no bus shelter, bench, lamp post, bin, railing or UK signage in this pack; US road decals and four-lane roads rejected.
 Trial screenshots: `*-local-with-private.png` are a local build with the private models; `*-public-build.png` is the build CI and staging produce. The pack's façade modules suit a high street rather than this residential street; none are placed at present.
+
+## Street life: signs, bus stops, people, cyclist and buses (step 14, 2026-10-18)
+
+**No third-party assets were added.** Every item below is project-owned, generated in code at load time (no image, model or font files are downloaded):
+
+| Item | Where | How it is made | Licence |
+|---|---|---|---|
+| Sign faces: street-name plates, mini-roundabout sign (diagram 611.1 design), bus stop flags, shop names | `src/world/signageMesh.ts` | Lettered on one canvas texture at load time with the device's own sans-serif font (Helvetica/Arial); the 611.1 arrows are drawn from circles and triangles | Project-owned. The 611.1 design is a prescribed UK traffic sign (TSRGD 2016); it is drawn from scratch, not copied from DfT artwork files |
+| Sign posts, plate backs, bus shelters (glass, frame, roof, advertising-panel end, bench) | `src/world/signageMesh.ts` | Geometry from code; one mesh, one material for all signage in a location | Project-owned |
+| Background people (3 shared shapes: body prism, head/hand ball, hair cap) | `src/world/peopleMesh.ts`, layout in `src/world/crowd.ts` | Thin instances with a colour each; legs and arms swing with distance walked | Project-owned |
+| Crossing pedestrian (zebra exercise) | `pedestrianFigure` in `src/actors/actorVisuals.ts` | The same people shapes, in the original navy coat | Project-owned |
+| Cyclist (Moving off) | `cyclistBody`, `cyclistLegs` in `src/actors/actorVisuals.ts` | Bicycle (wheels, frame, saddle, bars) and rider; legs follow the cranks | Project-owned |
+| Bus (generic single-deck, unbranded) | `busBody` in `src/actors/actorVisuals.ts` | Body, glazing, doors, wheels, lights; flashing indicators. No operator livery, route number or destination | Project-owned |
+
+**Free sources checked and why none are used:** no pack in the register has people or a bus (the Quaternius LowPoly Cars pack has cars only; the Downtown MegaKit Standard selection has no people, buses or UK street furniture). The licence-unknown CADmando bus stop includes a TfL route map image and cannot be used. Free asset sites (Kenney, Quaternius, Poly Pizza, itch.io, OpenGameArt, Sketchfab, Poly Haven) and CDN mirrors are blocked by this environment's network policy, so no new free models could be downloaded or checked. Nothing was purchased.
+
+**Text and names shown:** street names, bus stop names and indicators, and shop names come only from the location's OpenStreetMap data (ODbL, already credited on screen) and are drawn as plain lettering, with no logos. Shop names may be out of date. The representative streets get no names.
