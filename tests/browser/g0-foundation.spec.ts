@@ -15,6 +15,9 @@ const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${ex
 // fixed clock caps catch-up, so simulation time can run slower than real time.
 const until=(page:Page,fn:string,timeout=30_000)=>page.waitForFunction(fn,null,{timeout});
 
+// Dressed streets render slowly in software (about 1 fps on CI runners): allow time.
+test.setTimeout(300_000);
+
 test('G0: start, drive, brake, signal, pause, restart and recover focus',async({page},testInfo)=>{
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
