@@ -5,7 +5,7 @@ import {expect,test,type Page} from '@playwright/test';
 // Pixels are read from each mirror's own image (all mirrors rendering every frame), so the
 // coverage of all three is measured at once; the screen holds the left-mirror view and is recorded.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
-test.setTimeout(400_000);
+test.setTimeout(900_000);
 
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
@@ -20,13 +20,15 @@ test('G11: left mirror coverage of the cyclist: measured along its whole approac
   await read(page,'allMirrorsLive(true)');
   await read(page,"selectView('left-door')");
 
+  // The frame-by-frame recording (docs) is heavy in software rendering: only with RECORD=1.
+  const record=!!process.env.RECORD;
   const cdp=await page.context().newCDPSession(page);
   let frame=0;
   cdp.on('Page.screencastFrame',async f=>{
     writeFileSync(testInfo.outputPath(`frame-${String(frame++).padStart(5,'0')}.jpg`),Buffer.from(f.data,'base64'));
     await cdp.send('Page.screencastFrameAck',{sessionId:f.sessionId}).catch(()=>{});
   });
-  await cdp.send('Page.startScreencast',{format:'jpeg',quality:80,everyNthFrame:1});
+  if(record)await cdp.send('Page.startScreencast',{format:'jpeg',quality:80,everyNthFrame:1});
 
   type Row={t:number;behind:number;lateral:number;interior:number;left:number;leftX:number|null;right:number};
   const rows:Row[]=[];
@@ -46,9 +48,10 @@ test('G11: left mirror coverage of the cyclist: measured along its whole approac
       await read(page,'freezeTime(false)');
       if(c.pose.position.z<-6)break;
     }
-    await page.waitForTimeout(250);
+    // Next sample after about 0.4 s of simulated time (a wall-clock wait would give fewer samples on slow machines).
+    await expect.poll(async()=>(await read(page,'simTime()'))-t,{timeout:60_000,intervals:[100]}).toBeGreaterThanOrEqual(.4);
   }
-  await cdp.send('Page.stopScreencast');
+  if(record)await cdp.send('Page.stopScreencast');
   writeFileSync(testInfo.outputPath('coverage.json'),JSON.stringify(rows,null,1));
   console.log('COVERAGE\n'+rows.filter((_,i)=>i%2===0).map(r=>`${r.behind}\t${r.lateral}\t${r.interior}\t${r.left}\t${r.leftX}\t${r.right}`).join('\n'));
 
