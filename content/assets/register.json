@@ -166,6 +166,23 @@
       ],
       "storage": "public",
       "notes": "Shipped: the compact hatchback (uk_car_03_compact_mini_white) and saloon (uk_car_10_bmw_coupe_silver), as other road users' cars and in the parked-car mix on drives. Sports, super and futuristic models and the Car 01 variants are not used. Cyclist QA files not used (the cyclist is 4.6 MB). See docs/assets/batch-b.md."
+    },
+    {
+      "id": "driving-practice-batch-c",
+      "title": "Driving Practice Batch C v0.1 (British modular street scenery)",
+      "author": "Made for the project owner (procedurally modelled original geometry and texture atlas; build scripts in the pack's source/)",
+      "source": "Driving_Practice_Batch_C_Complete.zip supplied by the project owner, received 2026-10-19 (28 GLBs, previews, manifest, validation report, source scripts)",
+      "licence": "Project-owned original work: the pack README states the models and atlas were procedurally created with no third-party geometry or images. The owner confirmed on 2026-10-19 that their supplied packs may be used in the published app and this public repository.",
+      "licenceUrl": null,
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "contents": [
+        "12 buildings (high-street shops including Boots- and Tesco Express-style fronts, corner shop, cafe, pub, two-unit row, brick and buff terraced houses, low-rise flats, supermarket frontage, office, pharmacy)",
+        "9 road and pavement pieces (pavement, dropped kerb, corner, road section, give-way line, mini-roundabout island, double yellows, parking bays, refuge island)",
+        "7 furniture items (lamppost, street tree, planter, roadworks barrier, traffic cone, postbox, hanging sign)"
+      ],
+      "storage": "public",
+      "notes": "Shipped: the street tree only. Buildings and road pieces are fixed-size generic modules, while the scenes build both from mapped footprints and road geometry; the Boots/Tesco-style signs raise brand questions. The lamppost matches the drawn lamp column. Postbox, planter, cone, barrier and hanging sign have no mapped positions or scenario yet. See docs/assets/batch-c.md."
     }
   ],
   "models": [
@@ -452,6 +469,24 @@
         "bytes": 24240
       },
       "build": "TOOLS=<scratch folder> tools/assets/build-batch-b-cars.sh <extracted Batch B folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-c-street-tree",
+      "file": "public/assets/models/street/batch-c-street-tree.glb",
+      "pack": "driving-practice-batch-c",
+      "sourceFile": "glb/uk_street_tree_lod1.glb",
+      "use": "Every map tree and garden tree (in place of the drawn tree), as instances of one mesh",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, simplify (meshoptimizer) ratio 0.15, error 0.02 (2,056 to 358 triangles), quantize",
+        "At load: material replaced with StandardMaterial (vertex colours kept); scaled to each tree's height and crown radius, turned by position"
+      ],
+      "stats": {
+        "triangles": 358,
+        "materials": 0,
+        "bytes": 5584
+      },
+      "build": "tools/assets/build-batch-c.sh <extracted Batch C folder>",
       "storage": "public"
     }
   ]

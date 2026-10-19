@@ -3,20 +3,25 @@ import type {AssetContainer} from '@babylonjs/core/assetContainer';
 import type {Location} from '../contracts';
 import {loadModel} from '../assets/models';
 import type {Shelter} from './signage';
+import type {Tree} from './streetscape';
 
 /**
- * Street furniture models from asset Batch A (content/assets/register.json), used in place of the
- * simple drawn shapes wherever the scene already puts that object: Belisha beacons at zebras,
- * signal heads where an exercise runs signals, and bus shelters at mapped stops. Positions,
+ * Street furniture models from asset Batches A and C (content/assets/register.json), used in place of
+ * the simple drawn shapes wherever the scene already puts that object: Belisha beacons at zebras,
+ * signal heads where an exercise runs signals, bus shelters at mapped stops, and trees. Positions,
  * colliders and scoring are unchanged; where a model cannot load the drawn shape stays.
  * Models are in metres, origin at ground level, front facing +Z.
  */
 export const STREET_MODELS={
   beacon:'assets/models/street/batch-a-belisha-beacon.glb',
   shelter:'assets/models/street/batch-a-bus-shelter-modern.glb',
-  signalGreen:'assets/models/street/batch-a-uk-vehicle-signal-green.glb'
+  signalGreen:'assets/models/street/batch-a-uk-vehicle-signal-green.glb',
+  tree:'assets/models/street/batch-c-street-tree.glb'
 } as const;
 export type StreetModelId=keyof typeof STREET_MODELS;
+
+/** The tree model's height and crown radius (metres), which each tree is scaled to. */
+const TREE_MODEL={height:6.16,radius:1.8};
 
 /** The shelter model's frame (pillar span and depth) that the planned footprint is fitted to. */
 const SHELTER_MODEL={length:4.4,depth:1.55};
@@ -76,6 +81,28 @@ export class StreetModels{
       if(this.place('shelter',parent,s.id,s.x,s.y,s.z,facing,{x:s.length/SHELTER_MODEL.length,z:s.depth/SHELTER_MODEL.depth}))n++;
     }
     return n;
+  }
+
+  /**
+   * Trees (map trees and garden trees, streetscape.ts) as instances of one mesh (one draw call for all),
+   * each scaled to its height and crown radius and turned by its position so they do not all match.
+   */
+  placeTrees(parent:TransformNode,trees:readonly Tree[]):number{
+    const container=this.models.get('tree');
+    if(!container)return 0;
+    trees.forEach((t,i)=>{
+      const holder=new TransformNode(`street-tree-${i}`,this.scene);
+      holder.parent=parent;
+      holder.position.set(t.x,t.y,t.z);
+      holder.rotation.y=Math.abs((t.x*12.9898+t.z*78.233)%1)*Math.PI*2;
+      const r=t.radius/TREE_MODEL.radius;
+      holder.scaling.set(r,t.height/TREE_MODEL.height,r);
+      // Instances (not copies) of the model's mesh: Babylon draws them together.
+      const copy=container.instantiateModelsToScene(n=>`street-tree-${i}-${n}`,false,{doNotInstantiate:false});
+      for(const root of copy.rootNodes)root.parent=holder;
+      for(const mesh of holder.getChildMeshes()){mesh.isPickable=false;mesh.freezeWorldMatrix()}
+    });
+    return trees.length;
   }
 
   /**

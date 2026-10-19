@@ -183,7 +183,10 @@ export async function boot():Promise<void>{
       ...(layout?.cars??[]).map(c=>({model:c.model,colour:c.colour,x:c.x,y:c.y,z:c.z,heading:c.heading}))
     ];
     const vans=place.blocks.filter(b=>b.vehicleModel===PANEL_VAN.id).map(b=>({x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg),width:b.size.width,length:b.size.depth,height:b.size.height,colour:b.colour??'#e9e9e4'}));
-    if(layout||vans.length>0)buildStreetscape(scene,layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
+    // Modelled trees replace the drawn ones (positions and trunk colliders unchanged).
+    const modelTrees=!!layout&&!!streetModels?.has('tree');
+    if(layout||vans.length>0)buildStreetscape(scene,modelTrees?{...layout!,trees:[]}:layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
+    if(modelTrees)streetModels!.placeTrees(world.root,layout!.trees);
     bakeParkedCars(scene,world.root,parked,carModels);
     signPlan=layoutSignage(place,layout);
     // Modelled shelters replace the drawn ones (the plan, and so the colliders, are unchanged).
