@@ -24,7 +24,8 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
-import {CAR_MODEL,CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
+import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
+import {ROAD_USER_CAR_MODELS} from '../assets/carSpecs';
 import {PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
@@ -206,7 +207,11 @@ export async function boot():Promise<void>{
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
-  const [loadedParked,carModel,loadedStreet]=await Promise.all([loadCarModels(scene),CarModel.load(scene,CAR_MODEL),StreetModels.load(scene)]);
+  const [loadedParked,roadUserModels,loadedStreet]=await Promise.all([loadCarModels(scene),Promise.all(ROAD_USER_CAR_MODELS.map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene)]);
+  // Other road users' cars alternate between the models that loaded (simple shapes if none did).
+  const roadUserCars=roadUserModels.filter((m):m is CarModel=>m!==null);
+  const carModel=roadUserCars[0]??null;
+  const roadUserModel=(i:number)=>roadUserCars.length?roadUserCars[i%roadUserCars.length]!:null;
   carModels=loadedParked;
   streetModels=loadedStreet;
   dressLocation();
@@ -347,7 +352,7 @@ export async function boot():Promise<void>{
     const visuals=[
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
-      ...passers.map(p=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,carModel,2*p.size.halfLength)),
+      ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,roadUserModel(i+1),2*p.size.halfLength)),
       ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
@@ -1201,7 +1206,7 @@ export async function boot():Promise<void>{
     const p=perf.stats();
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
     byId('about-models').textContent=[
-      carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple car shapes (model not loaded)',
+      roadUserCars.length?`${roadUserCars.map(m=>m.spec.id).join(' and ')} (asset Batch B) for other cars`:'simple car shapes (model not loaded)',
       streetModels?.available.length?`street furniture (asset Batch A): ${streetModels.available.join(', ')}`:'drawn street furniture',
       props.available.size?`scenery: ${[...props.available].map(id=>PROP_ASSETS[id]?.storage==='private'?`${id} (licensed, private)`:id).join(', ')}`:'no scenery models in this build'
     ].join('; ');

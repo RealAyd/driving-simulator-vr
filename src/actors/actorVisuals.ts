@@ -224,8 +224,20 @@ function cyclistLegs(a:number):Shapes{
 export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car',visible:()=>boolean=()=>true,model:CarModel|null=null,length=4.3){
   const root=new TransformNode(`actor-${id}`,scene);
   if(shape==='car'&&model){
-    model.instantiate(root,id,colour,length);
-    return {update(){root.setEnabled(visible());applyPose(root,pose())},dispose:()=>root.dispose(false,true)};
+    const copy=model.instantiate(root,id,colour,length);
+    let travelled=0,last=pose().position;
+    return {
+      update(){
+        root.setEnabled(visible());
+        const p=pose();
+        // Wheels turn with the distance moved (road users only go forwards).
+        travelled+=Math.hypot(p.position.x-last.x,p.position.z-last.z);
+        last=p.position;
+        applyPose(root,p);
+        model.roll(copy,travelled);
+      },
+      dispose:()=>root.dispose(false,true)
+    };
   }
   const paint=mat(scene,`${id}-paint`,Color3.FromHexString(colour));
   if(shape==='cyclist'){

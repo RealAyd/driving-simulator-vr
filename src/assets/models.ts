@@ -1,6 +1,7 @@
 import {Color3,Mesh,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
 import {VertexBuffer} from '@babylonjs/core/Buffers/buffer';
 import type {AssetContainer} from '@babylonjs/core/assetContainer';
+import type {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
 import type {BaseTexture} from '@babylonjs/core/Materials/Textures/baseTexture';
 
 import {CAR_MODELS,type CarModelId,type CarModelSpec} from './carSpecs';
@@ -65,6 +66,8 @@ export async function loadModel(scene:Scene,url:string):Promise<AssetContainer|n
  */
 export class CarModel{
   private count=0;
+  /** Each copy's wheel animation, if the model has one (held paused; rolled by distance). */
+  private readonly wheels=new WeakMap<TransformNode,{group:AnimationGroup;metresPerLoop:number}>();
 
   private constructor(private readonly container:AssetContainer,readonly spec:CarModelSpec){}
 
@@ -83,6 +86,11 @@ export class CarModel{
     holder.parent=parent;
     holder.rotation.y=this.spec.yawOffset;
     holder.scaling.setAll(length/this.spec.length);
+    const loop=this.spec.wheelLoopMetres,group=entries.animationGroups[0];
+    if(loop&&group){
+      group.start(true);group.pause();
+      this.wheels.set(holder,{group,metresPerLoop:loop*length/this.spec.length});
+    }else for(const g of entries.animationGroups)g.dispose();
     const paint=new StandardMaterial(`${id}-paint-${++this.count}`,parent.getScene());
     paint.diffuseColor=Color3.FromHexString(colour);
     paint.specularColor=new Color3(.25,.25,.25);
@@ -92,6 +100,14 @@ export class CarModel{
         if(mesh.material?.name===this.spec.paintMaterial)mesh.material=paint;
     }
     return holder;
+  }
+
+  /** Turns a copy's wheels to match the distance it has travelled (metres, forwards positive). */
+  roll(copy:TransformNode,metres:number):void{
+    const w=this.wheels.get(copy);
+    if(!w)return;
+    const t=((metres/w.metresPerLoop)%1+1)%1;
+    w.group.goToFrame(w.group.from+t*(w.group.to-w.group.from));
   }
 
   /** Adds this model's triangles, posed in the world and with colours baked in (body in `colour`), to `target`. */

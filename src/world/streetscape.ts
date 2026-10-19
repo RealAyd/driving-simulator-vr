@@ -249,7 +249,7 @@ export function layoutStreetscape(location:Location):StreetLayout|null{
           out.pads.push({kind:'drive',corners:[at(g0+.1,side,pavementBack),at(g1-.1,side,pavementBack),at(g1-.1,side,back+1.5),at(g0+.1,side,back+1.5)],y:ground+.006});
           openings.push({side,from:g0-.3,to:g1+.3});
           if(rand()<spec.carsOnDrives){
-            const model=pick(['quaternius-normal-car-1','quaternius-normal-car-2','quaternius-suv','quaternius-normal-car-2'] as const);
+            const model=pick(['quaternius-normal-car-1','quaternius-normal-car-2','quaternius-suv','batch-b-compact-hatchback','quaternius-normal-car-2','batch-b-saloon'] as const);
             const car=CAR_MODELS[model];
             const centre=at((g0+g1)/2,side,pavementBack+.6+car.length/2);
             // Driven in forwards: facing the house.
