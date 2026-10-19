@@ -110,7 +110,7 @@
       "title": "Driving Practice UK Brentwood street asset Batch A (v0.1.0)",
       "author": "Made for the project owner (original modular geometry; generator script build_brentwood_batch_a.py in the pack)",
       "source": "Driving_Practice_Batch_A_Complete_6.zip supplied by the project owner, received 2026-10-19 (glb/, previews/, manifest.json, validation_report.json, scripts/)",
-      "licence": "Project-owned original work: the pack README states the street models are newly made from modular original geometry with no third-party (Sketchfab or Fab) geometry, and supplied for this project. To be confirmed by the project owner.",
+      "licence": "Project-owned original work: the pack README states the street models are newly made from modular original geometry with no third-party (Sketchfab or Fab) geometry, and supplied for this project. The project owner confirmed on 2026-10-19 that these models are theirs to publish in the app and this public repository.",
       "licenceUrl": null,
       "redistributionAllowed": true,
       "attributionRequired": false,

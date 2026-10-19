@@ -1315,6 +1315,8 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     pedestrian:()=>runtime?.pedestrian?{state:runtime.pedestrian.state,position:{...runtime.pedestrian.position}}:null,
+    /** Diagnostics (tests only): show or hide a road user's drawing (its simulation is unaffected), e.g. to measure what it hides. */
+    showActor:(id:string,on:boolean)=>{for(const m of scene.getTransformNodeByName(`actor-${id}`)?.getChildMeshes()??[])m.isVisible=on},
     follower:()=>runtime?.follower?{gap:runtime.follower.gap,speed:runtime.follower.speed,pose:runtime.follower.pose}:null,
     passers:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose}))??[],
     findings:()=>(runtime?.current()??[]).map(f=>({...(f as object)})),

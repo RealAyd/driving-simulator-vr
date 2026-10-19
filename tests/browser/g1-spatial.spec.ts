@@ -24,7 +24,15 @@ test('G1: interior mirror shows the real scene behind, correctly oriented, and u
   const colours=async()=>({red:await read(page,"mirrorPixels('interior','red')"),blue:await read(page,"mirrorPixels('interior','blue')")});
   await read(page,'freezeTime(true)');
   await page.waitForTimeout(600);
+  // The following car (35 m behind, a 1.4 m tall hatchback) is in line with the red parked car and hides most of
+  // it, as a real car would. Measured both ways: then the following car's drawing is hidden (a test-only switch;
+  // it still drives) so the reference cars behind it can be read.
+  const withFollower=await colours();
+  testInfo.annotations.push({type:'interior mirror at start, following car shown',description:JSON.stringify(withFollower)});
+  await read(page,"showActor('following-car',false)");
+  await page.waitForTimeout(600);
   const atStart=await colours();
+  expect(withFollower.red.n,'the following car hides part of the red car behind it').toBeLessThan(atStart.red.n);
   testInfo.annotations.push({type:'interior mirror at start',description:JSON.stringify(atStart)});
   // The red car is parked behind on the left kerb (almost straight behind) and the blue car behind on the
   // right kerb: in the mirror the blue car appears on the right and the red car to the left of it.
