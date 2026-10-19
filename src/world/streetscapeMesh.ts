@@ -3,6 +3,7 @@ import type {Vec2} from '../contracts';
 import {BAY,EAVES,framePoint,type Frame,type House,type HouseUnit,type StreetLayout,type Strip} from './streetscape';
 import type {Obelisk,TownArea,TownBuilding} from './townscape';
 import {brickTexture,detailTexture,REGIONS,roofTexture,type Region} from './sceneryTextures';
+import {shopfrontVariant} from '../assets/ukShopfronts';
 
 /**
  * Geometry for a streetscape layout. Everything static is drawn with three
@@ -373,15 +374,31 @@ function townBuilding(b:Builders,t:TownBuilding):void{
       b.detail.flat(q(.05,len-.05,y0+3.5,y0+3.62,.1),COLOURS.stone,o);
       for(let k=0;k<units;k++){
         const s0=k*uw+.2,s1=(k+1)*uw-.2;
-        const doorLeft=k%2===0;
+        const variant=shopfrontVariant(t.id,k,uw);
+        const doorLeft=variant.doorSide==='left';
         const d0=doorLeft?s0+.15:s1-1.15,d1=d0+1;
-        b.detail.regionQuad(q(d0,d1,y0,y0+2.3,f),REGIONS.door,fascia,o);
+        // A recessed entrance and side return provide real parallax, including in mirrors.
+        // The mapped building footprint and its collider remain unchanged.
+        const recess=variant.recess;
+        b.detail.regionQuad(q(d0,d1,y0,y0+2.3,f-recess),REGIONS.door,fascia,o);
+        if(recess>.1){
+          b.detail.flat([P(d0,y0,f),P(d0,y0,f-recess),P(d0,y0+2.3,f-recess),P(d0,y0+2.3,f)],COLOURS.stone,[-dir.x,0,-dir.z],true);
+          b.detail.flat([P(d1,y0,f-recess),P(d1,y0,f),P(d1,y0+2.3,f),P(d1,y0+2.3,f-recess)],COLOURS.stone,[dir.x,0,dir.z],true);
+          b.detail.flat([P(d0,y0+2.3,f),P(d1,y0+2.3,f),P(d1,y0+2.3,f-recess),P(d0,y0+2.3,f-recess)],COLOURS.stone,[0,-1,0],true);
+        }
         const g0=doorLeft?d1+.1:s0,g1=doorLeft?s1:d0-.1;
         if(g1-g0<.4)continue;
-        b.detail.flat(q(g0,g1,y0,y0+.5,f),fascia,o);
-        b.detail.flat(q(g0,g1,y0+.5,y0+2.7,f),COLOURS.glass,o);
-        const panes=Math.max(1,Math.round((g1-g0)/1.6));
-        for(let m=1;m<panes;m++){const s=g0+(g1-g0)*m/panes;b.detail.flat(q(s-.04,s+.04,y0+.5,y0+2.7,f+.01),fascia,o)}
+        b.detail.flat(q(g0,g1,y0,y0+variant.stallHeight,f),fascia,o);
+        b.detail.flat(q(g0,g1,y0+variant.stallHeight,y0+2.7,f),COLOURS.glass,o);
+        const panes=Math.max(1,Math.round((g1-g0)/variant.mullionSpacing));
+        for(let m=1;m<panes;m++){
+          const s=g0+(g1-g0)*m/panes;
+          b.detail.flat(q(s-.04,s+.04,y0+variant.stallHeight,y0+2.7,f+.01),fascia,o);
+        }
+        if(variant.canopy){
+          b.detail.flat(q(s0,s1,y0+2.72,y0+2.82,.4),fascia,o);
+          b.detail.flat([P(s0,y0+2.82,.4),P(s1,y0+2.82,.4),P(s1,y0+2.9,f),P(s0,y0+2.9,f)],COLOURS.stone,[0,1,0],true);
+        }
       }
       // Pilasters at the ends of each unit.
       for(let k=0;k<=units;k++){const s=Math.min(len-.12,Math.max(.12,k*uw));b.detail.flat(q(s-.12,s+.12,y0,y0+2.85,.05),COLOURS.stone,o)}
