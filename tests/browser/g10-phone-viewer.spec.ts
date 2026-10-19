@@ -181,6 +181,11 @@ test('G10: controller check with a non-standard layout; scored driving: held acc
   expect(JSON.stringify(await read(page,'passersDetail()'))).toBe(users);
   await page.screenshot({path:testInfo.outputPath('g10-05-pause-menu.png')});
   await tap(page,LAYOUT.pause,async()=>(await read(page,'session()'))==='running');
+  // Let two frames render after resuming: a control already down when play resumes counts as held through the
+  // pause and is ignored until pressed again (by design), so on a slow machine a press made before the first
+  // frame after resuming would be ignored.
+  await read(page,'resetPerf()');
+  await expect.poll(async()=>(await read(page,'perf()')).frames,{timeout:30_000}).toBeGreaterThanOrEqual(2);
 
   // Controller lost: pause, acceleration dropped; reconnecting does not resume; accelerate held through it does nothing until pressed again.
   await pad(page,LAYOUT.accelerate,true);
