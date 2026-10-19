@@ -36,8 +36,8 @@
         "Restaurant shopfront high/medium/low",
         "Gate",
         "Railing",
-        "Café table",
-        "Café chair",
+        "Caf\u00e9 table",
+        "Caf\u00e9 chair",
         "A-board",
         "Planter",
         "Ground, example scene and catalogue files"
@@ -104,6 +104,52 @@
         "Prop_Planter_Single",
         "Prop_Drain"
       ]
+    },
+    {
+      "id": "driving-practice-batch-a",
+      "title": "Driving Practice UK Brentwood street asset Batch A (v0.1.0)",
+      "author": "Made for the project owner (original modular geometry; generator script build_brentwood_batch_a.py in the pack)",
+      "source": "Driving_Practice_Batch_A_Complete_6.zip supplied by the project owner, received 2026-10-19 (glb/, previews/, manifest.json, validation_report.json, scripts/)",
+      "licence": "Project-owned original work: the pack README states the street models are newly made from modular original geometry with no third-party (Sketchfab or Fab) geometry, and supplied for this project. To be confirmed by the project owner.",
+      "licenceUrl": null,
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "contents": [
+        "Belisha beacon",
+        "Bus shelter (modern)",
+        "Bus stop flag and timetable",
+        "Timetable display",
+        "Bench",
+        "Litter bin",
+        "Vehicle traffic signal (red, amber, green, red+amber, off variants)",
+        "Pedestrian and toucan signals (stop and walk variants)",
+        "Speed camera",
+        "Bollard",
+        "Cast-iron railings 3 m",
+        "Brick boundary wall 3 m",
+        "Zebra crossing road section",
+        "Speed-table marking",
+        "Generic rail station entrance and railings",
+        "Red telephone kiosk"
+      ],
+      "storage": "public",
+      "notes": "Shipped so far: Belisha beacon, bus shelter, green vehicle signal (the objects the scenes already place). Not placed: speed camera, station entrance, speed table and zebra section need site verification (pack README); signal state variants await a signal controller; the others await mapped positions. The pack's four buses are listed separately (driving-practice-batch-a-buses)."
+    },
+    {
+      "id": "driving-practice-batch-a-buses",
+      "title": "Batch A recoloured buses (single- and double-decker, lightweight legacy and populated QA versions)",
+      "author": "Derivatives of bus models previously supplied by the project owner, with Tripo-generated passengers",
+      "source": "Same pack (Driving_Practice_Batch_A_Complete_6.zip), received 2026-10-19",
+      "licence": "Unconfirmed: the pack README says to use them under the rights of the original assets they derive from",
+      "licenceUrl": null,
+      "redistributionAllowed": false,
+      "attributionRequired": false,
+      "contents": [
+        "uk-single-decker-bright-red (lightweight legacy 0.34 MB, populated 18.8 MB)",
+        "uk-double-decker-bright-red (lightweight legacy 0.37 MB, populated 18.9 MB)"
+      ],
+      "storage": "private",
+      "notes": "Not used or shipped: rights unconfirmed, the populated versions are far too large for a phone (about 266,000 vertices, 24 materials), and bright red London-style buses do not match Brentwood's operators. The procedural bus stays."
     }
   ],
   "models": [
@@ -116,7 +162,7 @@
       "modifications": [
         "Converted OBJ+MTL to GLB with obj2gltf 3.2.0",
         "glTF-Transform 4.5.1: weld, dedup, join (one primitive per material), prune, quantize (KHR_mesh_quantization)",
-        "At load: glTF PBR materials replaced with StandardMaterial of the same colour (cheaper on phones, lit like the rest of the scene); body material 'Blue' recoloured per road user; turned 180° and scaled uniformly to the 4.3 m collision length"
+        "At load: glTF PBR materials replaced with StandardMaterial of the same colour (cheaper on phones, lit like the rest of the scene); body material 'Blue' recoloured per road user; turned 180\u00b0 and scaled uniformly to the 4.3 m collision length"
       ],
       "stats": {
         "triangles": 2954,
@@ -264,6 +310,61 @@
         "bytes": 13560
       },
       "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> SUV"
+    },
+    {
+      "id": "batch-a-belisha-beacon",
+      "file": "public/assets/models/street/batch-a-belisha-beacon.glb",
+      "pack": "driving-practice-batch-a",
+      "sourceFile": "glb/belisha_beacon.glb",
+      "use": "Belisha beacons at every zebra (in place of the drawn pole and globe; src/world/streetModels.ts)",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize (KHR_mesh_quantization)",
+        "At load: materials replaced with StandardMaterial (vertex colours kept); placed at the drawn beacon's position on the footway"
+      ],
+      "stats": {
+        "triangles": 1568,
+        "materials": 0,
+        "bytes": 20064
+      },
+      "build": "tools/assets/build-batch-a.sh <extracted Batch A folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-a-bus-shelter-modern",
+      "file": "public/assets/models/street/batch-a-bus-shelter-modern.glb",
+      "pack": "driving-practice-batch-a",
+      "sourceFile": "glb/bus_shelter_modern.glb",
+      "use": "Bus shelters where a shelter is mapped (in place of the drawn shelter), open front to the road",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize (KHR_mesh_quantization)",
+        "At load: materials replaced with StandardMaterial; scaled along and across the kerb to the planned shelter footprint that the collider uses (signage.ts)"
+      ],
+      "stats": {
+        "triangles": 352,
+        "materials": 2,
+        "bytes": 17224
+      },
+      "build": "tools/assets/build-batch-a.sh <extracted Batch A folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-a-uk-vehicle-signal-green",
+      "file": "public/assets/models/street/batch-a-uk-vehicle-signal-green.glb",
+      "pack": "driving-practice-batch-a",
+      "sourceFile": "glb/uk_vehicle_signal_green.glb",
+      "use": "Traffic-signal heads where an exercise holds signals at green (in place of the drawn head and pole)",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, join, prune, quantize (KHR_mesh_quantization)",
+        "glTF-Transform simplify (meshoptimizer), ratio 0.3, error 0.002: 4,092 to 1,226 triangles",
+        "At load: materials replaced with StandardMaterial; turned to face the approaching traffic"
+      ],
+      "stats": {
+        "triangles": 1226,
+        "materials": 0,
+        "bytes": 16096
+      },
+      "build": "tools/assets/build-batch-a.sh <extracted Batch A folder>",
+      "storage": "public"
     }
   ]
 }

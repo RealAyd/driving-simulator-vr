@@ -57,6 +57,7 @@ import {StaticObstacles} from '../world/obstacles';
 import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
 import {buildSignalHeads} from '../world/signals';
+import {StreetModels} from '../world/streetModels';
 import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
@@ -172,6 +173,8 @@ export async function boot():Promise<void>{
   let signage:BuiltSignage|null=null;
   let crowd:Person[]=[];
   let people!:PeopleRenderer;
+  /** Street furniture models (asset Batch A); null until loaded. */
+  let streetModels:StreetModels|null=null;
   const dressLocation=()=>{
     const layout=layoutStreetscape(place)??layoutTownscape(place);
     const parked:ParkedCar[]=[
@@ -182,7 +185,11 @@ export async function boot():Promise<void>{
     if(layout||vans.length>0)buildStreetscape(scene,layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
     bakeParkedCars(scene,world.root,parked,carModels);
     signPlan=layoutSignage(place,layout);
-    signage=buildSignage(scene,signPlan,world.root);
+    // Modelled shelters replace the drawn ones (the plan, and so the colliders, are unchanged).
+    const modelShelters=!!streetModels?.has('shelter');
+    signage=buildSignage(scene,modelShelters?{...signPlan,shelters:[]}:signPlan,world.root);
+    if(modelShelters)streetModels!.placeShelters(world.root,signPlan.shelters);
+    streetModels?.replaceBeacons(world.root,place);
     // Background people on the pavements (scenery: no colliders, never in the road, never assessed).
     crowd=layoutCrowd(place,layout,signPlan);
     people=new PeopleRenderer(scene,world.root);
@@ -199,8 +206,9 @@ export async function boot():Promise<void>{
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
-  const [loadedParked,carModel]=await Promise.all([loadCarModels(scene),CarModel.load(scene,CAR_MODEL)]);
+  const [loadedParked,carModel,loadedStreet]=await Promise.all([loadCarModels(scene),CarModel.load(scene,CAR_MODEL),StreetModels.load(scene)]);
   carModels=loadedParked;
+  streetModels=loadedStreet;
   dressLocation();
 
   const clock=new FixedStepClock(SIM_STEP);
@@ -346,6 +354,7 @@ export async function boot():Promise<void>{
     const guided=!!scenario.guide&&showGuide;
     const guide=guided?buildGuide(scene,scenario.guide!.path,scenario.guide!.arrows):null;
     const signals=buildSignalHeads(scene,place,scenario.signals);
+    streetModels?.replaceSignalHeads(scenario.signals);
     // Signal poles are solid, like lamp columns.
     for(const pole of signals.poles)dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
 
@@ -1193,6 +1202,7 @@ export async function boot():Promise<void>{
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
     byId('about-models').textContent=[
       carModel?`${carModel.spec.id} (CC0, Quaternius) for other cars`:'simple car shapes (model not loaded)',
+      streetModels?.available.length?`street furniture (asset Batch A): ${streetModels.available.join(', ')}`:'drawn street furniture',
       props.available.size?`scenery: ${[...props.available].map(id=>PROP_ASSETS[id]?.storage==='private'?`${id} (licensed, private)`:id).join(', ')}`:'no scenery models in this build'
     ].join('; ');
     byId('about-mirrors').textContent=`${mirrors.filter(m=>m.isActive).length} of 3 rendering now; ${quality.mirrorResolution} px, every ${quality.mirrorUpdateInterval} frame${quality.mirrorUpdateInterval===1?'':'s'} (every frame for the mirror you are looking at)`;
@@ -1306,6 +1316,8 @@ export async function boot():Promise<void>{
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
     sceneryModels:()=>[...props.available],
+    /** Street furniture models in use (asset Batch A). */
+    streetModels:()=>streetModels?.available??[],
     /** Whether route guidance is painted on the road in this attempt. */
     guidanceShown:()=>!!scene.getTransformNodeByName('exercise-guide'),
     /** Phone viewer state, for tests and diagnostics. */
