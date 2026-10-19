@@ -162,9 +162,15 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
       add(kerb,...strips(scene,`kerb-${road.id}-${side}`,samples,inner,inner,y,y+road.kerbHeight,keep,root));
     }
     const lineY=y+.006;
+    // The centre zig-zags of a zebra crossing replace the centre line there.
+    const zigzagged=(x:number,z:number)=>location.crossings.some(c=>{
+      if(c.roadId!==road.id||c.zigzagMarks===0)return false;
+      return Math.abs(sampleRoad(road,x,z).along-c.along)<c.width/2+c.giveWayOffset+.3+c.zigzagMarks*2+.5;
+    });
     const lines=(offset:number,dash:number,gap:number,width:number)=>{
       for(const line of markings(scene,road,offset,dash,gap,width,lineY))
-        if(inJunction(line.position.x,line.position.z,.5)||onOtherCarriageway(location,line.position.x,line.position.z,road.id))line.dispose();
+        if(inJunction(line.position.x,line.position.z,.5)||onOtherCarriageway(location,line.position.x,line.position.z,road.id)
+          ||(offset===0&&zigzagged(line.position.x,line.position.z)))line.dispose();
         else{line.parent=root;add(white,line)}
     };
     if(road.markings.centre==='dashed')lines(0,3,6,.1);        // UK centre/lane line: short dash, long gap
@@ -248,6 +254,21 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
         const dash=CreateGround(`${crossing.id}-giveway-${side}-${lateral.toFixed(1)}`,{width:.6,height:.2},scene);
         dash.material=white;
         place(dash,lateral+.3,offset,y);
+      }
+      // Zig-zags: from just beyond the give-way line, along both kerbs and the centre line.
+      for(let m=0;m<crossing.zigzagMarks;m++)for(const line of [-half+.25,0,half-.25]){
+        const a0=side*(crossing.width/2+crossing.giveWayOffset+.3+m*2),a1=a0+side*2;
+        const l0=line+(m%2?.25:-.25)*(line===0?.6:1),l1=line+(m%2?-.25:.25)*(line===0?.6:1);
+        const mid={along:(a0+a1)/2,lateral:(l0+l1)/2};
+        const mx=at.x+rx*mid.lateral+at.direction.x*mid.along,mz=at.z+rz*mid.lateral+at.direction.z*mid.along;
+        // Interrupted where a side road meets the kerb.
+        if(onOtherCarriageway(location,mx,mz,road.id,.3))continue;
+        const len=Math.hypot(a1-a0,l1-l0);
+        const mark=CreateGround(`${crossing.id}-zigzag-${side}-${m}-${line.toFixed(1)}`,{width:.1,height:len},scene);
+        mark.position.set(mx,y,mz);
+        mark.rotation.y=rotationYFromHeading(heading+Math.atan2(l1-l0,a1-a0));
+        mark.parent=root;
+        add(white,mark);
       }
       const poleLateral=side*(half+.5);
       const pole=CreateCylinder(`${crossing.id}-beacon-pole-${side}`,{height:2.6,diameter:.1},scene);

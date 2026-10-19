@@ -17,6 +17,8 @@ export interface AssessorInputs{
   crossing:Crossing;
   pedestrian:Pedestrian;
   now:()=>Seconds;
+  /** What hides the pavement on the approach (for feedback), e.g. "the parked van". */
+  restriction?:string;
 }
 
 const mph=(v:number)=>Math.round(mpsToMph(v));
@@ -134,9 +136,9 @@ export class Assessor implements SimModule{
       const v=approach.maxSpeed;
       const ids=[approach.entryEventId,approach.exitEventId].filter((id):id is string=>!!id);
       if(v>R.approachSeriousOver)this.record('approach.speed','approach-speed','serious',ids,
-        `You reached ${mph(v)} mph past the parked van, where a pedestrian could be hidden. At that speed you could not stop for someone stepping out.`);
+        `You reached ${mph(v)} mph past ${this.input.restriction??'the parked van'}, where a pedestrian could be hidden. At that speed you could not stop for someone stepping out.`);
       else if(v>R.approachIdealMax)this.record('approach.speed','approach-speed','minor',ids,
-        `You reached ${mph(v)} mph past the parked van. Slow to about 20 mph or less where the view of the pavement is blocked.`);
+        `You reached ${mph(v)} mph past ${this.input.restriction??'the parked van'}. Slow to about 20 mph or less where the view of the pavement is blocked.`);
       else this.notes.push(`Approached the restricted view at no more than ${mph(v)} mph.`);
     }
     const ped=this.input.pedestrian;

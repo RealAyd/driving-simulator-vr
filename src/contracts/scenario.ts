@@ -23,6 +23,11 @@ export const PedestrianActorSchema=z.object({
   walkSpeed:z.number().min(.5).max(2.5).default(1.3),
   /** Time spent looking and stepping to the kerb before crossing. */
   prepareSeconds:z.number().min(0).max(5).default(1.5),
+  /**
+   * Optional: where the pedestrian is at the start, walking along the pavement to `waitAt` (for example from a
+   * bus that has just set down). A request to cross waits until they reach the kerb.
+   */
+  walkFrom:point.optional(),
   crossingId:z.string()
 }).strict();
 
@@ -73,7 +78,7 @@ export const BusRunSchema=z.object({
   /** Stops on the way: where the front of the bus halts, and for how long. */
   calls:z.array(z.object({at:z.number().min(0),dwellSeconds:z.number().min(0).max(120)}).strict()).default([]),
   /** Seconds standing at `from` before pulling away. */
-  startDwellSeconds:z.number().min(0).max(120).default(0),
+  startDwellSeconds:z.number().min(0).max(600).default(0),
   cruiseMph:z.number().min(5).max(40),
   /** At `to`: 'stay' (stands there) or 'leave' (gone from the scene, as if out of sight). */
   end:z.enum(['stay','leave']),
@@ -131,6 +136,8 @@ export const ScenarioSchema=z.object({
   }).strict()).default([]),
   zones:z.array(ZoneSchema).default([]),
   actors:z.array(ActorSchema).default([]),
+  /** What hides the pavement on the approach, as named in feedback (restricted-view crossing rubric). */
+  restrictedViewBy:z.string().default('the parked van'),
   /** Background buses (scenery that moves; never assessed). */
   buses:z.array(BusRunSchema).default([]),
   triggers:z.array(z.object({

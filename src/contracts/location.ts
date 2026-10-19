@@ -68,7 +68,12 @@ export const CrossingSchema=z.object({
   /** Width of the striped area measured along the road. */
   width:z.number().min(2).max(10).default(4),
   /** Distance from the stripes to each give-way line. */
-  giveWayOffset:z.number().min(0).max(3).default(1)
+  giveWayOffset:z.number().min(0).max(3).default(1),
+  /**
+   * Zebra zig-zag markings: marks (about 2 m each) on each approach along both kerbs and the centre line,
+   * interrupted at side-road mouths. 0 draws none. Their real length is rarely mapped: record its source.
+   */
+  zigzagMarks:z.number().int().min(0).max(18).default(0)
 }).strict();
 
 /**

@@ -28,8 +28,10 @@ export function pedestrianFigure(ped:Pedestrian,groundAt:(x:number,z:number)=>nu
     pose:()=>{
       walked+=Math.hypot(ped.position.x-last.x,ped.position.z-last.z);
       last={...ped.position};
-      const dx=ped.def.crossTo.x-ped.def.waitAt.x,dz=ped.def.crossTo.z-ped.def.waitAt.z;
-      return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading:Math.atan2(dx,-dz),stride:walked,walking:ped.state==='crossing'};
+      // Facing the way they walk to the kerb (if they do), then across.
+      const to=ped.approaching?ped.def.waitAt:ped.def.crossTo,from=ped.approaching?ped.position:ped.def.waitAt;
+      const dx=to.x-from.x,dz=to.z-from.z;
+      return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading:Math.atan2(dx,-dz),stride:walked,walking:ped.state==='crossing'||ped.approaching};
     }
   };
 }

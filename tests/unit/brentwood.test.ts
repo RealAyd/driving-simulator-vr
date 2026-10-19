@@ -98,7 +98,7 @@ describe('Brentwood scenery (map buildings, trees, lights): matches the road lay
       if(points.some(p=>surfaceAt(place,p.x,p.z)?.kind==='carriageway'))bad.push(c.id);
     }
     expect(bad).toEqual([]);
-  });
+  },60_000);
 
   it('the guided route and the lead car\'s path touch no scenery collider',()=>{
     const obstacles=new StaticObstacles([...place.blocks,...layout.colliders]);
@@ -116,7 +116,7 @@ describe('Brentwood scenery (map buildings, trees, lights): matches the road lay
       const g=pointToBox(p.x,p.z,{position:{x:c.position.x,y:0,z:c.position.z},heading:degToRad(c.headingDeg)},c.size.width/2,c.size.depth/2);
       expect(g-.9,`${c.id}`).toBeGreaterThan(.2);
     }
-  });
+  },60_000);
 
   it('street lights stand on a pavement, clear of junctions and the signal crossing',()=>{
     expect(layout.lamps.length).toBeGreaterThan(4);

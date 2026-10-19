@@ -10,8 +10,10 @@ machine-estimated height). Outlines from OpenStreetMap are already in the OSM ex
 Overture Maps Foundation, Microsoft.
 
 Needs pyarrow and shapely (pip install pyarrow shapely). Run: python3 -I tools/brentwood/overture_extract.py
+Another area: python3 -I tools/brentwood/overture_extract.py <name> <lon0>,<lat0>,<lon1>,<lat1> <date read>
+(the Kings Road scene: kings-road 0.2930,51.6135,0.3060,51.6200 2026-10-19).
 """
-import json, pathlib
+import json, pathlib, sys
 import pyarrow.fs as fs, pyarrow.parquet as pq
 from shapely import wkb
 
@@ -19,6 +21,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 RELEASE = '2026-09-23.1'
 BASE = f'overturemaps-us-west-2/release/{RELEASE}/theme=buildings/type=building'
 X0, X1, Y0, Y1 = 0.296, 0.312, 51.617, 51.626
+NAME, READ = 'brentwood', '2026-10-18'
+if len(sys.argv) == 4:
+    NAME, READ = sys.argv[1], sys.argv[3]
+    X0, Y0, X1, Y1 = map(float, sys.argv[2].split(','))
 s3 = fs.S3FileSystem(anonymous=True, region='us-west-2')
 
 def groups(path):
@@ -55,6 +61,6 @@ for path, gs in hits:
 out = {'source': f'Overture Maps Foundation, release {RELEASE}, theme=buildings/type=building, bbox {X0},{Y0},{X1},{Y1}; '
                  'only outlines whose sources are all "Microsoft ML Buildings"',
        'licence': 'ODbL 1.0. © OpenStreetMap contributors, Overture Maps Foundation, Microsoft (ML Buildings).',
-       'downloaded': '2026-10-18', 'features': features}
-(ROOT / f'content/sources/overture-buildings-brentwood-{RELEASE}.json').write_text(json.dumps(out, separators=(',', ':')))
+       'downloaded': READ, 'features': features}
+(ROOT / f'content/sources/overture-buildings-{NAME}-{RELEASE}.json').write_text(json.dumps(out, separators=(',', ':')))
 print(len(features), 'Microsoft ML building outlines')

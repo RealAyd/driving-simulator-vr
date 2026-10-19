@@ -141,6 +141,14 @@ export function layoutCrowd(location:Location,layout:StreetLayout|null,signs:Sig
       }
       if(!best)continue;
       const a=at(best[0]),b=at(best[1]);
+      // People walk the straight line between the ends: on a curved road check that line itself, body width included.
+      const len=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;
+      let straight=true;
+      for(let d=0;d<=len&&straight;d+=.5){
+        const p={x:a.x+ux*d,z:a.z+uz*d};
+        straight=clear(p)&&[[.35,0],[-.35,0],[0,.35],[0,-.35]].every(([dx,dz])=>surfaceAt(location,p.x+dx!,p.z+dz!)?.kind==='pavement');
+      }
+      if(!straight)continue;
       candidates.push({a,b,y:road.surfaceHeight+road.kerbHeight});
     }
   }

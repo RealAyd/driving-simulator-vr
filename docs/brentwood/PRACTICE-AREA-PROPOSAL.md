@@ -74,6 +74,8 @@ What the map data does not tell us: lane markings and widths (mostly not mapped)
 
 ## 6. Proposed location 3: zebra crossing on Kings Road (B185)
 
+> **Built 2026-10-19 as a first, area-inspired version:** see `docs/verification/STEP15-kings-road-zebra.md`. Its hazard differs from the proposal below: the mapped bus stop just before the crossing serves the learner's direction, so the exercise uses a bus waiting there and a passenger walking to the crossing.
+
 | | |
 |---|---|
 | Where | Zebra crossing on Kings Road (B185 at this point, secondary). OSM node 1691283192 (crossing=uncontrolled, crossing_ref=zebra, flush kerb, tactile paving; node edited 2026-01-06): **51.61673 N, 0.29945 E**. Map: https://www.openstreetmap.org/node/1691283192 |

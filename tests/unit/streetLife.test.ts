@@ -12,17 +12,19 @@ import {pedestrianFigure} from '../../src/actors/actorVisuals';
 import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
 import zebraJson from '../../content/locations/representative-residential-straight.json';
 import movingOffJson from '../../content/locations/residential-moving-off.json';
+import kingsRoadJson from '../../content/locations/brentwood-kings-road-zebra.json';
 import crossingJson from '../../content/scenarios/crossing-restricted-view.json';
 
 const brentwood=parseLocation(brentwoodJson);
 const zebra=parseLocation(zebraJson);
 const movingOff=parseLocation(movingOffJson);
+const kingsRoad=parseLocation(kingsRoadJson);
 const dress=(l:Location)=>{
   const layout=layoutStreetscape(l)??layoutTownscape(l);
   const signs=layoutSignage(l,layout);
   return {layout,signs,crowd:layoutCrowd(l,layout,signs)};
 };
-const places=[['Brentwood',brentwood],['zebra crossing street',zebra],['Moving off street',movingOff]] as const;
+const places=[['Brentwood',brentwood],['zebra crossing street',zebra],['Moving off street',movingOff],['Kings Road',kingsRoad]] as const;
 
 describe('Location label',()=>{
   it('names the mapped street, the town and the mapped speed limit in Brentwood',()=>{
@@ -156,6 +158,14 @@ describe('Background people',()=>{
       expect(pose.y).toBeCloseTo(surfaceAt(l,pose.x,pose.z)!.height,5);
     }
   },60_000);
+
+  it('keep well away from the Kings Road zebra crossing',()=>{
+    const {crowd}=dress(kingsRoad);
+    for(const p of crowd)for(let t=0;t<=300;t+=1){
+      const q=personPose(p,t);
+      expect(Math.hypot(q.x,q.z),`${p.id} at ${t}s`).toBeGreaterThan(40);
+    }
+  });
 
   it('keep away from the zebra crossing, the van that hides the pedestrian, and the crossing pedestrian',()=>{
     const {crowd}=dress(zebra);

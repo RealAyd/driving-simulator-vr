@@ -21,7 +21,12 @@ export class Pedestrian implements SimModule{
 
   constructor(readonly def:PedestrianActorDef,private readonly events:EventSink,private readonly blocked:PathBlocked=()=>false){
     this.id=def.id;
-    this.position={...def.waitAt};
+    this.position={...(def.walkFrom??def.waitAt)};
+  }
+
+  /** Still walking along the pavement to the kerb (only with `walkFrom`). */
+  get approaching():boolean{
+    return this.state==='waiting'&&(this.position.x!==this.def.waitAt.x||this.position.z!==this.def.waitAt.z);
   }
 
   /** Asks the pedestrian to begin crossing after `delay` seconds. Ignored unless waiting. */
@@ -37,6 +42,12 @@ export class Pedestrian implements SimModule{
 
   fixedUpdate(dt:Seconds):void{
     this.timer+=dt;
+    if(this.approaching){
+      const dx=this.def.waitAt.x-this.position.x,dz=this.def.waitAt.z-this.position.z;
+      const remaining=Math.hypot(dx,dz),step=this.def.walkSpeed*dt;
+      this.position=step>=remaining?{...this.def.waitAt}:{x:this.position.x+dx/remaining*step,z:this.position.z+dz/remaining*step};
+      return;
+    }
     if(this.state==='waiting'&&this.pendingDelay!==null){
       this.pendingDelay-=dt;
       if(this.pendingDelay<=0){
@@ -61,7 +72,7 @@ export class Pedestrian implements SimModule{
 
   reset():void{
     this.state='waiting';
-    this.position={...this.def.waitAt};
+    this.position={...(this.def.walkFrom??this.def.waitAt)};
     this.pendingDelay=null;
     this.timer=0;
   }

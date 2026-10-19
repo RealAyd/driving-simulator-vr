@@ -7,7 +7,7 @@ test('perf probe',async({page})=>{
   test.skip(!process.env.PERF_PROBE,'diagnostic');
   test.setTimeout(600_000);
   const out:any={};
-  for(const exercise of (process.env.PERF_EXERCISES??'moving-off,zebra,brentwood').split(',')){
+  for(const exercise of (process.env.PERF_EXERCISES??'moving-off,zebra,brentwood,kings-road').split(',')){
     await page.goto('./');
     await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
     await page.click(`[data-exercise=${exercise}]`);

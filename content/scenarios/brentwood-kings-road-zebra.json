@@ -1,0 +1,303 @@
+{
+ "schemaVersion": 1,
+ "id": "brentwood-kings-road-zebra",
+ "locationId": "brentwood-kings-road-zebra",
+ "title": "Kings Road zebra (Brentwood)",
+ "learningObjective": "Approach a real zebra crossing past a bus at its stop: plan to pass the bus, keep a speed at which you can stop, check the mirror before slowing, and give way to a pedestrian who steps onto the crossing.",
+ "briefing": "Kings Road zebra crossing\n\nDrive south along Kings Road towards the zebra crossing. A bus is waiting at the stop on your side just before it, and a passenger who has just got off may be heading for the crossing.\n\nA car is following you, so check your mirror before you slow down.\n\nGive way to anyone who steps onto the crossing. The exercise ends once you have driven past the crossing, before the roundabout.\n\nArea-inspired: the bus, the pedestrian and the following car are part of the exercise, not a record of real traffic.",
+ "rubricId": "crossing-restricted-view",
+ "restrictedViewBy": "the bus at the stop",
+ "controllerDriving": {
+  "assistedSpeedMph": 20,
+  "accelerationLimit": 1.5
+ },
+ "assistPath": [
+  {
+   "x": -59.39,
+   "z": -148.51
+  },
+  {
+   "x": -57.91,
+   "z": -144.72
+  },
+  {
+   "x": -56.43,
+   "z": -140.92
+  },
+  {
+   "x": -54.95,
+   "z": -137.12
+  },
+  {
+   "x": -53.47,
+   "z": -133.32
+  },
+  {
+   "x": -51.99,
+   "z": -129.53
+  },
+  {
+   "x": -50.52,
+   "z": -125.73
+  },
+  {
+   "x": -49.04,
+   "z": -121.92
+  },
+  {
+   "x": -47.57,
+   "z": -118.12
+  },
+  {
+   "x": -46.12,
+   "z": -114.31
+  },
+  {
+   "x": -44.69,
+   "z": -110.52
+  },
+  {
+   "x": -43.15,
+   "z": -106.77
+  },
+  {
+   "x": -41.58,
+   "z": -103.02
+  },
+  {
+   "x": -39.99,
+   "z": -99.27
+  },
+  {
+   "x": -38.38,
+   "z": -95.54
+  },
+  {
+   "x": -36.77,
+   "z": -91.79
+  },
+  {
+   "x": -35.17,
+   "z": -88.04
+  },
+  {
+   "x": -33.58,
+   "z": -84.28
+  },
+  {
+   "x": -31.99,
+   "z": -80.52
+  },
+  {
+   "x": -30.42,
+   "z": -76.76
+  },
+  {
+   "x": -28.89,
+   "z": -73.01
+  },
+  {
+   "x": -27.26,
+   "z": -69.3
+  },
+  {
+   "x": -25.58,
+   "z": -65.61
+  },
+  {
+   "x": -23.86,
+   "z": -61.94
+  },
+  {
+   "x": -22.09,
+   "z": -58.25
+  },
+  {
+   "x": -21.62,
+   "z": -49.65
+  },
+  {
+   "x": -19.91,
+   "z": -45.75
+  },
+  {
+   "x": -18.26,
+   "z": -41.81
+  },
+  {
+   "x": -16.63,
+   "z": -37.82
+  },
+  {
+   "x": -15.01,
+   "z": -33.85
+  },
+  {
+   "x": -13.41,
+   "z": -29.87
+  },
+  {
+   "x": -7.53,
+   "z": -23.58
+  },
+  {
+   "x": -6.07,
+   "z": -19.73
+  },
+  {
+   "x": -4.62,
+   "z": -15.91
+  },
+  {
+   "x": -3.14,
+   "z": -12.1
+  },
+  {
+   "x": -1.64,
+   "z": -8.29
+  },
+  {
+   "x": -0.1,
+   "z": -4.47
+  },
+  {
+   "x": 1.35,
+   "z": -0.6
+  },
+  {
+   "x": 2.68,
+   "z": 3.31
+  },
+  {
+   "x": 3.86,
+   "z": 7.32
+  },
+  {
+   "x": 4.94,
+   "z": 11.3
+  },
+  {
+   "x": 5.97,
+   "z": 15.29
+  },
+  {
+   "x": 6.98,
+   "z": 19.28
+  },
+  {
+   "x": 7.95,
+   "z": 23.26
+  },
+  {
+   "x": 8.91,
+   "z": 27.25
+  },
+  {
+   "x": 9.87,
+   "z": 31.25
+  },
+  {
+   "x": 10.78,
+   "z": 35.26
+  },
+  {
+   "x": 11.55,
+   "z": 39.34
+  },
+  {
+   "x": 12.3,
+   "z": 43.38
+  }
+ ],
+ "zones": [
+  {
+   "id": "restricted-approach",
+   "roadId": "kings-road",
+   "from": 259.5,
+   "to": 305.1,
+   "label": "Past the bus at the stop to the give-way line"
+  },
+  {
+   "id": "pedestrian-trigger",
+   "roadId": "kings-road",
+   "from": 281.7,
+   "to": 311.7,
+   "label": "Close enough that the pedestrian starts to cross"
+  },
+  {
+   "id": "end",
+   "roadId": "kings-road",
+   "from": 319.7,
+   "to": 352.7,
+   "label": "Clear of the crossing, before the roundabout"
+  }
+ ],
+ "actors": [
+  {
+   "id": "pedestrian-1",
+   "kind": "pedestrian",
+   "walkFrom": {
+    "x": -2.98,
+    "z": -18.89
+   },
+   "waitAt": {
+    "x": 3.45,
+    "z": -1.25
+   },
+   "crossTo": {
+    "x": -3.7,
+    "z": 1.33
+   },
+   "walkSpeed": 1.3,
+   "prepareSeconds": 1.5,
+   "crossingId": "kings-road-zebra"
+  },
+  {
+   "id": "following-car",
+   "kind": "following-vehicle",
+   "startBehind": 35,
+   "desiredSpeed": 13.4,
+   "headway": 1.5,
+   "colour": "#9aa3ad"
+  }
+ ],
+ "buses": [
+  {
+   "id": "bus-at-stop",
+   "roadId": "kings-road",
+   "direction": "with",
+   "from": 271.0,
+   "to": 347.7,
+   "startDwellSeconds": 600,
+   "cruiseMph": 17,
+   "end": "leave"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "pedestrian-steps-out",
+   "when": {
+    "zoneEntered": "pedestrian-trigger"
+   },
+   "once": true,
+   "actions": [
+    {
+     "actor": "pedestrian-1",
+     "do": "start-crossing",
+     "delaySeconds": 0
+    }
+   ]
+  }
+ ],
+ "start": {
+  "position": {
+   "x": -59.39,
+   "z": -148.51
+  },
+  "headingDeg": 158.7
+ },
+ "end": {
+  "zone": "end",
+  "timeLimitSeconds": 240
+ }
+}

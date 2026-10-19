@@ -6,6 +6,8 @@ import movingOffLocationJson from '../../content/locations/residential-moving-of
 import movingOffRubric from '../../content/rubrics/moving-off.json';
 import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
 import brentwoodGuidedJson from '../../content/scenarios/brentwood-guided-traversal.json';
+import kingsRoadJson from '../../content/locations/brentwood-kings-road-zebra.json';
+import kingsRoadZebraJson from '../../content/scenarios/brentwood-kings-road-zebra.json';
 import {
   INFO,degToRad,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
   type AttemptConditions,type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
@@ -132,8 +134,8 @@ export async function boot():Promise<void>{
 
   const scene=new Scene(engine);
   configureScene(scene);
-  const locations=new Map([locationJson,brentwoodJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
-  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson].map(raw=>{
+  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
+  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson].map(raw=>{
     const s=parseScenario(raw);
     if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
     return [s.id,s] as const;
@@ -365,7 +367,7 @@ export async function boot():Promise<void>{
       events:()=>events.events,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength}),
       followerGap:()=>follower?follower.gap:null,
-      zones,crossing,pedestrian,now:()=>clock.time
+      zones,crossing,pedestrian,now:()=>clock.time,restriction:scenario.restrictedViewBy
     },events):null;
     const routeJunctions=!familiarisation&&scenario.zones.some(z=>z.id==='rb1-entry')?[
       {name:'Mini-roundabout 1',approachZone:'rb1-approach',entryZone:'rb1-entry',signal:'left' as const},
@@ -1011,6 +1013,7 @@ export async function boot():Promise<void>{
   // ---- Exercises: menu, settings and briefing, then Start practice ----
   const EXERCISES:Record<string,{scenario:string;intro?:string}>={
     brentwood:{scenario:'brentwood-guided-traversal'},
+    'kings-road':{scenario:'brentwood-kings-road-zebra'},
     zebra:{scenario:'crossing-restricted-view'},
     'moving-off':{scenario:'moving-off-safely',intro:'moving-off-intro'}
   };
