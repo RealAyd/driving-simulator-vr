@@ -150,6 +150,22 @@
       ],
       "storage": "private",
       "notes": "Not used or shipped: rights unconfirmed, the populated versions are far too large for a phone (about 266,000 vertices, 24 materials), and bright red London-style buses do not match Brentwood's operators. The procedural bus stays."
+    },
+    {
+      "id": "driving-practice-batch-b-cars",
+      "title": "Driving Practice Batch B corrected car pack (QA v0.3)",
+      "author": "Unknown original vehicle authors; materials, tyre sidewalls and paint variants corrected for the project owner",
+      "source": "Driving_Practice_Batch_B_Corrected_Complete.zip supplied by the project owner, received 2026-10-19 (24 car GLBs, 2 cyclist QA GLBs, previews, reports, scripts)",
+      "licence": "Unknown: the pack README states the vehicle source archive came without licence terms and that commercial or public-repository rights must be checked against the original marketplace listing or receipt. Several models resemble real branded vehicles (Mini, BMW, Ford, Porsche, Nissan, Toyota, Dodge, Bugatti, Tesla).",
+      "licenceUrl": null,
+      "redistributionAllowed": false,
+      "attributionRequired": false,
+      "contents": [
+        "10 car models and 14 paint/braking variants (cars_corrected/)",
+        "Cyclist with contact pose and urban bicycle (cyclist_QA/, unchanged from Batch B v0.2)"
+      ],
+      "storage": "private",
+      "notes": "Not shipped or used. tools/assets/build-batch-b-cars.sh builds the everyday models (Mini, BMW saloon, pickup) into the git-ignored public/assets/licensed/ for local evaluation only; see docs/assets/batch-b.md."
     }
   ],
   "models": [
