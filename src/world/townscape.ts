@@ -32,6 +32,8 @@ export interface TownBuilding{
   palette:Palette|'stone'|'concrete';
   /** Fascia paint for shopfronts. */
   fascia:string;
+  /** Mapped name (OpenStreetMap), if any: chooses what its shop windows show. */
+  name?:string;
   roof:'flat'|'pitched';
   detail:'full'|'low';
   roofColour:'slate'|'clay';
@@ -136,7 +138,7 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       out.colliders.push({id:`${b.id}-wall-${i}`,kind:'building',position:{x:mid.x-n.x*WALL/2,z:mid.z-n.z*WALL/2},
         headingDeg:headingFromDirection({x:c.x-a.x,z:c.z-a.z})*180/Math.PI,size:{width:WALL,depth:len,height:b.height},occludes:true,shape:'box'});
     }
-    town.buildings.push({id:b.id,use:b.use,ring,walls,height:b.height,levels:b.levels??Math.max(1,Math.round((b.height-.6)/STOREY)),
+    town.buildings.push({id:b.id,use:b.use,...(b.name?{name:b.name}:{}),ring,walls,height:b.height,levels:b.levels??Math.max(1,Math.round((b.height-.6)/STOREY)),
       palette:paletteFor(b),fascia:FASCIAS[hash(b.id)%FASCIAS.length]!,roof:b.roof,detail:b.detail,roofColour:hash(b.id)%3===0?'clay':'slate',y:-.02});
   }
   const inBuilding=(p:Vec2,margin:number)=>location.buildings.some(b=>insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin);

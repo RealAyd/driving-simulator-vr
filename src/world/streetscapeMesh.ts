@@ -3,7 +3,7 @@ import type {Vec2} from '../contracts';
 import {BAY,EAVES,framePoint,type Frame,type House,type HouseUnit,type StreetLayout,type Strip} from './streetscape';
 import type {Obelisk,TownArea,TownBuilding} from './townscape';
 import {brickTexture,detailTexture,REGIONS,roofTexture,type Region} from './sceneryTextures';
-import {shopfrontVariant} from '../assets/ukShopfronts';
+import {shopDisplay,shopfrontVariant} from '../assets/ukShopfronts';
 
 /**
  * Geometry for a streetscape layout. Everything static is drawn with three
@@ -389,8 +389,10 @@ function townBuilding(b:Builders,t:TownBuilding):void{
         const g0=doorLeft?d1+.1:s0,g1=doorLeft?s1:d0-.1;
         if(g1-g0<.4)continue;
         b.detail.flat(q(g0,g1,y0,y0+variant.stallHeight,f),fascia,o);
-        b.detail.flat(q(g0,g1,y0+variant.stallHeight,y0+2.7,f),COLOURS.glass,o);
+        // Glazing: each pane shows the business's window display (shopDisplay: from its mapped name).
         const panes=Math.max(1,Math.round((g1-g0)/variant.mullionSpacing));
+        const display=REGIONS[shopDisplay(t.name,t.id,k)];
+        for(let m=0;m<panes;m++)b.detail.regionQuad(q(g0+(g1-g0)*m/panes,g0+(g1-g0)*(m+1)/panes,y0+variant.stallHeight,y0+2.7,f),display,[1,1,1],o);
         for(let m=1;m<panes;m++){
           const s=g0+(g1-g0)*m/panes;
           b.detail.flat(q(s-.04,s+.04,y0+variant.stallHeight,y0+2.7,f+.01),fascia,o);

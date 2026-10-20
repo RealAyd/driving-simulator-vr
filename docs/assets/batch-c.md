@@ -13,6 +13,28 @@ All trees are instances of one mesh (`src/world/streetModels.ts`, `placeTrees`),
 in total. Phone profile, main view without mirrors, against Batches A and B: draw calls +1 per scene;
 triangles +7k (Brentwood), +10k (practice zebra), +16k (moving off, about 50 garden trees).
 
+## Shop windows (2026-10-20)
+
+Every shopfront's glazing now shows a lit window display, in the style of the pack's shop-shelves tile. Before,
+it was a flat dark panel. Each display is drawn in code on the scenery detail sheet (`src/world/sceneryTextures.ts`),
+so no image file is added.
+
+Each mapped business shows what it is, chosen from its OpenStreetMap name (`shopDisplay` in
+`src/assets/ukShopfronts.ts`):
+
+| Display | Businesses |
+| --- | --- |
+| Pub bar | Pubs, e.g. Victoria Arms, The Swan |
+| Café or takeaway counter with tables | Food, e.g. KFC, Greggs, Nando's, Nest Crêperie |
+| Office | Banks, betting shops and agents, e.g. Lloyds, HSBC, Betfred, letting agents |
+| Clothes rails | Charity and clothes shops, e.g. Sue Ryder, Cancer Research UK |
+| Goods on shelves | Every other shop |
+
+Unnamed units get shelves, or occasionally a clothes rail, chosen the same way every time.
+
+Building outlines, colliders and sightlines are unchanged. Screenshots: `batch-c/windows-kfc-halifax.png`
+and `batch-c/windows-boots.png`.
+
 ## Not used, and why
 
 * **Buildings (12):** fixed-size generic modules; every building in the scenes is generated from its mapped

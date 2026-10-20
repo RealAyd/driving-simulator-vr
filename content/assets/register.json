@@ -183,7 +183,7 @@
         "7 furniture items (lamppost, street tree, planter, roadworks barrier, traffic cone, postbox, hanging sign)"
       ],
       "storage": "public",
-      "notes": "Shipped: the street tree only. Buildings and road pieces are fixed-size generic modules, while the scenes build both from mapped footprints and road geometry; the Boots/Tesco-style signs raise brand questions. The lamppost matches the drawn lamp column. Postbox, planter, cone, barrier and hanging sign have no mapped positions or scenario yet. See docs/assets/batch-c.md."
+      "notes": "Shipped: the street tree only. Buildings and road pieces are fixed-size generic modules, while the scenes build both from mapped footprints and road geometry; the Boots/Tesco-style signs raise brand questions. The lamppost matches the drawn lamp column. Postbox, planter, cone, barrier and hanging sign have no mapped positions or scenario yet. See docs/assets/batch-c.md. Since 2026-10-20 shop windows show displays drawn in code in the style of the pack's shop-shelves atlas tile (no pack file added; docs/assets/batch-c.md)."
     },
     {
       "id": "driving-practice-batch-d",

@@ -20,7 +20,13 @@ const AREAS={
   boards:[356,4,120,120],
   paving:[4,132,120,120],
   grate:[132,132,56,56],
-  grass:[196,132,120,120]
+  grass:[196,132,120,120],
+  // Shop window displays (glass with what is behind it), in the style of asset Batch C's shop-shelves tile.
+  shelves:[4,260,88,120],
+  rail:[100,260,88,120],
+  cafe:[196,260,88,120],
+  pub:[292,260,88,120],
+  office:[388,260,88,120]
 } as const;
 export type RegionName=keyof typeof AREAS;
 
@@ -129,6 +135,65 @@ export function detailTexture(scene:Scene):DynamicTexture{
       const [x,y,w,h]=AREAS.grate;
       ctx.fillStyle=grey(.18);ctx.fillRect(x,y,w,h);
       ctx.fillStyle=grey(.05);for(let i=6;i<w-4;i+=7)ctx.fillRect(x+i,y+6,3,h-12);
+    }
+    // Shop window displays: an interior lit from above, what the business shows, then reflections on the glass.
+    {
+      const goods=['#c8553d','#e0b44c','#4f8fa8','#7fae5a','#d9d2c3','#8a5a9e','#3d6fb6','#e07b39','#b9c4c9'];
+      const pick=()=>goods[Math.floor(rand()*goods.length)]!;
+      const interior=(x:number,y:number,w:number,h:number,top:string,bottom:string)=>{
+        const g=ctx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,top);g.addColorStop(1,bottom);
+        ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+        ctx.fillStyle='rgba(255,244,214,.55)';ctx.fillRect(x,y,w,4);
+      };
+      {
+        const [x,y,w,h]=AREAS.shelves;
+        interior(x,y,w,h,'#6f7478','#3b4044');
+        for(let k=0;k<4;k++){
+          const sy=y+18+k*26;
+          for(let i=x+3;i<x+w-6;){const bw=5+rand()*7,bh=8+rand()*12;ctx.fillStyle=pick();ctx.fillRect(i,sy+18-bh,bw,bh);i+=bw+1+rand()*2}
+          ctx.fillStyle='#c9ccce';ctx.fillRect(x,sy+18,w,3);
+        }
+      }
+      {
+        const [x,y,w,h]=AREAS.rail;
+        interior(x,y,w,h,'#7a746c','#40403e');
+        ctx.fillStyle='#bfc3c6';ctx.fillRect(x+4,y+26,w-8,3);
+        for(let i=x+6;i<x+w-10;i+=7+rand()*3){ctx.fillStyle=pick();ctx.fillRect(i,y+29,7,40+rand()*30);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(i+6,y+29,1,40)}
+        ctx.fillStyle='#d8d3c8';ctx.fillRect(x+w/2-8,y+18,16,62);ctx.fillStyle=pick();ctx.fillRect(x+w/2-10,y+40,20,34);
+      }
+      {
+        const [x,y,w,h]=AREAS.cafe;
+        interior(x,y,w,h,'#a0835f','#5a4532');
+        for(let i=0;i<3;i++){const lx=x+14+i*30;ctx.fillStyle='#2a2a2a';ctx.fillRect(lx,y,1,16);ctx.fillStyle='#ffe7a8';ctx.beginPath();ctx.arc(lx,y+19,5,0,Math.PI*2);ctx.fill()}
+        ctx.fillStyle='#e9e2d4';ctx.fillRect(x+4,y+40,w-8,18);
+        for(let i=x+8;i<x+w-8;i+=12){ctx.fillStyle=pick();ctx.fillRect(i,y+44,8,10)}
+        ctx.fillStyle='#3a2a1e';ctx.fillRect(x,y+84,w,10);
+        for(const tx of [x+18,x+58]){ctx.fillStyle='#d8cdb8';ctx.fillRect(tx-10,y+92,20,3);ctx.fillStyle='#3a2a1e';ctx.fillRect(tx-1,y+95,2,18)}
+      }
+      {
+        const [x,y,w,h]=AREAS.pub;
+        interior(x,y,w,h,'#7a4b2a','#2e1a10');
+        for(let i=0;i<3;i++){const lx=x+14+i*30;ctx.fillStyle='#ffd27a';ctx.beginPath();ctx.arc(lx,y+16,4,0,Math.PI*2);ctx.fill()}
+        for(let k=0;k<2;k++)for(let i=x+6;i<x+w-6;i+=5){ctx.fillStyle=['#5a7d3c','#8a2f24','#c9a24b','#d9d2c3'][Math.floor(rand()*4)]!;ctx.fillRect(i,y+30+k*16,3,11)}
+        ctx.fillStyle='#4a2c18';ctx.fillRect(x,y+66,w,30);ctx.fillStyle='#8a5a33';ctx.fillRect(x,y+64,w,4);
+        ctx.fillStyle='#d8c9a0';for(let i=x+10;i<x+w-6;i+=22)ctx.fillRect(i,y+54,3,10);
+      }
+      {
+        const [x,y,w,h]=AREAS.office;
+        interior(x,y,w,h,'#c9cdd0','#7d8387');
+        for(let i=0;i<3;i++){ctx.fillStyle=pick();ctx.fillRect(x+6+i*27,y+14,22,30);ctx.fillStyle='#f4f4f0';ctx.fillRect(x+9+i*27,y+18,16,6)}
+        ctx.fillStyle='#5b636a';ctx.fillRect(x+6,y+74,w-12,6);
+        for(const dx of [x+16,x+52]){ctx.fillStyle='#2c3238';ctx.fillRect(dx,y+58,16,12);ctx.fillStyle='#8fb3cc';ctx.fillRect(dx+2,y+60,12,8)}
+        ctx.fillStyle='#5b636a';ctx.fillRect(x+10,y+80,3,26);ctx.fillRect(x+w-13,y+80,3,26);
+      }
+      // Glass: a sky reflection at the top and two diagonal highlights on every display.
+      for(const key of ['shelves','rail','cafe','pub','office'] as const){
+        const [x,y,w,h]=AREAS[key];
+        const sky=ctx.createLinearGradient(0,y,0,y+h*.45);sky.addColorStop(0,'rgba(190,210,225,.45)');sky.addColorStop(1,'rgba(190,210,225,0)');
+        ctx.fillStyle=sky;ctx.fillRect(x,y,w,h);
+        ctx.fillStyle='rgba(255,255,255,.12)';
+        for(const o of [.15,.55]){ctx.beginPath();ctx.moveTo(x+w*o,y+h);ctx.lineTo(x+w*o+14,y+h);ctx.lineTo(x+w*o+44,y);ctx.lineTo(x+w*o+30,y);ctx.closePath();ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.beginPath();ctx.moveTo(x+w*o,y+h);ctx.lineTo(x+w*o+14,y+h);ctx.lineTo(x+w*o+44,y);ctx.lineTo(x+w*o+30,y);ctx.closePath();ctx.fill();ctx.restore()}
+      }
     }
     // Grass.
     {
