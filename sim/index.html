@@ -97,6 +97,8 @@ body.phone #hud-status{display:none}
 #hud-place{position:absolute;left:var(--sl);top:calc(var(--st) + 26px);font-size:11px;color:#e2e8f0;background:rgba(15,23,42,.55);border-radius:6px;padding:2px 8px;white-space:nowrap;max-width:45vw;overflow:hidden;text-overflow:ellipsis}
 #hud-top{right:var(--sr);top:var(--st);display:flex;gap:6px;align-items:center;font-size:11px;color:var(--soft)}
 #hud-top button{min-height:34px}
+#hud-behind[aria-pressed="true"]{background:#0f766e;border-color:#5eead4}
+.hud-pill.behind{border-color:#fbbf24;color:#fbbf24}
 #hud-tilt{display:none;align-items:center;gap:6px}
 body.tilt #hud-tilt{display:flex}
 #hud-left{left:var(--sl);bottom:var(--sb);display:grid;gap:5px;justify-items:center}
@@ -106,6 +108,14 @@ body.tilt #hud-tilt{display:flex}
 #steer-buttons button{width:52px;font-size:18px;display:grid;place-items:center;line-height:1}
 #steer-buttons small{font-size:9px}
 body:not(.steer-buttons) #steer-buttons{display:none}
+/* On-screen steering wheel: drag round it with a thumb. */
+#touch-wheel{display:none;width:118px;height:118px;touch-action:none;cursor:grab}
+body.wheel-steer #touch-wheel{display:block}
+#touch-wheel .tw-rim{width:100%;height:100%;box-sizing:border-box;border:13px solid #334155;border-radius:50%;position:relative;box-shadow:inset 0 0 0 2px #64748b,0 0 0 2px #64748b}
+#touch-wheel .tw-rim>span{position:absolute;left:50%;top:-13px;width:10px;height:13px;margin-left:-5px;background:#f59e0b;border-radius:3px}
+#touch-wheel .tw-spoke{position:absolute;left:-2px;right:-2px;top:50%;height:9px;margin-top:-4px;background:#334155}
+#touch-wheel .tw-spoke::after{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#1e293b;border:2px solid #64748b}
+#touch-wheel.held .tw-rim{border-color:#0f766e}
 #hud-centre{left:50%;bottom:var(--sb);transform:translateX(-50%);display:grid;gap:5px}
 #view-buttons,#signal-buttons{display:flex;gap:5px;justify-content:center}
 #view-buttons button{width:66px;font-size:11px}
@@ -181,6 +191,7 @@ body.stationary [data-hold="throttle"]{opacity:.4}
         <label><input type="radio" name="steering" value="assist"> <span><b>Assisted</b>: keeps the car on the lane path; you control speed, signals and observations.</span></label>
         <label><input type="radio" name="steering" value="tilt"> <span><b>Tilt the phone</b> like a steering wheel (landscape).</span></label>
         <p id="tilt-unavailable" class="unit warn" hidden></p>
+        <label><input type="radio" name="steering" value="wheel"> <span><b>On-screen wheel</b>: turn the steering wheel on the screen with your thumb. Let go and it returns to the centre.</span></label>
         <label><input type="radio" name="steering" value="buttons"> <span><b>Steer buttons or keys</b>.</span></label>
         <div id="tilt-options" class="tilt-panel" hidden>
           <ol class="tilt-steps">
@@ -287,10 +298,11 @@ body.stationary [data-hold="throttle"]{opacity:.4}
   <div id="hud-place"></div>
   <div id="hud-top" class="hud-panel">
     <div id="hud-tilt"><div class="wheel" aria-hidden="true"><div id="hud-wheel" class="wheel-rim"><span></span></div></div><button id="hud-tilt-centre" type="button">Centre</button><span id="hud-tilt-state" class="unit"></span></div>
-    <button id="hud-task-toggle" type="button">Task</button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
+    <button id="hud-behind" type="button" aria-pressed="false" title="Camera behind the car (practice only: not a driver's view)">Behind</button><button id="hud-task-toggle" type="button">Task</button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
   </div>
   <div id="hud-left" class="hud-panel">
     <div id="hud-speedbox"><span id="hud-speed">0</span><span class="unit">mph</span></div>
+    <div id="touch-wheel" role="slider" aria-label="Steering wheel: drag round to steer" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0"><div class="tw-rim"><span></span><div class="tw-spoke"></div></div></div>
     <div id="steer-buttons">
       <button type="button" data-hold="left" aria-label="Steer left">◀<small>Steer</small></button>
       <button type="button" data-hold="right" aria-label="Steer right">▶<small>Steer</small></button>

@@ -41,6 +41,7 @@ import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
 import {KeyboardInput,type InputAction,type ViewTarget} from '../input/keyboard';
 import {SteerRamp} from '../input/steerRamp';
+import {screenAngle,TouchWheel} from '../input/touchWheel';
 import {TILT_SENSITIVITY,TiltSteering,isLandscape,type TiltPermission} from '../input/tilt';
 import {ScenarioRunner,type Outcome} from '../scenarios/scenarioRunner';
 import {ZoneTracker} from '../scenarios/zones';
@@ -73,7 +74,7 @@ import {Session} from './session';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
-type SteeringMode='assist'|'tilt'|'buttons';
+type SteeringMode='assist'|'tilt'|'wheel'|'buttons';
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** While a mirror view is selected the view narrows, like focusing on the glass (door mirrors are smaller). */
@@ -236,6 +237,7 @@ export async function boot():Promise<void>{
   let steeringMode:SteeringMode=quality.id==='phone'?'assist':'buttons';
   const tilt=new TiltSteering();
   let tiltSteer=0;
+  const touchWheel=new TouchWheel();
   const buttonSteer=new SteerRamp();
   const dynamicFootprints:DynamicFootprint[]=[];
   let vehicle!:VehicleController;
@@ -244,7 +246,7 @@ export async function boot():Promise<void>{
     // Called once per fixed simulation step.
     const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
     // The driver's own button/key steering always overrides tilt and the assistance.
-    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
+    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='wheel'?touchWheel.update(SIM_STEP):steeringMode==='assist'&&runtime?.assist?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
     lastControls=viewerDrive??{throttle:c.throttle,brake:c.brake,steer};
@@ -265,6 +267,11 @@ export async function boot():Promise<void>{
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);
   const mirrors=ALL_MIRRORS.map(spec=>new Mirror(scene,vehicleNode,cockpit.root,spec,quality,head.seat.eye));
+  // The learner's own car as seen from behind (hidden from the driver's seat).
+  const learnerBody=carModel?.instantiate(vehicleNode,'learner-car','#c81e1e',4.3)??null;
+  learnerBody?.setEnabled(false);
+  const learnerBox=scene.getMeshByName('car-body');
+  let learnerTravelled=0;
 
   const camera=new FreeCamera('driver-camera',Vector3.Zero(),scene);
   camera.inputs.clear();
@@ -318,6 +325,8 @@ export async function boot():Promise<void>{
   };
   const selectView=(view:ViewTarget|'forward')=>{
     if(session.state!=='running')return;
+    // A view button is a driver's view: back to the driver's seat first.
+    if(behind){setBehind(false);if(view==='forward')return}
     if(view==='forward'||heldView===view)forwardView();
     else holdView(view,'touch');
   };
@@ -439,6 +448,8 @@ export async function boot():Promise<void>{
         if(steeringMode==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
         if(guided)base.notes.push('Route guidance was shown on the road (the pull-out path).');
         if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
+        if(steeringMode==='wheel')base.notes.push('You steered with the on-screen wheel.');
+        if(behindSeconds>=1)base.notes.push(`${INFO}You used the behind-the-car view for ${Math.round(behindSeconds)} s. It is not a driver's view: only the mirrors, shoulder checks and forward view count as observations.`);
         if(variant)base.notes.push(`${INFO}Timing this attempt: ${variant.label.toLowerCase()}.`);
         const mode=controlMode();
         if(mode==='phone-viewer-controller'||mode==='webxr')base.notes.push(`${INFO}Observations were recorded from your head direction (motion sensors), not eye tracking.`);
@@ -478,6 +489,9 @@ export async function boot():Promise<void>{
     input.clear();
     clearHeldButtons();
     buttonSteer.reset();
+    touchWheel.reset();
+    if(behind)setBehind(false);
+    behindSeconds=0;
     if(runtime){
       const s=runtime.scenario;
       vehicle.setSpawn(s.start?{position:{x:s.start.position.x,y:0,z:s.start.position.z},heading:degToRad(s.start.headingDeg)}:spawnOf(place));
@@ -764,7 +778,7 @@ export async function boot():Promise<void>{
       viewerMode=mode;
       if(mode!=='calibration'){
         // Tilt steering needs the phone in the hands: use the assistance (or the controller's stick) instead.
-        if(steeringMode==='tilt')setSteeringMode('assist');
+        if(steeringMode==='tilt'||steeringMode==='wheel')setSteeringMode('assist');
         start(mode==='familiarisation'?(introId??scenarioId):scenarioId,{familiarisation:mode==='familiarisation'});
         if(session.state!=='running'){viewerMode=null;return}
         // Nothing moves until the driver has the headset on, looks straight ahead and starts.
@@ -977,8 +991,10 @@ export async function boot():Promise<void>{
     for(const radio of steeringRadios)radio.checked=radio.value===mode;
     byId('tilt-options').hidden=mode!=='tilt';
     document.body.classList.toggle('tilt',mode==='tilt');
-    // Steer buttons only where they are the steering, or the fallback for tilt.
-    document.body.classList.toggle('steer-buttons',mode!=='assist');
+    // Steer buttons only where they are the steering, or the fallback for tilt; the on-screen wheel replaces them.
+    document.body.classList.toggle('steer-buttons',mode==='buttons'||mode==='tilt');
+    document.body.classList.toggle('wheel-steer',mode==='wheel');
+    touchWheel.reset();
   };
   /** Tilt cannot work here: disable the option and say why. */
   const disableTilt=(reason:string)=>{
@@ -1162,6 +1178,31 @@ export async function boot():Promise<void>{
   byId('hud-ind-right').addEventListener('click',()=>onAction('indicator-right'));
   byId('hud-task-toggle').addEventListener('click',()=>hud.toggleTask());
   byId('hud-tilt-centre').addEventListener('click',()=>tilt.calibrate());
+  // On-screen wheel: the finger's angle around the wheel's centre turns it (one finger; others ignored).
+  const wheelEl=byId('touch-wheel');
+  let wheelPointer:number|null=null;
+  const wheelAngle=(event:PointerEvent)=>{
+    const r=wheelEl.getBoundingClientRect();
+    return screenAngle(r.left+r.width/2,r.top+r.height/2,event.clientX,event.clientY);
+  };
+  wheelEl.addEventListener('pointerdown',event=>{
+    event.preventDefault();
+    if(wheelPointer!==null)return;
+    wheelPointer=event.pointerId;
+    wheelEl.setPointerCapture(event.pointerId);
+    touchWheel.grab(wheelAngle(event));
+    wheelEl.classList.add('held');
+  });
+  wheelEl.addEventListener('pointermove',event=>{if(event.pointerId===wheelPointer)touchWheel.move(wheelAngle(event))});
+  const releaseWheel=(event:PointerEvent)=>{
+    if(event.pointerId!==wheelPointer)return;
+    wheelPointer=null;
+    touchWheel.release();
+    wheelEl.classList.remove('held');
+  };
+  wheelEl.addEventListener('pointerup',releaseWheel);
+  wheelEl.addEventListener('pointercancel',releaseWheel);
+  const wheelRim=wheelEl.querySelector<HTMLElement>('.tw-rim')!;
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-hold]')){
     const control=button.dataset.hold as 'throttle'|'brake'|'left'|'right';
     const set=(down:boolean)=>(event:Event)=>{
@@ -1234,6 +1275,19 @@ export async function boot():Promise<void>{
   let mirrorsOn=true;
   /** Diagnostics: render every mirror every frame, seen or not (to measure what each mirror shows). */
   let allMirrorsLive=false;
+  // Behind-the-car view: a camera following the car, for getting a feel for its position on the road. Not a driver's
+  // view: the head (and so observations) stays in the driver's seat, and the results say how long it was used.
+  let behind=false,behindSeconds=0;
+  const behindButton=byId('hud-behind');
+  const setBehind=(on:boolean)=>{
+    behind=on;
+    behindButton.setAttribute('aria-pressed',String(on));
+    behindButton.textContent=on?'Driver':'Behind';
+    const label=byId('hud-view-label');
+    if(on){label.textContent='View: Behind the car (not a driver\'s view)';label.classList.add('behind')}
+    else{label.classList.remove('behind');showView(heldView??'forward')}
+  };
+  behindButton.addEventListener('click',()=>{if(session.state==='running'&&!viewer.active)setBehind(!behind)});
   /** Diagnostics: a top-down camera (or one looking at `target`) for layout review screenshots. */
   let overhead:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null=null;
   const perf=new PerfProbe();
@@ -1246,7 +1300,8 @@ export async function boot():Promise<void>{
     if(session.state==='running'&&runtime){
       perf.record(engine.getDeltaTime());
       head.animate(dt);
-      const wantFov=!heldView||heldView.endsWith('shoulder')?HORIZONTAL_FOV:heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
+      if(behind)behindSeconds+=dt;
+      const wantFov=behind||!heldView||heldView.endsWith('shoulder')?HORIZONTAL_FOV:heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
       camera.fov+=Math.max(-3*dt,Math.min(3*dt,wantFov-camera.fov));
       observation.source=observationSource();
       clock.advance(dt,step);
@@ -1265,13 +1320,23 @@ export async function boot():Promise<void>{
       camera.position.set(overhead.x,overhead.height,overhead.z+.01);
       const t=overhead.target;
       camera.setTarget(t?new Vector3(t.x,t.y,t.z):new Vector3(overhead.x,0,overhead.z));
+    }else if(behind){
+      const from=localToWorld(pose,{x:0,y:3.2,z:7.5}),to=localToWorld(pose,{x:0,y:0,z:-7});
+      camera.position.set(from.x,from.y,from.z);
+      camera.setTarget(new Vector3(to.x,to.y,to.z));
     }else{
       camera.position.set(eye.x,eye.y,eye.z);
       camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
     }
+    // From behind, the learner's car is drawn with a car model (wheels turning) in place of the plain body box.
+    if(learnerBody){
+      const show=behind&&!viewer.active;
+      if(learnerBody.isEnabled()!==show){learnerBody.setEnabled(show);if(learnerBox)learnerBox.isVisible=!show;cockpit.root.setEnabled(!show)}
+      if(show&&carModel){learnerTravelled+=Math.abs(vehicle.state.speed)*dt;carModel.roll(learnerBody,learnerTravelled)}
+    }
     for(const mirror of mirrors){
       mirror.update(pose);
-      mirror.setActive(mirrorsOn&&(allMirrorsLive||camera.isInFrustum(mirror.glass)));
+      mirror.setActive(mirrorsOn&&!behind&&(allMirrorsLive||camera.isInFrustum(mirror.glass)));
       // The mirror being looked at updates every frame so approaching traffic stays readable.
       mirror.setRefresh(allMirrorsLive||heldView===mirror.spec.id?1:quality.mirrorUpdateInterval);
     }
@@ -1280,8 +1345,12 @@ export async function boot():Promise<void>{
     tiltSteer=tilt.read(dt);
     const wheelTurn=`rotate(${Math.round((steeringMode==='tilt'?tiltSteer:vehicle.state.steerAngle/.6)*120)}deg)`;
     hudWheel.style.transform=wheelTurn;
+    if(steeringMode==='wheel'){
+      wheelRim.style.transform=`rotate(${touchWheel.turnDeg.toFixed(1)}deg)`;
+      wheelEl.setAttribute('aria-valuenow',String(Math.round(touchWheel.turnDeg/2.7)));
+    }
     // Turning right turns the wheel clockwise as the driver sees it.
-    cockpit.wheel.rotation.y=-vehicle.state.steerAngle*STEERING_RATIO;
+    cockpit.setWheel(vehicle.state.steerAngle*STEERING_RATIO);
     cockpit.setInstruments(Math.round(vehicle.state.speed*2.237),vehicle.indicators.state,vehicle.indicators.isLit(clock.time));
     if(session.state==='ready'){
       wheelPreview.style.transform=wheelTurn;
@@ -1400,6 +1469,8 @@ export async function boot():Promise<void>{
     forceVariant:(id:string|null)=>{forcedVariant=id},
     /** Same as tapping a view button (or Forward). */
     selectView:(view:ViewTarget|'forward')=>selectView(view),
+    hands:()=>cockpit.handsTurn,
+    behind:()=>({on:behind,seconds:behindSeconds,carModel:!!learnerBody?.isEnabled()}),
     viewLabel:()=>byId('hud-view-label').textContent,
     buses:()=>runtime?.buses.map(b=>({id:b.id,pose:b.pose,speed:b.speed,state:b.state,visible:b.visible,indicating:b.indicating}))??[],
     passersDetail:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose,speed:p.speed,started:p.started}))??[],

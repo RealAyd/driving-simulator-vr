@@ -1,4 +1,4 @@
-import {Color3,CreateBox,CreateCylinder,CreatePlane,CreateRibbon,CreateTorus,DynamicTexture,Mesh,StandardMaterial,TransformNode,Vector3,type Scene} from '../engine/babylon';
+import {Color3,CreateBox,CreateCylinder,CreatePlane,CreateRibbon,CreateSphere,CreateTorus,DynamicTexture,Mesh,Quaternion,StandardMaterial,TransformNode,Vector3,type Scene} from '../engine/babylon';
 import type {Vec3} from '../contracts';
 import type {SeatConfig} from './seat';
 
@@ -24,9 +24,18 @@ export const CABIN={
 /** Steering-wheel turns per front-wheel angle, for display only. */
 export const STEERING_RATIO=4;
 
+/** How far (radians of wheel turn) the hands follow the wheel before they feed it through (pull-push). */
+export const HANDS_FOLLOW=1.2;
+/** Where the hands hold the rim when the wheel is centred: ten to two (60° either side of the top), in view above the dashboard edge. */
+const GRIP=Math.PI/3;
+
 export interface Cockpit{
   root:TransformNode;
   wheel:TransformNode;
+  /** Turns the steering wheel (radians, clockwise as the driver sees it positive) and moves the hands with it. */
+  setWheel(turn:number):void;
+  /** The hands' current angle on the rim (radians, clockwise positive), for checks. */
+  readonly handsTurn:number;
   /** Speedometer and indicator tell-tales in the instrument binnacle (redrawn only when they change). */
   setInstruments(mph:number,indicator:'off'|'left'|'right',lit:boolean):void;
   dispose():void;
@@ -170,6 +179,54 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   part('steering-hub',.075,.035,.065,.01,trim);
   part('steering-top-mark',.03,.035,.022,-.18,mat('steering-mark',new Color3(.85,.55,.1)));
 
+  // The driver's hands on the rim at ten to two, and arms from the shoulders (dark sleeves). The hands turn
+  // with the wheel up to HANDS_FOLLOW, then hold there as the wheel is fed through them (pull-push steering).
+  const skin=mat('driver-skin',new Color3(.78,.6,.48));
+  const sleeve=mat('driver-sleeve',new Color3(.14,.17,.24));
+  const handRing=new TransformNode('driver-hands',scene);
+  handRing.parent=column;
+  const RIM=.185;
+  const hands=[-1,1].map(side=>{
+    const hand=CreateSphere(`driver-hand-${side<0?'left':'right'}`,{diameterX:.07,diameterY:.05,diameterZ:.1,segments:6},scene);
+    hand.material=skin;
+    hand.parent=handRing;
+    // Local −Z is the top of the wheel: ten to two is ±60° from it, on the rim.
+    hand.position.set(side*RIM*Math.sin(GRIP),.012,-RIM*Math.cos(GRIP));
+    hand.isPickable=false;
+    return hand;
+  });
+  const limb=(name:string,radius:number)=>{
+    const m=CreateCylinder(name,{height:1,diameterTop:radius*2,diameterBottom:radius*2.3,tessellation:8},scene);
+    m.material=sleeve;m.parent=root;m.isPickable=false;m.rotationQuaternion=new Quaternion();
+    return m;
+  };
+  const arms=[-1,1].map(side=>({side,upper:limb(`driver-upper-arm-${side}`,.045),fore:limb(`driver-forearm-${side}`,.038)}));
+  const UP=new Vector3(0,1,0);
+  const place=(m:Mesh,a:Vector3,b:Vector3)=>{
+    const d=b.subtract(a),len=d.length();
+    m.position.copyFrom(a.add(b).scale(.5));
+    m.scaling.set(1,len,1);
+    Quaternion.FromUnitVectorsToRef(UP,d.scale(1/len),m.rotationQuaternion!);
+  };
+  let handsTurn=0;
+  const setWheel=(turn:number)=>{
+    wheel.rotation.y=-turn;
+    handsTurn=Math.max(-HANDS_FOLLOW,Math.min(HANDS_FOLLOW,turn));
+    handRing.rotation.y=-handsTurn;
+    root.computeWorldMatrix(true);
+    handRing.computeWorldMatrix(true);
+    for(const h of hands)h.computeWorldMatrix(true);
+    const toRoot=root.getWorldMatrix().clone().invert();
+    for(const {side,upper,fore} of arms){
+      const hand=Vector3.TransformCoordinates(hands[side<0?0:1]!.getAbsolutePosition(),toRoot);
+      const shoulder=new Vector3(eye.x+side*.19,eye.y-.22,eye.z+.08);
+      // Elbow: below and outside the line from shoulder to hand, bent towards the body.
+      const elbow=shoulder.add(hand).scale(.5).add(new Vector3(side*.07,-.12,.02));
+      place(upper,shoulder,elbow);
+      place(fore,elbow,hand);
+    }
+  };
+
   // Exterior body for other cameras. Seen from inside, its faces are back
   // faces and are culled, so it does not block the driver.
   const body=CreateBox('car-body',{width:1.8,height:1.0,depth:4.3},scene);
@@ -217,5 +274,6 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   };
   setInstruments(0,'off',false);
 
-  return {root,wheel,setInstruments,dispose:()=>root.dispose(false,true)};
+  setWheel(0);
+  return {root,wheel,setWheel,get handsTurn(){return handsTurn},setInstruments,dispose:()=>root.dispose(false,true)};
 }
