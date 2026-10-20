@@ -166,7 +166,7 @@
         "Cyclist with contact pose and urban bicycle (cyclist_QA/, unchanged from Batch B v0.2)"
       ],
       "storage": "public",
-      "notes": "Shipped: the compact hatchback (uk_car_03_compact_mini_white) and saloon (uk_car_10_bmw_coupe_silver), as other road users' cars and, since 2026-10-20, as every parked car (they replaced the Quaternius cars). Sports, super and futuristic models and the Car 01 variants are not used. Cyclist QA files not used (the cyclist is 4.6 MB). See docs/assets/batch-b.md."
+      "notes": "Shipped: the compact hatchback (uk_car_03_compact_mini_white) and saloon (uk_car_10_bmw_coupe_silver), as other road users' cars and, since 2026-10-20, as every parked car (they replaced the Quaternius cars); also, parked on drives only, the large saloon (uk_car_01, under a generic name) and the pickup (uk_car_07). Sports, super and futuristic models and the Car 01 traffic variants (the large saloon's body with 1024 px textures) are not used. Cyclist QA files not used (the cyclist is 4.6 MB). See docs/assets/batch-b.md."
     },
     {
       "id": "driving-practice-batch-c",
@@ -566,6 +566,44 @@
         "bytes": 221100
       },
       "build": "tools/assets/build-batch-a-buses.sh <extracted Batch A folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-b-large-saloon-parked",
+      "file": "public/assets/models/vehicles/batch-b-large-saloon-parked.glb",
+      "pack": "driving-practice-batch-b-cars",
+      "sourceFile": "cars_corrected/uk_car_01_sport_dodge.glb",
+      "use": "Parked cars on drives (a large saloon, for variety; parked only), recoloured per car, drawn 4.9 m long",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, prune; join; tools/assets/simplify.mjs (normals dropped, ratio 0.06, error 0.05); quantize",
+        "Baked into the parked-car mesh with flat normals and the body colour per car",
+        "At load (parked): scaled uniformly to 4.9 m long (src/assets/carSpecs.ts parkedLength)"
+      ],
+      "stats": {
+        "triangles": 1188,
+        "materials": 8,
+        "bytes": 27100
+      },
+      "build": "ONLY=parked tools/assets/build-batch-b-cars.sh <extracted Batch B corrected folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-b-pickup-parked",
+      "file": "public/assets/models/vehicles/batch-b-pickup-parked.glb",
+      "pack": "driving-practice-batch-b-cars",
+      "sourceFile": "cars_corrected/uk_car_07_pickup_ford_raptor_white.glb",
+      "use": "Parked cars on drives (a pickup, for variety; parked only), recoloured per car, drawn 5.3 m long",
+      "modifications": [
+        "glTF-Transform 4.5.1: weld, dedup, prune; join; tools/assets/simplify.mjs (normals dropped, ratio 0.06, error 0.05); quantize",
+        "Baked into the parked-car mesh with flat normals and the body colour per car",
+        "At load (parked): scaled uniformly to 5.3 m long (src/assets/carSpecs.ts parkedLength)"
+      ],
+      "stats": {
+        "triangles": 1240,
+        "materials": 8,
+        "bytes": 28028
+      },
+      "build": "ONLY=parked tools/assets/build-batch-b-cars.sh <extracted Batch B corrected folder>",
       "storage": "public"
     }
   ]

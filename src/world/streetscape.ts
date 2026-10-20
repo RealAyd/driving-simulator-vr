@@ -249,7 +249,7 @@ export function layoutStreetscape(location:Location):StreetLayout|null{
           out.pads.push({kind:'drive',corners:[at(g0+.1,side,pavementBack),at(g1-.1,side,pavementBack),at(g1-.1,side,back+1.5),at(g0+.1,side,back+1.5)],y:ground+.006});
           openings.push({side,from:g0-.3,to:g1+.3});
           if(rand()<spec.carsOnDrives){
-            const model=pick(['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon'] as const);
+            const model=pick(['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-large-saloon','batch-b-compact-hatchback','batch-b-saloon','batch-b-pickup'] as const);
             const car=parkedSize(CAR_MODELS[model]);
             const centre=at((g0+g1)/2,side,pavementBack+.6+car.length/2);
             // Driven in forwards: facing the house.

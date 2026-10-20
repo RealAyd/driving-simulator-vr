@@ -29,7 +29,10 @@ export const CAR_MODELS={
   // Asset Batch B (owner's models): WheelSpin_2s turns the 0.32 m wheels four times, 8.04 m of travel. The models are
   // drawn larger than the cars they show; road users are scaled to their collision length, parked copies to parkedLength.
   'batch-b-compact-hatchback':{id:'batch-b-compact-hatchback',url:'assets/models/vehicles/batch-b-compact-hatchback.glb',parkedUrl:'assets/models/vehicles/batch-b-compact-hatchback-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,wheelLoopMetres:8.04,length:4.55,width:2.16,height:1.5,parkedLength:4},
-  'batch-b-saloon':{id:'batch-b-saloon',url:'assets/models/vehicles/batch-b-saloon.glb',parkedUrl:'assets/models/vehicles/batch-b-saloon-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,wheelLoopMetres:8.04,length:5.04,width:1.98,height:1.5,parkedLength:4.6}
+  'batch-b-saloon':{id:'batch-b-saloon',url:'assets/models/vehicles/batch-b-saloon.glb',parkedUrl:'assets/models/vehicles/batch-b-saloon-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,wheelLoopMetres:8.04,length:5.04,width:1.98,height:1.5,parkedLength:4.6},
+  // Parked only (2026-10-20): the large saloon (uk_car_01) and the pickup (uk_car_07), for variety on drives.
+  'batch-b-large-saloon':{id:'batch-b-large-saloon',parkedUrl:'assets/models/vehicles/batch-b-large-saloon-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,length:5.24,width:1.98,height:1.47,parkedLength:4.9},
+  'batch-b-pickup':{id:'batch-b-pickup',parkedUrl:'assets/models/vehicles/batch-b-pickup-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,length:5.69,width:2.26,height:1.87,parkedLength:5.3}
 } as const satisfies Record<string,CarModelSpec>;
 
 export type CarModelId=keyof typeof CAR_MODELS;

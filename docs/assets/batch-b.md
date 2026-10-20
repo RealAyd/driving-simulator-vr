@@ -12,8 +12,13 @@ use in the published app and in this public repository (models mostly generated 
 | `batch-b-compact-hatchback` | `uk_car_03_compact_mini_white` | Other road users' cars: the zebra following car, alternate passing cars | 9,870 (from 16,638) | 194 KB |
 | `batch-b-saloon` | `uk_car_10_bmw_coupe_silver` | Alternate passing cars (for example the purple car when moving off) | 7,038 (from 10,582) | 159 KB |
 | `…-parked` versions | same | Every parked car since 2026-10-20 (kerbside and on drives); they replaced the Quaternius cars, whose files are no longer shipped | 1,263 and 908 | 29 and 24 KB |
+| `batch-b-large-saloon-parked` | `uk_car_01_sport_dodge` | Parked on drives only (since 2026-10-20), drawn 4.9 m long | 1,188 | 27 KB |
+| `batch-b-pickup-parked` | `uk_car_07_pickup_ford_raptor_white` | Parked on drives only (since 2026-10-20), drawn 5.3 m long | 1,240 | 28 KB |
 
-* `tools/assets/build-batch-b-cars.sh` rebuilds them (weld, dedup, prune, simplify, quantise; parked
+Drives get a mix: mostly hatchbacks and saloons, some large saloons, occasionally a pickup. The existing test
+checks that no drive car touches a house, wall, hedge or another car.
+
+* `tools/assets/build-batch-b-cars.sh` rebuilds them (`ONLY=parked` builds just the parked-only pair) (weld, dedup, prune, simplify, quantise; parked
   versions through `tools/assets/simplify.mjs`).
 * Body paint is one material (`Body`), recoloured per road user as before (the hatchback's roof,
   `Body.01`, keeps its colour). Road users are scaled to their collision length, as before.
@@ -35,8 +40,8 @@ Downloads +405 KB.
 
 ## Not used
 
-* Sports, super and futuristic models (Dodge-, Bugatti-, Porsche-, Nissan-, Toyota-like, Cybertruck-like)
-  and the pickup: not everyday Brentwood traffic, and heavier.
+* Sports, super and futuristic models (Bugatti-, Porsche-, Nissan-, Toyota-like, Cybertruck-like): not
+  everyday Brentwood traffic, and heavier.
 * Car 01 variants (`uk-traffic-car-01_*`): 15,598 triangles with 1024 px textures, about 956 KB each.
 * Braking variants: brake lights belong to the simulator's road-user logic (not yet modelled).
 * Cyclist QA files: the cyclist with contact pose is 4.6 MB (about 58,000 vertices). The drawn cyclist stays.
