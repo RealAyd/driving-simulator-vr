@@ -5,6 +5,7 @@ import {layoutTownscape} from '../../src/world/townscape';
 import {layoutSignage,type SignPanel} from '../../src/world/signage';
 import {appearance,layoutCrowd,personPose} from '../../src/world/crowd';
 import {placeLabel} from '../../src/world/placeLabel';
+import {brandSign} from '../../src/world/brandSigns';
 import {pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from '../../src/world/roadGeometry';
 import {Pedestrian} from '../../src/actors/pedestrian';
 import {EventLog} from '../../src/app/eventLog';
@@ -107,6 +108,12 @@ describe('Signs',()=>{
       expect(p.face.kind==='fascia'&&p.face.text).toBe(b.name);
       expect(b.use).toBe('shop');
     }
+  });
+
+  it('brand sign styles apply only where the map names exactly that business',()=>{
+    const branded=panels('fascia').filter(p=>p.face.kind==='fascia'&&brandSign(p.face.text));
+    expect(branded.map(p=>p.face.kind==='fascia'&&p.face.text).sort()).toEqual(["KFC","McDonald's",'Tesco Express']);
+    for(const p of branded)expect(brentwood.buildings.find(b=>`fascia-${b.id}`===p.id)!.name).toBe(p.face.kind==='fascia'&&p.face.text);
   });
 
   it('the representative streets get no invented names on plates or fascias',()=>{

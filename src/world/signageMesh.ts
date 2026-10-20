@@ -2,6 +2,7 @@ import {Color3,DynamicTexture,StandardMaterial,Texture,type Mesh,type Scene,type
 import {box,flatFace,Geometry,prism,type RGB,type V3} from './streetscapeMesh';
 import type {Region} from './sceneryTextures';
 import type {Shelter,SignFace,SignPanel,SignPlan} from './signage';
+import {brandSign} from './brandSigns';
 
 /**
  * Draws a sign plan: every face is lettered at load time onto one shared
@@ -137,13 +138,15 @@ function drawBusFlag(name:string,indicator:string|null){
   };
 }
 
-/** Shop name: plain light lettering on the fascia colour. */
+/** Shop name: plain light lettering on the fascia colour, or the brand's own sign colours where the map names a brand. */
 function drawFascia(text:string,background:string){
+  const brand=brandSign(text);
   return (ctx:CanvasRenderingContext2D,w:number,h:number)=>{
-    ctx.fillStyle=background;ctx.fillRect(0,0,w,h);
-    ctx.fillStyle='#f1ead6';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.font=fit(text,Math.round(h*.6),w-h*.4,'600');
-    ctx.fillText(text,w/2,h*.54);
+    ctx.fillStyle=brand?.background??background;ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=brand?.colour??'#f1ead6';ctx.textAlign='center';ctx.textBaseline='middle';
+    const label=brand?.text??text;
+    ctx.font=fit(label,Math.round(h*(brand?.7:.6)),w-h*.4,brand?.weight??'600');
+    ctx.fillText(label,w/2,h*.54);
   };
 }
 
@@ -222,8 +225,11 @@ export function buildSignage(scene:Scene,plan:SignPlan,parent:TransformNode):Bui
   // Fascias are as wide as their lettering (within the shopfront).
   for(const p of plan.panels)if(p.face.kind==='fascia'){
     const h=Math.round(p.height*DENSITY.fascia);
-    const needed=(textWidth(p.face.text,`600 ${Math.round(h*.6)}px ${FONT}`)+h*.6)/DENSITY.fascia;
-    p.width=Math.max(1,Math.min(p.maxWidth??p.width,needed));
+    const brand=brandSign(p.face.text);
+    const needed=(textWidth(brand?.text??p.face.text,`${brand?.weight??'600'} ${Math.round(h*(brand?.7:.6))}px ${FONT}`)+h*.6)/DENSITY.fascia;
+    // A brand's colours run along the whole fascia of its shopfront (up to 6 m); other names are as wide as their lettering.
+    p.width=Math.max(1,brand?Math.max(needed,p.maxWidth??p.width):Math.min(p.maxWidth??p.width,needed));
+    if(brand)p.height=.6;
   }
   const keys=plan.panels.map(p=>sheet.add(faceEntry(p.face,p)));
   sheet.add({key:'white',w:6,h:6,draw:(ctx,w,h)=>{ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h)}});

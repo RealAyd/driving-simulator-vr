@@ -1,6 +1,7 @@
 import {headingFromDirection,type Block,type Location,type Vec2} from '../contracts';
 import type {StreetLayout} from './streetscape';
 import {distanceToOutline,insidePolygon,type BusStop} from './townscape';
+import {brandSign} from './brandSigns';
 import {pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 
 /**
@@ -151,7 +152,8 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
   // ---- Shop names (map data only) on the fascia of the longest shopfront facing a road. ----
   for(const t of layout?.town?.buildings??[]){
     const name=location.buildings.find(b=>b.id===t.id)?.name;
-    if(!name||t.detail==='low')continue;
+    // Background buildings get no shop names, except a branded store (its sign reads from a distance).
+    if(!name||(t.detail==='low'&&!brandSign(name)))continue;
     const wall=t.walls.filter(w=>w.shopfront).sort((a,b)=>Math.hypot(b.b.x-b.a.x,b.b.z-b.a.z)-Math.hypot(a.b.x-a.a.x,a.b.z-a.a.z))[0];
     if(!wall)continue;
     const len=Math.hypot(wall.b.x-wall.a.x,wall.b.z-wall.a.z);

@@ -183,6 +183,23 @@
       ],
       "storage": "public",
       "notes": "Shipped: the street tree only. Buildings and road pieces are fixed-size generic modules, while the scenes build both from mapped footprints and road geometry; the Boots/Tesco-style signs raise brand questions. The lamppost matches the drawn lamp column. Postbox, planter, cone, barrier and hanging sign have no mapped positions or scenario yet. See docs/assets/batch-c.md."
+    },
+    {
+      "id": "driving-practice-batch-d",
+      "title": "Driving Practice Batch D v0.2 (detail upgrade: branded roadside buildings, taxi, e-bike, station entrance)",
+      "author": "Made for the project owner (procedurally built geometry and sign textures; build and render scripts in the pack's source/)",
+      "source": "Driving_Practice_Batch_D_Detail_Upgrade_Complete.zip supplied by the project owner, received 2026-10-20 (12 GLBs, 20 sign textures, previews, manifest, structural QA, source scripts)",
+      "licence": "Project-owned original work per the pack README (brand text and colours are approximate interpretations, not traced logos). The brand names and colours themselves are trademarks of their owners: the project owner chose on 2026-10-20 to show them; no affiliation or endorsement is claimed (stated in the About panel).",
+      "licenceUrl": null,
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "contents": [
+        "Esso forecourt; Lidl, Aldi, Asda, Sainsbury's, Tesco Extra and Tesco Express stores; KFC and McDonald's restaurants",
+        "TX-style black cab; Lime-style rental e-bike; London Underground-style station entrance (Embankment)",
+        "20 sign textures (brand lettering on brand colours)"
+      ],
+      "storage": "not stored: no file from the pack is in this repository",
+      "notes": "Used: the sign styles (lettering, colours, weight) of the KFC, McDonald's, Tesco Express and Sainsbury's textures, reproduced in code (src/world/brandSigns.ts) and drawn on the fascia of a building whose OpenStreetMap name is exactly that business (Brentwood High Street area: KFC, McDonald's, Tesco Express; the mapped Sainsbury's store has no wall facing a road, so no sign). The GLB buildings are not placed: they are fixed-size standalone stores, while the scenes draw buildings from their mapped outlines, and none of the other businesses (Esso, Lidl, Aldi, Asda, Tesco Extra) is mapped in the current areas. The Underground entrance is not used (no Underground in Brentwood). The taxi and e-bike are kept for later (not yet placed)."
     }
   ],
   "models": [
