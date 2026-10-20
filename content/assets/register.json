@@ -200,6 +200,23 @@
       ],
       "storage": "not stored: no file from the pack is in this repository",
       "notes": "Used: the sign styles (lettering, colours, weight) of the KFC, McDonald's, Tesco Express and Sainsbury's textures, reproduced in code (src/world/brandSigns.ts) and drawn on the fascia of a building whose OpenStreetMap name is exactly that business (Brentwood High Street area: KFC, McDonald's, Tesco Express; the mapped Sainsbury's store has no wall facing a road, so no sign). The GLB buildings are not placed: they are fixed-size standalone stores, while the scenes draw buildings from their mapped outlines, and none of the other businesses (Esso, Lidl, Aldi, Asda, Tesco Extra) is mapped in the current areas. The Underground entrance is not used (no Underground in Brentwood). The taxi and e-bike are kept for later (not yet placed)."
+    },
+    {
+      "id": "driving-practice-tripo-people",
+      "title": "Driving Practice Animated Tripo People (five rigged, animated characters)",
+      "author": "Characters made with Tripo for the project owner; rigged (Mixamo-style skeleton, mixamorig bone names) and animated for the project owner",
+      "source": "Driving_Practice_Animated_Tripo_People.zip (5 animated GLBs, previews, clip catalogue) and Driving_Practice_Tripo_Original_Source_Exports.zip (5 unmodified Tripo FBX exports), supplied by the project owner, received 2026-10-20",
+      "licence": "The project owner confirmed on 2026-10-20 that they hold a commercial licence to use these characters and their animations, including in this public repository and the published app.",
+      "licenceUrl": null,
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "contents": [
+        "pedestrian_male_01 and pedestrian_male_02 (Walk, Idle, LookLeft, LookRight, SeatedIdle)",
+        "pedestrian_woman_04 (also Carrying a bag) and pedestrian_adult_05 (also Climbing)",
+        "action_performer_03 (12 clips including Cycling, run and greet_01; no Walk)"
+      ],
+      "storage": "public: the four pedestrians, rebuilt smaller (below); the pack archives are not stored",
+      "notes": "Not used: action_performer_03 (no Walk clip; its Cycling clip is body motion with no bicycle), SeatedIdle and the other extra clips, and the FBX exports. The supplied GLBs' texture coordinates are flipped vertically (FBX convention), which shows as a patchwork of texture pieces; the build flips them back."
     }
   ],
   "models": [
@@ -504,6 +521,86 @@
         "bytes": 5584
       },
       "build": "tools/assets/build-batch-c.sh <extracted Batch C folder>",
+      "storage": "public"
+    },
+    {
+      "id": "tripo-person-man-jacket",
+      "file": "public/assets/models/people/person-man-jacket.glb",
+      "pack": "driving-practice-tripo-people",
+      "sourceFile": "Animated_GLBS/pedestrian_male_01.glb",
+      "use": "Animated people: every person who is part of an exercise and the background people nearest the car (within 50 m, at most two at a time of each look); everyone else keeps the light drawn figures",
+      "modifications": [
+        "Clips kept: Walk, Idle, LookLeft, LookRight",
+        "Texture coordinates flipped vertically",
+        "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+      ],
+      "stats": {
+        "triangles": 9336,
+        "materials": 1,
+        "bytes": 969708
+      },
+      "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
+      "storage": "public"
+    },
+    {
+      "id": "tripo-person-man-zip-jacket",
+      "file": "public/assets/models/people/person-man-zip-jacket.glb",
+      "pack": "driving-practice-tripo-people",
+      "sourceFile": "Animated_GLBS/pedestrian_male_02.glb",
+      "use": "Animated people: every person who is part of an exercise and the background people nearest the car (within 50 m, at most two at a time of each look); everyone else keeps the light drawn figures",
+      "modifications": [
+        "Clips kept: Walk, Idle, LookLeft, LookRight",
+        "Texture coordinates flipped vertically",
+        "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+      ],
+      "stats": {
+        "triangles": 7549,
+        "materials": 1,
+        "bytes": 799804
+      },
+      "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
+      "storage": "public"
+    },
+    {
+      "id": "tripo-person-woman-jacket",
+      "file": "public/assets/models/people/person-woman-jacket.glb",
+      "pack": "driving-practice-tripo-people",
+      "sourceFile": "Animated_GLBS/pedestrian_woman_04.glb",
+      "use": "Animated people: every person who is part of an exercise and the background people nearest the car (within 50 m, at most two at a time of each look); everyone else keeps the light drawn figures",
+      "modifications": [
+        "Clips kept: Walk, Idle, LookLeft, LookRight",
+        "Texture coordinates flipped vertically",
+        "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+      ],
+      "stats": {
+        "triangles": 7323,
+        "materials": 1,
+        "bytes": 843396
+      },
+      "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
+      "storage": "public"
+    },
+    {
+      "id": "tripo-person-older-man-coat",
+      "file": "public/assets/models/people/person-older-man-coat.glb",
+      "pack": "driving-practice-tripo-people",
+      "sourceFile": "Animated_GLBS/pedestrian_adult_05.glb",
+      "use": "Animated people: every person who is part of an exercise and the background people nearest the car (within 50 m, at most two at a time of each look); everyone else keeps the light drawn figures",
+      "modifications": [
+        "Clips kept: Walk, Idle, LookLeft, LookRight",
+        "Texture coordinates flipped vertically",
+        "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+      ],
+      "stats": {
+        "triangles": 6082,
+        "materials": 1,
+        "bytes": 728080
+      },
+      "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
       "storage": "public"
     }
   ]

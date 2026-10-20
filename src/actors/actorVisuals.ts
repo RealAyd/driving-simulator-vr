@@ -31,7 +31,9 @@ export function pedestrianFigure(ped:Pedestrian,groundAt:(x:number,z:number)=>nu
       // Facing the way they walk to the kerb (if they do), then across.
       const to=ped.approaching?ped.def.waitAt:ped.def.crossTo,from=ped.approaching?ped.position:ped.def.waitAt;
       const dx=to.x-from.x,dz=to.z-from.z;
-      return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading:Math.atan2(dx,-dz),stride:walked,walking:ped.state==='crossing'||ped.approaching};
+      // Before stepping out they look along the road (right, the nearer traffic in the UK).
+      return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading:Math.atan2(dx,-dz),stride:walked,walking:ped.state==='crossing'||ped.approaching,
+        ...(ped.state==='preparing'?{look:'right' as const}:{})};
     }
   };
 }

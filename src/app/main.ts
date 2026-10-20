@@ -16,6 +16,7 @@ import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
 import {Bus,BUS_SIZE} from '../actors/bus';
 import {layoutCrowd,personPose,type Person} from '../world/crowd';
 import {PeopleRenderer} from '../world/peopleMesh';
+import {AnimatedPeople} from '../world/animatedPeople';
 import {layoutSignage,type SignPlan} from '../world/signage';
 import {placeLabel,type PlaceLabel} from '../world/placeLabel';
 import {buildSignage,type BuiltSignage} from '../world/signageMesh';
@@ -174,6 +175,7 @@ export async function boot():Promise<void>{
   let signage:BuiltSignage|null=null;
   let crowd:Person[]=[];
   let people!:PeopleRenderer;
+  let animatedPeople:AnimatedPeople|null=null;
   /** Street furniture models (asset Batch A); null until loaded. */
   let streetModels:StreetModels|null=null;
   const dressLocation=()=>{
@@ -197,6 +199,7 @@ export async function boot():Promise<void>{
     // Background people on the pavements (scenery: no colliders, never in the road, never assessed).
     crowd=layoutCrowd(place,layout,signPlan);
     people=new PeopleRenderer(scene,world.root);
+    people.animated=animatedPeople;
     for(const p of crowd)people.add({id:p.id,look:p.look,pose:t=>personPose(p,t)});
     const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
     staticObstacles=new StaticObstacles(colliders);
@@ -210,6 +213,8 @@ export async function boot():Promise<void>{
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
+  // Animated people load in the background: the light figures are drawn until they are ready.
+  void AnimatedPeople.load(scene).then(a=>{animatedPeople=a;if(people)people.animated=a});
   const [loadedParked,roadUserModels,loadedStreet]=await Promise.all([loadCarModels(scene),Promise.all(ROAD_USER_CAR_MODELS.map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene)]);
   // Other road users' cars alternate between the models that loaded (simple shapes if none did).
   const roadUserCars=roadUserModels.filter((m):m is CarModel=>m!==null);
@@ -1211,6 +1216,7 @@ export async function boot():Promise<void>{
     byId('about-models').textContent=[
       roadUserCars.length?`${roadUserCars.map(m=>m.spec.id).join(' and ')} (asset Batch B) for other cars`:'simple car shapes (model not loaded)',
       streetModels?.available.length?`street furniture (asset Batch A): ${streetModels.available.join(', ')}`:'drawn street furniture',
+      animatedPeople?`animated people (owner's Tripo characters): ${animatedPeople.capacity} copies, used near the car and for exercise pedestrians`:'drawn people (animated models not loaded yet)',
       props.available.size?`scenery: ${[...props.available].map(id=>PROP_ASSETS[id]?.storage==='private'?`${id} (licensed, private)`:id).join(', ')}`:'no scenery models in this build'
     ].join('; ');
     byId('about-mirrors').textContent=`${mirrors.filter(m=>m.isActive).length} of 3 rendering now; ${quality.mirrorResolution} px, every ${quality.mirrorUpdateInterval} frame${quality.mirrorUpdateInterval===1?'':'s'} (every frame for the mirror you are looking at)`;
@@ -1301,7 +1307,7 @@ export async function boot():Promise<void>{
     /** Diagnostics (review screenshots): put the car at a point on the road, stationary. Not a driving feature. */
     placeCar:(x:number,z:number,headingDeg:number)=>{vehicle.setSpawn({position:{x,y:0,z},heading:degToRad(headingDeg)});vehicle.reset()},
     /** Diagnostics: background people (where each is at the current simulated time) and the figures drawn. */
-    people:()=>({drawn:people.ids(),crowd:crowd.map(p=>({id:p.id,kind:p.kind,...personPose(p,clock.time)}))}),
+    people:()=>({drawn:people.ids(),animated:[...people.animatedIds],animatedModelsLoaded:!!animatedPeople,crowd:crowd.map(p=>({id:p.id,kind:p.kind,...personPose(p,clock.time)}))}),
     /** The location label as shown. */
     place:()=>lastPlace,
     scenario:()=>runtime?.scenario.id??null,

@@ -1,6 +1,10 @@
 import {Color3,StandardMaterial,type Mesh,type Scene,type TransformNode} from '../engine/babylon';
 import {Geometry,type RGB,type V3} from './streetscapeMesh';
 import type {Appearance,FigurePose} from './crowd';
+import type {AnimatedPeople} from './animatedPeople';
+
+/** People within this distance of the car are drawn as animated models when there is a free copy. */
+const ANIMATED_RANGE=50;
 
 /**
  * Project-owned low-poly people, drawn as thin instances of three shared
@@ -98,14 +102,28 @@ export class PeopleRenderer{
   remove(id:string):void{this.figures.delete(id);this.dirtyColours=true}
   ids():string[]{return [...this.figures.keys()]}
 
+  /** Rigged, animated models for exercise figures and the people nearest the car (set once they have loaded). */
+  animated:AnimatedPeople|null=null;
+  /** Ids drawn by the animated models in the last update. */
+  animatedIds=new Set<string>();
+
   /** Places every figure for simulated time t; people further than `range` from `near` are not drawn. */
   update(t:number,near?:{x:number;z:number},range=140):void{
-    const list:Array<{f:Figure;pose:FigurePose}>=[];
+    let list:Array<{f:Figure;pose:FigurePose}>=[];
     for(const f of this.figures.values()){
       if(!(f.visible?.()??true))continue;
       const pose=f.pose(t);
       if(near&&Math.hypot(pose.x-near.x,pose.z-near.z)>range)continue;
       list.push({f,pose});
+    }
+    if(this.animated&&near){
+      // Exercise figures always, then the nearest people within ANIMATED_RANGE.
+      const d=(p:FigurePose)=>Math.hypot(p.x-near.x,p.z-near.z);
+      const wanted=list.filter(({f,pose})=>f.id.startsWith('actor-')||d(pose)<ANIMATED_RANGE)
+        .sort((a,b)=>Number(b.f.id.startsWith('actor-'))-Number(a.f.id.startsWith('actor-'))||d(a.pose)-d(b.pose))
+        .map(({f,pose})=>({id:f.id,height:f.look.height,pose,priority:f.id.startsWith('actor-')}));
+      this.animatedIds=this.animated.update(wanted,t);
+      list=list.filter(({f})=>!this.animatedIds.has(f.id));
     }
     const key=list.map(x=>x.f.id).join();
     if(key!==this.drawnKey){this.drawnKey=key;this.dirtyColours=true}

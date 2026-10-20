@@ -17,7 +17,9 @@ import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,surfaceAt}
 
 export type RGB=[number,number,number];
 export interface Appearance{top:RGB;legs:RGB;skin:RGB;hair:RGB;height:number;build:number;coat:number;hair_style:0|1|2}
-export interface FigurePose{x:number;y:number;z:number;heading:number;stride:number;walking:boolean}
+export interface FigurePose{x:number;y:number;z:number;heading:number;stride:number;walking:boolean;
+  /** Standing and looking along the road (for example before crossing, or for the bus). */
+  look?:'left'|'right'}
 export interface Walker{kind:'walker';id:string;a:Vec2;b:Vec2;y:number;speed:number;offset:number;look:Appearance}
 export interface Stander{kind:'stander';id:string;x:number;z:number;y:number;heading:number;look:Appearance}
 export type Person=Walker|Stander;
@@ -42,7 +44,8 @@ export function appearance(seed:number):Appearance{
 
 /** Where a person is at simulated time t (walkers go back and forth along their stretch of pavement). */
 export function personPose(p:Person,t:number):FigurePose{
-  if(p.kind==='stander')return {x:p.x,y:p.y,z:p.z,heading:p.heading,stride:0,walking:false};
+  // People waiting look along the road now and then (2 s in every 9 s), each at their own moment.
+  if(p.kind==='stander'){const c=((t+p.x*7.3)%9+9)%9;return {x:p.x,y:p.y,z:p.z,heading:p.heading,stride:0,walking:false,...(c<2?{look:c<1?'right' as const:'left' as const}:{})}}
   const dx=p.b.x-p.a.x,dz=p.b.z-p.a.z,L=Math.hypot(dx,dz)||1;
   const travelled=p.offset+p.speed*t;
   const s=((travelled%(2*L))+2*L)%(2*L);
