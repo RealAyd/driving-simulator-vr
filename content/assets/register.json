@@ -141,16 +141,16 @@
       "title": "Batch A recoloured buses (single- and double-decker, lightweight legacy and populated QA versions)",
       "author": "Derivatives of bus models previously supplied by the project owner, with Tripo-generated passengers",
       "source": "Same pack (Driving_Practice_Batch_A_Complete_6.zip), received 2026-10-19",
-      "licence": "Unconfirmed: the pack README says to use them under the rights of the original assets they derive from",
+      "licence": "The pack README says the recoloured buses derive from bus models the project owner supplied earlier (with Tripo passengers) and are to be used under those originals' rights. The project owner confirmed on 2026-10-19 that the Batch A models are theirs to publish, and on 2026-10-20 asked for the red buses to be used in the app.",
       "licenceUrl": null,
-      "redistributionAllowed": false,
+      "redistributionAllowed": true,
       "attributionRequired": false,
       "contents": [
         "uk-single-decker-bright-red (lightweight legacy 0.34 MB, populated 18.8 MB)",
         "uk-double-decker-bright-red (lightweight legacy 0.37 MB, populated 18.9 MB)"
       ],
-      "storage": "private",
-      "notes": "Not used or shipped: rights unconfirmed, the populated versions are far too large for a phone (about 266,000 vertices, 24 materials), and bright red London-style buses do not match Brentwood's operators. The procedural bus stays."
+      "storage": "public: the two lightweight versions, rebuilt (below); the populated versions are not stored",
+      "notes": "Shipped (2026-10-20): the lightweight single- and double-decker, as every bus in the exercises (the drawn bus remains only as a fallback). Not used: the populated versions (about 18.8 MB, 266,000 vertices each), the boarding figure and the boarding, alighting and door clips. The buses are bright red, London-style; the project owner chose them over Brentwood operators' liveries."
     },
     {
       "id": "driving-practice-batch-b-cars",
@@ -528,6 +528,44 @@
         "bytes": 728080
       },
       "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-a-bus-single-decker-red",
+      "file": "public/assets/models/vehicles/batch-a-bus-single-decker-red.glb",
+      "pack": "driving-practice-batch-a-buses",
+      "sourceFile": "glb/uk-single-decker-bright-red-lightweight-legacy.glb",
+      "use": "Every single-deck bus: the bus waiting at the Kings Road stop and the eastbound High Street bus in Brentwood",
+      "modifications": [
+        "Boarding figure (entry-* nodes) removed; only the wheels-rolling clip kept",
+        "glTF-Transform 4.5.1: prune, dedup, quantize (tools/assets/optimise-bus.mjs)",
+        "At load: StandardMaterial; scaled uniformly to the bus's 11.5 m collision length; wheels turned by distance driven; the simulator's indicator lamps added"
+      ],
+      "stats": {
+        "triangles": 7410,
+        "materials": 8,
+        "bytes": 202128
+      },
+      "build": "tools/assets/build-batch-a-buses.sh <extracted Batch A folder>",
+      "storage": "public"
+    },
+    {
+      "id": "batch-a-bus-double-decker-red",
+      "file": "public/assets/models/vehicles/batch-a-bus-double-decker-red.glb",
+      "pack": "driving-practice-batch-a-buses",
+      "sourceFile": "glb/uk-double-decker-bright-red-lightweight-legacy.glb",
+      "use": "The westbound High Street bus in Brentwood (scenario bus deck: double)",
+      "modifications": [
+        "Boarding figure (entry-* nodes) removed; only the wheels-rolling clip kept",
+        "glTF-Transform 4.5.1: prune, dedup, quantize (tools/assets/optimise-bus.mjs)",
+        "At load: StandardMaterial; scaled uniformly to the bus's 11.5 m collision length; wheels turned by distance driven; the simulator's indicator lamps added"
+      ],
+      "stats": {
+        "triangles": 9282,
+        "materials": 8,
+        "bytes": 221100
+      },
+      "build": "tools/assets/build-batch-a-buses.sh <extracted Batch A folder>",
       "storage": "public"
     }
   ]

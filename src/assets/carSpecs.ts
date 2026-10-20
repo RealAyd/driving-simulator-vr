@@ -34,6 +34,16 @@ export const CAR_MODELS={
 
 export type CarModelId=keyof typeof CAR_MODELS;
 
+/**
+ * Red buses (asset Batch A, the owner's): the lightweight single- and double-decker. They face −Z (no turn), are
+ * scaled to the bus's collision length, and their wheels-rolling clip (one turn in 2 s, 0.47 m wheels) turns the
+ * wheels backwards for forward travel, hence the negative distance per loop. No paint material: they stay red.
+ */
+export const BUS_MODELS={
+  single:{id:'batch-a-bus-single-decker-red',url:'assets/models/vehicles/batch-a-bus-single-decker-red.glb',parkedUrl:'assets/models/vehicles/batch-a-bus-single-decker-red.glb',paintMaterial:'(none)',yawOffset:0,wheelLoopMetres:-2.953,length:11.26,width:3.12,height:3.2},
+  double:{id:'batch-a-bus-double-decker-red',url:'assets/models/vehicles/batch-a-bus-double-decker-red.glb',parkedUrl:'assets/models/vehicles/batch-a-bus-double-decker-red.glb',paintMaterial:'(none)',yawOffset:0,wheelLoopMetres:-2.953,length:11.26,width:3.12,height:4.21}
+} as const satisfies Record<string,CarModelSpec>;
+
 /** The models used for other road users' cars (alternating), and the one used when only one is wanted. */
 export const ROAD_USER_CAR_MODELS:readonly CarModelSpec[]=[CAR_MODELS['batch-b-compact-hatchback'],CAR_MODELS['batch-b-saloon']];
 export const CAR_MODEL:CarModelSpec=ROAD_USER_CAR_MODELS[0]!;

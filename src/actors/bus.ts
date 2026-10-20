@@ -3,7 +3,7 @@ import {pointAtAlong} from '../world/roadGeometry';
 import {pointToBox} from '../world/collisions';
 import type {LearnerFootprint} from './passingVehicle';
 
-/** A generic single-deck bus (no operator's livery), metres. */
+/** A bus's footprint and the drawn bus's height (metres): the red bus models are scaled to this length. */
 export const BUS_SIZE={halfWidth:1.275,halfLength:5.75,height:3.05};
 /** Gentle acceleration from a stop and planned braking into one (m/s²). */
 const ACCELERATION=.9,PLANNED_DECEL=1.1;

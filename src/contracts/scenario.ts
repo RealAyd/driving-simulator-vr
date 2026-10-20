@@ -82,7 +82,10 @@ export const BusRunSchema=z.object({
   cruiseMph:z.number().min(5).max(40),
   /** At `to`: 'stay' (stands there) or 'leave' (gone from the scene, as if out of sight). */
   end:z.enum(['stay','leave']),
-  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#e9ebee')
+  /** Colour of the drawn bus, used only if the bus models do not load (the models are red). */
+  colour:z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#e9ebee'),
+  /** Single- or double-decker. Both have the same footprint; the double-decker stands 4.2 m tall. */
+  deck:z.enum(['single','double']).default('single')
 }).strict();
 
 export const ActorSchema=z.discriminatedUnion('kind',[PedestrianActorSchema,FollowingVehicleActorSchema,PassingVehicleActorSchema]);

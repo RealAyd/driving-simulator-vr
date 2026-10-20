@@ -9,6 +9,7 @@
  "buses": [
   {
    "id": "bus-westbound",
+   "deck": "double",
    "roadId": "high-street",
    "direction": "against",
    "from": 340.2,

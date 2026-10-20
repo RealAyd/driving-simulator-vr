@@ -30,5 +30,28 @@ rebuild `1984134`): draw calls 66 → 58 (Brentwood), 73 → 71 (Kings Road), 75
   says each needs site verification; markings are drawn from the map data.
 * Bench, litter bin, bollard, railings, boundary wall, telephone kiosk, timetable display: no mapped
   positions yet. Placing them needs map data or a survey of the selected streets.
-* Buses: rights unconfirmed, the populated versions are about 18.8 MB each (about 266,000 vertices), and
-  bright red London-style buses do not match Brentwood's operators. The drawn bus stays.
+* Buses (until 2026-10-20): rights unconfirmed, and the populated versions are about 18.8 MB each (about
+  266,000 vertices). Now in use: see below.
+
+## Red buses (2026-10-20)
+
+The project owner asked for the red buses and confirmed the Batch A models are theirs. The **lightweight**
+single- and double-decker are shipped. The **populated** versions are not: they are about 18.8 MB each.
+
+| Model | Triangles | File | Used for |
+| --- | --- | --- | --- |
+| `batch-a-bus-single-decker-red` | 7,410 | 202 KB | Every bus by default: the bus at the Kings Road stop, the eastbound High Street bus |
+| `batch-a-bus-double-decker-red` | 9,282 | 221 KB | The westbound High Street bus (`"deck": "double"` in the scenario) |
+
+* `tools/assets/build-batch-a-buses.sh` rebuilds them from the pack. The build removes the blocky boarding
+  figure and every clip except wheels-rolling, then prunes, dedups and quantises.
+* Size: each model is scaled to the bus's 11.5 m collision length, a scale of 1.02. Footprints, stops, timing
+  and the Kings Road restricted view are unchanged.
+* The single-decker stands 3.27 m tall, against 3.05 m for the drawn bus. The double-decker stands 4.3 m tall.
+* Wheels turn with the distance driven. The simulator's flashing indicator lamps are kept on the model.
+* If a model does not load, the other deck is used. If neither loads, the drawn bus is used, in the scenario's
+  colour.
+* The buses are bright red, London-style. The project owner chose them over Brentwood operators' liveries.
+* Screenshots (diagnostic camera at eye height):
+  * `batch-a/red-single-decker-kings-road.png`
+  * `batch-a/red-double-decker-high-street.png`

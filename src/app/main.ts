@@ -27,7 +27,7 @@ import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
 import {ROAD_USER_CAR_MODELS} from '../assets/carSpecs';
-import {PANEL_VAN,type CarModelId} from '../assets/carSpecs';
+import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
 import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
@@ -215,7 +215,9 @@ export async function boot():Promise<void>{
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
   // Animated people load in the background: the light figures are drawn until they are ready.
   void AnimatedPeople.load(scene).then(a=>{animatedPeople=a;if(people)people.animated=a});
-  const [loadedParked,roadUserModels,loadedStreet]=await Promise.all([loadCarModels(scene),Promise.all(ROAD_USER_CAR_MODELS.map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene)]);
+  const [loadedParked,roadUserModels,loadedStreet,singleDecker,doubleDecker]=await Promise.all([loadCarModels(scene),Promise.all(ROAD_USER_CAR_MODELS.map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)]);
+  // Red buses (asset Batch A): each deck falls back to the other, then to the drawn bus.
+  const busModels={single:singleDecker??doubleDecker,double:doubleDecker??singleDecker};
   // Other road users' cars alternate between the models that loaded (simple shapes if none did).
   const roadUserCars=roadUserModels.filter((m):m is CarModel=>m!==null);
   const carModel=roadUserCars[0]??null;
@@ -361,7 +363,7 @@ export async function boot():Promise<void>{
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
       ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,roadUserModel(i+1),2*p.size.halfLength)),
-      ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time))
+      ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time,busModels[b.def.deck]))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
     const guided=!!scenario.guide&&showGuide;
@@ -1215,6 +1217,7 @@ export async function boot():Promise<void>{
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
     byId('about-models').textContent=[
       roadUserCars.length?`${roadUserCars.map(m=>m.spec.id).join(' and ')} (asset Batch B) for other cars`:'simple car shapes (model not loaded)',
+      busModels.single||busModels.double?`red buses (asset Batch A): ${[singleDecker&&'single-decker',doubleDecker&&'double-decker'].filter(Boolean).join(' and ')}`:'drawn buses (models not loaded)',
       streetModels?.available.length?`street furniture (asset Batch A): ${streetModels.available.join(', ')}`:'drawn street furniture',
       animatedPeople?`animated people (owner's Tripo characters): ${animatedPeople.capacity} copies, used near the car and for exercise pedestrians`:'drawn people (animated models not loaded yet)',
       props.available.size?`scenery: ${[...props.available].map(id=>PROP_ASSETS[id]?.storage==='private'?`${id} (licensed, private)`:id).join(', ')}`:'no scenery models in this build'
@@ -1331,6 +1334,8 @@ export async function boot():Promise<void>{
     steering:()=>steeringMode,
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
+    /** The bus models loaded (red buses, asset Batch A). */
+    busModels:()=>[singleDecker,doubleDecker].filter(m=>m).map(m=>m!.spec.id),
     sceneryModels:()=>[...props.available],
     /** Street furniture models in use (asset Batch A). */
     streetModels:()=>streetModels?.available??[],

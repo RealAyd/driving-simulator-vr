@@ -25,6 +25,8 @@ test('G15: Brentwood shows its street names, signs, bus stops, people and buses;
   expect(signs.shelters.length).toBe(5);
   const people=await read(page,'people()');
   expect(people.crowd.length).toBeGreaterThan(20);
+  // Every bus is drawn with the red bus models (asset Batch A): both decks load.
+  expect(await read(page,'busModels()')).toEqual(['batch-a-bus-single-decker-red','batch-a-bus-double-decker-red']);
   // Buses: the westbound one waits at Coach Stop E, then pulls away; the eastbound one is on its way.
   // (Read once the first simulation steps have run: on a slow machine the page can be read before them.)
   await expect.poll(async()=>(await read(page,'buses()')).map((b:any)=>b.state),{timeout:120_000,intervals:[500]}).toEqual(['waiting','driving']);

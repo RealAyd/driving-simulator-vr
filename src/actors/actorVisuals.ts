@@ -142,21 +142,34 @@ function busBody(paint:RGB,W:number,L:number,H:number):{body:Shapes;lamps:Shapes
   return {body:g,lamps};
 }
 
-/** The bus as drawn: hidden once it has left; indicators flash (1.5 Hz) while it signals to pull away. */
-export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts').Pose;visible:boolean;indicating:boolean;def:{colour:string}},size:{halfWidth:number;halfLength:number;height:number},time:()=>number){
+/**
+ * The bus as drawn: the red bus model (single- or double-decker) when loaded, scaled to the bus's length, its wheels
+ * turning with the distance driven; otherwise simple shapes in the bus's colour. Hidden once it has left;
+ * indicators flash (1.5 Hz) while it signals to pull away.
+ */
+export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts').Pose;visible:boolean;indicating:boolean;def:{colour:string}},size:{halfWidth:number;halfLength:number;height:number},time:()=>number,model:CarModel|null=null){
   const root=new TransformNode(`actor-${bus.id}`,scene);
   const c=Color3.FromHexString(bus.def.colour);
-  const m=mat(scene,`${bus.id}-bus`,new Color3(1,1,1));
-  m.backFaceCulling=false;m.twoSidedLighting=true;
   const {body,lamps}=busBody([c.r,c.g,c.b],size.halfWidth*2,size.halfLength*2,size.height);
-  body.mesh(`${bus.id}-bus-body`,scene,m,root);
+  const copy=model?.instantiate(root,bus.id,bus.def.colour,size.halfLength*2)??null;
+  if(!copy){
+    const m=mat(scene,`${bus.id}-bus`,new Color3(1,1,1));
+    m.backFaceCulling=false;m.twoSidedLighting=true;
+    body.mesh(`${bus.id}-bus-body`,scene,m,root);
+  }
   const lampMat=mat(scene,`${bus.id}-bus-lamps`,new Color3(.35,.22,.05));
   lampMat.backFaceCulling=false;
   const lampMesh=lamps.mesh(`${bus.id}-bus-lamps`,scene,lampMat,root);
+  let travelled=0,last={...bus.pose.position};
   return {
     update(){
       root.setEnabled(bus.visible);
       applyPose(root,bus.pose);
+      if(copy&&model){
+        travelled+=Math.hypot(bus.pose.position.x-last.x,bus.pose.position.z-last.z);
+        last={...bus.pose.position};
+        model.roll(copy,travelled);
+      }
       const lit=bus.indicating&&Math.floor(time()*3)%2===0;
       lampMat.emissiveColor.set(lit?1:0,lit?.6:0,lit?.08:0);
       lampMesh.isVisible=true;
