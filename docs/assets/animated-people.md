@@ -19,6 +19,15 @@ four rebuilt models are (`public/assets/models/people/`).
   measures where anyone is looking.
 - Each person always gets the same look, chosen from their id.
 
+## Height correction (2026-10-20)
+
+The first version drew people about 1.8 times too tall (around 3 m: the zebra pedestrian looked like a giant
+next to the houses). Each character's size is carried by its skeleton, which the mesh's own bounds do not
+include. Each model's height is now measured as drawn (skinned, Idle pose: 1.68 to 1.79 m) when it loads, and every
+person is scaled from that to their own height (1.58 to 1.86 m; the zebra pedestrian is 1.72 m). G13 checks the
+drawn heights: the waiting pedestrian is 1.72 m, and every animated person is between 1.3 and 1.95 m.
+`docs/assets/animated-people/zebra-ped-scaled.png` shows the corrected scale next to a Belisha beacon and the van.
+
 ## Build (`tools/assets/build-people.sh`, `tools/assets/optimise-person.mjs`)
 
 | Model | Source | Triangles | Bytes |

@@ -4,7 +4,7 @@ import {layoutStreetscape} from '../../src/world/streetscape';
 import {boxesOverlap,StaticObstacles,type Box} from '../../src/world/obstacles';
 import {pointToBox} from '../../src/world/collisions';
 import {roadHalfWidth,sampleRoad} from '../../src/world/roadGeometry';
-import {CAR_MODELS} from '../../src/assets/carSpecs';
+import {CAR_MODELS,parkedSize} from '../../src/assets/carSpecs';
 import {SteeringAssist} from '../../src/vehicle/steeringAssist';
 import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
 import locationJson from '../../content/locations/residential-moving-off.json';
@@ -56,18 +56,20 @@ describe('moving-off street: layout',()=>{
         expect(boxesOverlap(toBox(car),toBox(s)),`${car.id} / ${s.id}`).toBe(false);
   });
 
-  it('gives each parked car a collision box the size of its model',()=>{
+  it('gives each parked car a collision box the size of its model as drawn',()=>{
+    const close=(a:number[],b:number[],id:string)=>a.forEach((v,i)=>expect(v,id).toBeCloseTo(b[i]!,3));
     for(const b of place.blocks.filter(b=>b.kind==='parked-vehicle')){
-      const spec=CAR_MODELS[b.vehicleModel as keyof typeof CAR_MODELS];
-      expect(spec,b.id).toBeTruthy();
-      expect([b.size.width,b.size.depth,b.size.height]).toEqual([spec.width,spec.length,spec.height]);
+      const model=CAR_MODELS[b.vehicleModel as keyof typeof CAR_MODELS];
+      expect(model,b.id).toBeTruthy();
+      const spec=parkedSize(model);
+      close([b.size.width,b.size.depth,b.size.height],[spec.width,spec.length,spec.height],b.id);
       // At the kerb, wheels on the carriageway.
       expect(sampleRoad(road,b.position.x,b.position.z).distance+b.size.width/2).toBeLessThanOrEqual(half);
     }
     for(const car of layout.cars){
       const box=layout.colliders.find(c=>c.id===car.id)!;
-      const spec=CAR_MODELS[car.model];
-      expect([box.size.width,box.size.depth]).toEqual([spec.width,spec.length]);
+      const spec=parkedSize(CAR_MODELS[car.model]);
+      close([box.size.width,box.size.depth],[spec.width,spec.length],car.id);
     }
   });
 

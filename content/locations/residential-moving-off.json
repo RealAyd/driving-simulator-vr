@@ -107,126 +107,126 @@
     {
       "id": "parked-car-ahead",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-1",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#c9ccd1",
       "position": {
-        "x": -2.15,
+        "x": -2.131,
         "z": -13
       },
       "size": {
-        "width": 1.81,
-        "depth": 4.22,
-        "height": 1.18
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       }
     },
     {
       "id": "parked-car-far-behind",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-2",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#8e1f1f",
       "position": {
-        "x": 2.36,
+        "x": 2.131,
         "z": 60
       },
       "size": {
-        "width": 1.64,
-        "depth": 3.31,
-        "height": 1.15
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-behind-east",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-2",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#1f2f4f",
       "position": {
-        "x": 2.36,
+        "x": 2.131,
         "z": 92
       },
       "size": {
-        "width": 1.64,
-        "depth": 3.31,
-        "height": 1.15
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-behind-west",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-1",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#3f444b",
       "position": {
-        "x": -2.145,
+        "x": -2.131,
         "z": 100
       },
       "size": {
-        "width": 1.81,
-        "depth": 4.22,
-        "height": 1.18
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       }
     },
     {
       "id": "parked-car-ahead-east-1",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-suv",
+      "vehicleModel": "batch-b-saloon",
       "colour": "#f1f1ee",
       "position": {
-        "x": 2.02,
+        "x": 2.176,
         "z": -48
       },
       "size": {
-        "width": 2.12,
-        "depth": 4.2,
-        "height": 1.53
+        "width": 1.807,
+        "depth": 4.6,
+        "height": 1.369
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-ahead-east-2",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-1",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#2f4a3a",
       "position": {
-        "x": 2.145,
+        "x": 2.131,
         "z": -70
       },
       "size": {
-        "width": 1.81,
-        "depth": 4.22,
-        "height": 1.18
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-ahead-east-3",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-1",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#6d737b",
       "position": {
-        "x": 2.145,
+        "x": 2.131,
         "z": -112
       },
       "size": {
-        "width": 1.81,
-        "depth": 4.22,
-        "height": 1.18
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-ahead-east-4",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-2",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#17191c",
       "position": {
-        "x": 2.36,
+        "x": 2.131,
         "z": -128
       },
       "size": {
-        "width": 1.64,
-        "depth": 3.31,
-        "height": 1.15
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     }

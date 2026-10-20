@@ -1307,7 +1307,7 @@ export async function boot():Promise<void>{
     /** Diagnostics (review screenshots): put the car at a point on the road, stationary. Not a driving feature. */
     placeCar:(x:number,z:number,headingDeg:number)=>{vehicle.setSpawn({position:{x,y:0,z},heading:degToRad(headingDeg)});vehicle.reset()},
     /** Diagnostics: background people (where each is at the current simulated time) and the figures drawn. */
-    people:()=>({drawn:people.ids(),animated:[...people.animatedIds],animatedModelsLoaded:!!animatedPeople,crowd:crowd.map(p=>({id:p.id,kind:p.kind,...personPose(p,clock.time)}))}),
+    people:()=>({drawn:people.ids(),animated:[...people.animatedIds],animatedModelsLoaded:!!animatedPeople,modelHeights:animatedPeople?[...animatedPeople.modelHeights]:[],animatedHeights:animatedPeople?.drawnHeights()??[],crowd:crowd.map(p=>({id:p.id,kind:p.kind,...personPose(p,clock.time)}))}),
     /** The location label as shown. */
     place:()=>lastPlace,
     scenario:()=>runtime?.scenario.id??null,

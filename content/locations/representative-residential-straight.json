@@ -9,7 +9,7 @@
     {
       "title": "Authored placeholder layout",
       "licence": "Project-owned",
-      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements, 3.5–6.5 m front gardens). Houses, gardens, street furniture and the panel van are project-owned geometry (the van from src/world/streetscapeMesh.ts); parked cars use Quaternius LowPoly Cars (CC0). No external map data used."
+      "notes": "Dimensions chosen to resemble a typical UK residential street (3.2 m lanes, 2 m pavements, 3.5\u20136.5 m front gardens). Houses, gardens, street furniture and the panel van are project-owned geometry (the van from src/world/streetscapeMesh.ts); parked cars use Quaternius LowPoly Cars (CC0). No external map data used."
     }
   ],
   "reviewStatus": "unreviewed",
@@ -122,93 +122,93 @@
     {
       "id": "parked-car-behind-left",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-1",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#c81e1e",
       "position": {
-        "x": -2.15,
+        "x": -2.131,
         "z": 62
       },
       "size": {
-        "width": 1.81,
-        "depth": 4.22,
-        "height": 1.18
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       }
     },
     {
       "id": "parked-car-behind-left-2",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-2",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#3f444b",
       "position": {
-        "x": -2.36,
+        "x": -2.131,
         "z": 131
       },
       "size": {
-        "width": 1.64,
-        "depth": 3.31,
-        "height": 1.15
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       }
     },
     {
       "id": "parked-car-behind-left-3",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-suv",
+      "vehicleModel": "batch-b-saloon",
       "colour": "#f1f1ee",
       "position": {
-        "x": -2.02,
+        "x": -2.176,
         "z": 176
       },
       "size": {
-        "width": 2.12,
-        "depth": 4.2,
-        "height": 1.53
+        "width": 1.807,
+        "depth": 4.6,
+        "height": 1.369
       }
     },
     {
       "id": "parked-car-behind-right",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-1",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#1e4fc8",
       "position": {
-        "x": 2.15,
+        "x": 2.131,
         "z": 40
       },
       "size": {
-        "width": 1.81,
-        "depth": 4.22,
-        "height": 1.18
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-behind-right-2",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-suv",
+      "vehicleModel": "batch-b-saloon",
       "colour": "#6d737b",
       "position": {
-        "x": 2.02,
+        "x": 2.176,
         "z": 74
       },
       "size": {
-        "width": 2.12,
-        "depth": 4.2,
-        "height": 1.53
+        "width": 1.807,
+        "depth": 4.6,
+        "height": 1.369
       },
       "headingDeg": 180
     },
     {
       "id": "parked-car-behind-right-3",
       "kind": "parked-vehicle",
-      "vehicleModel": "quaternius-normal-car-2",
+      "vehicleModel": "batch-b-compact-hatchback",
       "colour": "#17191c",
       "position": {
-        "x": 2.36,
+        "x": 2.131,
         "z": 150
       },
       "size": {
-        "width": 1.64,
-        "depth": 3.31,
-        "height": 1.15
+        "width": 1.899,
+        "depth": 4.0,
+        "height": 1.319
       },
       "headingDeg": 180
     }

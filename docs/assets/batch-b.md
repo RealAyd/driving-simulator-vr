@@ -11,7 +11,7 @@ use in the published app and in this public repository (models mostly generated 
 | --- | --- | --- | --- | --- |
 | `batch-b-compact-hatchback` | `uk_car_03_compact_mini_white` | Other road users' cars: the zebra following car, alternate passing cars | 9,870 (from 16,638) | 194 KB |
 | `batch-b-saloon` | `uk_car_10_bmw_coupe_silver` | Alternate passing cars (for example the purple car when moving off) | 7,038 (from 10,582) | 159 KB |
-| `…-parked` versions | same | Parked-car mix on drives, alongside the Quaternius cars | 1,263 and 908 | 29 and 24 KB |
+| `…-parked` versions | same | Every parked car since 2026-10-20 (kerbside and on drives); they replaced the Quaternius cars, whose files are no longer shipped | 1,263 and 908 | 29 and 24 KB |
 
 * `tools/assets/build-batch-b-cars.sh` rebuilds them (weld, dedup, prune, simplify, quantise; parked
   versions through `tools/assets/simplify.mjs`).
@@ -19,6 +19,14 @@ use in the published app and in this public repository (models mostly generated 
   `Body.01`, keeps its colour). Road users are scaled to their collision length, as before.
 * Wheels: `WheelSpin_2s` turns the 0.32 m wheels four times (8.04 m of travel); it is held paused and
   turned by the distance each road user has moved (`CarModel.roll`), so the wheels match the speed.
+* Size: the models are drawn larger than the cars they show (the hatchback is 4.55 × 2.16 × 1.50 m with
+  mirrors; a real compact hatchback is about 4.0 m long). Road users are scaled to their 4.3 m collision length;
+  parked copies are scaled to 4.0 m (hatchback: 4.0 × 1.90 × 1.32 m) and 4.6 m (saloon: 4.6 × 1.81 × 1.37 m), and
+  their collision boxes match. Kerbside cars stand 0.12 m from the kerb (`batch-b/parked-moving-off-forward.png`).
+* Kerbside parked cars (2026-10-20): the wider cars come about 0.36 m further into the road than the narrow
+  Quaternius car they replaced on the right-hand side of the Moving off street. The purple car's route was moved
+  0.4 m towards the centre where it passes them (`content/scenarios/moving-off-safely.json`), keeping the tested
+  0.2 m clearance. Nothing else in the scenario changed.
 * If a model does not load, road users fall back to the other model, then to simple shapes.
 
 Cost, phone profile, main view without mirrors (headless software rendering), against Batch A alone:

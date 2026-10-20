@@ -19,22 +19,38 @@ export const PERSON_MODELS=[
   'assets/models/people/person-woman-jacket.glb',
   'assets/models/people/person-older-man-coat.glb'
 ] as const;
-/** The models' height in their own units (metres). */
-const MODEL_HEIGHT=.98;
+/** Used if a model's height cannot be measured (the four models stand 1.72 to 1.83 m). */
+const FALLBACK_HEIGHT=1.78;
 /** Walking speed the Walk clip was made for (one 1.1 s stride cycle): the clip advances with distance walked. */
 const CLIP_WALK_SPEED=1.3;
 /** Copies of each model (people drawn animated at once, at most this many per look). */
 const COPIES=2;
 
 type Clip='Walk'|'Idle'|'LookLeft'|'LookRight';
-interface Slot{model:number;node:TransformNode;inner:TransformNode;clips:Map<string,AnimationGroup>;playing:AnimationGroup|null;owner:string|null}
+interface Slot{model:number;height:number;node:TransformNode;inner:TransformNode;clips:Map<string,AnimationGroup>;playing:AnimationGroup|null;owner:string|null}
 
 export interface AnimatedFigure{id:string;height:number;pose:FigurePose;priority:boolean}
+
+/**
+ * Height of a skinned model as drawn: the skeleton's own scale (the armature carries the character's size) is only
+ * applied through the skin, so the mesh's unskinned bounds cannot be used.
+ */
+function measureHeight(inner:TransformNode,idle:AnimationGroup|undefined):number{
+  if(idle){idle.start(false,1);idle.pause();idle.goToFrame(idle.from)}
+  inner.computeWorldMatrix(true);
+  for(const m of inner.getChildMeshes()){m.computeWorldMatrix(true);m.skeleton?.prepare(true);m.refreshBoundingInfo({applySkeleton:true})}
+  const {min,max}=inner.getHierarchyBoundingVectors(true);
+  idle?.stop();
+  const h=max.y-min.y;
+  return Number.isFinite(h)&&h>.5&&h<3?h:FALLBACK_HEIGHT;
+}
 
 const hash=(s:string)=>{let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);return h>>>0};
 
 export class AnimatedPeople{
   private readonly slots:Slot[]=[];
+  /** Each model's standing height as drawn (metres, skinned, Idle pose): people are scaled from this to their own height. */
+  readonly modelHeights:number[]=[];
 
   private constructor(private readonly scene:Scene,containers:Array<AssetContainer|null>){
     containers.forEach((c,model)=>{
@@ -51,8 +67,9 @@ export class AnimatedPeople{
         // Copies' clips are renamed with the copy's prefix: keyed by the clip's own name.
         const prefix=`person-${model}-${k}-`;
         const clips=new Map(copy.animationGroups.map(g=>{g.stop();return [g.name.startsWith(prefix)?g.name.slice(prefix.length):g.name,g] as const}));
+        if(k===0)this.modelHeights[model]=measureHeight(inner,clips.get('Idle'));
         node.setEnabled(false);
-        this.slots.push({model,node,inner,clips,playing:null,owner:null});
+        this.slots.push({model,height:this.modelHeights[model]!,node,inner,clips,playing:null,owner:null});
       }
     });
   }
@@ -95,7 +112,7 @@ export class AnimatedPeople{
   private place(s:Slot,f:AnimatedFigure,t:number){
     s.node.setEnabled(true);
     applyPose(s.node,{position:{x:f.pose.x,y:f.pose.y,z:f.pose.z},heading:f.pose.heading});
-    s.inner.scaling.setAll(f.height/MODEL_HEIGHT);
+    s.inner.scaling.setAll(f.height/s.height);
     // Clip and the time within it: walking follows distance walked; standing idles, looking along the road now and then.
     const clip:Clip=f.pose.walking?'Walk':f.pose.look==='right'?'LookRight':f.pose.look==='left'?'LookLeft':'Idle';
     const g=s.clips.get(clip)??s.clips.get('Idle');
@@ -105,6 +122,15 @@ export class AnimatedPeople{
     const at=f.pose.walking?f.pose.stride/CLIP_WALK_SPEED:t+(hash(f.id)%97)/10;
     const loop=((at%length)+length)%length;
     g.goToFrame(g.from+(g.to-g.from)*loop/length);
+  }
+
+  /** Diagnostics: each animated person's drawn height (metres, as skinned this frame). */
+  drawnHeights():Array<{id:string;height:number}>{
+    return this.slots.filter(s=>s.owner).map(s=>{
+      for(const m of s.inner.getChildMeshes())m.refreshBoundingInfo({applySkeleton:true});
+      const {min,max}=s.node.getHierarchyBoundingVectors(true);
+      return {id:s.owner!,height:max.y-min.y};
+    });
   }
 
   dispose():void{for(const s of this.slots)s.node.dispose(false,true)}

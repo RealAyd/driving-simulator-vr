@@ -4,7 +4,7 @@ import type {AssetContainer} from '@babylonjs/core/assetContainer';
 import type {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
 import type {BaseTexture} from '@babylonjs/core/Materials/Textures/baseTexture';
 
-import {CAR_MODELS,type CarModelId,type CarModelSpec} from './carSpecs';
+import {CAR_MODELS,parkedSize,type CarModelId,type CarModelSpec} from './carSpecs';
 export {CAR_MODEL,CAR_MODELS,type CarModelSpec} from './carSpecs';
 
 /** The glTF PBR material properties we carry over (Babylon's PBRMaterial). */
@@ -116,6 +116,7 @@ export class CarModel{
     const holder=new TransformNode('bake',scene);
     holder.position.set(x,y,z);
     holder.rotation.y=-heading+this.spec.yawOffset;
+    holder.scaling.setAll(parkedSize(this.spec).scale);
     for(const root of entries.rootNodes)root.parent=holder;
     const paint=Color3.FromHexString(colour);
     const p=new Vector3(),n=new Vector3();
@@ -189,7 +190,7 @@ function bakeSection(scene:Scene,parent:TransformNode,name:string,cars:ParkedCar
   for(const car of cars){
     const model=models.get(car.model);
     if(model){model.bakeInto(g,scene,car.colour,car.x,car.y,car.z,car.heading);continue}
-    const spec=CAR_MODELS[car.model];
+    const spec=parkedSize(CAR_MODELS[car.model]);
     const box=VertexData.CreateBox({width:spec.width,depth:spec.length,height:spec.height*.85});
     const c=Color3.FromHexString(car.colour),base=g.positions.length/3;
     const cos=Math.cos(car.heading),sin=Math.sin(car.heading);

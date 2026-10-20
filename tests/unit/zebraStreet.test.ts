@@ -4,7 +4,7 @@ import {layoutStreetscape} from '../../src/world/streetscape';
 import {boxesOverlap,StaticObstacles,type Box} from '../../src/world/obstacles';
 import {pointToBox} from '../../src/world/collisions';
 import {roadHalfWidth,sampleRoad} from '../../src/world/roadGeometry';
-import {CAR_MODELS,PANEL_VAN} from '../../src/assets/carSpecs';
+import {CAR_MODELS,PANEL_VAN,parkedSize} from '../../src/assets/carSpecs';
 import {SteeringAssist} from '../../src/vehicle/steeringAssist';
 import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
 import locationJson from '../../content/locations/representative-residential-straight.json';
@@ -77,11 +77,12 @@ describe('zebra street: layout',()=>{
       expect(boxesOverlap(toBox(solid[i]!),toBox(solid[j]!)),`${solid[i]!.id} / ${solid[j]!.id}`).toBe(false);
   });
 
-  it('gives every parked vehicle a collision box the size of its model',()=>{
+  it('gives every parked vehicle a collision box the size of its model as drawn',()=>{
     for(const b of place.blocks.filter(b=>b.kind==='parked-vehicle')){
-      const spec=b.vehicleModel===PANEL_VAN.id?PANEL_VAN:CAR_MODELS[b.vehicleModel as keyof typeof CAR_MODELS];
+      const model=CAR_MODELS[b.vehicleModel as keyof typeof CAR_MODELS];
+      const spec=b.vehicleModel===PANEL_VAN.id?PANEL_VAN:model&&parkedSize(model);
       expect(spec,b.id).toBeTruthy();
-      expect([b.size.width,b.size.depth,b.size.height],b.id).toEqual([spec.width,spec.length,spec.height]);
+      [spec!.width,spec!.length,spec!.height].forEach((v,i)=>expect([b.size.width,b.size.depth,b.size.height][i],b.id).toBeCloseTo(v,3));
     }
   });
 

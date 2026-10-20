@@ -8,7 +8,7 @@ test.setTimeout(240_000);
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 const VIEWS=[['forward','forward'],['interior','interior-mirror'],['left-door','left-mirror'],['right-door','right-mirror'],['left-shoulder','left-shoulder'],['right-shoulder','right-shoulder']] as const;
 
-test('G13: the zebra street is dressed from every view with cleared assets; the van still hides the pedestrian; the cost is measured',async({page},testInfo)=>{
+test('G13: the zebra street is dressed from every view with cleared assets; the van still hides the pedestrian; people are drawn at human height; the cost is measured',async({page},testInfo)=>{
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   const downloads:Array<{url:string;bytes:number}>=[];
@@ -57,5 +57,11 @@ test('G13: the zebra street is dressed from every view with cleared assets; the 
   expect(downloads.filter(d=>d.url.includes('/licensed/'))).toEqual([]);
   testInfo.annotations.push({type:'scene cost (software rendering, not an iPhone)',description:JSON.stringify({stats,perf,draws,loaded})});
   console.log('SCENE',JSON.stringify({scenery,stats,perf,draws,loaded}));
+  // People are drawn at human height: the waiting pedestrian (1.72 m) and everyone animated, as skinned this frame.
+  await expect.poll(()=>read(page,'people().animatedModelsLoaded'),{timeout:60_000}).toBe(true);
+  await expect.poll(()=>read(page,'people().animated'),{timeout:30_000}).toContain('actor-pedestrian-1');
+  const heights:Array<{id:string;height:number}>=await read(page,'people().animatedHeights');
+  expect(heights.find(h=>h.id==='actor-pedestrian-1')!.height).toBeCloseTo(1.72,1);
+  for(const h of heights){expect(h.height,h.id).toBeGreaterThan(1.3);expect(h.height,h.id).toBeLessThan(1.95)}
   expect(errors).toEqual([]);
 });

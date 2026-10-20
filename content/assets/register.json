@@ -19,7 +19,8 @@
         "SportsCar2",
         "Taxi"
       ],
-      "storage": "public"
+      "storage": "public",
+      "notes": "No longer shipped (2026-10-20): every parked and moving car now uses the project owner's Batch B models (driving-practice-batch-b-cars); tools/assets/build-quaternius-cars.sh can rebuild the files."
     },
     {
       "id": "a3js-london-street-starter",
@@ -165,7 +166,7 @@
         "Cyclist with contact pose and urban bicycle (cyclist_QA/, unchanged from Batch B v0.2)"
       ],
       "storage": "public",
-      "notes": "Shipped: the compact hatchback (uk_car_03_compact_mini_white) and saloon (uk_car_10_bmw_coupe_silver), as other road users' cars and in the parked-car mix on drives. Sports, super and futuristic models and the Car 01 variants are not used. Cyclist QA files not used (the cyclist is 4.6 MB). See docs/assets/batch-b.md."
+      "notes": "Shipped: the compact hatchback (uk_car_03_compact_mini_white) and saloon (uk_car_10_bmw_coupe_silver), as other road users' cars and, since 2026-10-20, as every parked car (they replaced the Quaternius cars). Sports, super and futuristic models and the Car 01 variants are not used. Cyclist QA files not used (the cyclist is 4.6 MB). See docs/assets/batch-b.md."
     },
     {
       "id": "driving-practice-batch-c",
@@ -220,25 +221,6 @@
     }
   ],
   "models": [
-    {
-      "id": "quaternius-normal-car-1",
-      "file": "public/assets/models/vehicles/quaternius-normal-car-1.glb",
-      "pack": "quaternius-lowpoly-cars",
-      "sourceFile": "OBJ/NormalCar1.obj + NormalCar1.mtl",
-      "use": "Other road users' cars (moving-off purple car, zebra following car, Brentwood lead car); body tinted per road user",
-      "modifications": [
-        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0",
-        "glTF-Transform 4.5.1: weld, dedup, join (one primitive per material), prune, quantize (KHR_mesh_quantization)",
-        "At load: glTF PBR materials replaced with StandardMaterial of the same colour (cheaper on phones, lit like the rest of the scene); body material 'Blue' recoloured per road user; turned 180\u00b0 and scaled uniformly to the 4.3 m collision length"
-      ],
-      "stats": {
-        "triangles": 2954,
-        "materials": 6,
-        "bytes": 113240
-      },
-      "build": "tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar1",
-      "storage": "public"
-    },
     {
       "id": "a3js-london-terrace-house-low",
       "file": "public/assets/licensed/a3js-london-terrace-house-low.glb",
@@ -322,63 +304,6 @@
       "build": "TOOLS=<scratch folder> tools/assets/build-downtown.sh <extracted Downtown_City_UK_Starter folder> Building_Small_1"
     },
     {
-      "id": "quaternius-normal-car-1-parked",
-      "file": "public/assets/models/vehicles/quaternius-normal-car-1-parked.glb",
-      "storage": "public",
-      "pack": "quaternius-lowpoly-cars",
-      "sourceFile": "OBJ/NormalCar1.obj + NormalCar1.mtl",
-      "use": "Parked cars on the Moving off street (kerbside and on drives), recoloured per car and baked into one static mesh per 200 m section",
-      "modifications": [
-        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0; glTF-Transform 4.5.1 weld, dedup, join, prune",
-        "Simplified for static parked cars: normals removed so flat-shaded faces share vertices, then meshoptimizer 0.22.0 simplify (ratio 0.2, error 0.01); glTF-Transform quantize",
-        "At load: flat normals rebuilt per triangle; material colours baked into vertex colours; body colour replaced per car; placed at native size (the collision box is the model's size)"
-      ],
-      "stats": {
-        "triangles": 718,
-        "materials": 6,
-        "bytes": 13048
-      },
-      "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar1"
-    },
-    {
-      "id": "quaternius-normal-car-2-parked",
-      "file": "public/assets/models/vehicles/quaternius-normal-car-2-parked.glb",
-      "storage": "public",
-      "pack": "quaternius-lowpoly-cars",
-      "sourceFile": "OBJ/NormalCar2.obj + NormalCar2.mtl",
-      "use": "Parked cars on the Moving off street (kerbside and on drives), recoloured per car and baked into one static mesh per 200 m section",
-      "modifications": [
-        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0; glTF-Transform 4.5.1 weld, dedup, join, prune",
-        "Simplified for static parked cars: normals removed so flat-shaded faces share vertices, then meshoptimizer 0.22.0 simplify (ratio 0.2, error 0.01); glTF-Transform quantize",
-        "At load: flat normals rebuilt per triangle; material colours baked into vertex colours; body colour replaced per car; placed at native size (the collision box is the model's size)"
-      ],
-      "stats": {
-        "triangles": 824,
-        "materials": 7,
-        "bytes": 15016
-      },
-      "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> NormalCar2"
-    },
-    {
-      "id": "quaternius-suv-parked",
-      "file": "public/assets/models/vehicles/quaternius-suv-parked.glb",
-      "storage": "public",
-      "pack": "quaternius-lowpoly-cars",
-      "sourceFile": "OBJ/SUV.obj + SUV.mtl",
-      "use": "Parked cars on the Moving off street (kerbside and on drives), recoloured per car and baked into one static mesh per 200 m section",
-      "modifications": [
-        "Converted OBJ+MTL to GLB with obj2gltf 3.2.0; glTF-Transform 4.5.1 weld, dedup, join, prune",
-        "Simplified for static parked cars: normals removed so flat-shaded faces share vertices, then meshoptimizer 0.22.0 simplify (ratio 0.2, error 0.01); glTF-Transform quantize",
-        "At load: flat normals rebuilt per triangle; material colours baked into vertex colours; body colour replaced per car; placed at native size (the collision box is the model's size)"
-      ],
-      "stats": {
-        "triangles": 749,
-        "materials": 6,
-        "bytes": 13560
-      },
-      "build": "PARKED=1 TOOLS=<scratch folder> tools/assets/build-quaternius-cars.sh <extracted OBJ folder> SUV"
-    },
-    {
       "id": "batch-a-belisha-beacon",
       "file": "public/assets/models/street/batch-a-belisha-beacon.glb",
       "pack": "driving-practice-batch-a",
@@ -456,10 +381,11 @@
       "file": "public/assets/models/vehicles/batch-b-compact-hatchback-parked.glb",
       "pack": "driving-practice-batch-b-cars",
       "sourceFile": "cars_corrected/uk_car_03_compact_mini_white.glb",
-      "use": "Parked cars on drives",
+      "use": "Every parked car (kerbside in the Moving off and practice zebra streets, and on drives), recoloured per car, drawn at 4.0 m (hatchback) or 4.6 m (saloon) long, with collision boxes of the same size",
       "modifications": [
         "glTF-Transform 4.5.1: weld, dedup, prune; join; tools/assets/simplify.mjs (normals dropped, ratio 0.06, error 0.05); quantize",
-        "Baked into the parked-car mesh with flat normals and the body colour per car"
+        "Baked into the parked-car mesh with flat normals and the body colour per car",
+        "At load (parked): scaled uniformly to 4.0 m (hatchback) or 4.6 m (saloon) long; the models are drawn larger than the cars they show (src/assets/carSpecs.ts parkedLength)"
       ],
       "stats": {
         "triangles": 1263,
@@ -492,10 +418,11 @@
       "file": "public/assets/models/vehicles/batch-b-saloon-parked.glb",
       "pack": "driving-practice-batch-b-cars",
       "sourceFile": "cars_corrected/uk_car_10_bmw_coupe_silver.glb",
-      "use": "Parked cars on drives",
+      "use": "Every parked car (kerbside in the Moving off and practice zebra streets, and on drives), recoloured per car, drawn at 4.0 m (hatchback) or 4.6 m (saloon) long, with collision boxes of the same size",
       "modifications": [
         "glTF-Transform 4.5.1: weld, dedup, prune; join; tools/assets/simplify.mjs (normals dropped, ratio 0.06, error 0.05); quantize",
-        "Baked into the parked-car mesh with flat normals and the body colour per car"
+        "Baked into the parked-car mesh with flat normals and the body colour per car",
+        "At load (parked): scaled uniformly to 4.0 m (hatchback) or 4.6 m (saloon) long; the models are drawn larger than the cars they show (src/assets/carSpecs.ts parkedLength)"
       ],
       "stats": {
         "triangles": 908,
