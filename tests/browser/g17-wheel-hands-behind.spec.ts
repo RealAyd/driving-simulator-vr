@@ -15,13 +15,18 @@ test('G17: the on-screen wheel steers and the hands follow it; the behind-the-ca
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   expect(await read(page,'steering()')).toBe('wheel');
-  // The wheel replaces the steer buttons.
-  await expect(page.locator('#touch-wheel')).toBeVisible();
+  // In the driver's seat the car's own wheel is turned: a grab area over it, and no separate wheel on screen.
+  await expect(page.locator('#wheel-grab')).toBeVisible();
+  await expect(page.locator('#touch-wheel')).toBeHidden();
   await expect(page.locator('#steer-buttons')).toBeHidden();
   expect(await read(page,'hands()')).toBeCloseTo(0,3);
 
-  // Drag clockwise round the wheel (a third of a turn): the car's wheels turn right, and so do the hands.
-  const box=(await page.locator('#touch-wheel').boundingBox())!;
+  // The grab area lies over the steering wheel as drawn, in the lower middle of the picture.
+  const box=(await page.locator('#wheel-grab').boundingBox())!;
+  const vw=page.viewportSize()!;
+  expect(Math.abs(box.x+box.width/2-vw.width/2)).toBeLessThan(vw.width*.15);
+  expect(box.y+box.height/2).toBeGreaterThan(vw.height*.5);
+  // Drag clockwise round the car's wheel from its top (a third of a turn): the car's wheels turn right, and so do the hands.
   const cx=box.x+box.width/2,cy=box.y+box.height/2,r=box.width/2-8;
   await page.mouse.move(cx,cy-r);
   await page.mouse.down();
@@ -37,6 +42,9 @@ test('G17: the on-screen wheel steers and the hands follow it; the behind-the-ca
   const seat=await read(page,'camera()');
   await page.click('#hud-behind');
   await expect(page.locator('#hud-view-label')).toHaveText(/Behind the car \(not a driver's view\)/);
+  // Behind the car its own wheel is out of sight, so the separate on-screen wheel appears.
+  await expect(page.locator('#touch-wheel')).toBeVisible();
+  await expect(page.locator('#wheel-grab')).toBeHidden();
   await expect.poll(async()=>(await read(page,'behind()')).carModel,{timeout:30_000}).toBe(true);
   const out=await read(page,'camera()');
   expect(out.position[1]).toBeGreaterThan(seat.position[1]+1.5);

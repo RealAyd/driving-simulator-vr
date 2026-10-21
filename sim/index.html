@@ -112,7 +112,11 @@ body.tilt #hud-tilt{display:flex}
 body:not(.steer-buttons) #steer-buttons{display:none}
 /* On-screen steering wheel: drag round it with a thumb. */
 #touch-wheel{display:none;width:118px;height:118px;touch-action:none;cursor:grab}
-body.wheel-steer #touch-wheel{display:block}
+/* In the driver's seat the car's own steering wheel is turned (an invisible grab area over it); the separate wheel
+   appears only in the behind-the-car view, where the car's wheel is out of sight. */
+body.wheel-steer.behind #touch-wheel{display:block}
+#wheel-grab{display:none;position:absolute;border-radius:50%;touch-action:none;pointer-events:auto;cursor:grab}
+body.wheel-steer:not(.behind) #wheel-grab{display:block}
 #touch-wheel .tw-rim{width:100%;height:100%;box-sizing:border-box;border:13px solid #334155;border-radius:50%;position:relative;box-shadow:inset 0 0 0 2px #64748b,0 0 0 2px #64748b}
 #touch-wheel .tw-rim>span{position:absolute;left:50%;top:-13px;width:10px;height:13px;margin-left:-5px;background:#f59e0b;border-radius:3px}
 #touch-wheel .tw-spoke{position:absolute;left:-2px;right:-2px;top:50%;height:9px;margin-top:-4px;background:#334155}
@@ -293,6 +297,7 @@ body.stationary [data-hold="throttle"]{opacity:.4}
 </section>
 
 <div id="hud" hidden>
+  <div id="wheel-grab" role="slider" aria-label="Steering wheel: drag round it to steer" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0"></div>
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>

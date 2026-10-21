@@ -30,7 +30,7 @@ import {ROAD_USER_CAR_MODELS} from '../assets/carSpecs';
 import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
-import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
+import {STEERING_RATIO,WHEEL_RIM,buildCockpit} from '../cockpit/cockpitModel';
 import {ALL_MIRRORS,Mirror} from '../cockpit/mirror';
 import {ObservationTracker,type ObservationSource,type ObservationTarget} from '../cockpit/observation';
 import {DriverHead} from '../cockpit/seat';
@@ -1181,30 +1181,45 @@ export async function boot():Promise<void>{
   byId('hud-ind-right').addEventListener('click',()=>onAction('indicator-right'));
   byId('hud-task-toggle').addEventListener('click',()=>hud.toggleTask());
   byId('hud-tilt-centre').addEventListener('click',()=>tilt.calibrate());
-  // On-screen wheel: the finger's angle around the wheel's centre turns it (one finger; others ignored).
+  // On-screen steering: the finger's angle around the wheel's centre turns it (one finger; others ignored). In the
+  // driver's seat the grab area lies over the car's own steering wheel; behind the car, the separate wheel is used.
   const wheelEl=byId('touch-wheel');
+  const wheelGrab=byId('wheel-grab');
   let wheelPointer:number|null=null;
-  const wheelAngle=(event:PointerEvent)=>{
-    const r=wheelEl.getBoundingClientRect();
-    return screenAngle(r.left+r.width/2,r.top+r.height/2,event.clientX,event.clientY);
+  for(const el of [wheelEl,wheelGrab]){
+    const angle=(event:PointerEvent)=>{
+      const r=el.getBoundingClientRect();
+      return screenAngle(r.left+r.width/2,r.top+r.height/2,event.clientX,event.clientY);
+    };
+    el.addEventListener('pointerdown',event=>{
+      event.preventDefault();
+      if(wheelPointer!==null)return;
+      wheelPointer=event.pointerId;
+      el.setPointerCapture(event.pointerId);
+      touchWheel.grab(angle(event));
+      wheelEl.classList.add('held');
+    });
+    el.addEventListener('pointermove',event=>{if(event.pointerId===wheelPointer)touchWheel.move(angle(event))});
+    const release=(event:PointerEvent)=>{
+      if(event.pointerId!==wheelPointer)return;
+      wheelPointer=null;
+      touchWheel.release();
+      wheelEl.classList.remove('held');
+    };
+    el.addEventListener('pointerup',release);
+    el.addEventListener('pointercancel',release);
+  }
+  /** Places the grab area over the car's steering wheel as drawn (its rim's screen circle, a little enlarged). */
+  const placeWheelGrab=()=>{
+    const m=cockpit.wheel.getWorldMatrix();
+    const view=camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight());
+    const project=(x:number,z:number)=>Vector3.Project(Vector3.TransformCoordinates(new Vector3(x,0,z),m),Matrix.IdentityReadOnly,scene.getTransformMatrix(),view);
+    const c=project(0,0),top=project(0,-WHEEL_RIM),side=project(WHEEL_RIM,0);
+    const k=canvas.clientWidth/engine.getRenderWidth();
+    const r=Math.max(Math.hypot(top.x-c.x,top.y-c.y),Math.hypot(side.x-c.x,side.y-c.y))*k*1.15;
+    const st=wheelGrab.style;
+    st.left=`${(c.x*k-r).toFixed(0)}px`;st.top=`${(c.y*k-r).toFixed(0)}px`;st.width=st.height=`${(2*r).toFixed(0)}px`;
   };
-  wheelEl.addEventListener('pointerdown',event=>{
-    event.preventDefault();
-    if(wheelPointer!==null)return;
-    wheelPointer=event.pointerId;
-    wheelEl.setPointerCapture(event.pointerId);
-    touchWheel.grab(wheelAngle(event));
-    wheelEl.classList.add('held');
-  });
-  wheelEl.addEventListener('pointermove',event=>{if(event.pointerId===wheelPointer)touchWheel.move(wheelAngle(event))});
-  const releaseWheel=(event:PointerEvent)=>{
-    if(event.pointerId!==wheelPointer)return;
-    wheelPointer=null;
-    touchWheel.release();
-    wheelEl.classList.remove('held');
-  };
-  wheelEl.addEventListener('pointerup',releaseWheel);
-  wheelEl.addEventListener('pointercancel',releaseWheel);
   const wheelRim=wheelEl.querySelector<HTMLElement>('.tw-rim')!;
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-hold]')){
     const control=button.dataset.hold as 'throttle'|'brake'|'left'|'right';
@@ -1286,6 +1301,7 @@ export async function boot():Promise<void>{
   const setBehind=(on:boolean)=>{
     behind=on;
     behindButton.setAttribute('aria-pressed',String(on));
+    document.body.classList.toggle('behind',on);
     behindButton.setAttribute('aria-label',on?'Camera: back to the driver\'s seat':'Camera: switch to behind the car');
     const label=byId('hud-view-label');
     if(on){label.textContent='View: Behind the car (not a driver\'s view)';label.classList.add('behind')}
@@ -1353,7 +1369,9 @@ export async function boot():Promise<void>{
     hudWheel.style.transform=wheelTurn;
     if(steeringMode==='wheel'){
       wheelRim.style.transform=`rotate(${touchWheel.turnDeg.toFixed(1)}deg)`;
-      wheelEl.setAttribute('aria-valuenow',String(Math.round(touchWheel.turnDeg/2.7)));
+      const value=String(Math.round(touchWheel.turnDeg/2.7));
+      wheelEl.setAttribute('aria-valuenow',value);wheelGrab.setAttribute('aria-valuenow',value);
+      if(!behind)placeWheelGrab();
     }
     // Turning right turns the wheel clockwise as the driver sees it.
     cockpit.setWheel(vehicle.state.steerAngle*STEERING_RATIO);
