@@ -31,7 +31,7 @@ const userZ=(page:Page,id:string,below:number)=>page.waitForFunction(([id,below]
 const overlaps=(a:Rect,b:Rect)=>a.left<b.right&&b.left<a.right&&a.top<b.bottom&&b.top<a.bottom;
 /** No HUD control may cover a mirror's glass. */
 async function controlsClear(page:Page,rect:Rect){
-  for(const id of ['hud-left','hud-centre','touch-controls','hud-top','hud-view-label']){
+  for(const id of ['hud-left','hud-centre','touch-controls','hud-top','hud-view-label','hud-behind']){
     const box=await page.locator('#'+id).boundingBox();
     if(!box)continue;
     expect(overlaps(rect,{left:box.x,top:box.y,right:box.x+box.width,bottom:box.y+box.height}),`#${id} covers the mirror`).toBe(false);
@@ -190,7 +190,7 @@ test('G3: with the iPhone 14 Pro Max landscape safe areas (59 px each side, 21 p
   for(const view of ['forward','interior','left-door','right-door'] as const){
     await read(page,`selectView('${view}')`);
     await page.waitForTimeout(900);
-    for(const id of ['hud-left','hud-centre','touch-controls','hud-top','hud-view-label']){
+    for(const id of ['hud-left','hud-centre','touch-controls','hud-top','hud-view-label','hud-behind']){
       const b=(await page.locator('#'+id).boundingBox())!;
       expect(b.x,`#${id} left of the cut-out`).toBeGreaterThanOrEqual(id==='hud-centre'?59:58);
       expect(b.x+b.width,`#${id} right edge`).toBeLessThanOrEqual(932-58);

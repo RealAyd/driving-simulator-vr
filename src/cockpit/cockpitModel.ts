@@ -111,16 +111,16 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   const dial=CreatePlane('instrument-dial',{width:.27,height:.093},scene);
   dial.parent=root;dial.material=dialMat;
   // Seen through the upper half of the wheel, above the hub.
-  const dialY=.94,dialZ=-.67;
+  const dialY=.985,dialZ=-.67;
   dial.position.set(eye.x,dialY,dialZ);
   // Turned and tilted towards the driver's eye (as the mirror glass is).
   dial.rotation.y=Math.atan2(0,eye.z-dialZ);
   dial.rotation.x=Math.atan2(-(eye.y-dialY),eye.z-dialZ);
   // A small visor over the dial.
   {
-    const visor=box('instrument-visor',.31,.014,.09,eye.x,.995,-.69,trim);
+    const visor=box('instrument-visor',.31,.014,.09,eye.x,1.04,-.69,trim);
     // The binnacle body under the dial, on top of the dashboard.
-    box('instrument-binnacle',.31,.06,.08,eye.x,.92,-.71,dashMat);
+    box('instrument-binnacle',.31,.1,.08,eye.x,.94,-.71,dashMat);
     visor.rotation.x=-.25;
   }
 
@@ -157,50 +157,73 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   box('rear-panel',2*W,C.sill-.3,.06,0,(C.sill+.3)/2,C.rear+.05,trim);
   box('centre-console',.24,.18,.7,0,.5,-.3,trim);
 
-  // Steering column tilted towards the driver; `wheel` spins about the column (local Y).
+  // Steering column tilted towards the driver; `wheel` spins about the column (local Y). A 38 cm wheel, close enough
+  // to the driver that its upper half and the hands on it are in the forward view (with the slight downward glance).
   const column=new TransformNode('steering-column',scene);
-  column.position.set(eye.x,.92,-.52);
-  column.rotation.x=Math.PI/2-.45;
+  column.position.set(eye.x,.95,-.44);
+  column.rotation.x=Math.PI/2-.42;
   column.parent=root;
   const wheel=new TransformNode('steering-wheel',scene);
   wheel.parent=column;
-  const rim=CreateTorus('steering-rim',{diameter:.37,thickness:.03,tessellation:32},scene);
+  const RIM=.19;
+  const rim=CreateTorus('steering-rim',{diameter:2*RIM,thickness:.036,tessellation:40},scene);
   rim.material=trim;
   rim.parent=wheel;
   // Local −Z is the top of the wheel as the driver sees it, +Z the bottom.
-  const part=(name:string,w:number,h:number,d:number,z:number,material:StandardMaterial)=>{
+  const part=(name:string,w:number,h:number,d:number,z:number,material:StandardMaterial,y=0)=>{
     const mesh=CreateBox(name,{width:w,height:h,depth:d},scene);
-    mesh.position.z=z;
+    mesh.position.set(0,y,z);
     mesh.material=material;
     mesh.parent=wheel;
+    return mesh;
   };
-  part('steering-spoke-cross',.31,.018,.03,.01,trim);
-  part('steering-spoke-lower',.03,.018,.15,.09,trim);
-  part('steering-hub',.075,.035,.065,.01,trim);
-  part('steering-top-mark',.03,.035,.022,-.18,mat('steering-mark',new Color3(.85,.55,.1)));
+  part('steering-spoke-cross',.33,.02,.036,.015,trim);
+  part('steering-spoke-lower',.034,.02,.16,.095,trim);
+  part('steering-hub',.12,.045,.09,.012,trim,.012);
+  part('steering-hub-pad',.1,.012,.07,.012,glossBlack,.04);
+  part('steering-top-mark',.03,.04,.024,-RIM,mat('steering-mark',new Color3(.85,.55,.1)));
 
-  // The driver's hands on the rim at ten to two, and arms from the shoulders (dark sleeves). The hands turn
-  // with the wheel up to HANDS_FOLLOW, then hold there as the wheel is fed through them (pull-push steering).
-  const skin=mat('driver-skin',new Color3(.78,.6,.48));
+  // The driver's hands on the rim at ten to two: the back of each hand towards the driver, knuckles round the
+  // outside of the rim, thumb along the inside; bare forearms (sleeves pushed up). The hands turn with the wheel up to
+  // HANDS_FOLLOW, then hold there as the wheel is fed through them (pull-push steering).
+  const skin=mat('driver-skin',new Color3(.8,.62,.5));
   const sleeve=mat('driver-sleeve',new Color3(.14,.17,.24));
   const handRing=new TransformNode('driver-hands',scene);
   handRing.parent=column;
-  const RIM=.185;
-  const hands=[-1,1].map(side=>{
-    const hand=CreateSphere(`driver-hand-${side<0?'left':'right'}`,{diameterX:.07,diameterY:.05,diameterZ:.1,segments:6},scene);
-    hand.material=skin;
-    hand.parent=handRing;
-    // Local −Z is the top of the wheel: ten to two is ±60° from it, on the rim.
-    hand.position.set(side*RIM*Math.sin(GRIP),.012,-RIM*Math.cos(GRIP));
-    hand.isPickable=false;
-    return hand;
-  });
-  const limb=(name:string,radius:number)=>{
-    const m=CreateCylinder(name,{height:1,diameterTop:radius*2,diameterBottom:radius*2.3,tessellation:8},scene);
-    m.material=sleeve;m.parent=root;m.isPickable=false;m.rotationQuaternion=new Quaternion();
+  const blob=(name:string,parent:TransformNode,d:[number,number,number],at:[number,number,number],material=skin)=>{
+    const m=CreateSphere(name,{diameterX:d[0],diameterY:d[1],diameterZ:d[2],segments:8},scene);
+    m.material=material;m.parent=parent;m.position.set(...at);m.isPickable=false;
     return m;
   };
-  const arms=[-1,1].map(side=>({side,upper:limb(`driver-upper-arm-${side}`,.045),fore:limb(`driver-forearm-${side}`,.038)}));
+  const hands=[-1,1].map(side=>{
+    const hand=new TransformNode(`driver-hand-${side<0?'left':'right'}`,scene);
+    hand.parent=handRing;
+    // On the rim, ±60° from the top; local X along the rim, +Z towards the centre, +Y towards the driver.
+    const phi=side*GRIP;
+    hand.position.set(RIM*Math.sin(phi),0,-RIM*Math.cos(phi));
+    hand.rotation.y=-phi;
+    const name=`driver-hand-${side<0?'left':'right'}`;
+    blob(`${name}-back`,hand,[.088,.034,.08],[0,.03,.004]);
+    // Knuckles and fingers wrapped round the outside of the rim, towards the dashboard.
+    for(let i=0;i<4;i++){
+      const x=(i-1.5)*.02;
+      blob(`${name}-finger-${i}`,hand,[.021,.03,.032],[x,.006,-.03]);
+      blob(`${name}-tip-${i}`,hand,[.019,.022,.026],[x,-.022,-.012]);
+    }
+    // Thumb along the inside of the rim, pointing up the wheel.
+    blob(`${name}-thumb`,hand,[.05,.022,.024],[-side*.03,.02,.032]);
+    // Wrist, towards the driver.
+    blob(`${name}-wrist`,hand,[.06,.045,.06],[0,.06,.03]);
+    return hand;
+  });
+  const wrists=hands.map(h=>h.getChildMeshes().find(m=>m.name.endsWith('-wrist'))!);
+  const limb=(name:string,radius:number,material:StandardMaterial,taper=1.2)=>{
+    const m=CreateCylinder(name,{height:1,diameterTop:radius*2,diameterBottom:radius*2*taper,tessellation:12},scene);
+    m.material=material;m.parent=root;m.isPickable=false;m.rotationQuaternion=new Quaternion();
+    return m;
+  };
+  // Forearms taper from the elbow (bottom) to the wrist (top).
+  const arms=[-1,1].map(side=>({side,upper:limb(`driver-upper-arm-${side}`,.05,sleeve,1.1),fore:limb(`driver-forearm-${side}`,.028,skin,1.45)}));
   const UP=new Vector3(0,1,0);
   const place=(m:Mesh,a:Vector3,b:Vector3)=>{
     const d=b.subtract(a),len=d.length();
@@ -216,12 +239,13 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
     root.computeWorldMatrix(true);
     handRing.computeWorldMatrix(true);
     for(const h of hands)h.computeWorldMatrix(true);
+    for(const w of wrists)w.computeWorldMatrix(true);
     const toRoot=root.getWorldMatrix().clone().invert();
     for(const {side,upper,fore} of arms){
-      const hand=Vector3.TransformCoordinates(hands[side<0?0:1]!.getAbsolutePosition(),toRoot);
-      const shoulder=new Vector3(eye.x+side*.19,eye.y-.22,eye.z+.08);
-      // Elbow: below and outside the line from shoulder to hand, bent towards the body.
-      const elbow=shoulder.add(hand).scale(.5).add(new Vector3(side*.07,-.12,.02));
+      const hand=Vector3.TransformCoordinates(wrists[side<0?0:1]!.getAbsolutePosition(),toRoot);
+      const shoulder=new Vector3(eye.x+side*.19,eye.y-.22,eye.z+.1);
+      // Elbow: below and outside the line from shoulder to wrist, bent towards the body.
+      const elbow=shoulder.add(hand).scale(.5).add(new Vector3(side*.08,-.14,.04));
       place(upper,shoulder,elbow);
       place(fore,elbow,hand);
     }

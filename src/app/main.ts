@@ -77,6 +77,9 @@ const SIM_STEP=1/60;
 type SteeringMode='assist'|'tilt'|'wheel'|'buttons';
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
+/** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
+ * Camera only: the head direction, and so observations, are unchanged. Not applied to mirror and shoulder views. */
+const FORWARD_GLANCE=degToRad(7);
 /** While a mirror view is selected the view narrows, like focusing on the glass (door mirrors are smaller). */
 const MIRROR_FOCUS_FOV={interior:degToRad(50),door:degToRad(40)};
 /**
@@ -1275,6 +1278,7 @@ export async function boot():Promise<void>{
   let mirrorsOn=true;
   /** Diagnostics: render every mirror every frame, seen or not (to measure what each mirror shows). */
   let allMirrorsLive=false;
+  let glance=FORWARD_GLANCE;
   // Behind-the-car view: a camera following the car, for getting a feel for its position on the road. Not a driver's
   // view: the head (and so observations) stays in the driver's seat, and the results say how long it was used.
   let behind=false,behindSeconds=0;
@@ -1282,7 +1286,7 @@ export async function boot():Promise<void>{
   const setBehind=(on:boolean)=>{
     behind=on;
     behindButton.setAttribute('aria-pressed',String(on));
-    behindButton.textContent=on?'Driver':'Behind';
+    behindButton.setAttribute('aria-label',on?'Camera: back to the driver\'s seat':'Camera: switch to behind the car');
     const label=byId('hud-view-label');
     if(on){label.textContent='View: Behind the car (not a driver\'s view)';label.classList.add('behind')}
     else{label.classList.remove('behind');showView(heldView??'forward')}
@@ -1325,8 +1329,10 @@ export async function boot():Promise<void>{
       camera.position.set(from.x,from.y,from.z);
       camera.setTarget(new Vector3(to.x,to.y,to.z));
     }else{
+      glance+=Math.max(-dt*.5,Math.min(dt*.5,(heldView||viewer.active?0:FORWARD_GLANCE)-glance));
+      const across=Math.hypot(look.x,look.z);
       camera.position.set(eye.x,eye.y,eye.z);
-      camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y,eye.z+look.z));
+      camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y-Math.tan(glance)*across,eye.z+look.z));
     }
     // From behind, the learner's car is drawn with a car model (wheels turning) in place of the plain body box.
     if(learnerBody){

@@ -13,9 +13,15 @@ What a learner can use on the phone screen, in the phone headset viewer and on a
 
 In the phone headset viewer, steering is assisted, or done with the controller's stick.
 
-**The driver's hands** (new) hold the wheel at ten to two. They turn with it up to about 70°, then stay there as the
-wheel is fed through them (pull-push). Both the wheel and the hands follow the car's actual steering, whichever
-option is used.
+**The driver's hands** hold the wheel at ten to two. They turn with it up to about 70°, then stay there as the wheel is
+fed through them (pull-push). Both the wheel and the hands follow the car's actual steering, whichever option is used.
+
+The hands have knuckles and fingers wrapped round the rim, a thumb along the inside and bare forearms. Since
+2026-10-21 the wheel is 38 cm across and sits nearer the driver, and the speedometer shows through it.
+
+**Forward glance:** in the forward view the camera looks about 7° below level, as a seated driver does, so the wheel
+and hands are in view. It affects the camera only: the head direction (and so observations) is unchanged, and mirror
+and shoulder views aim exactly as before.
 
 ## Views
 
@@ -31,7 +37,8 @@ Driver's views. Each one counts as an observation:
 
 In the phone headset viewer, or in a WebXR headset, you look around by turning your head.
 
-**Behind the car** (new; the "Behind" button at the top): a camera behind and above the car, with the car drawn as a
+**Behind the car** (the round camera button on the left edge; it turns green while on, and pressing it again returns
+to the driver's seat): a camera behind and above the car, with the car drawn as a
 model. It helps you get a feel for where the car is on the road.
 - It is **not a driver's view**: the label says so in amber, and nothing you see from there counts as an observation.
 - Any view button takes you back to the driver's seat.
@@ -51,4 +58,5 @@ review screenshots.
   - the behind view moves the camera out, shows the car model and is labelled;
   - a view button returns to the seat;
   - the results report the behind view and the on-screen wheel.
-- Screenshots: `docs/verification/step17/`.
+- Screenshots: `docs/verification/step17/`. The 2026-10-21 cockpit is in `cockpit-bigger-wheel.png`,
+  `cockpit-steering-right.png` and `camera-button-behind.png`.
