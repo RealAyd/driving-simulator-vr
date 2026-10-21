@@ -145,8 +145,10 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     // On real ground: a grid over the terrain (one square per terrain cell) that is laid on it with everything else,
     // a little lower again so it never shows through the road between the road's edges; the flat plane beyond, below it.
     const e=terrain.extent;
-    const near=CreateGround('verge-terrain',{width:e.width,height:e.depth,subdivisionsX:e.cols-1,subdivisionsY:e.rows-1},scene);
-    near.position.set(e.x0+e.width/2,ground.position.y-.08,e.z0+e.depth/2);
+    // Large areas (a whole test centre's streets): one square per two cells, a little lower again (gentle London slopes).
+    const step=e.cols*e.rows>40_000?2:1;
+    const near=CreateGround('verge-terrain',{width:e.width,height:e.depth,subdivisionsX:Math.ceil((e.cols-1)/step),subdivisionsY:Math.ceil((e.rows-1)/step)},scene);
+    near.position.set(e.x0+e.width/2,ground.position.y-(step>1?.14:.08),e.z0+e.depth/2);
     near.material=grass;
     near.parent=root;
     near.computeWorldMatrix(true);

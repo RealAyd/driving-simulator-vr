@@ -1,0 +1,243 @@
+// A drivable location around a test centre, generated from OpenStreetMap: roads (lanes, widths, one-way,
+// speed limits), mini-roundabouts, zebra and signal crossings, buildings (outline, height, use, shop names),
+// trees, grass/parks/car parks and bus stops, in the simulator's location format (src/contracts/location.ts).
+//
+//   node tools/centres/build_centre.mjs <id> "<name>" <lat> <lon> [half-size-metres=450] [osm-file]
+//
+// Downloads the OSM API 0.6 map call for the square (or reads a saved .osm file), writes
+// content/locations/<id>.json. Coordinates: x east, z south, metres from (lat, lon), 111 320 m per degree (as the
+// Brentwood tools). Map data © OpenStreetMap contributors, ODbL. Generated, not surveyed: fidelity
+// 'geographically-inspired', review status 'unreviewed'. No dependencies (Node 22).
+import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+
+const [id,name,latArg,lonArg,halfArg='450',osmFile]=process.argv.slice(2);
+if(!id||!name||!latArg||!lonArg)throw new Error('usage: build_centre.mjs <id> "<name>" <lat> <lon> [half-size] [osm-file]');
+const LAT=Number(latArg),LON=Number(lonArg),HALF=Number(halfArg);
+const KX=111320*Math.cos(LAT*Math.PI/180),KY=111320;
+const xy=(lat,lon)=>({x:+((lon-LON)*KX).toFixed(2),z:+(-(lat-LAT)*KY).toFixed(2)});
+const r2=v=>+v.toFixed(2);
+
+// ---- Fetch and parse ----
+const bbox=[LON-(HALF+60)/KX,LAT-(HALF+60)/KY,LON+(HALF+60)/KX,LAT+(HALF+60)/KY].map(v=>v.toFixed(5)).join(',');
+let xml;
+if(osmFile)xml=fs.readFileSync(osmFile,'utf8');
+else{
+  // curl: it uses the environment's HTTPS proxy, where Node's fetch may not.
+  xml=execFileSync('curl',['-sS','--fail','-m','120','-A','DrivingPractice-location-builder/1.0',`https://api.openstreetmap.org/api/0.6/map?bbox=${bbox}`],{encoding:'utf8',maxBuffer:256*1024*1024});
+}
+const attr=(s,k)=>{const m=s.match(new RegExp(`\\s${k}="([^"]*)"`));return m?m[1].replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>'):undefined};
+const tagsOf=body=>{const t={};for(const m of body.matchAll(/<tag\s[^>]*\/>/g))t[attr(m[0],'k')]=attr(m[0],'v');return t};
+const nodes=new Map(),ways=[];
+for(const m of xml.matchAll(/<node\s([^>]*?)(\/>|>([\s\S]*?)<\/node>)/g)){
+  const a=' '+m[1];
+  nodes.set(attr(a,'id'),{id:attr(a,'id'),lat:+attr(a,'lat'),lon:+attr(a,'lon'),tags:m[3]?tagsOf(m[3]):{}});
+}
+for(const m of xml.matchAll(/<way\s([^>]*)>([\s\S]*?)<\/way>/g)){
+  ways.push({id:attr(' '+m[1],'id'),nds:[...m[2].matchAll(/<nd ref="(\d+)"/g)].map(n=>n[1]),tags:tagsOf(m[2])});
+}
+const P=n=>xy(n.lat,n.lon);
+const inside=(p,margin=0)=>Math.abs(p.x)<=HALF+margin&&Math.abs(p.z)<=HALF+margin;
+
+// ---- Roads ----
+const DRIVEN={primary:3.5,secondary:3.3,tertiary:3.2,unclassified:3,residential:3,living_street:2.8,primary_link:3.4,secondary_link:3.2,tertiary_link:3,trunk:3.6,trunk_link:3.4};
+const miniNodes=new Set([...nodes.values()].filter(n=>n.tags.highway==='mini_roundabout'&&inside(P(n))).map(n=>n.id));
+const slug=s=>(s??'road').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'road';
+const roads=[],roadNodes=new Map(); // road id -> node ids along it (for crossings)
+for(const w of ways){
+  const width=DRIVEN[w.tags.highway];
+  if(!width||w.tags.area==='yes'||w.tags.access==='private')continue;
+  // Split at mini-roundabouts and where the way leaves the square.
+  const runs=[];let run=[];
+  for(const ref of w.nds){
+    const n=nodes.get(ref);if(!n)continue;
+    if(!inside(P(n),30)){if(run.length>1)runs.push(run);run=[];continue}
+    run.push(n);
+    if(miniNodes.has(ref)&&run.length>1){runs.push(run);run=[n]}
+  }
+  if(run.length>1)runs.push(run);
+  const oneway=w.tags.oneway==='yes'||w.tags.oneway==='1'||w.tags.junction==='roundabout';
+  const lanesTag=parseInt(w.tags.lanes??'',10);
+  const count=Math.min(4,Math.max(1,Number.isFinite(lanesTag)?lanesTag:oneway?1:2));
+  const mph=parseInt((w.tags.maxspeed??'').replace(/[^0-9]/g,''),10);
+  runs.forEach((nodesRun,k)=>{
+    const roadId=`${slug(w.tags.name??w.tags.ref??w.tags.highway)}-${w.id}${runs.length>1?`-${k}`:''}`;
+    const centreline=nodesRun.map(P);
+    // Drop repeated points.
+    const line=centreline.filter((p,i)=>i===0||Math.hypot(p.x-centreline[i-1].x,p.z-centreline[i-1].z)>.05);
+    if(line.length<2)return;
+    roads.push({
+      id:roadId,...(w.tags.name?{name:w.tags.name}:{}),
+      ...(Number.isFinite(mph)&&/mph/.test(w.tags.maxspeed??'')?{speedLimitMph:mph,speedLimitSource:`OSM way ${w.id} maxspeed`}:{}),
+      oneway,centreline:line,
+      lanes:{count,width:Math.min(4.5,Math.max(2.5,width))},
+      surfaceHeight:0,pavementWidth:w.tags.highway==='living_street'?1.5:2,kerbHeight:.12,
+      // Residential streets in the UK mostly have no centre line; through roads have a dashed one.
+      markings:{centre:count>=2&&!oneway&&!['residential','living_street','unclassified'].includes(w.tags.highway)?'dashed':'none',centreFrom:0,edges:false},
+      _way:w.id,_class:w.tags.highway
+    });
+    roadNodes.set(roadId,nodesRun.map(n=>n.id));
+  });
+}
+
+// ---- Mini-roundabouts: roads end at the junction's radius ----
+const RADIUS=7;
+const junctions=[];
+for(const ref of miniNodes){
+  const c=P(nodes.get(ref));
+  const entries=[];
+  for(const r of roads){
+    const ids=roadNodes.get(r.id);
+    const atStart=ids[0]===ref,atEnd=ids.at(-1)===ref;
+    if(!atStart&&!atEnd)continue;
+    // Trim the end at the junction back to the radius.
+    const line=atEnd?r.centreline:[...r.centreline].reverse();
+    while(line.length>2&&Math.hypot(line.at(-2).x-c.x,line.at(-2).z-c.z)<RADIUS)line.pop();
+    const a=line.at(-2),d=Math.hypot(a.x-c.x,a.z-c.z);
+    if(d>RADIUS)line[line.length-1]={x:r2(c.x+(a.x-c.x)*RADIUS/d),z:r2(c.z+(a.z-c.z)*RADIUS/d)};
+    // Traffic enters from this road unless it is one way out of the junction.
+    if(!r.oneway||atEnd)entries.push(r.id);
+    if(atEnd){line.push(c);r.centreline=line}else{line.push(c);r.centreline=line.reverse()}
+  }
+  junctions.push({id:`mini-${ref}`,kind:'mini-roundabout',position:c,radius:RADIUS,discDiameter:2.6,entries});
+}
+
+// ---- Crossings on roads ----
+const alongOf=(line,p)=>{let best={d:Infinity,along:0},acc=0;
+  for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1e-9;
+    const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/(l*l))),q={x:a.x+dx*t,z:a.z+dz*t},d=Math.hypot(p.x-q.x,p.z-q.z);
+    if(d<best.d)best={d,along:acc+l*t,point:q,dir:{x:dx/l,z:dz/l}};acc+=l}
+  return {...best,length:acc};};
+const crossings=[];
+for(const [roadId,ids] of roadNodes){
+  const road=roads.find(r=>r.id===roadId);
+  for(const ref of ids){
+    const n=nodes.get(ref),t=n.tags;
+    if(t.highway!=='crossing'&&t.highway!=='traffic_signals'&&!t.crossing)continue;
+    const kind=t.crossing==='zebra'||t.crossing_ref==='zebra'||t['crossing:markings']==='zebra'&&t.crossing==='uncontrolled'?'zebra'
+      :t.crossing==='traffic_signals'||['pelican','puffin','toucan','pegasus'].includes(t.crossing_ref)?'signal':null;
+    if(!kind)continue;
+    const a=alongOf(road.centreline,P(n));
+    if(a.along<8||a.along>a.length-8||crossings.some(c=>c.roadId===roadId&&Math.abs(c.along-a.along)<12))continue;
+    crossings.push({id:`${kind}-${ref}`,roadId,kind,along:r2(a.along),width:kind==='zebra'?3.5:3,giveWayOffset:1,
+      // Zig-zag length is rarely mapped: 8 marks (16 m) each side is the usual minimum-plus, an estimate.
+      zigzagMarks:kind==='zebra'?Math.min(8,Math.floor((Math.min(a.along,a.length-a.along)-6)/2)):0});
+  }
+}
+
+// ---- Buildings, with shops from points inside them ----
+const roadDistance=p=>Math.min(...roads.map(r=>alongOf(r.centreline,p).d));
+const polygonOf=w=>w.nds.map(r=>nodes.get(r)).filter(Boolean).map(P);
+const insidePoly=(p,poly)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.z>p.z)!==(b.z>p.z)&&p.x<(b.x-a.x)*(p.z-a.z)/(b.z-a.z)+a.x)c=!c}return c};
+const shopPoints=[...nodes.values()].filter(n=>(n.tags.shop||n.tags.amenity&&['cafe','restaurant','fast_food','pub','bank','pharmacy','post_office'].includes(n.tags.amenity))&&inside(P(n)));
+const buildings=[];
+for(const w of ways){
+  const b=w.tags.building;
+  if(!b||b==='no'||w.nds[0]!==w.nds.at(-1))continue;
+  let poly=polygonOf(w).slice(0,-1);
+  if(poly.length<3||!poly.every(p=>inside(p,20)))continue;
+  const levelsTag=parseInt(w.tags['building:levels']??'',10);
+  const shop=shopPoints.find(s=>insidePoly(P(s),poly));
+  const use=w.tags.shop||shop||['retail','commercial','supermarket','kiosk'].includes(b)?'shop'
+    :['house','terrace','residential','detached','semidetached_house','apartments','bungalow','flats'].includes(b)?'residential'
+    :b==='office'?'office':['church','chapel','mosque','temple'].includes(b)?'church':['school','college'].includes(b)?'school'
+    :['garage','garages','shed','roof','hut','carport'].includes(b)?'utility':['civic','public','hospital','train_station'].includes(b)?'civic':'other';
+  const levels=Number.isFinite(levelsTag)?Math.min(20,Math.max(1,levelsTag)):use==='utility'?1:use==='shop'||b==='apartments'?3:2;
+  const centre={x:poly.reduce((s,p)=>s+p.x,0)/poly.length,z:poly.reduce((s,p)=>s+p.z,0)/poly.length};
+  const near=roadDistance(centre);
+  const label=(w.tags.name??shop?.tags.name??w.tags.brand??shop?.tags.brand);
+  buildings.push({id:`osm-${w.id}`,footprint:poly.map(p=>({x:r2(p.x),z:r2(p.z)})),
+    height:r2(Math.min(60,levels*3+(use==='residential'?1.4:.6))),levels,
+    heightSource:Number.isFinite(levelsTag)?'map-levels':'estimated',use,
+    ...(label?{name:label}:{}),source:'map',
+    roof:use==='residential'&&poly.length===4?'pitched':'flat',detail:near>70?'low':'full'});
+}
+
+// ---- Trees, areas, bus stops ----
+const trees=[...nodes.values()].filter(n=>n.tags.natural==='tree'&&inside(P(n))).map(n=>P(n))
+  .filter(p=>roadDistance(p)>3);
+const areas=[];
+for(const w of ways){
+  const t=w.tags;
+  const kind=t.amenity==='parking'&&t.parking!=='underground'&&t.parking!=='multi-storey'?'parking'
+    :t.leisure==='park'||t.landuse==='recreation_ground'||t.leisure==='playground'?'green'
+    :t.landuse==='grass'||t.landuse==='village_green'||t.landuse==='meadow'||t.leisure==='common'?'grass'
+    :t.leisure==='garden'||t.landuse==='allotments'?'garden':null;
+  if(!kind||w.nds[0]!==w.nds.at(-1))continue;
+  const poly=polygonOf(w).slice(0,-1);
+  if(poly.length>=3&&poly.some(p=>inside(p)))areas.push({kind,polygon:poly.map(p=>({x:r2(p.x),z:r2(p.z)}))});
+}
+const furniture=[];
+for(const n of nodes.values()){
+  if(n.tags.highway!=='bus_stop'||!inside(P(n)))continue;
+  const p=P(n);let best=null;
+  for(const r of roads){const a=alongOf(r.centreline,p);if(!best||a.d<best.d)best=a}
+  if(!best||best.d>15)continue;
+  const facing=Math.atan2(best.point.x-p.x,-(best.point.z-p.z))*180/Math.PI;
+  furniture.push({kind:'bus-stop',position:p,facingDeg:r2((facing+360)%360),source:`OSM node ${n.id}`,
+    ...(n.tags.name?{name:n.tags.name}:{}),...(n.tags.local_ref?{indicator:`Stop ${n.tags.local_ref}`}:{}),shelter:n.tags.shelter==='yes'});
+}
+
+// ---- Terraces where residential streets have no mapped buildings ----
+// Many residential streets have no building outlines in OSM. Along such streets, typical terraced houses
+// (5.2 m wide, 9 m deep, 2 storeys, pitched roof) are placed behind a front garden, marked 'approximate'.
+const halfWidth=r=>r.lanes.width*r.lanes.count/2;
+const mapped=buildings.map(b=>b.footprint);
+const filled=[];
+const blocked=(corners,ownRoad)=>{
+  if(!corners.every(c=>inside(c)))return true;
+  for(const poly of mapped)if(corners.some(c=>insidePoly(c,poly))||insidePoly(poly[0],corners))return true;
+  for(const r of roads){
+    const clear=halfWidth(r)+r.pavementWidth+(r===ownRoad?1.5:2.5);
+    if(corners.some(c=>alongOf(r.centreline,c).d<clear))return true;
+  }
+  for(const j of junctions)if(corners.some(c=>Math.hypot(c.x-j.position.x,c.z-j.position.z)<j.radius+8))return true;
+  for(const a of areas)if(corners.some(c=>insidePoly(c,a.polygon)))return true;
+  return false;
+};
+for(const r of roads){
+  if(!['residential','unclassified','living_street','tertiary'].includes(r._class))continue;
+  const line=r.centreline;let acc=0;const segs=[];
+  for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],l=Math.hypot(b.x-a.x,b.z-a.z);segs.push({a,b,l,from:acc});acc+=l}
+  for(const side of [-1,1])for(let s0=8;s0<acc-8;s0+=5.4){
+    const seg=segs.find(g=>s0>=g.from&&s0<=g.from+g.l);if(!seg)continue;
+    const t=(s0-seg.from)/seg.l,dx=(seg.b.x-seg.a.x)/seg.l,dz=(seg.b.z-seg.a.z)/seg.l;
+    const rx=-dz*side,rz=dx*side; // away from the road on this side
+    const off=halfWidth(r)+r.pavementWidth+4.5,c={x:seg.a.x+dx*seg.l*t+rx*(off+4.5),z:seg.a.z+dz*seg.l*t+rz*(off+4.5)};
+    const corners=[[-2.6,-4.5],[2.6,-4.5],[2.6,4.5],[-2.6,4.5]].map(([u,v])=>({x:r2(c.x+dx*u+rx*v),z:r2(c.z+dz*u+rz*v)}));
+    if(blocked(corners,r)||filled.some(f=>Math.hypot(f.c.x-c.x,f.c.z-c.z)<5))continue;
+    filled.push({c,corners,road:r});
+  }
+}
+for(const [i,f] of filled.entries()){
+  buildings.push({id:`terrace-${i}`,footprint:f.corners,height:7.4,levels:2,heightSource:'estimated',use:'residential',source:'approximate',
+    evidence:`residential street (${f.road.name??f.road.id}) with no mapped building outlines: typical terraced house`,
+    roof:'pitched',detail:Math.hypot(f.c.x,f.c.z)<160?'full':'low'});
+}
+
+// ---- Start: the left lane of the road nearest the centre, facing along it ----
+let start=null;
+for(const r of roads){const a=alongOf(r.centreline,{x:0,z:0});if(a.length>40&&(!start||a.d<start.a.d))start={r,a}}
+if(!start)throw new Error('No road near the centre');
+const {r:sr,a:sa}=start;
+const along=Math.min(Math.max(sa.along,15),sa.length-25);
+const at=alongOf(sr.centreline,{x:0,z:0});
+const pt=(()=>{let acc=0;for(let i=1;i<sr.centreline.length;i++){const a=sr.centreline[i-1],b=sr.centreline[i],l=Math.hypot(b.x-a.x,b.z-a.z);
+  if(acc+l>=along){const t=(along-acc)/l;return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,dx:(b.x-a.x)/l,dz:(b.z-a.z)/l}}acc+=l}})();
+// Left of travel (UK): the left lane's middle.
+const lane=sr.oneway?0:sr.lanes.width/2;
+const spawn={position:{x:r2(pt.x+pt.dz*lane),z:r2(pt.z-pt.dx*lane)},headingDeg:r2((Math.atan2(pt.dx,-pt.dz)*180/Math.PI+360)%360),roadId:sr.id};
+void at;
+
+const location={
+  schemaVersion:2,id,name,placeName:name.replace(/ test centre.*$/i,''),
+  fidelity:'geographically-inspired',drivingSide:'left',
+  description:`Generated from OpenStreetMap around ${name} (${LAT.toFixed(5)}, ${LON.toFixed(5)}), ${2*HALF} m square, by tools/centres/build_centre.mjs. Lane widths by road class, speed limits where mapped, building heights from mapped levels or estimated from use, zebra zig-zags estimated. Not surveyed; not an official test route.`,
+  sources:[{title:'OpenStreetMap',licence:'ODbL 1.0, © OpenStreetMap contributors',url:'https://www.openstreetmap.org/copyright',
+    notes:`API 0.6 map call, bbox ${bbox}, ${osmFile?'from a saved file':'downloaded'} ${new Date().toISOString().slice(0,10)}.`}],
+  reviewStatus:'unreviewed',
+  roads:roads.map(({_way,_class,...r})=>r),
+  crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,spawn
+};
+fs.writeFileSync(`content/locations/${id}.json`,JSON.stringify(location,null,1)+'\n');
+console.log(`${id}: ${filled.length} approximate terraced houses added; ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops; start on ${sr.name??sr.id}`);

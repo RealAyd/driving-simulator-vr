@@ -1,0 +1,11 @@
+{
+ "schemaVersion": 1,
+ "id": "goodmayes-free-drive",
+ "locationId": "goodmayes",
+ "title": "Goodmayes (free drive)",
+ "learningObjective": "Practise driving around the streets near Goodmayes test centre: terraced side roads with parked cars, junctions, zebra and signal crossings, bus stops and a mini-roundabout.",
+ "briefing": "Goodmayes free drive\n\nYou start on Ashgrove Road. Drive anywhere you like in the area around Goodmayes test centre, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after ten minutes, if you leave the road or if you hit something.\n\nGenerated from OpenStreetMap data: roads, crossings and mapped buildings follow the map, and houses where the map has none are typical London terraces. It is not an official test route.",
+ "rubricId": "none",
+ "controllerDriving": {"assistedSpeedMph": 25, "accelerationLimit": 1.5},
+ "end": {"completeAfterSeconds": 600, "timeLimitSeconds": 660}
+}

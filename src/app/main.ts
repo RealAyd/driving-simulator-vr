@@ -8,8 +8,10 @@ import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundab
 import brentwoodGuidedJson from '../../content/scenarios/brentwood-guided-traversal.json';
 import kingsRoadJson from '../../content/locations/brentwood-kings-road-zebra.json';
 import kingsRoadZebraJson from '../../content/scenarios/brentwood-kings-road-zebra.json';
+import goodmayesJson from '../../content/locations/goodmayes.json';
+import goodmayesFreeDriveJson from '../../content/scenarios/goodmayes-free-drive.json';
 import {
-  INFO,degToRad,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
+  INFO,degToRad,headingDelta,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
   type AttemptConditions,type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
 } from '../contracts';
 import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
@@ -143,8 +145,8 @@ export async function boot():Promise<void>{
 
   const scene=new Scene(engine);
   configureScene(scene);
-  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
-  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson].map(raw=>{
+  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
+  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson].map(raw=>{
     const s=parseScenario(raw);
     if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
     return [s.id,s] as const;
@@ -409,8 +411,11 @@ export async function boot():Promise<void>{
     const runner=new ScenarioRunner(scenario,zones,new Map(pedestrian?[[pedestrian.id,pedestrian]]:[]),()=>{
       const {x,z}=vehicle.state.position;
       // Wrong way is judged against the exercise route where there is one (junctions join several roads).
-      const s=sampleRoad(road,x,z);
-      const roadHeading=assist?assist.headingAt(x,z):Math.atan2(s.direction.x,-s.direction.z);
+      // Free driving on a road network: the nearest road, either way along it unless it is one-way.
+      let r=road,s=sampleRoad(road,x,z);
+      if(!assist)for(const other of place.roads){if(other===road)continue;const o=sampleRoad(other,x,z);if(o.distance<s.distance){r=other;s=o}}
+      let roadHeading=assist?assist.headingAt(x,z):Math.atan2(s.direction.x,-s.direction.z);
+      if(!assist&&place.roads.length>1&&!r.oneway&&Math.abs(headingDelta(vehicle.state.heading,roadHeading))>Math.PI/2)roadHeading+=Math.PI;
       return {surface:vehicle.surfaceKind,heading:vehicle.state.heading,roadHeading,collidedWith:lastCollision};
     },events);
     runner.onMessage=text=>hud.setTask(text);
@@ -1074,6 +1079,7 @@ export async function boot():Promise<void>{
   const EXERCISES:Record<string,{scenario:string;intro?:string}>={
     brentwood:{scenario:'brentwood-guided-traversal'},
     'kings-road':{scenario:'brentwood-kings-road-zebra'},
+    goodmayes:{scenario:'goodmayes-free-drive'},
     zebra:{scenario:'crossing-restricted-view'},
     'moving-off':{scenario:'moving-off-safely',intro:'moving-off-intro'}
   };
