@@ -58,9 +58,25 @@ export class SunShadows{
     return this.castOnly.some(c=>m.isDescendantOf(c));
   }
 
+  /** Diagnostics: shadow casters drawn into the map last frame, and the map size. */
+  get stats(){const m=this.generator.getShadowMap()!;return {mapSize:m.getSize().width,casters:m.renderList?.length??0}}
+
   dispose():void{this.generator.dispose()}
 }
 
-/** Shadows are on unless the page asks for them off (`?shadows=0`). */
-export const shadowsWanted=(search:string)=>new URLSearchParams(search).get('shadows')!=='0';
+/**
+ * Shadows are on with a graphics processor and off with software rendering (SwiftShader, llvmpipe: an extra
+ * pass there halves the frame rate). `?shadows=1` or `?shadows=0` decides instead.
+ */
+export function shadowsWanted(search:string,renderer:string):boolean{
+  const asked=new URLSearchParams(search).get('shadows');
+  if(asked==='1'||asked==='0')return asked==='1';
+  return !/swiftshader|llvmpipe|softpipe|software/i.test(renderer);
+}
+
+/** The graphics renderer's name, where the browser reports it. */
+export function rendererName(gl:WebGLRenderingContext|null):string{
+  const info=gl?.getExtension('WEBGL_debug_renderer_info');
+  return info&&gl?String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)):'';
+}
 

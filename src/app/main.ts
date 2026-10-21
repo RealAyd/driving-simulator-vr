@@ -61,7 +61,7 @@ import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
 import {buildSignalHeads} from '../world/signals';
 import {StreetModels} from '../world/streetModels';
-import {SunShadows,shadowsWanted} from '../world/shadows';
+import {SunShadows,rendererName,shadowsWanted} from '../world/shadows';
 import {drape,terrainFor} from '../world/terrain';
 import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
@@ -156,7 +156,7 @@ export async function boot():Promise<void>{
   setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
   let world=buildWorld(scene,place,quality,terrain);
   // Sun shadows near the car (the sun belongs to the world, so they are remade with it).
-  const shadowsOn=shadowsWanted(location.search);
+  const shadowsOn=shadowsWanted(location.search,rendererName(engine._gl as WebGLRenderingContext|null));
   let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
   let staticObstacles=new StaticObstacles(place.blocks);
   const spawnOf=(l:typeof place):Pose=>({position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)});
@@ -1432,6 +1432,10 @@ export async function boot():Promise<void>{
     /** The bus models loaded (red buses, asset Batch A). */
     busModels:()=>[singleDecker,doubleDecker].filter(m=>m).map(m=>m!.spec.id),
     sceneryModels:()=>[...props.available],
+    /** Sun shadows: on or off (off with software rendering unless ?shadows=1), map size and casters. */
+    shadows:()=>({on:!!shadows,...(shadows?.stats??{})}),
+    /** Terrain: the location has real ground heights, and the height under the car. */
+    terrain:()=>({on:!!terrain,heightUnderCar:terrain?+terrain.heightAt(vehicle.state.position.x,vehicle.state.position.z).toFixed(2):0}),
     /** Street furniture models in use (asset Batch A). */
     streetModels:()=>streetModels?.available??[],
     /** Whether route guidance is painted on the road in this attempt. */
