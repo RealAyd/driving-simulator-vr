@@ -26,7 +26,8 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   test.setTimeout(400_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('./');
+  // A fixed route: the first direction (a left turn) comes about 170 m from the start.
+  await page.goto('./?routeSeed=1');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await expect(page.locator('[data-drive-mode=test]')).toHaveAttribute('aria-pressed','true');
   await page.click('[data-exercise=goodmayes]');
@@ -39,7 +40,8 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   expect(ex.steps.length).toBeGreaterThanOrEqual(6);
   // Drive (assisted steering keeps to the route) until the examiner has given the first direction and it is done.
   await driveUntil(page,async()=>(await read(page,'examiner()')).index>=1,240_000);
-  expect((await read(page,'examiner()')).index).toBeGreaterThanOrEqual(1);
+  const state=await read(page,'examiner()');
+  expect(state.index,`stuck at ${JSON.stringify((await read(page,'vehicle()')).position)}: ${state.lastSaid}`).toBeGreaterThanOrEqual(1);
   // Still going: the test is not ended by anything along the way.
   expect(await read(page,'session()')).toBe('running');
   const after=await read(page,'examiner()');

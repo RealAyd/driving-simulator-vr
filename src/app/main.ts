@@ -312,6 +312,8 @@ export async function boot():Promise<void>{
   shadows?.castOnlyUnder(cockpit.root);
   // The original hands and arms are drawn; `?driver=1` tries a people model's arms reaching them instead (experimental).
   let driverBody:DriverBody|null=null;
+  // ?routeSeed=N: the same mock test route every time (tests, or to drive a route again); otherwise a new one each test.
+  const routeSeed=Number(new URLSearchParams(location.search).get('routeSeed'))||null;
   if(new URLSearchParams(location.search).get('driver')==='1')
     void DriverBody.load(scene,cockpit.root,head.seat.eye,...(new URLSearchParams(location.search).get('driverModel')?[`assets/models/people/${new URLSearchParams(location.search).get('driverModel')}.glb`]:[])).then(d=>{driverBody=d;if(d)cockpit.hideSimpleArms()});
   const seatNode=new TransformNode('driver-seat',scene);
@@ -453,7 +455,7 @@ export async function boot():Promise<void>{
     // after a wrong turn.
     let routeAssist:SteeringAssist|null=null;
     const examiner=mock?new Examiner(new RoadNetwork(place),()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:Math.abs(vehicle.state.speed)}),{
-      target:2800,seed:Math.floor(Math.random()*1e9),events,listener:mockAssessor!,
+      target:2800,seed:routeSeed??Math.floor(Math.random()*1e9),events,listener:mockAssessor!,
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
       onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}}):null;
     if(examiner){
