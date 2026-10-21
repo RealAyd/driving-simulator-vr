@@ -1,0 +1,2546 @@
+[
+{
+"name": "Aberdeen North",
+"lat": 57.18553,
+"lon": -2.09622,
+"passRate": 43.1,
+"tests": 1724,
+"located": "centre"
+},
+{
+"name": "Aberdeen North LGV",
+"lat": 57.18553,
+"lon": -2.09622,
+"passRate": 46.6,
+"tests": 2368,
+"located": "centre"
+},
+{
+"name": "Abergavenny",
+"lat": 51.81597,
+"lon": -3.01062,
+"passRate": 61.1,
+"tests": 4650,
+"located": "centre"
+},
+{
+"name": "Aberystwyth (Park Avenue)",
+"lat": 52.41154,
+"lon": -4.08027,
+"passRate": 53.2,
+"tests": 1469,
+"located": "street"
+},
+{
+"name": "Airdrie",
+"lat": 55.86612,
+"lon": -3.98048,
+"passRate": 41.3,
+"tests": 6673,
+"located": "town"
+},
+{
+"name": "Alness",
+"lat": 57.69068,
+"lon": -4.26797,
+"passRate": 63.0,
+"tests": 865,
+"located": "centre"
+},
+{
+"name": "Alnwick",
+"lat": 55.41334,
+"lon": -1.70724,
+"passRate": 51.0,
+"tests": 1093,
+"located": "town"
+},
+{
+"name": "Arbroath",
+"lat": 56.55867,
+"lon": -2.58157,
+"passRate": 78.9,
+"tests": 294,
+"located": "town"
+},
+{
+"name": "Ashfield",
+"lat": 53.08977,
+"lon": -1.25188,
+"passRate": 51.2,
+"tests": 9507,
+"located": "town"
+},
+{
+"name": "Ashford (Kent)",
+"lat": 51.14856,
+"lon": 0.87226,
+"passRate": 52.0,
+"tests": 3504,
+"located": "street"
+},
+{
+"name": "Atherton (Manchester)",
+"lat": 53.52946,
+"lon": -2.50734,
+"passRate": 44.4,
+"tests": 7690,
+"located": "centre"
+},
+{
+"name": "Aylesbury",
+"lat": 51.81614,
+"lon": -0.81304,
+"passRate": 48.7,
+"tests": 5864,
+"located": "town"
+},
+{
+"name": "Ayr",
+"lat": 55.4628,
+"lon": -4.63025,
+"passRate": 56.8,
+"tests": 2015,
+"located": "town"
+},
+{
+"name": "Bala",
+"lat": 52.91122,
+"lon": -3.59947,
+"passRate": 61.1,
+"tests": 574,
+"located": "town"
+},
+{
+"name": "Ballater",
+"lat": 57.04951,
+"lon": -3.04052,
+"passRate": 77.1,
+"tests": 166,
+"located": "town"
+},
+{
+"name": "Banbury",
+"lat": 52.05775,
+"lon": -1.34888,
+"passRate": 39.9,
+"tests": 8241,
+"located": "centre"
+},
+{
+"name": "Banff",
+"lat": 57.66455,
+"lon": -2.52175,
+"passRate": 50.6,
+"tests": 253,
+"located": "town"
+},
+{
+"name": "Bangor",
+"lat": 53.22796,
+"lon": -4.12821,
+"passRate": 64.1,
+"tests": 3433,
+"located": "town"
+},
+{
+"name": "Barking (Tanner Street)",
+"lat": 51.54271,
+"lon": 0.07666,
+"passRate": 37.9,
+"tests": 7499,
+"located": "street"
+},
+{
+"name": "Barnet (London)",
+"lat": 51.64514,
+"lon": -0.18591,
+"passRate": 49.9,
+"tests": 9720,
+"located": "centre"
+},
+{
+"name": "Barnsley",
+"lat": 53.55471,
+"lon": -1.5033,
+"passRate": 52.2,
+"tests": 7765,
+"located": "centre"
+},
+{
+"name": "Barnstaple",
+"lat": 51.08041,
+"lon": -4.06005,
+"passRate": 54.7,
+"tests": 3583,
+"located": "town"
+},
+{
+"name": "Barra",
+"lat": 57.00177,
+"lon": -7.46969,
+"passRate": 60.0,
+"tests": 10,
+"located": "town"
+},
+{
+"name": "Barrow In Furness",
+"lat": 54.12888,
+"lon": -3.2269,
+"passRate": 61.9,
+"tests": 1735,
+"located": "town"
+},
+{
+"name": "Barry",
+"lat": 51.40651,
+"lon": -3.26669,
+"passRate": 61.8,
+"tests": 1621,
+"located": "town"
+},
+{
+"name": "Basildon",
+"lat": 51.57024,
+"lon": 0.45836,
+"passRate": 45.6,
+"tests": 4862,
+"located": "town"
+},
+{
+"name": "Basingstoke",
+"lat": 51.24526,
+"lon": -1.11246,
+"passRate": 56.9,
+"tests": 4940,
+"located": "centre"
+},
+{
+"name": "Bedford",
+"lat": 52.13638,
+"lon": -0.4675,
+"passRate": 49.9,
+"tests": 8958,
+"located": "town"
+},
+{
+"name": "Belvedere (London)",
+"lat": 51.48359,
+"lon": 0.14236,
+"passRate": 38.3,
+"tests": 4337,
+"located": "centre"
+},
+{
+"name": "Benbecula Island",
+"lat": 57.44643,
+"lon": -7.33842,
+"passRate": 78.8,
+"tests": 104,
+"located": "town"
+},
+{
+"name": "Berwick-On-Tweed",
+"lat": 55.76924,
+"lon": -2.00265,
+"passRate": 54.3,
+"tests": 667,
+"located": "town"
+},
+{
+"name": "Beverley LGV",
+"lat": 53.84255,
+"lon": -0.43157,
+"passRate": 55.1,
+"tests": 612,
+"located": "town"
+},
+{
+"name": "Birmingham (Garretts Green)",
+"lat": 52.47262,
+"lon": -1.7713,
+"passRate": 42.0,
+"tests": 21871,
+"located": "centre"
+},
+{
+"name": "Birmingham (Kings Heath)",
+"lat": 52.40672,
+"lon": -1.8873,
+"passRate": 47.0,
+"tests": 8488,
+"located": "centre"
+},
+{
+"name": "Birmingham (Kingstanding)",
+"lat": 52.54416,
+"lon": -1.89051,
+"passRate": 44.6,
+"tests": 17909,
+"located": "centre"
+},
+{
+"name": "Birmingham (Shirley)",
+"lat": 52.47262,
+"lon": -1.7713,
+"passRate": 58.1,
+"tests": 9582,
+"located": "centre"
+},
+{
+"name": "Birmingham (South Yardley)",
+"lat": 52.47262,
+"lon": -1.7713,
+"passRate": 41.6,
+"tests": 12709,
+"located": "centre"
+},
+{
+"name": "Bishopbriggs",
+"lat": 55.90439,
+"lon": -4.22486,
+"passRate": 50.5,
+"tests": 5661,
+"located": "town"
+},
+{
+"name": "Blackburn with Darwen",
+"lat": 53.69918,
+"lon": -2.4709,
+"passRate": 47.8,
+"tests": 8885,
+"located": "town"
+},
+{
+"name": "Blackpool",
+"lat": 53.81794,
+"lon": -3.05098,
+"passRate": 49.6,
+"tests": 6271,
+"located": "town"
+},
+{
+"name": "Bletchley",
+"lat": 51.99382,
+"lon": -0.74268,
+"passRate": 45.7,
+"tests": 9783,
+"located": "centre"
+},
+{
+"name": "Blyth",
+"lat": 55.1274,
+"lon": -1.50412,
+"passRate": 47.2,
+"tests": 6493,
+"located": "centre"
+},
+{
+"name": "Bodmin",
+"lat": 50.47073,
+"lon": -4.72432,
+"passRate": 46.1,
+"tests": 5561,
+"located": "town"
+},
+{
+"name": "Bolton (Manchester)",
+"lat": 53.57829,
+"lon": -2.43004,
+"passRate": 56.7,
+"tests": 11879,
+"located": "town"
+},
+{
+"name": "Borehamwood (London)",
+"lat": 51.69044,
+"lon": -0.28066,
+"passRate": 46.8,
+"tests": 7798,
+"located": "town"
+},
+{
+"name": "Boston",
+"lat": 52.97766,
+"lon": -0.0238,
+"passRate": 50.7,
+"tests": 4521,
+"located": "town"
+},
+{
+"name": "Bradford (Heaton)",
+"lat": 53.81622,
+"lon": -1.78856,
+"passRate": 49.5,
+"tests": 7594,
+"located": "street"
+},
+{
+"name": "Bradford (Thornbury)",
+"lat": 53.80302,
+"lon": -1.7049,
+"passRate": 47.1,
+"tests": 7107,
+"located": "street"
+},
+{
+"name": "Brecon",
+"lat": 51.94647,
+"lon": -3.38417,
+"passRate": 58.9,
+"tests": 1565,
+"located": "centre"
+},
+{
+"name": "Bredbury (Manchester)",
+"lat": 53.43046,
+"lon": -2.12484,
+"passRate": 54.2,
+"tests": 9946,
+"located": "centre"
+},
+{
+"name": "Brentwood (London)",
+"lat": 51.61776,
+"lon": 0.28926,
+"passRate": 48.5,
+"tests": 5485,
+"located": "town"
+},
+{
+"name": "Bridgend",
+"lat": 51.50499,
+"lon": -3.57567,
+"passRate": 53.1,
+"tests": 6938,
+"located": "town"
+},
+{
+"name": "Bridlington",
+"lat": 54.08224,
+"lon": -0.19086,
+"passRate": 56.4,
+"tests": 2766,
+"located": "town"
+},
+{
+"name": "Bristol (Avonmouth)",
+"lat": 51.47209,
+"lon": -2.48882,
+"passRate": 53.7,
+"tests": 9980,
+"located": "centre"
+},
+{
+"name": "Bristol (Kingswood)",
+"lat": 51.47209,
+"lon": -2.48882,
+"passRate": 52.0,
+"tests": 11483,
+"located": "centre"
+},
+{
+"name": "Bromley (London)",
+"lat": 51.37504,
+"lon": -0.01093,
+"passRate": 51.7,
+"tests": 10868,
+"located": "centre"
+},
+{
+"name": "Buckie",
+"lat": 57.67633,
+"lon": -2.96489,
+"passRate": 52.6,
+"tests": 274,
+"located": "town"
+},
+{
+"name": "Burgess Hill",
+"lat": 50.95259,
+"lon": -0.15316,
+"passRate": 43.2,
+"tests": 11191,
+"located": "centre"
+},
+{
+"name": "Burton on Trent",
+"lat": 52.80274,
+"lon": -1.62992,
+"passRate": 54.1,
+"tests": 6682,
+"located": "town"
+},
+{
+"name": "Bury (Manchester)",
+"lat": 53.59269,
+"lon": -2.29877,
+"passRate": 40.3,
+"tests": 8136,
+"located": "town"
+},
+{
+"name": "Bury St Edmunds",
+"lat": 52.24604,
+"lon": 0.71252,
+"passRate": 45.7,
+"tests": 8452,
+"located": "town"
+},
+{
+"name": "Buxton",
+"lat": 53.25934,
+"lon": -1.91008,
+"passRate": 57.0,
+"tests": 3449,
+"located": "town"
+},
+{
+"name": "Callander",
+"lat": 56.24369,
+"lon": -4.2148,
+"passRate": 47.4,
+"tests": 133,
+"located": "town"
+},
+{
+"name": "Camborne",
+"lat": 50.21388,
+"lon": -5.29903,
+"passRate": 41.3,
+"tests": 5967,
+"located": "town"
+},
+{
+"name": "Cambridge (Brookmount Court)",
+"lat": 52.21559,
+"lon": 0.02321,
+"passRate": 50.5,
+"tests": 13610,
+"located": "centre"
+},
+{
+"name": "Campbeltown",
+"lat": 55.42419,
+"lon": -5.6051,
+"passRate": 62.6,
+"tests": 115,
+"located": "town"
+},
+{
+"name": "Canterbury",
+"lat": 51.38549,
+"lon": -0.11893,
+"passRate": 50.3,
+"tests": 3322,
+"located": "centre"
+},
+{
+"name": "Cardiff (Llanishen)",
+"lat": 51.52283,
+"lon": -3.19232,
+"passRate": 51.3,
+"tests": 14852,
+"located": "centre"
+},
+{
+"name": "Cardigan",
+"lat": 52.08549,
+"lon": -4.65839,
+"passRate": 49.8,
+"tests": 1340,
+"located": "centre"
+},
+{
+"name": "Carlisle",
+"lat": 54.89485,
+"lon": -2.93623,
+"passRate": 54.9,
+"tests": 3684,
+"located": "town"
+},
+{
+"name": "Carlisle LGV (Cars)",
+"lat": 54.89485,
+"lon": -2.93623,
+"passRate": 61.9,
+"tests": 63,
+"located": "town"
+},
+{
+"name": "Carmarthen",
+"lat": 51.85913,
+"lon": -4.31159,
+"passRate": 54.4,
+"tests": 2053,
+"located": "town"
+},
+{
+"name": "Castle Douglas",
+"lat": 54.9401,
+"lon": -3.93054,
+"passRate": 50.2,
+"tests": 516,
+"located": "town"
+},
+{
+"name": "Chadderton",
+"lat": 53.54546,
+"lon": -2.13783,
+"passRate": 44.9,
+"tests": 12454,
+"located": "town"
+},
+{
+"name": "Cheetham Hill (Manchester)",
+"lat": 53.50329,
+"lon": -2.23448,
+"passRate": 43.7,
+"tests": 10768,
+"located": "town"
+},
+{
+"name": "Chelmsford (Hanbury Road)",
+"lat": 51.72381,
+"lon": 0.44635,
+"passRate": 44.7,
+"tests": 10758,
+"located": "street"
+},
+{
+"name": "Cheltenham",
+"lat": 51.90346,
+"lon": -2.06496,
+"passRate": 46.7,
+"tests": 6545,
+"located": "centre"
+},
+{
+"name": "Chertsey (London)",
+"lat": 51.47587,
+"lon": -0.2599,
+"passRate": 50.3,
+"tests": 8669,
+"located": "town"
+},
+{
+"name": "Chester",
+"lat": 53.25953,
+"lon": -2.52575,
+"passRate": 46.2,
+"tests": 8026,
+"located": "centre"
+},
+{
+"name": "Chesterfield",
+"lat": 53.23521,
+"lon": -1.42641,
+"passRate": 54.5,
+"tests": 4608,
+"located": "town"
+},
+{
+"name": "Chichester",
+"lat": 50.83649,
+"lon": -0.77917,
+"passRate": 64.2,
+"tests": 5295,
+"located": "town"
+},
+{
+"name": "Chingford (London)",
+"lat": 51.63352,
+"lon": 0.00902,
+"passRate": 36.5,
+"tests": 13235,
+"located": "centre"
+},
+{
+"name": "Chippenham",
+"lat": 51.45876,
+"lon": -2.1159,
+"passRate": 50.6,
+"tests": 7641,
+"located": "town"
+},
+{
+"name": "Chorley",
+"lat": 53.65753,
+"lon": -2.61856,
+"passRate": 48.3,
+"tests": 5257,
+"located": "centre"
+},
+{
+"name": "Clacton-on-Sea",
+"lat": 51.7884,
+"lon": 1.15279,
+"passRate": 47.4,
+"tests": 2867,
+"located": "town"
+},
+{
+"name": "Colchester",
+"lat": 51.88969,
+"lon": 0.89947,
+"passRate": 48.0,
+"tests": 9977,
+"located": "town"
+},
+{
+"name": "Coventry",
+"lat": 52.46363,
+"lon": -1.47582,
+"passRate": 42.3,
+"tests": 9102,
+"located": "centre"
+},
+{
+"name": "Crawley",
+"lat": 51.08094,
+"lon": -0.20175,
+"passRate": 40.1,
+"tests": 7869,
+"located": "centre"
+},
+{
+"name": "Crewe",
+"lat": 53.08991,
+"lon": -2.4437,
+"passRate": 44.4,
+"tests": 4725,
+"located": "centre"
+},
+{
+"name": "Crieff",
+"lat": 56.37272,
+"lon": -3.83975,
+"passRate": 66.1,
+"tests": 121,
+"located": "town"
+},
+{
+"name": "Culham LGV",
+"lat": 51.65629,
+"lon": -1.25507,
+"passRate": 61.1,
+"tests": 54,
+"located": "town"
+},
+{
+"name": "Cumnock",
+"lat": 55.45406,
+"lon": -4.2661,
+"passRate": 61.1,
+"tests": 906,
+"located": "town"
+},
+{
+"name": "Darlington",
+"lat": 54.51636,
+"lon": -1.50941,
+"passRate": 49.2,
+"tests": 6828,
+"located": "centre"
+},
+{
+"name": "Derby (Alvaston)",
+"lat": 52.90185,
+"lon": -1.43092,
+"passRate": 51.3,
+"tests": 9260,
+"located": "centre"
+},
+{
+"name": "Doncaster",
+"lat": 53.52277,
+"lon": -1.13353,
+"passRate": 42.0,
+"tests": 7865,
+"located": "town"
+},
+{
+"name": "Dorchester",
+"lat": 50.71315,
+"lon": -2.4713,
+"passRate": 66.7,
+"tests": 4561,
+"located": "centre"
+},
+{
+"name": "Dudley",
+"lat": 52.51108,
+"lon": -2.08168,
+"passRate": 45.7,
+"tests": 11354,
+"located": "town"
+},
+{
+"name": "Dumbarton",
+"lat": 55.94324,
+"lon": -4.57085,
+"passRate": 53.5,
+"tests": 1812,
+"located": "town"
+},
+{
+"name": "Dumfries",
+"lat": 55.06918,
+"lon": -3.61069,
+"passRate": 47.0,
+"tests": 2798,
+"located": "town"
+},
+{
+"name": "Dundee",
+"lat": 56.46059,
+"lon": -2.97019,
+"passRate": 60.3,
+"tests": 5851,
+"located": "town"
+},
+{
+"name": "Dunfermline (Vine)",
+"lat": 56.0757,
+"lon": -3.42613,
+"passRate": 43.3,
+"tests": 4422,
+"located": "centre"
+},
+{
+"name": "Dunoon",
+"lat": 55.97479,
+"lon": -4.93623,
+"passRate": 62.8,
+"tests": 183,
+"located": "centre"
+},
+{
+"name": "Duns",
+"lat": 55.77784,
+"lon": -2.34385,
+"passRate": 74.2,
+"tests": 132,
+"located": "town"
+},
+{
+"name": "Durham",
+"lat": 54.74651,
+"lon": -1.60998,
+"passRate": 49.6,
+"tests": 8228,
+"located": "centre"
+},
+{
+"name": "East Kilbride",
+"lat": 55.76057,
+"lon": -4.17766,
+"passRate": 46.4,
+"tests": 2451,
+"located": "town"
+},
+{
+"name": "Eastbourne",
+"lat": 50.78249,
+"lon": 0.3097,
+"passRate": 52.1,
+"tests": 5609,
+"located": "centre"
+},
+{
+"name": "Edinburgh (Currie)",
+"lat": 55.8999,
+"lon": -3.30781,
+"passRate": 43.2,
+"tests": 7475,
+"located": "centre"
+},
+{
+"name": "Edinburgh (Musselburgh)",
+"lat": 55.9428,
+"lon": -3.06719,
+"passRate": 47.0,
+"tests": 7800,
+"located": "centre"
+},
+{
+"name": "Elgin",
+"lat": 57.65128,
+"lon": -3.31797,
+"passRate": 44.5,
+"tests": 2184,
+"located": "centre"
+},
+{
+"name": "Enfield (Brancroft Way)",
+"lat": 52.30837,
+"lon": -1.94645,
+"passRate": 42.4,
+"tests": 474,
+"located": "centre"
+},
+{
+"name": "Enfield (Innova Business Park)",
+"lat": 52.30837,
+"lon": -1.94645,
+"passRate": 54.1,
+"tests": 8042,
+"located": "centre"
+},
+{
+"name": "Erith (London)",
+"lat": 51.48359,
+"lon": 0.14236,
+"passRate": 49.3,
+"tests": 4921,
+"located": "centre"
+},
+{
+"name": "Exeter",
+"lat": 50.69828,
+"lon": -3.51583,
+"passRate": 47.9,
+"tests": 8714,
+"located": "centre"
+},
+{
+"name": "Exeter LGV",
+"lat": 50.69828,
+"lon": -3.51583,
+"passRate": 36.1,
+"tests": 216,
+"located": "centre"
+},
+{
+"name": "Farnborough",
+"lat": 51.27406,
+"lon": -0.77073,
+"passRate": 58.3,
+"tests": 8041,
+"located": "centre"
+},
+{
+"name": "Featherstone",
+"lat": 53.67769,
+"lon": -1.35827,
+"passRate": 34.1,
+"tests": 14070,
+"located": "town"
+},
+{
+"name": "Folkestone",
+"lat": 51.07913,
+"lon": 1.17941,
+"passRate": 45.4,
+"tests": 4370,
+"located": "town"
+},
+{
+"name": "Forfar",
+"lat": 56.6443,
+"lon": -2.88821,
+"passRate": 68.5,
+"tests": 356,
+"located": "town"
+},
+{
+"name": "Fort William",
+"lat": 56.81783,
+"lon": -5.11095,
+"passRate": 62.0,
+"tests": 308,
+"located": "town"
+},
+{
+"name": "Fraserburgh",
+"lat": 57.6936,
+"lon": -2.00515,
+"passRate": 60.7,
+"tests": 496,
+"located": "town"
+},
+{
+"name": "Gairloch",
+"lat": 57.72801,
+"lon": -5.69034,
+"passRate": 69.2,
+"tests": 52,
+"located": "town"
+},
+{
+"name": "Galashiels",
+"lat": 55.61565,
+"lon": -2.80616,
+"passRate": 49.1,
+"tests": 2193,
+"located": "town"
+},
+{
+"name": "Gateshead",
+"lat": 54.96258,
+"lon": -1.60193,
+"passRate": 37.4,
+"tests": 8109,
+"located": "town"
+},
+{
+"name": "Gillingham",
+"lat": 51.38717,
+"lon": 0.54616,
+"passRate": 57.2,
+"tests": 14761,
+"located": "town"
+},
+{
+"name": "Girvan",
+"lat": 55.24132,
+"lon": -4.85536,
+"passRate": 68.7,
+"tests": 249,
+"located": "town"
+},
+{
+"name": "Glasgow (Anniesland)",
+"lat": 55.88924,
+"lon": -4.33845,
+"passRate": 40.8,
+"tests": 8560,
+"located": "centre"
+},
+{
+"name": "Glasgow (Baillieston)",
+"lat": 55.86076,
+"lon": -4.11246,
+"passRate": 44.4,
+"tests": 9478,
+"located": "centre"
+},
+{
+"name": "Glasgow (Shieldhall)",
+"lat": 55.86415,
+"lon": -4.34911,
+"passRate": 37.7,
+"tests": 6792,
+"located": "centre"
+},
+{
+"name": "Gloucester",
+"lat": 51.86537,
+"lon": -2.24582,
+"passRate": 49.6,
+"tests": 6511,
+"located": "town"
+},
+{
+"name": "Golspie",
+"lat": 57.97366,
+"lon": -3.97555,
+"passRate": 68.0,
+"tests": 100,
+"located": "town"
+},
+{
+"name": "Goodmayes (London)",
+"lat": 51.5658,
+"lon": 0.11193,
+"passRate": 43.7,
+"tests": 21961,
+"located": "town"
+},
+{
+"name": "Gosforth",
+"lat": 54.4234,
+"lon": -3.42569,
+"passRate": 47.5,
+"tests": 10234,
+"located": "town"
+},
+{
+"name": "Grangemouth",
+"lat": 56.0189,
+"lon": -3.72303,
+"passRate": 46.4,
+"tests": 4615,
+"located": "town"
+},
+{
+"name": "Grantham (Somerby)",
+"lat": 52.90237,
+"lon": -0.62582,
+"passRate": 58.1,
+"tests": 5959,
+"located": "street"
+},
+{
+"name": "Grantown-On-Spey",
+"lat": 57.32951,
+"lon": -3.6104,
+"passRate": 62.2,
+"tests": 180,
+"located": "town"
+},
+{
+"name": "Greenford (Horsenden Lane)",
+"lat": 51.55016,
+"lon": -0.33083,
+"passRate": 40.5,
+"tests": 7106,
+"located": "centre"
+},
+{
+"name": "Greenham",
+"lat": 51.37575,
+"lon": -1.28982,
+"passRate": 52.1,
+"tests": 3566,
+"located": "centre"
+},
+{
+"name": "Greenock",
+"lat": 55.94734,
+"lon": -4.75647,
+"passRate": 42.4,
+"tests": 2036,
+"located": "town"
+},
+{
+"name": "Grimsby Coldwater",
+"lat": 53.58062,
+"lon": -0.11358,
+"passRate": 42.7,
+"tests": 5754,
+"located": "centre"
+},
+{
+"name": "Guildford",
+"lat": 51.23561,
+"lon": -0.57321,
+"passRate": 51.8,
+"tests": 5032,
+"located": "town"
+},
+{
+"name": "Haddington",
+"lat": 55.96083,
+"lon": -2.78206,
+"passRate": 62.2,
+"tests": 1890,
+"located": "centre"
+},
+{
+"name": "Halifax",
+"lat": 53.72292,
+"lon": -1.86049,
+"passRate": 44.7,
+"tests": 4959,
+"located": "town"
+},
+{
+"name": "Hamilton",
+"lat": 55.77009,
+"lon": -4.04201,
+"passRate": 39.5,
+"tests": 5608,
+"located": "centre"
+},
+{
+"name": "Hartlepool",
+"lat": 54.68573,
+"lon": -1.20937,
+"passRate": 49.7,
+"tests": 5725,
+"located": "town"
+},
+{
+"name": "Hastings (Ore)",
+"lat": 50.86686,
+"lon": 0.59163,
+"passRate": 49.2,
+"tests": 3065,
+"located": "street"
+},
+{
+"name": "Hawick",
+"lat": 55.42256,
+"lon": -2.7867,
+"passRate": 61.1,
+"tests": 427,
+"located": "town"
+},
+{
+"name": "Heckmondwike",
+"lat": 53.70744,
+"lon": -1.67545,
+"passRate": 46.7,
+"tests": 5232,
+"located": "town"
+},
+{
+"name": "Hendon (London)",
+"lat": 51.58972,
+"lon": -0.2216,
+"passRate": 49.5,
+"tests": 11608,
+"located": "town"
+},
+{
+"name": "Hereford",
+"lat": 52.05538,
+"lon": -2.71517,
+"passRate": 59.4,
+"tests": 3352,
+"located": "town"
+},
+{
+"name": "Herne Bay",
+"lat": 51.37195,
+"lon": 1.1307,
+"passRate": 55.4,
+"tests": 7912,
+"located": "town"
+},
+{
+"name": "Hexham",
+"lat": 54.97148,
+"lon": -2.10179,
+"passRate": 56.7,
+"tests": 1213,
+"located": "town"
+},
+{
+"name": "Heysham",
+"lat": 54.0495,
+"lon": -2.89031,
+"passRate": 55.0,
+"tests": 3735,
+"located": "town"
+},
+{
+"name": "High Wycombe",
+"lat": 51.63174,
+"lon": -0.75596,
+"passRate": 51.0,
+"tests": 3891,
+"located": "town"
+},
+{
+"name": "Hinckley",
+"lat": 52.54106,
+"lon": -1.37294,
+"passRate": 48.3,
+"tests": 3465,
+"located": "town"
+},
+{
+"name": "Hornchurch (London)",
+"lat": 51.55926,
+"lon": 0.22091,
+"passRate": 48.3,
+"tests": 6310,
+"located": "centre"
+},
+{
+"name": "Horsforth",
+"lat": 53.83993,
+"lon": -1.62186,
+"passRate": 51.3,
+"tests": 11935,
+"located": "centre"
+},
+{
+"name": "Huddersfield",
+"lat": 53.64666,
+"lon": -1.78225,
+"passRate": 48.4,
+"tests": 9223,
+"located": "town"
+},
+{
+"name": "Hull",
+"lat": 53.76239,
+"lon": -0.33012,
+"passRate": 45.2,
+"tests": 9439,
+"located": "town"
+},
+{
+"name": "Huntly",
+"lat": 57.44748,
+"lon": -2.78642,
+"passRate": 62.5,
+"tests": 232,
+"located": "town"
+},
+{
+"name": "Inveraray",
+"lat": 56.23035,
+"lon": -5.07309,
+"passRate": 85.1,
+"tests": 67,
+"located": "town"
+},
+{
+"name": "Inverness (Longman Drive)",
+"lat": 57.49131,
+"lon": -4.2325,
+"passRate": 45.9,
+"tests": 2933,
+"located": "street"
+},
+{
+"name": "Inverurie",
+"lat": 57.28395,
+"lon": -2.37429,
+"passRate": 54.3,
+"tests": 1090,
+"located": "town"
+},
+{
+"name": "Ipswich",
+"lat": 52.03077,
+"lon": 1.21896,
+"passRate": 63.1,
+"tests": 10724,
+"located": "centre"
+},
+{
+"name": "Irvine",
+"lat": 55.61313,
+"lon": -4.66964,
+"passRate": 49.2,
+"tests": 5306,
+"located": "town"
+},
+{
+"name": "Isle of Mull",
+"lat": 56.4597,
+"lon": -5.86206,
+"passRate": 71.4,
+"tests": 28,
+"located": "town"
+},
+{
+"name": "Isle of Skye (Portree)",
+"lat": 57.41781,
+"lon": -6.20992,
+"passRate": 69.9,
+"tests": 133,
+"located": "street"
+},
+{
+"name": "Isles of Scilly",
+"lat": 49.92034,
+"lon": -6.29288,
+"passRate": 87.5,
+"tests": 8,
+"located": "town"
+},
+{
+"name": "Isleworth (Fleming Way)",
+"lat": 51.46654,
+"lon": -0.3374,
+"passRate": 51.8,
+"tests": 12106,
+"located": "street"
+},
+{
+"name": "Kelso",
+"lat": 55.59838,
+"lon": -2.43384,
+"passRate": 57.0,
+"tests": 381,
+"located": "town"
+},
+{
+"name": "Kendal (Oxenholme Road)",
+"lat": 54.31106,
+"lon": -2.7354,
+"passRate": 64.8,
+"tests": 2149,
+"located": "centre"
+},
+{
+"name": "Kettering",
+"lat": 52.37793,
+"lon": -0.72522,
+"passRate": 46.0,
+"tests": 8489,
+"located": "centre"
+},
+{
+"name": "Kings Lynn",
+"lat": 52.7471,
+"lon": 0.42067,
+"passRate": 46.0,
+"tests": 7405,
+"located": "centre"
+},
+{
+"name": "Kingussie",
+"lat": 57.08028,
+"lon": -4.05116,
+"passRate": 64.1,
+"tests": 131,
+"located": "town"
+},
+{
+"name": "Kirkcaldy",
+"lat": 56.13836,
+"lon": -3.12527,
+"passRate": 47.5,
+"tests": 5209,
+"located": "centre"
+},
+{
+"name": "Knaresborough",
+"lat": 54.00792,
+"lon": -1.46683,
+"passRate": 58.5,
+"tests": 5305,
+"located": "town"
+},
+{
+"name": "Kyle of Lochalsh",
+"lat": 57.28142,
+"lon": -5.71507,
+"passRate": 58.5,
+"tests": 142,
+"located": "town"
+},
+{
+"name": "Lanark",
+"lat": 55.77009,
+"lon": -4.04201,
+"passRate": 55.0,
+"tests": 1845,
+"located": "centre"
+},
+{
+"name": "Launceston",
+"lat": 50.61445,
+"lon": -4.33635,
+"passRate": 48.3,
+"tests": 2286,
+"located": "centre"
+},
+{
+"name": "Lee On The Solent",
+"lat": 50.8029,
+"lon": -1.20134,
+"passRate": 59.6,
+"tests": 10409,
+"located": "town"
+},
+{
+"name": "Leeds",
+"lat": 53.80608,
+"lon": -1.50566,
+"passRate": 50.2,
+"tests": 7346,
+"located": "centre"
+},
+{
+"name": "Leicester (Cannock Street)",
+"lat": 52.6624,
+"lon": -1.07981,
+"passRate": 37.7,
+"tests": 11638,
+"located": "street"
+},
+{
+"name": "Leicester (Wigston)",
+"lat": 52.58107,
+"lon": -1.13027,
+"passRate": 43.9,
+"tests": 16361,
+"located": "street"
+},
+{
+"name": "Leighton Buzzard (Stanbridge Road)",
+"lat": 51.91289,
+"lon": -0.64044,
+"passRate": 51.0,
+"tests": 7529,
+"located": "street"
+},
+{
+"name": "Lerwick",
+"lat": 60.15311,
+"lon": -1.14271,
+"passRate": 67.8,
+"tests": 432,
+"located": "town"
+},
+{
+"name": "Letchworth",
+"lat": 51.97871,
+"lon": -0.21523,
+"passRate": 58.3,
+"tests": 5032,
+"located": "centre"
+},
+{
+"name": "Lichfield",
+"lat": 52.68437,
+"lon": -1.82753,
+"passRate": 48.6,
+"tests": 8490,
+"located": "town"
+},
+{
+"name": "Lincoln",
+"lat": 53.20277,
+"lon": -0.61335,
+"passRate": 49.8,
+"tests": 6345,
+"located": "centre"
+},
+{
+"name": "Livingston",
+"lat": 55.88296,
+"lon": -3.51758,
+"passRate": 50.7,
+"tests": 4486,
+"located": "town"
+},
+{
+"name": "Llanelli",
+"lat": 51.68608,
+"lon": -4.15509,
+"passRate": 51.0,
+"tests": 3442,
+"located": "centre"
+},
+{
+"name": "Llantrisant",
+"lat": 51.54129,
+"lon": -3.37479,
+"passRate": 50.6,
+"tests": 8554,
+"located": "town"
+},
+{
+"name": "Lochgilphead",
+"lat": 56.0375,
+"lon": -5.43309,
+"passRate": 62.5,
+"tests": 144,
+"located": "town"
+},
+{
+"name": "Loughborough",
+"lat": 52.78088,
+"lon": -1.20103,
+"passRate": 43.7,
+"tests": 5769,
+"located": "centre"
+},
+{
+"name": "Loughton (London)",
+"lat": 51.46681,
+"lon": 0.14686,
+"passRate": 48.0,
+"tests": 6009,
+"located": "town"
+},
+{
+"name": "Louth",
+"lat": 53.36752,
+"lon": -0.00224,
+"passRate": 54.4,
+"tests": 829,
+"located": "town"
+},
+{
+"name": "Lowestoft(Mobbs Way)",
+"lat": 52.48661,
+"lon": 1.71771,
+"passRate": 46.1,
+"tests": 4921,
+"located": "street"
+},
+{
+"name": "Ludlow",
+"lat": 52.36799,
+"lon": -2.71931,
+"passRate": 59.6,
+"tests": 3529,
+"located": "town"
+},
+{
+"name": "Luton",
+"lat": 51.87773,
+"lon": -0.42013,
+"passRate": 40.1,
+"tests": 8304,
+"located": "centre"
+},
+{
+"name": "Macclesfield",
+"lat": 53.26066,
+"lon": -2.12552,
+"passRate": 49.9,
+"tests": 4910,
+"located": "town"
+},
+{
+"name": "Maidstone",
+"lat": 51.27483,
+"lon": 0.52316,
+"passRate": 58.0,
+"tests": 6330,
+"located": "town"
+},
+{
+"name": "Mallaig",
+"lat": 57.00613,
+"lon": -5.82945,
+"passRate": 63.0,
+"tests": 46,
+"located": "town"
+},
+{
+"name": "Malton",
+"lat": 54.13921,
+"lon": -0.79953,
+"passRate": 66.7,
+"tests": 562,
+"located": "town"
+},
+{
+"name": "Melton Mowbray",
+"lat": 52.76958,
+"lon": -0.89313,
+"passRate": 63.9,
+"tests": 2486,
+"located": "centre"
+},
+{
+"name": "Merthyr Tydfil",
+"lat": 51.74557,
+"lon": -3.37861,
+"passRate": 53.5,
+"tests": 3703,
+"located": "town"
+},
+{
+"name": "Middlesbrough",
+"lat": 54.57604,
+"lon": -1.2344,
+"passRate": 48.3,
+"tests": 8952,
+"located": "town"
+},
+{
+"name": "Mill Hill (London)",
+"lat": 51.61544,
+"lon": -0.23307,
+"passRate": 51.1,
+"tests": 8688,
+"located": "town"
+},
+{
+"name": "Mitcham (London)",
+"lat": 51.4058,
+"lon": -0.16408,
+"passRate": 48.9,
+"tests": 13825,
+"located": "town"
+},
+{
+"name": "Monmouth",
+"lat": 51.80989,
+"lon": -2.71604,
+"passRate": 61.2,
+"tests": 1407,
+"located": "town"
+},
+{
+"name": "Montrose",
+"lat": 56.71143,
+"lon": -2.46815,
+"passRate": 66.7,
+"tests": 633,
+"located": "town"
+},
+{
+"name": "Morden (London)",
+"lat": 51.38622,
+"lon": -0.21181,
+"passRate": 48.8,
+"tests": 16260,
+"located": "centre"
+},
+{
+"name": "Nelson",
+"lat": 53.76038,
+"lon": -2.75181,
+"passRate": 47.9,
+"tests": 6366,
+"located": "centre"
+},
+{
+"name": "Newport (Gwent)",
+"lat": 51.57024,
+"lon": -2.9702,
+"passRate": 51.0,
+"tests": 7106,
+"located": "centre"
+},
+{
+"name": "Newport (Isle of Wight)",
+"lat": 51.57024,
+"lon": -2.9702,
+"passRate": 52.4,
+"tests": 3875,
+"located": "centre"
+},
+{
+"name": "Newton Abbot",
+"lat": 50.52964,
+"lon": -3.61121,
+"passRate": 51.9,
+"tests": 6263,
+"located": "town"
+},
+{
+"name": "Newton Stewart",
+"lat": 54.95905,
+"lon": -4.48367,
+"passRate": 63.2,
+"tests": 201,
+"located": "town"
+},
+{
+"name": "Newtown",
+"lat": 52.51358,
+"lon": -3.31437,
+"passRate": 63.7,
+"tests": 1740,
+"located": "town"
+},
+{
+"name": "Norris Green (Liverpool)",
+"lat": 53.44411,
+"lon": -2.93043,
+"passRate": 38.7,
+"tests": 13265,
+"located": "centre"
+},
+{
+"name": "Northallerton",
+"lat": 54.34048,
+"lon": -1.43449,
+"passRate": 58.6,
+"tests": 2314,
+"located": "town"
+},
+{
+"name": "Northampton",
+"lat": 52.23433,
+"lon": -0.9028,
+"passRate": 50.4,
+"tests": 12825,
+"located": "town"
+},
+{
+"name": "Northwich",
+"lat": 53.25953,
+"lon": -2.52575,
+"passRate": 54.7,
+"tests": 3226,
+"located": "centre"
+},
+{
+"name": "Norwich (Jupiter Road)",
+"lat": 52.65756,
+"lon": 1.28283,
+"passRate": 42.2,
+"tests": 3032,
+"located": "street"
+},
+{
+"name": "Norwich (Peachman Way)",
+"lat": 52.63486,
+"lon": 1.37088,
+"passRate": 57.0,
+"tests": 11012,
+"located": "street"
+},
+{
+"name": "Nottingham (Chilwell)",
+"lat": 53.00636,
+"lon": -1.25115,
+"passRate": 43.9,
+"tests": 10561,
+"located": "centre"
+},
+{
+"name": "Nottingham (Colwick)",
+"lat": 52.95551,
+"lon": -1.06878,
+"passRate": 45.5,
+"tests": 11849,
+"located": "centre"
+},
+{
+"name": "Nuneaton",
+"lat": 52.46363,
+"lon": -1.47582,
+"passRate": 52.5,
+"tests": 6634,
+"located": "centre"
+},
+{
+"name": "Oban",
+"lat": 56.41202,
+"lon": -5.47237,
+"passRate": 61.3,
+"tests": 287,
+"located": "town"
+},
+{
+"name": "Orkney",
+"lat": 58.94182,
+"lon": -3.12969,
+"passRate": 66.0,
+"tests": 350,
+"located": "town"
+},
+{
+"name": "Oswestry",
+"lat": 52.86031,
+"lon": -3.05482,
+"passRate": 55.6,
+"tests": 1660,
+"located": "town"
+},
+{
+"name": "Oxford (Cowley)",
+"lat": 51.74094,
+"lon": -1.20239,
+"passRate": 48.2,
+"tests": 6449,
+"located": "centre"
+},
+{
+"name": "Paisley",
+"lat": 55.84558,
+"lon": -4.42396,
+"passRate": 46.6,
+"tests": 5777,
+"located": "town"
+},
+{
+"name": "Peebles",
+"lat": 55.65176,
+"lon": -3.18855,
+"passRate": 67.0,
+"tests": 528,
+"located": "town"
+},
+{
+"name": "Pembroke Dock",
+"lat": 51.69354,
+"lon": -4.9392,
+"passRate": 57.9,
+"tests": 2077,
+"located": "town"
+},
+{
+"name": "Penzance",
+"lat": 50.11948,
+"lon": -5.53525,
+"passRate": 49.2,
+"tests": 671,
+"located": "town"
+},
+{
+"name": "Perth (Arran Road)",
+"lat": 56.41751,
+"lon": -3.45898,
+"passRate": 46.0,
+"tests": 2606,
+"located": "street"
+},
+{
+"name": "Peterborough",
+"lat": 52.21559,
+"lon": 0.02321,
+"passRate": 50.2,
+"tests": 11021,
+"located": "centre"
+},
+{
+"name": "Peterhead",
+"lat": 57.50529,
+"lon": -1.78132,
+"passRate": 57.8,
+"tests": 1400,
+"located": "town"
+},
+{
+"name": "Pinner (London)",
+"lat": 51.59692,
+"lon": -0.39977,
+"passRate": 50.3,
+"tests": 14672,
+"located": "centre"
+},
+{
+"name": "Plymouth",
+"lat": 50.41743,
+"lon": -4.18559,
+"passRate": 40.8,
+"tests": 9867,
+"located": "centre"
+},
+{
+"name": "Plymouth LGV",
+"lat": 50.41743,
+"lon": -4.18559,
+"passRate": 20.3,
+"tests": 64,
+"located": "centre"
+},
+{
+"name": "Pontefract",
+"lat": 53.69174,
+"lon": -1.31057,
+"passRate": 47.8,
+"tests": 4883,
+"located": "town"
+},
+{
+"name": "Poole",
+"lat": 50.7402,
+"lon": -1.95375,
+"passRate": 48.4,
+"tests": 9639,
+"located": "town"
+},
+{
+"name": "Portsmouth",
+"lat": 50.80003,
+"lon": -1.0906,
+"passRate": 51.8,
+"tests": 11305,
+"located": "town"
+},
+{
+"name": "Preston",
+"lat": 53.76038,
+"lon": -2.75181,
+"passRate": 53.7,
+"tests": 11380,
+"located": "centre"
+},
+{
+"name": "Pwllheli",
+"lat": 52.88791,
+"lon": -4.41876,
+"passRate": 66.0,
+"tests": 750,
+"located": "town"
+},
+{
+"name": "Reading",
+"lat": 51.45642,
+"lon": -0.97007,
+"passRate": 49.8,
+"tests": 6877,
+"located": "town"
+},
+{
+"name": "Redditch",
+"lat": 52.30837,
+"lon": -1.94645,
+"passRate": 46.7,
+"tests": 4660,
+"located": "centre"
+},
+{
+"name": "Rhyl",
+"lat": 53.32074,
+"lon": -3.49073,
+"passRate": 55.9,
+"tests": 3232,
+"located": "town"
+},
+{
+"name": "Rochdale (Manchester)",
+"lat": 53.61537,
+"lon": -2.15576,
+"passRate": 41.2,
+"tests": 9790,
+"located": "town"
+},
+{
+"name": "Rotherham",
+"lat": 53.43104,
+"lon": -1.35519,
+"passRate": 51.3,
+"tests": 5817,
+"located": "town"
+},
+{
+"name": "Rugby",
+"lat": 52.37267,
+"lon": -1.262,
+"passRate": 46.0,
+"tests": 7174,
+"located": "town"
+},
+{
+"name": "Sale (Manchester)",
+"lat": 53.41934,
+"lon": -2.32002,
+"passRate": 49.1,
+"tests": 9977,
+"located": "centre"
+},
+{
+"name": "Salisbury",
+"lat": 51.07219,
+"lon": -1.78728,
+"passRate": 52.5,
+"tests": 5624,
+"located": "centre"
+},
+{
+"name": "Scarborough",
+"lat": 54.282,
+"lon": -0.40119,
+"passRate": 51.7,
+"tests": 2658,
+"located": "town"
+},
+{
+"name": "Scunthorpe",
+"lat": 53.59225,
+"lon": -0.64508,
+"passRate": 44.4,
+"tests": 5837,
+"located": "town"
+},
+{
+"name": "Sevenoaks",
+"lat": 51.27452,
+"lon": 0.19613,
+"passRate": 53.6,
+"tests": 6386,
+"located": "town"
+},
+{
+"name": "Sheffield (Handsworth)",
+"lat": 53.37246,
+"lon": -1.38902,
+"passRate": 45.3,
+"tests": 9283,
+"located": "town"
+},
+{
+"name": "Sheffield (Middlewood Road)",
+"lat": 53.40293,
+"lon": -1.51332,
+"passRate": 47.5,
+"tests": 9864,
+"located": "town"
+},
+{
+"name": "Shrewsbury",
+"lat": 52.70775,
+"lon": -2.75407,
+"passRate": 49.2,
+"tests": 5712,
+"located": "town"
+},
+{
+"name": "Sidcup (London)",
+"lat": 51.4264,
+"lon": 0.10104,
+"passRate": 59.0,
+"tests": 12809,
+"located": "town"
+},
+{
+"name": "Skegness",
+"lat": 53.14274,
+"lon": 0.32557,
+"passRate": 57.6,
+"tests": 1895,
+"located": "centre"
+},
+{
+"name": "Skipton",
+"lat": 53.95581,
+"lon": -2.02442,
+"passRate": 54.4,
+"tests": 2812,
+"located": "centre"
+},
+{
+"name": "Slough (London)",
+"lat": 51.5099,
+"lon": -0.53579,
+"passRate": 45.6,
+"tests": 9181,
+"located": "town"
+},
+{
+"name": "Southall (London)",
+"lat": 51.52585,
+"lon": -0.36536,
+"passRate": 46.2,
+"tests": 6461,
+"located": "centre"
+},
+{
+"name": "Southampton (Maybush)",
+"lat": 50.93369,
+"lon": -1.45286,
+"passRate": 47.1,
+"tests": 8954,
+"located": "centre"
+},
+{
+"name": "Southend-on-Sea",
+"lat": 51.53882,
+"lon": 0.71281,
+"passRate": 48.1,
+"tests": 4797,
+"located": "town"
+},
+{
+"name": "Southport (Liverpool)",
+"lat": 53.64874,
+"lon": -3.0045,
+"passRate": 59.2,
+"tests": 7231,
+"located": "town"
+},
+{
+"name": "Speke (Liverpool)",
+"lat": 53.3451,
+"lon": -2.86198,
+"passRate": 38.6,
+"tests": 6986,
+"located": "town"
+},
+{
+"name": "St Albans",
+"lat": 51.75305,
+"lon": -0.33797,
+"passRate": 48.4,
+"tests": 6881,
+"located": "town"
+},
+{
+"name": "St Helens (Liverpool)",
+"lat": 53.4569,
+"lon": -2.72423,
+"passRate": 40.2,
+"tests": 9776,
+"located": "centre"
+},
+{
+"name": "Stafford",
+"lat": 52.80632,
+"lon": -2.11638,
+"passRate": 46.1,
+"tests": 3783,
+"located": "town"
+},
+{
+"name": "Steeton",
+"lat": 53.89667,
+"lon": -1.94944,
+"passRate": 50.5,
+"tests": 3840,
+"located": "town"
+},
+{
+"name": "Stevenage",
+"lat": 51.90167,
+"lon": -0.20272,
+"passRate": 44.9,
+"tests": 4208,
+"located": "town"
+},
+{
+"name": "Stirling",
+"lat": 56.11812,
+"lon": -3.936,
+"passRate": 38.7,
+"tests": 4111,
+"located": "town"
+},
+{
+"name": "Stoke-On-Trent (Cobridge)",
+"lat": 53.03413,
+"lon": -2.18815,
+"passRate": 38.8,
+"tests": 6450,
+"located": "street"
+},
+{
+"name": "Stoke-on-Trent (Newcastle-Under-Lyme)",
+"lat": 53.02056,
+"lon": -2.22999,
+"passRate": 40.7,
+"tests": 7098,
+"located": "street"
+},
+{
+"name": "Stornoway",
+"lat": 58.21995,
+"lon": -6.40696,
+"passRate": 56.1,
+"tests": 374,
+"located": "town"
+},
+{
+"name": "Stranraer",
+"lat": 54.90443,
+"lon": -5.0262,
+"passRate": 73.4,
+"tests": 214,
+"located": "town"
+},
+{
+"name": "Sunderland",
+"lat": 54.90585,
+"lon": -1.38287,
+"passRate": 47.1,
+"tests": 9084,
+"located": "town"
+},
+{
+"name": "Swansea",
+"lat": 51.61893,
+"lon": -3.91414,
+"passRate": 52.1,
+"tests": 10590,
+"located": "centre"
+},
+{
+"name": "Swindon",
+"lat": 51.50326,
+"lon": -1.73331,
+"passRate": 49.3,
+"tests": 9470,
+"located": "centre"
+},
+{
+"name": "Swindon LGV",
+"lat": 51.50326,
+"lon": -1.73331,
+"passRate": 24.7,
+"tests": 146,
+"located": "centre"
+},
+{
+"name": "Taunton",
+"lat": 51.02724,
+"lon": -3.07978,
+"passRate": 56.3,
+"tests": 6957,
+"located": "centre"
+},
+{
+"name": "Telford",
+"lat": 52.67805,
+"lon": -2.45142,
+"passRate": 43.9,
+"tests": 5663,
+"located": "town"
+},
+{
+"name": "Thurso",
+"lat": 58.59474,
+"lon": -3.52058,
+"passRate": 58.1,
+"tests": 167,
+"located": "town"
+},
+{
+"name": "Tilbury",
+"lat": 51.46161,
+"lon": 0.36368,
+"passRate": 49.1,
+"tests": 4185,
+"located": "town"
+},
+{
+"name": "Tolworth (London)",
+"lat": 51.38411,
+"lon": -0.29304,
+"passRate": 53.3,
+"tests": 9241,
+"located": "centre"
+},
+{
+"name": "Tottenham",
+"lat": 51.5977,
+"lon": -0.06729,
+"passRate": 47.9,
+"tests": 12178,
+"located": "town"
+},
+{
+"name": "Trowbridge",
+"lat": 51.31616,
+"lon": -2.20243,
+"passRate": 51.1,
+"tests": 2547,
+"located": "town"
+},
+{
+"name": "Tunbridge Wells",
+"lat": 51.13639,
+"lon": 0.26399,
+"passRate": 58.9,
+"tests": 4887,
+"located": "centre"
+},
+{
+"name": "Ullapool",
+"lat": 57.89582,
+"lon": -5.16022,
+"passRate": 74.6,
+"tests": 59,
+"located": "town"
+},
+{
+"name": "Upton",
+"lat": 53.37939,
+"lon": -3.09857,
+"passRate": 50.0,
+"tests": 10893,
+"located": "centre"
+},
+{
+"name": "Uxbridge (London)",
+"lat": 51.54495,
+"lon": -0.48167,
+"passRate": 49.6,
+"tests": 7378,
+"located": "town"
+},
+{
+"name": "Wakefield",
+"lat": 53.68295,
+"lon": -1.49673,
+"passRate": 46.7,
+"tests": 7650,
+"located": "town"
+},
+{
+"name": "Wallasey",
+"lat": 53.42412,
+"lon": -3.03941,
+"passRate": 49.6,
+"tests": 1276,
+"located": "town"
+},
+{
+"name": "Walton LGV",
+"lat": 54.98198,
+"lon": -2.74471,
+"passRate": 56.9,
+"tests": 2320,
+"located": "town"
+},
+{
+"name": "Wanstead (London)",
+"lat": 51.57567,
+"lon": 0.0278,
+"passRate": 40.4,
+"tests": 8370,
+"located": "town"
+},
+{
+"name": "Warrington",
+"lat": 53.41024,
+"lon": -2.57849,
+"passRate": 55.3,
+"tests": 6124,
+"located": "centre"
+},
+{
+"name": "Warwick (Wedgenock House)",
+"lat": 52.28665,
+"lon": -1.60477,
+"passRate": 48.4,
+"tests": 10900,
+"located": "centre"
+},
+{
+"name": "Watford",
+"lat": 51.65539,
+"lon": -0.39574,
+"passRate": 46.6,
+"tests": 10896,
+"located": "town"
+},
+{
+"name": "Watnall",
+"lat": 53.00636,
+"lon": -1.25115,
+"passRate": 48.9,
+"tests": 702,
+"located": "centre"
+},
+{
+"name": "Wednesbury",
+"lat": 52.55218,
+"lon": -2.02244,
+"passRate": 36.4,
+"tests": 8335,
+"located": "town"
+},
+{
+"name": "Wellingborough",
+"lat": 52.30189,
+"lon": -0.69373,
+"passRate": 55.1,
+"tests": 1477,
+"located": "town"
+},
+{
+"name": "West Didsbury (Manchester)",
+"lat": 53.42472,
+"lon": -2.25789,
+"passRate": 50.9,
+"tests": 17196,
+"located": "centre"
+},
+{
+"name": "West Wickham (London)",
+"lat": 51.37504,
+"lon": -0.01093,
+"passRate": 50.9,
+"tests": 11147,
+"located": "centre"
+},
+{
+"name": "Weston-super-Mare",
+"lat": 51.34719,
+"lon": -2.97789,
+"passRate": 56.5,
+"tests": 5807,
+"located": "town"
+},
+{
+"name": "Whitby",
+"lat": 54.48665,
+"lon": -0.61353,
+"passRate": 65.1,
+"tests": 513,
+"located": "town"
+},
+{
+"name": "Wick",
+"lat": 58.44255,
+"lon": -3.09158,
+"passRate": 53.8,
+"tests": 225,
+"located": "town"
+},
+{
+"name": "Widnes",
+"lat": 53.36393,
+"lon": -2.77054,
+"passRate": 40.1,
+"tests": 5673,
+"located": "centre"
+},
+{
+"name": "Winchester",
+"lat": 51.05628,
+"lon": -1.32276,
+"passRate": 47.9,
+"tests": 3839,
+"located": "centre"
+},
+{
+"name": "Wolverhampton",
+"lat": 52.58477,
+"lon": -2.12757,
+"passRate": 33.4,
+"tests": 11719,
+"located": "town"
+},
+{
+"name": "Wood Green (London)",
+"lat": 51.59859,
+"lon": -0.1044,
+"passRate": 46.8,
+"tests": 10797,
+"located": "centre"
+},
+{
+"name": "Worcester",
+"lat": 52.19653,
+"lon": -2.20956,
+"passRate": 50.6,
+"tests": 10516,
+"located": "town"
+},
+{
+"name": "Workington",
+"lat": 54.64338,
+"lon": -3.54535,
+"passRate": 48.3,
+"tests": 3015,
+"located": "town"
+},
+{
+"name": "Worksop",
+"lat": 53.30424,
+"lon": -1.12462,
+"passRate": 53.3,
+"tests": 6022,
+"located": "town"
+},
+{
+"name": "Worthing",
+"lat": 50.81154,
+"lon": -0.36997,
+"passRate": 58.8,
+"tests": 7766,
+"located": "town"
+},
+{
+"name": "Wrexham",
+"lat": 53.04897,
+"lon": -3.01615,
+"passRate": 56.8,
+"tests": 3942,
+"located": "centre"
+},
+{
+"name": "Yeading (London)",
+"lat": 51.52724,
+"lon": -0.39927,
+"passRate": 46.9,
+"tests": 6289,
+"located": "town"
+},
+{
+"name": "Yeovil",
+"lat": 50.94205,
+"lon": -2.63186,
+"passRate": 59.7,
+"tests": 5754,
+"located": "town"
+},
+{
+"name": "York",
+"lat": 53.98883,
+"lon": -1.0489,
+"passRate": 51.3,
+"tests": 7121,
+"located": "centre"
+}
+]
