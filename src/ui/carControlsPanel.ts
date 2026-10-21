@@ -1,5 +1,5 @@
 import {CAR_CONTROLS,type CarControlId,type CarControls} from '../vehicle/carControls';
-import type {TellMeQuestion} from '../test/vehicleChecks';
+import {DVSA_SOURCE,tellMeChoices,type TellMeQuestion} from '../test/vehicleChecks';
 
 const $=(id:string)=>{
   const el=document.getElementById(id);
@@ -60,22 +60,20 @@ export class CarControlsPanel{
 }
 
 /**
- * The tell me question on screen: the question and three answers in a shuffled order (by `seed`). Calls `answer`
- * with the chosen text and closes.
+ * The tell me question on screen: DVSA's question and three of DVSA's answers (its answer to this question and to
+ * two others), in an order set by `seed`. Calls `answer` with the chosen text and closes.
  */
 export function askTellMe(q:TellMeQuestion,seed:number,answer:(text:string)=>void):void{
   const card=$('hud-question');
   $('hud-question-kind').textContent='Tell me';
   $('hud-question-text').textContent=q.question;
-  const options=[q.answer,...q.wrong];
-  // Rotate by the seed: the right answer is not always first.
-  const k=Math.abs(seed)%3,order=[...options.slice(k),...options.slice(0,k)];
-  $('hud-question-choices').replaceChildren(...order.map(text=>{
+  $('hud-question-choices').replaceChildren(...tellMeChoices(q,seed).map(text=>{
     const b=document.createElement('button');
     b.type='button';b.textContent=text;
     b.addEventListener('click',()=>{card.hidden=true;answer(text)});
     return b;
   }));
+  $('hud-question-source').textContent=`Question and answers: ${DVSA_SOURCE}`;
   card.hidden=false;
 }
 

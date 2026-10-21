@@ -5,7 +5,7 @@ import type {EventLog} from '../app/eventLog';
 import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
 import {judgePullUp,junctionPoints} from '../test/pullUp';
-import type {ShowMeQuestion,TellMeQuestion} from '../test/vehicleChecks';
+import {DVSA_SOURCE,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
 import type {Aspect,LiveStop} from '../world/trafficSignals';
 import type {Vec2} from '../contracts';
 
@@ -29,8 +29,6 @@ export interface MockTestInput{
   traffic:()=>Array<{x:number;z:number;heading:number;speed:number}>;
   /** Parked cars at the kerb (passing them on the right is not a positioning fault). */
   parked:Array<{x:number;z:number}>;
-  /** Car controls switched on now (lights, demisters, window): for "remember to switch it off". */
-  controlsOn?:()=>string[];
   /** Traffic lights: stop lines and their state now. */
   signals?:()=>readonly LiveStop[];
 }
@@ -65,13 +63,15 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   /** The vehicle safety questions and how they went (for the report). */
   private checks:string[]=[];
   private showing:{q:ShowMeQuestion;time:number;shown:boolean;other:string|null;event:string|null}|null=null;
+  /** When the show me question was asked (driving while answering it is watched). */
+  private showMeFrom:number|null=null;
 
   constructor(private readonly input:MockTestInput){this.junctions=junctionPoints(input.location);this.reset()}
 
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
     this.watch=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
-    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.showing=null;this.lights.clear();
+    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.showing=null;this.showMeFrom=null;this.lights.clear();
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
   }
@@ -123,16 +123,23 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     this.pulling={mirror:!!this.recentLook(3,['interior','left-door']),signalled:false,others:false,event:ev?.id??null};
   }
 
-  // ---- Vehicle safety questions: a wrong or missing answer is one driving fault ----
+  // ---- Vehicle safety questions (DVSA): one driving fault if one or both are wrong ----
+  private checkFault(text:string,events:string[]){
+    const existing=this.log.current.find(f=>f.incidentId==='vehicle-checks');
+    if(existing){existing.explanation+=` ${text}`;return}
+    this.fault('vehicle-checks','vehicle-checks','minor',`Vehicle safety questions: ${text}`,events);
+  }
+
   tellMe(q:TellMeQuestion,correct:boolean,answer:string):void{
     const ev=this.input.events.events.at(-1);
-    if(!correct)this.fault('vehicle-checks','tell-me','minor',`Vehicle checks (tell me): "${q.question}" Your answer: "${answer}" The answer: ${q.answer}`,ev?[ev.id]:[]);
-    this.checks.push(`${INFO}Tell me: ${q.question} ${correct?'Answered correctly.':'Not correct.'} ${q.answer}`);
+    if(!correct)this.checkFault(`Tell me – “${q.question}” Your answer: “${answer}” DVSA’s answer: “${q.answer}”`,ev?[ev.id]:[]);
+    this.checks.push(`${INFO}Tell me: ${q.question} ${correct?'Correct.':`Not correct. DVSA’s answer: ${q.answer}`}`);
   }
 
   showMe(q:ShowMeQuestion):void{
     const ev=this.input.events.events.at(-1);
     this.showing={q,time:this.input.now(),shown:false,other:null,event:ev?.id??null};
+    this.showMeFrom=this.input.now();
   }
 
   /** Stopped at the end: where (close to the kerb, a safe and convenient place), and the mirrors and signal first. */
@@ -181,17 +188,16 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
         this.fault('moving-off-safety','moving-off','minor','Moving off – safety: no check of the mirrors or over the right shoulder in the 10 s before moving off.');
     }
 
-    // The show me question: the right control within 30 s; afterwards, switched off again (45 s).
+    // The show me question: the control asked for within 30 s.
     const sm=this.showing;
     if(sm){
-      const t=now-sm.time,q=sm.q,ev=sm.event?[sm.event]:[];
-      if(!sm.shown&&t>30){
-        this.fault('vehicle-checks','show-me','minor',`Vehicle checks (show me): "${q.question}" ${sm.other?`The control used was the ${sm.other.replace(/-/g,' ')}, not the one asked for.`:'Not shown within 30 s.'} The answer: ${q.answer}`,ev);
-        this.checks.push(`${INFO}Show me: ${q.question} Not shown. ${q.answer}`);
+      const q=sm.q,ev=sm.event?[sm.event]:[];
+      if(sm.shown){
+        this.checks.push(`${INFO}Show me: ${q.question} Shown.`);
         this.showing=null;
-      }else if(sm.shown&&(!q.switchOff||t>45)){
-        const left=q.switchOff&&(this.input.controlsOn?.()??[]).includes(q.control);
-        this.checks.push(`${INFO}Show me: ${q.question} Shown correctly.${left?' Remember to switch it off when it is no longer needed.':''}`);
+      }else if(now-sm.time>30){
+        this.checkFault(`Show me – “${q.question}” ${sm.other?`The control used was the ${sm.other.replace(/-/g,' ')}, not the one asked for.`:'Not shown within 30 s.'}`,ev);
+        this.checks.push(`${INFO}Show me: ${q.question} Not shown.`);
         this.showing=null;
       }
     }
@@ -326,7 +332,11 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const notes:string[]=[];
     notes.push(`${INFO}${!finished?'Not finished':passed?'Pass':'Fail'}: ${driving} driving fault${driving===1?'':'s'}, ${serious} serious, ${dangerous} dangerous. A pass allows up to 15 driving faults and no serious or dangerous faults.`);
     if(outcome!=='completed')notes.push(`${INFO}${outcome==='time-limit'?'The time for the drive ran out; it is marked on the faults so far.':'The test was ended before the examiner finished it.'}`);
-    if(this.showing&&!this.showing.shown)this.checks.push(`${INFO}Show me: ${this.showing.q.question} Not shown before the test ended. ${this.showing.q.answer}`);
+    if(this.showing&&!this.showing.shown)this.checks.push(`${INFO}Show me: ${this.showing.q.question} Not shown before the test ended.`);
+    // DVSA: driving dangerously or potentially dangerously while answering the show me question is a fail.
+    if(this.showMeFrom!==null&&findings.some(f=>(f.severity==='serious'||f.severity==='dangerous')&&f.time>=this.showMeFrom!&&f.time<=this.showMeFrom!+30))
+      this.checks.push(`${INFO}A serious or dangerous fault came while answering the show me question: DVSA fails the test for driving dangerously or potentially dangerously while answering it.`);
+    if(this.checks.length)this.checks.push(`${INFO}Vehicle safety questions and answers: ${DVSA_SOURCE}.`);
     notes.push(...this.checks);
     if(this.redirects)notes.push(`${INFO}You went a different way ${this.redirects} time${this.redirects===1?'':'s'}: not a fault in itself; the examiner gave new directions.`);
     const byHeading=new Map<string,number>();

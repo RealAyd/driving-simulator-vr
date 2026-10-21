@@ -470,7 +470,7 @@ export async function boot():Promise<void>{
     const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
-      parked:kerbCars,controlsOn:()=>carControls.onNow,signals:()=>trafficSignals?.stops??[]}):null;
+      parked:kerbCars,signals:()=>trafficSignals?.stops??[]}):null;
     let finishTest:()=>void=()=>{};
     // Assisted steering follows the examiner's route in the left lane (src/test/routePath.ts), and the new route
     // after a wrong turn.

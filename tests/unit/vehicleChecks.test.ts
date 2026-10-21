@@ -2,7 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {parseLocation} from '../../src/contracts';
 import {RoadNetwork} from '../../src/test/route';
 import {BRIEFING,Examiner,TELL_ME_INTRO} from '../../src/test/examiner';
-import {SHOW_ME,TELL_ME} from '../../src/test/vehicleChecks';
+import {SHOW_ME,TELL_ME,tellMeChoices} from '../../src/test/vehicleChecks';
 import {MockTestAssessor} from '../../src/assessment/mockTest';
 import {CarControls} from '../../src/vehicle/carControls';
 import {EventLog} from '../../src/app/eventLog';
@@ -19,7 +19,7 @@ function setUp(tellMe=TELL_ME[0]!,showMe=SHOW_ME[2]!){
   const controls=new CarControls(events);
   const assessor=new MockTestAssessor({location:goodmayes,events,now:()=>time,
     learner:()=>({pose:{position:{x:learner.x,y:0,z:learner.z},heading:learner.heading},speed:learner.speed,indicator:'off',surface:'carriageway'}),
-    traffic:()=>[],parked:[],controlsOn:()=>controls.onNow});
+    traffic:()=>[],parked:[]});
   const said:string[]=[];
   let asked:string|null=null;
   const examiner=new Examiner(new RoadNetwork(goodmayes),()=>learner,{target:1500,seed:3,say:t=>said.push(t),events,onComplete:()=>{},listener:assessor,
@@ -30,10 +30,19 @@ function setUp(tellMe=TELL_ME[0]!,showMe=SHOW_ME[2]!){
 }
 
 describe('vehicle safety questions',()=>{
-  it('the question set: 14 tell me and 7 show me, each tell me with two wrong answers',()=>{
+  it('DVSA\'s main questions: 14 tell me and 7 show me; the choices are DVSA answers, the right one once',()=>{
     expect(TELL_ME).toHaveLength(14);
     expect(SHOW_ME).toHaveLength(7);
-    for(const q of TELL_ME){expect(q.wrong).toHaveLength(2);expect(q.wrong).not.toContain(q.answer)}
+    const answers=new Set(TELL_ME.map(q=>q.answer));
+    for(const q of TELL_ME)for(const seed of [0,1,2,5,9]){
+      const c=tellMeChoices(q,seed);
+      expect(c).toHaveLength(3);
+      expect(new Set(c).size).toBe(3);
+      expect(c.filter(a=>a===q.answer)).toHaveLength(1);
+      for(const a of c)expect(answers.has(a)).toBe(true);
+    }
+    // The order varies with the seed.
+    expect(new Set([0,1,2].map(seed=>tellMeChoices(TELL_ME[0]!,seed).indexOf(TELL_ME[0]!.answer))).size).toBe(3);
   });
 
   it('tell me comes first: the drive waits for the answer, then the briefing',()=>{
@@ -51,7 +60,7 @@ describe('vehicle safety questions',()=>{
   it('a wrong tell me answer is one driving fault, with the right answer in the report',()=>{
     const t=setUp();
     t.run(1);
-    t.examiner.answerTellMe(TELL_ME[0]!.wrong[0]);
+    t.examiner.answerTellMe(TELL_ME[5]!.answer);
     const f=t.assessor.current.filter(x=>x.ruleId==='vehicle-checks');
     expect(f.map(x=>x.severity)).toEqual(['minor']);
     expect(f[0]!.explanation).toContain(TELL_ME[0]!.answer);
@@ -67,6 +76,16 @@ describe('vehicle safety questions',()=>{
       t.run(50);
       expect(t.assessor.current.filter(f=>f.ruleId==='vehicle-checks')).toHaveLength(faults);
     }
+  });
+
+  it('one driving fault when both are wrong (DVSA: one or both wrong is one driving fault)',()=>{
+    const t=setUp();
+    t.run(1);t.examiner.answerTellMe(TELL_ME[5]!.answer);
+    t.assessor.showMe(t.showMe);
+    t.run(35);
+    const f=t.assessor.current.filter(x=>x.ruleId==='vehicle-checks');
+    expect(f.map(x=>x.severity)).toEqual(['minor']);
+    expect(f[0]!.explanation).toMatch(/Tell me.*Show me/);
   });
 
   it('the show me question is asked once while driving, after the first direction, away from junctions',()=>{
