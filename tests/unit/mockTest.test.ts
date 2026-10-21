@@ -1,11 +1,12 @@
 import {describe,expect,it} from 'vitest';
-import {parseLocation} from '../../src/contracts';
+import {parseLocation,parseScenario} from '../../src/contracts';
 import {RoadNetwork,type RouteLeg} from '../../src/test/route';
 import {Examiner} from '../../src/test/examiner';
 import {MockTestAssessor} from '../../src/assessment/mockTest';
 import {EventLog} from '../../src/app/eventLog';
 import {pointAtAlong,sampleRoad} from '../../src/world/roadGeometry';
 import goodmayesJson from '../../content/locations/goodmayes.json';
+import goodmayesMockTestJson from '../../content/scenarios/goodmayes-mock-test.json';
 
 const goodmayes=parseLocation(goodmayesJson);
 
@@ -69,5 +70,13 @@ describe('Mock test marking',()=>{
       expect(f?.severity,`${mphV} mph`).toBe(sev);
       if(sev!=='minor')expect(result.mockTest?.passed).toBe(false);
     }
+  });
+});
+
+describe('Goodmayes mock test scenario file',()=>{
+  it('is valid and marked as a mock test',()=>{
+    const s=parseScenario(goodmayesMockTestJson);
+    expect(s.rubricId).toBe('mock-test');
+    expect(s.locationId).toBe('goodmayes');
   });
 });
