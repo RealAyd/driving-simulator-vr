@@ -184,35 +184,52 @@ for(const n of nodes.values()){
 const halfWidth=r=>r.lanes.width*r.lanes.count/2;
 const mapped=buildings.map(b=>b.footprint);
 const filled=[];
-const blocked=(corners,ownRoad)=>{
+const blocked=(corners,ownRoad,ownClear=1.5)=>{
   if(!corners.every(c=>inside(c)))return true;
   for(const poly of mapped)if(corners.some(c=>insidePoly(c,poly))||insidePoly(poly[0],corners))return true;
   for(const r of roads){
-    const clear=halfWidth(r)+r.pavementWidth+(r===ownRoad?1.5:2.5);
+    const clear=halfWidth(r)+r.pavementWidth+(r===ownRoad?ownClear:2.5);
     if(corners.some(c=>alongOf(r.centreline,c).d<clear))return true;
   }
   for(const j of junctions)if(corners.some(c=>Math.hypot(c.x-j.position.x,c.z-j.position.z)<j.radius+8))return true;
   for(const a of areas)if(corners.some(c=>insidePoly(c,a.polygon)))return true;
   return false;
 };
+// On main roads near mapped businesses: a parade (three storeys, shops below and flats above, built up to the back of
+// the pavement); each business the map has only as a point is given the nearest unit's shopfront.
+const loosePoints=shopPoints.filter(s=>!buildings.some(b=>b.source==='map'&&insidePoly(P(s),b.footprint))&&s.tags.name);
 for(const r of roads){
-  if(!['residential','unclassified','living_street','tertiary'].includes(r._class))continue;
+  if(!['residential','unclassified','living_street','tertiary','secondary','primary'].includes(r._class))continue;
+  const main=r._class==='primary'||r._class==='secondary';
   const line=r.centreline;let acc=0;const segs=[];
   for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],l=Math.hypot(b.x-a.x,b.z-a.z);segs.push({a,b,l,from:acc});acc+=l}
-  for(const side of [-1,1])for(let s0=8;s0<acc-8;s0+=5.4){
-    const seg=segs.find(g=>s0>=g.from&&s0<=g.from+g.l);if(!seg)continue;
+  for(const side of [-1,1])for(let s0=8;s0<acc-8;){
+    const seg=segs.find(g=>s0>=g.from&&s0<=g.from+g.l);if(!seg){s0+=5.4;continue}
     const t=(s0-seg.from)/seg.l,dx=(seg.b.x-seg.a.x)/seg.l,dz=(seg.b.z-seg.a.z)/seg.l;
     const rx=-dz*side,rz=dx*side; // away from the road on this side
-    const off=halfWidth(r)+r.pavementWidth+4.5,c={x:seg.a.x+dx*seg.l*t+rx*(off+4.5),z:seg.a.z+dz*seg.l*t+rz*(off+4.5)};
-    const corners=[[-2.6,-4.5],[2.6,-4.5],[2.6,4.5],[-2.6,4.5]].map(([u,v])=>({x:r2(c.x+dx*u+rx*v),z:r2(c.z+dz*u+rz*v)}));
-    if(blocked(corners,r)||filled.some(f=>Math.hypot(f.c.x-c.x,f.c.z-c.z)<5))continue;
-    filled.push({c,corners,road:r});
+    const at={x:seg.a.x+dx*seg.l*t,z:seg.a.z+dz*seg.l*t};
+    const parade=main&&loosePoints.some(s=>Math.hypot(P(s).x-at.x,P(s).z-at.z)<60);
+    const [w,d,garden]=parade?[6,11,.6]:[5.2,9,4.5];
+    const off=halfWidth(r)+r.pavementWidth+garden,c={x:at.x+rx*(off+d/2),z:at.z+rz*(off+d/2)};
+    const corners=[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]].map(([u,v])=>({x:r2(c.x+dx*u+rx*v),z:r2(c.z+dz*u+rz*v)}));
+    s0+=w+.2;
+    if(blocked(corners,r,parade?.4:1.5)||filled.some(f=>Math.hypot(f.c.x-c.x,f.c.z-c.z)<w-.2))continue;
+    filled.push({c,corners,road:r,parade});
   }
 }
+const named=new Map();
+for(const s of loosePoints){
+  let best=null;
+  for(const [i,f] of filled.entries()){const d=Math.hypot(f.c.x-P(s).x,f.c.z-P(s).z);if(d<20&&!named.has(i)&&(!best||d<best.d))best={i,d}}
+  if(best)named.set(best.i,s);
+}
 for(const [i,f] of filled.entries()){
-  buildings.push({id:`terrace-${i}`,footprint:f.corners,height:7.4,levels:2,heightSource:'estimated',use:'residential',source:'approximate',
-    evidence:`residential street (${f.road.name??f.road.id}) with no mapped building outlines: typical terraced house`,
-    roof:'pitched',detail:Math.hypot(f.c.x,f.c.z)<160?'full':'low'});
+  const shop=named.get(i);
+  buildings.push({id:`terrace-${i}`,footprint:f.corners,height:f.parade?9.6:7.4,levels:f.parade?3:2,heightSource:'estimated',
+    use:shop?'shop':'residential',...(shop?{name:shop.tags.name}:{}),source:'approximate',
+    evidence:shop?`business mapped only as a point (${shop.tags.name}) on ${f.road.name??f.road.id}: typical parade unit`
+      :`street (${f.road.name??f.road.id}) with no mapped building outlines: typical ${f.parade?'parade with flats':'terraced house'}`,
+    roof:f.parade?'flat':'pitched',detail:Math.hypot(f.c.x,f.c.z)<160?'full':'low'});
 }
 
 // ---- Start: the left lane of the road nearest the centre, facing along it ----
@@ -240,4 +257,4 @@ const location={
   crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,spawn
 };
 fs.writeFileSync(`content/locations/${id}.json`,JSON.stringify(location,null,1)+'\n');
-console.log(`${id}: ${filled.length} approximate terraced houses added; ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops; start on ${sr.name??sr.id}`);
+console.log(`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops; start on ${sr.name??sr.id}`);

@@ -54,6 +54,8 @@ async function openExercise(page:Page){
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.click('[data-exercise=moving-off]');
+  // The headset options are folded under "Phone headset" on the exercise screen.
+  await page.click('#viewer-details > summary');
 }
 
 /** The input check: remap each control to this controller's layout, press each once, Done. */

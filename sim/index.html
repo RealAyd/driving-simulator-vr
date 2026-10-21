@@ -11,105 +11,159 @@
 <link rel="manifest" href="manifest.webmanifest">
 <title>Driving Practice Simulator (preview)</title>
 <style>
-:root{color-scheme:dark;--ink:#f8fafc;--soft:#cbd5e1;--panel:#0f172ae0;--line:#334155;--green:#128e54;--amber:#f59e0b;
+:root{color-scheme:dark;
+  --ink:#f1f5f9;--soft:#94a3b8;--faint:#64748b;
+  --bg:#070b16;--surface:rgba(13,19,33,.86);--surface-2:rgba(30,41,59,.55);--surface-3:rgba(51,65,85,.55);
+  --line:rgba(148,163,184,.16);--line-strong:rgba(148,163,184,.3);
+  --accent:#2dd4bf;--accent-ink:#04201d;--accent-soft:rgba(45,212,191,.14);
+  --go:#16a34a;--stop:#dc2626;--amber:#f59e0b;
+  --panel:rgba(10,15,28,.6);
   --sl:max(10px,env(safe-area-inset-left));--sr:max(10px,env(safe-area-inset-right));--sb:max(8px,env(safe-area-inset-bottom));--st:max(8px,env(safe-area-inset-top))}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#0f172a;color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
 #sim-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
 [hidden]{display:none!important}
 /* Phone viewer: only the stereo picture; a tap anywhere pauses and leaves the viewer. */
 body.viewer #hud,body.viewer .screen{display:none!important}
-.guide-option{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--soft);margin:12px 0 0}
-.guide-option input{margin-top:3px;width:18px;height:18px;flex:none}
+
+/* ---- Screens: one card over the live scene ---- */
+.screen{position:fixed;inset:0;display:grid;place-items:center;padding:calc(var(--st) + 6px) var(--sr) calc(var(--sb) + 6px) var(--sl);
+  background:linear-gradient(100deg,rgba(4,8,18,.92) 0%,rgba(4,8,18,.74) 55%,rgba(4,8,18,.55) 100%);z-index:20;overflow-y:auto;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.card{width:min(100%,560px);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 22px;box-shadow:0 30px 80px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.card.wide{width:min(100%,980px)}
+.card h1{margin:0 0 4px;font-size:22px;font-weight:700;letter-spacing:-.015em;line-height:1.2}
+.card p{margin:8px 0;color:var(--soft)}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:11.5px;color:#99f6e4;background:var(--accent-soft);white-space:nowrap}
+button{font:inherit;cursor:pointer;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 16px;transition:background .15s,border-color .15s,transform .08s}
+button:hover{border-color:var(--line-strong)}
+button:active{transform:scale(.98)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700;width:100%;margin-top:14px;padding:13px;font-size:16px;border-radius:14px}
+button.primary:hover{background:#5eead4}
+button.wide{width:100%;margin-top:8px}
+button.link{background:none;border:none;padding:0;color:var(--accent);font-size:14px;font-weight:600}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.unit{font-size:12px;color:var(--soft)}
+.warn{color:#fcd34d!important}
+kbd{font:600 11px ui-monospace,SFMono-Regular,monospace;background:var(--surface-3);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:6px;padding:1px 6px;color:var(--ink)}
+details.more{border:1px solid var(--line);border-radius:14px;background:rgba(15,23,42,.4)}
+details.more>summary{cursor:pointer;list-style:none;padding:10px 14px;font-size:13px;font-weight:600;color:var(--soft);display:flex;justify-content:space-between;align-items:center}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--faint);border-bottom:2px solid var(--faint);transform:rotate(45deg);margin-right:4px;transition:transform .2s}
+details.more[open]>summary::after{transform:rotate(-135deg)}
+details.more>.more-body{padding:0 14px 12px}
+
+/* ---- Home: exercises as cards ---- */
+.home-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:12px;align-items:center}
+.brand-mark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(140deg,#2dd4bf,#0e7490);color:#04201d;box-shadow:0 6px 20px rgba(45,212,191,.25)}
+.brand h1{margin:0}
+.brand p{margin:0!important;font-size:13px}
+.group{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin:16px 0 8px;font-weight:700}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px 14px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line);width:100%;margin:0;font-weight:400}
+.choice:hover{background:rgba(51,65,85,.55);border-color:color-mix(in srgb,var(--c) 55%,transparent)}
+.choice .ico{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.choice .txt{display:grid;gap:2px;min-width:0}
+.choice b{font-size:15px;font-weight:650;letter-spacing:-.005em}
+.choice small{font-size:12.5px;color:var(--soft);line-height:1.38}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.tags i{font-style:normal;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:rgba(148,163,184,.12);color:#cbd5e1}
+.tags i.real{background:rgba(45,212,191,.13);color:#99f6e4}
+.home-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:flex-start}
+.home-foot details{flex:1 1 260px}
+.home-foot button{flex:0 0 auto;margin:0}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12.5px;color:var(--soft)}
+body.phone .keys-box{display:none}
+
+/* ---- Exercise: briefing on the left, settings and Start on the right ---- */
+.detail{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:720px){.detail{grid-template-columns:1fr}}
+.detail-side{display:grid;gap:10px}
+.objective{color:var(--ink)!important;font-weight:600;font-size:14.5px}
+.briefing-box{border:1px solid rgba(245,158,11,.35);border-radius:16px;padding:6px 16px;background:linear-gradient(180deg,rgba(245,158,11,.08),rgba(245,158,11,.02));margin:10px 0 0;max-height:min(52vh,420px);overflow-y:auto}
+.briefing-box h2{font-size:15px;color:#fbbf24;margin:8px 0 4px;font-weight:700}
+.briefing-box p{color:#e2e8f0!important;font-size:13.5px;margin:6px 0;line-height:1.5}
+.intro-option{margin:0}
+.intro-option button{margin-top:0}
+.section-label{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:700;margin:0 0 6px}
+fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:0}
+.steering legend{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:700;padding:0;margin-bottom:6px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{position:relative;display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);font-size:12px;color:var(--soft);cursor:pointer;transition:background .15s,border-color .15s}
+.opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.opt svg{flex:none;color:var(--faint);margin-top:1px}
+.opt b{display:block;color:var(--ink);font-size:13.5px;font-weight:650}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt:has(input:checked) svg{color:var(--accent)}
+.opt:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+.opt:has(input:disabled){opacity:.45;cursor:default}
+.guide-option{display:flex;gap:12px;align-items:center;font-size:12.5px;color:var(--soft);padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);cursor:pointer}
 .guide-option b{color:var(--ink)}
+.guide-option input{appearance:none;-webkit-appearance:none;flex:none;width:40px;height:24px;border-radius:999px;background:var(--surface-3);border:1px solid var(--line-strong);position:relative;margin:0;cursor:pointer;transition:background .2s}
+.guide-option input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#e2e8f0;transition:transform .2s}
+.guide-option input:checked{background:var(--accent)}
+.guide-option input:checked::after{transform:translateX(16px)}
 .viewer-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
 .controller-table{width:100%;border-collapse:collapse;font-size:13px}
-.controller-table td,.controller-table th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
+.controller-table td,.controller-table th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left}
 .controller-table .live.on{color:#4ade80;font-weight:700}
 .controller-table .tested{color:#4ade80}
-.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
-.viewer-panel select{font:inherit;background:#1e293b;color:var(--ink);border:1px solid #64748b;border-radius:8px;padding:4px;max-width:100%}
-.screen{position:fixed;inset:0;display:grid;place-items:center;padding:var(--st) var(--sr) var(--sb) var(--sl);background:#0b1220d9;z-index:20;overflow-y:auto}
-body.phone .keys{display:none}
-.card{width:min(100%,560px);background:#111827;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 24px 80px #0008}
-.card h1{margin:0 0 6px;font-size:22px}
-.card p{margin:8px 0;color:var(--soft)}
-.badge{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 10px;font-size:12px;color:#a7f3d0}
-button{font:inherit;cursor:pointer;color:var(--ink);background:#1e293b;border:1px solid #64748b;border-radius:999px;padding:9px 16px}
-button.primary{background:var(--green);border-color:var(--green);font-weight:700;width:100%;margin-top:14px;padding:12px}
-button.wide{width:100%;margin-top:8px}
-button.link{background:none;border:none;padding:0;color:#5eead4;font-size:14px}
-button:focus-visible{outline:3px solid #5eead4;outline-offset:2px}
-.unit{font-size:11px;color:var(--soft)}
-.warn{color:#fcd34d!important}
-.keys{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;color:var(--soft);margin-top:12px}
-kbd{font:12px ui-monospace,monospace;background:#1f2937;border:1px solid #475569;border-radius:5px;padding:1px 6px;color:var(--ink)}
-.choices{display:grid;gap:8px;margin-top:12px}
-.choices .primary{margin-top:0;text-align:left;display:grid;gap:2px}
-.choices small{font-weight:400;font-size:12px;color:#e2e8f0}
-.choice-brentwood{background:#6d28d9!important;border-color:#a78bfa!important}
-.choice-zebra{background:#128e54!important}
-.choice-kings-road{background:#0e7490!important;border-color:#67e8f9!important}
-.choice-goodmayes{background:#4d7c0f!important;border-color:#bef264!important}
-.choice-moving-off{background:#0e5260!important;border-color:#5bb6ca!important}
-.objective{color:var(--ink)!important;font-weight:600}
-.briefing-box{border:1px solid #f59e0b;border-radius:12px;padding:8px 14px;background:#0b1220;margin:10px 0}
-.briefing-box h2{font-size:17px;color:#fbbf24;margin:4px 0}
-.briefing-box p{color:var(--ink)!important;font-size:14px;margin:6px 0}
-.intro-option{margin:8px 0}
-.about{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;margin:10px 0}
-.about dt{color:var(--soft)}.about dd{margin:0;font-family:ui-monospace,monospace;word-break:break-all}
-fieldset.steering{border:1px solid var(--line);border-radius:12px;margin:12px 0 0;padding:6px 12px 8px;display:grid;gap:6px}
-.steering legend{font-size:13px;color:var(--soft);padding:0 4px}
-.steering label{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--soft)}
-.steering label:has(input:disabled){opacity:.5}
-.steering input{margin-top:3px;width:18px;height:18px;flex:none}
-.steering b{color:var(--ink)}
-.steering .unit{margin:0}
-#tilt-unavailable{padding-left:28px;font-size:12px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.viewer-panel{display:grid;gap:6px}
+.viewer-panel select,.tilt-options select{font:inherit;font-size:13px;background:var(--surface-3);color:var(--ink);border:1px solid var(--line-strong);border-radius:10px;padding:5px 8px;max-width:100%}
+#tilt-unavailable{font-size:12px;margin:0}
 #tilt-status.warn{font-size:13px}
-.tilt-panel{padding-left:28px;display:grid;gap:8px}
+.tilt-panel{display:grid;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(15,23,42,.4)}
 .tilt-steps{margin:0;padding-left:18px;display:grid;gap:6px;font-size:13px}
 .tilt-steps button{padding:6px 14px}
 .tilt-steps button:disabled{opacity:.45;cursor:default}
-#tilt-enable{background:#0e5260;border-color:#5bb6ca;font-weight:700}
-.tilt-state{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0;font-size:13px}
+#tilt-enable{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.tilt-state{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0;font-size:12.5px}
 .tilt-state dt{color:var(--soft)}
 .tilt-state dd{margin:0}
 .tilt-state .ok{color:#86efac}.tilt-state .bad{color:#fcd34d}
-.tilt-options{display:flex;gap:14px;align-items:center}
-.tilt-options select{font:inherit;background:#1e293b;color:var(--ink);border:1px solid #64748b;border-radius:8px;padding:4px}
+.tilt-options{display:flex;gap:14px;align-items:center;font-size:13px}
 .wheel{width:30px;height:30px;flex:none}
 .tilt-panel .wheel{width:44px;height:44px}
 .wheel-rim{width:100%;height:100%;border:4px solid #94a3b8;border-radius:50%;position:relative;transition:transform 40ms linear}
-.wheel-rim span{position:absolute;left:50%;top:-4px;width:6px;height:10px;margin-left:-3px;background:#f59e0b;border-radius:3px}
+.wheel-rim span{position:absolute;left:50%;top:-4px;width:6px;height:10px;margin-left:-3px;background:var(--amber);border-radius:3px}
+.about{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin:12px 0}
+.about dt{color:var(--soft)}.about dd{margin:0;font-family:ui-monospace,SFMono-Regular,monospace;word-break:break-all}
 
-/* ---- Driving HUD: controls sit over the dashboard, clear of the mirrors and the road ---- */
+/* ---- Driving HUD: glass panels over the dashboard, clear of the mirrors and the road ---- */
 #hud{position:fixed;inset:0;pointer-events:none;z-index:10;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #hud button,#sim-canvas{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-.hud-panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:5px;pointer-events:auto}
-#hud button{border-radius:10px;padding:0 8px;font-size:12px;line-height:1.1;min-height:40px}
+.hud-panel{position:absolute;background:var(--panel);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:5px;pointer-events:auto;
+  -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);box-shadow:0 8px 28px rgba(0,0,0,.28)}
+#hud button{border-radius:11px;padding:0 9px;font-size:12px;font-weight:600;line-height:1.1;min-height:40px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--ink)}
+#hud button:active{background:rgba(255,255,255,.16)}
 #hud-status{position:absolute;left:var(--sl);bottom:calc(var(--sb) + 100px);font-size:11px;color:var(--soft);background:var(--panel);border-radius:8px;padding:3px 8px}
 body.phone #hud-status{display:none}
-#hud-credit{position:absolute;left:50%;top:1px;transform:translateX(-50%);font-size:9px;color:#e2e8f0;opacity:.75;text-shadow:0 0 3px #000;white-space:nowrap}
-#hud-task{position:absolute;left:50%;top:calc(var(--st) + 4px);transform:translateX(-50%);max-width:calc(100vw - 2 * (var(--sr) + 205px));text-align:center;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
-.hud-pill{position:absolute;left:var(--sl);top:var(--st);font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-.hud-pill.mirror{border-color:#5eead4;color:#5eead4}
-#hud-place{position:absolute;left:var(--sl);top:calc(var(--st) + 26px);font-size:11px;color:#e2e8f0;background:rgba(15,23,42,.55);border-radius:6px;padding:2px 8px;white-space:nowrap;max-width:45vw;overflow:hidden;text-overflow:ellipsis}
-#hud-top{right:var(--sr);top:var(--st);display:flex;gap:6px;align-items:center;font-size:11px;color:var(--soft)}
+#hud-credit{position:absolute;left:50%;top:1px;transform:translateX(-50%);font-size:9px;color:#e2e8f0;opacity:.7;text-shadow:0 0 3px #000;white-space:nowrap}
+#hud-task{position:absolute;left:50%;top:calc(var(--st) + 4px);transform:translateX(-50%);max-width:calc(100vw - 2 * (var(--sr) + 215px));text-align:center;font-size:13px;font-weight:500;background:rgba(10,15,28,.78);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:7px 14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.hud-pill{position:absolute;left:var(--sl);top:var(--st);font-size:12px;font-weight:700;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:4px 11px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.hud-pill.mirror{border-color:var(--accent);color:var(--accent)}
+#hud-place{position:absolute;left:var(--sl);top:calc(var(--st) + 29px);font-size:11px;color:#e2e8f0;background:rgba(10,15,28,.5);border-radius:8px;padding:2px 9px;white-space:nowrap;max-width:45vw;overflow:hidden;text-overflow:ellipsis}
+#hud-top{right:var(--sr);top:var(--st);display:flex;gap:5px;align-items:center;font-size:11px;color:var(--soft)}
 #hud-top button{min-height:34px}
+#hud-top button.icon{width:38px;padding:0;display:grid;place-items:center}
+#hud-sound[aria-pressed="true"] .snd-off,#hud-sound[aria-pressed="false"] .snd-on{display:none}
+#hud-sound[aria-pressed="false"]{color:var(--soft)}
+#hud-fps{min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
 /* Round icon buttons on the left edge (camera). */
-#hud .hud-round{position:absolute;left:var(--sl);top:calc(var(--st) + 52px);width:46px;height:46px;min-height:46px;padding:0;border-radius:50%;display:grid;place-items:center;pointer-events:auto;background:var(--panel);border:1px solid var(--line);color:var(--ink)}
-#hud-behind[aria-pressed="true"]{background:#0f766e;border-color:#5eead4}
+#hud .hud-round{position:absolute;left:var(--sl);top:calc(var(--st) + 56px);width:46px;height:46px;min-height:46px;padding:0;border-radius:50%;display:grid;place-items:center;pointer-events:auto;background:var(--panel);border:1px solid rgba(255,255,255,.12);color:var(--ink);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+#hud-behind[aria-pressed="true"]{background:#0f766e;border-color:var(--accent)}
 .hud-pill.behind{border-color:#fbbf24;color:#fbbf24}
 #hud-tilt{display:none;align-items:center;gap:6px}
 body.tilt #hud-tilt{display:flex}
 #hud-left{left:var(--sl);bottom:var(--sb);display:grid;gap:5px;justify-items:center}
-#hud-speedbox{display:flex;align-items:baseline;gap:4px}
-#hud-speed{font-size:24px;font-weight:800;line-height:1}
+#hud-speedbox{display:flex;align-items:baseline;gap:5px;padding:0 4px}
+#hud-speed{font-size:26px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.gear-readout{align-self:center;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:rgba(22,163,74,.25);color:#86efac;border:1px solid rgba(134,239,172,.35)}
+body.reverse .gear-readout{background:rgba(245,158,11,.25);color:#fcd34d;border-color:rgba(252,211,77,.4)}
 #steer-buttons{display:flex;gap:5px}
-#steer-buttons button{width:52px;font-size:18px;display:grid;place-items:center;line-height:1}
-#steer-buttons small{font-size:9px}
+#steer-buttons button{width:54px;font-size:18px;display:grid;place-items:center;line-height:1}
+#steer-buttons small{font-size:9px;font-weight:600;color:var(--soft)}
 body:not(.steer-buttons) #steer-buttons{display:none}
 /* On-screen steering wheel: drag round it with a thumb. */
 #touch-wheel{display:none;width:118px;height:118px;touch-action:none;cursor:grab}
@@ -119,34 +173,46 @@ body.wheel-steer.behind #touch-wheel{display:block}
 #wheel-grab{display:none;position:absolute;border-radius:50%;touch-action:none;pointer-events:auto;cursor:grab}
 body.wheel-steer:not(.behind) #wheel-grab{display:block}
 #touch-wheel .tw-rim{width:100%;height:100%;box-sizing:border-box;border:13px solid #334155;border-radius:50%;position:relative;box-shadow:inset 0 0 0 2px #64748b,0 0 0 2px #64748b}
-#touch-wheel .tw-rim>span{position:absolute;left:50%;top:-13px;width:10px;height:13px;margin-left:-5px;background:#f59e0b;border-radius:3px}
+#touch-wheel .tw-rim>span{position:absolute;left:50%;top:-13px;width:10px;height:13px;margin-left:-5px;background:var(--amber);border-radius:3px}
 #touch-wheel .tw-spoke{position:absolute;left:-2px;right:-2px;top:50%;height:9px;margin-top:-4px;background:#334155}
 #touch-wheel .tw-spoke::after{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#1e293b;border:2px solid #64748b}
 #touch-wheel.held .tw-rim{border-color:#0f766e}
 #hud-centre{left:50%;bottom:var(--sb);transform:translateX(-50%);display:grid;gap:5px}
-#view-buttons,#signal-buttons{display:flex;gap:5px;justify-content:center}
-#view-buttons button{width:66px;font-size:11px}
-#view-buttons button.selected{background:#0f766e;border-color:#5eead4;font-weight:700}
+#view-buttons,#signal-buttons{display:flex;gap:4px;justify-content:center}
+#view-buttons button{width:64px;font-size:11px;font-weight:600;background:transparent;border-color:transparent;color:#cbd5e1}
+#view-buttons button.selected{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 #view-buttons button[data-view="forward"]{width:62px}
-#signal-buttons button{flex:1;max-width:160px;font-weight:700;min-height:34px}
-.signal .ind{color:#475569;font-size:14px}
-.signal.armed{border-color:var(--amber);background:#422006}
-.signal.armed .ind{color:#b45309}
+#signal-buttons button{flex:1;max-width:170px;font-weight:700;min-height:34px}
+.signal .ind{color:#64748b;font-size:14px}
+.signal.armed{border-color:var(--amber)!important;background:rgba(245,158,11,.18)!important}
+.signal.armed .ind{color:#d97706}
 .signal.lit .ind{color:#fbbf24;text-shadow:0 0 8px #fbbf24}
-#touch-controls{right:var(--sr);bottom:var(--sb);display:flex;gap:6px}
-#touch-controls button{width:66px;min-height:64px!important;font-size:15px!important;font-weight:700}
-#touch-controls button.held{background:#0f766e;border-color:#5eead4}
-#touch-controls [data-hold="brake"].held{background:#7f1d1d;border-color:#f87171}
+#touch-controls{right:var(--sr);bottom:var(--sb);display:flex;gap:6px;align-items:stretch}
+#touch-controls button{width:68px;min-height:66px!important;font-size:15px!important;font-weight:800}
+#touch-controls [data-hold="throttle"]{background:linear-gradient(180deg,rgba(34,197,94,.35),rgba(22,163,74,.25));border-color:rgba(134,239,172,.4)}
+#touch-controls [data-hold="brake"]{background:linear-gradient(180deg,rgba(239,68,68,.32),rgba(185,28,28,.22));border-color:rgba(252,165,165,.35)}
+#touch-controls [data-hold="throttle"].held{background:#16a34a;border-color:#86efac}
+#touch-controls [data-hold="brake"].held{background:#b91c1c;border-color:#fca5a5}
+body.reverse #touch-controls [data-hold="throttle"]{background:linear-gradient(180deg,rgba(245,158,11,.4),rgba(217,119,6,.28));border-color:rgba(252,211,77,.5)}
+body.reverse #touch-controls [data-hold="throttle"].held{background:#d97706}
+.reverse-label,body.reverse .go-label{display:none}
+body.reverse .reverse-label{display:inline;font-size:13px}
+#touch-controls button.gear{width:40px;padding:3px!important;display:grid;grid-template-rows:1fr 1fr;gap:3px;font-size:13px!important;background:rgba(255,255,255,.05)}
+.gear span{display:grid;place-items:center;border-radius:8px;color:var(--faint)}
+.gear[aria-pressed="false"] .gear-d{background:#16a34a;color:#fff}
+.gear[aria-pressed="true"] .gear-r{background:#d97706;color:#fff}
 #steer-buttons button.held{background:#0f766e}
-body.stationary [data-hold="throttle"]{opacity:.4}
+body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 #error-message{white-space:pre-wrap;color:#fecaca;font:13px ui-monospace,monospace}
+
+/* ---- Results ---- */
 .results-card{max-height:calc(100vh - 32px);overflow-y:auto}
 .findings,.notes{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}
-.finding{border:1px solid var(--line);border-left-width:5px;border-radius:10px;padding:8px 12px;background:#0b1220}
+.finding{border:1px solid var(--line);border-left-width:4px;border-radius:12px;padding:9px 13px;background:rgba(15,23,42,.6)}
 .finding p{margin:4px 0;color:var(--ink)}
-.finding small{color:#94a3b8;font-size:11px}
+.finding small{color:var(--soft);font-size:11px}
 .finding-head{display:flex;gap:8px;align-items:baseline;font-weight:700}
-.upgraded{font-weight:400;font-size:12px;color:#94a3b8}
+.upgraded{font-weight:400;font-size:12px;color:var(--soft)}
 .sev-advice{border-left-color:#64748b}.sev-minor{border-left-color:#eab308}.sev-serious{border-left-color:#f97316}.sev-dangerous{border-left-color:#ef4444}
 .notes li{color:#a7f3d0;font-size:13px}.notes li::before{content:"✓ "}
 .notes li.improve{color:#fcd34d}.notes li.improve::before{content:"→ "}
@@ -159,48 +225,55 @@ body.stationary [data-hold="throttle"]{opacity:.4}
 <section id="screen-loading" class="screen" role="status"><div class="card"><h1>Loading simulator…</h1><p>Preparing the road and car.</p></div></section>
 
 <section id="screen-start" class="screen" hidden>
-  <div class="card">
+  <div class="card wide">
     <div id="exercise-list">
-      <span class="badge">Preview · draft feedback, not reviewed by an instructor</span>
-      <h1>Driving Practice</h1>
-      <p id="location-label">Choose an exercise.</p>
+      <div class="home-head">
+        <div class="brand">
+          <span class="brand-mark"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M3.8 11h5.9M14.3 11h5.9M12 14.2V20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+          <div><h1>Driving Practice</h1><p id="location-label">Real UK streets from the driver's seat</p></div>
+        </div>
+        <span class="badge">Preview · draft feedback, not instructor-reviewed</span>
+      </div>
+      <h2 class="group">Test centre drives</h2>
       <div class="choices">
-        <button class="primary choice-brentwood" type="button" data-exercise="brentwood">Brentwood mini-roundabouts<small>Drive through two mini-roundabouts close together: plan your lane, slow down, give way to the right. Area-inspired, not an official test route.</small></button>
-        <button class="primary choice-kings-road" type="button" data-exercise="kings-road">Kings Road zebra (Brentwood)<small>A real zebra crossing with a bus at the stop just before it: pass the bus, check your mirror, give way to a passenger crossing. Area-inspired, not an official test route.</small></button>
-        <button class="primary choice-goodmayes" type="button" data-exercise="goodmayes">Goodmayes free drive<small>Drive anywhere around Goodmayes test centre: terraced side roads, crossings, bus stops. Built from map data, not an official test route; nothing is scored.</small></button>
-        <button class="primary choice-zebra" type="button" data-exercise="zebra">Zebra crossing<small>Pass a parked van with a car following you, then give way to a pedestrian at the crossing.</small></button>
-        <button class="primary choice-moving-off" type="button" data-exercise="moving-off">Moving off safely<small>From a parked position: check all round, decide whether moving would affect anyone, and move off at a safe moment.</small></button>
+        <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes free drive</b><small>Drive anywhere around Goodmayes test centre: terraced streets, crossings, bus stops.</small><span class="tags"><i class="real">Real streets</i><i>Free drive</i><i>Not scored</i></span></span></button>
       </div>
-      <div class="keys">
-        <span><kbd>W</kbd>/<kbd>↑</kbd></span><span>Go</span>
-        <span><kbd>S</kbd>/<kbd>↓</kbd>/<kbd>Space</kbd></span><span>Brake</span>
-        <span><kbd>A</kbd><kbd>D</kbd>/<kbd>←</kbd><kbd>→</kbd></span><span>Steer</span>
-        <span><kbd>[</kbd> <kbd>]</kbd></span><span>Signal left / right</span>
-        <span>Drag</span><span>Look around (mouse or swipe)</span>
-        <span><kbd>Q</kbd> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>E</kbd></span><span>Hold to look: left shoulder, left mirror, interior mirror, right mirror, right shoulder</span>
-        <span><kbd>C</kbd></span><span>Forward view</span>
-        <span><kbd>P</kbd>/<kbd>Esc</kbd></span><span>Pause</span>
+      <h2 class="group">Skills</h2>
+      <div class="choices">
+        <button class="choice" type="button" data-exercise="brentwood" style="--c:#a78bfa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m14.8 7.2 1.6-1.9.4 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt"><b>Brentwood mini-roundabouts</b><small>Two mini-roundabouts close together: plan, slow down, give way to the right.</small><span class="tags"><i class="real">Real streets</i><i>Scored</i></span></span></button>
+        <button class="choice" type="button" data-exercise="kings-road" style="--c:#22d3ee"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 10h14M8 21v-3M16 21v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor"/><circle cx="15.5" cy="14" r="1.1" fill="currentColor"/></svg></span><span class="txt"><b>Kings Road zebra</b><small>Pass a bus at its stop, check your mirror, give way at a real zebra crossing.</small><span class="tags"><i class="real">Real streets</i><i>Scored</i></span></span></button>
+        <button class="choice" type="button" data-exercise="zebra" style="--c:#34d399"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 2"/></svg></span><span class="txt"><b>Zebra crossing</b><small>Pass a parked van with a car behind you, then give way to a pedestrian.</small><span class="tags"><i>Practice street</i><i>Scored</i></span></span></button>
+        <button class="choice" type="button" data-exercise="moving-off" style="--c:#60a5fa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 15v-3l2-5h12l2 5v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 12h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="16.5" r="1.8" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1.8" fill="currentColor"/></svg></span><span class="txt"><b>Moving off safely</b><small>From parked: check all round and move off at a safe moment.</small><span class="tags"><i>Practice street</i><i>Scored</i></span></span></button>
       </div>
-      <button id="xr-button" type="button" hidden class="wide">Enter VR headset (experimental, seated)</button>
-      <button id="about-open" type="button" class="wide">About this build</button>
+      <div class="home-foot">
+        <details class="more keys-box"><summary>Keyboard controls</summary><div class="more-body"><div class="keys">
+          <span><kbd>W</kbd> <kbd>↑</kbd></span><span>Go</span>
+          <span><kbd>S</kbd> <kbd>↓</kbd> <kbd>Space</kbd></span><span>Brake</span>
+          <span><kbd>X</kbd></span><span>Drive / reverse</span>
+          <span><kbd>A</kbd> <kbd>D</kbd> <kbd>←</kbd> <kbd>→</kbd></span><span>Steer</span>
+          <span><kbd>[</kbd> <kbd>]</kbd></span><span>Signal left / right</span>
+          <span>Drag</span><span>Look around (mouse or swipe)</span>
+          <span><kbd>Q</kbd> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>E</kbd></span><span>Hold to look: shoulders and mirrors</span>
+          <span><kbd>C</kbd></span><span>Forward view</span>
+          <span><kbd>P</kbd> <kbd>Esc</kbd></span><span>Pause</span>
+        </div></div></details>
+        <button id="xr-button" type="button" hidden>VR headset (experimental)</button>
+        <button id="about-open" type="button">About</button>
+      </div>
     </div>
-
     <div id="exercise-detail" hidden>
-      <button id="exercise-back" type="button" class="link">← All exercises</button>
-      <h1 id="exercise-title"></h1>
-      <p id="exercise-objective" class="objective"></p>
-      <div id="exercise-briefing" class="briefing-box"></div>
-      <div id="intro-option" class="intro-option" hidden>
-        <button id="start-intro" type="button" class="wide">Optional: guided introduction to the view controls</button>
-        <p class="unit">Not assessed. Road users pass while you stay parked and try each view.</p>
-      </div>
+      <div class="detail">
+        <div class="detail-main">
+          <button id="exercise-back" type="button" class="link">← All exercises</button>
+          <h1 id="exercise-title" style="margin-top:8px"></h1>
+          <p id="exercise-objective" class="objective"></p>
+          <div id="exercise-briefing" class="briefing-box"></div>
+        </div>
+        <div class="detail-side">
       <fieldset id="steering-mode" class="steering">
         <legend>Steering</legend>
-        <label><input type="radio" name="steering" value="assist"> <span><b>Assisted</b>: keeps the car on the lane path; you control speed, signals and observations.</span></label>
-        <label><input type="radio" name="steering" value="tilt"> <span><b>Tilt the phone</b> like a steering wheel (landscape).</span></label>
+        <div class="opts"><label class="opt"><input type="radio" name="steering" value="assist"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 21 10 3M17 21 14 3M12 6v2M12 11v2M12 16v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span><b>Assisted</b>Keeps you in lane; you do speed, signals and checks.</span></label><label class="opt"><input type="radio" name="steering" value="tilt"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2.5" transform="rotate(-12 12 12)" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span><b>Tilt the phone</b>Steer like a wheel, in landscape.</span></label><label class="opt"><input type="radio" name="steering" value="wheel"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.8 11h16.4M12 13.5V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span><b>On-screen wheel</b>Turn the wheel with your thumb.</span></label><label class="opt"><input type="radio" name="steering" value="buttons"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9 7-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Buttons or keys</b>Steer left / right buttons.</span></label></div>
         <p id="tilt-unavailable" class="unit warn" hidden></p>
-        <label><input type="radio" name="steering" value="wheel"> <span><b>On-screen wheel</b>: turn the steering wheel on the screen with your thumb. Let go and it returns to the centre.</span></label>
-        <label><input type="radio" name="steering" value="buttons"> <span><b>Steer buttons or keys</b>.</span></label>
         <div id="tilt-options" class="tilt-panel" hidden>
           <ol class="tilt-steps">
             <li><button id="tilt-enable" type="button">Enable tilt</button> <span class="unit">asks for motion access</span></li>
@@ -218,12 +291,16 @@ body.stationary [data-hold="throttle"]{opacity:.4}
           </div>
         </div>
         <p id="tilt-status" class="unit" role="status"></p>
-        <p class="unit">With tilt, the Steer buttons stay on screen as a fallback and always take priority.</p>
+        <p class="unit" style="margin:0">With tilt, the Steer buttons stay on screen as a fallback and always take priority.</p>
       </fieldset>
-      <label id="guide-option" class="guide-option" hidden><input type="checkbox" id="guide-toggle"> <span><b>Show the pull-out path</b> on the road. Useful while learning the controls; leave it off for an independent attempt.</span></label>
-      <button id="start-practice" class="primary" type="button">Start practice</button>
+      <label id="guide-option" class="guide-option" hidden><span><b>Show the pull-out path</b> on the road. Useful while learning; leave it off for an independent attempt.</span><input type="checkbox" id="guide-toggle"></label>
+          <button id="start-practice" class="primary" type="button">Start practice</button>
+      <div id="intro-option" class="intro-option" hidden>
+        <button id="start-intro" type="button" class="wide">Optional: guided introduction to the view controls</button>
+        <p class="unit">Not assessed. Road users pass while you stay parked and try each view.</p>
+      </div>
+          <details id="viewer-details" class="more"><summary>Phone headset (experimental)</summary><div class="more-body">
       <fieldset id="viewer-mode" class="steering viewer-panel">
-        <legend>Phone headset (experimental)</legend>
         <p class="unit">Normal touch-screen practice above is unchanged. With the phone in a headset:</p>
         <button id="viewer-familiarise" type="button" class="wide">Sit in the car (no controller needed)</button>
         <p class="unit">Parked and not scored: look around, check the mirrors and practise shoulder checks. Menus work by looking at a button for a moment; tap the screen to leave.</p>
@@ -235,6 +312,9 @@ body.stationary [data-hold="throttle"]{opacity:.4}
         <p id="viewer-summary" class="unit"></p>
         <p id="viewer-status" class="unit" role="status"></p>
       </fieldset>
+          </div></details>
+        </div>
+      </div>
     </div>
   </div>
 </section>
