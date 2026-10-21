@@ -254,6 +254,14 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 #hud-question-choices{display:grid;gap:6px}
 #hud-question-source{font-size:10px;color:var(--soft)}
 #hud-question-choices button{text-align:left;padding:8px 11px!important;font-weight:500!important;font-size:12.5px!important;line-height:1.3!important}
+/* Lessons: the syllabus, one card per lesson. */
+.lesson-list{display:grid;gap:6px;margin:10px 0}
+.lesson-list button{display:grid;grid-template-columns:28px 1fr;gap:2px 10px;text-align:left;padding:9px 11px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--ink)}
+.lesson-list button:hover{border-color:var(--accent)}
+.lesson-list .n{grid-row:span 2;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(20,184,166,.18);color:var(--accent);font-weight:800;font-size:12px}
+.lesson-list b{font-size:13.5px}.lesson-list small{color:var(--soft);font-size:12px}
+.lesson-list button:disabled{opacity:.45}
+.lesson-list button:disabled .n{background:rgba(255,255,255,.08);color:var(--soft)}
 /* Tutorial: the part of the screen being explained is cut out of a dark veil, with a note beside it. */
 #tour{position:fixed;inset:0;z-index:60}
 .tour-spot{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(3,7,18,.64);outline:2px solid var(--accent);transition:left .2s,top .2s,width .2s,height .2s;pointer-events:none}
@@ -302,6 +310,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
         <div class="mode-row">
           <label for="area-query" class="section-label">Drive anywhere in the UK</label>
           <div class="mode-switch" role="group" aria-label="What to do there">
+            <button type="button" data-drive-mode="lesson" aria-pressed="false">Lesson</button>
             <button type="button" data-drive-mode="test" aria-pressed="true">Mock test</button>
             <button type="button" data-drive-mode="free" aria-pressed="false">Free drive</button>
           </div>
@@ -316,7 +325,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
       </div>
       <h2 class="group">Test centre drives</h2>
       <div class="choices">
-        <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b><small>The streets round Goodmayes test centre: a mock test with the examiner's directions, or a free drive (switch above). Built from map data, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Mock test</i><i>Free drive</i></span></span></button>
+        <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b><small>The streets round Goodmayes test centre: lessons with an instructor, a mock test with the examiner's directions, or a free drive (switch above). Built from map data, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Lessons</i><i>Mock test</i><i>Free drive</i></span></span></button>
       </div>
       <h2 class="group">Skills</h2>
       <div class="choices">
@@ -347,6 +356,8 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
           <button id="exercise-back" type="button" class="link">← All exercises</button>
           <h1 id="exercise-title" style="margin-top:8px"></h1>
           <p id="exercise-objective" class="objective"></p>
+          <div id="lesson-list" class="lesson-list" role="list" hidden></div>
+          <button id="lesson-back" type="button" class="link" hidden>← All lessons</button>
           <div id="exercise-briefing" class="briefing-box"></div>
         </div>
         <div class="detail-side">

@@ -1,5 +1,5 @@
 import type {EventSink,Seconds,SimModule} from '../contracts';
-import {RoadNetwork,type RouteLeg,type RouteStep} from './route';
+import {RoadNetwork,type RoadPos,type Route,type RouteLeg,type RouteStep} from './route';
 import {stopPlace} from './pullUp';
 import type {ShowMeQuestion,TellMeQuestion} from './vehicleChecks';
 
@@ -67,7 +67,15 @@ export class Examiner implements SimModule{
      *  `answerTellMe`) and one show me (while driving). Without them the test starts with the briefing. */
     tellMe?:TellMeQuestion;showMe?:ShowMeQuestion;
     /** Shows the tell me question's choices (the answer comes back through `answerTellMe`). */
-    askTellMe?:(question:TellMeQuestion)=>void}){}
+    askTellMe?:(question:TellMeQuestion)=>void;
+    /** Plans the route instead of the usual mix of junctions (a lesson's route). */
+    planner?:(start:RoadPos,target:number,seed:number)=>Route;
+    /** What is said to begin, to ask for the pull-up, and at the end (an instructor's words on a lesson). */
+    words?:{briefing?:string;pullUp?:string;end?:string}}){}
+
+  private get briefing(){return this.options.words?.briefing??BRIEFING}
+  private get pullUpWords(){return this.options.words?.pullUp??PULL_UP}
+  private get endWords(){return this.options.words?.end??END}
 
   private say(text:string){this.lastSaid=text;this.options.say(text)}
   private key=(r:{name?:string|undefined;id:string})=>r.name??r.id;
@@ -76,7 +84,7 @@ export class Examiner implements SimModule{
     const l=this.learner();
     const pos=this.net.locate(l.x,l.z,l.heading);
     if(!pos)return false;
-    const route=this.net.plan(pos,length,seed);
+    const route=this.options.planner?this.options.planner(pos,length,seed):this.net.plan(pos,length,seed);
     this.steps=route.steps;this.legs=route.legs;
     this.index=0;this.spoken=false;this.near=false;this.offRoute=0;this.closest=Infinity;
     this.options.onPlan?.();
@@ -114,7 +122,7 @@ export class Examiner implements SimModule{
       return;
     }
     if(this.phase==='briefing'){
-      if(this.time>.3){this.say(BRIEFING);this.phase='driving'}
+      if(this.time>.3){this.say(this.briefing);this.phase='driving'}
       return;
     }
     if(this.phase==='driving'){
@@ -164,8 +172,8 @@ export class Examiner implements SimModule{
       // Some distance after the last turn, then the request.
       if(this.sincePullUp>60&&!this.pullUpAsked){
         this.pullUpAsked=true;
-        this.say(PULL_UP);
-        this.options.events.emit('examiner.direction',{text:PULL_UP,turn:'pull-up'});
+        this.say(this.pullUpWords);
+        this.options.events.emit('examiner.direction',{text:this.pullUpWords,turn:'pull-up'});
         this.options.listener?.pullUp?.();
       }
       if(this.pullUpAsked){
@@ -177,7 +185,7 @@ export class Examiner implements SimModule{
         if(this.stoppedFor>2&&(atSide||this.stoppedFor>6&&!l.blocked)){
           this.phase='stopping';this.time=0;
           this.options.listener?.pulledUp?.();
-          this.say(END);
+          this.say(this.endWords);
         }
       }
       return;

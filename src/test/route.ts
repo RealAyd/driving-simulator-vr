@@ -28,9 +28,22 @@ export interface RouteStep{
   from:{road:Road;dir:1|-1};
   /** Distance along the route to the manoeuvre (metres from the route's start). */
   distance:number;
+  /** The kind of junction: a side road off this one, the end of this road (emerging), a mini-roundabout, or
+   *  traffic lights. */
+  kind:'side'|'end'|'roundabout'|'lights';
+  /** Roads join from both sides here (a crossroads). */
+  crossroads:boolean;
 }
 /** A stretch of the route: a road driven one way between two points on it (metres along the road's own direction). */
 export interface RouteLeg{road:Road;dir:1|-1;from:number;to:number}
+/** A junction and the way taken through it, as a lesson weighs it. */
+export type JunctionChoice=Pick<RouteStep,'kind'|'turn'|'crossroads'|'at'>;
+export interface PlanOptions{
+  /** Roads to take, in order, from the start (a way to a junction the lesson needs), before choosing freely. */
+  forced?:Array<{road:Road;dir:1|-1}>;
+  /** How much a lesson wants a junction and way through it (0: no preference): taken more often. */
+  prefer?:(j:JunctionChoice)=>number;
+}
 export interface Route{steps:RouteStep[];legs:RouteLeg[];length:number}
 
 const len=(r:Road)=>r.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-r.centreline[i]!.x,p.z-r.centreline[i]!.z),0);
@@ -44,7 +57,7 @@ const SHARPEST=2.35;
 interface Option{road:Road;dir:1|-1;from:number;angle:number;
   /** The turn measured further along the new road (20 m): a road that bends straight back is a U-turn in effect. */
   overall:number}
-interface Decision{along:number;at:Vec2;kind:'side'|'end';options:Option[];roundabout:boolean;straight:Option|null}
+interface Decision{along:number;at:Vec2;kind:'side'|'end';options:Option[];roundabout:boolean;straight:Option|null;crossroads:boolean}
 
 export class RoadNetwork{
   private readonly nodes:Array<{x:number;z:number;junction:boolean;radius:number}>=[];
@@ -109,7 +122,9 @@ export class RoadNetwork{
       const o=optionFrom(e,e.along);
       // Not a side road that doubles back (joining at a sharp angle): almost a U-turn, not a test manoeuvre.
       if(!this.fit(o))continue;
-      out.push({along:e.along,at:{x:p.x,z:p.z},kind:'side',options:[o],roundabout:false,straight:null});
+      // A road joining opposite, within a few metres: a crossroads.
+      const crossroads=(this.sideRoads.get(road)??[]).some(x=>x!==e&&Math.abs(x.along-e.along)<10&&Math.sign(optionFrom(x,x.along).angle)===-Math.sign(o.angle));
+      out.push({along:e.along,at:{x:p.x,z:p.z},kind:'side',options:[o],roundabout:false,straight:null,crossroads});
     }
     const endAlong=dir>0?L:0;
     const [na,nb]=this.roadNodes.get(road)!;
@@ -129,7 +144,8 @@ export class RoadNetwork{
     // At a mini-roundabout every exit counts (they are numbered); elsewhere no doubling back.
     if(!n.junction)for(let k=options.length-1;k>=0;k--)if(!this.fit(options[k]!))options.splice(k,1);
     const straight=options.filter(o=>Math.abs(o.angle)<.6).sort((a,b)=>Math.abs(a.angle)-Math.abs(b.angle))[0]??null;
-    out.push({along:endAlong,at:n.junction?{x:n.x,z:n.z}:{x:end.x,z:end.z},kind:'end',options,roundabout:n.junction,straight});
+    const crossroads=!!straight&&options.some(o=>o.angle<-.6)&&options.some(o=>o.angle>.6);
+    out.push({along:endAlong,at:n.junction?{x:n.x,z:n.z}:{x:end.x,z:end.z},kind:'end',options,roundabout:n.junction,straight,crossroads});
     return out;
   }
 
@@ -137,39 +153,64 @@ export class RoadNetwork{
    * A route of about `target` metres from a position: at each junction it sometimes turns (side roads), and at
    * road ends it picks a way on, never straight back and never into a dead end. Deterministic for a seed.
    */
-  plan(start:RoadPos,target:number,seed=1):Route{
+  plan(start:RoadPos,target:number,seed=1,options:PlanOptions={}):Route{
     let state=seed>>>0||1;
     const rand=()=>{state=Math.imul(state^(state>>>15),2246822507)+0x9e3779b9>>>0;return (state>>>8)/16777216};
     let best:Route={steps:[],legs:[],length:0};
     for(let attempt=0;attempt<60;attempt++){
       const steps:RouteStep[]=[],legs:RouteLeg[]=[];
-      let pos=start,distance=0,ok=true,lastSay='';
+      let pos=start,distance=0,ok=true,lastSay='',stuck=false;
       // Roads already driven: a route should not go round the same block twice.
       const key=(r:Road)=>r.name??r.id;
       const driven=new Map<string,number>([[key(start.road),1]]);
       const uses=(r:Road)=>driven.get(key(r))??0;
+      const forced=[...(options.forced??[])];
+      const want=(d:Decision,o:Option)=>options.prefer?.(this.choice(d,o))??0;
       while(distance<target&&steps.length<20){
         const ds=this.decisions(pos);
+        // A road that ends in a dead end (the edge of the area): the last side road off it is the way on.
+        const end=ds.at(-1),deadEnd=!!end&&end.kind==='end'&&!end.options.some(o=>this.leadsOn(o));
+        const lastSide=deadEnd?[...ds].reverse().find(d=>d.kind==='side'&&this.leadsOn(d.options[0]!)):undefined;
         let taken:{d:Decision;o:Option}|null=null;
         for(const d of ds){
+          // On the way to a junction the lesson needs: the roads given, in order.
+          const next=forced[0];
+          if(next){
+            const o=d.options.find(x=>x.road===next.road&&x.dir===next.dir);
+            if(o){forced.shift();taken={d,o};break}
+            if(d.kind==='side')continue;
+            forced.length=0;
+          }
           if(d.kind==='side'){
-            // Not straight after the last manoeuvre (room to signal), and not every road.
-            if(Math.abs(d.along-pos.along)>35&&uses(d.options[0]!.road)===0&&rand()<.3&&this.leadsOn(d.options[0]!)){taken={d,o:d.options[0]!};break}
+            // Not straight after the last manoeuvre (room to signal), and not every road: more often when a lesson
+            // wants this turn.
+            const o=d.options[0]!,keen=want(d,o)>0;
+            if(d===lastSide){taken={d,o};break}
+            if(Math.abs(d.along-pos.along)>35&&uses(o.road)<=(keen?1:0)&&rand()<(keen?.85:.3)&&this.leadsOn(o)){taken={d,o};break}
             continue;
           }
           let viable=d.options.filter(o=>this.leadsOn(o));
-          if(viable.length===0){ok=false;break}
+          // Into a dead end (the edge of the area): the route ends at the last junction (no use if it is the first).
+          if(viable.length===0){ok=steps.length>0;stuck=true;break}
           // Short links (a few metres between two junctions on the map) only when there is nothing else: two
           // manoeuvres moments apart are confusing to follow.
           const room=(o:Option)=>o.dir>0?len(o.road)-o.from:o.from;
           if(viable.some(o=>room(o)>40))viable=viable.filter(o=>room(o)>40);
+          // A lesson's kind of turn wherever there is one (most of the time: some variety).
+          if(options.prefer&&rand()<.85){const keen=viable.filter(x=>want(d,x)>0);if(keen.length)viable=keen}
           const least=Math.min(...viable.map(o=>uses(o.road)));
           viable=viable.filter(o=>uses(o.road)===least);
-          // Prefer going on (ahead) sometimes, turning otherwise.
-          const o=d.straight&&viable.includes(d.straight)&&rand()<.45?d.straight:viable[Math.floor(rand()*viable.length)]!;
+          // Prefer going on (ahead) sometimes, turning otherwise; or what the lesson wants.
+          let o:Option;
+          if(options.prefer&&viable.some(x=>want(d,x)>0)){
+            const w=viable.map(x=>1+3*Math.max(0,want(d,x))),total=w.reduce((a,b)=>a+b,0);
+            let r=rand()*total,i=0;
+            while(i<viable.length-1&&r>=w[i]!){r-=w[i]!;i++}
+            o=viable[i]!;
+          }else o=d.straight&&viable.includes(d.straight)&&rand()<.45?d.straight:viable[Math.floor(rand()*viable.length)]!;
           taken={d,o};
         }
-        if(!ok||!taken)break;
+        if(!ok||!taken||stuck)break;
         const {d,o}=taken;
         distance+=Math.abs(d.along-pos.along);
         const turn:Turn=Math.abs(o.angle)<.6?'ahead':o.angle>0?'right':'left';
@@ -201,7 +242,8 @@ export class RoadNetwork{
         }
         if(say&&say===lastSay&&steps.length>0&&distance-steps.at(-1)!.distance<40)say=`Then ${say[0]!.toLowerCase()}${say.slice(1)}`;
         lastSay=say;
-        if(say)steps.push({say,turn,...(exit?{exit}:{}),at:d.at,to:{road:o.road,dir:o.dir},from:{road:pos.road,dir:pos.dir},distance});
+        if(say)steps.push({say,turn,...(exit?{exit}:{}),at:d.at,to:{road:o.road,dir:o.dir},from:{road:pos.road,dir:pos.dir},distance,
+          kind:this.choice(d,o).kind,crossroads:d.crossroads});
         legs.push({road:pos.road,dir:pos.dir,from:pos.along,to:d.along});
         pos={road:o.road,dir:o.dir,along:o.from};
         driven.set(key(o.road),uses(o.road)+1);
@@ -219,9 +261,75 @@ export class RoadNetwork{
     return Math.abs(o.angle)<=SHARPEST&&Math.abs(o.overall)<=SHARPEST&&!!o.road.name;
   }
 
-  /** Whether driving on along an option leads to another decision (not a dead end or the edge of the area). */
-  private leadsOn(o:Option):boolean{
-    const ds=this.decisions({road:o.road,dir:o.dir,along:o.from});
-    return ds.some(d=>d.kind==='side'||d.options.length>0);
+  /** The junction and way through it, as a lesson weighs it. */
+  private choice(d:Decision,o:Option):JunctionChoice{
+    const lights=!d.roundabout&&this.location.signals.some(g=>g.kind==='junction'&&Math.hypot(g.position.x-d.at.x,g.position.z-d.at.z)<35);
+    // Where this road carries straight on, turning off it is turning into a side road (the map often splits a
+    // road at every junction, so it shows as a road end); only with no way ahead is it emerging from a road end.
+    // (At a crossroads the priority is not known from the map: it counts as a road end, with care both ways.)
+    const kind=d.roundabout?'roundabout':lights?'lights':d.kind==='side'||d.straight&&!d.crossroads?'side':'end';
+    return {kind,turn:Math.abs(o.angle)<.6?'ahead':o.angle>0?'right':'left',crossroads:d.crossroads,at:d.at};
   }
+
+  /**
+   * The roads to take from `start` to the nearest junction a lesson needs (`goal`), through it, by the shortest
+   * way (within `reach` metres); null when there is none.
+   */
+  wayTo(start:RoadPos,goal:(j:JunctionChoice)=>boolean,seed=1,reach=1600):{way:Array<{road:Road;dir:1|-1}>;at:Vec2;end:RoadPos}|null{
+    const key=(p:RoadPos)=>`${p.road.id}|${p.dir}|${Math.round(p.along)}`;
+    const dist=new Map<string,number>([[key(start),0]]);
+    const prev=new Map<string,{from:string;road:Road;dir:1|-1}>();
+    const open:Array<[number,RoadPos]>=[[0,start]];
+    let best:{cost:number;from:string;through:Option;at:Vec2}|null=null;
+    while(open.length){
+      open.sort((a,b)=>a[0]-b[0]);
+      const [cost,pos]=open.shift()!,k=key(pos);
+      if(cost>(dist.get(k)??Infinity)||cost>reach||(best&&cost>=best.cost))continue;
+      for(const d of this.decisions(pos)){
+        const c=cost+Math.abs(d.along-pos.along);
+        const viable=d.options.filter(o=>this.leadsOn(o));
+        const through=viable.filter(o=>goal(this.choice(d,o)));
+        if(through.length&&(!best||c<best.cost))best={cost:c,from:k,through:through[Math.abs(seed)%through.length]!,at:d.at};
+        for(const o of viable){
+          const np:RoadPos={road:o.road,dir:o.dir,along:o.from},nk=key(np);
+          if(c<(dist.get(nk)??Infinity)){dist.set(nk,c);prev.set(nk,{from:k,road:o.road,dir:o.dir});open.push([c,np])}
+        }
+      }
+    }
+    if(!best)return null;
+    const way:Array<{road:Road;dir:1|-1}>=[];
+    for(let k=best.from;prev.has(k);k=prev.get(k)!.from)way.unshift({road:prev.get(k)!.road,dir:prev.get(k)!.dir});
+    way.push({road:best.through.road,dir:best.through.dir});
+    return {way,at:best.at,end:{road:best.through.road,dir:best.through.dir,along:best.through.from}};
+  }
+
+  /**
+   * The best of many routes for a purpose (a lesson's junctions): the highest `score` among routes of at least
+   * 70% of `target`, trying seeds from `seed`.
+   */
+  planFor(start:RoadPos,target:number,seed:number,score:(route:Route)=>number,tries=30,options:PlanOptions={}):Route{
+    let best:{route:Route;score:number}|null=null;
+    for(let k=0;k<tries;k++){
+      const route=this.plan(start,target,seed+k*7919,options);
+      if(route.length<target*.7&&best)continue;
+      const sc=score(route);
+      if(!best||sc>best.score)best={route,score:sc};
+    }
+    return best!.route;
+  }
+
+  /** Whether driving on along an option leads to another decision (not a dead end or the edge of the area). */
+  private leadsOn(o:Option,depth=3):boolean{
+    // Looked a few junctions ahead (a road whose only ways on are side roads into dead ends does not lead on).
+    const key=`${o.road.id}|${o.dir}|${Math.round(o.from)}|${depth}`;
+    const known=this.leadsOnCache.get(key);
+    if(known!==undefined)return known;
+    this.leadsOnCache.set(key,true);
+    const ds=this.decisions({road:o.road,dir:o.dir,along:o.from});
+    const result=depth<=1?ds.some(d=>d.kind==='side'||d.options.length>0)
+      :ds.some(d=>d.options.some(x=>this.leadsOn(x,depth-1)));
+    this.leadsOnCache.set(key,result);
+    return result;
+  }
+  private readonly leadsOnCache=new Map<string,boolean>();
 }

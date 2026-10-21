@@ -1,0 +1,11 @@
+{
+ "schemaVersion": 1,
+ "id": "goodmayes-lesson",
+ "locationId": "goodmayes",
+ "title": "Goodmayes (lesson)",
+ "learningObjective": "Driving lessons on the streets round Goodmayes test centre: one topic at a time, with an instructor who coaches you as you drive.",
+ "briefing": "Goodmayes lessons\n\nChoose a lesson. Your instructor explains it first, gives directions as you drive, reminds you when something is not yet done (mirrors, signal, speed, position, giving way) and tells you how each junction went. At the end you get a lesson report: what went well and what to work on. There is no pass or fail.\n\nBuilt from OpenStreetMap data; not an official test route. Draft lessons, not reviewed by an approved driving instructor.",
+ "rubricId": "lesson",
+ "controllerDriving": {"assistedSpeedMph": 25, "accelerationLimit": 1.5},
+ "end": {"timeLimitSeconds": 900}
+}

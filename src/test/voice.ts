@@ -29,10 +29,11 @@ export class ExaminerVoice{
     synth.speak(u);
   }
 
-  say(text:string):void{
+  /** Speaks `text`: instead of anything being said, or after it (`queue`, for an instructor's follow-up words). */
+  say(text:string,queue=false):void{
     const synth=this.synth;
     if(!synth||this.muted||!text)return;
-    synth.cancel();
+    if(!queue)synth.cancel();
     const u=new SpeechSynthesisUtterance(text);
     if(this.voice)u.voice=this.voice;
     u.lang=this.voice?.lang??'en-GB';

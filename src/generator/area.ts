@@ -15,7 +15,7 @@ export interface AreaRequest{
   /** A test centre: the drive starts near it and the briefing says so. */
   testCentre?:boolean;
 }
-export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;summary:string}
+export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
 
 const OSM_API='https://api.openstreetmap.org/api/0.6/map';
 const slug=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'area';
@@ -64,7 +64,16 @@ export async function buildArea(request:AreaRequest,progress:(step:string)=>void
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
     end:{timeLimitSeconds:900}
   });
-  return {location,scenario,mockTest,summary};
+  const lesson=parseScenario({
+    schemaVersion:1,id:`${id}-lesson`,locationId:id,
+    title:`${request.label} (lesson)`,
+    learningObjective:'Driving lessons on these streets: one topic at a time, with an instructor who coaches you as you drive.',
+    briefing:`${request.label}: lessons\n\nChoose a lesson. Your instructor explains it first, gives directions as you drive, reminds you when something is not yet done (mirrors, signal, speed, position, giving way) and tells you how each junction went. At the end you get a lesson report: what went well and what to work on. There is no pass or fail.\n\nBuilt from OpenStreetMap data; not an official test route. Draft lessons, not reviewed by an approved driving instructor.`,
+    rubricId:'lesson',
+    controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
+    end:{timeLimitSeconds:900}
+  });
+  return {location,scenario,mockTest,lesson,summary};
 }
 
 /** A UK postcode (full), e.g. "IG3 9QJ". */

@@ -18,15 +18,18 @@ function el<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string,className?
 
 /** Renders an attempt result. Text only (no innerHTML), so content cannot inject markup. */
 export function renderResults(result:AttemptResult,eventTime:(id:string)=>number|undefined,attemptsSaved:number,storage:'indexeddb'|'memory',saveFailed=false):void{
-  const mock=result.mockTest;
+  const mock=result.mockTest,lesson=result.lesson;
   // A mock test reads like the examiner's verdict: pass or fail, then the faults in the marking sheet's terms.
-  const label=(sev:Severity)=>mock&&sev==='minor'?'Driving fault':SEVERITY_TEXT[sev];
+  // A lesson has no verdict: what went well and what to work on.
+  const label=(sev:Severity)=>lesson&&sev==='minor'?'To work on':mock&&sev==='minor'?'Driving fault':SEVERITY_TEXT[sev];
   const title=document.getElementById('results-title')!;
-  title.textContent=mock?`Mock test: ${!mock.finished?'ended early':mock.passed?'PASS':'FAIL'}`:OUTCOME_TEXT[result.outcome];
+  title.textContent=lesson?`Lesson ${lesson.number}: ${lesson.title}`:mock?`Mock test: ${!mock.finished?'ended early':mock.passed?'PASS':'FAIL'}`:OUTCOME_TEXT[result.outcome];
   title.classList.toggle('verdict-pass',!!mock?.passed);
   title.classList.toggle('verdict-fail',!!mock&&mock.finished&&!mock.passed);
   const worst=result.findings[0]?.severity;
-  document.getElementById('results-summary')!.textContent=mock
+  document.getElementById('results-summary')!.textContent=lesson
+    ?`${lesson.junctions} junction${lesson.junctions===1?'':'s'} · ${lesson.good} done well · ${lesson.improve} to work on`
+    :mock
     ?`${mock.driving} driving fault${mock.driving===1?'':'s'} · ${mock.serious} serious · ${mock.dangerous} dangerous${result.outcome!=='completed'?` · ${OUTCOME_TEXT[result.outcome].replace('Stopped: ','stopped: ')}`:''}`
     :result.findings.length===0?'No findings recorded for this attempt.'
     :`${result.findings.length} finding${result.findings.length===1?'':'s'}; most significant: ${SEVERITY_TEXT[worst!]}.`;

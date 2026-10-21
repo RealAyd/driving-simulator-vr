@@ -33,10 +33,14 @@ import {SHOW_ME,TELL_ME,pick} from '../test/vehicleChecks';
 import {CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
 import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
+import {LESSONS,LESSONS_COMING,planLesson,type Lesson} from '../lessons/syllabus';
+import {Instructor} from '../lessons/instructor';
+import type {ExaminerListener} from '../test/examiner';
 import {Examiner} from '../test/examiner';
 import {ExaminerVoice} from '../test/voice';
 import {MockTestAssessor} from '../assessment/mockTest';
 import goodmayesMockTestJson from '../../content/scenarios/goodmayes-mock-test.json';
+import goodmayesLessonJson from '../../content/scenarios/goodmayes-lesson.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
@@ -184,7 +188,7 @@ export async function boot():Promise<void>{
   const scene=new Scene(engine);
   configureScene(scene);
   const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
-  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson,goodmayesMockTestJson].map(raw=>{
+  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson,goodmayesMockTestJson,goodmayesLessonJson].map(raw=>{
     const s=parseScenario(raw);
     if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
     return [s.id,s] as const;
@@ -318,6 +322,8 @@ export async function boot():Promise<void>{
   // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
   const sound=new Soundscape();
   const examinerVoice=new ExaminerVoice();
+  /** The lesson chosen on the lesson list (a lesson scenario runs it). */
+  let chosenLessonId:string|null=null;
   // Lights, washers and wipers, demisters, horn and window (the Controls panel; the show me questions use them).
   const carControls=new CarControls(events);
   const pressControl=(id:CarControlId)=>{
@@ -482,25 +488,58 @@ export async function boot():Promise<void>{
     for(const pole of signals.poles)dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
 
     // Mock test: the examiner's route and directions, and the marking.
-    const mock=scenario.rubricId==='mock-test'&&!familiarisation;
+    // A lesson runs the same route, directions and marking as a mock test, with an instructor coaching on top.
+    const lesson:Lesson|null=scenario.rubricId==='lesson'&&!familiarisation?LESSONS.find(l=>l.id===chosenLessonId)??LESSONS[0]!:null;
+    const mock=(scenario.rubricId==='mock-test'||!!lesson)&&!familiarisation;
     const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
       parked:kerbCars,signals:()=>trafficSignals?.stops??[]}):null;
     let finishTest:()=>void=()=>{};
+    /** A lesson's report: the instructor's notes, and from the marking only what the instructor does not cover
+     *  (safety: speed, kerbs, collisions, lights, positioning), with no pass or fail. */
+    const COACHED=/^(mirrors-change-direction|signals-|junctions-approach-speed|moving-off-safety|normal-stops|mirrors-change-speed|vehicle-checks)/;
+    const lessonResult=(r:AttemptResult):AttemptResult=>{
+      if(!lesson||!instructor)return r;
+      const findings=r.findings.filter(f=>!COACHED.test(f.ruleId));
+      const notes=[...(lessonMissing?[`${INFO}${lessonMissing}`]:[]),...instructor.notes()];
+      const c=instructor.counts;
+      const {mockTest:_,...rest}=r;
+      return {...rest,rubricVersion:'lesson-0.1',findings,notes,lesson:{number:lesson.number,title:lesson.title,junctions:c.manoeuvres,good:c.good,improve:c.improve+findings.length}};
+    };
     // Assisted steering follows the examiner's route in the left lane (src/test/routePath.ts), and the new route
     // after a wrong turn.
     let routeAssist:SteeringAssist|null=null;
     // The route and the vehicle safety questions come from one number (?routeSeed= repeats them).
     const testSeed=routeSeed??Math.floor(Math.random()*1e9);
-    const examiner=mock?new Examiner(new RoadNetwork(place),()=>{
+    const net=new RoadNetwork(place);
+    const instructor=lesson?new Instructor({location:place,lesson,events,now:()=>clock.time,
+      learner:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:Math.abs(vehicle.state.speed),indicator:vehicle.indicators.state}),
+      traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
+      signals:()=>trafficSignals?.stops??[],parked:kerbCars,
+      say:text=>{examinerVoice.say(text,true);hud.setTask(text)}}):null;
+    // The examiner tells the marking and the instructor about each direction.
+    const listeners:ExaminerListener[]=[mockAssessor,instructor].filter((x):x is NonNullable<typeof x>=>!!x);
+    const listener:ExaminerListener={
+      direction:step=>{for(const l of listeners)l.direction?.(step)},done:(step,ok)=>{for(const l of listeners)l.done?.(step,ok)},
+      pullUp:()=>{for(const l of listeners)l.pullUp?.()},pulledUp:()=>{for(const l of listeners)l.pulledUp?.()},
+      tellMe:(q,ok,a)=>{for(const l of listeners)l.tellMe?.(q,ok,a)},showMe:q=>{for(const l of listeners)l.showMe?.(q)}};
+    const lessonScore=(r:import('../test/route').Route)=>lesson?r.steps.reduce((n,st)=>n+lesson.score(st),0)+(lesson.routeScore?.(r,place)??0):0;
+    const lessonWords=lesson?{briefing:`${lesson.briefing[0]} When you're ready: mirrors, look over your right shoulder, and move off.`,
+      pullUp:'That\'s the end of the lesson route. Pull up on the left at the next safe place, please.',
+      end:'Well done. Let\'s go through how it went.'}:null;
+    const examiner=mock?new Examiner(net,()=>{
       const {x,z}=vehicle.state.position,h=vehicle.state.heading,fx=Math.sin(h),fz=-Math.cos(h);
       // Traffic stopped just in front: queueing, not pulling up.
       const blocked=(traffic?.cars??[]).some(c=>{const dx=c.pose.position.x-x,dz=c.pose.position.z-z,a=dx*fx+dz*fz;return c.visible&&a>0&&a<12&&Math.abs(dx*fz-dz*fx)<2});
       return {x,z,heading:h,speed:Math.abs(vehicle.state.speed),blocked};
     },{
-      target:2800,seed:testSeed,events,listener:mockAssessor!,
-      tellMe:pick(TELL_ME,testSeed),showMe:pick(SHOW_ME,Math.floor(testSeed/7)),
+      target:lesson?.length??2800,seed:testSeed,events,listener,
+      // A lesson: its own route (the topic's junctions), the instructor's words, no vehicle safety questions.
+      ...(lesson?{
+        planner:(start,target,seed)=>planLesson(net,lesson,place,start,target,seed),
+        words:lessonWords!
+      }:{tellMe:pick(TELL_ME,testSeed),showMe:pick(SHOW_ME,Math.floor(testSeed/7))}),
       askTellMe:q=>{hud.setTask(examiner!.lastSaid,false);askTellMe(q,testSeed,text=>examiner!.answerTellMe(text))},
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
       onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}}):null;
@@ -509,6 +548,10 @@ export async function boot():Promise<void>{
       const path=routeLanePath(examiner.legs,kerbCars);
       if(path.length>1)routeAssist=new SteeringAssist(path,vehicle.params);
     }
+    // A lesson about something these streets do not have (no mini-roundabout, no lights): said once at the start.
+    const lessonMissing=lesson?.needs&&examiner&&lessonScore({steps:examiner.steps,legs:examiner.legs,length:0})===0
+      ?`There are no ${lesson.needs} on these streets, so we'll practise the routine on the junctions there are. Try a test centre that has some.`:null;
+    if(lessonMissing&&lessonWords)lessonWords.briefing+=` ${lessonMissing}`;
     const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
     const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):routeAssist;
     const road=place.roads[0]!;
@@ -549,7 +592,7 @@ export async function boot():Promise<void>{
     const controlsModule:SimModule={id:'car-controls',fixedUpdate:dt=>carControls.update(dt),
       reset:()=>{carControls.reset();hideQuestion();controlsPanel.open(false)},dispose(){}};
     const modules:SimModule[]=[
-      controlsModule,...(trafficSignals?[trafficSignals]:[]),
+      controlsModule,...(trafficSignals?[trafficSignals]:[]),...(instructor?[instructor]:[]),
       ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,...(traffic?[traffic]:[]),
       zones,runner,observation,...(examiner?[examiner]:[]),...(mockAssessor?[mockAssessor]:[]),...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
     ];
@@ -576,7 +619,7 @@ export async function boot():Promise<void>{
       },
       finish(outcome){
         examinerVoice.stop();
-        const base=mockAssessor?mockAssessor.finish(scenario.id,outcome,runner.elapsed):assessor?assessor.finish(scenario.id,outcome,runner.elapsed)
+        const base=mockAssessor?lessonResult(mockAssessor.finish(scenario.id,outcome,runner.elapsed)):assessor?assessor.finish(scenario.id,outcome,runner.elapsed)
           :movingOff?movingOff.finish(scenario.id,outcome,runner.elapsed):{
           scenarioId:scenario.id,rubricVersion:'none (practice)',outcome,findings:[],
           notes:route?route.notes():practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
@@ -1190,18 +1233,18 @@ export async function boot():Promise<void>{
 
   // ---- Exercises: menu, settings and briefing, then Start practice ----
   /** `test`: the mock test at the same place (chosen on the home screen with Mock test / Free drive). */
-  const EXERCISES:Record<string,{scenario:string;intro?:string;test?:string}>={
+  const EXERCISES:Record<string,{scenario:string;intro?:string;test?:string;lesson?:string}>={
     brentwood:{scenario:'brentwood-guided-traversal'},
     'kings-road':{scenario:'brentwood-kings-road-zebra'},
-    goodmayes:{scenario:'goodmayes-free-drive',test:'goodmayes-mock-test'},
+    goodmayes:{scenario:'goodmayes-free-drive',test:'goodmayes-mock-test',lesson:'goodmayes-lesson'},
     zebra:{scenario:'crossing-restricted-view'},
     'moving-off':{scenario:'moving-off-safely',intro:'moving-off-intro'}
   };
   let chosen:{scenario:string;intro?:string}|null=null;
   // Home screen: a mock test (directions and marking) or a free drive, for the test centres and places.
-  let driveMode:'test'|'free'='test';
+  let driveMode:'test'|'free'|'lesson'='test';
   for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>{
-    driveMode=b.dataset.driveMode as 'test'|'free';
+    driveMode=b.dataset.driveMode as 'test'|'free'|'lesson';
     for(const o of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))o.setAttribute('aria-pressed',String(o===b));
   });
   /** Briefing text: paragraphs split on blank lines; a short first line is its heading. */
@@ -1225,16 +1268,48 @@ export async function boot():Promise<void>{
     vehicle.reset();
     head.recentre();
   };
+  /** Lessons: the place's lessons are listed first; choosing one shows its briefing, and Start begins it. */
+  const lessonList=byId('lesson-list'),lessonBack=byId('lesson-back'),startButton=byId<HTMLButtonElement>('start-practice');
+  const showLesson=(lesson:Lesson|null)=>{
+    chosenLessonId=lesson?.id??null;
+    lessonList.hidden=!!lesson;lessonBack.hidden=!lesson;
+    byId('exercise-briefing').hidden=!lesson;
+    startButton.disabled=!lesson;
+    startButton.textContent=lesson?'Start lesson':'Choose a lesson';
+    if(!lesson){byId('exercise-objective').textContent='Choose a lesson. Each one teaches one topic, with an instructor who coaches you as you drive.';return}
+    byId('exercise-objective').textContent=lesson.objective;
+    renderBriefing(byId('exercise-briefing'),[`Lesson ${lesson.number}: ${lesson.title}`,...lesson.briefing,lesson.rules].join('\n\n'));
+  };
+  lessonBack.addEventListener('click',()=>showLesson(null));
+  lessonList.replaceChildren(...LESSONS.map(l=>{
+    const b=document.createElement('button');b.type='button';b.dataset['lesson']=l.id;b.setAttribute('role','listitem');
+    const n=document.createElement('span');n.className='n';n.textContent=String(l.number);
+    const t=document.createElement('b');t.textContent=l.title;
+    const d=document.createElement('small');d.textContent=l.summary;
+    b.append(n,t,d);b.addEventListener('click',()=>showLesson(l));
+    return b;
+  }),...LESSONS_COMING.map(l=>{
+    const b=document.createElement('button');b.type='button';b.disabled=true;b.setAttribute('role','listitem');
+    const n=document.createElement('span');n.className='n';n.textContent='·';
+    const t=document.createElement('b');t.textContent=l.title;
+    const d=document.createElement('small');d.textContent=l.summary;
+    b.append(n,t,d);
+    return b;
+  }));
   const showExercise=(key:string|null)=>{
     const entry=key?EXERCISES[key]!:null;
-    chosen=entry&&driveMode==='test'&&entry.test?{scenario:entry.test}:entry;
+    chosen=entry&&driveMode==='test'&&entry.test?{scenario:entry.test}:entry&&driveMode==='lesson'&&entry.lesson?{scenario:entry.lesson}:entry;
     byId('exercise-list').hidden=!!chosen;
     byId('exercise-detail').hidden=!chosen;
+    const lessons=!!chosen&&!!entry?.lesson&&chosen.scenario===entry.lesson;
+    lessonList.hidden=!lessons;lessonBack.hidden=true;byId('exercise-briefing').hidden=false;
+    startButton.disabled=false;startButton.textContent='Start practice';
     if(!chosen)return;
     const scenario=scenarios.get(chosen.scenario)!;
     byId('exercise-title').textContent=scenario.title;
     byId('exercise-objective').textContent=scenario.learningObjective;
     renderBriefing(byId('exercise-briefing'),scenario.briefing);
+    if(lessons)showLesson(null);
     byId('guide-option').hidden=!scenario.guide;
     showGuide=guideToggle.checked=false;
     byId('intro-option').hidden=!chosen.intro;
@@ -1261,11 +1336,12 @@ export async function boot():Promise<void>{
     building=true;
     try{
       const built=await buildArea(request,step=>{areaStatus.textContent=step});
-      const {location:l,scenario:sc,mockTest}=built;
+      const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=built;
       locations.set(l.id,l);
       scenarios.set(sc.id,sc);
       scenarios.set(mockTest.id,mockTest);
-      EXERCISES[l.id]={scenario:sc.id,test:mockTest.id};
+      scenarios.set(lessonScenario.id,lessonScenario);
+      EXERCISES[l.id]={scenario:sc.id,test:mockTest.id,lesson:lessonScenario.id};
       events.emit('area.built',{locationId:l.id,label:request.label,lat:request.lat,lon:request.lon,summary:built.summary});
       areaStatus.textContent='';
       showExercise(l.id);

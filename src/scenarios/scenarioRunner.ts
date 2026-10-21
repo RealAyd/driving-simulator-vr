@@ -54,9 +54,9 @@ export class ScenarioRunner implements SimModule{
     for(const trigger of this.scenario.triggers)
       if('atSeconds' in trigger.when&&this.elapsed>=trigger.when.atSeconds)this.fire(trigger,{atSeconds:trigger.when.atSeconds});
     const l=this.learner();
-    // A collision ends an exercise. A mock test goes on (the marking records it as a dangerous fault; reverse
+    // A collision ends an exercise. A mock test or lesson goes on (the marking records it as a dangerous fault; reverse
     // away and carry on), as does touching the barriers at the edge of a generated area (reverse and turn round).
-    const mock=this.scenario.rubricId==='mock-test';
+    const mock=this.scenario.rubricId==='mock-test'||this.scenario.rubricId==='lesson';
     if(l.collidedWith&&!mock&&!l.collidedWith.startsWith('edge-barrier'))return this.finish('collision');
     // Leaving the route: off any road surface, or driving the wrong way.
     const wrongWay=Math.abs(headingDelta(l.heading,l.roadHeading))>WRONG_WAY_RADIANS;
