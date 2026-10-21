@@ -1,7 +1,7 @@
 import type {Controls} from '../vehicle/kinematics';
 import type {ControlSource} from '../vehicle/vehicleController';
 
-export type InputAction='indicator-left'|'indicator-right'|'pause'|'reset'|'recentre';
+export type InputAction='indicator-left'|'indicator-right'|'pause'|'reset'|'recentre'|'gear';
 
 /** Held views: mirrors and over-the-shoulder checks. */
 export type ViewTarget='left-shoulder'|'left-door'|'interior'|'right-door'|'right-shoulder';
@@ -16,7 +16,8 @@ const ACTIONS:Record<string,InputAction>={
   KeyP:'pause',
   Escape:'pause',
   KeyR:'reset',
-  KeyC:'recentre'
+  KeyC:'recentre',
+  KeyX:'gear'
 };
 const DRIVING_KEYS=new Set([...THROTTLE,...BRAKE,...LEFT,...RIGHT]);
 const VIEW_KEYS:Record<string,ViewTarget>={
@@ -33,6 +34,8 @@ export class KeyboardInput implements ControlSource{
   private readonly virtual=new Set<string>();
   private readonly listeners:Array<[EventTarget,string,EventListener]>=[];
   onAction:(action:InputAction)=>void=()=>{};
+  /** Reverse gear selected (the Drive/Reverse switch or X); Go then drives backwards. */
+  reverse=false;
   /** Called with a view while its key is held, and null on release. */
   onView:(view:ViewTarget|null)=>void=()=>{};
 
@@ -79,7 +82,8 @@ export class KeyboardInput implements ControlSource{
     return {
       throttle:this.any(THROTTLE)?1:0,
       brake:this.any(BRAKE)?1:0,
-      steer:(this.any(RIGHT)?1:0)-(this.any(LEFT)?1:0)
+      steer:(this.any(RIGHT)?1:0)-(this.any(LEFT)?1:0),
+      reverse:this.reverse
     };
   }
 
@@ -94,6 +98,9 @@ export class KeyboardInput implements ControlSource{
     this.held.clear();
     this.virtual.clear();
   }
+
+  /** Back to Drive (a new attempt). */
+  resetGear():void{this.reverse=false}
 
   dispose():void{
     for(const [target,type,handler] of this.listeners)target.removeEventListener(type,handler);

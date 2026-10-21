@@ -32,6 +32,26 @@ describe('kinematic learner car',()=>{
     expect(drive(start(),{throttle:1,brake:0,steer:0},120).speed).toBeLessThanOrEqual(LEARNER_CAR.maxSpeed);
     expect(drive(start(5),{throttle:0,brake:1,steer:0},5).speed).toBe(0);
   });
+  it('reverses in reverse gear: backwards, slowly, and steering right swings the front left of the line of travel',()=>{
+    const back=drive(start(),{throttle:1,brake:0,steer:0,reverse:true},6);
+    expect(back.speed).toBeLessThan(0);
+    expect(back.speed).toBeGreaterThanOrEqual(-LEARNER_CAR.maxReverseSpeed);
+    expect(back.position.z).toBeGreaterThan(3);
+    expect(back.heading).toBe(0);
+    const turning=drive(start(),{throttle:1,brake:0,steer:1,reverse:true},4);
+    // Reversing with right lock: the car's rear swings right (east), so the heading turns anticlockwise.
+    expect(turning.heading).toBeGreaterThan(Math.PI);
+    expect(turning.position.x).toBeGreaterThan(.2);
+  });
+  it('pressing Go in the other gear slows the car to a stop first; braking stops a reversing car',()=>{
+    let s=drive(start(5),{throttle:1,brake:0,steer:0,reverse:true},1);
+    expect(s.speed).toBeLessThan(5);
+    expect(s.speed).toBeGreaterThan(0);
+    s=drive(start(-2),{throttle:0,brake:1,steer:0},2);
+    expect(s.speed).toBe(0);
+    s=drive(start(-2),{throttle:1,brake:0,steer:0},3);
+    expect(s.speed).toBeGreaterThan(0);
+  });
   it('stops predictably: simulated braking distance matches v²/2a',()=>{
     let s=start(13.4); // 30 mph
     const z0=s.position.z;

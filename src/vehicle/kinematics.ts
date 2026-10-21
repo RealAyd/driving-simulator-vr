@@ -5,6 +5,8 @@ export interface Controls{
   throttle:number;
   brake:number;
   steer:number;
+  /** Reverse gear selected: the accelerator drives the car backwards (up to `maxReverseSpeed`). */
+  reverse?:boolean;
 }
 
 export const NO_CONTROLS:Readonly<Controls>=Object.freeze({throttle:0,brake:0,steer:0});
@@ -12,7 +14,10 @@ export const NO_CONTROLS:Readonly<Controls>=Object.freeze({throttle:0,brake:0,st
 export interface VehicleParams{
   wheelbase:Metres;
   maxSpeed:MetresPerSecond;
+  /** Fastest the car reverses (m/s). */
+  maxReverseSpeed:MetresPerSecond;
   acceleration:number;      // m/s² at full throttle from rest
+  reverseAcceleration:number; // m/s² at full throttle in reverse, from rest
   brakeDeceleration:number; // m/s² at full brake
   rollingDeceleration:number;
   maxSteerAngle:Radians;
@@ -27,7 +32,9 @@ export interface VehicleParams{
 export const LEARNER_CAR:Readonly<VehicleParams>=Object.freeze({
   wheelbase:2.6,
   maxSpeed:31.3,            // 70 mph
+  maxReverseSpeed:2.7,      // 6 mph
   acceleration:2.6,
+  reverseAcceleration:1.1,
   brakeDeceleration:7.5,
   rollingDeceleration:.35,
   maxSteerAngle:.55,
@@ -52,22 +59,30 @@ export function steerLimit(params:VehicleParams,speed:MetresPerSecond):Radians{
 }
 
 /**
- * One fixed step of a kinematic bicycle model. No reverse gear in G0/G1:
- * speed never goes below zero. Height is set by the caller from the road.
+ * One fixed step of a kinematic bicycle model. Speed is signed: negative is reversing (reverse gear selected and
+ * the accelerator held). Pressing the accelerator in the gear opposite to the way the car is rolling slows it to a
+ * stop first. Height is set by the caller from the road.
  */
 export function stepVehicle(state:VehicleState,controls:Controls,params:VehicleParams,dt:Seconds):VehicleState{
   const throttle=clamp(controls.throttle,0,1);
   const brake=clamp(controls.brake,0,1);
   const steer=clamp(controls.steer,-1,1);
+  const reverse=!!controls.reverse;
 
   const target=steer*steerLimit(params,state.speed);
   const maxChange=params.steerRate*dt;
   const steerAngle=state.steerAngle+clamp(target-state.steerAngle,-maxChange,maxChange);
 
-  let speed=state.speed+throttle*params.acceleration*(1-state.speed/params.maxSpeed)*dt;
-  const decel=brake*params.brakeDeceleration+(throttle>0?0:params.rollingDeceleration);
-  speed=Math.max(0,speed-decel*dt);
-  speed=Math.min(speed,params.maxSpeed);
+  let speed=state.speed;
+  let decel=brake*params.brakeDeceleration+(throttle>0?0:params.rollingDeceleration);
+  if(throttle>0){
+    if(reverse?speed>.05:speed<-.05)decel+=throttle*params.brakeDeceleration*.5;
+    else if(reverse)speed-=throttle*params.reverseAcceleration*(1+speed/params.maxReverseSpeed)*dt;
+    else speed+=throttle*params.acceleration*(1-speed/params.maxSpeed)*dt;
+  }
+  // Braking and rolling resistance bring the car towards a stop, never past it.
+  speed=speed>0?Math.max(0,speed-decel*dt):Math.min(0,speed+decel*dt);
+  speed=clamp(speed,-params.maxReverseSpeed,params.maxSpeed);
 
   // Integrate with the average speed over the step for predictable stopping.
   const travel=(state.speed+speed)/2*dt;

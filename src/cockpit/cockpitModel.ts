@@ -1,6 +1,7 @@
-import {Color3,CreateBox,CreateCylinder,CreatePlane,CreateRibbon,CreateSphere,CreateTorus,DynamicTexture,Mesh,Quaternion,StandardMaterial,TransformNode,Vector3,type Scene} from '../engine/babylon';
+import {Color3,CreateBox,CreateCapsule,CreateCylinder,CreatePlane,CreateRibbon,CreateSphere,CreateTorus,DynamicTexture,Mesh,Quaternion,StandardMaterial,TransformNode,Vector3,type Scene} from '../engine/babylon';
 import type {Vec3} from '../contracts';
 import type {SeatConfig} from './seat';
+import type {Grip} from './driverBody';
 
 /**
  * Right-hand-drive interior and body, parented to the vehicle node so its
@@ -40,6 +41,10 @@ export interface Cockpit{
   readonly handsTurn:number;
   /** Speedometer and indicator tell-tales in the instrument binnacle (redrawn only when they change). */
   setInstruments(mph:number,indicator:'off'|'left'|'right',lit:boolean):void;
+  /** Where each hand holds the rim now (left, right), with the wheel's centre, top and the column's axis, in world space. */
+  grips():[Grip,Grip];
+  /** Hides the simple arms (a driver model's arms reach the hands instead). */
+  hideSimpleArms():void;
   dispose():void;
 }
 
@@ -198,16 +203,28 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   part('steering-hub-pad',.1,.012,.07,.012,glossBlack,.04);
   part('steering-top-mark',.03,.04,.024,-RIM,mat('steering-mark',new Color3(.85,.55,.1)));
 
-  // The driver's hands on the rim at twenty to three: the back of each hand towards the driver, knuckles round the
-  // outside of the rim, thumb along the inside; bare forearms (sleeves pushed up). The hands turn with the wheel up to
-  // HANDS_FOLLOW, then hold there as the wheel is fed through them (pull-push steering).
-  const skin=mat('driver-skin',new Color3(.8,.62,.5));
+  // The driver's hands on the rim at twenty to three: the back of each hand towards the driver, fingers round the
+  // outside of the rim and curled behind it, thumb along the inside; modelled from rounded pieces (palm, two-jointed
+  // fingers, thumb, wrist). The hands turn with the wheel up to HANDS_FOLLOW, then hold there as the wheel is fed
+  // through them (pull-push steering).
+  const skin=mat('driver-skin',new Color3(.86,.66,.55),.08);
+  skin.emissiveColor=new Color3(.1,.07,.06);
   const sleeve=mat('driver-sleeve',new Color3(.14,.17,.24));
   const handRing=new TransformNode('driver-hands',scene);
   handRing.parent=column;
   const blob=(name:string,parent:TransformNode,d:[number,number,number],at:[number,number,number],material=skin)=>{
-    const m=CreateSphere(name,{diameterX:d[0],diameterY:d[1],diameterZ:d[2],segments:8},scene);
+    const m=CreateSphere(name,{diameterX:d[0],diameterY:d[1],diameterZ:d[2],segments:12},scene);
     m.material=material;m.parent=parent;m.position.set(...at);m.isPickable=false;
+    return m;
+  };
+  /** A rounded segment (finger bone, thumb, wrist) between two points in the hand's frame. */
+  const bone=(name:string,parent:TransformNode,a:[number,number,number],b:[number,number,number],radius:number)=>{
+    const A=new Vector3(...a),B=new Vector3(...b),d=B.subtract(A),len=d.length();
+    const m=CreateCapsule(name,{height:len+2*radius,radius,tessellation:10,subdivisions:1,capSubdivisions:4},scene);
+    m.material=skin;m.parent=parent;m.isPickable=false;
+    m.position.copyFrom(A.add(B).scale(.5));
+    m.rotationQuaternion=new Quaternion();
+    Quaternion.FromUnitVectorsToRef(new Vector3(0,1,0),d.scale(1/len),m.rotationQuaternion);
     return m;
   };
   const hands=[-1,1].map(side=>{
@@ -218,17 +235,21 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
     hand.position.set(RIM*Math.sin(phi),0,-RIM*Math.cos(phi));
     hand.rotation.y=-phi;
     const name=`driver-hand-${side<0?'left':'right'}`;
-    blob(`${name}-back`,hand,[.088,.034,.08],[0,.03,.004]);
-    // Knuckles and fingers wrapped round the outside of the rim, towards the dashboard.
-    for(let i=0;i<4;i++){
-      const x=(i-1.5)*.02;
-      blob(`${name}-finger-${i}`,hand,[.021,.03,.032],[x,.006,-.03]);
-      blob(`${name}-tip-${i}`,hand,[.019,.022,.026],[x,-.022,-.012]);
-    }
-    // Thumb along the inside of the rim, pointing up the wheel.
-    blob(`${name}-thumb`,hand,[.05,.022,.024],[-side*.03,.02,.032]);
-    // Wrist, towards the driver.
-    blob(`${name}-wrist`,hand,[.06,.045,.06],[0,.06,.03]);
+    // Back of the hand over the rim, towards the driver: flat, a little wider at the knuckles.
+    blob(`${name}-back`,hand,[.08,.024,.088],[0,.03,.008]);
+    blob(`${name}-palm-edge`,hand,[.07,.03,.04],[0,.024,-.018]);
+    // Fingers: from the knuckles over the outside of the rim, then curled behind it towards the centre.
+    [.95,1,.96,.84].forEach((k,i)=>{
+      const x=(i-1.5)*.0195;
+      blob(`${name}-knuckle-${i}`,hand,[.019,.017,.019],[x,.024,-.03]);
+      bone(`${name}-finger-${i}`,hand,[x,.018,-.034],[x,-.006*k,-.042*k],.0088);
+      bone(`${name}-tip-${i}`,hand,[x,-.006*k,-.042*k],[x,-.026*k,-.016],.0079);
+    });
+    // Thumb along the inside of the rim, pointing up the wheel, slightly bent at the joint.
+    bone(`${name}-thumb`,hand,[-side*.012,.03,.026],[-side*.04,.026,.03],.0105);
+    bone(`${name}-thumb-tip`,hand,[-side*.04,.026,.03],[-side*.062,.017,.028],.0088);
+    // Wrist, towards the driver and into the sleeve.
+    bone(`${name}-wrist`,hand,[0,.04,.02],[0,.1,.06],.019);
     return hand;
   });
   const wrists=hands.map(h=>h.getChildMeshes().find(m=>m.name.endsWith('-wrist'))!);
@@ -314,6 +335,21 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   };
   setInstruments(0,'off',false);
 
+  const grips=():[Grip,Grip]=>{
+    column.computeWorldMatrix(true);
+    const m=column.getWorldMatrix();
+    const centre=Vector3.TransformCoordinates(Vector3.Zero(),m);
+    const top=Vector3.TransformCoordinates(new Vector3(0,0,-RIM),m);
+    const toDriver=Vector3.TransformNormal(new Vector3(0,1,0),m).normalize();
+    return hands.map(h=>{
+      h.computeWorldMatrix(true);
+      return {point:h.getAbsolutePosition().clone(),wrist:Vector3.TransformCoordinates(new Vector3(0,.1,.06),h.getWorldMatrix()),centre,top,toDriver};
+    }) as [Grip,Grip];
+  };
+  const hideSimpleArms=()=>{
+    for(const {upper,fore} of arms){upper.isVisible=false;fore.isVisible=false}
+  };
+
   setWheel(0);
-  return {root,wheel,setWheel,get handsTurn(){return handsTurn},setInstruments,dispose:()=>root.dispose(false,true)};
+  return {root,wheel,setWheel,get handsTurn(){return handsTurn},setInstruments,grips,hideSimpleArms,dispose:()=>root.dispose(false,true)};
 }

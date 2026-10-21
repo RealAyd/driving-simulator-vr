@@ -12,6 +12,7 @@ export type SimEventType=
   |'session.finished'
   |'vehicle.indicator.changed'
   |'vehicle.braking'
+  |'vehicle.gear.changed'
   |'vehicle.surface.changed'
   |'vehicle.stopped'
   |'vehicle.moving'

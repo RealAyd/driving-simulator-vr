@@ -308,10 +308,10 @@ body.stationary [data-hold="throttle"]{opacity:.4}
   <button id="hud-behind" type="button" class="hud-round" aria-pressed="false" aria-label="Camera: switch to behind the car" title="Camera: driver's seat / behind the car (practice only)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v2.1l4.4-2.6a1 1 0 0 1 1.6.8v8.4a1 1 0 0 1-1.6.8L15 14.4v2.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 16.5z"/></svg></button>
   <div id="hud-top" class="hud-panel">
     <div id="hud-tilt"><div class="wheel" aria-hidden="true"><div id="hud-wheel" class="wheel-rim"><span></span></div></div><button id="hud-tilt-centre" type="button">Centre</button><span id="hud-tilt-state" class="unit"></span></div>
-    <button id="hud-task-toggle" type="button">Task</button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
+    <button id="hud-task-toggle" type="button">Task</button><button id="hud-sound" type="button" class="icon" aria-pressed="true" aria-label="Sound on. Tap to mute"><svg class="snd-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
   </div>
   <div id="hud-left" class="hud-panel">
-    <div id="hud-speedbox"><span id="hud-speed">0</span><span class="unit">mph</span></div>
+    <div id="hud-speedbox"><span id="hud-gear" class="gear-readout" aria-label="Gear">D</span><span id="hud-speed">0</span><span class="unit">mph</span></div>
     <div id="touch-wheel" role="slider" aria-label="Steering wheel: drag round to steer" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0"><div class="tw-rim"><span></span><div class="tw-spoke"></div></div></div>
     <div id="steer-buttons">
       <button type="button" data-hold="left" aria-label="Steer left">◀<small>Steer</small></button>
@@ -333,8 +333,9 @@ body.stationary [data-hold="throttle"]{opacity:.4}
     </div>
   </div>
   <div id="touch-controls" class="hud-panel">
+    <button id="gear-toggle" type="button" class="gear" aria-pressed="false" aria-label="Gear: drive. Tap for reverse"><span class="gear-d">D</span><span class="gear-r">R</span></button>
     <button type="button" data-hold="brake" aria-label="Brake">Brake</button>
-    <button type="button" data-hold="throttle" aria-label="Go, move off">Go</button>
+    <button type="button" data-hold="throttle" aria-label="Go, move off"><span class="go-label">Go</span><span class="reverse-label">Reverse</span></button>
   </div>
 </div>
 <script type="module" src="./main.ts"></script>

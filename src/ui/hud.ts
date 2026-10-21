@@ -26,8 +26,11 @@ export class Hud{
     if(state==='error')$('error-message').textContent=error??'Unknown error';
   }
 
-  update(speedMps:number,indicator:IndicatorState,lit:boolean,fps:number):void{
-    this.speed.textContent=String(Math.round(mpsToMph(speedMps)));
+  private readonly gear=$('hud-gear');
+
+  update(speedMps:number,reverse:boolean,indicator:IndicatorState,lit:boolean,fps:number):void{
+    this.speed.textContent=String(Math.round(mpsToMph(Math.abs(speedMps))));
+    this.gear.textContent=reverse?'R':'D';
     // The signal buttons show the active state: amber while on, bright while lit.
     const l=this.left.parentElement!,r=this.right.parentElement!;
     l.classList.toggle('lit',indicator==='left'&&lit);

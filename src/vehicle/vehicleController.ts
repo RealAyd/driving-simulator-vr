@@ -66,7 +66,7 @@ export class VehicleController implements SimModule{
     this.previous=this.state;
     const controls=this.controls.read();
     // Braking evidence: one event each time the driver starts braking while moving.
-    const brakingNow=controls.brake>0&&this.state.speed>1;
+    const brakingNow=controls.brake>0&&Math.abs(this.state.speed)>1;
     if(brakingNow&&!this.braking)this.events.emit('vehicle.braking',{speed:this.state.speed});
     this.braking=controls.brake>0;
     let next=stepVehicle(this.state,controls,this.params,dt);
@@ -84,10 +84,10 @@ export class VehicleController implements SimModule{
       this.colliding=null;
     }
 
-    if(this.stopped&&next.speed>=STOPPED_BELOW){
+    if(this.stopped&&Math.abs(next.speed)>=STOPPED_BELOW){
       this.stopped=false;
-      this.events.emit('vehicle.moving',{speed:next.speed});
-    }else if(!this.stopped&&next.speed<STOPPED_BELOW){
+      this.events.emit('vehicle.moving',{speed:next.speed,reverse:next.speed<0});
+    }else if(!this.stopped&&Math.abs(next.speed)<STOPPED_BELOW){
       this.stopped=true;
       this.events.emit('vehicle.stopped',{x:next.position.x,z:next.position.z});
     }

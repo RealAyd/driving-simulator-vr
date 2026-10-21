@@ -25,6 +25,8 @@ import {buildSignage,type BuiltSignage} from '../world/signageMesh';
 import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../actors/followingVehicle';
 import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian,onwardPath} from '../actors/pedestrian';
+import {Soundscape,type RoadUserSound} from '../audio/soundscape';
+import {DriverBody} from '../cockpit/driverBody';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -266,13 +268,18 @@ export async function boot():Promise<void>{
     // Called once per fixed simulation step.
     const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
     // The driver's own button/key steering always overrides tilt and the assistance.
-    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='wheel'?touchWheel.update(SIM_STEP):steeringMode==='assist'&&runtime?.assist?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
+    // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
+    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='wheel'?touchWheel.update(SIM_STEP):steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
-    lastControls=viewerDrive??{throttle:c.throttle,brake:c.brake,steer};
+    lastControls=viewerDrive??{throttle:c.throttle,brake:c.brake,steer,reverse:!!keys.reverse};
     return lastControls;
   }};
   let lastControls:Controls={throttle:0,brake:0,steer:0};
+  // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
+  const sound=new Soundscape();
+  for(const type of ['pointerdown','keydown'])document.addEventListener(type,()=>{void sound.unlock()},{capture:true});
+  let soundActive=false;
   vehicle=new VehicleController(spawn,controls,{
     surfaceHeightAt:(x,z)=>surfaceAt(place,x,z)?.height??null,
     groundHeight:0,
@@ -284,6 +291,10 @@ export async function boot():Promise<void>{
   const head=new DriverHead();
   const cockpit=buildCockpit(scene,vehicleNode,head.seat);
   shadows?.castOnlyUnder(cockpit.root);
+  // The driver's own body and hands (a people model), replacing the simple hands once loaded; `?driver=0` keeps those.
+  let driverBody:DriverBody|null=null;
+  if(new URLSearchParams(location.search).get('driver')!=='0')
+    void DriverBody.load(scene,cockpit.root,head.seat.eye).then(d=>{driverBody=d;if(d)cockpit.hideSimpleArms()});
   const seatNode=new TransformNode('driver-seat',scene);
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);
@@ -374,7 +385,7 @@ export async function boot():Promise<void>{
     const pedDef=scenario.actors.find((a):a is PedestrianActorDef=>a.kind==='pedestrian');
     const followerDef=scenario.actors.find((a):a is FollowingVehicleActorDef=>a.kind==='following-vehicle');
     const pedestrian=pedDef?new Pedestrian(pedDef,events,(p,r)=>pointToBox(p.x,p.z,vehicle.pose,vehicle.halfWidth,vehicle.halfLength)<r):null;
-    const follower=followerDef?new FollowingVehicle(followerDef,()=>vehicle.pose,()=>vehicle.state.speed):null;
+    const follower=followerDef?new FollowingVehicle(followerDef,()=>vehicle.pose,()=>Math.max(0,vehicle.state.speed)):null;
     const learnerFootprint=()=>({pose:vehicle.pose,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength});
     const passers=scenario.actors.filter((a):a is PassingVehicleActorDef=>a.kind==='passing-vehicle').map(d=>new PassingVehicle(d,learnerFootprint,events));
     if(pedestrian){
@@ -462,7 +473,7 @@ export async function boot():Promise<void>{
         lastCollision=null;
         for(let i=firstNewEvent;i<events.events.length;i++){
           const e=events.events[i]!;
-          if(e.type==='vehicle.collision')lastCollision=String(e.payload['obstacleId']);
+          if(e.type==='vehicle.collision'){lastCollision=String(e.payload['obstacleId']);sound.collision(Number(e.payload['speed'])||0)}
         }
       },
       finish(outcome){
@@ -524,6 +535,7 @@ export async function boot():Promise<void>{
       runtime.chooseVariant(forcedVariant);
     }
     vehicle.reset();
+    setGear(false);
     for(const m of runtime?.modules??[])m.reset();
     head.recentre();
     heldBy=null;
@@ -1143,6 +1155,10 @@ export async function boot():Promise<void>{
   byId('start-practice').addEventListener('click',()=>{if(chosen)start(chosen.scenario)});
   byId('start-intro').addEventListener('click',()=>{if(chosen?.intro)start(chosen.intro)});
 
+  const soundButton=byId<HTMLButtonElement>('hud-sound');
+  const showSound=()=>{soundButton.setAttribute('aria-pressed',String(!sound.muted));soundButton.setAttribute('aria-label',sound.muted?'Sound off. Tap to turn on':'Sound on. Tap to mute')};
+  soundButton.addEventListener('click',()=>{sound.setMuted(!sound.muted);showSound()});
+  showSound();
   const pause=()=>{
     if(!session.to('paused'))return;
     clock.pause();
@@ -1183,8 +1199,19 @@ export async function boot():Promise<void>{
     if(action==='reset')return restart();
     if(session.state!=='running')return;
     if(action==='recentre'){forwardView();xr.recentre();if(viewer.active)headTracker.recentre()}
+    else if(action==='gear'){if(!runtime?.scenario.stationary)setGear(!input.reverse)}
     else vehicle.toggleIndicator(action==='indicator-left'?'left':'right',clock.time);
   };
+  /** Drive or Reverse: the switch beside the pedals (or X). Go then moves the car that way. */
+  const gearButton=byId<HTMLButtonElement>('gear-toggle');
+  const setGear=(reverse:boolean)=>{
+    input.reverse=reverse;
+    gearButton.setAttribute('aria-pressed',String(reverse));
+    gearButton.setAttribute('aria-label',reverse?'Gear: reverse. Tap for drive':'Gear: drive. Tap for reverse');
+    document.body.classList.toggle('reverse',reverse);
+    events.emit('vehicle.gear.changed',{gear:reverse?'reverse':'drive'});
+  };
+  gearButton.addEventListener('pointerdown',event=>{event.preventDefault();onAction('gear')});
   // In the phone viewer, keys act only through the controller check's bindings (so nothing acts twice).
   input.onAction=action=>{if(!viewer.active)onAction(action)};
 
@@ -1380,7 +1407,7 @@ export async function boot():Promise<void>{
     if(learnerBody){
       const show=behind&&!viewer.active;
       if(learnerBody.isEnabled()!==show){learnerBody.setEnabled(show);if(learnerBox)learnerBox.isVisible=!show;cockpit.root.setEnabled(!show)}
-      if(show&&carModel){learnerTravelled+=Math.abs(vehicle.state.speed)*dt;carModel.roll(learnerBody,learnerTravelled)}
+      if(show&&carModel){learnerTravelled+=vehicle.state.speed*dt;carModel.roll(learnerBody,learnerTravelled)}
     }
     for(const mirror of mirrors){
       mirror.update(pose);
@@ -1401,7 +1428,8 @@ export async function boot():Promise<void>{
     }
     // Turning right turns the wheel clockwise as the driver sees it.
     cockpit.setWheel(vehicle.state.steerAngle*STEERING_RATIO);
-    cockpit.setInstruments(Math.round(vehicle.state.speed*2.237),vehicle.indicators.state,vehicle.indicators.isLit(clock.time));
+    if(driverBody&&!behind)driverBody.update(cockpit.grips());
+    cockpit.setInstruments(Math.round(Math.abs(vehicle.state.speed)*2.237),vehicle.indicators.state,vehicle.indicators.isLit(clock.time));
     if(session.state==='ready'){
       wheelPreview.style.transform=wheelTurn;
       if(steeringMode==='tilt')showTiltState();
@@ -1410,7 +1438,19 @@ export async function boot():Promise<void>{
       const state=tilt.receiving?'tilt on':'no tilt: use Steer';
       if(hudTiltState.textContent!==state)hudTiltState.textContent=state;
     }
-    hud.update(vehicle.state.speed,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
+    // Sound plays while driving; paused, menus and results are quiet.
+    const driving=session.state==='running'&&!!runtime;
+    if(driving!==soundActive){soundActive=driving;if(!driving)sound.hush()}
+    if(driving){
+      const users:RoadUserSound[]=[];
+      const r=runtime!;
+      if(r.follower)users.push({id:r.follower.id,kind:'car',x:r.follower.pose.position.x,z:r.follower.pose.position.z,speed:r.follower.speed});
+      for(const p of r.passers)if(p.started)users.push({id:p.id,kind:'car',x:p.pose.position.x,z:p.pose.position.z,speed:p.speed});
+      for(const b of r.buses)if(b.visible)users.push({id:b.id,kind:'bus',x:b.pose.position.x,z:b.pose.position.z,speed:b.speed});
+      sound.update({speed:vehicle.state.speed,throttle:lastControls.throttle,brake:lastControls.brake},users,
+        {x:pose.position.x,z:pose.position.z,heading:pose.heading},vehicle.indicators.isLit(clock.time));
+    }
+    hud.update(vehicle.state.speed,input.reverse,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     // Location label: the street the car is on (a few times a second; the DOM only changes with the street).
     if((placeTimer-=dt)<=0){
       placeTimer=.25;
@@ -1443,6 +1483,9 @@ export async function boot():Promise<void>{
     camera:()=>({position:camera.position.asArray(),forward:camera.getForwardRay(1).direction.asArray()}),
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
+    sound:()=>sound.stats,
+    driver:()=>({loaded:!!driverBody,arms:driverBody?.debug()??null,grips:cockpit.grips().map(g=>g.point.asArray()),eye:camera.position.asArray()}),
+    gear:()=>input.reverse?'reverse':'drive',
     pedestrian:()=>runtime?.pedestrian?{state:runtime.pedestrian.state,position:{...runtime.pedestrian.position}}:null,
     /** Diagnostics (tests only): show or hide a road user's drawing (its simulation is unaffected), e.g. to measure what it hides. */
     showActor:(id:string,on:boolean)=>{for(const m of scene.getTransformNodeByName(`actor-${id}`)?.getChildMeshes()??[])m.isVisible=on},
