@@ -15,7 +15,7 @@ describe('keyboard input',()=>{
     win.dispatchEvent(key('keydown','KeyW'));
     expect(input.read().throttle).toBe(1);
     win.dispatchEvent(new Event('blur'));
-    expect(input.read()).toEqual({throttle:0,brake:0,steer:0});
+    expect(input.read()).toEqual({throttle:0,brake:0,steer:0,reverse:false});
   });
   it('clears held controls when the tab becomes hidden',()=>{
     const win=new EventTarget(),doc=new FakeDoc();
