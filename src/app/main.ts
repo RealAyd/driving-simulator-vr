@@ -77,6 +77,8 @@ import {StaticObstacles} from '../world/obstacles';
 import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
 import {buildSignalHeads} from '../world/signals';
+import {TrafficSignals} from '../world/trafficSignals';
+import {buildSignalLights} from '../world/signalLights';
 import {StreetModels} from '../world/streetModels';
 import {SunShadows,rendererName,shadowsWanted} from '../world/shadows';
 import {drape,terrainFor} from '../world/terrain';
@@ -129,6 +131,8 @@ interface ExerciseRuntime{
   traffic:Traffic|null;
   /** Mock test: the examiner (directions; the Task button repeats the last). */
   examiner:Examiner|null;
+  /** Traffic lights running at this location (generated areas), or null. */
+  trafficSignals:TrafficSignals|null;
   /** Timing variation in use this attempt, if the scenario has any. */
   readonly variant:Scenario['variants'][number]|null;
   chooseVariant(forced?:string|null):void;
@@ -429,9 +433,14 @@ export async function boot():Promise<void>{
       dynamicFootprints.push({id:follower.id,shape:()=>({kind:'box',pose:follower.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})});
     }
     for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started});
+    // Traffic lights from the map (generated areas): they run, traffic obeys them, a mock test marks the learner.
+    // Exercises that set their own signals (scenario `signals`) keep those instead.
+    const trafficSignals=place.signals.length>0&&Object.keys(scenario.signals).length===0?new TrafficSignals(place):null;
+    const signalLights=trafficSignals?buildSignalLights(scene,trafficSignals.stops):null;
+    for(const pole of signalLights?.poles??[])dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
     // Background traffic on generated areas' roads: solid, never assessed.
     const traffic=place.streetParking>0?new Traffic(place,{count:12,buses:2,busStops:place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position),
-      parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed})}):null;
+      parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed}),signals:()=>trafficSignals?.stops??[]}):null;
     for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
     // Background buses: solid road users that slow for the learner; never assessed.
     const buses=scenario.buses.map(d=>new Bus(d,place,learnerFootprint));
@@ -461,7 +470,7 @@ export async function boot():Promise<void>{
     const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
-      parked:kerbCars,controlsOn:()=>carControls.onNow}):null;
+      parked:kerbCars,controlsOn:()=>carControls.onNow,signals:()=>trafficSignals?.stops??[]}):null;
     let finishTest:()=>void=()=>{};
     // Assisted steering follows the examiner's route in the left lane (src/test/routePath.ts), and the new route
     // after a wrong turn.
@@ -524,14 +533,14 @@ export async function boot():Promise<void>{
     const controlsModule:SimModule={id:'car-controls',fixedUpdate:dt=>carControls.update(dt),
       reset:()=>{carControls.reset();hideQuestion();controlsPanel.open(false)},dispose(){}};
     const modules:SimModule[]=[
-      controlsModule,
+      controlsModule,...(trafficSignals?[trafficSignals]:[]),
       ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,...(traffic?[traffic]:[]),
       zones,runner,observation,...(examiner?[examiner]:[]),...(mockAssessor?[mockAssessor]:[]),...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
     ];
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,traffic,examiner,
+      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,traffic,examiner,trafficSignals,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.
@@ -570,9 +579,10 @@ export async function boot():Promise<void>{
         return base;
       },
       current:()=>mockAssessor?mockAssessor.current:assessor?assessor.current:movingOff?movingOff.current:[],
-      renderVisuals(){for(const v of visuals)v.update()},
+      renderVisuals(){for(const v of visuals)v.update();signalLights?.update()},
       dispose(){
         for(const v of visuals)v.dispose();
+        signalLights?.dispose();
         for(const f of figures)people.remove(f.id);
         guide?.dispose();
         signals.dispose();
@@ -1620,6 +1630,7 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     sound:()=>sound.stats,
+    signals:()=>runtime?.trafficSignals?.stops.map(s=>({id:s.id,road:s.road.name??s.road.id,state:s.state}))??[],
     examiner:()=>runtime?.examiner?{phase:runtime.examiner.phase,index:runtime.examiner.index,lastSaid:runtime.examiner.lastSaid,steps:runtime.examiner.steps.map(s=>({say:s.say,at:s.at,to:s.to.road.name??s.to.road.id}))}:null,
     meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled(),at:m.getAbsolutePosition().asArray().map(v=>Math.round(v*10)/10),visible:m.isVisible})),
     driver:()=>({loaded:!!driverBody,arms:driverBody?.debug()??null,grips:cockpit.grips().map(g=>g.point.asArray()),eye:camera.position.asArray()}),

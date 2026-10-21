@@ -17,7 +17,7 @@ describe('Mock test routes',()=>{
     expect(route.length).toBeGreaterThan(2400);
     expect(route.steps.length).toBeGreaterThanOrEqual(8);
     for(const [i,s] of route.steps.entries()){
-      expect(s.say).toMatch(/^(Then )?((T|t)ake the|(A|a)t the (end of the road|junction|roundabout))/);
+      expect(s.say).toMatch(/^(Then )?((T|t)ake the|(A|a)t the (end of the road|junction|roundabout|traffic lights))/);
       // The next road passes (or starts) within a few metres of the manoeuvre.
       const d=Math.min(...s.to.road.centreline.map(p=>Math.hypot(p.x-s.at.x,p.z-s.at.z)));
       expect(d,`${s.say} → ${s.to.road.name}`).toBeLessThan(25);

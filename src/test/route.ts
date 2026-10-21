@@ -175,7 +175,12 @@ export class RoadNetwork{
         const turn:Turn=Math.abs(o.angle)<.6?'ahead':o.angle>0?'right':'left';
         let say:string;
         let exit:number|undefined;
-        if(d.roundabout){
+        // Traffic lights at the junction: the examiner names them ("At the traffic lights, turn left").
+        const lights=!d.roundabout&&this.location.signals.some(g=>g.kind==='junction'&&Math.hypot(g.position.x-d.at.x,g.position.z-d.at.z)<35);
+        if(lights){
+          const sameRoad=!!o.road.name&&o.road.name===pos.road.name;
+          say=turn==='ahead'?(sameRoad?'':'At the traffic lights, go straight ahead.'):`At the traffic lights, turn ${turn}.`;
+        }else if(d.roundabout){
           // Exits counted clockwise from the left (UK), the way the learner would count them.
           const order=[...d.options].sort((a,b)=>a.angle-b.angle);
           exit=order.indexOf(o)+1;

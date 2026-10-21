@@ -1,4 +1,5 @@
 import {pointAtAlong,sampleRoad} from '../world/roadGeometry';
+import type {LiveStop} from '../world/trafficSignals';
 import {headingFromDirection,type Location,type Pose,type Road,type Seconds,type SimModule,type Vec2} from '../contracts';
 const roadLength=(road:Road)=>road.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
 
@@ -42,6 +43,8 @@ export interface TrafficOptions{
   buses?:number;
   busStops?:Vec2[];
   seed?:number;
+  /** Traffic lights (stop lines and their state now): traffic stops at red, and at amber when it can. */
+  signals?:()=>readonly LiveStop[];
 }
 
 export class Traffic implements SimModule{
@@ -173,6 +176,8 @@ export class Traffic implements SimModule{
       const dist=Math.hypot(p.x-learner.x,p.z-learner.z);
       if(dist<90||dist>260)continue;
       if(this.drivers.some(o=>o!==d&&Math.hypot(o.car.pose.position.x-p.x,o.car.pose.position.z-p.z)<20))continue;
+      // Not just short of traffic lights (a car appearing there could not stop for red).
+      if((this.options.signals?.()??[]).some(st=>Math.hypot(st.lane.x-p.x,st.lane.z-p.z)<50))continue;
       const car=d?.car??this.newCar(i);
       car.visible=true;
       car.speed=leg.cruise*.8;
@@ -244,6 +249,16 @@ export class Traffic implements SimModule{
       const squeeze=!!d.squeezing;
       if(squeeze){if(Math.abs(learnerLeft)<car.halfWidth+.95)ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner')}
       else if(!(learnerStopped&&learnerLeft>2.15))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
+      // Traffic lights ahead in this lane: stop about 1.5 m short of the line at red (and red and amber), and at
+      // amber unless too close to stop comfortably (3 m/s²).
+      for(const st of this.options.signals?.()??[]){
+        if(st.state==='green'||Math.cos(st.heading-car.pose.heading)<.8)continue;
+        const dx=st.lane.x-pos.x,dz=st.lane.z-pos.z,along=dx*fwd.x+dz*fwd.z;
+        const front=along-car.halfLength;
+        if(front<-.5||along>45||Math.abs(dx*fwd.z-dz*fwd.x)>2.5)continue;
+        if(st.state==='amber'&&front<car.speed*car.speed/6+1)continue;
+        ahead(st.lane.x,st.lane.z,-(GAP-1.5),'lights');
+      }
       let target=d.leg.cruise;
       if(gap<Infinity)target=Math.min(target,Math.max(0,(gap-GAP)*.55));
       // The end of a road: slow for the turn; at a mini-roundabout or a T-junction, give way to anyone nearer to it.
@@ -301,7 +316,8 @@ export class Traffic implements SimModule{
       }
       d.lat+=Math.max(-.9*dt,Math.min(.9*dt,want-d.lat));
       car.speed=car.speed<target?Math.min(target,car.speed+ACCEL*dt):Math.max(target,car.speed-BRAKE*dt);
-      d.waited=car.speed<.2&&d.dwell<=0?d.waited+dt:0;
+      // (Waiting at a red light is not being stuck.)
+      d.waited=car.speed<.2&&d.dwell<=0&&why!=='lights'?d.waited+dt:0;
       d.why=why;
       d.s+=car.speed*dt;
       // On to the next leg (through the junction), or away if there is none.

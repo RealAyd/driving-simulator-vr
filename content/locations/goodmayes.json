@@ -4629,6 +4629,171 @@
    "entries": []
   }
  ],
+ "signals": [
+  {
+   "id": "signals-0",
+   "kind": "junction",
+   "position": {
+    "x": 22.74,
+    "z": -200.72
+   },
+   "stops": [
+    {
+     "roadId": "goodmayes-road-23651275",
+     "along": 106.69,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "barley-lane-1017506158",
+     "along": 18.9,
+     "dir": -1,
+     "line": true
+    },
+    {
+     "roadId": "barley-lane-1017506159",
+     "along": 11.43,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "high-road-1069958116",
+     "along": 5.39,
+     "dir": -1,
+     "line": true
+    },
+    {
+     "roadId": "high-road-1072262335",
+     "along": 34.27,
+     "dir": 1,
+     "line": true
+    }
+   ],
+   "crossings": [
+    "signal-9385035233",
+    "signal-9385035232",
+    "signal-9385072032"
+   ],
+   "source": "OSM highway=traffic_signals stop lines and signal crossings; timings estimated"
+  },
+  {
+   "id": "signals-1",
+   "kind": "junction",
+   "position": {
+    "x": -30.33,
+    "z": 214.85
+   },
+   "stops": [
+    {
+     "roadId": "goodmayes-lane-430265894",
+     "along": 19.68,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "goodmayes-lane-430265895",
+     "along": 22.48,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "goodmayes-lane-430265898",
+     "along": 6.37,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "goodmayes-lane-430265899",
+     "along": 10.45,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "green-lane-430265918",
+     "along": 10.47,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "goodmayes-road-430265910",
+     "along": 8.46,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "green-lane-430265920",
+     "along": 8.86,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "goodmayes-road-620207822",
+     "along": 15.24,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "green-lane-620207827",
+     "along": 15.26,
+     "dir": -1,
+     "line": true
+    }
+   ],
+   "crossings": [
+    "signal-4295421377",
+    "signal-4295421382",
+    "signal-4295421422",
+    "signal-4295421415"
+   ],
+   "source": "OSM highway=traffic_signals stop lines and signal crossings; timings estimated"
+  },
+  {
+   "id": "signals-2",
+   "kind": "crossing",
+   "position": {
+    "x": -287.38,
+    "z": -94.97
+   },
+   "stops": [
+    {
+     "roadId": "high-road-1069958112",
+     "along": 23.75,
+     "dir": 1,
+     "line": true
+    },
+    {
+     "roadId": "high-road-1069958112",
+     "along": 36.9,
+     "dir": -1,
+     "line": true
+    }
+   ],
+   "crossings": [
+    "signal-11613587676"
+   ],
+   "source": "OSM highway=traffic_signals stop lines and signal crossings; timings estimated"
+  },
+  {
+   "id": "signals-3",
+   "kind": "crossing",
+   "position": {
+    "x": 391.09,
+    "z": -300.7
+   },
+   "stops": [
+    {
+     "roadId": "high-road-1247316685",
+     "along": 44.26,
+     "dir": 1,
+     "line": true
+    }
+   ],
+   "crossings": [
+    "signal-11595356332"
+   ],
+   "source": "OSM highway=traffic_signals stop lines and signal crossings; timings estimated"
+  }
+ ],
  "buildings": [
   {
    "id": "osm-29903997",

@@ -122,6 +122,62 @@ for(const [roadId,ids] of roadNodes){
   }
 }
 
+// ---- Traffic lights: stop lines mapped as highway=traffic_signals (on each approach, or on the junction node
+// itself), and the signal crossings, grouped into sets that run together (a junction, or a crossing) ----
+const pointAt=(line,along)=>{let acc=0;
+  for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],l=Math.hypot(b.x-a.x,b.z-a.z);
+    if(acc+l>=along||i===line.length-1){const t=l?Math.max(0,Math.min(1,(along-acc)/l)):0;return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,dx:(b.x-a.x)/(l||1),dz:(b.z-a.z)/(l||1)}}
+    acc+=l}
+  return {...line[0],dx:1,dz:0};};
+const stops=[];
+const addStop=(road,along,dir,line)=>{
+  const L=alongOf(road.centreline,road.centreline[0]).length;
+  if(along<1||along>L-1||(dir<0&&road.oneway))return;
+  if(stops.some(q=>q.roadId===road.id&&q.dir===dir&&Math.abs(q.along-along)<4))return;
+  const p=pointAt(road.centreline,along);
+  stops.push({roadId:road.id,along:r2(along),dir,line,x:p.x,z:p.z,hx:p.dx*dir,hz:p.dz*dir});
+};
+const signalNodes=new Set();
+for(const ids of roadNodes.values())for(const ref of ids)if(nodes.get(ref)?.tags.highway==='traffic_signals')signalNodes.add(ref);
+for(const ref of signalNodes){
+  const t=nodes.get(ref).tags,way=t['traffic_signals:direction']??t.direction;
+  const on=roads.filter(r=>roadNodes.get(r.id).includes(ref));
+  for(const road of on){
+    const ids=roadNodes.get(road.id),a=alongOf(road.centreline,P(nodes.get(ref))),L=a.length;
+    if(way==='forward'||way==='backward'){addStop(road,a.along,way==='forward'?1:-1,true);continue}
+    // No direction: on the junction node itself, a stop line 10 m back on each road into it; mid-road (a crossing),
+    // both ways at the node.
+    const junctionNode=on.length>1;
+    if(!junctionNode){addStop(road,a.along,1,true);addStop(road,a.along,-1,true);continue}
+    if(ids.at(-1)===ref)addStop(road,L-10,1,true);
+    else if(ids[0]===ref)addStop(road,10,-1,true);
+    else{addStop(road,a.along-10,1,true);addStop(road,a.along+10,-1,true)}
+  }
+}
+// Signal crossings without mapped stop lines near them: their own stop lines (drawn with the crossing).
+for(const c of crossings.filter(c=>c.kind==='signal')){
+  const road=roads.find(r=>r.id===c.roadId);
+  if(stops.some(q=>q.roadId===c.roadId&&Math.abs(q.along-c.along)<30))continue;
+  for(const dir of [1,-1])addStop(road,c.along-dir*(c.width/2+c.giveWayOffset+.3),dir,false);
+}
+// Sets: stops within 45 m of each other (one junction's approaches, with the crossings on them).
+const signals=[];
+const seen=new Set();
+for(const first of stops){
+  if(seen.has(first))continue;
+  const set=[first];seen.add(first);
+  for(let i=0;i<set.length;i++)for(const q of stops)if(!seen.has(q)&&Math.hypot(q.x-set[i].x,q.z-set[i].z)<45){seen.add(q);set.push(q)}
+  // A junction when the approaches come from more than one direction (not just both ways along one road).
+  const axis=q=>((Math.atan2(q.hx,-q.hz)%Math.PI)+Math.PI)%Math.PI;
+  const turn=(a,b)=>{const d=Math.abs(a-b);return Math.min(d,Math.PI-d)};
+  const kind=set.some(q=>turn(axis(q),axis(set[0]))>.6)?'junction':'crossing';
+  const cx=set.reduce((n,q)=>n+q.x,0)/set.length,cz=set.reduce((n,q)=>n+q.z,0)/set.length;
+  const linked=crossings.filter(c=>{if(c.kind!=='signal')return false;const p=pointAt(roads.find(r=>r.id===c.roadId).centreline,c.along);return set.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<45)}).map(c=>c.id);
+  signals.push({id:`signals-${signals.length}`,kind,position:{x:r2(cx),z:r2(cz)},
+    stops:set.map(q=>({roadId:q.roadId,along:q.along,dir:q.dir,line:q.line})),crossings:linked,
+    source:'OSM highway=traffic_signals stop lines and signal crossings; timings estimated'});
+}
+
 // ---- Buildings, with shops from points inside them ----
 const roadDistance=p=>Math.min(...roads.map(r=>alongOf(r.centreline,p).d));
 const polygonOf=w=>w.nds.map(r=>nodes.get(r)).filter(Boolean).map(P);
@@ -276,7 +332,7 @@ const location={
     notes:`API 0.6 map call, bbox ${bbox}, ${sourceNote} ${date}.`}],
   reviewStatus:'unreviewed',
   roads:roads.map(({_way,_class,...r})=>r),
-  blocks,crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,streetParking:.3,spawn
+  blocks,crossings,junctions,signals,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,streetParking:.3,spawn
 };
-return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops, ${blocks.length} edge barriers; start on ${sr.name??sr.id}`};
+return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${signals.length} sets of traffic lights, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops, ${blocks.length} edge barriers; start on ${sr.name??sr.id}`};
 }

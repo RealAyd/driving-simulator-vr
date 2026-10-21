@@ -93,6 +93,28 @@ export const JunctionSchema=z.object({
 }).strict();
 
 /**
+ * Traffic lights: a set of signals that run together (a junction, or a signal-controlled crossing), with a stop
+ * line on each approach. `dir` is the way along the road that traffic stopping at the line travels (1: the
+ * centreline's own direction). Stops made from a signal crossing use the crossing's own stop lines (`line`: false);
+ * stops from mapped junction signals draw theirs.
+ */
+export const SignalStopSchema=z.object({
+  roadId:z.string(),
+  along:z.number(),
+  dir:z.union([z.literal(1),z.literal(-1)]),
+  line:z.boolean().default(true)
+}).strict();
+export const SignalGroupSchema=z.object({
+  id:z.string().regex(/^[a-z0-9-]+$/),
+  kind:z.enum(['junction','crossing']),
+  position:point,
+  stops:z.array(SignalStopSchema).min(1),
+  /** Signal crossings (ids) that are part of this set. */
+  crossings:z.array(z.string()).default([]),
+  source:z.string().optional()
+}).strict();
+
+/**
  * Building outline (from map data) drawn with brick or render walls, windows
  * on each storey, a flat roof and, where a business is mapped, shopfronts on
  * the ground floor facing the road (src/world/townscape.ts).
@@ -221,6 +243,7 @@ export const LocationSchema=z.object({
   blocks:z.array(BlockSchema).default([]),
   crossings:z.array(CrossingSchema).default([]),
   junctions:z.array(JunctionSchema).default([]),
+  signals:z.array(SignalGroupSchema).default([]),
   buildings:z.array(BuildingSchema).default([]),
   trees:z.array(point).default([]),
   /** Ground between roads and buildings: grass (residential verges) or paving (a town centre). */
@@ -247,6 +270,8 @@ export const LocationSchema=z.object({
   for(const model of location.models)
     if(model.replacesBlock&&!blockIds.has(model.replacesBlock))ctx.addIssue({code:'custom',message:`Model "${model.id}" replaces missing block "${model.replacesBlock}"`});
   if(location.streetscape&&!roadIds.has(location.streetscape.roadId))ctx.addIssue({code:'custom',message:`Streetscape road "${location.streetscape.roadId}" does not exist`});
+  for(const group of location.signals)for(const stop of group.stops)
+    if(!roadIds.has(stop.roadId))ctx.addIssue({code:'custom',message:`Signals "${group.id}" stop on missing road "${stop.roadId}"`});
   for(const junction of location.junctions)for(const entry of junction.entries)
     if(!roadIds.has(entry))ctx.addIssue({code:'custom',message:`Junction "${junction.id}" lists missing road "${entry}"`});
 });
@@ -256,6 +281,8 @@ export type Road=z.infer<typeof RoadSchema>;
 export type Block=z.infer<typeof BlockSchema>;
 export type Crossing=z.infer<typeof CrossingSchema>;
 export type Junction=z.infer<typeof JunctionSchema>;
+export type SignalGroup=z.infer<typeof SignalGroupSchema>;
+export type SignalStop=z.infer<typeof SignalStopSchema>;
 export type Building=z.infer<typeof BuildingSchema>;
 export type PlacedModel=z.infer<typeof PlacedModelSchema>;
 export type Streetscape=z.infer<typeof StreetscapeSchema>;

@@ -15,6 +15,10 @@ test('G19: Goodmayes free drive starts on real ground and drives off along the r
   await page.click('[data-exercise=goodmayes]');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
+  // The traffic lights mapped at Goodmayes run (two junctions and two crossings).
+  const lights=await read(page,'signals()');
+  expect(lights.length).toBeGreaterThan(10);
+  expect(new Set(lights.map((s:{state:string})=>s.state)).has('red')).toBe(true);
   const t=await read(page,'terrain()');
   expect(t.on).toBe(true);
   const cam=await read(page,'camera()');

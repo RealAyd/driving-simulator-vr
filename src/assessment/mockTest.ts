@@ -6,6 +6,7 @@ import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
 import {judgePullUp,junctionPoints} from '../test/pullUp';
 import type {ShowMeQuestion,TellMeQuestion} from '../test/vehicleChecks';
+import type {Aspect,LiveStop} from '../world/trafficSignals';
 import type {Vec2} from '../contracts';
 
 /**
@@ -30,6 +31,8 @@ export interface MockTestInput{
   parked:Array<{x:number;z:number}>;
   /** Car controls switched on now (lights, demisters, window): for "remember to switch it off". */
   controlsOn?:()=>string[];
+  /** Traffic lights: stop lines and their state now. */
+  signals?:()=>readonly LiveStop[];
 }
 
 /** A manoeuvre the examiner asked for, being watched. */
@@ -57,6 +60,8 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   /** After the request to pull up: what was done before stopping. */
   private pulling:{mirror:boolean;signalled:boolean;others:boolean;event:string|null}|null=null;
   private readonly junctions:Vec2[];
+  /** Each stop line being approached: where the car's front was, the light then, and the amber judgement. */
+  private lights=new Map<string,{front:number;last:Aspect;couldStop:boolean;waitingGreen:number}>();
   /** The vehicle safety questions and how they went (for the report). */
   private checks:string[]=[];
   private showing:{q:ShowMeQuestion;time:number;shown:boolean;other:string|null;event:string|null}|null=null;
@@ -66,7 +71,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
     this.watch=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
-    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.showing=null;
+    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.showing=null;this.lights.clear();
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
   }
@@ -253,6 +258,35 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
         if(this.wrongSide>3)this.fault('positioning-normal',`position-${this.wrongSideIncident}`,this.wrongSide>8?'serious':'minor',
           `Positioning – normal driving: on the right-hand side of ${near.r.name??'the road'} for ${this.wrongSide.toFixed(0)} s with nothing to pass.`);
       }else this.wrongSide=0;
+    }
+
+    // Traffic lights: over the stop line at red (or red and amber); on at amber with room to stop; slow away on green.
+    const ahead=(m:number)=>this.input.traffic().some(t=>{const dx=t.x-x,dz=t.z-z,a=dx*fwd.x+dz*fwd.z;return a>0&&a<m&&Math.abs(dx*fwd.z-dz*fwd.x)<2});
+    const front={x:x+fwd.x*2.1,z:z+fwd.z*2.1};
+    for(const st of this.input.signals?.()??[]){
+      const hx=Math.sin(st.heading),hz=-Math.cos(st.heading);
+      const dx=front.x-st.x,dz=front.z-st.z,along=dx*hx+dz*hz,left=dx*hz-dz*hx;
+      const half=st.road.lanes.count*st.road.lanes.width/2;
+      const mine=Math.cos(st.heading-heading)>.8&&along>-60&&along<15&&left<half+1&&left>(st.road.oneway?-half-1:-1);
+      if(!mine){this.lights.delete(st.id);continue}
+      let m=this.lights.get(st.id);
+      if(!m){m={front:along,last:st.state,couldStop:false,waitingGreen:0};this.lights.set(st.id,m)}
+      // When the amber comes on: could the car stop before the line (0.7 s to react, then 4 m/s²)?
+      if(st.state==='amber'&&m.last!=='amber')m.couldStop=-along>speed*.7+speed*speed/8&&speed>2;
+      if(m.front<0&&along>=0&&speed>.3){
+        const road=st.road.name??'the road';
+        if(st.state==='red'||st.state==='red-amber')this.fault('traffic-lights',`lights-${st.id}-${Math.round(now)}`,'serious',
+          `Response to signals – traffic lights: crossed the stop line on ${road} at ${st.state==='red'?'red':'red and amber'} (it means stop).`);
+        else if(st.state==='amber'&&m.couldStop)this.fault('traffic-lights',`lights-${st.id}-${Math.round(now)}`,'minor',
+          `Response to signals – traffic lights: went on at amber on ${road} when there was room to stop safely.`);
+      }
+      // Waiting at the line on green with nothing in front: undue hesitation after 5 s.
+      if(st.state==='green'&&speed<.3&&along<0&&along>-12&&!ahead(10)){
+        m.waitingGreen+=dt;
+        if(m.waitingGreen>5&&m.waitingGreen-dt<=5)this.fault('traffic-lights-hesitation',`hesitation-${st.id}-${Math.round(now)}`,'minor',
+          `Response to signals – traffic lights: did not move off for over 5 s on green on ${st.road.name??'the road'} (undue hesitation).`);
+      }else m.waitingGreen=0;
+      m.front=along;m.last=st.state;
     }
 
     // Mounting the pavement, or leaving the road.
