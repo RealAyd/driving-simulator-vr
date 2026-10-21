@@ -35,6 +35,10 @@ export interface AttemptResult{
   finishedAt:string;
   /** How the attempt was driven (recorded with every attempt). */
   conditions?:AttemptConditions;
+  /** Mock driving test: the verdict and the fault counts (driving faults are the 'minor' findings). */
+  mockTest?:{passed:boolean;driving:number;serious:number;dangerous:number;
+    /** False when the test was ended before the examiner finished it (and nothing so far had already failed it). */
+    finished:boolean};
 }
 
 export interface AttemptConditions{

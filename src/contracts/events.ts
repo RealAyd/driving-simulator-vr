@@ -14,6 +14,9 @@ export type SimEventType=
   |'vehicle.braking'
   |'vehicle.gear.changed'
   |'area.built'
+  /** Mock test: the examiner gave a direction, or new directions after a different way was taken. */
+  |'examiner.direction'
+  |'examiner.redirected'
   |'vehicle.surface.changed'
   |'vehicle.stopped'
   |'vehicle.moving'

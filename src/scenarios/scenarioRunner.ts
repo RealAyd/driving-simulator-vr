@@ -54,14 +54,15 @@ export class ScenarioRunner implements SimModule{
     for(const trigger of this.scenario.triggers)
       if('atSeconds' in trigger.when&&this.elapsed>=trigger.when.atSeconds)this.fire(trigger,{atSeconds:trigger.when.atSeconds});
     const l=this.learner();
-    // Any collision ends the attempt: there is no reverse gear, so a car
-    // pressed against an obstacle could not otherwise continue.
-    // The barriers at the edge of a generated area only stop the car (reverse and turn round); they are not a crash.
-    if(l.collidedWith&&!l.collidedWith.startsWith('edge-barrier'))return this.finish('collision');
+    // A collision ends an exercise. A mock test goes on (the marking records it as a dangerous fault; reverse
+    // away and carry on), as does touching the barriers at the edge of a generated area (reverse and turn round).
+    const mock=this.scenario.rubricId==='mock-test';
+    if(l.collidedWith&&!mock&&!l.collidedWith.startsWith('edge-barrier'))return this.finish('collision');
     // Leaving the route: off any road surface, or driving the wrong way.
     const wrongWay=Math.abs(headingDelta(l.heading,l.roadHeading))>WRONG_WAY_RADIANS;
     this.offRoute=l.surface==='none'||wrongWay?this.offRoute+dt:0;
-    if(this.offRoute>=OFF_ROUTE_SECONDS)return this.finish('left-route');
+    // A mock test goes on (the marking records it); exercises end when the car leaves their route.
+    if(this.offRoute>=OFF_ROUTE_SECONDS&&!mock)return this.finish('left-route');
     if(this.scenario.end.completeAfterSeconds!==undefined&&this.elapsed>=this.scenario.end.completeAfterSeconds)return this.finish('completed');
     if(this.elapsed>=this.scenario.end.timeLimitSeconds)return this.finish('time-limit');
   }

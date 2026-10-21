@@ -15,7 +15,7 @@ export interface AreaRequest{
   /** A test centre: the drive starts near it and the briefing says so. */
   testCentre?:boolean;
 }
-export interface BuiltArea{location:Location;scenario:Scenario;summary:string}
+export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;summary:string}
 
 const OSM_API='https://api.openstreetmap.org/api/0.6/map';
 const slug=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'area';
@@ -55,7 +55,16 @@ export async function buildArea(request:AreaRequest,progress:(step:string)=>void
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
     end:{completeAfterSeconds:600,timeLimitSeconds:660}
   });
-  return {location,scenario,summary};
+  const mockTest=parseScenario({
+    schemaVersion:1,id:`${id}-mock-test`,locationId:id,
+    title:`${request.label} (mock test)`,
+    learningObjective:'A mock driving test: follow the examiner\'s directions for about ten minutes, driving as you would on test. Every fault is marked, as on the DVSA marking sheet; the result comes at the end.',
+    briefing:`${request.label}: mock test\n\nThe examiner will ask you to follow the road ahead unless traffic signs direct you otherwise, and give you directions in good time: listen for them (they are shown on screen too; Task repeats the last one).\n\nCheck your mirrors and signal for every turn, keep to the speed limit and keep left. If you go a different way, that is fine: the examiner gives new directions. At the end you will be asked to pull up on the left.\n\nMarking: driving, serious and dangerous faults under the marking sheet's headings; up to 15 driving faults and no serious or dangerous fault is a pass. Nothing stops the test early: a collision is marked as a dangerous fault and you carry on (select reverse to back away if you need to). The report comes at the end.\n\nBuilt from OpenStreetMap data; not an official test route. Draft marking, not reviewed by an examiner.`,
+    rubricId:'mock-test',
+    controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
+    end:{timeLimitSeconds:1500}
+  });
+  return {location,scenario,mockTest,summary};
 }
 
 /** A UK postcode (full), e.g. "IG3 9QJ". */

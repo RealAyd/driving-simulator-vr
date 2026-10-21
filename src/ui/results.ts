@@ -18,10 +18,17 @@ function el<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string,className?
 
 /** Renders an attempt result. Text only (no innerHTML), so content cannot inject markup. */
 export function renderResults(result:AttemptResult,eventTime:(id:string)=>number|undefined,attemptsSaved:number,storage:'indexeddb'|'memory',saveFailed=false):void{
-  document.getElementById('results-title')!.textContent=OUTCOME_TEXT[result.outcome];
+  const mock=result.mockTest;
+  // A mock test reads like the examiner's verdict: pass or fail, then the faults in the marking sheet's terms.
+  const label=(sev:Severity)=>mock&&sev==='minor'?'Driving fault':SEVERITY_TEXT[sev];
+  const title=document.getElementById('results-title')!;
+  title.textContent=mock?`Mock test: ${!mock.finished?'ended early':mock.passed?'PASS':'FAIL'}`:OUTCOME_TEXT[result.outcome];
+  title.classList.toggle('verdict-pass',!!mock?.passed);
+  title.classList.toggle('verdict-fail',!!mock&&mock.finished&&!mock.passed);
   const worst=result.findings[0]?.severity;
-  document.getElementById('results-summary')!.textContent=
-    result.findings.length===0?'No findings recorded for this attempt.'
+  document.getElementById('results-summary')!.textContent=mock
+    ?`${mock.driving} driving fault${mock.driving===1?'':'s'} · ${mock.serious} serious · ${mock.dangerous} dangerous${result.outcome!=='completed'?` · ${OUTCOME_TEXT[result.outcome].replace('Stopped: ','stopped: ')}`:''}`
+    :result.findings.length===0?'No findings recorded for this attempt.'
     :`${result.findings.length} finding${result.findings.length===1?'':'s'}; most significant: ${SEVERITY_TEXT[worst!]}.`;
 
   const list=document.getElementById('results-findings')!;
@@ -29,7 +36,7 @@ export function renderResults(result:AttemptResult,eventTime:(id:string)=>number
   for(const f of result.findings){
     const item=el('li',undefined,`finding sev-${f.severity}`);
     const head=el('div',undefined,'finding-head');
-    head.append(el('span',SEVERITY_TEXT[f.severity],'sev'),el('span',f.upgradedFrom?`(raised from ${SEVERITY_TEXT[f.upgradedFrom]})`:'','upgraded'));
+    head.append(el('span',label(f.severity),'sev'),el('span',f.upgradedFrom?`(raised from ${label(f.upgradedFrom)})`:'','upgraded'));
     item.append(head,el('p',f.explanation));
     const evidence=f.eventIds.map(id=>{const t=eventTime(id);return t===undefined?id:`${id} at ${t.toFixed(1)} s`}).join(', ');
     item.append(el('small',`Rule ${f.ruleId} · incident ${f.incidentId}${evidence?` · evidence: ${evidence}`:''}`));

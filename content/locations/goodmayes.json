@@ -4346,102 +4346,6 @@
    "colour": "#d62828"
   },
   {
-   "id": "edge-barrier-2",
-   "kind": "wall",
-   "position": {
-    "x": 465.08,
-    "z": 210.56
-   },
-   "headingDeg": 175.33,
-   "size": {
-    "width": 11,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
-   "id": "edge-barrier-3",
-   "kind": "wall",
-   "position": {
-    "x": -460.82,
-    "z": 116.43
-   },
-   "headingDeg": 77.34,
-   "size": {
-    "width": 11,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
-   "id": "edge-barrier-4",
-   "kind": "wall",
-   "position": {
-    "x": -466.39,
-    "z": 201.09
-   },
-   "headingDeg": 106.37,
-   "size": {
-    "width": 11,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
-   "id": "edge-barrier-5",
-   "kind": "wall",
-   "position": {
-    "x": -464.65,
-    "z": 118.93
-   },
-   "headingDeg": 177.53,
-   "size": {
-    "width": 11,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
-   "id": "edge-barrier-6",
-   "kind": "wall",
-   "position": {
-    "x": -463.08,
-    "z": 341.96
-   },
-   "headingDeg": 343.28,
-   "size": {
-    "width": 11,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
-   "id": "edge-barrier-7",
-   "kind": "wall",
-   "position": {
-    "x": -58.52,
-    "z": 472.39
-   },
-   "headingDeg": 272.33,
-   "size": {
-    "width": 11,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
    "id": "edge-barrier-8",
    "kind": "wall",
    "position": {
@@ -4538,68 +4442,68 @@
    "colour": "#d62828"
   },
   {
-   "id": "edge-barrier-14",
-   "kind": "wall",
+   "id": "edge-barrier-hedge-0",
+   "kind": "hedge",
    "position": {
-    "x": -54.4,
-    "z": 468.56
+    "x": 0,
+    "z": -485.99
    },
-   "headingDeg": 6.15,
+   "headingDeg": 0,
    "size": {
-    "width": 11.6,
-    "depth": 0.5,
-    "height": 1.1
+    "width": 972.98,
+    "depth": 0.8,
+    "height": 1.4
    },
-   "occludes": true,
-   "colour": "#d62828"
+   "occludes": false,
+   "colour": "#4b6b3c"
   },
   {
-   "id": "edge-barrier-15",
-   "kind": "wall",
+   "id": "edge-barrier-hedge-1",
+   "kind": "hedge",
    "position": {
-    "x": -54.31,
-    "z": 476.26
+    "x": 485.99,
+    "z": 0
    },
-   "headingDeg": 352.13,
+   "headingDeg": 0,
    "size": {
-    "width": 11.6,
-    "depth": 0.5,
-    "height": 1.1
+    "width": 0.8,
+    "depth": 972.98,
+    "height": 1.4
    },
-   "occludes": true,
-   "colour": "#d62828"
+   "occludes": false,
+   "colour": "#4b6b3c"
   },
   {
-   "id": "edge-barrier-16",
-   "kind": "wall",
+   "id": "edge-barrier-hedge-2",
+   "kind": "hedge",
    "position": {
-    "x": -54.31,
-    "z": 476.26
+    "x": 0,
+    "z": 485.99
    },
-   "headingDeg": 172.13,
+   "headingDeg": 0,
    "size": {
-    "width": 11.6,
-    "depth": 0.5,
-    "height": 1.1
+    "width": 972.98,
+    "depth": 0.8,
+    "height": 1.4
    },
-   "occludes": true,
-   "colour": "#d62828"
+   "occludes": false,
+   "colour": "#4b6b3c"
   },
   {
-   "id": "edge-barrier-17",
-   "kind": "wall",
+   "id": "edge-barrier-hedge-3",
+   "kind": "hedge",
    "position": {
-    "x": 460.86,
-    "z": 208.06
+    "x": -485.99,
+    "z": 0
    },
-   "headingDeg": 265.61,
+   "headingDeg": 0,
    "size": {
-    "width": 12,
-    "depth": 0.5,
-    "height": 1.1
+    "width": 0.8,
+    "depth": 972.98,
+    "height": 1.4
    },
-   "occludes": true,
-   "colour": "#d62828"
+   "occludes": false,
+   "colour": "#4b6b3c"
   }
  ],
  "crossings": [

@@ -11,6 +11,7 @@ test('G19: Goodmayes free drive starts on real ground and drives off along the r
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=free]');
   await page.click('[data-exercise=goodmayes]');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');

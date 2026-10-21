@@ -27,6 +27,12 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian,onwardPath} from '../actors/pedestrian';
 import {Soundscape,type RoadUserSound} from '../audio/soundscape';
 import {Traffic} from '../actors/traffic';
+import {RoadNetwork} from '../test/route';
+import {routeLanePath} from '../test/routePath';
+import {Examiner} from '../test/examiner';
+import {ExaminerVoice} from '../test/voice';
+import {MockTestAssessor} from '../assessment/mockTest';
+import goodmayesMockTestJson from '../../content/scenarios/goodmayes-mock-test.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
@@ -118,6 +124,8 @@ interface ExerciseRuntime{
   passers:PassingVehicle[];
   buses:Bus[];
   traffic:Traffic|null;
+  /** Mock test: the examiner (directions; the Task button repeats the last). */
+  examiner:Examiner|null;
   /** Timing variation in use this attempt, if the scenario has any. */
   readonly variant:Scenario['variants'][number]|null;
   chooseVariant(forced?:string|null):void;
@@ -153,7 +161,7 @@ export async function boot():Promise<void>{
   const scene=new Scene(engine);
   configureScene(scene);
   const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
-  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson].map(raw=>{
+  const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson,goodmayesMockTestJson].map(raw=>{
     const s=parseScenario(raw);
     if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
     return [s.id,s] as const;
@@ -286,8 +294,9 @@ export async function boot():Promise<void>{
   let lastControls:Controls={throttle:0,brake:0,steer:0};
   // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
   const sound=new Soundscape();
+  const examinerVoice=new ExaminerVoice();
   // Safari starts audio only from a completed tap (touchend, pointerup, click) or a key, not from pointerdown.
-  for(const type of ['pointerdown','pointerup','touchend','click','keydown'])document.addEventListener(type,()=>{void sound.unlock()},{capture:true});
+  for(const type of ['pointerdown','pointerup','touchend','click','keydown'])document.addEventListener(type,()=>{void sound.unlock();examinerVoice.unlock()},{capture:true});
   let soundActive=false;
   let edgeTimer=0,edgeWarned=false;
   vehicle=new VehicleController(spawn,controls,{
@@ -433,8 +442,27 @@ export async function boot():Promise<void>{
     // Signal poles are solid, like lamp columns.
     for(const pole of signals.poles)dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
 
+    // Mock test: the examiner's route and directions, and the marking.
+    const mock=scenario.rubricId==='mock-test'&&!familiarisation;
+    const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
+      learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
+      traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
+      parked:kerbCars}):null;
+    let finishTest:()=>void=()=>{};
+    // Assisted steering follows the examiner's route in the left lane (src/test/routePath.ts), and the new route
+    // after a wrong turn.
+    let routeAssist:SteeringAssist|null=null;
+    const examiner=mock?new Examiner(new RoadNetwork(place),()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:Math.abs(vehicle.state.speed)}),{
+      target:2800,seed:Math.floor(Math.random()*1e9),events,listener:mockAssessor!,
+      say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
+      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}}):null;
+    if(examiner){
+      examiner.reset();
+      const path=routeLanePath(examiner.legs,kerbCars);
+      if(path.length>1)routeAssist=new SteeringAssist(path,vehicle.params);
+    }
     const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
-    const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):null;
+    const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):routeAssist;
     const road=place.roads[0]!;
     let lastCollision:string|null=null;
     const runner=new ScenarioRunner(scenario,zones,new Map(pedestrian?[[pedestrian.id,pedestrian]]:[]),()=>{
@@ -448,6 +476,7 @@ export async function boot():Promise<void>{
       return {surface:vehicle.surfaceKind,heading:vehicle.state.heading,roadHeading,collidedWith:lastCollision};
     },events);
     runner.onMessage=text=>hud.setTask(text);
+    finishTest=()=>runner.finish('completed');
 
     const crossing=pedestrian?place.crossings.find(c=>c.id===pedestrian.def.crossingId)??null:null;
     const assessor=scenario.rubricId==='crossing-restricted-view'&&pedestrian&&crossing?new Assessor({
@@ -470,12 +499,12 @@ export async function boot():Promise<void>{
 
     const modules:SimModule[]=[
       ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,...(traffic?[traffic]:[]),
-      zones,runner,observation,...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
+      zones,runner,observation,...(examiner?[examiner]:[]),...(mockAssessor?[mockAssessor]:[]),...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
     ];
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,traffic,
+      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,traffic,examiner,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.
@@ -494,7 +523,8 @@ export async function boot():Promise<void>{
         }
       },
       finish(outcome){
-        const base=assessor?assessor.finish(scenario.id,outcome,runner.elapsed)
+        examinerVoice.stop();
+        const base=mockAssessor?mockAssessor.finish(scenario.id,outcome,runner.elapsed):assessor?assessor.finish(scenario.id,outcome,runner.elapsed)
           :movingOff?movingOff.finish(scenario.id,outcome,runner.elapsed):{
           scenarioId:scenario.id,rubricVersion:'none (practice)',outcome,findings:[],
           notes:route?route.notes():practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
@@ -512,7 +542,7 @@ export async function boot():Promise<void>{
           ...(mode==='phone-viewer-controller'&&checkedDevice?{controller:checkedDevice}:{})};
         return base;
       },
-      current:()=>assessor?assessor.current:movingOff?movingOff.current:[],
+      current:()=>mockAssessor?mockAssessor.current:assessor?assessor.current:movingOff?movingOff.current:[],
       renderVisuals(){for(const v of visuals)v.update()},
       dispose(){
         for(const v of visuals)v.dispose();
@@ -1106,14 +1136,21 @@ export async function boot():Promise<void>{
   const wheelPreview=byId('tilt-preview');
 
   // ---- Exercises: menu, settings and briefing, then Start practice ----
-  const EXERCISES:Record<string,{scenario:string;intro?:string}>={
+  /** `test`: the mock test at the same place (chosen on the home screen with Mock test / Free drive). */
+  const EXERCISES:Record<string,{scenario:string;intro?:string;test?:string}>={
     brentwood:{scenario:'brentwood-guided-traversal'},
     'kings-road':{scenario:'brentwood-kings-road-zebra'},
-    goodmayes:{scenario:'goodmayes-free-drive'},
+    goodmayes:{scenario:'goodmayes-free-drive',test:'goodmayes-mock-test'},
     zebra:{scenario:'crossing-restricted-view'},
     'moving-off':{scenario:'moving-off-safely',intro:'moving-off-intro'}
   };
   let chosen:{scenario:string;intro?:string}|null=null;
+  // Home screen: a mock test (directions and marking) or a free drive, for the test centres and places.
+  let driveMode:'test'|'free'='test';
+  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>{
+    driveMode=b.dataset.driveMode as 'test'|'free';
+    for(const o of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))o.setAttribute('aria-pressed',String(o===b));
+  });
   /** Briefing text: paragraphs split on blank lines; a short first line is its heading. */
   const renderBriefing=(target:HTMLElement,text:string)=>{
     const parts=text.split(/\n\n+/);
@@ -1136,7 +1173,8 @@ export async function boot():Promise<void>{
     head.recentre();
   };
   const showExercise=(key:string|null)=>{
-    chosen=key?EXERCISES[key]!:null;
+    const entry=key?EXERCISES[key]!:null;
+    chosen=entry&&driveMode==='test'&&entry.test?{scenario:entry.test}:entry;
     byId('exercise-list').hidden=!!chosen;
     byId('exercise-detail').hidden=!chosen;
     if(!chosen)return;
@@ -1170,10 +1208,11 @@ export async function boot():Promise<void>{
     building=true;
     try{
       const built=await buildArea(request,step=>{areaStatus.textContent=step});
-      const {location:l,scenario:sc}=built;
+      const {location:l,scenario:sc,mockTest}=built;
       locations.set(l.id,l);
       scenarios.set(sc.id,sc);
-      EXERCISES[l.id]={scenario:sc.id};
+      scenarios.set(mockTest.id,mockTest);
+      EXERCISES[l.id]={scenario:sc.id,test:mockTest.id};
       events.emit('area.built',{locationId:l.id,label:request.label,lat:request.lat,lon:request.lon,summary:built.summary});
       areaStatus.textContent='';
       showExercise(l.id);
@@ -1206,10 +1245,14 @@ export async function boot():Promise<void>{
 
   const soundButton=byId<HTMLButtonElement>('hud-sound');
   const showSound=()=>{soundButton.setAttribute('aria-pressed',String(!sound.muted));soundButton.setAttribute('aria-label',sound.muted?'Sound off. Tap to turn on':'Sound on. Tap to mute')};
-  soundButton.addEventListener('click',()=>{sound.setMuted(!sound.muted);showSound()});
+  // The examiner's voice follows the sound button (directions are still shown on screen).
+  const muteVoice=()=>{examinerVoice.muted=sound.muted;if(sound.muted)examinerVoice.stop()};
+  muteVoice();
+  soundButton.addEventListener('click',()=>{sound.setMuted(!sound.muted);showSound();muteVoice()});
   showSound();
   const pause=()=>{
     if(!session.to('paused'))return;
+    examinerVoice.stop();
     clock.pause();
     input.clear();
     clearHeldButtons();
@@ -1279,7 +1322,8 @@ export async function boot():Promise<void>{
   byId('hud-pause').addEventListener('click',pause);
   byId('hud-ind-left').addEventListener('click',()=>onAction('indicator-left'));
   byId('hud-ind-right').addEventListener('click',()=>onAction('indicator-right'));
-  byId('hud-task-toggle').addEventListener('click',()=>hud.toggleTask());
+  // On a mock test the Task button says the examiner's last direction again (and shows it).
+  byId('hud-task-toggle').addEventListener('click',()=>{if(runtime?.examiner?.lastSaid){runtime.examiner.repeat();hud.setTask(runtime.examiner.lastSaid)}else hud.toggleTask()});
   byId('hud-tilt-centre').addEventListener('click',()=>tilt.calibrate());
   // On-screen steering: the finger's angle around the wheel's centre turns it (one finger; others ignored). In the
   // driver's seat the grab area lies over the car's own steering wheel; behind the car, the separate wheel is used.
@@ -1542,6 +1586,7 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     sound:()=>sound.stats,
+    examiner:()=>runtime?.examiner?{phase:runtime.examiner.phase,index:runtime.examiner.index,lastSaid:runtime.examiner.lastSaid,steps:runtime.examiner.steps.map(s=>({say:s.say,at:s.at,to:s.to.road.name??s.to.road.id}))}:null,
     meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled(),at:m.getAbsolutePosition().asArray().map(v=>Math.round(v*10)/10),visible:m.isVisible})),
     driver:()=>({loaded:!!driverBody,arms:driverBody?.debug()??null,grips:cockpit.grips().map(g=>g.point.asArray()),eye:camera.position.asArray()}),
     gear:()=>input.reverse?'reverse':'drive',

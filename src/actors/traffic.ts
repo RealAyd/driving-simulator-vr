@@ -23,6 +23,8 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   dwell:number;served:Set<number>;
   /** Seconds stood still (not at a bus stop): after a while, a car stuck behind another that is also waiting creeps on. */
   waited:number;
+  /** Tucked in to the kerb to let a stopped learner through a narrow gap (until the learner has gone by). */
+  squeezing?:boolean;
   /** Diagnostics: what it slowed for last. */
   why?:string}
 
@@ -231,7 +233,17 @@ export class Traffic implements SimModule{
       const learnerLeft=lx*fwd.z-lz*fwd.x,learnerAlong=lx*fwd.x+lz*fwd.z;
       const aligned=Math.cos(learner.pose.heading-car.pose.heading)>.85;
       const learnerStopped=Math.abs(learner.speed)<.5&&learnerLeft>-.8&&aligned&&d.leg.road!==null;
-      if(!(learnerStopped&&learnerLeft>2.15))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
+      // Coming the other way (moving, or waiting out in the road): parked cars on this side are passed after it.
+      // Counted 15 m nearer than it is: a learner can be slow through a narrow gap, so traffic waits in good time.
+      if(Math.cos(learner.pose.heading-car.pose.heading)<-.5&&learnerAlong>0&&learnerAlong<60&&Math.abs(learnerLeft)<4)oncoming.push({along:learnerAlong-15});
+      // Nose to nose with the learner stopped in a gap one car wide (parked cars on both sides): after a moment,
+      // tuck in to this side's kerb so the learner can come through, and stay there until they have gone by.
+      const facingLearner=Math.cos(learner.pose.heading-car.pose.heading)<-.5&&learnerAlong>-3&&learnerAlong<25;
+      if(!facingLearner)d.squeezing=false;
+      else if(Math.abs(learner.speed)<.5&&learnerAlong<20&&d.waited>2&&d.leg.road!==null&&d.leg.lane>0)d.squeezing=true;
+      const squeeze=!!d.squeezing;
+      if(squeeze){if(Math.abs(learnerLeft)<car.halfWidth+.95)ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner')}
+      else if(!(learnerStopped&&learnerLeft>2.15))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
       let target=d.leg.cruise;
       if(gap<Infinity)target=Math.min(target,Math.max(0,(gap-GAP)*.55));
       // The end of a road: slow for the turn; at a mini-roundabout or a T-junction, give way to anyone nearer to it.
@@ -275,9 +287,12 @@ export class Traffic implements SimModule{
       // Parked cars on this side ahead: ease towards the crown of the road to pass them, back to the lane after;
       // with traffic coming the other way, wait behind them until it has passed.
       let want=d.leg.lane;
+      if(squeeze&&d.leg.road)want=Math.min(d.leg.lane+.55,d.leg.road.lanes.width*d.leg.road.lanes.count/2-car.halfWidth-.1);
       const obstacles=learnerStopped&&learnerAlong>-7&&learnerAlong<30?[...this.options.parked,learner.pose.position]:this.options.parked;
       if(d.leg.lane>0&&car.kind==='car')for(const q of obstacles){
         const dx=q.x-pos.x,dz=q.z-pos.z,along=dx*fwd.x+dz*fwd.z,left=dx*fwd.z-dz*fwd.x;
+        // Already alongside with someone coming: back into the lane rather than hold the middle of the road.
+        if(along<1&&q!==learner.pose.position&&oncoming.some(o=>o.along<25))continue;
         if(along>(q===learner.pose.position?-7:-5)&&along<16&&left>(q===learner.pose.position?-.8:.4)&&left<3.2){
           if(oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2&&along>3){target=Math.min(target,Math.max(0,(along-7)*.5));car.speed=Math.min(car.speed,target+.5)}
           else want=q===learner.pose.position?d.leg.lane-2.6:.15;

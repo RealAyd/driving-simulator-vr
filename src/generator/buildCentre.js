@@ -235,12 +235,23 @@ for(const r of roads){
   const line=r.centreline;
   for(const [end,next] of [[line[0],line[1]],[line.at(-1),line.at(-2)]]){
     if(Math.max(Math.abs(end.x),Math.abs(end.z))<HALF-1)continue;
+    // Not where another road carries on from this end (a corner or junction at the edge): only dead ends.
+    if(roads.some(o=>o!==r&&alongOf(o.centreline,end).d<3))continue;
     const dx=next.x-end.x,dz=next.z-end.z,l=Math.hypot(dx,dz)||1;
     const back=Math.min(4,l*.5),at={x:r2(end.x+dx/l*back),z:r2(end.z+dz/l*back)};
     const width=r.lanes.width*r.lanes.count+2*r.pavementWidth+1;
     blocks.push({id:`edge-barrier-${blocks.length}`,kind:'wall',position:at,headingDeg:r2(((Math.atan2(dx,-dz)*180/Math.PI)+360)%360),
       size:{width:r2(width),depth:.5,height:1.1},occludes:true,colour:'#d62828'});
   }
+}
+
+// A low hedge all round, just outside the last of the map data, so no car can drive off into empty ground (where
+// a road ends at a corner or junction on the edge there is no barrier across it, and the car could go straight on).
+{
+  let m=0;for(const r of roads)for(const p of r.centreline)m=Math.max(m,Math.abs(p.x),Math.abs(p.z));
+  const at=r2(m+6),long=r2(2*at+1);
+  for(const [i,[x,z,across]] of [[0,-at,true],[at,0,false],[0,at,true],[-at,0,false]].entries())
+    blocks.push({id:`edge-barrier-hedge-${i}`,kind:'hedge',position:{x,z},headingDeg:0,size:{width:across?long:.8,depth:across?.8:long,height:1.4},occludes:false,colour:'#4b6b3c'});
 }
 
 // ---- Start: the left lane of the road nearest the centre, facing along it ----
