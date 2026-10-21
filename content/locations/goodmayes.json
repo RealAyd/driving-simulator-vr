@@ -4312,6 +4312,296 @@
    }
   }
  ],
+ "blocks": [
+  {
+   "id": "edge-barrier-0",
+   "kind": "wall",
+   "position": {
+    "x": -464.88,
+    "z": 345.46
+   },
+   "headingDeg": 72.5,
+   "size": {
+    "width": 12,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-1",
+   "kind": "wall",
+   "position": {
+    "x": 373.2,
+    "z": 446.98
+   },
+   "headingDeg": 1.86,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-2",
+   "kind": "wall",
+   "position": {
+    "x": 465.08,
+    "z": 210.56
+   },
+   "headingDeg": 175.33,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-3",
+   "kind": "wall",
+   "position": {
+    "x": -460.82,
+    "z": 116.43
+   },
+   "headingDeg": 77.34,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-4",
+   "kind": "wall",
+   "position": {
+    "x": -466.39,
+    "z": 201.09
+   },
+   "headingDeg": 106.37,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-5",
+   "kind": "wall",
+   "position": {
+    "x": -464.65,
+    "z": 118.93
+   },
+   "headingDeg": 177.53,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-6",
+   "kind": "wall",
+   "position": {
+    "x": -463.08,
+    "z": 341.96
+   },
+   "headingDeg": 343.28,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-7",
+   "kind": "wall",
+   "position": {
+    "x": -58.52,
+    "z": 472.39
+   },
+   "headingDeg": 272.33,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-8",
+   "kind": "wall",
+   "position": {
+    "x": -69.18,
+    "z": 474.2
+   },
+   "headingDeg": 74.32,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-9",
+   "kind": "wall",
+   "position": {
+    "x": -163.29,
+    "z": -464.67
+   },
+   "headingDeg": 192.03,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-10",
+   "kind": "wall",
+   "position": {
+    "x": -92.57,
+    "z": -452.59
+   },
+   "headingDeg": 191.14,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-11",
+   "kind": "wall",
+   "position": {
+    "x": -238.17,
+    "z": -470.56
+   },
+   "headingDeg": 193.04,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-12",
+   "kind": "wall",
+   "position": {
+    "x": -312.97,
+    "z": -466.84
+   },
+   "headingDeg": 192.33,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-13",
+   "kind": "wall",
+   "position": {
+    "x": 458.8,
+    "z": -70.81
+   },
+   "headingDeg": 262.06,
+   "size": {
+    "width": 11,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-14",
+   "kind": "wall",
+   "position": {
+    "x": -54.4,
+    "z": 468.56
+   },
+   "headingDeg": 6.15,
+   "size": {
+    "width": 11.6,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-15",
+   "kind": "wall",
+   "position": {
+    "x": -54.31,
+    "z": 476.26
+   },
+   "headingDeg": 352.13,
+   "size": {
+    "width": 11.6,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-16",
+   "kind": "wall",
+   "position": {
+    "x": -54.31,
+    "z": 476.26
+   },
+   "headingDeg": 172.13,
+   "size": {
+    "width": 11.6,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  },
+  {
+   "id": "edge-barrier-17",
+   "kind": "wall",
+   "position": {
+    "x": 460.86,
+    "z": 208.06
+   },
+   "headingDeg": 265.61,
+   "size": {
+    "width": 12,
+    "depth": 0.5,
+    "height": 1.1
+   },
+   "occludes": true,
+   "colour": "#d62828"
+  }
+ ],
  "crossings": [
   {
    "id": "zebra-256233560",

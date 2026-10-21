@@ -56,7 +56,8 @@ export class ScenarioRunner implements SimModule{
     const l=this.learner();
     // Any collision ends the attempt: there is no reverse gear, so a car
     // pressed against an obstacle could not otherwise continue.
-    if(l.collidedWith)return this.finish('collision');
+    // The barriers at the edge of a generated area only stop the car (reverse and turn round); they are not a crash.
+    if(l.collidedWith&&!l.collidedWith.startsWith('edge-barrier'))return this.finish('collision');
     // Leaving the route: off any road surface, or driving the wrong way.
     const wrongWay=Math.abs(headingDelta(l.heading,l.roadHeading))>WRONG_WAY_RADIANS;
     this.offRoute=l.surface==='none'||wrongWay?this.offRoute+dt:0;

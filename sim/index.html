@@ -9,6 +9,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Driving Practice">
 <title>Driving Practice Simulator (preview)</title>
 <style>
 :root{color-scheme:dark;
@@ -92,6 +94,14 @@ body.phone .keys-box{display:none}
 .centre-group>summary small{font-weight:500;color:var(--faint);margin-left:auto;margin-right:10px}
 .centre-list{max-height:260px;margin:0 8px 8px}
 #area-status{font-size:13px;color:#99f6e4}
+
+
+/* ---- Full screen ---- */
+.head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fs-button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;font-weight:600}
+.howto{margin:12px 0;padding-left:20px;display:grid;gap:8px;color:var(--ink);font-size:14px}
+.howto svg{vertical-align:-3px;color:var(--accent)}
+#screen-fullscreen{z-index:30}
 
 /* ---- Exercise: briefing on the left, settings and Start on the right ---- */
 .detail{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
@@ -250,7 +260,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
           <span class="brand-mark"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M3.8 11h5.9M14.3 11h5.9M12 14.2V20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
           <div><h1>Driving Practice</h1><p id="location-label">Real UK streets from the driver's seat</p></div>
         </div>
-        <span class="badge">Preview · draft feedback, not instructor-reviewed</span>
+        <div class="head-actions"><span class="badge">Preview · draft feedback, not instructor-reviewed</span><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button></div>
       </div>
       <div class="area-search">
         <label for="area-query" class="section-label">Drive anywhere in the UK</label>
@@ -401,6 +411,19 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
   </div>
 </section>
 
+<section id="screen-fullscreen" class="screen" hidden aria-labelledby="fullscreen-title">
+  <div class="card">
+    <h1 id="fullscreen-title">Full screen on iPhone</h1>
+    <p>Safari on iPhone does not let a web page cover the whole screen. Add Driving Practice to your Home Screen instead: it then opens full screen in landscape, with no browser bars.</p>
+    <ol class="howto">
+      <li>Tap <b>Share</b> <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> in Safari's toolbar (or the ••• menu, then Share).</li>
+      <li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      <li>Open <b>Driving Practice</b> from your Home Screen.</li>
+    </ol>
+    <button id="fullscreen-close" class="primary" type="button">OK</button>
+  </div>
+</section>
+
 <section id="screen-error" class="screen" hidden role="alert">
   <div class="card"><h1>Something went wrong</h1><p id="error-message"></p>
     <button id="error-reload" class="primary" type="button">Reload</button></div>
@@ -416,7 +439,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
   <button id="hud-behind" type="button" class="hud-round" aria-pressed="false" aria-label="Camera: switch to behind the car" title="Camera: driver's seat / behind the car (practice only)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v2.1l4.4-2.6a1 1 0 0 1 1.6.8v8.4a1 1 0 0 1-1.6.8L15 14.4v2.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 16.5z"/></svg></button>
   <div id="hud-top" class="hud-panel">
     <div id="hud-tilt"><div class="wheel" aria-hidden="true"><div id="hud-wheel" class="wheel-rim"><span></span></div></div><button id="hud-tilt-centre" type="button">Centre</button><span id="hud-tilt-state" class="unit"></span></div>
-    <button id="hud-task-toggle" type="button">Task</button><button id="hud-sound" type="button" class="icon" aria-pressed="true" aria-label="Sound on. Tap to mute"><svg class="snd-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
+    <button id="hud-fullscreen" type="button" class="icon fs-button" aria-label="Full screen"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="hud-task-toggle" type="button">Task</button><button id="hud-sound" type="button" class="icon" aria-pressed="true" aria-label="Sound on. Tap to mute"><svg class="snd-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
   </div>
   <div id="hud-left" class="hud-panel">
     <div id="hud-speedbox"><span id="hud-gear" class="gear-readout" aria-label="Gear">D</span><span id="hud-speed">0</span><span class="unit">mph</span></div>

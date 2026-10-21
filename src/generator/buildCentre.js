@@ -229,6 +229,20 @@ for(const [i,f] of filled.entries()){
     roof:f.parade?'flat':'pitched',detail:Math.hypot(f.c.x,f.c.z)<160?'full':'low'});
 }
 
+// ---- The edge of the area: a red barrier across each road where it leaves the square (the map data stops there) ----
+const blocks=[];
+for(const r of roads){
+  const line=r.centreline;
+  for(const [end,next] of [[line[0],line[1]],[line.at(-1),line.at(-2)]]){
+    if(Math.max(Math.abs(end.x),Math.abs(end.z))<HALF-1)continue;
+    const dx=next.x-end.x,dz=next.z-end.z,l=Math.hypot(dx,dz)||1;
+    const back=Math.min(4,l*.5),at={x:r2(end.x+dx/l*back),z:r2(end.z+dz/l*back)};
+    const width=r.lanes.width*r.lanes.count+2*r.pavementWidth+1;
+    blocks.push({id:`edge-barrier-${blocks.length}`,kind:'wall',position:at,headingDeg:r2(((Math.atan2(dx,-dz)*180/Math.PI)+360)%360),
+      size:{width:r2(width),depth:.5,height:1.1},occludes:true,colour:'#d62828'});
+  }
+}
+
 // ---- Start: the left lane of the road nearest the centre, facing along it ----
 let start=null;
 for(const r of roads){const a=alongOf(r.centreline,{x:0,z:0});if(a.length>40&&(!start||a.d<start.a.d))start={r,a}}
@@ -251,7 +265,7 @@ const location={
     notes:`API 0.6 map call, bbox ${bbox}, ${sourceNote} ${date}.`}],
   reviewStatus:'unreviewed',
   roads:roads.map(({_way,_class,...r})=>r),
-  crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,spawn
+  blocks,crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,spawn
 };
-return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops; start on ${sr.name??sr.id}`};
+return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops, ${blocks.length} edge barriers; start on ${sr.name??sr.id}`};
 }

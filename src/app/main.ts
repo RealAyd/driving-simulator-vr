@@ -29,6 +29,7 @@ import {Soundscape,type RoadUserSound} from '../audio/soundscape';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
+import {setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -283,6 +284,7 @@ export async function boot():Promise<void>{
   // Safari starts audio only from a completed tap (touchend, pointerup, click) or a key, not from pointerdown.
   for(const type of ['pointerdown','pointerup','touchend','click','keydown'])document.addEventListener(type,()=>{void sound.unlock()},{capture:true});
   let soundActive=false;
+  let edgeTimer=0,edgeWarned=false;
   vehicle=new VehicleController(spawn,controls,{
     surfaceHeightAt:(x,z)=>surfaceAt(place,x,z)?.height??null,
     groundHeight:0,
@@ -1139,6 +1141,15 @@ export async function boot():Promise<void>{
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
   byId('exercise-back').addEventListener('click',()=>showExercise(null));
 
+  // ---- Full screen (or, on iPhone, how to add the app to the Home Screen) ----
+  let pausedForHowTo=false;
+  setUpFullscreen([byId<HTMLButtonElement>('home-fullscreen'),byId<HTMLButtonElement>('hud-fullscreen')],()=>{
+    pausedForHowTo=session.state==='running';
+    if(pausedForHowTo)pause();
+    byId('screen-fullscreen').hidden=false;
+  });
+  byId('fullscreen-close').addEventListener('click',()=>{byId('screen-fullscreen').hidden=true;if(pausedForHowTo)resume()});
+
   // ---- Drive anywhere: an area built on the phone round a test centre, postcode or place ----
   const areaStatus=byId('area-status');
   let building=false;
@@ -1477,6 +1488,14 @@ export async function boot():Promise<void>{
         {x:pose.position.x,z:pose.position.z,heading:pose.heading},vehicle.indicators.isLit(clock.time));
     }
     hud.update(vehicle.state.speed,input.reverse,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
+    // Approaching the edge of a generated area: say so, once per approach.
+    if((edgeTimer-=dt)<=0){
+      edgeTimer=.5;
+      const {x,z}=vehicle.state.position;
+      const near=session.state==='running'&&place.blocks.some(b=>b.id.startsWith('edge-barrier')&&Math.hypot(b.position.x-x,b.position.z-z)<35);
+      if(near&&!edgeWarned)hud.setTask('End of the mapped area ahead: the road is closed at the red barrier. Turn round, or tap R to reverse.');
+      edgeWarned=near;
+    }
     // Location label: the street the car is on (a few times a second; the DOM only changes with the street).
     if((placeTimer-=dt)<=0){
       placeTimer=.25;
