@@ -20,7 +20,11 @@ interface Leg{points:Vec2[];lengths:number[];road:Road|null;dir:1|-1;cruise:numb
   endAlong?:number}
 interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   /** Buses: seconds left at the current stop, and the stops already served on this leg. */
-  dwell:number;served:Set<number>}
+  dwell:number;served:Set<number>;
+  /** Seconds stood still (not at a bus stop): after a while, a car stuck behind another that is also waiting creeps on. */
+  waited:number;
+  /** Diagnostics: what it slowed for last. */
+  why?:string}
 
 const HALF_LENGTH=2.2,HALF_WIDTH=.95,BUS={halfLength:5.75,halfWidth:1.275};
 const ACCEL=1.6,BRAKE=4.5,GAP=7;
@@ -170,13 +174,13 @@ export class Traffic implements SimModule{
       const car=d?.car??this.newCar(i);
       car.visible=true;
       car.speed=leg.cruise*.8;
-      const driver:Driver={car,leg,s,lat:leg.lane,next:null,dwell:0,served:new Set()};
+      const driver:Driver={car,leg,s,lat:leg.lane,next:null,dwell:0,served:new Set(),waited:0};
       this.place(driver);
       return driver;
     }
     const car=d?.car??this.newCar(i);
     car.visible=false;
-    return {car,leg:this.legOf(roads[0]!,1),s:0,lat:0,next:null,dwell:0,served:new Set()};
+    return {car,leg:this.legOf(roads[0]!,1),s:0,lat:0,next:null,dwell:0,served:new Set(),waited:0};
   }
 
   private place(d:Driver){
@@ -193,30 +197,41 @@ export class Traffic implements SimModule{
       const pos=car.pose.position,fwd={x:Math.sin(car.pose.heading),z:-Math.cos(car.pose.heading)};
       // What is ahead in this car's path (a box 3.8 m wide, 40 m long): traffic going the same way, and the learner.
       let gap=Infinity;
-      const ahead=(x:number,z:number,len:number)=>{
+      let why='';
+      const ahead=(x:number,z:number,len:number,what='traffic')=>{
         const dx=x-pos.x,dz=z-pos.z,along=dx*fwd.x+dz*fwd.z,side=Math.abs(dx*fwd.z-dz*fwd.x);
-        if(along>0&&along<40&&side<1.9)gap=Math.min(gap,along-len-car.halfLength);
+        if(along>0&&along<40&&side<car.halfWidth+1.15&&along-len-car.halfLength<gap){gap=along-len-car.halfLength;why=what}
       };
       const oncoming:Array<{along:number}>=[];
       for(const o of this.drivers){
         if(o===d||!o.car.visible)continue;
         const op=o.car.pose.position,ofx=Math.sin(o.car.pose.heading),ofz=-Math.cos(o.car.pose.heading);
         const facing=fwd.x*ofx+fwd.z*ofz;
-        if(facing>.3)ahead(op.x,op.z,o.car.halfLength);
-        // Across the road ahead (turning in or out of a side road): stop for it.
-        else if(facing>=-.5)ahead(op.x,op.z,o.car.halfLength*.6+1);
+        if(facing>.3){
+          // Following: unless both have been waiting a long time (a knot at a junction), then only the nose-to-tail gap counts.
+          if(d.waited<8||o.car.speed>.3)ahead(op.x,op.z,o.car.halfLength,`behind ${o.car.id}`);
+          else{const dx=op.x-pos.x,dz=op.z-pos.z;if(dx*fwd.x+dz*fwd.z<o.car.halfLength+car.halfLength+1.5)ahead(op.x,op.z,o.car.halfLength)}
+        }
+        // Across the road ahead (turning in or out of a side road): stop for it if it is moving, or if it is waiting
+        // and has the turn first (two cars waiting for each other take turns, by their order), or is right in front.
+        else if(facing>=-.5){
+          const dx=op.x-pos.x,dz=op.z-pos.z,close=Math.hypot(dx,dz)<car.halfLength+o.car.halfLength+1;
+          const first=this.drivers.indexOf(o)<i;
+          if(o.car.speed>.3||close||d.waited<2||(first&&d.waited<8))ahead(op.x,op.z,o.car.halfLength*.6+1,`crossing ${o.car.id}`);
+        }
         else if(facing<-.5){
           const dx=op.x-pos.x,dz=op.z-pos.z,along=dx*fwd.x+dz*fwd.z,side=Math.abs(dx*fwd.z-dz*fwd.x);
           if(along>0&&along<40&&side<4)oncoming.push({along});
           // Nose to nose in the same strip of road (a narrow street): stop well short.
-          if(side<1.5)ahead(op.x,op.z,o.car.halfLength+3);
+          if(side<1.5)ahead(op.x,op.z,o.car.halfLength+3,`facing ${o.car.id}`);
         }
       }
       // The learner: followed when moving; when stopped in this lane, passed like a parked car (below) once there is room.
       const lx=learner.pose.position.x-pos.x,lz=learner.pose.position.z-pos.z;
       const learnerLeft=lx*fwd.z-lz*fwd.x,learnerAlong=lx*fwd.x+lz*fwd.z;
-      const learnerStopped=Math.abs(learner.speed)<.5&&learnerLeft>.3;
-      if(!(learnerStopped&&d.lat<d.leg.lane-2))ahead(learner.pose.position.x,learner.pose.position.z,2.2);
+      const aligned=Math.cos(learner.pose.heading-car.pose.heading)>.85;
+      const learnerStopped=Math.abs(learner.speed)<.5&&learnerLeft>-.8&&aligned&&d.leg.road!==null;
+      if(!(learnerStopped&&learnerLeft>2.15))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
       let target=d.leg.cruise;
       if(gap<Infinity)target=Math.min(target,Math.max(0,(gap-GAP)*.55));
       // The end of a road: slow for the turn; at a mini-roundabout or a T-junction, give way to anyone nearer to it.
@@ -230,9 +245,14 @@ export class Traffic implements SimModule{
         const busy=this.drivers.some(o=>{
           if(o===d||!o.car.visible)return false;
           const r=Math.hypot(o.car.pose.position.x-point.x,o.car.pose.position.z-point.z);
-          return r<reach&&r<mine-.5;
-        })||Math.hypot(learner.pose.position.x-point.x,learner.pose.position.z-point.z)<reach;
-        if(busy&&remaining<7)target=0;
+          // Nearer the junction and moving, or nearer and waiting with the turn first.
+          return r<reach&&r<mine-.5&&(o.car.speed>.3||d.waited<2||this.drivers.indexOf(o)<i||d.waited<8);
+        })||(()=>{
+          // The learner holds the junction while moving through it or standing in it, not when parked near it.
+          const r=Math.hypot(learner.pose.position.x-point.x,learner.pose.position.z-point.z);
+          return r<reach&&(Math.abs(learner.speed)>.5||r<5);
+        })();
+        if(busy&&remaining<7){target=0;why='junction busy'}
       }
       // Buses: pull up at each bus stop on their side, wait, then go on.
       if(car.kind==='bus'){
@@ -255,17 +275,19 @@ export class Traffic implements SimModule{
       // Parked cars on this side ahead: ease towards the crown of the road to pass them, back to the lane after;
       // with traffic coming the other way, wait behind them until it has passed.
       let want=d.leg.lane;
-      const obstacles=learnerStopped&&learnerAlong>0&&learnerAlong<30?[...this.options.parked,learner.pose.position]:this.options.parked;
+      const obstacles=learnerStopped&&learnerAlong>-7&&learnerAlong<30?[...this.options.parked,learner.pose.position]:this.options.parked;
       if(d.leg.lane>0&&car.kind==='car')for(const q of obstacles){
         const dx=q.x-pos.x,dz=q.z-pos.z,along=dx*fwd.x+dz*fwd.z,left=dx*fwd.z-dz*fwd.x;
-        if(along>-5&&along<16&&left>.4&&left<3.2){
+        if(along>(q===learner.pose.position?-7:-5)&&along<16&&left>(q===learner.pose.position?-.8:.4)&&left<3.2){
           if(oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2&&along>3){target=Math.min(target,Math.max(0,(along-7)*.5));car.speed=Math.min(car.speed,target+.5)}
-          else want=q===learner.pose.position?d.leg.lane-2.3:.15;
+          else want=q===learner.pose.position?d.leg.lane-2.6:.15;
           break;
         }
       }
       d.lat+=Math.max(-.9*dt,Math.min(.9*dt,want-d.lat));
       car.speed=car.speed<target?Math.min(target,car.speed+ACCEL*dt):Math.max(target,car.speed-BRAKE*dt);
+      d.waited=car.speed<.2&&d.dwell<=0?d.waited+dt:0;
+      d.why=why;
       d.s+=car.speed*dt;
       // On to the next leg (through the junction), or away if there is none.
       while(d.s>=d.leg.lengths.at(-1)!){
@@ -280,6 +302,12 @@ export class Traffic implements SimModule{
       }
       if(!car.visible)continue;
       this.place(d);
+      // Knotted (waiting a long time) well away from the learner: come back elsewhere, as if it had turned off.
+      const fromLearner=Math.hypot(car.pose.position.x-learner.pose.position.x,car.pose.position.z-learner.pose.position.z);
+      // (Behind the learner it can go after a while too: the learner cannot see it leave.)
+      const lfx=Math.sin(learner.pose.heading),lfz=-Math.cos(learner.pose.heading);
+      const behindLearner=(car.pose.position.x-learner.pose.position.x)*lfx+(car.pose.position.z-learner.pose.position.z)*lfz<-3;
+      if((d.waited>20&&fromLearner>50)||(d.waited>25&&behindLearner)){car.visible=false;continue}
       // Too far from the learner: come back somewhere nearer, out of sight.
       if(Math.hypot(car.pose.position.x-learner.pose.position.x,car.pose.position.z-learner.pose.position.z)>320)car.visible=false;
     }
