@@ -23,8 +23,21 @@ export function headingFromRotationY(rotationY:number):Radians{
   return -rotationY;
 }
 
-/** Applies a pose to a node. Vehicle rotation is applied here only once. */
+/**
+ * Ground height under a point (the location's terrain, world/terrain.ts), or flat. Poses stay flat (driving and
+ * assessment are 2D); what is drawn is lifted onto the ground here.
+ */
+let ground:(x:number,z:number)=>number=()=>0;
+export function setGround(fn:((x:number,z:number)=>number)|null):void{ground=fn??(()=>0)}
+export function groundAt(x:number,z:number):number{return ground(x,z)}
+
+/** A pose lifted onto the ground: for the camera and mirrors, which are placed from the learner's pose. */
+export function onGround(pose:Pose):Pose{
+  return {...pose,position:{...pose.position,y:pose.position.y+ground(pose.position.x,pose.position.z)}};
+}
+
+/** Applies a pose to a node, on the ground. Vehicle rotation is applied here only once. */
 export function applyPose(node:TransformNode,pose:Pose):void{
-  node.position.set(pose.position.x,pose.position.y,pose.position.z);
+  node.position.set(pose.position.x,pose.position.y+ground(pose.position.x,pose.position.z),pose.position.z);
   node.rotation.set(0,rotationYFromHeading(pose.heading),0);
 }

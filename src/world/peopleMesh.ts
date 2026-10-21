@@ -1,3 +1,4 @@
+import {groundAt} from '../engine/babylonAdapter';
 import {Color3,StandardMaterial,type Mesh,type Scene,type TransformNode} from '../engine/babylon';
 import {Geometry,type RGB,type V3} from './streetscapeMesh';
 import type {Appearance,FigurePose} from './crowd';
@@ -151,7 +152,8 @@ export class PeopleRenderer{
 
   private place(f:Figure,pose:FigurePose,i:number){
     const L=f.look,k=L.height/1.75,w=L.build;
-    const P:V3=[pose.x,pose.y,pose.z];
+    // On the ground (terrain): poses are flat.
+    const P:V3=[pose.x,pose.y+groundAt(pose.x,pose.z),pose.z];
     // Facing: heading clockwise from north; the figure's forward is −z.
     const h=pose.heading;
     const phase=pose.stride/(.78*k)*Math.PI;

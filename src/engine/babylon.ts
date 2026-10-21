@@ -18,6 +18,7 @@ export {ShaderStore} from '@babylonjs/core/Engines/shaderStore';
 export {Color3,Color4} from '@babylonjs/core/Maths/math.color';
 export {TransformNode} from '@babylonjs/core/Meshes/transformNode';
 export {Mesh} from '@babylonjs/core/Meshes/mesh';
+export {InstancedMesh} from '@babylonjs/core/Meshes/instancedMesh';
 export {CreateBox} from '@babylonjs/core/Meshes/Builders/boxBuilder';
 export {CreateGround} from '@babylonjs/core/Meshes/Builders/groundBuilder';
 export {CreateRibbon} from '@babylonjs/core/Meshes/Builders/ribbonBuilder';

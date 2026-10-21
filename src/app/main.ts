@@ -34,7 +34,7 @@ import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
 import {ALL_MIRRORS,Mirror} from '../cockpit/mirror';
 import {ObservationTracker,type ObservationSource,type ObservationTarget} from '../cockpit/observation';
 import {DriverHead} from '../cockpit/seat';
-import {applyPose,configureScene} from '../engine/babylonAdapter';
+import {applyPose,configureScene,groundAt,onGround,setGround} from '../engine/babylonAdapter';
 import {Camera,Engine,FreeCamera,Matrix,Scene,TransformNode,Vector3} from '../engine/babylon';
 import {FixedStepClock} from '../engine/clock';
 import {PerfProbe} from '../engine/perfProbe';
@@ -61,6 +61,8 @@ import {sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
 import {buildSignalHeads} from '../world/signals';
 import {StreetModels} from '../world/streetModels';
+import {SunShadows,shadowsWanted} from '../world/shadows';
+import {drape,terrainFor} from '../world/terrain';
 import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
@@ -149,14 +151,24 @@ export async function boot():Promise<void>{
   }));
   // The world is rebuilt when an exercise takes place somewhere else.
   let place=locations.get(parseLocation(locationJson).id)!;
-  let world=buildWorld(scene,place,quality);
+  // Real ground heights where a location has them (content/terrain); the world is laid on them once dressed.
+  let terrain=terrainFor(place.id);
+  setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
+  let world=buildWorld(scene,place,quality,terrain);
+  // Sun shadows near the car (the sun belongs to the world, so they are remade with it).
+  const shadowsOn=shadowsWanted(location.search);
+  let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
   let staticObstacles=new StaticObstacles(place.blocks);
   const spawnOf=(l:typeof place):Pose=>({position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)});
   const useLocation=(id:string)=>{
     if(place.id===id)return;
+    shadows?.dispose();
     world.dispose();
     place=locations.get(id)!;
-    world=buildWorld(scene,place,quality);
+    terrain=terrainFor(place.id);
+    setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
+    world=buildWorld(scene,place,quality,terrain);
+    if(shadowsOn){shadows=new SunShadows(scene,world.sun,quality);shadows.castOnlyUnder(cockpit.root)}
     placeModels();
     dressLocation();
     vehicle.setSpawn(spawnOf(place));
@@ -168,6 +180,7 @@ export async function boot():Promise<void>{
   const placeModels=()=>{
     const root=world.root;
     for(const m of place.models)void props.place(root,m.asset,`model-${m.id}`,m.position.x,m.position.z,m.facingDeg).then(node=>{
+      if(node)node.position.y+=groundAt(m.position.x,m.position.z);
       if(node&&m.replacesBlock)scene.getMeshByName(m.replacesBlock)?.setEnabled(false);
     });
   };
@@ -208,12 +221,14 @@ export async function boot():Promise<void>{
     const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
     staticObstacles=new StaticObstacles(colliders);
     sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
+    if(terrain)drape(world.root,terrain);
   };
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
   const showCredit=()=>{
     const osm=place.sources.some(source=>source.licence.includes('ODbL'));
-    byId('hud-credit').hidden=!osm;
-    byId('hud-credit').textContent=osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'';
+    byId('hud-credit').hidden=!osm&&!terrain;
+    // Terrain data (AWS Terrain Tiles: SRTM, EU-DEM/Copernicus and others) asks for attribution too.
+    byId('hud-credit').textContent=[osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'',terrain?'terrain: AWS Terrain Tiles (Mapzen; SRTM, Copernicus)':''].filter(Boolean).join(' · ');
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
@@ -266,6 +281,7 @@ export async function boot():Promise<void>{
   const vehicleNode=new TransformNode('learner-car',scene);
   const head=new DriverHead();
   const cockpit=buildCockpit(scene,vehicleNode,head.seat);
+  shadows?.castOnlyUnder(cockpit.root);
   const seatNode=new TransformNode('driver-seat',scene);
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);
@@ -382,6 +398,7 @@ export async function boot():Promise<void>{
     const guide=guided?buildGuide(scene,scenario.guide!.path,scenario.guide!.arrows):null;
     const signals=buildSignalHeads(scene,place,scenario.signals);
     streetModels?.replaceSignalHeads(scenario.signals);
+    if(terrain)for(const name of ['signal-heads','exercise-guide']){const n=scene.getTransformNodeByName(name);if(n)drape(n,terrain)}
     // Signal poles are solid, like lamp columns.
     for(const pole of signals.poles)dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
 
@@ -1315,8 +1332,10 @@ export async function boot():Promise<void>{
       if(stoppedEarlyFor>EARLY_STOP_HINT_SECONDS&&stoppedEarlyFor-dt<=EARLY_STOP_HINT_SECONDS)hud.setTask('Continue along the road towards the crossing.');
     }
     const alpha=session.state==='running'?clock.alpha:1;
-    const pose=vehicle.interpolatedPose(alpha);
-    applyPose(vehicleNode,pose);
+    const flat=vehicle.interpolatedPose(alpha);
+    applyPose(vehicleNode,flat);
+    // The cameras and mirrors go where the car is drawn: on the ground.
+    const pose=onGround(flat);
     if(viewer.active)updateViewer(dt,pose);
     const eye=head.eyeWorld(pose),look=head.lookWorld(pose);
     if(viewer.active&&!overhead){/* cameras placed by updateViewer */}
@@ -1374,6 +1393,7 @@ export async function boot():Promise<void>{
       if(label.text!==lastPlace?.text){hudPlace.textContent=label.text;hudPlace.title=label.title}
       lastPlace=label;
     }
+    shadows?.follow(pose.position.x,pose.position.z,dt);
     scene.render();
   });
   window.addEventListener('resize',()=>{engine.resize();viewer.layout()});

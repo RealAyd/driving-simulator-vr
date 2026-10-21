@@ -6,15 +6,20 @@ import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
+import {buildSky,configureTone,mapWorldUVs,texture,type SurfaceKind} from './surfaces';
+import type {Terrain} from './terrain';
 
 export interface BuiltWorld{
   root:TransformNode;
   /** Meshes that can hide hazards from the driver (used by later stages). */
   occluders:Mesh[];
+  /** The sun (casts the shadows near the car, shadows.ts). */
+  sun:DirectionalLight;
   dispose():void;
 }
 
-const SKY=new Color3(.62,.76,.88);
+/** Haze at the horizon (also the fog colour) and the sky overhead. */
+const SKY=new Color3(.76,.83,.88),ZENITH=new Color3(.34,.55,.82);
 
 function material(scene:Scene,name:string,color:Color3,specular=.05):StandardMaterial{
   const m=new StandardMaterial(name,scene);
@@ -92,7 +97,7 @@ function strips(scene:Scene,name:string,samples:Sample[],fromOffset:number|((s:S
   return meshes;
 }
 
-export function buildWorld(scene:Scene,location:Location,quality:QualityProfile):BuiltWorld{
+export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,terrain:Terrain|null=null):BuiltWorld{
   scene.clearColor.set(SKY.r,SKY.g,SKY.b,1);
   // Light haze: distant houses fade into the sky rather than ending against it (mirrors included).
   scene.fogMode=Scene.FOGMODE_LINEAR;
@@ -100,19 +105,31 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   scene.fogStart=180;
   scene.fogEnd=650;
   scene.ambientColor=new Color3(.3,.3,.3);
+  configureTone(scene);
   const root=new TransformNode(`location-${location.id}`,scene);
+  buildSky(scene,SKY,ZENITH).parent=root;
 
+  // Sky fill (slightly blue) weaker than the sun, as on a clear day: faces away from the sun and shadows stay readable.
   const hemi=new HemisphericLight('sky-light',new Vector3(0,1,0),scene);
-  hemi.intensity=.75;
-  hemi.groundColor=new Color3(.35,.38,.33);
-  const sun=new DirectionalLight('sun',new Vector3(-.4,-1,.3),scene);
-  sun.intensity=.65;
+  hemi.intensity=.5;
+  hemi.diffuse=new Color3(.86,.92,1);
+  hemi.groundColor=new Color3(.3,.32,.29);
+  // Afternoon sun from the south-west, low enough for shadows to model buildings and cars.
+  const sun=new DirectionalLight('sun',new Vector3(-.45,-.8,.4),scene);
+  sun.intensity=1.05;
+  sun.diffuse=new Color3(1,.96,.88);
 
   const tarmac=material(scene,'tarmac',new Color3(.24,.25,.27));
   const pavement=material(scene,'pavement',new Color3(.58,.57,.55));
   const kerb=material(scene,'kerb',new Color3(.7,.7,.68));
   // The ground between roads and buildings: grass verges, or paving in a town centre.
   const grass=material(scene,'grass',location.ground==='paved'?new Color3(.6,.59,.56):new Color3(.33,.47,.27));
+  // Textured surfaces (surfaces.ts): the texture carries the colour.
+  texture(tarmac,'asphalt');
+  texture(pavement,'paving');
+  texture(kerb,'kerb');
+  texture(grass,location.ground==='paved'?'paving':'grass');
+  const surfaceOf=new Map<StandardMaterial,SurfaceKind>([[tarmac,'asphalt'],[pavement,'paving'],[kerb,'kerb'],[grass,location.ground==='paved'?'paving':'grass']]);
   const white=material(scene,'road-white',new Color3(.95,.95,.93));
   white.emissiveColor=new Color3(.25,.25,.25);
 
@@ -123,6 +140,20 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
   ground.position.y=location.ground==='paved'?-.06:-.02;
   ground.material=grass;
   ground.parent=root;
+  mapWorldUVs(ground,surfaceOf.get(grass)!);
+  if(terrain){
+    // On real ground: a grid over the terrain (one square per terrain cell) that is laid on it with everything else,
+    // a little lower again so it never shows through the road between the road's edges; the flat plane beyond, below it.
+    const e=terrain.extent;
+    const near=CreateGround('verge-terrain',{width:e.width,height:e.depth,subdivisionsX:e.cols-1,subdivisionsY:e.rows-1},scene);
+    near.position.set(e.x0+e.width/2,ground.position.y-.08,e.z0+e.depth/2);
+    near.material=grass;
+    near.parent=root;
+    near.computeWorldMatrix(true);
+    mapWorldUVs(near,surfaceOf.get(grass)!);
+    ground.position.y=terrain.lowest-1;
+    ground.name='verge-beyond';
+  }
 
   // Static meshes are merged per material at the end to keep draw calls low on phones.
   const byMaterial=new Map<StandardMaterial,Mesh[]>();
@@ -310,14 +341,16 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile)
 
   // One draw call per material for everything static.
   for(const [mat,meshes] of byMaterial){
-    if(meshes.length<2)continue;
+    const kind=surfaceOf.get(mat);
+    if(meshes.length<2){if(kind)for(const m of meshes)mapWorldUVs(m,kind);continue}
     const merged=Mesh.MergeMeshes(meshes,true,true);
-    if(merged){merged.name=`merged-${mat.name}`;merged.material=mat;merged.parent=root;merged.freezeWorldMatrix()}
+    if(merged){merged.name=`merged-${mat.name}`;merged.material=mat;merged.parent=root;if(kind)mapWorldUVs(merged,kind);merged.freezeWorldMatrix()}
   }
 
   return {
     root,
     occluders,
+    sun,
     dispose(){
       root.dispose(false,true);
       hemi.dispose();
