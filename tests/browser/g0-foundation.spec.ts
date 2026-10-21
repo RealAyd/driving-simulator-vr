@@ -25,9 +25,9 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
-  await expect(page.locator('#location-label')).toContainText('Choose an exercise');
-  // Three clearly named exercises.
-  await expect(page.locator('[data-exercise]')).toHaveText([/^Brentwood mini-roundabouts/,/^Kings Road zebra \(Brentwood\)/,/^Zebra crossing/,/^Moving off safely/]);
+  await expect(page.locator('#location-label')).toContainText('Real UK streets');
+  // Clearly named places and exercises.
+  await expect(page.locator('[data-exercise]')).toHaveText([/^Goodmayes/,/^Brentwood mini-roundabouts/,/^Kings Road zebra/,/^Zebra crossing/,/^Moving off safely/]);
   await page.screenshot({path:testInfo.outputPath('01-start.png')});
 
   // The exercise screen shows its own title, objective and briefing; nothing runs until Start practice.

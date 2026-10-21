@@ -44,11 +44,12 @@ test('G16: Kings Road, careful: passes the bus slowly, checks the mirror, gives 
   expect((await read(page,'buses()'))[0].state).toBe('waiting');
   await page.screenshot({path:testInfo.outputPath('g16-01-start.png')});
   await drive(page,c=>toCrossing(c)>80?8:5.5,c=>toCrossing(c)<52);
-  // Mirror check before slowing for the crossing.
+  await page.screenshot({path:testInfo.outputPath('g16-02-passing-the-bus.png')});
+  // Mirror check just before slowing for the crossing (no screenshot in between: on a slow renderer that takes
+  // seconds of simulated time, longer than the look-back the rule allows).
   await read(page,"holdView('interior')");
   await page.waitForFunction(()=>(window as any).__drivingPractice.events().some((e:any)=>e.type==='observation.dwell'&&e.payload.target==='interior'),null,{timeout:60_000});
   await read(page,"holdView(null)");
-  await page.screenshot({path:testInfo.outputPath('g16-02-passing-the-bus.png')});
   await drive(page,c=>toCrossing(c)-2.15<GIVE_WAY+2.5?0:3,
     (c,p)=>c.speed===0&&toCrossing(c)-2.15<GIVE_WAY+6&&(p.state==='preparing'||p.state==='crossing'));
   await page.screenshot({path:testInfo.outputPath('g16-03-giving-way.png')});
