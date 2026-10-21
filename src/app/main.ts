@@ -32,6 +32,7 @@ import {routeLanePath} from '../test/routePath';
 import {SHOW_ME,TELL_ME,pick} from '../test/vehicleChecks';
 import {CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
+import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
 import {Examiner} from '../test/examiner';
 import {ExaminerVoice} from '../test/voice';
 import {MockTestAssessor} from '../assessment/mockTest';
@@ -148,6 +149,21 @@ export async function boot():Promise<void>{
   const hud=new Hud();
   const session=new Session();
   session.onChange(state=>hud.showOnly(state,session.error));
+  // ---- Tutorial: the home and driving tours, first time by themselves, and from the Tutorial buttons ----
+  const tutorial=new Tutorial();
+  /** The driving tour with the drive held still (the clock stops until it is finished). */
+  const driveTour=(once:boolean)=>{
+    if(session.state!=='running'||tutorial.active)return;
+    const resume=()=>{if(session.state==='running')clock.resume()};
+    if(once?tutorial.startOnce('drive',DRIVE_TOUR,resume):(tutorial.start(DRIVE_TOUR,resume),true))clock.pause();
+  };
+  session.onChange(state=>{
+    if(state==='ready')setTimeout(()=>{if(session.state==='ready'&&!byId('exercise-list').hidden)tutorial.startOnce('home',HOME_TOUR)},400);
+    else if(state==='running')setTimeout(()=>driveTour(true),700);
+    else tutorial.close();
+  });
+  byId('tutorial-home').addEventListener('click',()=>tutorial.start(HOME_TOUR));
+  byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
   // Every failure is shown on screen rather than leaving a blank canvas.
   window.addEventListener('error',event=>session.fail(event.message||'Unexpected error'));
