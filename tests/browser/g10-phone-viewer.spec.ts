@@ -283,6 +283,7 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(64);
   await page.click('[data-exercise=moving-off]');
+  await page.click('#viewer-details > summary');
   await page.selectOption('#viewer-slot','Viewer 2');
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(63);
   await page.selectOption('#viewer-slot','Viewer 1');
