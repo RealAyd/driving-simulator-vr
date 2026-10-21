@@ -237,6 +237,21 @@ body.reverse .reverse-label{display:inline;font-size:13px}
 .gear[aria-pressed="true"] .gear-r{background:#d97706;color:#fff}
 #steer-buttons button.held{background:#0f766e}
 body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
+/* Car controls (show me): a grid under the top bar; tell-tales under the speed. */
+#hud-controls{right:var(--sr);top:calc(var(--st) + 50px);display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:min(372px,62vw)}
+#hud-controls button{min-height:38px;font-size:11px}
+#hud-controls button[aria-pressed="true"]{background:rgba(20,184,166,.3);border-color:var(--accent)}
+#hud-controls-toggle[aria-expanded="true"]{background:var(--accent);color:var(--accent-ink)}
+#hud-telltales{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:130px}
+#hud-telltales:empty{display:none}
+.tt{font-size:9px;font-weight:800;padding:2px 5px;border-radius:5px;letter-spacing:.02em}
+.tt-green{background:#166534;color:#bbf7d0}.tt-blue{background:#1d4ed8;color:#dbeafe}.tt-amber{background:#92400e;color:#fde68a}.tt-grey{background:#334155;color:#e2e8f0}
+/* The tell me question: over the view, before driving. */
+#hud-question{left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:14px;display:grid;gap:8px;z-index:3}
+#hud-question-kind{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+#hud-question p{margin:0;font-size:14px;font-weight:600;line-height:1.35}
+#hud-question-choices{display:grid;gap:6px}
+#hud-question-choices button{text-align:left;padding:8px 11px!important;font-weight:500!important;font-size:12.5px!important;line-height:1.3!important}
 #error-message{white-space:pre-wrap;color:#fecaca;font:13px ui-monospace,monospace}
 
 /* ---- Results ---- */
@@ -453,10 +468,19 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
   <button id="hud-behind" type="button" class="hud-round" aria-pressed="false" aria-label="Camera: switch to behind the car" title="Camera: driver's seat / behind the car (practice only)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v2.1l4.4-2.6a1 1 0 0 1 1.6.8v8.4a1 1 0 0 1-1.6.8L15 14.4v2.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 16.5z"/></svg></button>
   <div id="hud-top" class="hud-panel">
     <div id="hud-tilt"><div class="wheel" aria-hidden="true"><div id="hud-wheel" class="wheel-rim"><span></span></div></div><button id="hud-tilt-centre" type="button">Centre</button><span id="hud-tilt-state" class="unit"></span></div>
-    <button id="hud-fullscreen" type="button" class="icon fs-button" aria-label="Full screen"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="hud-task-toggle" type="button">Task</button><button id="hud-sound" type="button" class="icon" aria-pressed="true" aria-label="Sound on. Tap to mute"><svg class="snd-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
+    <button id="hud-fullscreen" type="button" class="icon fs-button" aria-label="Full screen"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="hud-controls-toggle" type="button" aria-expanded="false" aria-controls="hud-controls">Controls</button><button id="hud-task-toggle" type="button">Task</button><button id="hud-sound" type="button" class="icon" aria-pressed="true" aria-label="Sound on. Tap to mute"><svg class="snd-on" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span id="hud-fps">– fps</span><button id="hud-pause" type="button">Pause</button>
+  </div>
+  <!-- Lights, washers and wipers, demisters, horn, window (buttons made from CAR_CONTROLS). -->
+  <div id="hud-controls" class="hud-panel" role="group" aria-label="Car controls" hidden></div>
+  <!-- The examiner's tell me question: choose an answer (before driving). -->
+  <div id="hud-question" class="hud-panel" role="dialog" aria-labelledby="hud-question-kind" hidden>
+    <div id="hud-question-kind">Tell me</div>
+    <p id="hud-question-text"></p>
+    <div id="hud-question-choices"></div>
   </div>
   <div id="hud-left" class="hud-panel">
     <div id="hud-speedbox"><span id="hud-gear" class="gear-readout" aria-label="Gear">D</span><span id="hud-speed">0</span><span class="unit">mph</span></div>
+    <div id="hud-telltales" aria-label="Warning lights"></div>
     <div id="touch-wheel" role="slider" aria-label="Steering wheel: drag round to steer" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0"><div class="tw-rim"><span></span><div class="tw-spoke"></div></div></div>
     <div id="steer-buttons">
       <button type="button" data-hold="left" aria-label="Steer left">◀<small>Steer</small></button>

@@ -29,6 +29,9 @@ import {Soundscape,type RoadUserSound} from '../audio/soundscape';
 import {Traffic} from '../actors/traffic';
 import {RoadNetwork} from '../test/route';
 import {routeLanePath} from '../test/routePath';
+import {SHOW_ME,TELL_ME,pick} from '../test/vehicleChecks';
+import {CarControls,type CarControlId} from '../vehicle/carControls';
+import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
 import {Examiner} from '../test/examiner';
 import {ExaminerVoice} from '../test/voice';
 import {MockTestAssessor} from '../assessment/mockTest';
@@ -295,6 +298,15 @@ export async function boot():Promise<void>{
   // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
   const sound=new Soundscape();
   const examinerVoice=new ExaminerVoice();
+  // Lights, washers and wipers, demisters, horn and window (the Controls panel; the show me questions use them).
+  const carControls=new CarControls(events);
+  const pressControl=(id:CarControlId)=>{
+    if(session.state!=='running')return;
+    carControls.press(id);
+    if(id==='horn')sound.horn();
+  };
+  const controlsPanel=new CarControlsPanel(carControls,pressControl);
+  let wiperPhase=0;
   // Safari starts audio only from a completed tap (touchend, pointerup, click) or a key, not from pointerdown.
   for(const type of ['pointerdown','pointerup','touchend','click','keydown'])document.addEventListener(type,()=>{void sound.unlock();examinerVoice.unlock()},{capture:true});
   let soundActive=false;
@@ -449,13 +461,22 @@ export async function boot():Promise<void>{
     const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
-      parked:kerbCars}):null;
+      parked:kerbCars,controlsOn:()=>carControls.onNow}):null;
     let finishTest:()=>void=()=>{};
     // Assisted steering follows the examiner's route in the left lane (src/test/routePath.ts), and the new route
     // after a wrong turn.
     let routeAssist:SteeringAssist|null=null;
-    const examiner=mock?new Examiner(new RoadNetwork(place),()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:Math.abs(vehicle.state.speed)}),{
-      target:2800,seed:routeSeed??Math.floor(Math.random()*1e9),events,listener:mockAssessor!,
+    // The route and the vehicle safety questions come from one number (?routeSeed= repeats them).
+    const testSeed=routeSeed??Math.floor(Math.random()*1e9);
+    const examiner=mock?new Examiner(new RoadNetwork(place),()=>{
+      const {x,z}=vehicle.state.position,h=vehicle.state.heading,fx=Math.sin(h),fz=-Math.cos(h);
+      // Traffic stopped just in front: queueing, not pulling up.
+      const blocked=(traffic?.cars??[]).some(c=>{const dx=c.pose.position.x-x,dz=c.pose.position.z-z,a=dx*fx+dz*fz;return c.visible&&a>0&&a<12&&Math.abs(dx*fz-dz*fx)<2});
+      return {x,z,heading:h,speed:Math.abs(vehicle.state.speed),blocked};
+    },{
+      target:2800,seed:testSeed,events,listener:mockAssessor!,
+      tellMe:pick(TELL_ME,testSeed),showMe:pick(SHOW_ME,Math.floor(testSeed/7)),
+      askTellMe:q=>{hud.setTask(examiner!.lastSaid,false);askTellMe(q,testSeed,text=>examiner!.answerTellMe(text))},
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
       onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}}):null;
     if(examiner){
@@ -499,7 +520,11 @@ export async function boot():Promise<void>{
     },movingOffRubric,events):null;
     const practice=assessor||route||movingOff?null:new ViewPracticeSummary(passers,()=>vehicle.pose,()=>events.events,()=>clock.time);
 
+    // The car's controls: off at the start of each attempt (and any question card closed).
+    const controlsModule:SimModule={id:'car-controls',fixedUpdate:dt=>carControls.update(dt),
+      reset:()=>{carControls.reset();hideQuestion();controlsPanel.open(false)},dispose(){}};
     const modules:SimModule[]=[
+      controlsModule,
       ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,...(traffic?[traffic]:[]),
       zones,runner,observation,...(examiner?[examiner]:[]),...(mockAssessor?[mockAssessor]:[]),...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
     ];
@@ -1255,6 +1280,7 @@ export async function boot():Promise<void>{
   const pause=()=>{
     if(!session.to('paused'))return;
     examinerVoice.stop();
+    controlsPanel.open(false);
     clock.pause();
     input.clear();
     clearHeldButtons();
@@ -1294,6 +1320,8 @@ export async function boot():Promise<void>{
     if(session.state!=='running')return;
     if(action==='recentre'){forwardView();xr.recentre();if(viewer.active)headTracker.recentre()}
     else if(action==='gear'){if(!runtime?.scenario.stationary)setGear(!input.reverse)}
+    else if(action==='horn')pressControl('horn');
+    else if(action==='lights')pressControl('dipped');
     else vehicle.toggleIndicator(action==='indicator-left'?'left':'right',clock.time);
   };
   /** Drive or Reverse: the switch beside the pedals (or X). Go then moves the car that way. */
@@ -1525,6 +1553,10 @@ export async function boot():Promise<void>{
     cockpit.setWheel(vehicle.state.steerAngle*STEERING_RATIO);
     if(driverBody&&!behind)driverBody.update(cockpit.grips());
     cockpit.setInstruments(Math.round(Math.abs(vehicle.state.speed)*2.237),vehicle.indicators.state,vehicle.indicators.isLit(clock.time));
+    // Wipers: a sweep up and back every 1.2 s while wiping, finishing the sweep to park.
+    if(carControls.wiping.front||wiperPhase>0){wiperPhase+=dt/1.2;if(!carControls.wiping.front&&wiperPhase%1<dt/1.2)wiperPhase=0}
+    cockpit.setWipers(1.75*(.5-.5*Math.cos(2*Math.PI*wiperPhase)));
+    controlsPanel.update();
     if(session.state==='ready'){
       wheelPreview.style.transform=wheelTurn;
       if(steeringMode==='tilt')showTiltState();
@@ -1551,7 +1583,7 @@ export async function boot():Promise<void>{
     if((edgeTimer-=dt)<=0){
       edgeTimer=.5;
       const {x,z}=vehicle.state.position;
-      const near=session.state==='running'&&place.blocks.some(b=>b.id.startsWith('edge-barrier')&&Math.hypot(b.position.x-x,b.position.z-z)<35);
+      const near=session.state==='running'&&place.blocks.some(b=>b.id.startsWith('edge-barrier')&&!b.id.startsWith('edge-barrier-hedge')&&Math.hypot(b.position.x-x,b.position.z-z)<35);
       if(near&&!edgeWarned)hud.setTask('End of the mapped area ahead: the road is closed at the red barrier. Turn round, or tap R to reverse.');
       edgeWarned=near;
     }

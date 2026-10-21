@@ -34,8 +34,22 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   await expect(page.locator('#exercise-title')).toContainText('mock test');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
-  // The briefing, on screen.
+  // The tell me question first: three answers to choose from; then the briefing.
+  await expect(page.locator('#hud-question')).toBeVisible({timeout:20_000});
+  await expect(page.locator('#hud-question-choices button')).toHaveCount(3);
+  await page.screenshot({path:testInfo.outputPath('g21-tell-me.png')});
+  await page.locator('#hud-question-choices button').first().click();
+  await expect(page.locator('#hud-question')).toBeHidden();
   await expect(page.locator('#hud-task')).toContainText('mock driving test',{timeout:20_000});
+  // The car's controls (show me): dipped headlights on shows the tell-tale.
+  await page.click('#hud-controls-toggle');
+  await expect(page.locator('#hud-controls button')).toHaveCount(9);
+  await page.screenshot({path:testInfo.outputPath('g21-controls.png')});
+  await page.click('[data-car-control=dipped]');
+  await expect(page.locator('#hud-telltales')).toContainText('Dipped');
+  await page.click('#hud-controls-toggle');
+  await page.click('[data-car-control=dipped]');
+  await expect(page.locator('#hud-telltales')).not.toContainText('Dipped');
   const ex=await read(page,'examiner()');
   expect(ex.steps.length).toBeGreaterThanOrEqual(6);
   // Drive (assisted steering keeps to the route) until the examiner has given the first direction and it is done.

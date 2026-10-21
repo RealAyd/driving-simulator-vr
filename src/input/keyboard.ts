@@ -1,7 +1,7 @@
 import type {Controls} from '../vehicle/kinematics';
 import type {ControlSource} from '../vehicle/vehicleController';
 
-export type InputAction='indicator-left'|'indicator-right'|'pause'|'reset'|'recentre'|'gear';
+export type InputAction='indicator-left'|'indicator-right'|'pause'|'reset'|'recentre'|'gear'|'horn'|'lights';
 
 /** Held views: mirrors and over-the-shoulder checks. */
 export type ViewTarget='left-shoulder'|'left-door'|'interior'|'right-door'|'right-shoulder';
@@ -17,7 +17,9 @@ const ACTIONS:Record<string,InputAction>={
   Escape:'pause',
   KeyR:'reset',
   KeyC:'recentre',
-  KeyX:'gear'
+  KeyX:'gear',
+  KeyH:'horn',
+  KeyL:'lights'
 };
 const DRIVING_KEYS=new Set([...THROTTLE,...BRAKE,...LEFT,...RIGHT]);
 const VIEW_KEYS:Record<string,ViewTarget>={

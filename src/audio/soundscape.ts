@@ -199,6 +199,17 @@ export class Soundscape{
     o.connect(g).connect(this.master);o.start(t);o.stop(t+.04);
   }
 
+  /** The car's horn: a short blast of two reedy tones (about 420 and 510 Hz, as a car's high and low horns). */
+  horn(seconds=.6):void{
+    const ctx=this.ctx;
+    if(!ctx||ctx.state!=='running')return;
+    const t=ctx.currentTime,g=ctx.createGain(),lp=ctx.createBiquadFilter();
+    lp.type='lowpass';lp.frequency.value=2400;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.02);g.gain.setValueAtTime(.22,t+seconds-.04);g.gain.exponentialRampToValueAtTime(.0001,t+seconds);
+    for(const f of [420,510]){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=f;o.connect(lp);o.start(t);o.stop(t+seconds+.02)}
+    lp.connect(g).connect(this.master);
+  }
+
   /** A crash: a dull thump and crunch, louder the faster the impact (m/s). */
   collision(speed:number):void{
     const ctx=this.ctx;

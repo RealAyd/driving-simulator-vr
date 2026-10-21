@@ -45,6 +45,8 @@ export interface Cockpit{
   grips():[Grip,Grip];
   /** Hides the simple arms (a driver model's arms reach the hands instead). */
   hideSimpleArms():void;
+  /** Windscreen wipers: radians up from parked along the bottom of the windscreen. */
+  setWipers(angle:number):void;
   dispose():void;
 }
 
@@ -334,6 +336,24 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
     for(const {upper,fore} of arms){upper.isVisible=false;fore.isVisible=false}
   };
 
+  // Windscreen wipers: two blades parked along the bottom of the windscreen, pointing to the driver's side, that
+  // sweep up across it about their spindles (in the screen's plane: local X along the blade, Y up the glass).
+  const screenUp=new Vector3(0,C.screenTop.y-C.screenBase.y,C.screenTop.z-C.screenBase.z).normalize();
+  const screenFrame=Quaternion.RotationQuaternionFromAxis(new Vector3(1,0,0),screenUp,Vector3.Cross(new Vector3(1,0,0),screenUp).normalize());
+  const wiperArms=[-.66,-.02].map((x,i)=>{
+    const spindle=new TransformNode(`wiper-spindle-${i}`,scene);
+    spindle.parent=root;
+    // On the glass, a few centimetres up from the base, just outside it.
+    spindle.position.set(x,C.screenBase.y+screenUp.y*.05,C.screenBase.z+screenUp.z*.05-.02);
+    spindle.rotationQuaternion=screenFrame;
+    const arm=new TransformNode(`wiper-arm-${i}`,scene);
+    arm.parent=spindle;
+    const blade=CreateBox(`wiper-blade-${i}`,{width:.56,height:.014,depth:.014},scene);
+    blade.position.x=.29;blade.material=glossBlack;blade.parent=arm;blade.isPickable=false;
+    return arm;
+  });
+  const setWipers=(angle:number)=>{for(const arm of wiperArms)arm.rotation.z=angle};
+
   setWheel(0);
-  return {root,wheel,setWheel,get handsTurn(){return handsTurn},setInstruments,grips,hideSimpleArms,dispose:()=>root.dispose(false,true)};
+  return {root,wheel,setWheel,get handsTurn(){return handsTurn},setInstruments,grips,hideSimpleArms,setWipers,dispose:()=>root.dispose(false,true)};
 }

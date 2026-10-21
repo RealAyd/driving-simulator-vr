@@ -17,6 +17,10 @@ export type SimEventType=
   /** Mock test: the examiner gave a direction, or new directions after a different way was taken. */
   |'examiner.direction'
   |'examiner.redirected'
+  /** Mock test: a vehicle safety question (tell me before driving, show me while driving). */
+  |'examiner.question'
+  /** A control other than driving: lights, washers, demisters, horn, window (`control`, `on`). */
+  |'vehicle.control'
   |'vehicle.surface.changed'
   |'vehicle.stopped'
   |'vehicle.moving'

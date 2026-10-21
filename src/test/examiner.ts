@@ -1,5 +1,7 @@
 import type {EventSink,Seconds,SimModule} from '../contracts';
 import {RoadNetwork,type RouteLeg,type RouteStep} from './route';
+import {stopPlace} from './pullUp';
+import type {ShowMeQuestion,TellMeQuestion} from './vehicleChecks';
 
 /**
  * The examiner on a mock test: the briefing, each direction in good time before the junction (spoken and shown),
@@ -8,14 +10,23 @@ import {RoadNetwork,type RouteLeg,type RouteStep} from './route';
  * stopping ends the test.
  */
 
-export interface ExaminerLearner{x:number;z:number;heading:number;speed:number}
+export interface ExaminerLearner{x:number;z:number;heading:number;speed:number;
+  /** Traffic stopped close in front (queueing, not pulling up). */
+  blocked?:boolean}
 /** Told about each direction and how it went (the mock test assessor scores the manoeuvres). */
 export interface ExaminerListener{
   direction?(step:RouteStep):void;
   done?(step:RouteStep,followed:boolean):void;
   pullUp?():void;
+  /** Stopped at the side of the road after the pull-up request: the test ends here. */
+  pulledUp?():void;
+  /** The tell me question was answered (before driving). */
+  tellMe?(question:TellMeQuestion,correct:boolean,answer:string):void;
+  /** The show me question was asked (while driving). */
+  showMe?(question:ShowMeQuestion):void;
 }
 
+export const TELL_ME_INTRO='Before we start, I\'m going to ask you a vehicle safety question.';
 export const BRIEFING='This is your mock driving test. Please follow the road ahead, unless traffic signs direct you otherwise or I ask you to turn. I\'ll give you directions in good time. Move off when you\'re ready.';
 export const PULL_UP='Please pull up on the left at the next safe and convenient place.';
 export const END='Thank you. That\'s the end of your test.';
@@ -30,7 +41,7 @@ export class Examiner implements SimModule{
   /** The planned way (for assisted steering along the route). */
   legs:RouteLeg[]=[];
   index=0;
-  phase:'briefing'|'driving'|'pull-up'|'stopping'|'finished'='briefing';
+  phase:'tell-me'|'briefing'|'driving'|'pull-up'|'stopping'|'finished'='briefing';
   /** The last thing said (the Task button repeats it). */
   lastSaid='';
   private time=0;
@@ -42,11 +53,21 @@ export class Examiner implements SimModule{
   private stoppedFor=0;
   private sincePullUp=0;
   private routeDone=0;
+  private pullUpAsked=false;
+  private tellMeAsked=false;
+  private showMeAsked=false;
+  /** Seconds since the last direction (the show me question waits for a quiet stretch). */
+  private sinceDirection=0;
 
   constructor(private readonly net:RoadNetwork,private readonly learner:()=>ExaminerLearner,private readonly options:{
     target:number;seed:number;say:(text:string)=>void;events:EventSink;onComplete:()=>void;listener?:ExaminerListener;
     /** A new route was planned (at the start, and after a wrong turn): `legs` has the way to follow. */
-    onPlan?:()=>void}){}
+    onPlan?:()=>void;
+    /** Vehicle safety questions for this test: one tell me (asked before driving, answered on screen with
+     *  `answerTellMe`) and one show me (while driving). Without them the test starts with the briefing. */
+    tellMe?:TellMeQuestion;showMe?:ShowMeQuestion;
+    /** Shows the tell me question's choices (the answer comes back through `answerTellMe`). */
+    askTellMe?:(question:TellMeQuestion)=>void}){}
 
   private say(text:string){this.lastSaid=text;this.options.say(text)}
   private key=(r:{name?:string|undefined;id:string})=>r.name??r.id;
@@ -63,8 +84,17 @@ export class Examiner implements SimModule{
   }
 
   reset():void{
-    this.time=0;this.phase='briefing';this.stoppedFor=0;this.sincePullUp=0;this.routeDone=0;this.lastSaid='';
+    this.time=0;this.phase=this.options.tellMe?'tell-me':'briefing';this.stoppedFor=0;this.sincePullUp=0;this.routeDone=0;this.lastSaid='';this.pullUpAsked=false;
+    this.tellMeAsked=false;this.showMeAsked=false;this.sinceDirection=0;
     this.plan(this.options.target,this.options.seed);
+  }
+
+  /** The learner's answer to the tell me question (one of the choices shown); then the drive begins. */
+  answerTellMe(answer:string):void{
+    const q=this.options.tellMe;
+    if(this.phase!=='tell-me'||!q)return;
+    this.options.listener?.tellMe?.(q,answer===q.answer,answer);
+    this.phase='briefing';this.time=0;
   }
 
   /** Say the current direction (or the last thing said) again. */
@@ -73,18 +103,38 @@ export class Examiner implements SimModule{
   fixedUpdate(dt:Seconds):void{
     this.time+=dt;
     const l=this.learner();
+    if(this.phase==='tell-me'){
+      // Asked once, then waiting for the answer (the car is parked).
+      if(this.time>.3&&!this.tellMeAsked){
+        this.tellMeAsked=true;
+        this.say(`${TELL_ME_INTRO} ${this.options.tellMe!.question}`);
+        this.options.events.emit('examiner.question',{kind:'tell-me',id:this.options.tellMe!.id});
+        this.options.askTellMe?.(this.options.tellMe!);
+      }
+      return;
+    }
     if(this.phase==='briefing'){
       if(this.time>.3){this.say(BRIEFING);this.phase='driving'}
       return;
     }
     if(this.phase==='driving'){
+      this.sinceDirection+=dt;
       const step=this.steps[this.index];
+      // The show me question: once, after the first manoeuvre, on a quiet stretch (moving, nothing to do for a while).
+      const q=this.options.showMe;
+      if(q&&!this.showMeAsked&&this.index>=1&&this.sinceDirection>8&&l.speed>3&&(!step||Math.hypot(l.x-step.at.x,l.z-step.at.z)>130)){
+        this.showMeAsked=true;
+        this.say(q.question);
+        this.options.events.emit('examiner.question',{kind:'show-me',id:q.id});
+        this.options.listener?.showMe?.(q);
+      }
       if(!step){this.phase='pull-up';this.sincePullUp=0;return}
       const d=Math.hypot(l.x-step.at.x,l.z-step.at.z);
       // In good time: before the junction (or straight after the last manoeuvre when the next one is close).
       if(!this.spoken&&d<ANNOUNCE+Math.max(0,l.speed-9)*4){
         this.spoken=true;
         this.say(step.say);
+        this.sinceDirection=0;
         this.options.events.emit('examiner.direction',{text:step.say,turn:step.turn,step:this.index});
         this.options.listener?.direction?.(step);
       }
@@ -112,14 +162,23 @@ export class Examiner implements SimModule{
     if(this.phase==='pull-up'){
       this.sincePullUp+=l.speed*dt;
       // Some distance after the last turn, then the request.
-      if(this.sincePullUp>60&&this.lastSaid!==PULL_UP){
+      if(this.sincePullUp>60&&!this.pullUpAsked){
+        this.pullUpAsked=true;
         this.say(PULL_UP);
         this.options.events.emit('examiner.direction',{text:PULL_UP,turn:'pull-up'});
         this.options.listener?.pullUp?.();
       }
-      if(this.lastSaid===PULL_UP){
+      if(this.pullUpAsked){
         this.stoppedFor=l.speed<.3?this.stoppedFor+dt:0;
-        if(this.stoppedFor>2){this.phase='stopping';this.time=0;this.say(END)}
+        // Stopped at the side of the road; or stopped a while out in the road with nothing in front (a poor
+        // place, but it is where the learner chose). Waiting in a queue is not pulling up.
+        const place=stopPlace(this.net.location,l.x,l.z,l.heading);
+        const atSide=!!place&&!place.rightSide&&place.kerbGap<1.6;
+        if(this.stoppedFor>2&&(atSide||this.stoppedFor>6&&!l.blocked)){
+          this.phase='stopping';this.time=0;
+          this.options.listener?.pulledUp?.();
+          this.say(END);
+        }
       }
       return;
     }

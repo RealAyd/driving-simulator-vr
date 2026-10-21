@@ -3,6 +3,7 @@ import {parseLocation,parseScenario} from '../../src/contracts';
 import {RoadNetwork,type RouteLeg} from '../../src/test/route';
 import {Examiner} from '../../src/test/examiner';
 import {MockTestAssessor} from '../../src/assessment/mockTest';
+import {stopPlace} from '../../src/test/pullUp';
 import {EventLog} from '../../src/app/eventLog';
 import {pointAtAlong,sampleRoad} from '../../src/world/roadGeometry';
 import goodmayesJson from '../../content/locations/goodmayes.json';
@@ -25,7 +26,7 @@ function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:n
   examiner.reset();
   const route=net.plan(net.locate(learner.x,learner.z,learner.heading)!,1500,3);
   const last=route.steps.at(-1)!,from=sampleRoad(last.to.road,last.at.x,last.at.z).along;
-  const legs:RouteLeg[]=[...route.legs,{road:last.to.road,dir:last.to.dir,from,to:Math.max(0,Math.min(net.length(last.to.road),from+last.to.dir*120))}];
+  const legs:RouteLeg[]=[...route.legs,{road:last.to.road,dir:last.to.dir,from,to:Math.max(0,Math.min(net.length(last.to.road),from+last.to.dir*80))}];
   // Look round before moving off.
   if(options.mirrors){time+=.5;events.emit('observation.dwell',{target:'right-door'})}
   let i=0;
@@ -43,8 +44,12 @@ function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:n
       time+=dt;examiner.fixedUpdate(dt);assessor.fixedUpdate(dt);
     }
   }
+  // Pull up on the left: a mirror check, then in to the kerb (0.3 m from it on a 6 m road) and stop.
+  if(options.mirrors)events.emit('observation.dwell',{target:'interior'});
+  const gap=stopPlace(goodmayes,learner.x,learner.z,learner.heading)!.kerbGap-.3;
+  learner.x-=Math.cos(learner.heading)*gap;learner.z-=Math.sin(learner.heading)*gap;
   learner.speed=0;
-  for(let k=0;k<200&&!finished;k++){time+=1/30;examiner.fixedUpdate(1/30);assessor.fixedUpdate(1/30)}
+  for(let k=0;k<400&&!finished;k++){time+=1/30;examiner.fixedUpdate(1/30);assessor.fixedUpdate(1/30)}
   return {result:assessor.finish('mock',finished?'completed':'time-limit',time),route};
 }
 
@@ -52,7 +57,7 @@ describe('Mock test marking',()=>{
   it('a careful drive (mirrors, signals, 25 mph, 12 mph at the turns) passes with no faults at the turns',()=>{
     const {result}=drive({signals:true,mirrors:true,speed:(_,d)=>d<25?5.4:11});
     expect(result.outcome).toBe('completed');
-    expect(result.findings.filter(f=>/mirrors|signals/.test(f.ruleId))).toEqual([]);
+    expect(result.findings.filter(f=>/mirrors|signals|normal-stops/.test(f.ruleId)).map(f=>f.explanation)).toEqual([]);
     expect(result.mockTest?.passed).toBe(true);
   });
   it('no signals and no mirror checks: a driving fault for each at every turn',()=>{

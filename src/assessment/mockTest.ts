@@ -4,6 +4,9 @@ import {sampleRoad} from '../world/roadGeometry';
 import type {EventLog} from '../app/eventLog';
 import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
+import {judgePullUp,junctionPoints} from '../test/pullUp';
+import type {ShowMeQuestion,TellMeQuestion} from '../test/vehicleChecks';
+import type {Vec2} from '../contracts';
 
 /**
  * Mock driving test marking, in the shape of the DVSA marking sheet (DL25): driving faults (recorded as "minor"),
@@ -25,6 +28,8 @@ export interface MockTestInput{
   traffic:()=>Array<{x:number;z:number;heading:number;speed:number}>;
   /** Parked cars at the kerb (passing them on the right is not a positioning fault). */
   parked:Array<{x:number;z:number}>;
+  /** Car controls switched on now (lights, demisters, window): for "remember to switch it off". */
+  controlsOn?:()=>string[];
 }
 
 /** A manoeuvre the examiner asked for, being watched. */
@@ -49,13 +54,19 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   private redirects=0;
   private inRoundabout=-1;
   private directions=0;
+  /** After the request to pull up: what was done before stopping. */
+  private pulling:{mirror:boolean;signalled:boolean;others:boolean;event:string|null}|null=null;
+  private readonly junctions:Vec2[];
+  /** The vehicle safety questions and how they went (for the report). */
+  private checks:string[]=[];
+  private showing:{q:ShowMeQuestion;time:number;shown:boolean;other:string|null;event:string|null}|null=null;
 
-  constructor(private readonly input:MockTestInput){this.reset()}
+  constructor(private readonly input:MockTestInput){this.junctions=junctionPoints(input.location);this.reset()}
 
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
     this.watch=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
-    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;
+    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.showing=null;
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
   }
@@ -102,7 +113,34 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     }
   }
 
-  pullUp():void{}
+  pullUp():void{
+    const ev=this.input.events.events.at(-1);
+    this.pulling={mirror:!!this.recentLook(3,['interior','left-door']),signalled:false,others:false,event:ev?.id??null};
+  }
+
+  // ---- Vehicle safety questions: a wrong or missing answer is one driving fault ----
+  tellMe(q:TellMeQuestion,correct:boolean,answer:string):void{
+    const ev=this.input.events.events.at(-1);
+    if(!correct)this.fault('vehicle-checks','tell-me','minor',`Vehicle checks (tell me): "${q.question}" Your answer: "${answer}" The answer: ${q.answer}`,ev?[ev.id]:[]);
+    this.checks.push(`${INFO}Tell me: ${q.question} ${correct?'Answered correctly.':'Not correct.'} ${q.answer}`);
+  }
+
+  showMe(q:ShowMeQuestion):void{
+    const ev=this.input.events.events.at(-1);
+    this.showing={q,time:this.input.now(),shown:false,other:null,event:ev?.id??null};
+  }
+
+  /** Stopped at the end: where (close to the kerb, a safe and convenient place), and the mirrors and signal first. */
+  pulledUp():void{
+    const p=this.pulling,l=this.input.learner();
+    const ev=p?.event?[p.event]:[];
+    for(const f of judgePullUp(this.input.location,this.junctions,this.input.parked,l.pose.position.x,l.pose.position.z,l.pose.heading))
+      this.fault('normal-stops',`pull-up-${f.key}`,f.severity,f.text,ev);
+    if(p&&!p.mirror)this.fault('mirrors-change-speed','pull-up-mirrors','minor','Use of mirrors – change speed: no check of the interior or left mirror before pulling up.',ev);
+    // A signal helps anyone around; with nobody about it is not needed.
+    if(p&&!p.signalled&&p.others)this.fault('signals-necessary','pull-up-signal','minor','Signals – necessary: no left signal before pulling up, with other road users about.',ev);
+    this.pulling=null;
+  }
 
   /** Findings so far (for the HUD and diagnostics). */
   get current(){return this.log.current}
@@ -120,6 +158,11 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
       if(e.type==='observation.dwell'){
         this.looks.unshift({time:e.time,target:String(e.payload['target']),id:e.id});
         if(this.watch)this.watch.mirror=true;
+        if(this.pulling&&['interior','left-door'].includes(String(e.payload['target'])))this.pulling.mirror=true;
+      }
+      if(e.type==='vehicle.control'&&this.showing&&!this.showing.shown){
+        const c=String(e.payload['control']);
+        if(c===this.showing.q.control)this.showing.shown=true;else this.showing.other??=c;
       }
       if(e.type==='vehicle.collision')this.fault('control-collision',`collision-${String(e.payload['obstacleId'])}`,'dangerous',`Control: collision with ${String(e.payload['obstacleId']).replace(/-\d+$/,'').replace(/-/g,' ')} at ${mph(Number(e.payload['speed'])||0).toFixed(0)} mph.`,[e.id]);
     }
@@ -131,6 +174,27 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
       this.movedOff=true;
       if(!this.recentLook(10,['right-door','right-shoulder','interior']))
         this.fault('moving-off-safety','moving-off','minor','Moving off – safety: no check of the mirrors or over the right shoulder in the 10 s before moving off.');
+    }
+
+    // The show me question: the right control within 30 s; afterwards, switched off again (45 s).
+    const sm=this.showing;
+    if(sm){
+      const t=now-sm.time,q=sm.q,ev=sm.event?[sm.event]:[];
+      if(!sm.shown&&t>30){
+        this.fault('vehicle-checks','show-me','minor',`Vehicle checks (show me): "${q.question}" ${sm.other?`The control used was the ${sm.other.replace(/-/g,' ')}, not the one asked for.`:'Not shown within 30 s.'} The answer: ${q.answer}`,ev);
+        this.checks.push(`${INFO}Show me: ${q.question} Not shown. ${q.answer}`);
+        this.showing=null;
+      }else if(sm.shown&&(!q.switchOff||t>45)){
+        const left=q.switchOff&&(this.input.controlsOn?.()??[]).includes(q.control);
+        this.checks.push(`${INFO}Show me: ${q.question} Shown correctly.${left?' Remember to switch it off when it is no longer needed.':''}`);
+        this.showing=null;
+      }
+    }
+
+    // Pulling up: a mirror check and a left signal before stopping (a signal is needed when others are about).
+    if(this.pulling){
+      if(l.indicator==='left')this.pulling.signalled=true;
+      if(this.input.traffic().some(t=>Math.hypot(t.x-x,t.z-z)<60))this.pulling.others=true;
     }
 
     // The manoeuvre being watched: mirror checks, the signal, the speed into the junction.
@@ -228,6 +292,8 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const notes:string[]=[];
     notes.push(`${INFO}${!finished?'Not finished':passed?'Pass':'Fail'}: ${driving} driving fault${driving===1?'':'s'}, ${serious} serious, ${dangerous} dangerous. A pass allows up to 15 driving faults and no serious or dangerous faults.`);
     if(outcome!=='completed')notes.push(`${INFO}${outcome==='time-limit'?'The time for the drive ran out; it is marked on the faults so far.':'The test was ended before the examiner finished it.'}`);
+    if(this.showing&&!this.showing.shown)this.checks.push(`${INFO}Show me: ${this.showing.q.question} Not shown before the test ended. ${this.showing.q.answer}`);
+    notes.push(...this.checks);
     if(this.redirects)notes.push(`${INFO}You went a different way ${this.redirects} time${this.redirects===1?'':'s'}: not a fault in itself; the examiner gave new directions.`);
     const byHeading=new Map<string,number>();
     for(const f of findings)if(f.severity==='minor'){const h=f.explanation.split(':')[0]!;byHeading.set(h,(byHeading.get(h)??0)+1)}
