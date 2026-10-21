@@ -5,7 +5,8 @@
 "lon": -2.09622,
 "passRate": 43.1,
 "tests": 1724,
-"located": "centre"
+"located": "centre",
+"postcode": "AB22 8GT"
 },
 {
 "name": "Aberdeen North LGV",
@@ -16,28 +17,49 @@
 "located": "centre"
 },
 {
+"name": "Aberdeen South (Cove)",
+"lat": 57.08888,
+"lon": -2.10754,
+"passRate": 51.4,
+"tests": 4807,
+"located": "centre",
+"postcode": "AB12 3GQ"
+},
+{
+"name": "Aberfeldy",
+"lat": 56.61804,
+"lon": -3.86826,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "PH15 2BJ"
+},
+{
 "name": "Abergavenny",
 "lat": 51.81597,
 "lon": -3.01062,
 "passRate": 61.1,
 "tests": 4650,
-"located": "centre"
+"located": "centre",
+"postcode": "NP7 5HT"
 },
 {
 "name": "Aberystwyth (Park Avenue)",
-"lat": 52.41154,
-"lon": -4.08027,
+"lat": 52.40997,
+"lon": -4.08126,
 "passRate": 53.2,
 "tests": 1469,
-"located": "street"
+"located": "centre",
+"postcode": "SY23 1PG"
 },
 {
 "name": "Airdrie",
-"lat": 55.86612,
-"lon": -3.98048,
+"lat": 55.86685,
+"lon": -3.98904,
 "passRate": 41.3,
 "tests": 6673,
-"located": "town"
+"located": "centre",
+"postcode": "ML6 0DA"
 },
 {
 "name": "Alness",
@@ -45,39 +67,62 @@
 "lon": -4.26797,
 "passRate": 63.0,
 "tests": 865,
-"located": "centre"
+"located": "centre",
+"postcode": "IV17 0PJ"
 },
 {
 "name": "Alnwick",
-"lat": 55.41334,
-"lon": -1.70724,
+"lat": 55.41181,
+"lon": -1.70541,
 "passRate": 51.0,
 "tests": 1093,
-"located": "town"
+"located": "centre",
+"postcode": "NE66 1JX"
 },
 {
 "name": "Arbroath",
-"lat": 56.55867,
-"lon": -2.58157,
+"lat": 56.55026,
+"lon": -2.6126,
 "passRate": 78.9,
 "tests": 294,
-"located": "town"
+"located": "centre",
+"postcode": "DD11 2NQ"
+},
+{
+"name": "Armagh",
+"lat": 54.34933,
+"lon": -6.63186,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT60 1HW"
 },
 {
 "name": "Ashfield",
-"lat": 53.08977,
-"lon": -1.25188,
+"lat": 53.12456,
+"lon": -1.23651,
 "passRate": 51.2,
 "tests": 9507,
-"located": "town"
+"located": "centre",
+"postcode": "NG17 5LA"
 },
 {
 "name": "Ashford (Kent)",
-"lat": 51.14856,
-"lon": 0.87226,
+"lat": 51.14465,
+"lon": 0.87623,
 "passRate": 52.0,
 "tests": 3504,
-"located": "street"
+"located": "centre",
+"postcode": "TN23 1HU"
+},
+{
+"name": "Ashford (London Middlesex)",
+"lat": 51.43251,
+"lon": -0.4619,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "TW15 2PJ"
 },
 {
 "name": "Atherton (Manchester)",
@@ -85,39 +130,62 @@
 "lon": -2.50734,
 "passRate": 44.4,
 "tests": 7690,
-"located": "centre"
+"located": "centre",
+"postcode": "M46 0SU"
 },
 {
 "name": "Aylesbury",
-"lat": 51.81614,
-"lon": -0.81304,
+"lat": 51.82223,
+"lon": -0.84313,
 "passRate": 48.7,
 "tests": 5864,
-"located": "town"
+"located": "centre",
+"postcode": "HP19 8JR"
 },
 {
 "name": "Ayr",
-"lat": 55.4628,
-"lon": -4.63025,
+"lat": 55.48226,
+"lon": -4.60369,
 "passRate": 56.8,
 "tests": 2015,
-"located": "town"
+"located": "centre",
+"postcode": "KA8 9DJ"
 },
 {
 "name": "Bala",
-"lat": 52.91122,
-"lon": -3.59947,
+"lat": 52.90888,
+"lon": -3.60026,
 "passRate": 61.1,
 "tests": 574,
-"located": "town"
+"located": "centre",
+"postcode": "LL23 7SP"
+},
+{
+"name": "Ballachulish",
+"lat": 56.68305,
+"lon": -5.10572,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "PH49 4HP"
 },
 {
 "name": "Ballater",
-"lat": 57.04951,
-"lon": -3.04052,
+"lat": 57.04555,
+"lon": -3.04124,
 "passRate": 77.1,
 "tests": 166,
-"located": "town"
+"located": "centre",
+"postcode": "AB35 5QW"
+},
+{
+"name": "Ballymena",
+"lat": 54.85191,
+"lon": -6.2573,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT42 3ER"
 },
 {
 "name": "Banbury",
@@ -125,23 +193,26 @@
 "lon": -1.34888,
 "passRate": 39.9,
 "tests": 8241,
-"located": "centre"
+"located": "centre",
+"postcode": "OX16 9PA"
 },
 {
 "name": "Banff",
-"lat": 57.66455,
-"lon": -2.52175,
+"lat": 57.66581,
+"lon": -2.52315,
 "passRate": 50.6,
 "tests": 253,
-"located": "town"
+"located": "centre",
+"postcode": "AB45 1DL"
 },
 {
 "name": "Bangor",
-"lat": 53.22796,
-"lon": -4.12821,
+"lat": 53.21798,
+"lon": -4.11153,
 "passRate": 64.1,
 "tests": 3433,
-"located": "town"
+"located": "centre",
+"postcode": "LL57 4YH"
 },
 {
 "name": "Barking (Tanner Street)",
@@ -157,7 +228,8 @@
 "lon": -0.18591,
 "passRate": 49.9,
 "tests": 9720,
-"located": "centre"
+"located": "centre",
+"postcode": "EN5 1AD"
 },
 {
 "name": "Barnsley",
@@ -165,47 +237,53 @@
 "lon": -1.5033,
 "passRate": 52.2,
 "tests": 7765,
-"located": "centre"
+"located": "centre",
+"postcode": "S75 2DH"
 },
 {
 "name": "Barnstaple",
-"lat": 51.08041,
-"lon": -4.06005,
+"lat": 51.08502,
+"lon": -4.08258,
 "passRate": 54.7,
 "tests": 3583,
-"located": "town"
+"located": "centre",
+"postcode": "EX31 1AB"
 },
 {
 "name": "Barra",
-"lat": 57.00177,
-"lon": -7.46969,
+"lat": 56.95504,
+"lon": -7.48832,
 "passRate": 60.0,
 "tests": 10,
-"located": "town"
+"located": "centre",
+"postcode": "HS9 5XD"
 },
 {
 "name": "Barrow In Furness",
-"lat": 54.12888,
-"lon": -3.2269,
+"lat": 54.1185,
+"lon": -3.24165,
 "passRate": 61.9,
 "tests": 1735,
-"located": "town"
+"located": "centre",
+"postcode": "LA14 2PN"
 },
 {
 "name": "Barry",
-"lat": 51.40651,
-"lon": -3.26669,
+"lat": 51.3997,
+"lon": -3.27926,
 "passRate": 61.8,
 "tests": 1621,
-"located": "town"
+"located": "centre",
+"postcode": "CF62 5QN"
 },
 {
 "name": "Basildon",
-"lat": 51.57024,
-"lon": 0.45836,
+"lat": 51.5891,
+"lon": 0.48802,
 "passRate": 45.6,
 "tests": 4862,
-"located": "town"
+"located": "centre",
+"postcode": "SS14 3JS"
 },
 {
 "name": "Basingstoke",
@@ -213,15 +291,26 @@
 "lon": -1.11246,
 "passRate": 56.9,
 "tests": 4940,
-"located": "centre"
+"located": "centre",
+"postcode": "RG22 4LR"
 },
 {
 "name": "Bedford",
-"lat": 52.13638,
-"lon": -0.4675,
+"lat": 52.14824,
+"lon": -0.47654,
 "passRate": 49.9,
 "tests": 8958,
-"located": "town"
+"located": "centre",
+"postcode": "MK41 7NY"
+},
+{
+"name": "Belfast",
+"lat": 54.57332,
+"lon": -5.96312,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT12 6QL"
 },
 {
 "name": "Belvedere (London)",
@@ -229,23 +318,26 @@
 "lon": 0.14236,
 "passRate": 38.3,
 "tests": 4337,
-"located": "centre"
+"located": "centre",
+"postcode": "DA17 5EE"
 },
 {
 "name": "Benbecula Island",
-"lat": 57.44643,
-"lon": -7.33842,
+"lat": 57.47124,
+"lon": -7.37158,
 "passRate": 78.8,
 "tests": 104,
-"located": "town"
+"located": "centre",
+"postcode": "HS7 5LA"
 },
 {
 "name": "Berwick-On-Tweed",
-"lat": 55.76924,
-"lon": -2.00265,
+"lat": 55.76324,
+"lon": -2.01632,
 "passRate": 54.3,
 "tests": 667,
-"located": "town"
+"located": "centre",
+"postcode": "TD15 2UY"
 },
 {
 "name": "Beverley LGV",
@@ -256,12 +348,22 @@
 "located": "town"
 },
 {
+"name": "Birmingham (Cocks Moors Woods Leisure Centre)",
+"lat": 52.41726,
+"lon": -1.88953,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "B14 6ER"
+},
+{
 "name": "Birmingham (Garretts Green)",
 "lat": 52.47262,
 "lon": -1.7713,
 "passRate": 42.0,
 "tests": 21871,
-"located": "centre"
+"located": "centre",
+"postcode": "B33 0SD"
 },
 {
 "name": "Birmingham (Kings Heath)",
@@ -269,7 +371,8 @@
 "lon": -1.8873,
 "passRate": 47.0,
 "tests": 8488,
-"located": "centre"
+"located": "centre",
+"postcode": "B14 5JA"
 },
 {
 "name": "Birmingham (Kingstanding)",
@@ -277,47 +380,71 @@
 "lon": -1.89051,
 "passRate": 44.6,
 "tests": 17909,
-"located": "centre"
+"located": "centre",
+"postcode": "B44 9UL"
 },
 {
 "name": "Birmingham (Shirley)",
-"lat": 52.47262,
-"lon": -1.7713,
+"lat": 52.4043,
+"lon": -1.82202,
 "passRate": 58.1,
 "tests": 9582,
-"located": "centre"
+"located": "centre",
+"postcode": "B90 4AA"
 },
 {
 "name": "Birmingham (South Yardley)",
-"lat": 52.47262,
-"lon": -1.7713,
+"lat": 52.45398,
+"lon": -1.81009,
 "passRate": 41.6,
 "tests": 12709,
-"located": "centre"
+"located": "centre",
+"postcode": "B26 1EA"
+},
+{
+"name": "Birmingham (Sutton Coldfield)",
+"lat": 52.54756,
+"lon": -1.84123,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "B73 5UB"
 },
 {
 "name": "Bishopbriggs",
-"lat": 55.90439,
-"lon": -4.22486,
+"lat": 55.92325,
+"lon": -4.19899,
 "passRate": 50.5,
 "tests": 5661,
-"located": "town"
+"located": "centre",
+"postcode": "G64 2QA"
+},
+{
+"name": "Bishops Stortford",
+"lat": 51.86142,
+"lon": 0.16439,
+"passRate": 50.4,
+"tests": 6826,
+"located": "centre",
+"postcode": "CM23 3JQ"
 },
 {
 "name": "Blackburn with Darwen",
-"lat": 53.69918,
-"lon": -2.4709,
+"lat": 53.71317,
+"lon": -2.47636,
 "passRate": 47.8,
 "tests": 8885,
-"located": "town"
+"located": "centre",
+"postcode": "BB3 0DB"
 },
 {
 "name": "Blackpool",
-"lat": 53.81794,
-"lon": -3.05098,
+"lat": 53.77715,
+"lon": -3.03504,
 "passRate": 49.6,
 "tests": 6271,
-"located": "town"
+"located": "centre",
+"postcode": "FY4 2DP"
 },
 {
 "name": "Bletchley",
@@ -325,7 +452,8 @@
 "lon": -0.74268,
 "passRate": 45.7,
 "tests": 9783,
-"located": "centre"
+"located": "centre",
+"postcode": "MK3 6DH"
 },
 {
 "name": "Blyth",
@@ -333,55 +461,62 @@
 "lon": -1.50412,
 "passRate": 47.2,
 "tests": 6493,
-"located": "centre"
+"located": "centre",
+"postcode": "NE24 3BA"
 },
 {
 "name": "Bodmin",
-"lat": 50.47073,
-"lon": -4.72432,
+"lat": 50.45974,
+"lon": -4.70616,
 "passRate": 46.1,
 "tests": 5561,
-"located": "town"
+"located": "centre",
+"postcode": "PL31 1RD"
 },
 {
 "name": "Bolton (Manchester)",
-"lat": 53.57829,
-"lon": -2.43004,
+"lat": 53.56526,
+"lon": -2.42332,
 "passRate": 56.7,
 "tests": 11879,
-"located": "town"
+"located": "centre",
+"postcode": "BL3 2AW"
 },
 {
 "name": "Borehamwood (London)",
-"lat": 51.69044,
-"lon": -0.28066,
+"lat": 51.64648,
+"lon": -0.25407,
 "passRate": 46.8,
 "tests": 7798,
-"located": "town"
+"located": "centre",
+"postcode": "WD6 2BT"
 },
 {
 "name": "Boston",
-"lat": 52.97766,
-"lon": -0.0238,
+"lat": 52.97031,
+"lon": -0.03023,
 "passRate": 50.7,
 "tests": 4521,
-"located": "town"
+"located": "centre",
+"postcode": "PE21 8AL"
 },
 {
 "name": "Bradford (Heaton)",
-"lat": 53.81622,
-"lon": -1.78856,
+"lat": 53.80889,
+"lon": -1.78401,
 "passRate": 49.5,
 "tests": 7594,
-"located": "street"
+"located": "centre",
+"postcode": "BD9 5AS"
 },
 {
 "name": "Bradford (Thornbury)",
-"lat": 53.80302,
-"lon": -1.7049,
+"lat": 53.79869,
+"lon": -1.70489,
 "passRate": 47.1,
 "tests": 7107,
-"located": "street"
+"located": "centre",
+"postcode": "BD3 7AY"
 },
 {
 "name": "Brecon",
@@ -389,7 +524,8 @@
 "lon": -3.38417,
 "passRate": 58.9,
 "tests": 1565,
-"located": "centre"
+"located": "centre",
+"postcode": "LD3 7RT"
 },
 {
 "name": "Bredbury (Manchester)",
@@ -397,39 +533,44 @@
 "lon": -2.12484,
 "passRate": 54.2,
 "tests": 9946,
-"located": "centre"
+"located": "centre",
+"postcode": "SK6 2QT"
 },
 {
 "name": "Brentwood (London)",
-"lat": 51.61776,
-"lon": 0.28926,
+"lat": 51.61054,
+"lon": 0.29693,
 "passRate": 48.5,
 "tests": 5485,
-"located": "town"
+"located": "centre",
+"postcode": "CM14 5JN"
 },
 {
 "name": "Bridgend",
-"lat": 51.50499,
-"lon": -3.57567,
+"lat": 51.50527,
+"lon": -3.57996,
 "passRate": 53.1,
 "tests": 6938,
-"located": "town"
+"located": "centre",
+"postcode": "CF31 4AD"
 },
 {
 "name": "Bridlington",
-"lat": 54.08224,
-"lon": -0.19086,
+"lat": 54.08113,
+"lon": -0.21141,
 "passRate": 56.4,
 "tests": 2766,
-"located": "town"
+"located": "centre",
+"postcode": "YO16 4SF"
 },
 {
 "name": "Bristol (Avonmouth)",
-"lat": 51.47209,
-"lon": -2.48882,
+"lat": 51.51637,
+"lon": -2.68126,
 "passRate": 53.7,
 "tests": 9980,
-"located": "centre"
+"located": "centre",
+"postcode": "BS11 8AQ"
 },
 {
 "name": "Bristol (Kingswood)",
@@ -437,23 +578,35 @@
 "lon": -2.48882,
 "passRate": 52.0,
 "tests": 11483,
-"located": "centre"
+"located": "centre",
+"postcode": "BS15 4GQ"
+},
+{
+"name": "Brodick (Isle of Arran)",
+"lat": 55.57619,
+"lon": -5.13832,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "KA27 8AU"
 },
 {
 "name": "Bromley (London)",
-"lat": 51.37504,
-"lon": -0.01093,
+"lat": 51.42127,
+"lon": 0.02147,
 "passRate": 51.7,
 "tests": 10868,
-"located": "centre"
+"located": "centre",
+"postcode": "BR1 5AB"
 },
 {
 "name": "Buckie",
-"lat": 57.67633,
-"lon": -2.96489,
+"lat": 57.67316,
+"lon": -2.97252,
 "passRate": 52.6,
 "tests": 274,
-"located": "town"
+"located": "centre",
+"postcode": "AB56 1QJ"
 },
 {
 "name": "Burgess Hill",
@@ -461,79 +614,89 @@
 "lon": -0.15316,
 "passRate": 43.2,
 "tests": 11191,
-"located": "centre"
+"located": "centre",
+"postcode": "RH15 9AG"
 },
 {
 "name": "Burton on Trent",
-"lat": 52.80274,
-"lon": -1.62992,
+"lat": 52.79621,
+"lon": -1.65723,
 "passRate": 54.1,
 "tests": 6682,
-"located": "town"
+"located": "centre",
+"postcode": "DE14 2TG"
 },
 {
 "name": "Bury (Manchester)",
-"lat": 53.59269,
-"lon": -2.29877,
+"lat": 53.59931,
+"lon": -2.2855,
 "passRate": 40.3,
 "tests": 8136,
-"located": "town"
+"located": "centre",
+"postcode": "BL9 6HH"
 },
 {
 "name": "Bury St Edmunds",
-"lat": 52.24604,
-"lon": 0.71252,
+"lat": 52.24868,
+"lon": 0.71106,
 "passRate": 45.7,
 "tests": 8452,
-"located": "town"
+"located": "centre",
+"postcode": "IP33 1TJ"
 },
 {
 "name": "Buxton",
-"lat": 53.25934,
-"lon": -1.91008,
+"lat": 53.25296,
+"lon": -1.91526,
 "passRate": 57.0,
 "tests": 3449,
-"located": "town"
+"located": "centre",
+"postcode": "SK17 9DS"
 },
 {
 "name": "Callander",
-"lat": 56.24369,
-"lon": -4.2148,
+"lat": 56.24136,
+"lon": -4.21777,
 "passRate": 47.4,
 "tests": 133,
-"located": "town"
+"located": "centre",
+"postcode": "FK17 8AG"
 },
 {
 "name": "Camborne",
-"lat": 50.21388,
-"lon": -5.29903,
+"lat": 50.22409,
+"lon": -5.26703,
 "passRate": 41.3,
 "tests": 5967,
-"located": "town"
+"located": "centre",
+"postcode": "TR15 3QS"
 },
 {
 "name": "Cambridge (Brookmount Court)",
-"lat": 52.21559,
-"lon": 0.02321,
+"lat": 52.23328,
+"lon": 0.13612,
 "passRate": 50.5,
 "tests": 13610,
-"located": "centre"
+"located": "centre",
+"postcode": "CB4 2QH"
 },
 {
 "name": "Campbeltown",
-"lat": 55.42419,
-"lon": -5.6051,
+"lat": 55.42417,
+"lon": -5.6035,
 "passRate": 62.6,
 "tests": 115,
-"located": "town"
+"located": "centre",
+"postcode": "PA28 6BU"
 },
 {
 "name": "Canterbury",
-"lat": 51.38549,
-"lon": -0.11893,
+"lat": 51.275,
+"lon": 1.08808,
 "passRate": 50.3,
 "tests": 3322,
-"located": "centre"
+"located": "centre",
+"postcode": "CT1 3AS"
 },
 {
 "name": "Cardiff (Llanishen)",
@@ -541,7 +704,8 @@
 "lon": -3.19232,
 "passRate": 51.3,
 "tests": 14852,
-"located": "centre"
+"located": "centre",
+"postcode": "CF14 5GF"
 },
 {
 "name": "Cardigan",
@@ -549,63 +713,71 @@
 "lon": -4.65839,
 "passRate": 49.8,
 "tests": 1340,
-"located": "centre"
+"located": "centre",
+"postcode": "SA43 1ED"
 },
 {
 "name": "Carlisle",
-"lat": 54.89485,
-"lon": -2.93623,
+"lat": 54.89682,
+"lon": -2.95344,
 "passRate": 54.9,
 "tests": 3684,
-"located": "town"
+"located": "centre",
+"postcode": "CA2 7AF"
 },
 {
 "name": "Carlisle LGV (Cars)",
-"lat": 54.89485,
-"lon": -2.93623,
+"lat": 54.9234,
+"lon": -2.9506,
 "passRate": 61.9,
 "tests": 63,
-"located": "town"
+"located": "centre",
+"postcode": "CA3 0HA"
 },
 {
 "name": "Carmarthen",
-"lat": 51.85913,
-"lon": -4.31159,
+"lat": 51.85635,
+"lon": -4.30237,
 "passRate": 54.4,
 "tests": 2053,
-"located": "town"
+"located": "centre",
+"postcode": "SA31 1LP"
 },
 {
 "name": "Castle Douglas",
-"lat": 54.9401,
-"lon": -3.93054,
+"lat": 54.93145,
+"lon": -3.936,
 "passRate": 50.2,
 "tests": 516,
-"located": "town"
+"located": "centre",
+"postcode": "DG7 1TH"
 },
 {
 "name": "Chadderton",
-"lat": 53.54546,
-"lon": -2.13783,
+"lat": 53.53218,
+"lon": -2.16884,
 "passRate": 44.9,
 "tests": 12454,
-"located": "town"
+"located": "centre",
+"postcode": "OL9 9XA"
 },
 {
 "name": "Cheetham Hill (Manchester)",
-"lat": 53.50329,
-"lon": -2.23448,
+"lat": 53.50081,
+"lon": -2.2421,
 "passRate": 43.7,
 "tests": 10768,
-"located": "town"
+"located": "centre",
+"postcode": "M8 0AL"
 },
 {
 "name": "Chelmsford (Hanbury Road)",
-"lat": 51.72381,
-"lon": 0.44635,
+"lat": 51.80693,
+"lon": 0.64663,
 "passRate": 44.7,
 "tests": 10758,
-"located": "street"
+"located": "centre",
+"postcode": "CM8 3DR"
 },
 {
 "name": "Cheltenham",
@@ -613,39 +785,44 @@
 "lon": -2.06496,
 "passRate": 46.7,
 "tests": 6545,
-"located": "centre"
+"located": "centre",
+"postcode": "GL52 2HQ"
 },
 {
 "name": "Chertsey (London)",
-"lat": 51.47587,
-"lon": -0.2599,
+"lat": 51.38465,
+"lon": -0.50943,
 "passRate": 50.3,
 "tests": 8669,
-"located": "town"
+"located": "centre",
+"postcode": "KT16 9JX"
 },
 {
 "name": "Chester",
-"lat": 53.25953,
-"lon": -2.52575,
+"lat": 53.24675,
+"lon": -2.93282,
 "passRate": 46.2,
 "tests": 8026,
-"located": "centre"
+"located": "centre",
+"postcode": "CH1 6LT"
 },
 {
 "name": "Chesterfield",
-"lat": 53.23521,
-"lon": -1.42641,
+"lat": 53.24456,
+"lon": -1.42578,
 "passRate": 54.5,
 "tests": 4608,
-"located": "town"
+"located": "centre",
+"postcode": "S41 7LT"
 },
 {
 "name": "Chichester",
-"lat": 50.83649,
-"lon": -0.77917,
+"lat": 50.85303,
+"lon": -0.711,
 "passRate": 64.2,
 "tests": 5295,
-"located": "town"
+"located": "centre",
+"postcode": "PO20 2FR"
 },
 {
 "name": "Chingford (London)",
@@ -653,15 +830,17 @@
 "lon": 0.00902,
 "passRate": 36.5,
 "tests": 13235,
-"located": "centre"
+"located": "centre",
+"postcode": "E4 6AD"
 },
 {
 "name": "Chippenham",
-"lat": 51.45876,
-"lon": -2.1159,
+"lat": 51.46482,
+"lon": -2.14275,
 "passRate": 50.6,
 "tests": 7641,
-"located": "town"
+"located": "centre",
+"postcode": "SN14 6LH"
 },
 {
 "name": "Chorley",
@@ -669,23 +848,44 @@
 "lon": -2.61856,
 "passRate": 48.3,
 "tests": 5257,
-"located": "centre"
+"located": "centre",
+"postcode": "PR6 0BT"
 },
 {
 "name": "Clacton-on-Sea",
-"lat": 51.7884,
-"lon": 1.15279,
+"lat": 51.79404,
+"lon": 1.15265,
 "passRate": 47.4,
 "tests": 2867,
-"located": "town"
+"located": "centre",
+"postcode": "CO15 6QA"
 },
 {
 "name": "Colchester",
-"lat": 51.88969,
-"lon": 0.89947,
+"lat": 51.87212,
+"lon": 0.92817,
 "passRate": 48.0,
 "tests": 9977,
-"located": "town"
+"located": "centre",
+"postcode": "CO2 8HF"
+},
+{
+"name": "Coleraine",
+"lat": 55.14598,
+"lon": -6.64922,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT52 2NJ"
+},
+{
+"name": "Cookstown",
+"lat": 54.62707,
+"lon": -6.75827,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT80 9AR"
 },
 {
 "name": "Coventry",
@@ -693,7 +893,17 @@
 "lon": -1.47582,
 "passRate": 42.3,
 "tests": 9102,
-"located": "centre"
+"located": "centre",
+"postcode": "CV7 9EJ"
+},
+{
+"name": "Craigavon",
+"lat": 54.44909,
+"lon": -6.41339,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT63 5RY"
 },
 {
 "name": "Crawley",
@@ -701,7 +911,8 @@
 "lon": -0.20175,
 "passRate": 40.1,
 "tests": 7869,
-"located": "centre"
+"located": "centre",
+"postcode": "RH11 9BJ"
 },
 {
 "name": "Crewe",
@@ -709,15 +920,17 @@
 "lon": -2.4437,
 "passRate": 44.4,
 "tests": 4725,
-"located": "centre"
+"located": "centre",
+"postcode": "CW2 7LL"
 },
 {
 "name": "Crieff",
-"lat": 56.37272,
-"lon": -3.83975,
+"lat": 56.36776,
+"lon": -3.84566,
 "passRate": 66.1,
 "tests": 121,
-"located": "town"
+"located": "centre",
+"postcode": "PH7 3SB"
 },
 {
 "name": "Culham LGV",
@@ -729,11 +942,12 @@
 },
 {
 "name": "Cumnock",
-"lat": 55.45406,
-"lon": -4.2661,
+"lat": 55.4516,
+"lon": -4.26414,
 "passRate": 61.1,
 "tests": 906,
-"located": "town"
+"located": "centre",
+"postcode": "KA18 1DX"
 },
 {
 "name": "Darlington",
@@ -741,7 +955,8 @@
 "lon": -1.50941,
 "passRate": 49.2,
 "tests": 6828,
-"located": "centre"
+"located": "centre",
+"postcode": "DL1 4PW"
 },
 {
 "name": "Derby (Alvaston)",
@@ -749,15 +964,17 @@
 "lon": -1.43092,
 "passRate": 51.3,
 "tests": 9260,
-"located": "centre"
+"located": "centre",
+"postcode": "DE21 7AY"
 },
 {
 "name": "Doncaster",
-"lat": 53.52277,
-"lon": -1.13353,
+"lat": 53.54303,
+"lon": -1.08653,
 "passRate": 42.0,
 "tests": 7865,
-"located": "town"
+"located": "centre",
+"postcode": "DN2 5YL"
 },
 {
 "name": "Dorchester",
@@ -765,63 +982,80 @@
 "lon": -2.4713,
 "passRate": 66.7,
 "tests": 4561,
-"located": "centre"
+"located": "centre",
+"postcode": "DT1 3SU"
+},
+{
+"name": "Downpatrick",
+"lat": 54.31632,
+"lon": -5.70376,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT30 6DU"
 },
 {
 "name": "Dudley",
-"lat": 52.51108,
-"lon": -2.08168,
+"lat": 52.50181,
+"lon": -2.15417,
 "passRate": 45.7,
 "tests": 11354,
-"located": "town"
+"located": "centre",
+"postcode": "DY6 7YE"
 },
 {
 "name": "Dumbarton",
-"lat": 55.94324,
-"lon": -4.57085,
+"lat": 55.96963,
+"lon": -4.57578,
 "passRate": 53.5,
 "tests": 1812,
-"located": "town"
+"located": "centre",
+"postcode": "G82 3PD"
 },
 {
 "name": "Dumfries",
-"lat": 55.06918,
-"lon": -3.61069,
+"lat": 55.06925,
+"lon": -3.59671,
 "passRate": 47.0,
 "tests": 2798,
-"located": "town"
+"located": "centre",
+"postcode": "DG1 2SH"
 },
 {
 "name": "Dundee",
-"lat": 56.46059,
-"lon": -2.97019,
+"lat": 56.47857,
+"lon": -3.01009,
 "passRate": 60.3,
 "tests": 5851,
-"located": "town"
+"located": "centre",
+"postcode": "DD2 3QH"
 },
 {
 "name": "Dunfermline (Vine)",
-"lat": 56.0757,
-"lon": -3.42613,
+"lat": 56.07588,
+"lon": -3.4264,
 "passRate": 43.3,
 "tests": 4422,
-"located": "centre"
+"located": "centre",
+"postcode": "KY11 4JU"
 },
 {
 "name": "Dunoon",
-"lat": 55.97479,
-"lon": -4.93623,
+"lat": 55.95302,
+"lon": -4.92268,
 "passRate": 62.8,
 "tests": 183,
-"located": "centre"
+"located": "centre",
+"postcode": "PA23 8BP"
 },
 {
 "name": "Duns",
-"lat": 55.77784,
-"lon": -2.34385,
+"lat": 55.77783,
+"lon": -2.34819,
 "passRate": 74.2,
 "tests": 132,
-"located": "town"
+"located": "centre",
+"postcode": "TD11 3AU"
 },
 {
 "name": "Durham",
@@ -829,15 +1063,17 @@
 "lon": -1.60998,
 "passRate": 49.6,
 "tests": 8228,
-"located": "centre"
+"located": "centre",
+"postcode": "DH7 8XL"
 },
 {
 "name": "East Kilbride",
-"lat": 55.76057,
-"lon": -4.17766,
+"lat": 55.76664,
+"lon": -4.16098,
 "passRate": 46.4,
 "tests": 2451,
-"located": "town"
+"located": "centre",
+"postcode": "G74 3EU"
 },
 {
 "name": "Eastbourne",
@@ -845,7 +1081,8 @@
 "lon": 0.3097,
 "passRate": 52.1,
 "tests": 5609,
-"located": "centre"
+"located": "centre",
+"postcode": "BN22 7PT"
 },
 {
 "name": "Edinburgh (Currie)",
@@ -853,7 +1090,8 @@
 "lon": -3.30781,
 "passRate": 43.2,
 "tests": 7475,
-"located": "centre"
+"located": "centre",
+"postcode": "EH14 5LT"
 },
 {
 "name": "Edinburgh (Musselburgh)",
@@ -861,7 +1099,8 @@
 "lon": -3.06719,
 "passRate": 47.0,
 "tests": 7800,
-"located": "centre"
+"located": "centre",
+"postcode": "EH21 6SJ"
 },
 {
 "name": "Elgin",
@@ -869,7 +1108,8 @@
 "lon": -3.31797,
 "passRate": 44.5,
 "tests": 2184,
-"located": "centre"
+"located": "centre",
+"postcode": "IV30 1UE"
 },
 {
 "name": "Enfield (Brancroft Way)",
@@ -881,19 +1121,30 @@
 },
 {
 "name": "Enfield (Innova Business Park)",
-"lat": 52.30837,
-"lon": -1.94645,
+"lat": 51.67686,
+"lon": -0.02135,
 "passRate": 54.1,
 "tests": 8042,
-"located": "centre"
+"located": "centre",
+"postcode": "EN3 7XY"
+},
+{
+"name": "Enniskillen",
+"lat": 54.35619,
+"lon": -7.61308,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT74 4AD"
 },
 {
 "name": "Erith (London)",
-"lat": 51.48359,
-"lon": 0.14236,
+"lat": 51.50372,
+"lon": 0.1629,
 "passRate": 49.3,
 "tests": 4921,
-"located": "centre"
+"located": "centre",
+"postcode": "DA17 6LJ"
 },
 {
 "name": "Exeter",
@@ -901,7 +1152,8 @@
 "lon": -3.51583,
 "passRate": 47.9,
 "tests": 8714,
-"located": "centre"
+"located": "centre",
+"postcode": "EX2 8FS"
 },
 {
 "name": "Exeter LGV",
@@ -917,87 +1169,98 @@
 "lon": -0.77073,
 "passRate": 58.3,
 "tests": 8041,
-"located": "centre"
+"located": "centre",
+"postcode": "GU14 6UU"
 },
 {
 "name": "Featherstone",
-"lat": 53.67769,
-"lon": -1.35827,
+"lat": 52.64055,
+"lon": -2.11383,
 "passRate": 34.1,
 "tests": 14070,
-"located": "town"
+"located": "centre",
+"postcode": "WV10 7JD"
 },
 {
 "name": "Folkestone",
-"lat": 51.07913,
-"lon": 1.17941,
+"lat": 51.07908,
+"lon": 1.16751,
 "passRate": 45.4,
 "tests": 4370,
-"located": "town"
+"located": "centre",
+"postcode": "CT20 2TS"
 },
 {
 "name": "Forfar",
-"lat": 56.6443,
-"lon": -2.88821,
+"lat": 56.64274,
+"lon": -2.88952,
 "passRate": 68.5,
 "tests": 356,
-"located": "town"
+"located": "centre",
+"postcode": "DD8 2AE"
 },
 {
 "name": "Fort William",
-"lat": 56.81783,
-"lon": -5.11095,
+"lat": 56.82215,
+"lon": -5.10578,
 "passRate": 62.0,
 "tests": 308,
-"located": "town"
+"located": "centre",
+"postcode": "PH33 6AN"
 },
 {
 "name": "Fraserburgh",
-"lat": 57.6936,
-"lon": -2.00515,
+"lat": 57.69062,
+"lon": -2.00318,
 "passRate": 60.7,
 "tests": 496,
-"located": "town"
+"located": "centre",
+"postcode": "AB43 9TN"
 },
 {
 "name": "Gairloch",
-"lat": 57.72801,
-"lon": -5.69034,
+"lat": 57.73616,
+"lon": -5.70153,
 "passRate": 69.2,
 "tests": 52,
-"located": "town"
+"located": "centre",
+"postcode": "IV21 2BX"
 },
 {
 "name": "Galashiels",
-"lat": 55.61565,
-"lon": -2.80616,
+"lat": 55.61259,
+"lon": -2.80267,
 "passRate": 49.1,
 "tests": 2193,
-"located": "town"
+"located": "centre",
+"postcode": "TD1 3BH"
 },
 {
 "name": "Gateshead",
-"lat": 54.96258,
-"lon": -1.60193,
+"lat": 54.95711,
+"lon": -1.65595,
 "passRate": 37.4,
 "tests": 8109,
-"located": "town"
+"located": "centre",
+"postcode": "NE11 9HU"
 },
 {
 "name": "Gillingham",
-"lat": 51.38717,
-"lon": 0.54616,
+"lat": 51.36481,
+"lon": 0.58016,
 "passRate": 57.2,
 "tests": 14761,
-"located": "town"
+"located": "centre",
+"postcode": "ME8 0EZ"
 },
 {
 "name": "Girvan",
-"lat": 55.24132,
-"lon": -4.85536,
+"lat": 55.24131,
+"lon": -4.85812,
 "passRate": 68.7,
 "tests": 249,
-"located": "town"
+"located": "centre",
+"postcode": "KA26 9AL"
 },
 {
 "name": "Glasgow (Anniesland)",
@@ -1005,7 +1268,8 @@
 "lon": -4.33845,
 "passRate": 40.8,
 "tests": 8560,
-"located": "centre"
+"located": "centre",
+"postcode": "G13 1XS"
 },
 {
 "name": "Glasgow (Baillieston)",
@@ -1013,7 +1277,8 @@
 "lon": -4.11246,
 "passRate": 44.4,
 "tests": 9478,
-"located": "centre"
+"located": "centre",
+"postcode": "G69 6GA"
 },
 {
 "name": "Glasgow (Shieldhall)",
@@ -1021,71 +1286,80 @@
 "lon": -4.34911,
 "passRate": 37.7,
 "tests": 6792,
-"located": "centre"
+"located": "centre",
+"postcode": "G51 4TH"
 },
 {
 "name": "Gloucester",
-"lat": 51.86537,
-"lon": -2.24582,
+"lat": 51.8338,
+"lon": -2.2763,
 "passRate": 49.6,
 "tests": 6511,
-"located": "town"
+"located": "centre",
+"postcode": "GL2 4LY"
 },
 {
 "name": "Golspie",
-"lat": 57.97366,
-"lon": -3.97555,
+"lat": 57.97297,
+"lon": -3.98372,
 "passRate": 68.0,
 "tests": 100,
-"located": "town"
+"located": "centre",
+"postcode": "KW10 6SP"
 },
 {
 "name": "Goodmayes (London)",
-"lat": 51.5658,
-"lon": 0.11193,
+"lat": 51.5637,
+"lon": 0.10998,
 "passRate": 43.7,
 "tests": 21961,
-"located": "town"
+"located": "centre",
+"postcode": "IG3 9UZ"
 },
 {
 "name": "Gosforth",
-"lat": 54.4234,
-"lon": -3.42569,
+"lat": 55.04157,
+"lon": -1.60909,
 "passRate": 47.5,
 "tests": 10234,
-"located": "town"
+"located": "centre",
+"postcode": "NE3 5HB"
 },
 {
 "name": "Grangemouth",
-"lat": 56.0189,
-"lon": -3.72303,
+"lat": 56.01125,
+"lon": -3.74123,
 "passRate": 46.4,
 "tests": 4615,
-"located": "town"
+"located": "centre",
+"postcode": "FK3 8WJ"
 },
 {
 "name": "Grantham (Somerby)",
-"lat": 52.90237,
-"lon": -0.62582,
+"lat": 52.90194,
+"lon": -0.58734,
 "passRate": 58.1,
 "tests": 5959,
-"located": "street"
+"located": "centre",
+"postcode": "NG31 7TX"
 },
 {
 "name": "Grantown-On-Spey",
-"lat": 57.32951,
-"lon": -3.6104,
+"lat": 57.32705,
+"lon": -3.60932,
 "passRate": 62.2,
 "tests": 180,
-"located": "town"
+"located": "centre",
+"postcode": "PH26 3JR"
 },
 {
 "name": "Greenford (Horsenden Lane)",
-"lat": 51.55016,
-"lon": -0.33083,
+"lat": 51.55023,
+"lon": -0.33093,
 "passRate": 40.5,
 "tests": 7106,
-"located": "centre"
+"located": "centre",
+"postcode": "UB6 7QH"
 },
 {
 "name": "Greenham",
@@ -1097,11 +1371,12 @@
 },
 {
 "name": "Greenock",
-"lat": 55.94734,
-"lon": -4.75647,
+"lat": 55.95289,
+"lon": -4.76927,
 "passRate": 42.4,
 "tests": 2036,
-"located": "town"
+"located": "centre",
+"postcode": "PA16 8DD"
 },
 {
 "name": "Grimsby Coldwater",
@@ -1109,15 +1384,17 @@
 "lon": -0.11358,
 "passRate": 42.7,
 "tests": 5754,
-"located": "centre"
+"located": "centre",
+"postcode": "DN31 2TB"
 },
 {
 "name": "Guildford",
-"lat": 51.23561,
-"lon": -0.57321,
+"lat": 51.2594,
+"lon": -0.56488,
 "passRate": 51.8,
 "tests": 5032,
-"located": "town"
+"located": "centre",
+"postcode": "GU1 1SA"
 },
 {
 "name": "Haddington",
@@ -1125,15 +1402,17 @@
 "lon": -2.78206,
 "passRate": 62.2,
 "tests": 1890,
-"located": "centre"
+"located": "centre",
+"postcode": "EH41 3NG"
 },
 {
 "name": "Halifax",
-"lat": 53.72292,
-"lon": -1.86049,
+"lat": 53.72989,
+"lon": -1.89145,
 "passRate": 44.7,
 "tests": 4959,
-"located": "town"
+"located": "centre",
+"postcode": "HX2 0HA"
 },
 {
 "name": "Hamilton",
@@ -1141,95 +1420,107 @@
 "lon": -4.04201,
 "passRate": 39.5,
 "tests": 5608,
-"located": "centre"
+"located": "centre",
+"postcode": "ML3 6RQ"
 },
 {
 "name": "Hartlepool",
-"lat": 54.68573,
-"lon": -1.20937,
+"lat": 54.6771,
+"lon": -1.20125,
 "passRate": 49.7,
 "tests": 5725,
-"located": "town"
+"located": "centre",
+"postcode": "TS25 1TZ"
 },
 {
 "name": "Hastings (Ore)",
-"lat": 50.86686,
-"lon": 0.59163,
+"lat": 50.88091,
+"lon": 0.59809,
 "passRate": 49.2,
 "tests": 3065,
-"located": "street"
+"located": "centre",
+"postcode": "TN35 4NN"
 },
 {
 "name": "Hawick",
-"lat": 55.42256,
-"lon": -2.7867,
+"lat": 55.43631,
+"lon": -2.76725,
 "passRate": 61.1,
 "tests": 427,
-"located": "town"
+"located": "centre",
+"postcode": "TD9 8EJ"
 },
 {
 "name": "Heckmondwike",
-"lat": 53.70744,
-"lon": -1.67545,
+"lat": 53.70737,
+"lon": -1.67141,
 "passRate": 46.7,
 "tests": 5232,
-"located": "town"
+"located": "centre",
+"postcode": "WF16 0AS"
 },
 {
 "name": "Hendon (London)",
-"lat": 51.58972,
-"lon": -0.2216,
+"lat": 51.59599,
+"lon": -0.24014,
 "passRate": 49.5,
 "tests": 11608,
-"located": "town"
+"located": "centre",
+"postcode": "NW9 5TZ"
 },
 {
 "name": "Hereford",
-"lat": 52.05538,
-"lon": -2.71517,
+"lat": 52.06651,
+"lon": -2.72936,
 "passRate": 59.4,
 "tests": 3352,
-"located": "town"
+"located": "centre",
+"postcode": "HR4 9NS"
 },
 {
 "name": "Herne Bay",
-"lat": 51.37195,
-"lon": 1.1307,
+"lat": 51.36194,
+"lon": 1.15002,
 "passRate": 55.4,
 "tests": 7912,
-"located": "town"
+"located": "centre",
+"postcode": "CT6 6GZ"
 },
 {
 "name": "Hexham",
-"lat": 54.97148,
-"lon": -2.10179,
+"lat": 54.97453,
+"lon": -2.10965,
 "passRate": 56.7,
 "tests": 1213,
-"located": "town"
+"located": "centre",
+"postcode": "NE46 3EW"
 },
 {
 "name": "Heysham",
-"lat": 54.0495,
-"lon": -2.89031,
+"lat": 54.03697,
+"lon": -2.9016,
 "passRate": 55.0,
 "tests": 3735,
-"located": "town"
+"located": "centre",
+"postcode": "LA3 2UZ"
 },
 {
 "name": "High Wycombe",
-"lat": 51.63174,
-"lon": -0.75596,
+"lat": 51.61325,
+"lon": -0.77071,
 "passRate": 51.0,
 "tests": 3891,
-"located": "town"
+"located": "centre",
+"postcode": "HP11 1TL"
 },
 {
 "name": "Hinckley",
-"lat": 52.54106,
-"lon": -1.37294,
+"lat": 52.53385,
+"lon": -1.3702,
 "passRate": 48.3,
 "tests": 3465,
-"located": "town"
+"located": "centre",
+"postcode": "LE10 2TG"
 },
 {
 "name": "Hornchurch (London)",
@@ -1237,7 +1528,8 @@
 "lon": 0.22091,
 "passRate": 48.3,
 "tests": 6310,
-"located": "centre"
+"located": "centre",
+"postcode": "RM12 6JX"
 },
 {
 "name": "Horsforth",
@@ -1245,55 +1537,71 @@
 "lon": -1.62186,
 "passRate": 51.3,
 "tests": 11935,
-"located": "centre"
+"located": "centre",
+"postcode": "LS18 5NY"
 },
 {
 "name": "Huddersfield",
-"lat": 53.64666,
-"lon": -1.78225,
+"lat": 53.66863,
+"lon": -1.7675,
 "passRate": 48.4,
 "tests": 9223,
-"located": "town"
+"located": "centre",
+"postcode": "HD2 1HJ"
 },
 {
 "name": "Hull",
-"lat": 53.76239,
-"lon": -0.33012,
+"lat": 53.76791,
+"lon": -0.33526,
 "passRate": 45.2,
 "tests": 9439,
-"located": "town"
+"located": "centre",
+"postcode": "HU6 7PY"
 },
 {
 "name": "Huntly",
-"lat": 57.44748,
-"lon": -2.78642,
+"lat": 57.44489,
+"lon": -2.79466,
 "passRate": 62.5,
 "tests": 232,
-"located": "town"
+"located": "centre",
+"postcode": "AB54 8JX"
+},
+{
+"name": "Hydebank",
+"lat": 54.54183,
+"lon": -5.9288,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT8 8JL"
 },
 {
 "name": "Inveraray",
-"lat": 56.23035,
-"lon": -5.07309,
+"lat": 56.23133,
+"lon": -5.07272,
 "passRate": 85.1,
 "tests": 67,
-"located": "town"
+"located": "centre",
+"postcode": "PA32 8UY"
 },
 {
 "name": "Inverness (Longman Drive)",
-"lat": 57.49131,
-"lon": -4.2325,
+"lat": 57.49256,
+"lon": -4.22904,
 "passRate": 45.9,
 "tests": 2933,
-"located": "street"
+"located": "centre",
+"postcode": "IV1 1SU"
 },
 {
 "name": "Inverurie",
-"lat": 57.28395,
-"lon": -2.37429,
+"lat": 57.29372,
+"lon": -2.38801,
 "passRate": 54.3,
 "tests": 1090,
-"located": "town"
+"located": "centre",
+"postcode": "AB51 4FR"
 },
 {
 "name": "Ipswich",
@@ -1301,55 +1609,89 @@
 "lon": 1.21896,
 "passRate": 63.1,
 "tests": 10724,
-"located": "centre"
+"located": "centre",
+"postcode": "IP3 9SW"
 },
 {
 "name": "Irvine",
-"lat": 55.61313,
-"lon": -4.66964,
+"lat": 55.60366,
+"lon": -4.63886,
 "passRate": 49.2,
 "tests": 5306,
-"located": "town"
+"located": "centre",
+"postcode": "KA11 5DJ"
+},
+{
+"name": "Islay Island",
+"lat": 55.75659,
+"lon": -6.28547,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "PA43 7HL"
 },
 {
 "name": "Isle of Mull",
-"lat": 56.4597,
-"lon": -5.86206,
+"lat": 56.51729,
+"lon": -5.94498,
 "passRate": 71.4,
 "tests": 28,
-"located": "town"
+"located": "centre",
+"postcode": "PA72 6JD"
+},
+{
+"name": "Isle of Skye (Broadford)",
+"lat": 57.23888,
+"lon": -5.89413,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "IV49 9AQ"
 },
 {
 "name": "Isle of Skye (Portree)",
-"lat": 57.41781,
-"lon": -6.20992,
+"lat": 57.41987,
+"lon": -6.21017,
 "passRate": 69.9,
 "tests": 133,
-"located": "street"
+"located": "centre",
+"postcode": "IV51 9BD"
+},
+{
+"name": "Isle of Tiree",
+"lat": 56.50003,
+"lon": -6.80872,
+"passRate": 80.0,
+"tests": 10,
+"located": "centre",
+"postcode": "PA77 6UH"
 },
 {
 "name": "Isles of Scilly",
-"lat": 49.92034,
-"lon": -6.29288,
+"lat": 49.91437,
+"lon": -6.31537,
 "passRate": 87.5,
 "tests": 8,
-"located": "town"
+"located": "centre",
+"postcode": "TR21 0LW"
 },
 {
 "name": "Isleworth (Fleming Way)",
-"lat": 51.46654,
-"lon": -0.3374,
+"lat": 51.46634,
+"lon": -0.33722,
 "passRate": 51.8,
 "tests": 12106,
-"located": "street"
+"located": "centre",
+"postcode": "TW7 6DB"
 },
 {
 "name": "Kelso",
-"lat": 55.59838,
-"lon": -2.43384,
+"lat": 55.59081,
+"lon": -2.42488,
 "passRate": 57.0,
 "tests": 381,
-"located": "town"
+"located": "centre",
+"postcode": "TD5 8DW"
 },
 {
 "name": "Kendal (Oxenholme Road)",
@@ -1357,7 +1699,8 @@
 "lon": -2.7354,
 "passRate": 64.8,
 "tests": 2149,
-"located": "centre"
+"located": "centre",
+"postcode": "LA9 7RL"
 },
 {
 "name": "Kettering",
@@ -1365,7 +1708,8 @@
 "lon": -0.72522,
 "passRate": 46.0,
 "tests": 8489,
-"located": "centre"
+"located": "centre",
+"postcode": "NN15 6NL"
 },
 {
 "name": "Kings Lynn",
@@ -1373,15 +1717,17 @@
 "lon": 0.42067,
 "passRate": 46.0,
 "tests": 7405,
-"located": "centre"
+"located": "centre",
+"postcode": "PE30 4LS"
 },
 {
 "name": "Kingussie",
-"lat": 57.08028,
-"lon": -4.05116,
+"lat": 57.0786,
+"lon": -4.05379,
 "passRate": 64.1,
 "tests": 131,
-"located": "town"
+"located": "centre",
+"postcode": "PH21 1EN"
 },
 {
 "name": "Kirkcaldy",
@@ -1389,31 +1735,53 @@
 "lon": -3.12527,
 "passRate": 47.5,
 "tests": 5209,
-"located": "centre"
+"located": "centre",
+"postcode": "KY1 2YX"
 },
 {
 "name": "Knaresborough",
-"lat": 54.00792,
-"lon": -1.46683,
+"lat": 54.00129,
+"lon": -1.44405,
 "passRate": 58.5,
 "tests": 5305,
-"located": "town"
+"located": "centre",
+"postcode": "HG5 8QB"
 },
 {
 "name": "Kyle of Lochalsh",
-"lat": 57.28142,
-"lon": -5.71507,
+"lat": 57.28049,
+"lon": -5.72096,
 "passRate": 58.5,
 "tests": 142,
-"located": "town"
+"located": "centre",
+"postcode": "IV40 8BP"
+},
+{
+"name": "Lairg",
+"lat": 58.02308,
+"lon": -4.39461,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "IV27 4DB"
 },
 {
 "name": "Lanark",
-"lat": 55.77009,
-"lon": -4.04201,
+"lat": 55.66301,
+"lon": -3.74686,
 "passRate": 55.0,
 "tests": 1845,
-"located": "centre"
+"located": "centre",
+"postcode": "ML11 9AX"
+},
+{
+"name": "Larne",
+"lat": 54.85291,
+"lon": -5.84431,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT40 2SY"
 },
 {
 "name": "Launceston",
@@ -1421,15 +1789,17 @@
 "lon": -4.33635,
 "passRate": 48.3,
 "tests": 2286,
-"located": "centre"
+"located": "centre",
+"postcode": "PL15 9NJ"
 },
 {
 "name": "Lee On The Solent",
-"lat": 50.8029,
-"lon": -1.20134,
+"lat": 50.80996,
+"lon": -1.20069,
 "passRate": 59.6,
 "tests": 10409,
-"located": "town"
+"located": "centre",
+"postcode": "PO13 9JY"
 },
 {
 "name": "Leeds",
@@ -1440,36 +1810,58 @@
 "located": "centre"
 },
 {
+"name": "Leeds (Colton Mill)",
+"lat": 53.79204,
+"lon": -1.43029,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "LS15 9JN"
+},
+{
+"name": "Leeds (The Old Fire Station)",
+"lat": 53.80273,
+"lon": -1.49416,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "LS9 6NL"
+},
+{
 "name": "Leicester (Cannock Street)",
-"lat": 52.6624,
-"lon": -1.07981,
+"lat": 52.66355,
+"lon": -1.08036,
 "passRate": 37.7,
 "tests": 11638,
-"located": "street"
+"located": "centre",
+"postcode": "LE4 9HT"
 },
 {
 "name": "Leicester (Wigston)",
-"lat": 52.58107,
-"lon": -1.13027,
+"lat": 52.58396,
+"lon": -1.14119,
 "passRate": 43.9,
 "tests": 16361,
-"located": "street"
+"located": "centre",
+"postcode": "LE18 4WS"
 },
 {
 "name": "Leighton Buzzard (Stanbridge Road)",
-"lat": 51.91289,
-"lon": -0.64044,
+"lat": 51.91183,
+"lon": -0.63085,
 "passRate": 51.0,
 "tests": 7529,
-"located": "street"
+"located": "centre",
+"postcode": "LU7 4QG"
 },
 {
 "name": "Lerwick",
-"lat": 60.15311,
-"lon": -1.14271,
+"lat": 60.15117,
+"lon": -1.14735,
 "passRate": 67.8,
 "tests": 432,
-"located": "town"
+"located": "centre",
+"postcode": "ZE1 0DJ"
 },
 {
 "name": "Letchworth",
@@ -1477,15 +1869,17 @@
 "lon": -0.21523,
 "passRate": 58.3,
 "tests": 5032,
-"located": "centre"
+"located": "centre",
+"postcode": "SG6 1RF"
 },
 {
 "name": "Lichfield",
-"lat": 52.68437,
-"lon": -1.82753,
+"lat": 52.68153,
+"lon": -1.83498,
 "passRate": 48.6,
 "tests": 8490,
-"located": "town"
+"located": "centre",
+"postcode": "WS13 6RB"
 },
 {
 "name": "Lincoln",
@@ -1493,15 +1887,26 @@
 "lon": -0.61335,
 "passRate": 49.8,
 "tests": 6345,
-"located": "centre"
+"located": "centre",
+"postcode": "LN6 3RT"
+},
+{
+"name": "Lisburn",
+"lat": 54.51292,
+"lon": -6.07587,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT28 2BP"
 },
 {
 "name": "Livingston",
-"lat": 55.88296,
-"lon": -3.51758,
+"lat": 55.90618,
+"lon": -3.50143,
 "passRate": 50.7,
 "tests": 4486,
-"located": "town"
+"located": "centre",
+"postcode": "EH54 5DE"
 },
 {
 "name": "Llanelli",
@@ -1509,23 +1914,44 @@
 "lon": -4.15509,
 "passRate": 51.0,
 "tests": 3442,
-"located": "centre"
+"located": "centre",
+"postcode": "SA15 3SB"
 },
 {
 "name": "Llantrisant",
-"lat": 51.54129,
-"lon": -3.37479,
+"lat": 51.52419,
+"lon": -3.36506,
 "passRate": 50.6,
 "tests": 8554,
-"located": "town"
+"located": "centre",
+"postcode": "CF72 8YR"
 },
 {
 "name": "Lochgilphead",
-"lat": 56.0375,
-"lon": -5.43309,
+"lat": 56.03624,
+"lon": -5.42767,
 "passRate": 62.5,
 "tests": 144,
-"located": "town"
+"located": "centre",
+"postcode": "PA31 8QX"
+},
+{
+"name": "Londonderry (Altnagelvin)",
+"lat": 54.98168,
+"lon": -7.30304,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT47 2ED"
+},
+{
+"name": "Londonderry (Newbuildings)",
+"lat": 54.95486,
+"lon": -7.36109,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT47 2SX"
 },
 {
 "name": "Loughborough",
@@ -1533,39 +1959,44 @@
 "lon": -1.20103,
 "passRate": 43.7,
 "tests": 5769,
-"located": "centre"
+"located": "centre",
+"postcode": "LE11 1JP"
 },
 {
 "name": "Loughton (London)",
-"lat": 51.46681,
-"lon": 0.14686,
+"lat": 51.64959,
+"lon": 0.05668,
 "passRate": 48.0,
 "tests": 6009,
-"located": "town"
+"located": "centre",
+"postcode": "IG10 1RB"
 },
 {
 "name": "Louth",
-"lat": 53.36752,
-"lon": -0.00224,
+"lat": 53.36364,
+"lon": 0.01554,
 "passRate": 54.4,
 "tests": 829,
-"located": "town"
+"located": "centre",
+"postcode": "LN11 8RS"
 },
 {
 "name": "Lowestoft(Mobbs Way)",
-"lat": 52.48661,
-"lon": 1.71771,
+"lat": 52.48694,
+"lon": 1.71489,
 "passRate": 46.1,
 "tests": 4921,
-"located": "street"
+"located": "centre",
+"postcode": "NR32 3AL"
 },
 {
 "name": "Ludlow",
-"lat": 52.36799,
-"lon": -2.71931,
+"lat": 52.36602,
+"lon": -2.693,
 "passRate": 59.6,
 "tests": 3529,
-"located": "town"
+"located": "centre",
+"postcode": "SY8 1FD"
 },
 {
 "name": "Luton",
@@ -1573,39 +2004,62 @@
 "lon": -0.42013,
 "passRate": 40.1,
 "tests": 8304,
-"located": "centre"
+"located": "centre",
+"postcode": "LU1 5BT"
 },
 {
 "name": "Macclesfield",
-"lat": 53.26066,
-"lon": -2.12552,
+"lat": 53.25795,
+"lon": -2.12012,
 "passRate": 49.9,
 "tests": 4910,
-"located": "town"
+"located": "centre",
+"postcode": "SK10 1JQ"
 },
 {
 "name": "Maidstone",
-"lat": 51.27483,
-"lon": 0.52316,
+"lat": 51.26086,
+"lon": 0.52596,
 "passRate": 58.0,
 "tests": 6330,
-"located": "town"
+"located": "centre",
+"postcode": "ME15 6JZ"
 },
 {
 "name": "Mallaig",
-"lat": 57.00613,
-"lon": -5.82945,
+"lat": 57.00609,
+"lon": -5.83019,
 "passRate": 63.0,
 "tests": 46,
-"located": "town"
+"located": "centre",
+"postcode": "PH41 4PX"
+},
+{
+"name": "Mallusk",
+"lat": 54.67524,
+"lon": -5.98482,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT36 4YY"
 },
 {
 "name": "Malton",
-"lat": 54.13921,
-"lon": -0.79953,
+"lat": 54.14067,
+"lon": -0.79051,
 "passRate": 66.7,
 "tests": 562,
-"located": "town"
+"located": "centre",
+"postcode": "YO17 7LB"
+},
+{
+"name": "Medway Ambely Road (Formally Gillingham LGV)",
+"lat": 51.36207,
+"lon": 0.57771,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "ME8 0SJ"
 },
 {
 "name": "Melton Mowbray",
@@ -1613,55 +2067,62 @@
 "lon": -0.89313,
 "passRate": 63.9,
 "tests": 2486,
-"located": "centre"
+"located": "centre",
+"postcode": "LE13 0UL"
 },
 {
 "name": "Merthyr Tydfil",
-"lat": 51.74557,
-"lon": -3.37861,
+"lat": 51.72008,
+"lon": -3.35563,
 "passRate": 53.5,
 "tests": 3703,
-"located": "town"
+"located": "centre",
+"postcode": "CF48 4DR"
 },
 {
 "name": "Middlesbrough",
-"lat": 54.57604,
-"lon": -1.2344,
+"lat": 54.57153,
+"lon": -1.1896,
 "passRate": 48.3,
 "tests": 8952,
-"located": "town"
+"located": "centre",
+"postcode": "TS3 8TE"
 },
 {
 "name": "Mill Hill (London)",
-"lat": 51.61544,
-"lon": -0.23307,
+"lat": 51.6103,
+"lon": -0.24698,
 "passRate": 51.1,
 "tests": 8688,
-"located": "town"
+"located": "centre",
+"postcode": "NW7 2DQ"
 },
 {
 "name": "Mitcham (London)",
-"lat": 51.4058,
-"lon": -0.16408,
+"lat": 51.39005,
+"lon": -0.13706,
 "passRate": 48.9,
 "tests": 13825,
-"located": "town"
+"located": "centre",
+"postcode": "CR0 3AQ"
 },
 {
 "name": "Monmouth",
-"lat": 51.80989,
-"lon": -2.71604,
+"lat": 51.81364,
+"lon": -2.70981,
 "passRate": 61.2,
 "tests": 1407,
-"located": "town"
+"located": "centre",
+"postcode": "NP25 3DP"
 },
 {
 "name": "Montrose",
-"lat": 56.71143,
-"lon": -2.46815,
+"lat": 56.70617,
+"lon": -2.46114,
 "passRate": 66.7,
 "tests": 633,
-"located": "town"
+"located": "centre",
+"postcode": "DD10 8EE"
 },
 {
 "name": "Morden (London)",
@@ -1669,15 +2130,17 @@
 "lon": -0.21181,
 "passRate": 48.8,
 "tests": 16260,
-"located": "centre"
+"located": "centre",
+"postcode": "SM4 4PE"
 },
 {
 "name": "Nelson",
-"lat": 53.76038,
-"lon": -2.75181,
+"lat": 53.83473,
+"lon": -2.21029,
 "passRate": 47.9,
 "tests": 6366,
-"located": "centre"
+"located": "centre",
+"postcode": "BB9 9BT"
 },
 {
 "name": "Newport (Gwent)",
@@ -1685,39 +2148,62 @@
 "lon": -2.9702,
 "passRate": 51.0,
 "tests": 7106,
-"located": "centre"
+"located": "centre",
+"postcode": "NP19 4XH"
 },
 {
 "name": "Newport (Isle of Wight)",
-"lat": 51.57024,
-"lon": -2.9702,
+"lat": 50.71274,
+"lon": -1.29609,
 "passRate": 52.4,
 "tests": 3875,
-"located": "centre"
+"located": "centre",
+"postcode": "PO30 5WB"
+},
+{
+"name": "Newry",
+"lat": 54.18804,
+"lon": -6.31529,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT34 1LD"
 },
 {
 "name": "Newton Abbot",
-"lat": 50.52964,
-"lon": -3.61121,
+"lat": 50.52734,
+"lon": -3.59722,
 "passRate": 51.9,
 "tests": 6263,
-"located": "town"
+"located": "centre",
+"postcode": "TQ12 4YQ"
 },
 {
 "name": "Newton Stewart",
-"lat": 54.95905,
-"lon": -4.48367,
+"lat": 54.95329,
+"lon": -4.48174,
 "passRate": 63.2,
 "tests": 201,
-"located": "town"
+"located": "centre",
+"postcode": "DG8 6JW"
 },
 {
 "name": "Newtown",
-"lat": 52.51358,
-"lon": -3.31437,
+"lat": 52.51321,
+"lon": -3.31593,
 "passRate": 63.7,
 "tests": 1740,
-"located": "town"
+"located": "centre",
+"postcode": "SY16 1JB"
+},
+{
+"name": "Newtownards",
+"lat": 54.58435,
+"lon": -5.7098,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT23 4XP"
 },
 {
 "name": "Norris Green (Liverpool)",
@@ -1725,23 +2211,26 @@
 "lon": -2.93043,
 "passRate": 38.7,
 "tests": 13265,
-"located": "centre"
+"located": "centre",
+"postcode": "L11 5BR"
 },
 {
 "name": "Northallerton",
-"lat": 54.34048,
-"lon": -1.43449,
+"lat": 54.34027,
+"lon": -1.43213,
 "passRate": 58.6,
 "tests": 2314,
-"located": "town"
+"located": "centre",
+"postcode": "DL6 1NU"
 },
 {
 "name": "Northampton",
-"lat": 52.23433,
-"lon": -0.9028,
+"lat": 52.25327,
+"lon": -0.91594,
 "passRate": 50.4,
 "tests": 12825,
-"located": "town"
+"located": "centre",
+"postcode": "NN5 7QA"
 },
 {
 "name": "Northwich",
@@ -1749,7 +2238,8 @@
 "lon": -2.52575,
 "passRate": 54.7,
 "tests": 3226,
-"located": "centre"
+"located": "centre",
+"postcode": "CW8 4BU"
 },
 {
 "name": "Norwich (Jupiter Road)",
@@ -1761,19 +2251,21 @@
 },
 {
 "name": "Norwich (Peachman Way)",
-"lat": 52.63486,
-"lon": 1.37088,
+"lat": 52.63435,
+"lon": 1.37497,
 "passRate": 57.0,
 "tests": 11012,
-"located": "street"
+"located": "centre",
+"postcode": "NR7 0WE"
 },
 {
 "name": "Nottingham (Chilwell)",
-"lat": 53.00636,
-"lon": -1.25115,
+"lat": 52.90468,
+"lon": -1.23832,
 "passRate": 43.9,
 "tests": 10561,
-"located": "centre"
+"located": "centre",
+"postcode": "NG9 6DZ"
 },
 {
 "name": "Nottingham (Colwick)",
@@ -1781,39 +2273,53 @@
 "lon": -1.06878,
 "passRate": 45.5,
 "tests": 11849,
-"located": "centre"
+"located": "centre",
+"postcode": "NG4 2JU"
 },
 {
 "name": "Nuneaton",
-"lat": 52.46363,
-"lon": -1.47582,
+"lat": 52.52458,
+"lon": -1.48839,
 "passRate": 52.5,
 "tests": 6634,
-"located": "centre"
+"located": "centre",
+"postcode": "CV10 8AA"
 },
 {
 "name": "Oban",
-"lat": 56.41202,
-"lon": -5.47237,
+"lat": 56.41101,
+"lon": -5.47486,
 "passRate": 61.3,
 "tests": 287,
-"located": "town"
+"located": "centre",
+"postcode": "PA34 4AE"
+},
+{
+"name": "Omagh",
+"lat": 54.61006,
+"lon": -7.32834,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "BT78 5PW"
 },
 {
 "name": "Orkney",
-"lat": 58.94182,
-"lon": -3.12969,
+"lat": 58.99101,
+"lon": -2.97272,
 "passRate": 66.0,
 "tests": 350,
-"located": "town"
+"located": "centre",
+"postcode": "KW15 1FL"
 },
 {
 "name": "Oswestry",
-"lat": 52.86031,
-"lon": -3.05482,
+"lat": 52.84496,
+"lon": -3.04215,
 "passRate": 55.6,
 "tests": 1660,
-"located": "town"
+"located": "centre",
+"postcode": "SY10 8GA"
 },
 {
 "name": "Oxford (Cowley)",
@@ -1821,63 +2327,71 @@
 "lon": -1.20239,
 "passRate": 48.2,
 "tests": 6449,
-"located": "centre"
+"located": "centre",
+"postcode": "OX4 2PY"
 },
 {
 "name": "Paisley",
-"lat": 55.84558,
-"lon": -4.42396,
+"lat": 55.84382,
+"lon": -4.4793,
 "passRate": 46.6,
 "tests": 5777,
-"located": "town"
+"located": "centre",
+"postcode": "PA1 2FB"
 },
 {
 "name": "Peebles",
-"lat": 55.65176,
-"lon": -3.18855,
+"lat": 55.65747,
+"lon": -3.19414,
 "passRate": 67.0,
 "tests": 528,
-"located": "town"
+"located": "centre",
+"postcode": "EH45 8DN"
 },
 {
 "name": "Pembroke Dock",
-"lat": 51.69354,
-"lon": -4.9392,
+"lat": 51.69433,
+"lon": -4.95262,
 "passRate": 57.9,
 "tests": 2077,
-"located": "town"
+"located": "centre",
+"postcode": "SA72 6TD"
 },
 {
 "name": "Penzance",
-"lat": 50.11948,
-"lon": -5.53525,
+"lat": 50.1183,
+"lon": -5.54212,
 "passRate": 49.2,
 "tests": 671,
-"located": "town"
+"located": "centre",
+"postcode": "TR18 4JH"
 },
 {
 "name": "Perth (Arran Road)",
-"lat": 56.41751,
-"lon": -3.45898,
+"lat": 56.41698,
+"lon": -3.45793,
 "passRate": 46.0,
 "tests": 2606,
-"located": "street"
+"located": "centre",
+"postcode": "PH1 3DZ"
 },
 {
 "name": "Peterborough",
-"lat": 52.21559,
-"lon": 0.02321,
+"lat": 52.56911,
+"lon": -0.21934,
 "passRate": 50.2,
 "tests": 11021,
-"located": "centre"
+"located": "centre",
+"postcode": "PE1 5XA"
 },
 {
 "name": "Peterhead",
-"lat": 57.50529,
-"lon": -1.78132,
+"lat": 57.48708,
+"lon": -1.80175,
 "passRate": 57.8,
 "tests": 1400,
-"located": "town"
+"located": "centre",
+"postcode": "AB42 3AW"
 },
 {
 "name": "Pinner (London)",
@@ -1885,7 +2399,17 @@
 "lon": -0.39977,
 "passRate": 50.3,
 "tests": 14672,
-"located": "centre"
+"located": "centre",
+"postcode": "HA5 2DZ"
+},
+{
+"name": "Pitlochry",
+"lat": 56.70562,
+"lon": -3.73326,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "PH16 5EA"
 },
 {
 "name": "Plymouth",
@@ -1893,7 +2417,8 @@
 "lon": -4.18559,
 "passRate": 40.8,
 "tests": 9867,
-"located": "centre"
+"located": "centre",
+"postcode": "PL5 2EY"
 },
 {
 "name": "Plymouth LGV",
@@ -1905,27 +2430,30 @@
 },
 {
 "name": "Pontefract",
-"lat": 53.69174,
-"lon": -1.31057,
+"lat": 53.70778,
+"lon": -1.34057,
 "passRate": 47.8,
 "tests": 4883,
-"located": "town"
+"located": "centre",
+"postcode": "WF10 5HW"
 },
 {
 "name": "Poole",
-"lat": 50.7402,
-"lon": -1.95375,
+"lat": 50.74101,
+"lon": -1.97566,
 "passRate": 48.4,
 "tests": 9639,
-"located": "town"
+"located": "centre",
+"postcode": "BH17 0SA"
 },
 {
 "name": "Portsmouth",
-"lat": 50.80003,
-"lon": -1.0906,
+"lat": 50.84577,
+"lon": -1.09055,
 "passRate": 51.8,
 "tests": 11305,
-"located": "town"
+"located": "centre",
+"postcode": "PO6 4SH"
 },
 {
 "name": "Preston",
@@ -1933,23 +2461,26 @@
 "lon": -2.75181,
 "passRate": 53.7,
 "tests": 11380,
-"located": "centre"
+"located": "centre",
+"postcode": "PR2 2PD"
 },
 {
 "name": "Pwllheli",
-"lat": 52.88791,
-"lon": -4.41876,
+"lat": 52.88072,
+"lon": -4.42331,
 "passRate": 66.0,
 "tests": 750,
-"located": "town"
+"located": "centre",
+"postcode": "LL53 5NT"
 },
 {
 "name": "Reading",
-"lat": 51.45642,
-"lon": -0.97007,
+"lat": 51.41966,
+"lon": -0.9743,
 "passRate": 49.8,
 "tests": 6877,
-"located": "town"
+"located": "centre",
+"postcode": "RG2 0TD"
 },
 {
 "name": "Redditch",
@@ -1957,39 +2488,62 @@
 "lon": -1.94645,
 "passRate": 46.7,
 "tests": 4660,
-"located": "centre"
+"located": "centre",
+"postcode": "B97 6HJ"
+},
+{
+"name": "Redhill Aerodrome",
+"lat": 51.21602,
+"lon": -0.13835,
+"passRate": 49.4,
+"tests": 4619,
+"located": "centre",
+"postcode": "RH1 5JZ"
 },
 {
 "name": "Rhyl",
-"lat": 53.32074,
-"lon": -3.49073,
+"lat": 53.31487,
+"lon": -3.48565,
 "passRate": 55.9,
 "tests": 3232,
-"located": "town"
+"located": "centre",
+"postcode": "LL18 2EL"
 },
 {
 "name": "Rochdale (Manchester)",
-"lat": 53.61537,
-"lon": -2.15576,
+"lat": 53.60992,
+"lon": -2.13992,
 "passRate": 41.2,
 "tests": 9790,
-"located": "town"
+"located": "centre",
+"postcode": "OL16 5EB"
 },
 {
 "name": "Rotherham",
-"lat": 53.43104,
-"lon": -1.35519,
+"lat": 53.44222,
+"lon": -1.35813,
 "passRate": 51.3,
 "tests": 5817,
-"located": "town"
+"located": "centre",
+"postcode": "S61 4RL"
+},
+{
+"name": "Rothesay",
+"lat": 55.83637,
+"lon": -5.05621,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "PA20 0DG"
 },
 {
 "name": "Rugby",
-"lat": 52.37267,
-"lon": -1.262,
+"lat": 52.37104,
+"lon": -1.28752,
 "passRate": 46.0,
 "tests": 7174,
-"located": "town"
+"located": "centre",
+"postcode": "CV22 7DH"
 },
 {
 "name": "Sale (Manchester)",
@@ -1997,7 +2551,8 @@
 "lon": -2.32002,
 "passRate": 49.1,
 "tests": 9977,
-"located": "centre"
+"located": "centre",
+"postcode": "M33 7ER"
 },
 {
 "name": "Salisbury",
@@ -2005,63 +2560,71 @@
 "lon": -1.78728,
 "passRate": 52.5,
 "tests": 5624,
-"located": "centre"
+"located": "centre",
+"postcode": "SP1 1LY"
 },
 {
 "name": "Scarborough",
-"lat": 54.282,
-"lon": -0.40119,
+"lat": 54.26165,
+"lon": -0.417,
 "passRate": 51.7,
 "tests": 2658,
-"located": "town"
+"located": "centre",
+"postcode": "YO12 4AY"
 },
 {
 "name": "Scunthorpe",
-"lat": 53.59225,
-"lon": -0.64508,
+"lat": 53.59825,
+"lon": -0.64655,
 "passRate": 44.4,
 "tests": 5837,
-"located": "town"
+"located": "centre",
+"postcode": "DN15 6XH"
 },
 {
 "name": "Sevenoaks",
-"lat": 51.27452,
-"lon": 0.19613,
+"lat": 51.27213,
+"lon": 0.18864,
 "passRate": 53.6,
 "tests": 6386,
-"located": "town"
+"located": "centre",
+"postcode": "TN13 1HJ"
 },
 {
 "name": "Sheffield (Handsworth)",
-"lat": 53.37246,
-"lon": -1.38902,
+"lat": 53.36902,
+"lon": -1.36514,
 "passRate": 45.3,
 "tests": 9283,
-"located": "town"
+"located": "centre",
+"postcode": "S13 9LT"
 },
 {
 "name": "Sheffield (Middlewood Road)",
-"lat": 53.40293,
-"lon": -1.51332,
+"lat": 53.41667,
+"lon": -1.51075,
 "passRate": 47.5,
 "tests": 9864,
-"located": "town"
+"located": "centre",
+"postcode": "S6 1TQ"
 },
 {
 "name": "Shrewsbury",
-"lat": 52.70775,
-"lon": -2.75407,
+"lat": 52.74598,
+"lon": -2.73646,
 "passRate": 49.2,
 "tests": 5712,
-"located": "town"
+"located": "centre",
+"postcode": "SY1 3BF"
 },
 {
 "name": "Sidcup (London)",
-"lat": 51.4264,
-"lon": 0.10104,
+"lat": 51.41939,
+"lon": 0.1226,
 "passRate": 59.0,
 "tests": 12809,
-"located": "town"
+"located": "centre",
+"postcode": "DA14 5AG"
 },
 {
 "name": "Skegness",
@@ -2069,7 +2632,8 @@
 "lon": 0.32557,
 "passRate": 57.6,
 "tests": 1895,
-"located": "centre"
+"located": "centre",
+"postcode": "PE25 2EL"
 },
 {
 "name": "Skipton",
@@ -2077,15 +2641,26 @@
 "lon": -2.02442,
 "passRate": 54.4,
 "tests": 2812,
-"located": "centre"
+"located": "centre",
+"postcode": "BD23 2BE"
 },
 {
 "name": "Slough (London)",
-"lat": 51.5099,
-"lon": -0.53579,
+"lat": 51.50851,
+"lon": -0.54587,
 "passRate": 45.6,
 "tests": 9181,
-"located": "town"
+"located": "centre",
+"postcode": "SL3 6EZ"
+},
+{
+"name": "South Uist",
+"lat": 57.15469,
+"lon": -7.31288,
+"passRate": null,
+"tests": 0,
+"located": "centre",
+"postcode": "HS8 5TH"
 },
 {
 "name": "Southall (London)",
@@ -2093,7 +2668,8 @@
 "lon": -0.36536,
 "passRate": 46.2,
 "tests": 6461,
-"located": "centre"
+"located": "centre",
+"postcode": "UB1 2HD"
 },
 {
 "name": "Southampton (Maybush)",
@@ -2101,39 +2677,44 @@
 "lon": -1.45286,
 "passRate": 47.1,
 "tests": 8954,
-"located": "centre"
+"located": "centre",
+"postcode": "SO16 9FP"
 },
 {
 "name": "Southend-on-Sea",
-"lat": 51.53882,
-"lon": 0.71281,
+"lat": 51.54845,
+"lon": 0.709,
 "passRate": 48.1,
 "tests": 4797,
-"located": "town"
+"located": "centre",
+"postcode": "SS2 6LL"
 },
 {
 "name": "Southport (Liverpool)",
-"lat": 53.64874,
-"lon": -3.0045,
+"lat": 53.64405,
+"lon": -3.00378,
 "passRate": 59.2,
 "tests": 7231,
-"located": "town"
+"located": "centre",
+"postcode": "PR8 1HE"
 },
 {
 "name": "Speke (Liverpool)",
-"lat": 53.3451,
-"lon": -2.86198,
+"lat": 53.34897,
+"lon": -2.88459,
 "passRate": 38.6,
 "tests": 6986,
-"located": "town"
+"located": "centre",
+"postcode": "L19 2QR"
 },
 {
 "name": "St Albans",
-"lat": 51.75305,
-"lon": -0.33797,
+"lat": 51.7531,
+"lon": -0.33462,
 "passRate": 48.4,
 "tests": 6881,
-"located": "town"
+"located": "centre",
+"postcode": "AL1 3JX"
 },
 {
 "name": "St Helens (Liverpool)",
@@ -2141,79 +2722,89 @@
 "lon": -2.72423,
 "passRate": 40.2,
 "tests": 9776,
-"located": "centre"
+"located": "centre",
+"postcode": "WA9 1NS"
 },
 {
 "name": "Stafford",
-"lat": 52.80632,
-"lon": -2.11638,
+"lat": 52.81262,
+"lon": -2.12451,
 "passRate": 46.1,
 "tests": 3783,
-"located": "town"
+"located": "centre",
+"postcode": "ST16 2RF"
 },
 {
 "name": "Steeton",
-"lat": 53.89667,
-"lon": -1.94944,
+"lat": 53.89946,
+"lon": -1.95075,
 "passRate": 50.5,
 "tests": 3840,
-"located": "town"
+"located": "centre",
+"postcode": "BD20 6RW"
 },
 {
 "name": "Stevenage",
-"lat": 51.90167,
-"lon": -0.20272,
+"lat": 51.91098,
+"lon": -0.20845,
 "passRate": 44.9,
 "tests": 4208,
-"located": "town"
+"located": "centre",
+"postcode": "SG1 3DT"
 },
 {
 "name": "Stirling",
-"lat": 56.11812,
-"lon": -3.936,
+"lat": 56.11055,
+"lon": -3.93952,
 "passRate": 38.7,
 "tests": 4111,
-"located": "town"
+"located": "centre",
+"postcode": "FK8 2HF"
 },
 {
 "name": "Stoke-On-Trent (Cobridge)",
-"lat": 53.03413,
-"lon": -2.18815,
+"lat": 53.04032,
+"lon": -2.18803,
 "passRate": 38.8,
 "tests": 6450,
-"located": "street"
+"located": "centre",
+"postcode": "ST6 2HE"
 },
 {
 "name": "Stoke-on-Trent (Newcastle-Under-Lyme)",
-"lat": 53.02056,
-"lon": -2.22999,
+"lat": 52.99635,
+"lon": -2.21217,
 "passRate": 40.7,
 "tests": 7098,
-"located": "street"
+"located": "centre",
+"postcode": "ST4 6PQ"
 },
 {
 "name": "Stornoway",
-"lat": 58.21995,
-"lon": -6.40696,
+"lat": 58.20779,
+"lon": -6.39111,
 "passRate": 56.1,
 "tests": 374,
-"located": "town"
+"located": "centre",
+"postcode": "HS1 2XX"
 },
 {
 "name": "Stranraer",
-"lat": 54.90443,
-"lon": -5.0262,
+"lat": 54.90501,
+"lon": -5.02137,
 "passRate": 73.4,
 "tests": 214,
-"located": "town"
+"located": "centre",
+"postcode": "DG9 8EH"
 },
 {
 "name": "Sunderland",
-"lat": 54.90585,
-"lon": -1.38287,
+"lat": 54.92123,
+"lon": -1.42865,
 "passRate": 47.1,
 "tests": 9084,
-"located": "town"
+"located": "centre",
+"postcode": "SR5 3JJ"
 },
 {
 "name": "Swansea",
@@ -2221,15 +2812,17 @@
 "lon": -3.91414,
 "passRate": 52.1,
 "tests": 10590,
-"located": "centre"
+"located": "centre",
+"postcode": "SA1 8QY"
 },
 {
 "name": "Swindon",
-"lat": 51.50326,
-"lon": -1.73331,
+"lat": 51.575,
+"lon": -1.83242,
 "passRate": 49.3,
 "tests": 9470,
-"located": "centre"
+"located": "centre",
+"postcode": "SN5 5BL"
 },
 {
 "name": "Swindon LGV",
@@ -2245,31 +2838,35 @@
 "lon": -3.07978,
 "passRate": 56.3,
 "tests": 6957,
-"located": "centre"
+"located": "centre",
+"postcode": "TA2 8RX"
 },
 {
 "name": "Telford",
-"lat": 52.67805,
-"lon": -2.45142,
+"lat": 52.71969,
+"lon": -2.46515,
 "passRate": 43.9,
 "tests": 5663,
-"located": "town"
+"located": "centre",
+"postcode": "TF1 7FR"
 },
 {
 "name": "Thurso",
-"lat": 58.59474,
-"lon": -3.52058,
+"lat": 58.59228,
+"lon": -3.53656,
 "passRate": 58.1,
 "tests": 167,
-"located": "town"
+"located": "centre",
+"postcode": "KW14 7QA"
 },
 {
 "name": "Tilbury",
-"lat": 51.46161,
-"lon": 0.36368,
+"lat": 51.4643,
+"lon": 0.35142,
 "passRate": 49.1,
 "tests": 4185,
-"located": "town"
+"located": "centre",
+"postcode": "RM18 7AE"
 },
 {
 "name": "Tolworth (London)",
@@ -2277,23 +2874,26 @@
 "lon": -0.29304,
 "passRate": 53.3,
 "tests": 9241,
-"located": "centre"
+"located": "centre",
+"postcode": "KT6 7RZ"
 },
 {
 "name": "Tottenham",
-"lat": 51.5977,
-"lon": -0.06729,
+"lat": 51.60746,
+"lon": -0.079,
 "passRate": 47.9,
 "tests": 12178,
-"located": "town"
+"located": "centre",
+"postcode": "N17 8JL"
 },
 {
 "name": "Trowbridge",
-"lat": 51.31616,
-"lon": -2.20243,
+"lat": 51.3139,
+"lon": -2.20224,
 "passRate": 51.1,
 "tests": 2547,
-"located": "town"
+"located": "centre",
+"postcode": "BA14 7DZ"
 },
 {
 "name": "Tunbridge Wells",
@@ -2301,15 +2901,17 @@
 "lon": 0.26399,
 "passRate": 58.9,
 "tests": 4887,
-"located": "centre"
+"located": "centre",
+"postcode": "TN1 2ES"
 },
 {
 "name": "Ullapool",
-"lat": 57.89582,
-"lon": -5.16022,
+"lat": 57.89881,
+"lon": -5.15918,
 "passRate": 74.6,
 "tests": 59,
-"located": "town"
+"located": "centre",
+"postcode": "IV26 2UW"
 },
 {
 "name": "Upton",
@@ -2317,47 +2919,53 @@
 "lon": -3.09857,
 "passRate": 50.0,
 "tests": 10893,
-"located": "centre"
+"located": "centre",
+"postcode": "CH49 0UF"
 },
 {
 "name": "Uxbridge (London)",
-"lat": 51.54495,
-"lon": -0.48167,
+"lat": 51.53689,
+"lon": -0.48539,
 "passRate": 49.6,
 "tests": 7378,
-"located": "town"
+"located": "centre",
+"postcode": "UB8 2DB"
 },
 {
 "name": "Wakefield",
-"lat": 53.68295,
-"lon": -1.49673,
+"lat": 53.68345,
+"lon": -1.54656,
 "passRate": 46.7,
 "tests": 7650,
-"located": "town"
+"located": "centre",
+"postcode": "WF5 9TR"
 },
 {
 "name": "Wallasey",
-"lat": 53.42412,
-"lon": -3.03941,
+"lat": 53.41882,
+"lon": -3.02734,
 "passRate": 49.6,
 "tests": 1276,
-"located": "town"
+"located": "centre",
+"postcode": "CH44 8AT"
 },
 {
 "name": "Walton LGV",
-"lat": 54.98198,
-"lon": -2.74471,
+"lat": 53.92132,
+"lon": -1.32284,
 "passRate": 56.9,
 "tests": 2320,
-"located": "town"
+"located": "centre",
+"postcode": "LS23 7DU"
 },
 {
 "name": "Wanstead (London)",
-"lat": 51.57567,
-"lon": 0.0278,
+"lat": 51.58046,
+"lon": 0.02384,
 "passRate": 40.4,
 "tests": 8370,
-"located": "town"
+"located": "centre",
+"postcode": "E11 2AW"
 },
 {
 "name": "Warrington",
@@ -2365,7 +2973,8 @@
 "lon": -2.57849,
 "passRate": 55.3,
 "tests": 6124,
-"located": "centre"
+"located": "centre",
+"postcode": "WA2 9EP"
 },
 {
 "name": "Warwick (Wedgenock House)",
@@ -2373,15 +2982,17 @@
 "lon": -1.60477,
 "passRate": 48.4,
 "tests": 10900,
-"located": "centre"
+"located": "centre",
+"postcode": "CV34 5AP"
 },
 {
 "name": "Watford",
-"lat": 51.65539,
-"lon": -0.39574,
+"lat": 51.66641,
+"lon": -0.36519,
 "passRate": 46.6,
 "tests": 10896,
-"located": "town"
+"located": "centre",
+"postcode": "WD25 8HU"
 },
 {
 "name": "Watnall",
@@ -2393,19 +3004,21 @@
 },
 {
 "name": "Wednesbury",
-"lat": 52.55218,
-"lon": -2.02244,
+"lat": 52.55487,
+"lon": -2.01241,
 "passRate": 36.4,
 "tests": 8335,
-"located": "town"
+"located": "centre",
+"postcode": "WS10 9HN"
 },
 {
 "name": "Wellingborough",
-"lat": 52.30189,
-"lon": -0.69373,
+"lat": 52.30194,
+"lon": -0.72366,
 "passRate": 55.1,
 "tests": 1477,
-"located": "town"
+"located": "centre",
+"postcode": "NN8 3RU"
 },
 {
 "name": "West Didsbury (Manchester)",
@@ -2413,7 +3026,8 @@
 "lon": -2.25789,
 "passRate": 50.9,
 "tests": 17196,
-"located": "centre"
+"located": "centre",
+"postcode": "M21 7QY"
 },
 {
 "name": "West Wickham (London)",
@@ -2421,39 +3035,44 @@
 "lon": -0.01093,
 "passRate": 50.9,
 "tests": 11147,
-"located": "centre"
+"located": "centre",
+"postcode": "BR4 0RL"
 },
 {
 "name": "Weston-super-Mare",
-"lat": 51.34719,
-"lon": -2.97789,
+"lat": 51.34107,
+"lon": -2.97268,
 "passRate": 56.5,
 "tests": 5807,
-"located": "town"
+"located": "centre",
+"postcode": "BS23 3PZ"
 },
 {
 "name": "Whitby",
-"lat": 54.48665,
-"lon": -0.61353,
+"lat": 54.4825,
+"lon": -0.60814,
 "passRate": 65.1,
 "tests": 513,
-"located": "town"
+"located": "centre",
+"postcode": "YO22 4ET"
 },
 {
 "name": "Wick",
-"lat": 58.44255,
-"lon": -3.09158,
+"lat": 58.45032,
+"lon": -3.08987,
 "passRate": 53.8,
 "tests": 225,
-"located": "town"
+"located": "centre",
+"postcode": "KW1 4QS"
 },
 {
 "name": "Widnes",
-"lat": 53.36393,
-"lon": -2.77054,
+"lat": 53.36237,
+"lon": -2.77248,
 "passRate": 40.1,
 "tests": 5673,
-"located": "centre"
+"located": "centre",
+"postcode": "WA8 8PT"
 },
 {
 "name": "Winchester",
@@ -2461,15 +3080,17 @@
 "lon": -1.32276,
 "passRate": 47.9,
 "tests": 3839,
-"located": "centre"
+"located": "centre",
+"postcode": "SO23 9SY"
 },
 {
 "name": "Wolverhampton",
-"lat": 52.58477,
-"lon": -2.12757,
+"lat": 52.56367,
+"lon": -2.10224,
 "passRate": 33.4,
 "tests": 11719,
-"located": "town"
+"located": "centre",
+"postcode": "WV4 6JX"
 },
 {
 "name": "Wood Green (London)",
@@ -2477,31 +3098,35 @@
 "lon": -0.1044,
 "passRate": 46.8,
 "tests": 10797,
-"located": "centre"
+"located": "centre",
+"postcode": "N22 5LF"
 },
 {
 "name": "Worcester",
-"lat": 52.19653,
-"lon": -2.20956,
+"lat": 52.214,
+"lon": -2.17804,
 "passRate": 50.6,
 "tests": 10516,
-"located": "town"
+"located": "centre",
+"postcode": "WR4 9FE"
 },
 {
 "name": "Workington",
-"lat": 54.64338,
-"lon": -3.54535,
+"lat": 54.63488,
+"lon": -3.56942,
 "passRate": 48.3,
 "tests": 3015,
-"located": "town"
+"located": "centre",
+"postcode": "CA14 3YT"
 },
 {
 "name": "Worksop",
-"lat": 53.30424,
-"lon": -1.12462,
+"lat": 53.32317,
+"lon": -1.15948,
 "passRate": 53.3,
 "tests": 6022,
-"located": "town"
+"located": "centre",
+"postcode": "S81 8BW"
 },
 {
 "name": "Worthing",
@@ -2517,23 +3142,26 @@
 "lon": -3.01615,
 "passRate": 56.8,
 "tests": 3942,
-"located": "centre"
+"located": "centre",
+"postcode": "LL13 7YP"
 },
 {
 "name": "Yeading (London)",
-"lat": 51.52724,
-"lon": -0.39927,
+"lat": 51.52351,
+"lon": -0.39009,
 "passRate": 46.9,
 "tests": 6289,
-"located": "town"
+"located": "centre",
+"postcode": "UB4 9BS"
 },
 {
 "name": "Yeovil",
-"lat": 50.94205,
-"lon": -2.63186,
+"lat": 50.94372,
+"lon": -2.6609,
 "passRate": 59.7,
 "tests": 5754,
-"located": "town"
+"located": "centre",
+"postcode": "BA20 2EN"
 },
 {
 "name": "York",
@@ -2541,6 +3169,7 @@
 "lon": -1.0489,
 "passRate": 51.3,
 "tests": 7121,
-"located": "centre"
+"located": "centre",
+"postcode": "YO32 9GW"
 }
 ]

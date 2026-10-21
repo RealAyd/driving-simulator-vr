@@ -8,7 +8,9 @@ import {isPartialPostcode,isPostcode,type AreaRequest} from '../generator/area';
 
 export interface TestCentre{name:string;lat:number;lon:number;passRate:number|null;tests:number;
   /** How the position was found: the centre itself on the map, the street in its name, or only its town (approximate). */
-  located:'centre'|'street'|'town'}
+  located:'centre'|'street'|'town';
+  /** The centre's postcode, where known: typing it finds the centre. */
+  postcode?:string}
 
 const files=import.meta.glob('../../content/centres/*.json',{eager:true,import:'default'}) as Record<string,TestCentre[]>;
 export const TEST_CENTRES:TestCentre[]=Object.values(files).flat();
@@ -45,7 +47,8 @@ export function setUpAreaSearch(input:HTMLInputElement,list:HTMLElement,status:H
     const words=nq.split(' ').filter(Boolean);
     for(const c of TEST_CENTRES){
       if(results.length>=6)break;
-      if(words.every(w=>norm(c.name).includes(w)))results.push({label:`${c.name} test centre`,
+      const byPostcode=!!c.postcode&&c.postcode.replace(/\s/g,'')===q.replace(/\s/g,'').toUpperCase();
+      if(byPostcode||words.every(w=>norm(c.name).includes(w)))results.push({label:`${c.name} test centre`,
         detail:[c.passRate!==null?`pass rate ${c.passRate.toFixed(0)}%`:'test centre',c.located==='town'?'area approximate':''].filter(Boolean).join(' · '),
         pick:async()=>({label:`${c.name} test centre`,lat:c.lat,lon:c.lon,testCentre:c.located!=='town'})});
     }
