@@ -8,12 +8,12 @@ What a learner can use on the phone screen, in the phone headset viewer and on a
 | --- | --- | --- |
 | Assisted | Keeps the car on the lane path. You control speed, signals and observations. | Default on phones |
 | Tilt the phone | Turn the phone in landscape like a steering wheel. The Steer buttons stay on screen as a fallback. | Phones with a motion sensor, standalone link only |
-| **On-screen wheel** (new) | Drag round the wheel at the bottom left with a thumb. It goes past half a turn, up to 270° (full lock). Let go and it returns to the centre. Steer keys still override it. | Phone screen |
+| **On-screen wheel** | In the driver's seat, drag round the car's own steering wheel (there is no separate wheel on screen). Behind the car, a separate wheel appears at the bottom left. It goes past half a turn, up to 270° (full lock). Let go and it returns to the centre. Steer keys still override it. | Phone screen |
 | Steer buttons or keys | ◀ ▶ buttons, or A/D or the arrow keys. A tap gives a small correction; holding builds up to full lock. | Default on computers |
 
 In the phone headset viewer, steering is assisted, or done with the controller's stick.
 
-**The driver's hands** hold the wheel at ten to two. They turn with it up to about 70°, then stay there as the wheel is
+**The driver's hands** hold the wheel low on its sides (about twenty to three), with the forearms rising from the bottom corners of the picture, as in a driving game's cockpit view (2026-10-21; previously ten to two). They turn with it up to about 70°, then stay there as the wheel is
 fed through them (pull-push). Both the wheel and the hands follow the car's actual steering, whichever option is used.
 
 The hands have knuckles and fingers wrapped round the rim, a thumb along the inside and bare forearms. Since

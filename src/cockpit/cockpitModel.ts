@@ -26,8 +26,10 @@ export const STEERING_RATIO=4;
 
 /** How far (radians of wheel turn) the hands follow the wheel before they feed it through (pull-push). */
 export const HANDS_FOLLOW=1.2;
-/** Where the hands hold the rim when the wheel is centred: ten to two (60° either side of the top), in view above the dashboard edge. */
-const GRIP=Math.PI/3;
+/** Where the hands hold the rim when the wheel is centred: about twenty to three (75° either side of the top), low on the sides of the wheel with the forearms rising from below, as in a driving game's cockpit view. */
+const GRIP=5*Math.PI/12;
+/** Steering-wheel rim radius (metres). */
+export const WHEEL_RIM=.19;
 
 export interface Cockpit{
   root:TransformNode;
@@ -165,7 +167,7 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   column.parent=root;
   const wheel=new TransformNode('steering-wheel',scene);
   wheel.parent=column;
-  const RIM=.19;
+  const RIM=WHEEL_RIM;
   const rim=CreateTorus('steering-rim',{diameter:2*RIM,thickness:.036,tessellation:40},scene);
   rim.material=trim;
   rim.parent=wheel;
@@ -183,7 +185,7 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   part('steering-hub-pad',.1,.012,.07,.012,glossBlack,.04);
   part('steering-top-mark',.03,.04,.024,-RIM,mat('steering-mark',new Color3(.85,.55,.1)));
 
-  // The driver's hands on the rim at ten to two: the back of each hand towards the driver, knuckles round the
+  // The driver's hands on the rim at twenty to three: the back of each hand towards the driver, knuckles round the
   // outside of the rim, thumb along the inside; bare forearms (sleeves pushed up). The hands turn with the wheel up to
   // HANDS_FOLLOW, then hold there as the wheel is fed through them (pull-push steering).
   const skin=mat('driver-skin',new Color3(.8,.62,.5));
@@ -198,7 +200,7 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   const hands=[-1,1].map(side=>{
     const hand=new TransformNode(`driver-hand-${side<0?'left':'right'}`,scene);
     hand.parent=handRing;
-    // On the rim, ±60° from the top; local X along the rim, +Z towards the centre, +Y towards the driver.
+    // On the rim, ±75° from the top; local X along the rim, +Z towards the centre, +Y towards the driver.
     const phi=side*GRIP;
     hand.position.set(RIM*Math.sin(phi),0,-RIM*Math.cos(phi));
     hand.rotation.y=-phi;
@@ -243,9 +245,10 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
     const toRoot=root.getWorldMatrix().clone().invert();
     for(const {side,upper,fore} of arms){
       const hand=Vector3.TransformCoordinates(wrists[side<0?0:1]!.getAbsolutePosition(),toRoot);
-      const shoulder=new Vector3(eye.x+side*.19,eye.y-.22,eye.z+.1);
-      // Elbow: below and outside the line from shoulder to wrist, bent towards the body.
-      const elbow=shoulder.add(hand).scale(.5).add(new Vector3(side*.08,-.14,.04));
+      // Shoulders low and wide of the eye, elbows down by the sides: the forearms rise into view from the bottom
+      // corners of the picture to the wheel.
+      const shoulder=new Vector3(eye.x+side*.23,eye.y-.3,eye.z+.12);
+      const elbow=shoulder.add(hand).scale(.5).add(new Vector3(side*.12,-.2,.06));
       place(upper,shoulder,elbow);
       place(fore,elbow,hand);
     }
