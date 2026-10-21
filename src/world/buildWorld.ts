@@ -111,9 +111,9 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
 
   // Sky fill (slightly blue) weaker than the sun, as on a clear day: faces away from the sun and shadows stay readable.
   const hemi=new HemisphericLight('sky-light',new Vector3(0,1,0),scene);
-  hemi.intensity=.5;
+  hemi.intensity=.68;
   hemi.diffuse=new Color3(.86,.92,1);
-  hemi.groundColor=new Color3(.3,.32,.29);
+  hemi.groundColor=new Color3(.42,.43,.4);
   // Afternoon sun from the south-west, low enough for shadows to model buildings and cars.
   const sun=new DirectionalLight('sun',new Vector3(-.45,-.8,.4),scene);
   sun.intensity=1.05;

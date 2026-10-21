@@ -45,9 +45,15 @@ export async function loadModel(scene:Scene,url:string):Promise<AssetContainer|n
         if(pbr.albedoTexture)std.diffuseTexture=pbr.albedoTexture;
         if(pbr.emissiveColor)std.emissiveColor=pbr.emissiveColor.toGammaSpace();
         if(pbr.emissiveTexture)std.emissiveTexture=pbr.emissiveTexture;
-        std.alpha=pbr.alpha;
         std.backFaceCulling=pbr.backFaceCulling;
         std.specularColor=new Color3(.12,.12,.12);
+        // Glass is drawn tinted and solid: see-through glass showed the models' bare insides (a bus looked hollow)
+        // and sorted badly against the body.
+        if(pbr.alpha<1){
+          std.diffuseColor=std.diffuseColor.scale(.28);
+          std.specularColor=new Color3(.45,.47,.5);
+          std.specularPower=48;
+        }
         converted.set(pbr,std);
         container.materials.push(std);
       }

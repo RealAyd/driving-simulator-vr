@@ -154,6 +154,19 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   }
   // Roof header above the windscreen: a slim rounded band, not a slab.
   strut('windscreen-header',{x:-(W-.06),y:C.roof-.005,z:C.screenTop.z+.01},{x:W-.06,y:C.roof-.005,z:C.screenTop.z+.01},.06,.06,.06,frame);
+  // Black ceramic band along the top of the windscreen, deeper round the interior mirror's base, and the mirror's
+  // mounting block on it: the mirror is seen to hang from the car, not float (the header itself is just above the
+  // forward view).
+  {
+    const at=(t:number,x:number)=>new Vector3(x,C.screenBase.y+(C.screenTop.y-C.screenBase.y)*t,C.screenBase.z+(C.screenTop.z-C.screenBase.z)*t+.012);
+    const band=(name:string,t0:number,t1:number,x0:number,x1:number,inset=0)=>keep(CreateRibbon(name,{pathArray:[
+      [at(t0,x0+inset),at(t0,x1-inset)],[at(t1,x0),at(t1,x1)]
+    ],sideOrientation:2},scene),glossBlack);
+    band('windscreen-frit',.87,1,-(W-.06),W-.06);
+    band('mirror-frit',.76,.87,-.17,.17,.05);
+    const block=box('mirror-mount',.06,.045,.035,0,1.405,-.655,glossBlack);
+    block.rotation.x=-.8;
+  }
   box('roof-lining',2*W-.1,.02,C.rear-C.screenTop.z,0,C.roof+.015,(C.screenTop.z+C.rear)/2,lining);
   box('floor',2*W,.04,2.4,0,.3,0,trim);
   box('rear-panel',2*W,C.sill-.3,.06,0,(C.sill+.3)/2,C.rear+.05,trim);

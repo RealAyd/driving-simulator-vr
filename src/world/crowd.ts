@@ -42,17 +42,37 @@ export function appearance(seed:number):Appearance{
   return {top:pick(TOPS),legs:pick(LEGS),skin:pick(SKIN),hair:pick(HAIR),height:1.58+r()*.28,build:.9+r()*.25,coat:r()<.35?r()*.3:0,hair_style:Math.floor(r()*3) as 0|1|2};
 }
 
-/** Where a person is at simulated time t (walkers go back and forth along their stretch of pavement). */
+/** Seconds a walker spends at each end of their stretch: stopping, looking about, turning (each their own). */
+const pauseOf=(p:Walker)=>3+(p.offset*7.1%5);
+/** Seconds to turn round at the end of a stretch. */
+const TURN=1.2;
+
+/**
+ * Where a person is at simulated time t. Walkers walk their stretch of pavement, stop at the end, look about,
+ * turn round over a second or so and walk back (as someone waiting for a friend or a shop to open would).
+ */
 export function personPose(p:Person,t:number):FigurePose{
   // People waiting look along the road now and then (2 s in every 9 s), each at their own moment.
   if(p.kind==='stander'){const c=((t+p.x*7.3)%9+9)%9;return {x:p.x,y:p.y,z:p.z,heading:p.heading,stride:0,walking:false,...(c<2?{look:c<1?'right' as const:'left' as const}:{})}}
   const dx=p.b.x-p.a.x,dz=p.b.z-p.a.z,L=Math.hypot(dx,dz)||1;
-  const travelled=p.offset+p.speed*t;
-  const s=((travelled%(2*L))+2*L)%(2*L);
-  const back=s>L,k=back?2*L-s:s;
   const ux=dx/L,uz=dz/L;
-  const heading=Math.atan2(back?-ux:ux,-(back?-uz:uz));
-  return {x:p.a.x+ux*k,y:p.y,z:p.a.z+uz*k,heading,stride:travelled,walking:true};
+  const walk=L/p.speed,pause=pauseOf(p),leg=walk+pause,cycle=2*leg;
+  const time=p.offset/p.speed+t;
+  const c=((time%cycle)+cycle)%cycle,laps=Math.floor(time/cycle);
+  const back=c>=leg,inLeg=back?c-leg:c;
+  const walking=inLeg<walk;
+  const k=walking?inLeg*p.speed:L;
+  const along=back?L-k:k;
+  const forward=Math.atan2(ux,-uz),reverse=Math.atan2(-ux,uz);
+  // Turning at the end of the pause, towards the way back.
+  let heading=back?reverse:forward;
+  if(!walking&&inLeg>leg-TURN){
+    const f=(inLeg-(leg-TURN))/TURN,e=f*f*(3-2*f);
+    heading=(back?reverse:forward)+Math.PI*e;
+  }
+  const look=!walking&&inLeg-walk<pause-TURN?(((inLeg-walk)%3)<1.5?'left' as const:'right' as const):undefined;
+  const stride=(laps*2+(back?1:0))*L+k;
+  return {x:p.a.x+ux*along,y:p.y,z:p.a.z+uz*along,heading,stride,walking,...(look?{look}:{})};
 }
 
 export interface CrowdOptions{

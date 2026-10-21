@@ -23,16 +23,20 @@ const CROSSING_PEDESTRIAN:Appearance={top:[.12,.2,.38],legs:[.15,.15,.17],skin:[
  */
 export function pedestrianFigure(ped:Pedestrian,groundAt:(x:number,z:number)=>number):Figure{
   let last={...ped.position},walked=0;
+  const c0={x:ped.def.crossTo.x-ped.def.waitAt.x,z:ped.def.crossTo.z-ped.def.waitAt.z};
+  let heading=Math.atan2(c0.x,-c0.z);
   return {
     id:`actor-${ped.id}`,look:CROSSING_PEDESTRIAN,
     pose:()=>{
-      walked+=Math.hypot(ped.position.x-last.x,ped.position.z-last.z);
+      const step={x:ped.position.x-last.x,z:ped.position.z-last.z};
+      walked+=Math.hypot(step.x,step.z);
       last={...ped.position};
-      // Facing the way they walk to the kerb (if they do), then across.
+      // Facing the way they walk to the kerb (if they do), then across, then on along the pavement.
       const to=ped.approaching?ped.def.waitAt:ped.def.crossTo,from=ped.approaching?ped.position:ped.def.waitAt;
-      const dx=to.x-from.x,dz=to.z-from.z;
+      if(ped.walkingOn&&Math.hypot(step.x,step.z)>1e-4)heading=Math.atan2(step.x,-step.z);
+      else if(!ped.walkingOn&&ped.state!=='clear')heading=Math.atan2(to.x-from.x,-(to.z-from.z));
       // Before stepping out they look along the road (right, the nearer traffic in the UK).
-      return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading:Math.atan2(dx,-dz),stride:walked,walking:ped.state==='crossing'||ped.approaching,
+      return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading,stride:walked,walking:ped.state==='crossing'||ped.approaching||ped.walkingOn,
         ...(ped.state==='preparing'?{look:'right' as const}:{})};
     }
   };

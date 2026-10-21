@@ -24,7 +24,7 @@ import {placeLabel,type PlaceLabel} from '../world/placeLabel';
 import {buildSignage,type BuiltSignage} from '../world/signageMesh';
 import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../actors/followingVehicle';
 import {PassingVehicle} from '../actors/passingVehicle';
-import {PEDESTRIAN_RADIUS,Pedestrian} from '../actors/pedestrian';
+import {PEDESTRIAN_RADIUS,Pedestrian,onwardPath} from '../actors/pedestrian';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -378,6 +378,7 @@ export async function boot():Promise<void>{
     const learnerFootprint=()=>({pose:vehicle.pose,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength});
     const passers=scenario.actors.filter((a):a is PassingVehicleActorDef=>a.kind==='passing-vehicle').map(d=>new PassingVehicle(d,learnerFootprint,events));
     if(pedestrian){
+      pedestrian.onward=onwardPath(place,pedestrian.def);
       dynamicFootprints.push({id:pedestrian.id,shape:()=>({kind:'circle',x:pedestrian.position.x,z:pedestrian.position.z,radius:PEDESTRIAN_RADIUS})});
     }
     if(follower){

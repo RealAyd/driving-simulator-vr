@@ -28,8 +28,8 @@ export class SunShadows{
     this.generator.usePoissonSampling=true;
     this.generator.bias=.0015;
     this.generator.normalBias=.02;
-    // Shaded ground keeps only the sky light.
-    this.generator.setDarkness(.1);
+    // Shade keeps some of the sun's light too: soft daylight shadows, not black ones.
+    this.generator.setDarkness(.3);
     const map=this.generator.getShadowMap()!;
     // Every second frame: half the cost; at 30 mph a shadow lags under 0.2 m.
     map.refreshRate=2;

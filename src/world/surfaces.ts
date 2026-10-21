@@ -160,7 +160,8 @@ export function buildSky(scene:Scene,horizon:Color3,zenith:Color3):Mesh{
 export function configureTone(scene:Scene):void{
   const ip=scene.imageProcessingConfiguration;
   ip.toneMappingEnabled=true;
-  ip.toneMappingType=ImageProcessingConfiguration.TONEMAPPING_ACES;
-  ip.exposure=1.3;
-  ip.contrast=1.12;
+  // Khronos PBR Neutral: keeps colours and mid-tones as authored (ACES darkened brick and faces too much on phones).
+  ip.toneMappingType=ImageProcessingConfiguration.TONEMAPPING_KHR_PBR_NEUTRAL;
+  ip.exposure=1.12;
+  ip.contrast=1;
 }

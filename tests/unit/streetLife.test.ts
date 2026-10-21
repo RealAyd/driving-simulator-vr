@@ -7,7 +7,7 @@ import {appearance,layoutCrowd,personPose} from '../../src/world/crowd';
 import {placeLabel} from '../../src/world/placeLabel';
 import {brandSign} from '../../src/world/brandSigns';
 import {pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from '../../src/world/roadGeometry';
-import {Pedestrian} from '../../src/actors/pedestrian';
+import {Pedestrian,onwardPath} from '../../src/actors/pedestrian';
 import {EventLog} from '../../src/app/eventLog';
 import {pedestrianFigure} from '../../src/actors/actorVisuals';
 import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
@@ -15,6 +15,7 @@ import zebraJson from '../../content/locations/representative-residential-straig
 import movingOffJson from '../../content/locations/residential-moving-off.json';
 import kingsRoadJson from '../../content/locations/brentwood-kings-road-zebra.json';
 import crossingJson from '../../content/scenarios/crossing-restricted-view.json';
+import kingsRoadZebraJson from '../../content/scenarios/brentwood-kings-road-zebra.json';
 
 const brentwood=parseLocation(brentwoodJson);
 const zebra=parseLocation(zebraJson);
@@ -250,5 +251,26 @@ describe('Crossing pedestrian figure',()=>{
     expect(ped.state).toBe('crossing');
     expect([pose.x,pose.z,pose.walking]).toEqual([ped.position.x,ped.position.z,true]);
     expect(pose.stride).toBeGreaterThan(.5);
+  });
+
+  it.each([['practice zebra',crossingJson,zebra],['Kings Road',kingsRoadZebraJson,kingsRoad]] as const)('%s: after crossing, walks on along the pavement instead of standing at the kerb',(_,json,l)=>{
+    const def=parseScenario(json).actors.find(a=>a.kind==='pedestrian') as PedestrianActorDef;
+    const ped=new Pedestrian(def,new EventLog(()=>0));
+    ped.onward=onwardPath(l,def);
+    const figure=pedestrianFigure(ped,()=>0);
+    ped.requestCrossing(0);
+    for(let i=0;i<60*60&&ped.state!=='clear';i++){ped.fixedUpdate(1/60);figure.pose(0)}
+    expect(ped.state).toBe('clear');
+    let walking=0;
+    for(let i=0;i<60*30;i++){
+      ped.fixedUpdate(1/60);
+      const pose=figure.pose(0);
+      if(pose.walking)walking++;
+      if(Math.hypot(ped.position.x-def.crossTo.x,ped.position.z-def.crossTo.z)>.5)
+        expect(surfaceAt(l,ped.position.x,ped.position.z)?.kind,`at ${i/60}s`).toBe('pavement');
+    }
+    expect(Math.hypot(ped.position.x-def.crossTo.x,ped.position.z-def.crossTo.z)).toBeGreaterThan(12);
+    expect(walking).toBeGreaterThan(60*10);
+    expect(ped.walkingOn).toBe(false);
   });
 });
