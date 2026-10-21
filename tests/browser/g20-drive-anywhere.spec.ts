@@ -1,0 +1,36 @@
+import fs from 'node:fs';
+import {expect,test,type Page} from '@playwright/test';
+
+// Drive anywhere: a postcode is looked up (postcodes.io) and the streets round it are downloaded (OSM API) and
+// built on the device. The two services are answered from saved responses here (fixtures, IG3 9QJ in Goodmayes).
+test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
+const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
+const fixture=(name:string)=>fs.readFileSync(new URL(`./fixtures/${name}`,import.meta.url));
+
+test('G20: search a postcode, build the area on the device and drive there',async({page},testInfo)=>{
+  test.setTimeout(300_000);
+  const errors:string[]=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  let osmCalls=0;
+  await page.route('https://api.postcodes.io/**',route=>route.fulfill({contentType:'application/json',body:fixture('postcode-ig3-9qj.json'),headers:{'access-control-allow-origin':'*'}}));
+  await page.route('https://api.openstreetmap.org/**',route=>{osmCalls++;return route.fulfill({contentType:'text/xml',body:fixture('osm-ig3-9qj.osm'),headers:{'access-control-allow-origin':'*'}})});
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.fill('#area-query','IG3 9QJ');
+  await expect(page.locator('#area-results button').first()).toContainText('IG3 9QJ');
+  await page.locator('#area-results button').first().click();
+  await expect(page.locator('#exercise-detail')).toBeVisible({timeout:60_000});
+  await expect(page.locator('#exercise-title')).toContainText('IG3 9QJ');
+  await expect(page.locator('#exercise-briefing')).toContainText('not an official test route');
+  expect(osmCalls).toBe(1);
+  await page.click('#start-practice');
+  await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
+  expect(await read(page,'location()')).toMatch(/^area-ig3-9qj/);
+  // Drives off along the street without leaving the route.
+  await page.keyboard.down('KeyW');
+  await expect.poll(async()=>(await read(page,'vehicle()')).speed,{timeout:60_000}).toBeGreaterThan(4);
+  await page.keyboard.up('KeyW');
+  expect(await read(page,'session()')).toBe('running');
+  await page.screenshot({path:testInfo.outputPath('g20-area.png')});
+  expect(errors).toEqual([]);
+});

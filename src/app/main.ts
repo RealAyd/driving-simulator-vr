@@ -27,6 +27,8 @@ import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian,onwardPath} from '../actors/pedestrian';
 import {Soundscape,type RoadUserSound} from '../audio/soundscape';
 import {DriverBody} from '../cockpit/driverBody';
+import {buildArea} from '../generator/area';
+import {setUpAreaSearch} from '../ui/areaSearch';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -1135,6 +1137,27 @@ export async function boot():Promise<void>{
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-exercise]'))
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
   byId('exercise-back').addEventListener('click',()=>showExercise(null));
+
+  // ---- Drive anywhere: an area built on the phone round a test centre, postcode or place ----
+  const areaStatus=byId('area-status');
+  let building=false;
+  setUpAreaSearch(byId<HTMLInputElement>('area-query'),byId('area-results'),areaStatus,async request=>{
+    if(building||session.state!=='ready')return;
+    building=true;
+    try{
+      const built=await buildArea(request,step=>{areaStatus.textContent=step});
+      const {location:l,scenario:sc}=built;
+      locations.set(l.id,l);
+      scenarios.set(sc.id,sc);
+      EXERCISES[l.id]={scenario:sc.id};
+      events.emit('area.built',{locationId:l.id,label:request.label,lat:request.lat,lon:request.lon,summary:built.summary});
+      areaStatus.textContent='';
+      showExercise(l.id);
+    }catch(error){
+      areaStatus.textContent=error instanceof Error&&/OpenStreetMap|dense|road/.test(error.message)?error.message:'Could not build this area (no connection, or no roads there). Try again or pick another place.';
+      console.warn('[Driving Practice] area not built',error);
+    }finally{building=false}
+  });
 
   const start=(scenarioId:string,options:{familiarisation?:boolean}={})=>{
     if(session.state!=='ready')return;

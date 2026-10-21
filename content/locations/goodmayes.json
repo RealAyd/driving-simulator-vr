@@ -5,7 +5,7 @@
  "placeName": "Goodmayes",
  "fidelity": "geographically-inspired",
  "drivingSide": "left",
- "description": "Generated from OpenStreetMap around Goodmayes (51.56500, 0.11030), 900 m square, by tools/centres/build_centre.mjs. Lane widths by road class, speed limits where mapped, building heights from mapped levels or estimated from use, zebra zig-zags estimated. Not surveyed; not an official test route.",
+ "description": "Generated from OpenStreetMap around Goodmayes (51.56500, 0.11030), 900 m square, by src/generator/buildCentre.js. Lane widths by road class, speed limits where mapped, building heights from mapped levels or estimated from use, zebra zig-zags estimated. Not surveyed; not an official test route.",
  "sources": [
   {
    "title": "OpenStreetMap",

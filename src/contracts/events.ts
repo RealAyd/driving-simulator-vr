@@ -13,6 +13,7 @@ export type SimEventType=
   |'vehicle.indicator.changed'
   |'vehicle.braking'
   |'vehicle.gear.changed'
+  |'area.built'
   |'vehicle.surface.changed'
   |'vehicle.stopped'
   |'vehicle.moving'
