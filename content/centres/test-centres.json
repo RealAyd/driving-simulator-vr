@@ -215,14 +215,6 @@
 "postcode": "LL57 4YH"
 },
 {
-"name": "Barking (Tanner Street)",
-"lat": 51.54271,
-"lon": 0.07666,
-"passRate": 37.9,
-"tests": 7499,
-"located": "street"
-},
-{
 "name": "Barnet (London)",
 "lat": 51.64514,
 "lon": -0.18591,
@@ -338,14 +330,6 @@
 "tests": 667,
 "located": "centre",
 "postcode": "TD15 2UY"
-},
-{
-"name": "Beverley LGV",
-"lat": 53.84255,
-"lon": -0.43157,
-"passRate": 55.1,
-"tests": 612,
-"located": "town"
 },
 {
 "name": "Birmingham (Cocks Moors Woods Leisure Centre)",
@@ -931,14 +915,6 @@
 "tests": 121,
 "located": "centre",
 "postcode": "PH7 3SB"
-},
-{
-"name": "Culham LGV",
-"lat": 51.65629,
-"lon": -1.25507,
-"passRate": 61.1,
-"tests": 54,
-"located": "town"
 },
 {
 "name": "Cumnock",
@@ -2242,14 +2218,6 @@
 "postcode": "CW8 4BU"
 },
 {
-"name": "Norwich (Jupiter Road)",
-"lat": 52.65756,
-"lon": 1.28283,
-"passRate": 42.2,
-"tests": 3032,
-"located": "street"
-},
-{
 "name": "Norwich (Peachman Way)",
 "lat": 52.63435,
 "lon": 1.37497,
@@ -3130,11 +3098,12 @@
 },
 {
 "name": "Worthing",
-"lat": 50.81154,
-"lon": -0.36997,
+"lat": 50.82008,
+"lon": -0.40943,
 "passRate": 58.8,
 "tests": 7766,
-"located": "town"
+"located": "centre",
+"postcode": "BN13 1NP"
 },
 {
 "name": "Wrexham",

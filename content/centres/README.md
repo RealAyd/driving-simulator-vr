@@ -10,3 +10,7 @@
 - **Positions:** each postcode looked up with postcodes.io (Ordnance Survey and ONS open data); two retired
   postcodes from postcodes.io's terminated-postcode records. Where no postcode was supplied, the centre found with
   OpenStreetMap's search (Nominatim, ODbL) or, failing that, its town (`located: "town"`, shown as approximate).
+
+Removed (owner's list, October 2026): Barking (Tanner Street), closed 5 January 2026; Beverley LGV, car tests
+ceased 6 May 2026; Culham LGV, car tests ceased 15 October 2025; Norwich (Jupiter Road), car tests ceased
+7 February 2025. Worthing placed by its postcode (BN13 1NP).
