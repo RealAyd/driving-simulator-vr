@@ -207,9 +207,9 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   // outside of the rim and curled behind it, thumb along the inside; modelled from rounded pieces (palm, two-jointed
   // fingers, thumb, wrist). The hands turn with the wheel up to HANDS_FOLLOW, then hold there as the wheel is fed
   // through them (pull-push steering).
-  const skin=mat('driver-skin',new Color3(.86,.66,.55),.08);
-  skin.emissiveColor=new Color3(.1,.07,.06);
-  const sleeve=mat('driver-sleeve',new Color3(.14,.17,.24));
+  const skin=mat('driver-skin',new Color3(.78,.56,.43),.1);
+  skin.emissiveColor=new Color3(.05,.035,.028);
+  const sleeve=mat('driver-sleeve',new Color3(.17,.22,.34));
   const handRing=new TransformNode('driver-hands',scene);
   handRing.parent=column;
   const blob=(name:string,parent:TransformNode,d:[number,number,number],at:[number,number,number],material=skin)=>{
@@ -236,18 +236,16 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
     hand.rotation.y=-phi;
     const name=`driver-hand-${side<0?'left':'right'}`;
     // Back of the hand over the rim, towards the driver: flat, a little wider at the knuckles.
-    blob(`${name}-back`,hand,[.08,.024,.088],[0,.03,.008]);
-    blob(`${name}-palm-edge`,hand,[.07,.03,.04],[0,.024,-.018]);
+    blob(`${name}-back`,hand,[.078,.024,.086],[0,.029,.006]);
     // Fingers: from the knuckles over the outside of the rim, then curled behind it towards the centre.
     [.95,1,.96,.84].forEach((k,i)=>{
-      const x=(i-1.5)*.0195;
-      blob(`${name}-knuckle-${i}`,hand,[.019,.017,.019],[x,.024,-.03]);
-      bone(`${name}-finger-${i}`,hand,[x,.018,-.034],[x,-.006*k,-.042*k],.0088);
-      bone(`${name}-tip-${i}`,hand,[x,-.006*k,-.042*k],[x,-.026*k,-.016],.0079);
+      const x=(i-1.5)*.018;
+      bone(`${name}-finger-${i}`,hand,[x,.022,-.03],[x,-.004*k,-.04*k],.0092);
+      bone(`${name}-tip-${i}`,hand,[x,-.004*k,-.04*k],[x,-.024*k,-.016],.0082);
     });
-    // Thumb along the inside of the rim, pointing up the wheel, slightly bent at the joint.
-    bone(`${name}-thumb`,hand,[-side*.012,.03,.026],[-side*.04,.026,.03],.0105);
-    bone(`${name}-thumb-tip`,hand,[-side*.04,.026,.03],[-side*.062,.017,.028],.0088);
+    // Thumb lying along the inside of the rim, pointing up the wheel.
+    bone(`${name}-thumb`,hand,[-side*.014,.026,.024],[-side*.04,.018,.026],.0102);
+    bone(`${name}-thumb-tip`,hand,[-side*.04,.018,.026],[-side*.058,.008,.022],.0086);
     // Wrist, towards the driver and into the sleeve.
     bone(`${name}-wrist`,hand,[0,.04,.02],[0,.1,.06],.019);
     return hand;

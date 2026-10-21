@@ -294,7 +294,7 @@ export async function boot():Promise<void>{
   // The driver's own body and hands (a people model), replacing the simple hands once loaded; `?driver=0` keeps those.
   let driverBody:DriverBody|null=null;
   if(new URLSearchParams(location.search).get('driver')!=='0')
-    void DriverBody.load(scene,cockpit.root,head.seat.eye).then(d=>{driverBody=d;if(d)cockpit.hideSimpleArms()});
+    void DriverBody.load(scene,cockpit.root,head.seat.eye,...(new URLSearchParams(location.search).get('driverModel')?[`assets/models/people/${new URLSearchParams(location.search).get('driverModel')}.glb`]:[])).then(d=>{driverBody=d;if(d)cockpit.hideSimpleArms()});
   const seatNode=new TransformNode('driver-seat',scene);
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);

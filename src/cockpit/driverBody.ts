@@ -1,4 +1,4 @@
-import {Quaternion,TransformNode,Vector3,type Scene} from '../engine/babylon';
+import {Color3,Quaternion,StandardMaterial,TransformNode,Vector3,type Scene} from '../engine/babylon';
 import {loadModel} from '../assets/models';
 import type {Vec3} from '../contracts';
 
@@ -44,8 +44,8 @@ export class DriverBody{
   private constructor(private readonly root:TransformNode,private readonly arms:Arm[],private readonly shoulderOf:(a:Arm)=>Vector3){}
 
   /** Loads and seats the driver; null if the model is not available. */
-  static async load(scene:Scene,parent:TransformNode,eye:Vec3):Promise<DriverBody|null>{
-    const container=await loadModel(scene,DRIVER_MODEL);
+  static async load(scene:Scene,parent:TransformNode,eye:Vec3,url=DRIVER_MODEL):Promise<DriverBody|null>{
+    const container=await loadModel(scene,url);
     if(!container)return null;
     const root=new TransformNode('driver-body',scene);
     root.parent=parent;
@@ -56,7 +56,10 @@ export class DriverBody{
     const copy=container.instantiateModelsToScene(n=>`driver-${n}`,false,{doNotInstantiate:true});
     for(const r of copy.rootNodes)r.parent=inner;
     for(const g of copy.animationGroups)g.stop();
-    for(const m of inner.getChildMeshes()){m.isPickable=false;m.alwaysSelectAsActiveMesh=true;m.receiveShadows=false}
+    // Plain clothes: the models' textures carry baked shading that looks murky this close; a navy jumper reads cleanly.
+    const cloth=new StandardMaterial('driver-clothes',scene);
+    cloth.diffuseColor=new Color3(.17,.22,.34);cloth.specularColor=new Color3(.05,.05,.06);cloth.emissiveColor=new Color3(.03,.035,.05);
+    for(const m of inner.getChildMeshes()){m.isPickable=false;m.alwaysSelectAsActiveMesh=true;m.receiveShadows=false;m.material=cloth}
     const need=(name:string)=>{const b=bone(inner,name);if(!b)throw new Error(`driver model has no ${name}`);return b};
     try{
       // Everything posed through rotation quaternions.
