@@ -75494,6 +75494,7 @@
   }
  ],
  "townLampSpacing": 32,
+ "streetParking": 0.3,
  "spawn": {
   "position": {
    "x": -11.48,

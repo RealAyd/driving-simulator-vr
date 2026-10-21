@@ -229,6 +229,11 @@ export const LocationSchema=z.object({
   furniture:z.array(FurnitureSchema).default([]),
   /** Street lights along every road at this spacing, in town layouts without a streetscape (0 = none). */
   townLampSpacing:z.number().min(0).default(0),
+  /**
+   * Cars parked at the kerb on residential streets (two-way, no centre line), as the share of the places where
+   * parking is allowed (0 = none). Generated areas only: the assessed exercises place their parked cars themselves.
+   */
+  streetParking:z.number().min(0).max(1).default(0),
   models:z.array(PlacedModelSchema).default([]),
   streetscape:StreetscapeSchema.optional(),
   spawn:z.object({position:point,headingDeg:z.number(),roadId:z.string()}).strict()

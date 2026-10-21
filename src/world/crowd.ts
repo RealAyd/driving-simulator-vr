@@ -82,6 +82,8 @@ export interface CrowdOptions{
 }
 /** How many people each kind of place gets (a modest number: they are scenery). */
 export function crowdOptions(location:Location):CrowdOptions{
+  // Generated areas (a whole test centre's streets) need many more to feel lived in wherever the car goes.
+  if(location.streetParking>0)return {walkers:110,seed:31,clearNearsideBehindStart:false};
   return location.placeName?{walkers:28,seed:31,clearNearsideBehindStart:false}:{walkers:9,seed:17,clearNearsideBehindStart:true};
 }
 

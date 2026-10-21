@@ -26,6 +26,7 @@ import {FOLLOWER_HALF_LENGTH,FOLLOWER_HALF_WIDTH,FollowingVehicle} from '../acto
 import {PassingVehicle} from '../actors/passingVehicle';
 import {PEDESTRIAN_RADIUS,Pedestrian,onwardPath} from '../actors/pedestrian';
 import {Soundscape,type RoadUserSound} from '../audio/soundscape';
+import {Traffic} from '../actors/traffic';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
@@ -116,6 +117,7 @@ interface ExerciseRuntime{
   follower:FollowingVehicle|null;
   passers:PassingVehicle[];
   buses:Bus[];
+  traffic:Traffic|null;
   /** Timing variation in use this attempt, if the scenario has any. */
   readonly variant:Scenario['variants'][number]|null;
   chooseVariant(forced?:string|null):void;
@@ -198,12 +200,15 @@ export async function boot():Promise<void>{
   let signPlan:SignPlan={panels:[],shelters:[],colliders:[]};
   let signage:BuiltSignage|null=null;
   let crowd:Person[]=[];
+  /** Cars parked at the kerb (generated areas): background traffic passes them. */
+  let kerbCars:Array<{x:number;z:number}>=[];
   let people!:PeopleRenderer;
   let animatedPeople:AnimatedPeople|null=null;
   /** Street furniture models (asset Batch A); null until loaded. */
   let streetModels:StreetModels|null=null;
   const dressLocation=()=>{
     const layout=layoutStreetscape(place)??layoutTownscape(place);
+    kerbCars=(layout?.cars??[]).filter(c=>c.id.startsWith('kerb-car')).map(c=>({x:c.x,z:c.z}));
     const parked:ParkedCar[]=[
       ...place.blocks.filter(b=>b.vehicleModel&&b.vehicleModel in CAR_MODELS).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
       ...(layout?.cars??[]).map(c=>({model:c.model,colour:c.colour,x:c.x,y:c.y,z:c.z,heading:c.heading}))
@@ -401,12 +406,19 @@ export async function boot():Promise<void>{
       dynamicFootprints.push({id:follower.id,shape:()=>({kind:'box',pose:follower.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})});
     }
     for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started});
+    // Background traffic on generated areas' roads: solid, never assessed.
+    const traffic=place.streetParking>0?new Traffic(place,{count:12,buses:2,busStops:place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position),
+      parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed})}):null;
+    for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
     // Background buses: solid road users that slow for the learner; never assessed.
     const buses=scenario.buses.map(d=>new Bus(d,place,learnerFootprint));
     for(const b of buses)dynamicFootprints.push({id:b.id,shape:()=>({kind:'box',pose:b.pose,halfWidth:BUS_SIZE.halfWidth,halfLength:BUS_SIZE.halfLength}),active:()=>b.visible});
     const figures=pedestrian?[pedestrianFigure(pedestrian,(x,z)=>surfaceAt(place,x,z)?.height??0)]:[];
     for(const f of figures)people.add(f);
     const visuals=[
+      ...(traffic?.cars.map((c,i)=>c.kind==='bus'
+        ?busVisual(scene,{id:c.id,get pose(){return c.pose},get visible(){return c.visible},indicating:false,def:{colour:c.colour}},BUS_SIZE,()=>clock.time,busModels[i%2?'double':'single'])
+        :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3))??[]),
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
       ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,roadUserModel(i+1),2*p.size.halfLength)),
@@ -457,13 +469,13 @@ export async function boot():Promise<void>{
     const practice=assessor||route||movingOff?null:new ViewPracticeSummary(passers,()=>vehicle.pose,()=>events.events,()=>clock.time);
 
     const modules:SimModule[]=[
-      ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,
+      ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,...(traffic?[traffic]:[]),
       zones,runner,observation,...(assessor?[assessor]:[]),...(practice?[practice]:[]),...(route?[route]:[]),...(movingOff?[movingOff]:[])
     ];
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,
+      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,traffic,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.
@@ -1484,6 +1496,7 @@ export async function boot():Promise<void>{
       if(r.follower)users.push({id:r.follower.id,kind:'car',x:r.follower.pose.position.x,z:r.follower.pose.position.z,speed:r.follower.speed});
       for(const p of r.passers)if(p.started)users.push({id:p.id,kind:'car',x:p.pose.position.x,z:p.pose.position.z,speed:p.speed});
       for(const b of r.buses)if(b.visible)users.push({id:b.id,kind:'bus',x:b.pose.position.x,z:b.pose.position.z,speed:b.speed});
+      for(const c of r.traffic?.cars??[])if(c.visible)users.push({id:c.id,kind:c.kind,x:c.pose.position.x,z:c.pose.position.z,speed:c.speed});
       sound.update({speed:vehicle.state.speed,throttle:lastControls.throttle,brake:lastControls.brake},users,
         {x:pose.position.x,z:pose.position.z,heading:pose.heading},vehicle.indicators.isLit(clock.time));
     }
@@ -1529,7 +1542,7 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     sound:()=>sound.stats,
-    meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled()})),
+    meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled(),at:m.getAbsolutePosition().asArray().map(v=>Math.round(v*10)/10),visible:m.isVisible})),
     driver:()=>({loaded:!!driverBody,arms:driverBody?.debug()??null,grips:cockpit.grips().map(g=>g.point.asArray()),eye:camera.position.asArray()}),
     gear:()=>input.reverse?'reverse':'drive',
     pedestrian:()=>runtime?.pedestrian?{state:runtime.pedestrian.state,position:{...runtime.pedestrian.position}}:null,
@@ -1537,6 +1550,7 @@ export async function boot():Promise<void>{
     showActor:(id:string,on:boolean)=>{for(const m of scene.getTransformNodeByName(`actor-${id}`)?.getChildMeshes()??[])m.isVisible=on},
     follower:()=>runtime?.follower?{gap:runtime.follower.gap,speed:runtime.follower.speed,pose:runtime.follower.pose}:null,
     passers:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose}))??[],
+    traffic:()=>runtime?.traffic?.cars.map(c=>({id:c.id,visible:c.visible,speed:c.speed,pose:c.pose}))??[],
     findings:()=>(runtime?.current()??[]).map(f=>({...(f as object)})),
     result:()=>lastResult,
     assist:()=>steeringMode==='assist',

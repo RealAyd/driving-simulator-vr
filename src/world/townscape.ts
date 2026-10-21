@@ -1,5 +1,6 @@
 import {headingFromDirection,type Block,type Building,type Location,type Vec2} from '../contracts';
 import type {Palette,StreetLayout,Tree} from './streetscape';
+import {CAR_MODELS,PARKED_CAR_COLOURS,parkedSize,type CarModelId} from '../assets/carSpecs';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 
 /**
@@ -211,5 +212,55 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       out.drains.push({x:p.x,z:p.z,heading:headingFromDirection(p.direction),y:road.surfaceHeight+.008});
     }
   }
+  if(location.streetParking>0)parkAtKerbs(location,out);
   return out;
+}
+
+/** The everyday cars parked on residential streets (most often the smaller ones). */
+const KERB_MODELS:CarModelId[]=['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon'];
+
+/**
+ * Cars parked along residential streets (two-way, no centre line): nose to tail at the kerb with gaps, clear of
+ * junctions, side-road mouths, crossings and their zig-zags, bus stops, lamp columns and the learner's start, and
+ * never opposite another parked car (a car can always get through). Deterministic for a location.
+ */
+function parkAtKerbs(location:Location,out:StreetLayout):void{
+  const sp=location.spawn.position;
+  let seed=2166136261;
+  const rand=()=>{seed=Math.imul(seed^(seed>>>15),2246822507)+0x9e3779b9>>>0;return (seed>>>8)/16777216};
+  const parked:Array<{x:number;z:number}>=[];
+  for(const road of location.roads){
+    if(road.oneway||road.lanes.count<2||road.markings.centre!=='none'||road.pavementWidth<=0)continue;
+    const half=roadHalfWidth(road);
+    const length=road.centreline.slice(1).reduce((s,p,i)=>s+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
+    for(const side of [-1,1]){
+      for(let s=14+rand()*6;s<length-14;){
+        const model=KERB_MODELS[Math.floor(rand()*KERB_MODELS.length)]!;
+        const size=parkedSize(CAR_MODELS[model]);
+        const along=s+size.length/2;
+        s+=size.length+1.2+(rand()<.3?4+rand()*8:0);
+        if(rand()>location.streetParking)continue;
+        const p=pointAtAlong(road,along);
+        const lateral=half-size.width/2+.05;
+        const c={x:p.x-p.direction.z*side*lateral,z:p.z+p.direction.x*side*lateral};
+        const ends=[-1,1].map(k=>pointAtAlong(road,along+k*(size.length/2+1)));
+        const kerbOf=(q:{x:number;z:number;direction:Vec2})=>({x:q.x-q.direction.z*side*(half+.3),z:q.z+q.direction.x*side*(half+.3)});
+        if(location.junctions.some(j=>Math.hypot(c.x-j.position.x,c.z-j.position.z)<j.radius+14))continue;
+        // A side road joins here (its carriageway at the kerb, or just ahead or behind): keep the mouth clear.
+        if([p,...ends].some(q=>{const k=kerbOf(q);return onOtherCarriageway(location,k.x,k.z,road.id,6)}))continue;
+        if(location.crossings.some(x=>x.roadId===road.id&&Math.abs(x.along-along)<(x.kind==='zebra'?x.zigzagMarks*2+8:14)))continue;
+        if(out.town?.busStops.some(b=>Math.hypot(b.x-c.x,b.z-c.z)<22))continue;
+        if(out.lamps.some(l=>Math.hypot(l.x-c.x,l.z-c.z)<size.length/2+.3))continue;
+        if(Math.hypot(c.x-sp.x,c.z-sp.z)<30)continue;
+        if(location.blocks.some(b=>Math.hypot(b.position.x-c.x,b.position.z-c.z)<12))continue;
+        // Never opposite (or overlapping) another parked car.
+        if(parked.some(q=>Math.hypot(q.x-c.x,q.z-c.z)<size.length+.6))continue;
+        const heading=headingFromDirection(side<0?p.direction:{x:-p.direction.x,z:-p.direction.z});
+        parked.push(c);
+        const id=`kerb-car-${out.cars.length}`;
+        out.cars.push({id,model,colour:PARKED_CAR_COLOURS[Math.floor(rand()*PARKED_CAR_COLOURS.length)]!,x:c.x,z:c.z,heading,y:road.surfaceHeight+.006});
+        out.colliders.push({id,kind:'parked-vehicle',position:c,headingDeg:heading*180/Math.PI,size:{width:size.width*.9,depth:size.length,height:size.height},occludes:true,shape:'box'});
+      }
+    }
+  }
 }

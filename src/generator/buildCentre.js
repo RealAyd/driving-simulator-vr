@@ -265,7 +265,7 @@ const location={
     notes:`API 0.6 map call, bbox ${bbox}, ${sourceNote} ${date}.`}],
   reviewStatus:'unreviewed',
   roads:roads.map(({_way,_class,...r})=>r),
-  blocks,crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,spawn
+  blocks,crossings,junctions,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,streetParking:.3,spawn
 };
 return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops, ${blocks.length} edge barriers; start on ${sr.name??sr.id}`};
 }

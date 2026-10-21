@@ -209,13 +209,18 @@ export function bakeParkedCars(scene:Scene,parent:TransformNode,cars:ParkedCar[]
   const material=new StandardMaterial('parked-cars',scene);
   material.specularColor=new Color3(.22,.22,.22);
   material.backFaceCulling=false;
-  // One mesh per 200 m section (like the street), so each view draws only the cars in front of it.
+  // One mesh per 100 m section, so each view draws only the cars in front of it, and none further than 160 m away
+  // (a generated area has hundreds of parked cars).
   const sections=new Map<string,ParkedCar[]>();
   for(const car of cars){
-    const key=`${Math.floor(car.x/200)},${Math.floor(car.z/200)}`;
+    const key=`${Math.floor(car.x/100)},${Math.floor(car.z/100)}`;
     sections.set(key,[...(sections.get(key)??[]),car]);
   }
-  return [...sections].map(([key,list])=>bakeSection(scene,parent,`parked-cars-${key}`,list,models,material));
+  return [...sections].map(([key,list])=>{
+    const mesh=bakeSection(scene,parent,`parked-cars-${key}`,list,models,material);
+    mesh.addLODLevel(160,null);
+    return mesh;
+  });
 }
 
 function bakeSection(scene:Scene,parent:TransformNode,name:string,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>,material:StandardMaterial):Mesh{
