@@ -25,7 +25,9 @@ export class Soundscape{
   private ctx:AudioContext|null=null;
   private master!:GainNode;
   private noiseBuffer!:AudioBuffer;
-  private engine:{osc:OscillatorNode;sub:OscillatorNode;filter:BiquadFilterNode;gain:GainNode;roar:GainNode;roarFilter:BiquadFilterNode}|null=null;
+  private engine:{osc:OscillatorNode;lfo:OscillatorNode;filter:BiquadFilterNode;gain:GainNode;roar:GainNode;roarFilter:BiquadFilterNode;rumble:GainNode}|null=null;
+  /** A car engine's timbre: the firing note and its first few harmonics, soft (a raw sawtooth sounds like a moped). */
+  private engineWave!:PeriodicWave;
   private readonly voices=new Map<string,Voice>();
   private wasLit=false;
   muted:boolean;
@@ -63,18 +65,29 @@ export class Soundscape{
     let brown=0;
     for(let i=0;i<data.length;i++){brown=(brown+.02*(Math.random()*2-1))/1.02;data[i]=brown*3.5}
 
-    // The learner's engine: a low sawtooth and a sub-octave, through a filter that opens with the accelerator.
-    const osc=ctx.createOscillator(),sub=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
-    osc.type='sawtooth';sub.type='triangle';
-    filter.type='lowpass';filter.Q.value=1.4;
+    const harmonics=[0,.35,1,.55,.4,.18,.1,.05];
+    this.engineWave=ctx.createPeriodicWave(new Float32Array(harmonics.length),new Float32Array(harmonics));
+
+    // The learner's engine, heard from inside the car: a smooth four-cylinder hum, pulsing gently at the firing rate,
+    // through a filter that opens with the accelerator; a low rumble under load.
+    const osc=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+    osc.setPeriodicWave(this.engineWave);
+    filter.type='lowpass';filter.Q.value=.7;
     gain.gain.value=0;
-    osc.connect(filter);sub.connect(filter);filter.connect(gain).connect(this.master);
+    const am=ctx.createGain();am.gain.value=.8;
+    const lfo=ctx.createOscillator(),lfoDepth=ctx.createGain();lfo.type='sine';lfoDepth.gain.value=.2;
+    lfo.connect(lfoDepth).connect(am.gain);
+    osc.connect(am).connect(filter).connect(gain).connect(this.master);
+    const rumbleSrc=ctx.createBufferSource();rumbleSrc.buffer=this.noiseBuffer;rumbleSrc.loop=true;
+    const rumbleFilter=ctx.createBiquadFilter();rumbleFilter.type='lowpass';rumbleFilter.frequency.value=160;
+    const rumble=ctx.createGain();rumble.gain.value=0;
+    rumbleSrc.connect(rumbleFilter).connect(rumble).connect(this.master);
     const noise=ctx.createBufferSource();noise.buffer=this.noiseBuffer;noise.loop=true;
     const roarFilter=ctx.createBiquadFilter();roarFilter.type='bandpass';roarFilter.Q.value=.6;
     const roar=ctx.createGain();roar.gain.value=0;
     noise.connect(roarFilter).connect(roar).connect(this.master);
-    osc.start();sub.start();noise.start();
-    this.engine={osc,sub,filter,gain,roar,roarFilter};
+    osc.start();lfo.start();noise.start();rumbleSrc.start(0,.7);
+    this.engine={osc,lfo,filter,gain,roar,roarFilter,rumble};
   }
 
   get running():boolean{return this.ctx?.state==='running'}
@@ -98,19 +111,23 @@ export class Soundscape{
     if(!ctx||ctx.state!=='running'||!this.engine)return;
     const t=ctx.currentTime,e=this.engine;
     const speed=Math.abs(car.speed);
-    // Engine speed: idle at 750 rpm, rising through each gear and dropping at a change (four gears to 30 mph+).
+    // Engine speed: idle at 800 rpm, rising through each gear (changing up at about 2,500 rpm, as a learner would)
+    // and easing down at each change.
     const gearTop=[0,4.5,9,14,20,40];
     let gear=1;while(gear<gearTop.length-1&&speed>gearTop[gear]!)gear++;
     const within=(speed-gearTop[gear-1]!)/(gearTop[gear]!-gearTop[gear-1]!);
-    const rpm=car.speed<0?900+speed*400:speed<.3?750:1100+Math.min(1,within)*1900+car.throttle*300;
-    const f=rpm/60*2;
-    e.osc.frequency.setTargetAtTime(f,t,.08);
-    e.sub.frequency.setTargetAtTime(f/2,t,.08);
-    e.filter.frequency.setTargetAtTime(220+car.throttle*900+rpm*.12,t,.1);
-    e.gain.gain.setTargetAtTime(.055+car.throttle*.06,t,.1);
+    const rpm=car.speed<0?1000+speed*350:speed<.3?800+car.throttle*500:1300+Math.min(1,within)*1200+car.throttle*250;
+    // The firing rate of a four-cylinder engine (two firings a revolution), an octave up: phone speakers cannot play
+    // the true 25–90 Hz, and the harmonics carry the character anyway.
+    const f=rpm/60*2*2;
+    e.osc.frequency.setTargetAtTime(f,t,.25);
+    e.lfo.frequency.setTargetAtTime(rpm/60*2,t,.25);
+    e.filter.frequency.setTargetAtTime(300+car.throttle*500+rpm*.08,t,.2);
+    e.gain.gain.setTargetAtTime(.07+car.throttle*.05,t,.2);
+    e.rumble.gain.setTargetAtTime(.12+car.throttle*.25,t,.2);
     // Tyres and wind grow with speed.
     e.roarFilter.frequency.setTargetAtTime(300+speed*25,t,.2);
-    e.roar.gain.setTargetAtTime(Math.min(.5,speed*speed*.0009+speed*.008),t,.2);
+    e.roar.gain.setTargetAtTime(Math.min(.6,speed*speed*.0012+speed*.012),t,.2);
 
     // Road users: one voice each while in earshot.
     for(const v of this.voices.values())v.seen=false;
@@ -125,11 +142,11 @@ export class Soundscape{
       const near=1/(1+(d/7)**2);
       const s=Math.abs(u.speed);
       const bus=u.kind==='bus';
-      const hz=(bus?32:46)+s*(bus?2.2:3.4);
-      v.osc.frequency.setTargetAtTime(hz,t,.15);
-      v.sub.frequency.setTargetAtTime(hz/2,t,.15);
-      v.filter.frequency.setTargetAtTime(280+s*30,t,.2);
-      v.gain.gain.setTargetAtTime((bus?.09:.05)*near,t,.1);
+      const hz=(bus?60:84)+s*(bus?3:4.5);
+      v.osc.frequency.setTargetAtTime(hz,t,.25);
+      v.sub.frequency.setTargetAtTime(hz/2,t,.25);
+      v.filter.frequency.setTargetAtTime(240+s*20,t,.2);
+      v.gain.gain.setTargetAtTime((bus?.12:.07)*near,t,.1);
       v.roar.gain.setTargetAtTime(Math.min(.6,s*.05)*near,t,.1);
       v.pan.pan.setTargetAtTime(Math.max(-.9,Math.min(.9,right)),t,.1);
     }
@@ -146,8 +163,8 @@ export class Soundscape{
 
   private voice(ctx:AudioContext,u:RoadUserSound):Voice{
     const osc=ctx.createOscillator(),sub=ctx.createOscillator(),filter=ctx.createBiquadFilter(),gain=ctx.createGain(),pan=ctx.createStereoPanner();
-    osc.type='sawtooth';sub.type='square';
-    filter.type='lowpass';filter.Q.value=.8;
+    osc.setPeriodicWave(this.engineWave);sub.type='sine';
+    filter.type='lowpass';filter.Q.value=.7;
     gain.gain.value=0;
     osc.connect(filter);sub.connect(filter);filter.connect(gain).connect(pan).connect(this.master);
     const noise=ctx.createBufferSource();noise.buffer=this.noiseBuffer;noise.loop=true;
@@ -189,7 +206,7 @@ export class Soundscape{
     const ctx=this.ctx;
     if(!ctx||!this.engine)return;
     const t=ctx.currentTime;
-    this.engine.gain.gain.setTargetAtTime(0,t,.1);this.engine.roar.gain.setTargetAtTime(0,t,.1);
+    this.engine.gain.gain.setTargetAtTime(0,t,.1);this.engine.roar.gain.setTargetAtTime(0,t,.1);this.engine.rumble.gain.setTargetAtTime(0,t,.1);
     for(const v of this.voices.values()){v.gain.gain.setTargetAtTime(0,t,.1);v.roar.gain.setTargetAtTime(0,t,.1)}
   }
 

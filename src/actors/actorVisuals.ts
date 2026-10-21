@@ -21,6 +21,8 @@ const CROSSING_PEDESTRIAN:Appearance={top:[.12,.2,.38],legs:[.15,.15,.17],skin:[
  * standing while waiting, walking (legs and arms swinging) while crossing.
  * Display only: the actor's position, footprint and timing are unchanged.
  */
+const waitingLook=(t:number):{look?:'left'|'right'}=>{const c=t%7;return c<1.6?{look:'right'}:c>3.5&&c<5?{look:'left'}:{}};
+
 export function pedestrianFigure(ped:Pedestrian,groundAt:(x:number,z:number)=>number):Figure{
   let last={...ped.position},walked=0;
   const c0={x:ped.def.crossTo.x-ped.def.waitAt.x,z:ped.def.crossTo.z-ped.def.waitAt.z};
@@ -37,7 +39,8 @@ export function pedestrianFigure(ped:Pedestrian,groundAt:(x:number,z:number)=>nu
       else if(!ped.walkingOn&&ped.state!=='clear')heading=Math.atan2(to.x-from.x,-(to.z-from.z));
       // Before stepping out they look along the road (right, the nearer traffic in the UK).
       return {x:ped.position.x,y:groundAt(ped.position.x,ped.position.z),z:ped.position.z,heading,stride:walked,walking:ped.state==='crossing'||ped.approaching||ped.walkingOn,
-        ...(ped.state==='preparing'?{look:'right' as const}:{})};
+        // Waiting at the kerb they look along the road now and then (right, ahead, left), as people do.
+        ...(ped.state==='preparing'?{look:'right' as const}:ped.state==='waiting'&&!ped.approaching?waitingLook(ped.waited):{})};
     }
   };
 }

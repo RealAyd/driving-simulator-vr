@@ -1,4 +1,4 @@
-import {Color3,Mesh,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
+import {Color3,CreateBox,Matrix,Mesh,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
 import {VertexBuffer} from '@babylonjs/core/Buffers/buffer';
 import type {AssetContainer} from '@babylonjs/core/assetContainer';
 import type {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
@@ -105,8 +105,35 @@ export class CarModel{
       for(const mesh of root.getChildMeshes(false) as AbstractMesh[])
         if(mesh.material?.name===this.spec.paintMaterial)mesh.material=paint;
     }
+    if(this.spec.glassShell)this.addGlassShell(holder);
     return holder;
   }
+
+  /** A dark tinted box just inside the body (in the copy's own frame): open window frames show it as glass. */
+  private addGlassShell(holder:TransformNode):void{
+    holder.computeWorldMatrix(true);
+    for(const m of holder.getChildMeshes(false))m.computeWorldMatrix(true);
+    const {min,max}=holder.getHierarchyBoundingVectors(true);
+    const toLocal=Matrix.Invert(holder.getWorldMatrix());
+    const corners=[min,max,new Vector3(min.x,min.y,max.z),new Vector3(max.x,max.y,min.z)].map(p=>Vector3.TransformCoordinates(p,toLocal));
+    const lo=new Vector3(Math.min(...corners.map(c=>c.x)),Math.min(...corners.map(c=>c.y)),Math.min(...corners.map(c=>c.z)));
+    const hi=new Vector3(Math.max(...corners.map(c=>c.x)),Math.max(...corners.map(c=>c.y)),Math.max(...corners.map(c=>c.z)));
+    const size=hi.subtract(lo);
+    // Inset 7 cm a side (inside the panels, clear of the mirrors' width), from a quarter of the height to just under the roof.
+    const inset=.07,width=size.x-(this.spec.width-2.55)-2*inset;
+    const y0=lo.y+size.y*.25,y1=hi.y-size.y*.05;
+    const shell=CreateBox(`${holder.name}-glass-shell`,{width:Math.max(.5,width),height:y1-y0,depth:size.z-2*inset-.1},holder.getScene());
+    shell.parent=holder;
+    shell.position.set((lo.x+hi.x)/2,(y0+y1)/2,(lo.z+hi.z)/2);
+    this.shellMaterial??=(()=>{
+      const m=new StandardMaterial('vehicle-glass-shell',holder.getScene());
+      m.diffuseColor=new Color3(.07,.08,.095);m.specularColor=new Color3(.4,.42,.45);m.specularPower=48;
+      return m;
+    })();
+    shell.material=this.shellMaterial;
+    shell.isPickable=false;
+  }
+  private shellMaterial:StandardMaterial|null=null;
 
   /** Turns a copy's wheels to match the distance it has travelled (metres, forwards positive). */
   roll(copy:TransformNode,metres:number):void{

@@ -1484,6 +1484,7 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     sound:()=>sound.stats,
+    meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled()})),
     driver:()=>({loaded:!!driverBody,arms:driverBody?.debug()??null,grips:cockpit.grips().map(g=>g.point.asArray()),eye:camera.position.asArray()}),
     gear:()=>input.reverse?'reverse':'drive',
     pedestrian:()=>runtime?.pedestrian?{state:runtime.pedestrian.state,position:{...runtime.pedestrian.position}}:null,

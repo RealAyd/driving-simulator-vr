@@ -24,7 +24,7 @@ const FALLBACK_HEIGHT=1.78;
 /** Walking speed the Walk clip was made for (one 1.1 s stride cycle): the clip advances with distance walked. */
 const CLIP_WALK_SPEED=1.3;
 /** Copies of each model (people drawn animated at once, at most this many per look). */
-const COPIES=2;
+const COPIES=3;
 
 type Clip='Walk'|'Idle'|'LookLeft'|'LookRight';
 interface Slot{model:number;height:number;node:TransformNode;inner:TransformNode;clips:Map<string,AnimationGroup>;playing:AnimationGroup|null;owner:string|null}
@@ -99,7 +99,8 @@ export class AnimatedPeople{
     for(const s of this.slots)if(s.owner&&!wantedIds.has(s.owner))s.owner=null;
     const drawn=new Set<string>();
     for(const f of ordered){
-      const slot=this.slots.find(s=>s.owner===f.id)??this.slots.find(s=>s.owner===null&&s.model===this.modelFor(f.id));
+      // Their own look if a copy is free, else any free copy (moving, not frozen, matters more than the look).
+      const slot=this.slots.find(s=>s.owner===f.id)??this.slots.find(s=>s.owner===null&&s.model===this.modelFor(f.id))??this.slots.find(s=>s.owner===null);
       if(!slot)continue;
       slot.owner=f.id;
       drawn.add(f.id);

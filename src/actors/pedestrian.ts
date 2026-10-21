@@ -65,8 +65,12 @@ export class Pedestrian implements SimModule{
     this.events.emit('actor.state.changed',{actorId:this.id,state,x:this.position.x,z:this.position.z});
   }
 
+  /** Seconds spent so far (for looking about while waiting at the kerb). */
+  waited=0;
+
   fixedUpdate(dt:Seconds):void{
     this.timer+=dt;
+    this.waited+=dt;
     if(this.approaching){
       const dx=this.def.waitAt.x-this.position.x,dz=this.def.waitAt.z-this.position.z;
       const remaining=Math.hypot(dx,dz),step=this.def.walkSpeed*dt;
@@ -104,6 +108,7 @@ export class Pedestrian implements SimModule{
     this.pendingDelay=null;
     this.timer=0;
     this.walked=0;
+    this.waited=0;
   }
 
   dispose():void{}

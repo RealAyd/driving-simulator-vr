@@ -11,6 +11,11 @@ export interface CarModelSpec{
   yawOffset:number;
   /** Distance (model metres) the car travels in one loop of its wheel animation, if it has one. */
   wheelLoopMetres?:number;
+  /**
+   * Window openings with no glass (the buses' upper side windows): a dark tinted shell just inside the body is drawn
+   * so they read as glass instead of showing the bare inside.
+   */
+  glassShell?:boolean;
   /** Model size in its own units (metres): length, width (with mirrors) and height. */
   length:number;
   width:number;
@@ -43,8 +48,8 @@ export type CarModelId=keyof typeof CAR_MODELS;
  * wheels backwards for forward travel, hence the negative distance per loop. No paint material: they stay red.
  */
 export const BUS_MODELS={
-  single:{id:'batch-a-bus-single-decker-red',url:'assets/models/vehicles/batch-a-bus-single-decker-red.glb',parkedUrl:'assets/models/vehicles/batch-a-bus-single-decker-red.glb',paintMaterial:'(none)',yawOffset:0,wheelLoopMetres:-2.953,length:11.26,width:3.12,height:3.2},
-  double:{id:'batch-a-bus-double-decker-red',url:'assets/models/vehicles/batch-a-bus-double-decker-red.glb',parkedUrl:'assets/models/vehicles/batch-a-bus-double-decker-red.glb',paintMaterial:'(none)',yawOffset:0,wheelLoopMetres:-2.953,length:11.26,width:3.12,height:4.21}
+  single:{id:'batch-a-bus-single-decker-red',url:'assets/models/vehicles/batch-a-bus-single-decker-red.glb',parkedUrl:'assets/models/vehicles/batch-a-bus-single-decker-red.glb',paintMaterial:'(none)',yawOffset:0,wheelLoopMetres:-2.953,glassShell:true,length:11.26,width:3.12,height:3.2},
+  double:{id:'batch-a-bus-double-decker-red',url:'assets/models/vehicles/batch-a-bus-double-decker-red.glb',parkedUrl:'assets/models/vehicles/batch-a-bus-double-decker-red.glb',paintMaterial:'(none)',yawOffset:0,wheelLoopMetres:-2.953,glassShell:true,length:11.26,width:3.12,height:4.21}
 } as const satisfies Record<string,CarModelSpec>;
 
 /** The models used for other road users' cars (alternating), and the one used when only one is wanted. */

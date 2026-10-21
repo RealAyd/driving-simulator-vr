@@ -5,7 +5,7 @@ import type {Appearance,FigurePose} from './crowd';
 import type {AnimatedPeople} from './animatedPeople';
 
 /** People within this distance of the car are drawn as animated models when there is a free copy. */
-const ANIMATED_RANGE=50;
+const ANIMATED_RANGE=70;
 
 /**
  * Project-owned low-poly people, drawn as thin instances of three shared
