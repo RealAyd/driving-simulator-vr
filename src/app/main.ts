@@ -28,7 +28,7 @@ import {PEDESTRIAN_RADIUS,Pedestrian,onwardPath} from '../actors/pedestrian';
 import {Soundscape,type RoadUserSound} from '../audio/soundscape';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
-import {setUpAreaSearch} from '../ui/areaSearch';
+import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -280,7 +280,8 @@ export async function boot():Promise<void>{
   let lastControls:Controls={throttle:0,brake:0,steer:0};
   // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
   const sound=new Soundscape();
-  for(const type of ['pointerdown','keydown'])document.addEventListener(type,()=>{void sound.unlock()},{capture:true});
+  // Safari starts audio only from a completed tap (touchend, pointerup, click) or a key, not from pointerdown.
+  for(const type of ['pointerdown','pointerup','touchend','click','keydown'])document.addEventListener(type,()=>{void sound.unlock()},{capture:true});
   let soundActive=false;
   vehicle=new VehicleController(spawn,controls,{
     surfaceHeightAt:(x,z)=>surfaceAt(place,x,z)?.height??null,
@@ -1141,7 +1142,7 @@ export async function boot():Promise<void>{
   // ---- Drive anywhere: an area built on the phone round a test centre, postcode or place ----
   const areaStatus=byId('area-status');
   let building=false;
-  setUpAreaSearch(byId<HTMLInputElement>('area-query'),byId('area-results'),areaStatus,async request=>{
+  const openArea=async(request:import('../generator/area').AreaRequest)=>{
     if(building||session.state!=='ready')return;
     building=true;
     try{
@@ -1157,7 +1158,9 @@ export async function boot():Promise<void>{
       areaStatus.textContent=error instanceof Error&&/OpenStreetMap|dense|road/.test(error.message)?error.message:'Could not build this area (no connection, or no roads there). Try again or pick another place.';
       console.warn('[Driving Practice] area not built',error);
     }finally{building=false}
-  });
+  };
+  setUpAreaSearch(byId<HTMLInputElement>('area-query'),byId('area-results'),areaStatus,request=>void openArea(request));
+  setUpCentreBrowser(byId('centre-browser'),request=>{byId('area-status').scrollIntoView({block:'nearest'});void openArea(request)});
 
   const start=(scenarioId:string,options:{familiarisation?:boolean}={})=>{
     if(session.state!=='ready')return;

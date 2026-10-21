@@ -87,6 +87,11 @@ body.phone .keys-box{display:none}
 .area-results b{font-weight:600;font-size:14px}
 .area-results small{color:var(--soft);font-size:12px;white-space:nowrap}
 #area-status:empty{display:none}
+.centre-browser{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-top:4px}
+.centre-group[open]{grid-column:1/-1}
+.centre-group>summary small{font-weight:500;color:var(--faint);margin-left:auto;margin-right:10px}
+.centre-list{max-height:260px;margin:0 8px 8px}
+#area-status{font-size:13px;color:#99f6e4}
 
 /* ---- Exercise: briefing on the left, settings and Start on the right ---- */
 .detail{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
@@ -255,6 +260,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
         </div>
         <ul id="area-results" class="area-results" hidden></ul>
         <p id="area-status" class="unit" role="status"></p>
+        <div id="centre-browser" class="centre-browser" aria-label="All test centres, by letter"></div>
       </div>
       <h2 class="group">Test centre drives</h2>
       <div class="choices">

@@ -34,3 +34,18 @@ test('G20: search a postcode, build the area on the device and drive there',asyn
   await page.screenshot({path:testInfo.outputPath('g20-area.png')});
   expect(errors).toEqual([]);
 });
+
+test('G20: test centres show at once, even with no answer from the place search; every centre can be browsed by letter',async({page},testInfo)=>{
+  test.setTimeout(120_000);
+  // The place search never answers (a slow or missing connection).
+  await page.route('https://api.postcodes.io/**',()=>new Promise(()=>{}));
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.fill('#area-query','Basildon');
+  await expect(page.locator('#area-results button').first()).toContainText('Basildon test centre',{timeout:2000});
+  await page.fill('#area-query','');
+  await page.locator('#centre-browser summary',{hasText:'A–D'}).click();
+  await expect(page.locator('#centre-browser .centre-list button',{hasText:'Aberdeen North'}).first()).toBeVisible();
+  await expect(page.locator('#centre-browser .centre-list button',{hasText:'Brentwood'}).first()).toBeVisible();
+  await page.screenshot({path:testInfo.outputPath('g20-browse.png'),fullPage:true});
+});

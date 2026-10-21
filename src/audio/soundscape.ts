@@ -48,9 +48,22 @@ export class Soundscape{
         this.ctx=new Context();
         this.build(this.ctx);
       }
-      if(this.ctx.state==='suspended')await this.ctx.resume();
+      // iPhone: play as media, so the ring/silent switch does not mute the car (Safari 16.4+), and a silent sound
+      // through an <audio> element in the same tap does the same on older versions.
+      const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
+      if(session&&session.type!=='playback')session.type='playback';
+      if(!this.primed){
+        this.primed=true;
+        const silent=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+        silent.setAttribute('playsinline','');
+        void silent.play().catch(()=>{});
+      }
+      // A one-sample sound started inside the tap is what lets Safari start the audio graph.
+      const kick=this.ctx.createBufferSource();kick.buffer=this.ctx.createBuffer(1,1,22050);kick.connect(this.ctx.destination);kick.start(0);
+      if(this.ctx.state!=='running')await this.ctx.resume();
     }catch{/* no audio on this device */}
   }
+  private primed=false;
 
   private build(ctx:AudioContext):void{
     this.master=ctx.createGain();

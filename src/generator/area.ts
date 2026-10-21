@@ -22,15 +22,21 @@ const slug=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$
 
 /** Downloads the map data (smaller squares where the map is too dense for one call) and builds the area. */
 export async function buildArea(request:AreaRequest,progress:(step:string)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
-  let xml:string|null=null,half=450;
-  for(const size of [450,330,240]){
+  let xml:string|null=null,half=350;
+  // Map data already downloaded on this device is reused (Cache Storage): a second drive there starts at once.
+  const cache=await (globalThis as {caches?:CacheStorage}).caches?.open('driving-practice-osm').catch(()=>null)??null;
+  for(const size of [350,250,180]){
     half=size;
+    const url=`${OSM_API}?bbox=${centreBbox(request.lat,request.lon,size).join(',')}`;
+    const cached=await cache?.match(url).catch(()=>undefined);
+    if(cached){xml=await cached.text();break}
     progress('Downloading map data…');
-    const response=await fetcher(`${OSM_API}?bbox=${centreBbox(request.lat,request.lon,size).join(',')}`);
+    const response=await fetcher(url);
     // 400: more than the API's 50 000 nodes in the square (a city centre): try a smaller one.
     if(response.status===400)continue;
     if(!response.ok)throw new Error(`OpenStreetMap did not answer (HTTP ${response.status}). Try again in a minute.`);
     xml=await response.text();
+    void cache?.put(url,new Response(xml,{headers:{'content-type':'text/xml'}})).catch(()=>{});
     break;
   }
   if(!xml)throw new Error('The map is too dense here to download in one go.');
