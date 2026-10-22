@@ -355,6 +355,9 @@ export async function boot():Promise<void>{
   const examinerVoice=new ExaminerVoice();
   // Sound stays on: resumed after each spoken sentence, when the page comes back, and checked each second.
   examinerVoice.onSpoken=()=>sound.keepAlive();
+  // Sonia's recorded sentences, played through the car's sound (the device's voice for anything else).
+  examinerVoice.audio=()=>sound.context;
+  void examinerVoice.loadClips();
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)sound.keepAlive()});
   addEventListener('pageshow',()=>sound.keepAlive());
   setInterval(()=>{if(session.state==='running')sound.keepAlive()},1000);

@@ -48,7 +48,7 @@ interface Watch{
 }
 
 /** What the instructor says at once when the marking records a safety fault, and the note for the report. */
-const CORRECTIONS:Record<string,(severity:string,limit:number)=>{say:string;lesson:string}>={
+export const CORRECTIONS:Record<string,(severity:string,limit:number)=>{say:string;lesson:string}>={
   'positioning-pavement':()=>({say:'Careful: you\'ve mounted the pavement. Steer gently back onto the road.',lesson:'keep the wheels off the pavement'}),
   'control-off-road':()=>({say:'You\'ve left the road. Slow down and steer back onto it.',lesson:'keep to the road'}),
   'control-collision':()=>({say:'Stop. You\'ve hit something. Check it\'s safe, then reverse away if you need to.',lesson:'you hit something: slow down and leave more room'}),

@@ -105,6 +105,9 @@ export class Soundscape{
 
   get running():boolean{return this.ctx?.state==='running'}
 
+  /** The audio context while it is playing (the voice clips are played through it). */
+  get context():AudioContext|null{return this.ctx?.state==='running'?this.ctx:null}
+
   /**
    * Keeps the sound going: after the phone has interrupted it (a call, Siri, another app, or on iPhone the spoken
    * directions taking the audio session), it is resumed without waiting for the next tap. Called each second while

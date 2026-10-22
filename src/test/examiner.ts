@@ -30,7 +30,7 @@ export const TELL_ME_INTRO='Before we start, I\'m going to ask you a vehicle saf
 export const BRIEFING='This is your mock driving test. Please follow the road ahead, unless traffic signs direct you otherwise or I ask you to turn. I\'ll give you directions in good time. Move off when you\'re ready.';
 export const PULL_UP='Please pull up on the left at the next safe and convenient place.';
 export const END='Thank you. That\'s the end of your test.';
-const REDIRECT='That\'s fine, I\'ll give you new directions.';
+export const REDIRECT='That\'s fine, I\'ll give you new directions.';
 
 /** Spoken this far before the junction (metres): about five seconds at 30 mph, more where roads are quicker. */
 const ANNOUNCE=70;
