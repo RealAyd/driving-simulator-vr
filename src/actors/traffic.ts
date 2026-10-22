@@ -77,7 +77,7 @@ export class Traffic implements SimModule{
     for(const road of location.roads){
       const len=roadLength(road),list:Array<{along:number;road:Road;dir:1|-1}>=[];
       for(const other of location.roads){
-        if(other===road||other.centreline.length<2)continue;
+        if(other===road||other.centreline.length<2||other.level!==road.level)continue;
         for(const [end,dir] of [[other.centreline[0]!,1],[other.centreline.at(-1)!,-1]] as const){
           if(dir<0&&other.oneway)continue;
           const at=sampleRoad(road,end.x,end.z);
@@ -134,7 +134,7 @@ export class Traffic implements SimModule{
     if(leg.endNode>=0)for(const e of this.ends[leg.endNode]!)if(e.road!==leg.road)options.push({road:e.road,make:()=>this.legOf(e.road,e.dir,undefined,bus)});
     // The end of a side road at a T-junction: on to the road it meets, either way (unless one way).
     for(const road of this.location.roads){
-      if(road===leg.road)continue;
+      if(road===leg.road||(leg.road&&road.level!==leg.road.level))continue;
       const at=sampleRoad(road,end.x,end.z);
       if(at.distance>7||at.along<3||at.along>roadLength(road)-3)continue;
       options.push({road,make:()=>this.legOf(road,1,at.along,bus)});

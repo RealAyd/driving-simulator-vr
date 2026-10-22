@@ -26,7 +26,7 @@ export const DRIVE_TOUR:readonly TourStep[]=[
   {target:'#touch-controls [data-hold=throttle]',title:'Go',text:'Hold to accelerate. Let go and the car slows gently. Your speed is up to you: keep to the limit shown at the top left.'},
   {target:'#touch-controls [data-hold=brake]',title:'Brake',text:'Hold to brake: gently to slow down, longer to stop.'},
   {target:'#gear-toggle',title:'Drive or Reverse',text:'D drives forward, R reverses (Go then moves the car backwards). Useful after a wrong turn or to back away from something.'},
-  {target:'#wheel-grab,#touch-wheel,#steer-buttons,#hud-left',title:'Steering',text:'With assisted steering the car follows the lane and the route for you, so you can concentrate on speed and observation. Change steering on the screen before you start (assisted, wheel, tilt or buttons).'},
+  {target:'#steer-buttons,#hud-left',title:'Steering',text:'With assisted steering the car follows the lane and the route for you, so you can concentrate on speed and observation. Change steering on the screen before you start (assisted, tilt or Steer buttons).'},
   {target:'#view-buttons',title:'Mirrors and shoulder checks',text:'Hold a button to look: left and right shoulder (blind spots), the door mirrors and the interior mirror. Look before you signal, change speed or turn: the examiner and instructor see every check.'},
   {target:'#signal-buttons',title:'Signals',text:'Tap to signal left or right; tap again to cancel. Signal after checking the mirrors, in good time, and only when it helps someone. No signal is needed to go straight ahead.'},
   {target:'#hud-speedbox',title:'Speed and warning lights',text:'Your speed in mph and the gear (D or R). Warning lights show here when headlights, demisters or wipers are on.'},

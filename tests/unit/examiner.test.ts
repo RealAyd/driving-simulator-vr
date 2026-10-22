@@ -63,4 +63,22 @@ describe('Examiner',()=>{
     expect(log.some(e=>e.type==='examiner.redirected')).toBe(true);
     expect(said.some(t=>t.startsWith('That\'s fine'))).toBe(true);
   });
+
+  it('driving on away from the route: new directions at most every 20 s, and "That\'s fine" not every time',()=>{
+    const net=new RoadNetwork(goodmayes);
+    const sp=goodmayes.spawn;
+    const learner={x:sp.position.x,z:sp.position.z,heading:sp.headingDeg*Math.PI/180,speed:8};
+    const said:string[]=[],log:Array<{type:SimEventType;payload:Record<string,unknown>}>=[];
+    const ex=new Examiner(net,()=>learner,{target:1500,seed:3,say:t=>said.push(t),events:sink(log),onComplete:()=>{}});
+    ex.reset();
+    // A minute on a road the route never uses (as if lost): moving, but nowhere near the directions.
+    const off=goodmayes.roads.find(r=>r.name==='High Road')!;
+    for(let t=0;t<60;t+=1/30){
+      const p=pointAtAlong(off,10+t*2);
+      Object.assign(learner,{x:p.x,z:p.z,heading:Math.atan2(p.direction.x,-p.direction.z)});
+      ex.fixedUpdate(1/30);
+    }
+    expect(log.filter(e=>e.type==='examiner.redirected').length).toBeLessThanOrEqual(3);
+    expect(said.filter(t=>t.startsWith('That\'s fine')).length).toBeLessThanOrEqual(1);
+  });
 });

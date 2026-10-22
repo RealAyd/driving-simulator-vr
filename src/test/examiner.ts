@@ -50,6 +50,8 @@ export class Examiner implements SimModule{
   /** Closest the car has come to the current junction (metres). */
   private closest=Infinity;
   private offRoute=0;
+  /** When new directions were last given (they are not given again for a while, and said briefly). */
+  private lastRedirect=-Infinity;
   private stoppedFor=0;
   private sincePullUp=0;
   private routeDone=0;
@@ -93,7 +95,7 @@ export class Examiner implements SimModule{
 
   reset():void{
     this.time=0;this.phase=this.options.tellMe?'tell-me':'briefing';this.stoppedFor=0;this.sincePullUp=0;this.routeDone=0;this.lastSaid='';this.pullUpAsked=false;
-    this.tellMeAsked=false;this.showMeAsked=false;this.sinceDirection=0;
+    this.tellMeAsked=false;this.showMeAsked=false;this.sinceDirection=0;this.lastRedirect=-Infinity;
     this.plan(this.options.target,this.options.seed);
   }
 
@@ -163,7 +165,8 @@ export class Examiner implements SimModule{
       if(pos&&!this.near){
         const onRoute=[step.from.road,step.to.road].some(r=>this.key(r)===this.key(pos.road));
         this.offRoute=onRoute||l.speed<1?0:this.offRoute+dt;
-        if(this.offRoute>5)this.redirect(step);
+        // (Not again within 20 s of the last new directions: driving on to find a way back is fine.)
+        if(this.offRoute>5&&this.time-this.lastRedirect>20)this.redirect(step);
       }
       return;
     }
@@ -196,15 +199,18 @@ export class Examiner implements SimModule{
   private redirect(step:RouteStep){
     this.options.events.emit('examiner.redirected',{expected:step.to.road.name??step.to.road.id});
     const remaining=Math.max(700,this.options.target-this.routeDone);
+    // "That's fine…" once in a while; new directions soon after the last just give the next direction.
+    const reassure=this.time-this.lastRedirect>60;
+    this.lastRedirect=this.time;
     if(this.plan(remaining,this.options.seed+this.steps.length+Math.round(this.time))){
       // With the next direction straight away if it is close (one sentence, not one cut short by the other).
       const next=this.steps[0],l=this.learner();
       if(next&&Math.hypot(l.x-next.at.x,l.z-next.at.z)<ANNOUNCE*1.3){
         this.spoken=true;
-        this.say(`${REDIRECT} ${next.say}`);
+        this.say(reassure?`${REDIRECT} ${next.say}`:next.say);
         this.options.events.emit('examiner.direction',{text:next.say,turn:next.turn,step:0});
         this.options.listener?.direction?.(next);
-      }else this.say(REDIRECT);
+      }else if(reassure)this.say(REDIRECT);
     }else{
       // Off any road: carry on; directions resume once the car is back on one.
       this.offRoute=0;

@@ -63,8 +63,13 @@ for(const w of ways){
     // Drop repeated points.
     const line=centreline.filter((p,i)=>i===0||Math.hypot(p.x-centreline[i-1].x,p.z-centreline[i-1].z)>.05);
     if(line.length<2)return;
+    // Bridges and tunnels (not a passage under a building) are at another level: no junctions with roads they
+    // cross, only where they join at their ends.
+    const layer=parseInt(w.tags.layer??'',10);
+    const bridge=w.tags.bridge&&w.tags.bridge!=='no',tunnel=w.tags.tunnel&&w.tags.tunnel!=='no'&&w.tags.tunnel!=='building_passage';
+    const level=bridge?(Number.isFinite(layer)&&layer>0?Math.min(3,layer):1):tunnel?(Number.isFinite(layer)&&layer<0?Math.max(-3,layer):-1):0;
     roads.push({
-      id:roadId,...(w.tags.name?{name:w.tags.name}:{}),
+      id:roadId,...(w.tags.name?{name:w.tags.name}:{}),...(level?{level}:{}),
       ...(Number.isFinite(mph)&&/mph/.test(w.tags.maxspeed??'')?{speedLimitMph:mph,speedLimitSource:`OSM way ${w.id} maxspeed`}:{}),
       oneway,centreline:line,
       lanes:{count,width:Math.min(4.5,Math.max(2.5,width))},

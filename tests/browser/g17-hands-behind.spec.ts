@@ -1,39 +1,31 @@
 import {expect,test,type Page} from '@playwright/test';
 
-// The on-screen steering wheel, the driver's hands on the wheel, and the behind-the-car view.
+// The driver's hands on the wheel (they follow the steering), and the behind-the-car view.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
-test('G17: the on-screen wheel steers and the hands follow it; the behind-the-car view is practice only and reported',async({page},testInfo)=>{
+test('G17: the hands follow the steering; the behind-the-car view is practice only and reported',async({page},testInfo)=>{
   test.setTimeout(300_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.click('[data-exercise=moving-off]');
-  await page.click('input[name=steering][value=wheel]');
+  // The on-screen wheel is gone: assisted, tilt or the Steer buttons.
+  await expect(page.locator('input[name=steering][value=wheel]')).toHaveCount(0);
+  await page.click('input[name=steering][value=buttons]');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
-  expect(await read(page,'steering()')).toBe('wheel');
-  // In the driver's seat the car's own wheel is turned: a grab area over it, and no separate wheel on screen.
-  await expect(page.locator('#wheel-grab')).toBeVisible();
-  await expect(page.locator('#touch-wheel')).toBeHidden();
-  await expect(page.locator('#steer-buttons')).toBeHidden();
+  expect(await read(page,'steering()')).toBe('buttons');
   expect(await read(page,'hands()')).toBeCloseTo(0,3);
-
-  // The grab area lies over the steering wheel as drawn, in the lower middle of the picture.
-  const box=(await page.locator('#wheel-grab').boundingBox())!;
-  const vw=page.viewportSize()!;
-  expect(Math.abs(box.x+box.width/2-vw.width/2)).toBeLessThan(vw.width*.15);
-  expect(box.y+box.height/2).toBeGreaterThan(vw.height*.5);
-  // Drag clockwise round the car's wheel from its top (a third of a turn): the car's wheels turn right, and so do the hands.
-  const cx=box.x+box.width/2,cy=box.y+box.height/2,r=box.width/2-8;
-  await page.mouse.move(cx,cy-r);
+  // Hold Steer right: the car's wheels turn right, and so do the hands on the wheel.
+  const right=page.locator('[data-hold=right]');
+  const box=(await right.boundingBox())!;
+  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
   await page.mouse.down();
-  for(let a=0;a<=120;a+=10){const t=a*Math.PI/180;await page.mouse.move(cx+r*Math.sin(t),cy-r*Math.cos(t))}
   await expect.poll(async()=>(await read(page,'vehicle()')).steerAngle,{timeout:30_000}).toBeGreaterThan(.1);
   await expect.poll(()=>read(page,'hands()'),{timeout:30_000}).toBeGreaterThan(.3);
-  await page.screenshot({path:testInfo.outputPath('g17-wheel-right.png')});
+  await page.screenshot({path:testInfo.outputPath('g17-steer-right.png')});
   // Let go: the wheel returns to the centre.
   await page.mouse.up();
   await expect.poll(async()=>Math.abs((await read(page,'vehicle()')).steerAngle),{timeout:30_000}).toBeLessThan(.02);
@@ -42,9 +34,8 @@ test('G17: the on-screen wheel steers and the hands follow it; the behind-the-ca
   const seat=await read(page,'camera()');
   await page.click('#hud-behind');
   await expect(page.locator('#hud-view-label')).toHaveText(/Behind the car \(not a driver's view\)/);
-  // Behind the car its own wheel is out of sight, so the separate on-screen wheel appears.
-  await expect(page.locator('#touch-wheel')).toBeVisible();
-  await expect(page.locator('#wheel-grab')).toBeHidden();
+  // The Steer buttons stay.
+  await expect(page.locator('#steer-buttons')).toBeVisible();
   await expect.poll(async()=>(await read(page,'behind()')).carModel,{timeout:30_000}).toBe(true);
   const out=await read(page,'camera()');
   expect(out.position[1]).toBeGreaterThan(seat.position[1]+1.5);
@@ -61,6 +52,5 @@ test('G17: the on-screen wheel steers and the hands follow it; the behind-the-ca
   await page.click('#end-button');
   await expect(page.locator('#results-title')).toHaveText('You exited the exercise');
   await expect(page.locator('#results-notes')).toContainText(/behind-the-car view for \d+ s\. It is not a driver's view/);
-  await expect(page.locator('#results-notes')).toContainText('You steered with the on-screen wheel.');
   expect(errors).toEqual([]);
 });

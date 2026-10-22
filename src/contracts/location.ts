@@ -18,6 +18,11 @@ export const RoadSchema=z.object({
   speedLimitSource:z.string().optional(),
   /** One-way roads carry traffic only along the centreline direction. */
   oneway:z.boolean().default(false),
+  /**
+   * Level: 0 on the ground, above on a bridge (1, 2…), below in a tunnel (−1…). Roads at different levels only meet
+   * where one ends and the next begins (the ends of a bridge); one passing over another is not a junction.
+   */
+  level:z.number().int().min(-3).max(3).default(0),
   /** Polyline along the road centre, in local metres. At least two points. */
   centreline:z.array(point).min(2),
   /** Running lanes; UK two-way roads have one each way. */

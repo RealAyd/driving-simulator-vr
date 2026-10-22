@@ -82,7 +82,7 @@ export class RoadNetwork{
     for(const road of location.roads){
       const L=len(road),list:Array<{along:number;road:Road;dir:1|-1}>=[];
       for(const other of location.roads){
-        if(other===road||other.centreline.length<2)continue;
+        if(other===road||other.centreline.length<2||other.level!==road.level)continue;
         for(const [end,dir] of [[other.centreline[0]!,1],[other.centreline.at(-1)!,-1]] as const){
           if(dir<0&&other.oneway)continue;
           const at=sampleRoad(road,end.x,end.z);
@@ -134,7 +134,7 @@ export class RoadNetwork{
     // T-junction: the road ends at the side of a through road.
     const end=pointAtAlong(road,endAlong);
     for(const other of this.location.roads){
-      if(other===road)continue;
+      if(other===road||other.level!==road.level)continue;
       const at=sampleRoad(other,end.x,end.z);
       if(at.distance>7||at.along<3||at.along>len(other)-3)continue;
       options.push(optionFrom({road:other,dir:1},endAlong,at.along));

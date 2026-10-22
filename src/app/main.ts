@@ -52,7 +52,7 @@ import {ROAD_USER_CAR_MODELS} from '../assets/carSpecs';
 import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
-import {STEERING_RATIO,WHEEL_RIM,buildCockpit} from '../cockpit/cockpitModel';
+import {STEERING_RATIO,buildCockpit} from '../cockpit/cockpitModel';
 import {ALL_MIRRORS,Mirror} from '../cockpit/mirror';
 import {ObservationTracker,type ObservationSource,type ObservationTarget} from '../cockpit/observation';
 import {DriverHead} from '../cockpit/seat';
@@ -63,7 +63,6 @@ import {PerfProbe} from '../engine/perfProbe';
 import {pickQualityProfile} from '../engine/quality';
 import {KeyboardInput,type InputAction,type ViewTarget} from '../input/keyboard';
 import {SteerRamp} from '../input/steerRamp';
-import {screenAngle,TouchWheel} from '../input/touchWheel';
 import {TILT_SENSITIVITY,TiltSteering,isLandscape,type TiltPermission} from '../input/tilt';
 import {ScenarioRunner,type Outcome} from '../scenarios/scenarioRunner';
 import {ZoneTracker} from '../scenarios/zones';
@@ -100,7 +99,7 @@ import {Session} from './session';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
-type SteeringMode='assist'|'tilt'|'wheel'|'buttons';
+type SteeringMode='assist'|'tilt'|'buttons';
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
@@ -334,7 +333,6 @@ export async function boot():Promise<void>{
   let steeringMode:SteeringMode=quality.id==='phone'?'assist':'buttons';
   const tilt=new TiltSteering();
   let tiltSteer=0;
-  const touchWheel=new TouchWheel();
   const buttonSteer=new SteerRamp();
   const dynamicFootprints:DynamicFootprint[]=[];
   let vehicle!:VehicleController;
@@ -344,7 +342,7 @@ export async function boot():Promise<void>{
     const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
     // The driver's own button/key steering always overrides tilt and the assistance.
     // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
-    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='wheel'?touchWheel.update(SIM_STEP):steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
+    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
     lastControls=viewerDrive??{throttle:c.throttle,brake:c.brake,steer,reverse:!!keys.reverse};
@@ -659,7 +657,6 @@ export async function boot():Promise<void>{
         if(steeringMode==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
         if(guided)base.notes.push('Route guidance was shown on the road (the pull-out path).');
         if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
-        if(steeringMode==='wheel')base.notes.push('You steered with the on-screen wheel.');
         if(behindSeconds>=1)base.notes.push(`${INFO}You used the behind-the-car view for ${Math.round(behindSeconds)} s. It is not a driver's view: only the mirrors, shoulder checks and forward view count as observations.`);
         if(variant)base.notes.push(`${INFO}Timing this attempt: ${variant.label.toLowerCase()}.`);
         const mode=controlMode();
@@ -701,7 +698,6 @@ export async function boot():Promise<void>{
     input.clear();
     clearHeldButtons();
     buttonSteer.reset();
-    touchWheel.reset();
     if(behind)setBehind(false);
     behindSeconds=0;
     if(runtime){
@@ -991,7 +987,7 @@ export async function boot():Promise<void>{
       viewerMode=mode;
       if(mode!=='calibration'){
         // Tilt steering needs the phone in the hands: use the assistance (or the controller's stick) instead.
-        if(steeringMode==='tilt'||steeringMode==='wheel')setSteeringMode('assist');
+        if(steeringMode==='tilt')setSteeringMode('assist');
         start(mode==='familiarisation'?(introId??scenarioId):scenarioId,{familiarisation:mode==='familiarisation'});
         if(session.state!=='running'){viewerMode=null;return}
         // Nothing moves until the driver has the headset on, looks straight ahead and starts.
@@ -1204,10 +1200,8 @@ export async function boot():Promise<void>{
     for(const radio of steeringRadios)radio.checked=radio.value===mode;
     byId('tilt-options').hidden=mode!=='tilt';
     document.body.classList.toggle('tilt',mode==='tilt');
-    // Steer buttons only where they are the steering, or the fallback for tilt; the on-screen wheel replaces them.
+    // Steer buttons only where they are the steering, or the fallback for tilt.
     document.body.classList.toggle('steer-buttons',mode==='buttons'||mode==='tilt');
-    document.body.classList.toggle('wheel-steer',mode==='wheel');
-    touchWheel.reset();
   };
   /** Tilt cannot work here: disable the option and say why. */
   const disableTilt=(reason:string)=>{
@@ -1517,46 +1511,6 @@ export async function boot():Promise<void>{
   // On a mock test the Task button says the examiner's last direction again (and shows it).
   byId('hud-task-toggle').addEventListener('click',()=>{if(runtime?.examiner?.lastSaid){runtime.examiner.repeat();hud.setTask(runtime.examiner.lastSaid)}else hud.toggleTask()});
   byId('hud-tilt-centre').addEventListener('click',()=>tilt.calibrate());
-  // On-screen steering: the finger's angle around the wheel's centre turns it (one finger; others ignored). In the
-  // driver's seat the grab area lies over the car's own steering wheel; behind the car, the separate wheel is used.
-  const wheelEl=byId('touch-wheel');
-  const wheelGrab=byId('wheel-grab');
-  let wheelPointer:number|null=null;
-  for(const el of [wheelEl,wheelGrab]){
-    const angle=(event:PointerEvent)=>{
-      const r=el.getBoundingClientRect();
-      return screenAngle(r.left+r.width/2,r.top+r.height/2,event.clientX,event.clientY);
-    };
-    el.addEventListener('pointerdown',event=>{
-      event.preventDefault();
-      if(wheelPointer!==null)return;
-      wheelPointer=event.pointerId;
-      el.setPointerCapture(event.pointerId);
-      touchWheel.grab(angle(event));
-      wheelEl.classList.add('held');
-    });
-    el.addEventListener('pointermove',event=>{if(event.pointerId===wheelPointer)touchWheel.move(angle(event))});
-    const release=(event:PointerEvent)=>{
-      if(event.pointerId!==wheelPointer)return;
-      wheelPointer=null;
-      touchWheel.release();
-      wheelEl.classList.remove('held');
-    };
-    el.addEventListener('pointerup',release);
-    el.addEventListener('pointercancel',release);
-  }
-  /** Places the grab area over the car's steering wheel as drawn (its rim's screen circle, a little enlarged). */
-  const placeWheelGrab=()=>{
-    const m=cockpit.wheel.getWorldMatrix();
-    const view=camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight());
-    const project=(x:number,z:number)=>Vector3.Project(Vector3.TransformCoordinates(new Vector3(x,0,z),m),Matrix.IdentityReadOnly,scene.getTransformMatrix(),view);
-    const c=project(0,0),top=project(0,-WHEEL_RIM),side=project(WHEEL_RIM,0);
-    const k=canvas.clientWidth/engine.getRenderWidth();
-    const r=Math.max(Math.hypot(top.x-c.x,top.y-c.y),Math.hypot(side.x-c.x,side.y-c.y))*k*1.15;
-    const st=wheelGrab.style;
-    st.left=`${(c.x*k-r).toFixed(0)}px`;st.top=`${(c.y*k-r).toFixed(0)}px`;st.width=st.height=`${(2*r).toFixed(0)}px`;
-  };
-  const wheelRim=wheelEl.querySelector<HTMLElement>('.tw-rim')!;
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-hold]')){
     const control=button.dataset.hold as 'throttle'|'brake'|'left'|'right';
     const set=(down:boolean)=>(event:Event)=>{
@@ -1705,12 +1659,6 @@ export async function boot():Promise<void>{
     tiltSteer=tilt.read(dt);
     const wheelTurn=`rotate(${Math.round((steeringMode==='tilt'?tiltSteer:vehicle.state.steerAngle/.6)*120)}deg)`;
     hudWheel.style.transform=wheelTurn;
-    if(steeringMode==='wheel'){
-      wheelRim.style.transform=`rotate(${touchWheel.turnDeg.toFixed(1)}deg)`;
-      const value=String(Math.round(touchWheel.turnDeg/2.7));
-      wheelEl.setAttribute('aria-valuenow',value);wheelGrab.setAttribute('aria-valuenow',value);
-      if(!behind)placeWheelGrab();
-    }
     // Turning right turns the wheel clockwise as the driver sees it.
     cockpit.setWheel(vehicle.state.steerAngle*STEERING_RATIO);
     if(driverBody&&!behind)driverBody.update(cockpit.grips());
