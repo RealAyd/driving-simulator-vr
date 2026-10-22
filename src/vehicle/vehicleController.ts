@@ -66,9 +66,9 @@ export class VehicleController implements SimModule{
     this.previous=this.state;
     const controls=this.controls.read();
     // Braking evidence: one event each time the driver starts braking while moving.
-    const brakingNow=controls.brake>0&&Math.abs(this.state.speed)>1;
+    const brakingNow=(controls.driverBrake??controls.brake)>0&&Math.abs(this.state.speed)>1;
     if(brakingNow&&!this.braking)this.events.emit('vehicle.braking',{speed:this.state.speed});
-    this.braking=controls.brake>0;
+    this.braking=(controls.driverBrake??controls.brake)>0;
     let next=stepVehicle(this.state,controls,this.params,dt);
     next={...next,position:{...next.position,y:this.heightAt(next.position.x,next.position.z)}};
 
@@ -76,7 +76,9 @@ export class VehicleController implements SimModule{
     if(hit){
       // Stop at the last free position; report each contact once.
       next={...this.state,speed:0};
-      if(this.colliding!==hit)this.events.emit('vehicle.collision',{obstacleId:hit,speed:this.state.speed});
+      // Standing still (not accelerating into it): something drove into the car, not the car into it.
+      const still=Math.abs(this.state.speed)<.3&&controls.throttle===0;
+      if(this.colliding!==hit)this.events.emit('vehicle.collision',{obstacleId:hit,speed:this.state.speed,...(still?{struck:true}:{})});
       this.colliding=hit;
     }else if(this.colliding&&this.collisions.firstCollision(next,this.halfWidth+CONTACT_RELEASE,this.halfLength+CONTACT_RELEASE)!==this.colliding){
       // Creeping forward against the same obstacle is one incident; it ends

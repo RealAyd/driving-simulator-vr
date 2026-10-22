@@ -263,6 +263,12 @@ export class Traffic implements SimModule{
       }
       let target=d.leg.cruise;
       if(gap<Infinity)target=Math.min(target,Math.max(0,(gap-GAP)*.55));
+      // About to touch the learner's car (turning in beside it, squeezing past it): stop, whatever else applies.
+      {
+        const lx=learner.pose.position.x-pos.x,lz=learner.pose.position.z-pos.z;
+        const along=lx*fwd.x+lz*fwd.z,side=Math.abs(lx*fwd.z-lz*fwd.x);
+        if(along>-1&&along<car.halfLength+3.2&&side<car.halfWidth+1.25){target=0;car.speed=Math.min(car.speed,.5);why='learner'}
+      }
       // The end of a road: slow for the turn; at a mini-roundabout or a T-junction, give way to anyone nearer to it.
       const remaining=d.leg.lengths.at(-1)!-d.s;
       if(d.leg.road&&remaining<20){

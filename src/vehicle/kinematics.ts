@@ -7,6 +7,8 @@ export interface Controls{
   steer:number;
   /** Reverse gear selected: the accelerator drives the car backwards (up to `maxReverseSpeed`). */
   reverse?:boolean;
+  /** The driver's own braking, when part of `brake` is the steering assistance's (slowing for a bend). */
+  driverBrake?:number;
 }
 
 export const NO_CONTROLS:Readonly<Controls>=Object.freeze({throttle:0,brake:0,steer:0});

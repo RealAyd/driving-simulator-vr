@@ -34,4 +34,19 @@ describe('mock test routes with assisted steering',()=>{
       expect(worst).toBeLessThan(3);
     });
   }
+  // A learner who comes too fast (20 mph, never slowing for junctions): the assistance slows for each bend, so the
+  // car still follows the lane round the corners instead of running wide over the kerb.
+  it('too fast for the corners: the assistance slows for them and stays on the lane',{timeout:60_000},()=>{
+    const route=net.plan(net.locate(location.spawn.position.x,location.spawn.position.z,heading)!,2000,3);
+    const assist=new SteeringAssist(routeLanePath(route.legs,parked),LEARNER_CAR);
+    let car:VehicleState={position:{x:location.spawn.position.x,y:0,z:location.spawn.position.z},heading,speed:0,steerAngle:0};
+    let worst=0;
+    for(let t=0;t<400&&assist.progress(car.position.x,car.position.z)<assist.length-5;t+=1/60){
+      const brake=assist.brakeFor(car,car.speed);
+      car=stepVehicle(car,{throttle:brake>0||car.speed>9?0:1,brake,steer:assist.steer(car,car.speed)},LEARNER_CAR,1/60);
+      const p=assist.pointAt(assist.progress(car.position.x,car.position.z));
+      worst=Math.max(worst,Math.hypot(p.x-car.position.x,p.z-car.position.z));
+    }
+    expect(worst).toBeLessThan(3);
+  });
 });

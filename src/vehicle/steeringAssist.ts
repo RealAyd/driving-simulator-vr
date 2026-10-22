@@ -7,6 +7,9 @@ import {steerLimit,type VehicleParams} from './kinematics';
  * and decisions. It only proposes a steering input; the driver's own
  * steering always overrides it, and its use is recorded in the results.
  */
+/** Sideways acceleration the assisted car slows to round a bend (m/s²): gentle, so it follows the curve. */
+const BEND_LATERAL=2;
+
 export class SteeringAssist{
   private lengths:number[]=[];
 
@@ -83,11 +86,38 @@ export class SteeringAssist{
     return Math.atan2(b.x-a.x,-(b.z-a.z));
   }
 
+  /** How much the path turns (radians, signed) between two distances along it. */
+  turnBetween(a:number,b:number):number{
+    const p0=this.pointAt(a),p1=this.pointAt(a+1.5),q0=this.pointAt(b-1.5),q1=this.pointAt(b);
+    const h0=Math.atan2(p1.x-p0.x,-(p1.z-p0.z)),h1=Math.atan2(q1.x-q0.x,-(q1.z-q0.z));
+    return headingDelta(h1,h0);
+  }
+
+  /**
+   * Braking (0–1) so the car is slow enough for the bends ahead: a speed at which it follows each bend (a gentle
+   * sideways acceleration), reached with gentle braking. Not the speed a test expects (slower), only what keeps the
+   * assisted car on the road.
+   */
+  brakeFor(pose:Pose,speed:number):number{
+    if(speed<2)return 0;
+    const at=this.progress(pose.position.x,pose.position.z);
+    let need=0;
+    for(let d=2;d<speed*speed/3+15;d+=2){
+      const turn=Math.abs(this.turnBetween(at+d,at+d+6));
+      if(turn<.05)continue;
+      const radius=6/turn,allowed=Math.max(3,Math.sqrt(BEND_LATERAL*radius));
+      // Deceleration needed to be at the allowed speed by then.
+      need=Math.max(need,(speed*speed-allowed*allowed)/(2*Math.max(1,d)));
+    }
+    return need<.4?0:Math.min(1,need/this.params.brakeDeceleration*1.3);
+  }
+
   /** Normalised steering input (-1 left … +1 right) for the current pose and speed. */
   steer(pose:Pose,speed:number):number{
     if(speed<.3)return 0;
+    const at=this.progress(pose.position.x,pose.position.z);
     const lookahead=Math.min(15,Math.max(4,4+.6*speed));
-    const target=this.pointAt(this.progress(pose.position.x,pose.position.z)+lookahead);
+    const target=this.pointAt(at+lookahead);
     const dx=target.x-pose.position.x,dz=target.z-pose.position.z;
     const alpha=headingDelta(Math.atan2(dx,-dz),pose.heading);
     // Path behind or beside the car (gone past a turn): full lock towards it rather than sin(alpha), which fades out.

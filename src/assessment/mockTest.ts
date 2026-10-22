@@ -176,7 +176,8 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
         const c=String(e.payload['control']);
         if(c===this.showing.q.control)this.showing.shown=true;else this.showing.other??=c;
       }
-      if(e.type==='vehicle.collision')this.fault('control-collision',`collision-${String(e.payload['obstacleId'])}`,'dangerous',`Control: collision with ${String(e.payload['obstacleId']).replace(/-\d+$/,'').replace(/-/g,' ')} at ${mph(Number(e.payload['speed'])||0).toFixed(0)} mph.`,[e.id]);
+      // (Struck while standing still: another road user drove into the car; not the learner's fault.)
+      if(e.type==='vehicle.collision'&&!e.payload['struck'])this.fault('control-collision',`collision-${String(e.payload['obstacleId'])}`,'dangerous',`Control: collision with ${String(e.payload['obstacleId']).replace(/-\d+$/,'').replace(/-/g,' ')} at ${mph(Number(e.payload['speed'])||0).toFixed(0)} mph.`,[e.id]);
     }
     if(evs.length)this.lastEvent=Math.max(this.lastEvent,Number(evs.at(-1)!.id.slice(3)));
     this.looks=this.looks.filter(lk=>now-lk.time<30);

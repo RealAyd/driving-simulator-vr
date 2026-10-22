@@ -105,8 +105,14 @@ export class Soundscape{
 
   get running():boolean{return this.ctx?.state==='running'}
 
-  /** The audio context while it is playing (the voice clips are played through it). */
-  get context():AudioContext|null{return this.ctx?.state==='running'?this.ctx:null}
+  /** The audio context once the sound has started (the voice clips are played through it; it wakes it if paused). */
+  get context():AudioContext|null{return this.ctx}
+
+  /** The car and traffic turned down while someone speaks, so every word is heard; back up after. */
+  duck(speaking:boolean):void{
+    if(!this.ctx||this.muted)return;
+    this.master.gain.setTargetAtTime(speaking?.35:.9,this.ctx.currentTime,speaking?.08:.4);
+  }
 
   /**
    * Keeps the sound going: after the phone has interrupted it (a call, Siri, another app, or on iPhone the spoken

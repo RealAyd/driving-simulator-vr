@@ -355,7 +355,10 @@ export async function boot():Promise<void>{
     const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
-    lastControls=viewerDrive??{throttle:c.throttle,brake:c.brake,steer,reverse:!!keys.reverse};
+    // Assisted steering also eases off for a bend too tight for the speed (only what keeps the car on the road: the
+    // speed a test expects is slower, and still the learner's to judge).
+    const bendBrake=steeringMode==='assist'&&c.steer===0&&runtime?.assist&&vehicle.state.speed>0&&!keys.reverse?runtime.assist.brakeFor(vehicle.pose,vehicle.state.speed):0;
+    lastControls=viewerDrive??{throttle:bendBrake>0?0:c.throttle,brake:Math.max(c.brake,bendBrake),steer,reverse:!!keys.reverse,...(bendBrake>0?{driverBrake:c.brake}:{})};
     return lastControls;
   }};
   let lastControls:Controls={throttle:0,brake:0,steer:0};
@@ -367,6 +370,7 @@ export async function boot():Promise<void>{
   // Recorded sentences, played through the car's sound (the device's voice for anything else): the examiner's in
   // Ryan's voice, the instructor's (lessons, practice) in Sonia's.
   examinerVoice.audio=()=>sound.context;
+  examinerVoice.onSpeaking=speaking=>sound.duck(speaking);
   void examinerVoice.loadClips(INSTRUCTOR_CLIPS);
   void examinerVoice.loadClips(EXAMINER_CLIPS);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)sound.keepAlive()});
@@ -674,7 +678,7 @@ export async function boot():Promise<void>{
         lastCollision=null;
         for(let i=firstNewEvent;i<events.events.length;i++){
           const e=events.events[i]!;
-          if(e.type==='vehicle.collision'){lastCollision=String(e.payload['obstacleId']);sound.collision(Number(e.payload['speed'])||0)}
+          if(e.type==='vehicle.collision'){if(!e.payload['struck'])lastCollision=String(e.payload['obstacleId']);sound.collision(Number(e.payload['speed'])||0)}
         }
       },
       finish(outcome){

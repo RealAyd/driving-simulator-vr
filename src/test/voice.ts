@@ -72,18 +72,26 @@ export class ExaminerVoice{
     synth.speak(u);
   }
 
-  /** Speaks `text`: instead of anything being said, or after it (`queue`, for an instructor's follow-up words). */
+  /** Called with true while a sentence is being spoken, false after (the car's sound is turned down meanwhile). */
+  onSpeaking:(speaking:boolean)=>void=()=>{};
+
+  /**
+   * Speaks `text`: next, instead of anything still waiting (a new direction), or after it all (`queue`, for an
+   * instructor's follow-up words). The sentence being spoken is never cut off half way: it finishes first.
+   */
   say(text:string,queue=false):void{
     if(this.muted||!text||(!this.synth&&this.clips.size===0))return;
-    if(!queue)this.stop();
     // Sentence by sentence: each has its own clip, and some browsers cut off an utterance after about 15 seconds.
-    this.waiting.push(...sentences(text));
+    if(queue)this.waiting.push(...sentences(text));
+    else this.waiting=sentences(text);
     if(!this.busy)void this.run();
   }
 
+  /** Silences it at once (paused, ended, sound off). */
   stop():void{
     this.generation++;
     this.waiting=[];this.busy=false;
+    this.onSpeaking(false);
     try{this.source?.stop()}catch{/* ended */}
     this.source=null;
     this.synth?.cancel();
@@ -92,6 +100,7 @@ export class ExaminerVoice{
   private async run():Promise<void>{
     this.busy=true;
     const g=this.generation;
+    this.onSpeaking(true);
     while(this.waiting.length&&g===this.generation){
       const s=this.waiting.shift()!;
       const played=this.clips.has(phraseFile(s))&&await this.playClip(s,g).catch(()=>false);
@@ -99,13 +108,19 @@ export class ExaminerVoice{
       if(!played)await this.speak(s);
       if(g===this.generation)this.onSpoken();
     }
-    if(g===this.generation)this.busy=false;
+    if(g===this.generation){this.busy=false;this.onSpeaking(false)}
   }
 
   /** Plays a sentence's clip through the car's sound; false if it cannot (sound not running, download failed). */
   private async playClip(sentence:string,g:number):Promise<boolean>{
     const ctx=this.audio();
-    if(!ctx||ctx.state!=='running')return false;
+    if(!ctx||ctx.state==='closed')return false;
+    // Paused by the phone (a notification, a call, another app's sound): woken, rather than the device's own voice
+    // taking over (which on iPhone pauses the sound again, so the two would keep swapping).
+    if(ctx.state!=='running'){
+      await Promise.race([ctx.resume().catch(()=>{}),new Promise(r=>setTimeout(r,600))]);
+      if((ctx.state as string)!=='running')return false;
+    }
     const path=this.base+phraseFile(sentence);
     let bytes=this.bytes.get(path);
     if(!bytes){
@@ -118,13 +133,20 @@ export class ExaminerVoice{
     return new Promise<boolean>(resolve=>{
       const src=ctx.createBufferSource();
       src.buffer=buffer;
-      src.connect(ctx.destination);
+      src.connect(this.output(ctx));
       // Ended, stopped, or (the context suspended by the phone) given up on after the clip's length and a margin.
       const timer=setTimeout(()=>{try{src.stop()}catch{/* ended */}resolve(true)},buffer.duration*1000+1500);
       src.onended=()=>{clearTimeout(timer);if(this.source===src)this.source=null;resolve(true)};
       this.source=src;
       src.start();
     });
+  }
+
+  /** The voice's own volume, a little above the car's sound (made once per audio context). */
+  private gain:{ctx:AudioContext;node:GainNode}|null=null;
+  private output(ctx:AudioContext):AudioNode{
+    if(this.gain?.ctx!==ctx){const node=ctx.createGain();node.gain.value=1.4;node.connect(ctx.destination);this.gain={ctx,node}}
+    return this.gain.node;
   }
 
   /** Speaks a sentence with the device's voice; resolves when it is said (or after a time, if the phone stalls). */

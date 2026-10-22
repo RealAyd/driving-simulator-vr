@@ -62,7 +62,7 @@ export class Assessor implements SimModule{
       }
       if(e.type==='vehicle.collision'&&e.payload['obstacleId']===this.input.pedestrian.id){
         this.record('crossing.collision','crossing-conflict','dangerous',[e.id],'The car struck the pedestrian on the crossing.');
-      }else if(e.type==='vehicle.collision'){
+      }else if(e.type==='vehicle.collision'&&!e.payload['struck']){
         this.record('vehicle.collision',`collision-${e.payload['obstacleId']}`,'serious',[e.id],
           `The car collided with ${String(e.payload['obstacleId']).replace(/-/g,' ')}.`);
       }
