@@ -6,7 +6,7 @@ test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 test.setTimeout(300_000);
 
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
-const EYE={x:.37,y:1.2,z:.1};
+const EYE={x:.37,y:1.3,z:.1};
 /** Head yaw/pitch (degrees) that looks from the driver's eye at a car-local point. */
 const aimAt=(p:{x:number;y:number;z:number})=>{
   const dx=p.x-EYE.x,dy=p.y-EYE.y,dz=p.z-EYE.z;

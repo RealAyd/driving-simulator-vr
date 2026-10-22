@@ -43,7 +43,8 @@ test('G16: Kings Road, careful: passes the bus slowly, checks the mirror, gives 
   await expect(page.locator('#hud-place')).toHaveText('Kings Road · Brentwood · 30 mph');
   expect((await read(page,'buses()'))[0].state).toBe('waiting');
   await page.screenshot({path:testInfo.outputPath('g16-01-start.png')});
-  await drive(page,c=>toCrossing(c)>80?8:5.5,c=>toCrossing(c)<52);
+  // Into the approach zone (it starts about 51 m out): the slowing down that is marked is the first one there.
+  await drive(page,c=>toCrossing(c)>80?8:5.5,c=>toCrossing(c)<49);
   await page.screenshot({path:testInfo.outputPath('g16-02-passing-the-bus.png')});
   // Mirror check just before slowing for the crossing (no screenshot in between: on a slow renderer that takes
   // seconds of simulated time, longer than the look-back the rule allows).

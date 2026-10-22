@@ -21,7 +21,8 @@ const OSM_API='https://api.openstreetmap.org/api/0.6/map';
 const slug=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'area';
 
 /** Downloads the map data (smaller squares where the map is too dense for one call) and builds the area. */
-export async function buildArea(request:AreaRequest,progress:(step:string)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
+/** `progress` gets each step with the percent done (0–100). */
+export async function buildArea(request:AreaRequest,progress:(step:string,percent:number)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
   let xml:string|null=null,half=350;
   // Map data already downloaded on this device is reused (Cache Storage): a second drive there starts at once.
   const cache=await (globalThis as {caches?:CacheStorage}).caches?.open('driving-practice-osm').catch(()=>null)??null;
@@ -30,7 +31,7 @@ export async function buildArea(request:AreaRequest,progress:(step:string)=>void
     const url=`${OSM_API}?bbox=${centreBbox(request.lat,request.lon,size).join(',')}`;
     const cached=await cache?.match(url).catch(()=>undefined);
     if(cached){xml=await cached.text();break}
-    progress('Downloading map data…');
+    progress('Downloading map data…',10);
     const response=await fetcher(url);
     // 400: more than the API's 50 000 nodes in the square (a city centre): try a smaller one.
     if(response.status===400)continue;
@@ -40,7 +41,7 @@ export async function buildArea(request:AreaRequest,progress:(step:string)=>void
     break;
   }
   if(!xml)throw new Error('The map is too dense here to download in one go.');
-  progress('Building the streets…');
+  progress('Building the streets…',55);
   // Let the message show before the (synchronous) generator runs.
   await new Promise(r=>setTimeout(r,30));
   const id=`area-${slug(request.label)}`;
@@ -73,6 +74,7 @@ export async function buildArea(request:AreaRequest,progress:(step:string)=>void
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
     end:{timeLimitSeconds:900}
   });
+  progress('Streets built',100);
   return {location,scenario,mockTest,lesson,summary};
 }
 

@@ -105,7 +105,7 @@ const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
  * Camera only: the head direction, and so observations, are unchanged. Not applied to mirror and shoulder views. */
-const FORWARD_GLANCE=degToRad(10);
+const FORWARD_GLANCE=degToRad(12);
 /** While a mirror view is selected the view narrows, like focusing on the glass (door mirrors are smaller). */
 const MIRROR_FOCUS_FOV={interior:degToRad(50),door:degToRad(40)};
 /**
@@ -154,14 +154,24 @@ export async function boot():Promise<void>{
   const session=new Session();
   session.onChange(state=>hud.showOnly(state,session.error));
   // ---- Loading: building a place or starting a drive blocks the page for a few seconds; say so first ----
-  const busyBox=byId('busy'),busyText=byId('busy-text'),busyStep=byId('busy-step');
-  /** Shows the loading screen, lets the browser draw it, runs `work`, then hides it. */
-  const withLoading=async<T,>(text:string,work:()=>T|Promise<T>):Promise<T>=>{
-    busyText.textContent=text;busyStep.textContent='';busyBox.hidden=false;
-    // Two frames: the screen is drawn before the work holds the page.
-    await new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r())));
-    try{return await work()}finally{busyBox.hidden=true}
+  const busyBox=byId('busy'),busyText=byId('busy-text'),busyStep=byId('busy-step'),busyPct=byId('busy-pct'),busyBar=byId('busy-bar');
+  /** Lets the browser draw (two frames; a moment at most, should frames not come, as in a hidden tab). */
+  const drawn=()=>new Promise<void>(r=>{let done=false;const go=()=>{if(!done){done=true;r()}};requestAnimationFrame(()=>requestAnimationFrame(go));setTimeout(go,120)});
+  type Report=(percent:number,step?:string)=>Promise<void>;
+  const report:Report=async(percent,step)=>{
+    const p=Math.max(1,Math.min(100,Math.round(percent)));
+    busyPct.textContent=`${p}%`;busyBar.style.width=`${p}%`;busyBar.parentElement!.setAttribute('aria-valuenow',String(p));
+    if(step!==undefined)busyStep.textContent=step;
+    await drawn();
   };
+  /** Shows the loading screen (1–100%), lets the browser draw it, runs `work` (which reports as it goes), hides it. */
+  const withLoading=async<T,>(text:string,work:(report:Report)=>T|Promise<T>):Promise<T>=>{
+    busyText.textContent=text;busyStep.textContent='';busyBox.hidden=false;
+    await report(1);
+    try{const result=await work(report);await report(100);return result}finally{busyBox.hidden=true}
+  };
+  /** Builds a place with the loading screen's percent going from `from` to `to`. */
+  const loadLocation=async(id:string,rep:Report,from=0,to=100)=>{for(const [p,step] of locationStages(id))await rep(from+(to-from)*p/100,step)};
   // ---- Tutorial: the home and driving tours, first time by themselves, and from the Tutorial buttons ----
   const tutorial=new Tutorial();
   /** The driving tour with the drive held still (the clock stops until it is finished). */
@@ -213,21 +223,26 @@ export async function boot():Promise<void>{
   let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
   let staticObstacles=new StaticObstacles(place.blocks);
   const spawnOf=(l:typeof place):Pose=>({position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)});
-  const useLocation=(id:string)=>{
+  /** Building a place, in stages: [percent done, what comes next] after each (the loading screen shows them). */
+  function* locationStages(id:string):Generator<[number,string]>{
     if(place.id===id)return;
+    yield [3,'Clearing away the last place'];
     shadows?.dispose();
     world.dispose();
     place=locations.get(id)!;
     terrain=terrainFor(place.id);
     setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
+    yield [8,'Laying the roads and buildings'];
     world=buildWorld(scene,place,quality,terrain);
     if(shadowsOn){shadows=new SunShadows(scene,world.sun,quality);shadows.castOnlyUnder(cockpit.root)}
     placeModels();
-    dressLocation();
+    yield* dressStages(40,97);
     vehicle.setSpawn(spawnOf(place));
     hud.setStatus(`${place.name} · ${place.fidelity} layout · ${quality.id} quality`);
     showCredit();
-  };
+    yield [100,'Ready'];
+  }
+  const useLocation=(id:string)=>{for(const _ of locationStages(id)){/* all at once */}};
   // Scenery models for the location; any that are unavailable leave the simple shapes in place.
   const props=new PropLibrary(scene);
   const placeModels=()=>{
@@ -250,8 +265,12 @@ export async function boot():Promise<void>{
   let animatedPeople:AnimatedPeople|null=null;
   /** Street furniture models (asset Batch A); null until loaded. */
   let streetModels:StreetModels|null=null;
-  const dressLocation=()=>{
+  /** Dressing the place in stages, reporting percent from `from` to `to`. */
+  function* dressStages(from:number,to:number):Generator<[number,string]>{
+    const at=(k:number)=>from+(to-from)*k;
+    yield [at(0),'Planning houses, shops and parked cars'];
     const layout=layoutStreetscape(place)??layoutTownscape(place);
+    yield [at(.25),'Building houses and gardens'];
     kerbCars=(layout?.cars??[]).filter(c=>c.id.startsWith('kerb-car')).map(c=>({x:c.x,z:c.z}));
     const parked:ParkedCar[]=[
       ...place.blocks.filter(b=>b.vehicleModel&&b.vehicleModel in CAR_MODELS).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
@@ -262,7 +281,9 @@ export async function boot():Promise<void>{
     const modelTrees=!!layout&&!!streetModels?.has('tree');
     if(layout||vans.length>0)buildStreetscape(scene,modelTrees?{...layout!,trees:[]}:layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
     if(modelTrees)streetModels!.placeTrees(world.root,layout!.trees);
+    yield [at(.55),'Parking cars'];
     bakeParkedCars(scene,world.root,parked,carModels);
+    yield [at(.7),'Signs, bus stops and people'];
     signPlan=layoutSignage(place,layout);
     // Modelled shelters replace the drawn ones (the plan, and so the colliders, are unchanged).
     const modelShelters=!!streetModels?.has('shelter');
@@ -277,8 +298,10 @@ export async function boot():Promise<void>{
     const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
     staticObstacles=new StaticObstacles(colliders);
     sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
+    yield [at(.88),'Laying it on the ground'];
     if(terrain)drape(world.root,terrain);
-  };
+  }
+  const dressLocation=()=>{for(const _ of dressStages(0,100)){/* all at once */}};
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
   const showCredit=()=>{
     const osm=place.sources.some(source=>source.licence.includes('ODbL'));
@@ -1271,9 +1294,15 @@ export async function boot():Promise<void>{
   let showGuide=false;
   const guideToggle=byId<HTMLInputElement>('guide-toggle');
   guideToggle.addEventListener('change',()=>{showGuide=guideToggle.checked});
+  /** A place being built behind the loading screen (Start waits for it). */
+  let placeLoading:Promise<void>|null=null;
   const preview=async(scenario:Scenario)=>{
     // A different place: its streets, buildings and traffic are built now (a few seconds).
-    if(scenario.locationId!==place.id)await withLoading(`Loading ${locations.get(scenario.locationId)?.name??'the streets'}…`,()=>useLocation(scenario.locationId));
+    // Real streets take seconds: built in stages behind the loading screen. Small practice streets: at once.
+    if(scenario.locationId!==place.id&&(locations.get(scenario.locationId)?.streetParking??0)>0){
+      placeLoading=withLoading(`Loading ${locations.get(scenario.locationId)?.name??'the streets'}…`,rep=>loadLocation(scenario.locationId,rep));
+      try{await placeLoading}finally{placeLoading=null}
+    }
     // (Started meanwhile: the drive has placed the car.)
     if(session.state!=='ready')return;
     useLocation(scenario.locationId);
@@ -1348,13 +1377,19 @@ export async function boot():Promise<void>{
     if(building||session.state!=='ready')return;
     building=true;
     try{
-      const built=await withLoading(`Building the streets round ${request.label}…`,()=>buildArea(request,step=>{areaStatus.textContent=step;busyStep.textContent=step}));
-      const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=built;
-      locations.set(l.id,l);
-      scenarios.set(sc.id,sc);
-      scenarios.set(mockTest.id,mockTest);
-      scenarios.set(lessonScenario.id,lessonScenario);
-      EXERCISES[l.id]={scenario:sc.id,test:mockTest.id,lesson:lessonScenario.id};
+      // One loading screen: the map data and the streets (the first half), then the place itself.
+      const built=await withLoading(`Building the streets round ${request.label}…`,async rep=>{
+        const b=await buildArea(request,(step,percent)=>{areaStatus.textContent=step;void rep(percent*.5,step)});
+        const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=b;
+        locations.set(l.id,l);
+        scenarios.set(sc.id,sc);
+        scenarios.set(mockTest.id,mockTest);
+        scenarios.set(lessonScenario.id,lessonScenario);
+        EXERCISES[l.id]={scenario:sc.id,test:mockTest.id,lesson:lessonScenario.id};
+        await loadLocation(l.id,rep,50,100);
+        return b;
+      });
+      const {location:l}=built;
       events.emit('area.built',{locationId:l.id,label:request.label,lat:request.lat,lon:request.lon,summary:built.summary});
       areaStatus.textContent='';
       showExercise(l.id);
@@ -1386,7 +1421,12 @@ export async function boot():Promise<void>{
   // streets start at once.
   const startShowing=(id:string)=>{
     const sc=scenarios.get(id);
-    if(sc&&(locations.get(sc.locationId)?.streetParking??0)>0)void withLoading('Starting…',()=>start(id));
+    if(placeLoading){const waiting=placeLoading;void waiting.then(()=>startShowing(id));return}
+    if(sc&&(locations.get(sc.locationId)?.streetParking??0)>0)void withLoading('Starting…',async rep=>{
+      await loadLocation(sc.locationId,rep,0,40);
+      await rep(45,'Traffic, people, lights and your route');
+      start(id);
+    });
     else start(id);
   };
   byId('start-practice').addEventListener('click',()=>{if(chosen)startShowing(chosen.scenario)});

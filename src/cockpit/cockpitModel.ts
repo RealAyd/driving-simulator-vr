@@ -276,8 +276,9 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
 
   // Exterior body for other cameras. Seen from inside, its faces are back
   // faces and are culled, so it does not block the driver.
-  const body=CreateBox('car-body',{width:1.8,height:1.0,depth:4.3},scene);
-  body.position.set(0,.75,0);
+  // Up to the roof, so the driver's eye is always inside it (above its top, the top face would fill the view).
+  const body=CreateBox('car-body',{width:1.8,height:1.24,depth:4.3},scene);
+  body.position.set(0,.87,0);
   body.material=paint;
   body.parent=root;
 

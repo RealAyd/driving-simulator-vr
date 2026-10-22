@@ -259,6 +259,9 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 .busy-card{display:grid;justify-items:center;gap:10px;padding:22px 28px;border-radius:18px;background:#0f172a;border:1px solid rgba(255,255,255,.12);box-shadow:0 12px 40px rgba(0,0,0,.45);max-width:min(420px,calc(100vw - 32px));text-align:center}
 .busy-card p{margin:0;font-weight:700;font-size:15px}
 .busy-card small{color:var(--soft);font-size:12px;min-height:1em}
+#busy-pct{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1}
+.busy-track{width:min(280px,60vw);height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+#busy-bar{display:block;height:100%;width:1%;background:var(--accent);transition:width .15s}
 .spinner{width:38px;height:38px;border-radius:50%;border:4px solid rgba(255,255,255,.15);border-top-color:var(--accent);animation:spin .8s linear infinite;will-change:transform}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Lessons: the syllabus, one card per lesson. */
@@ -302,7 +305,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 <canvas id="sim-canvas" tabindex="0" aria-label="Driving simulator view"></canvas>
 
 <!-- Building a place or starting a drive takes a few seconds: shown over everything meanwhile. -->
-<div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busy-card"><span class="spinner" aria-hidden="true"></span><p id="busy-text">Loading…</p><small id="busy-step"></small></div></div>
+<div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busy-card"><span class="spinner" aria-hidden="true"></span><p id="busy-text">Loading…</p><b id="busy-pct">1%</b><div class="busy-track" role="progressbar" aria-label="Loading" aria-valuemin="1" aria-valuemax="100" aria-valuenow="1"><span id="busy-bar"></span></div><small id="busy-step"></small></div></div>
 <section id="screen-loading" class="screen" role="status"><div class="card"><h1>Loading simulator…</h1><p>Preparing the road and car.</p></div></section>
 
 <section id="screen-start" class="screen" hidden>
