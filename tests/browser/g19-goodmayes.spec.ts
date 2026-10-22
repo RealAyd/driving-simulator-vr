@@ -13,6 +13,11 @@ test('G19: Goodmayes free drive starts on real ground and drives off along the r
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.click('[data-drive-mode=free]');
   await page.click('[data-exercise=goodmayes]');
+  // Building the place takes a few seconds: the loading screen says so meanwhile.
+  await expect(page.locator('#busy')).toBeVisible();
+  await expect(page.locator('#busy-text')).toContainText('Loading Goodmayes');
+  await page.screenshot({path:testInfo.outputPath('g19-00-loading.png')});
+  await expect(page.locator('#busy')).toBeHidden({timeout:90_000});
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   // The traffic lights mapped at Goodmayes run (two junctions and two crossings).

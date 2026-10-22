@@ -105,7 +105,7 @@ const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
  * Camera only: the head direction, and so observations, are unchanged. Not applied to mirror and shoulder views. */
-const FORWARD_GLANCE=degToRad(7);
+const FORWARD_GLANCE=degToRad(10);
 /** While a mirror view is selected the view narrows, like focusing on the glass (door mirrors are smaller). */
 const MIRROR_FOCUS_FOV={interior:degToRad(50),door:degToRad(40)};
 /**
@@ -153,6 +153,15 @@ export async function boot():Promise<void>{
   const hud=new Hud();
   const session=new Session();
   session.onChange(state=>hud.showOnly(state,session.error));
+  // ---- Loading: building a place or starting a drive blocks the page for a few seconds; say so first ----
+  const busyBox=byId('busy'),busyText=byId('busy-text'),busyStep=byId('busy-step');
+  /** Shows the loading screen, lets the browser draw it, runs `work`, then hides it. */
+  const withLoading=async<T,>(text:string,work:()=>T|Promise<T>):Promise<T>=>{
+    busyText.textContent=text;busyStep.textContent='';busyBox.hidden=false;
+    // Two frames: the screen is drawn before the work holds the page.
+    await new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r())));
+    try{return await work()}finally{busyBox.hidden=true}
+  };
   // ---- Tutorial: the home and driving tours, first time by themselves, and from the Tutorial buttons ----
   const tutorial=new Tutorial();
   /** The driving tour with the drive held still (the clock stops until it is finished). */
@@ -1262,7 +1271,11 @@ export async function boot():Promise<void>{
   let showGuide=false;
   const guideToggle=byId<HTMLInputElement>('guide-toggle');
   guideToggle.addEventListener('change',()=>{showGuide=guideToggle.checked});
-  const preview=(scenario:Scenario)=>{
+  const preview=async(scenario:Scenario)=>{
+    // A different place: its streets, buildings and traffic are built now (a few seconds).
+    if(scenario.locationId!==place.id)await withLoading(`Loading ${locations.get(scenario.locationId)?.name??'the streets'}…`,()=>useLocation(scenario.locationId));
+    // (Started meanwhile: the drive has placed the car.)
+    if(session.state!=='ready')return;
     useLocation(scenario.locationId);
     vehicle.setSpawn(scenario.start?{position:{x:scenario.start.position.x,y:0,z:scenario.start.position.z},heading:degToRad(scenario.start.headingDeg)}:spawnOf(place));
     vehicle.reset();
@@ -1313,7 +1326,7 @@ export async function boot():Promise<void>{
     byId('guide-option').hidden=!scenario.guide;
     showGuide=guideToggle.checked=false;
     byId('intro-option').hidden=!chosen.intro;
-    preview(scenario);
+    void preview(scenario);
   };
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-exercise]'))
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
@@ -1335,7 +1348,7 @@ export async function boot():Promise<void>{
     if(building||session.state!=='ready')return;
     building=true;
     try{
-      const built=await buildArea(request,step=>{areaStatus.textContent=step});
+      const built=await withLoading(`Building the streets round ${request.label}…`,()=>buildArea(request,step=>{areaStatus.textContent=step;busyStep.textContent=step}));
       const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=built;
       locations.set(l.id,l);
       scenarios.set(sc.id,sc);
@@ -1369,8 +1382,15 @@ export async function boot():Promise<void>{
     events.emit('assist.changed',{enabled:steeringMode==='assist'&&!!runtime.assist,steering:steeringMode});
     canvas.focus();
   };
-  byId('start-practice').addEventListener('click',()=>{if(chosen)start(chosen.scenario)});
-  byId('start-intro').addEventListener('click',()=>{if(chosen?.intro)start(chosen.intro)});
+  // Real streets (traffic, people, lights to set up) take a moment: the loading screen first. The small practice
+  // streets start at once.
+  const startShowing=(id:string)=>{
+    const sc=scenarios.get(id);
+    if(sc&&(locations.get(sc.locationId)?.streetParking??0)>0)void withLoading('Starting…',()=>start(id));
+    else start(id);
+  };
+  byId('start-practice').addEventListener('click',()=>{if(chosen)startShowing(chosen.scenario)});
+  byId('start-intro').addEventListener('click',()=>{if(chosen?.intro)startShowing(chosen.intro)});
 
   const soundButton=byId<HTMLButtonElement>('hud-sound');
   const showSound=()=>{soundButton.setAttribute('aria-pressed',String(!sound.muted));soundButton.setAttribute('aria-label',sound.muted?'Sound off. Tap to turn on':'Sound on. Tap to mute')};

@@ -13,7 +13,7 @@ export interface SeatConfig{
 }
 
 export const RHD_SEAT:Readonly<SeatConfig>=Object.freeze({
-  eye:{x:.37,y:1.2,z:.1},
+  eye:{x:.37,y:1.25,z:.1},
   yawLimit:degToRad(160),   // enough for over-the-shoulder checks
   pitchUp:degToRad(45),
   pitchDown:degToRad(60)
