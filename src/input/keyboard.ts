@@ -30,6 +30,12 @@ const VIEW_KEYS:Record<string,ViewTarget>={
  * Keyboard and on-screen button input. Held keys are cleared whenever the
  * page loses focus or becomes hidden, so no control can stay stuck on.
  */
+/** Whether a key goes to a text box (an input, a text area, or an editable element). */
+export function typing(event:{target?:EventTarget|null}):boolean{
+  const t=event.target as {tagName?:string;isContentEditable?:boolean}|null|undefined;
+  return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable===true);
+}
+
 export class KeyboardInput implements ControlSource{
   private readonly held=new Set<string>();
   /** On-screen buttons hold virtual keys through the same path. */
@@ -58,6 +64,8 @@ export class KeyboardInput implements ControlSource{
   }
 
   private onKeyDown(event:KeyboardEvent):void{
+    // Typing in a box (the place search): the letters are the text, not driving keys.
+    if(typing(event))return;
     if(DRIVING_KEYS.has(event.code)){
       this.held.add(event.code);
       event.preventDefault?.();

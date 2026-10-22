@@ -73,6 +73,24 @@ export function pointAtAlong(road:Road,along:number):{x:number;z:number;directio
 
 export type SurfaceKind='carriageway'|'pavement';
 
+/** Each road's bounding box and the furthest its pavement reaches from the centreline (computed once per road). */
+const bounds=new WeakMap<Road,{x0:number;x1:number;z0:number;z1:number;reach:number}>();
+function boundsOf(road:Road){
+  let b=bounds.get(road);
+  if(!b){
+    const xs=road.centreline.map(p=>p.x),zs=road.centreline.map(p=>p.z);
+    const widest=Math.max(road.pavementWidth,...(road.pavementProfile??[]).flatMap(p=>[p.left,p.right]));
+    b={x0:Math.min(...xs),x1:Math.max(...xs),z0:Math.min(...zs),z1:Math.max(...zs),reach:roadHalfWidth(road)+widest};
+    bounds.set(road,b);
+  }
+  return b;
+}
+/** Whether (x, z) could be within `reach` of the road (its box, widened): false rules it out without sampling. */
+const near=(road:Road,x:number,z:number,reach:number)=>{
+  const b=boundsOf(road);
+  return x>=b.x0-reach&&x<=b.x1+reach&&z>=b.z0-reach&&z<=b.z1+reach;
+};
+
 /**
  * Surface height comes only from authored road data, never from scene
  * meshes, so the vehicle cannot snap onto roofs or decorative objects.
@@ -83,6 +101,7 @@ export function surfaceAt(location:Location,x:number,z:number):{height:number;ki
     if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius)
       return {height:0,kind:'carriageway',roadId:junction.id};
   for(const road of location.roads){
+    if(!near(road,x,z,boundsOf(road).reach))continue;
     const s=sampleRoad(road,x,z),offset=s.distance;
     const half=roadHalfWidth(road);
     if(offset<=half)return {height:road.surfaceHeight,kind:'carriageway',roadId:road.id};
@@ -98,5 +117,5 @@ export function surfaceAt(location:Location,x:number,z:number):{height:number;ki
 export function onOtherCarriageway(location:Location,x:number,z:number,exceptRoadId:string,margin=0):boolean{
   for(const junction of location.junctions)
     if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius+margin)return true;
-  return location.roads.some(road=>road.id!==exceptRoadId&&sampleRoad(road,x,z).distance<=roadHalfWidth(road)+margin);
+  return location.roads.some(road=>road.id!==exceptRoadId&&near(road,x,z,roadHalfWidth(road)+margin)&&sampleRoad(road,x,z).distance<=roadHalfWidth(road)+margin);
 }

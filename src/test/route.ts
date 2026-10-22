@@ -53,6 +53,10 @@ const turnAngle=(a:Vec2,b:Vec2)=>Math.atan2(a.x*b.z-a.z*b.x,a.x*b.x+a.z*b.z);
 const ORD=['first','second','third','fourth','fifth'];
 /** Sharpest turn a route takes at a side road or road end (radians, about 135°). */
 const SHARPEST=2.35;
+/** Driving a route can still do from a turn for it to count as leading on (not soon into a dead end). */
+const LEADS_ON=800;
+/** Where nothing leads on that far: the least a way on must still allow (to drive on, and to pull up). */
+const MIN_ONWARD=200;
 
 interface Option{road:Road;dir:1|-1;from:number;angle:number;
   /** The turn measured further along the new road (20 m): a road that bends straight back is a U-turn in effect. */
@@ -170,7 +174,12 @@ export class RoadNetwork{
         const ds=this.decisions(pos);
         // A road that ends in a dead end (the edge of the area): the last side road off it is the way on.
         const end=ds.at(-1),deadEnd=!!end&&end.kind==='end'&&!end.options.some(o=>this.leadsOn(o));
-        const lastSide=deadEnd?[...ds].reverse().find(d=>d.kind==='side'&&this.leadsOn(d.options[0]!)):undefined;
+        // (Where nothing leads on far, as on a few streets with no loops: the side road that goes furthest, if it
+        // goes further than the way on at the end.)
+        const furthest=(os:Option[])=>Math.max(0,...os.map(o=>this.reach(o)));
+        const sides=ds.filter(d=>d.kind==='side');
+        const lastSide=!deadEnd?undefined:[...sides].reverse().find(d=>this.leadsOn(d.options[0]!))
+          ??sides.filter(d=>this.reach(d.options[0]!)>furthest(end!.options)+50).sort((a,b)=>this.reach(b.options[0]!)-this.reach(a.options[0]!))[0];
         let taken:{d:Decision;o:Option}|null=null;
         for(const d of ds){
           // On the way to a junction the lesson needs: the roads given, in order.
@@ -190,6 +199,8 @@ export class RoadNetwork{
             continue;
           }
           let viable=d.options.filter(o=>this.leadsOn(o));
+          // Nothing leads on far: the way that goes furthest, while it leaves room to drive on and pull up.
+          if(viable.length===0){const far=furthest(d.options);if(far>=MIN_ONWARD)viable=d.options.filter(o=>this.reach(o)>=far-1)}
           // Into a dead end (the edge of the area): the route ends at the last junction (no use if it is the first).
           if(viable.length===0){ok=steps.length>0;stuck=true;break}
           // Short links (a few metres between two junctions on the map) only when there is nothing else: two
@@ -318,18 +329,67 @@ export class RoadNetwork{
     return best!.route;
   }
 
-  /** Whether driving on along an option leads to another decision (not a dead end or the edge of the area). */
-  private leadsOn(o:Option,depth=3):boolean{
-    // Looked a few junctions ahead (a road whose only ways on are side roads into dead ends does not lead on).
-    const key=`${o.road.id}|${o.dir}|${Math.round(o.from)}|${depth}`;
-    const known=this.leadsOnCache.get(key);
-    if(known!==undefined)return known;
-    this.leadsOnCache.set(key,true);
-    const ds=this.decisions({road:o.road,dir:o.dir,along:o.from});
-    const result=depth<=1?ds.some(d=>d.kind==='side'||d.options.length>0)
-      :ds.some(d=>d.options.some(x=>this.leadsOn(x,depth-1)));
-    this.leadsOnCache.set(key,result);
-    return result;
+  /** Metres to a dead end or the edge of the area ahead (Infinity when the road ends at a junction). */
+  roomAhead(pos:RoadPos):number{
+    const end=this.decisions(pos).at(-1);
+    return !end||end.options.length>0?Infinity:Math.abs(end.along-pos.along);
   }
-  private readonly leadsOnCache=new Map<string,boolean>();
+
+  /**
+   * Whether driving on along an option leads on: at least LEADS_ON metres more driving are possible from it, however
+   * many junctions later, without a dead end or the edge of the area (a road whose every way on soon ends in one
+   * does not lead on).
+   */
+  leadsOn(o:{road:Road;dir:1|-1;from:number}):boolean{return this.reach(o)>=LEADS_ON}
+  /** How far one can drive on from an option (metres, up to LEADS_ON), by the longest way. */
+  reach(o:{road:Road;dir:1|-1;from:number}):number{
+    const reach=this.reaches(),k=this.stateKey(o.road,o.dir,o.from);
+    // (Every option is one of the places reached from a road's start; anything else, by its own ways on.)
+    return reach.get(k)??this.onward({road:o.road,dir:o.dir,along:o.from},reach);
+  }
+  private stateKey(road:Road,dir:number,from:number){return `${road.id}|${dir}|${Math.round(from)}`}
+  private onward(pos:RoadPos,reach:Map<string,number>):number{
+    let best=0;
+    for(const d of this.decisions(pos)){
+      const to=Math.abs(d.along-pos.along);
+      best=Math.max(best,to);
+      for(const o of d.options)best=Math.max(best,to+(reach.get(this.stateKey(o.road,o.dir,o.from))??0));
+    }
+    return Math.min(LEADS_ON,best);
+  }
+  /**
+   * Every place a route can be (a road, a direction, where it joined it), all of them reached from any road's start,
+   * and how far one can drive on from each (worked out again until nothing changes; capped, so it settles).
+   */
+  private reaches():Map<string,number>{
+    if(this.reachOf)return this.reachOf;
+    const states=new Map<string,RoadPos>();
+    const queue:RoadPos[]=this.location.roads.flatMap(r=>[{road:r,dir:1 as const,along:0},...(r.oneway?[]:[{road:r,dir:-1 as const,along:len(r)}])]);
+    for(const p of queue)states.set(this.stateKey(p.road,p.dir,p.along),p);
+    while(queue.length){
+      const pos=queue.pop()!;
+      for(const d of this.decisions(pos))for(const o of d.options){
+        const k=this.stateKey(o.road,o.dir,o.from);
+        if(!states.has(k)){const p={road:o.road,dir:o.dir,along:o.from};states.set(k,p);queue.push(p)}
+      }
+    }
+    // Each place's ways on: [metres to the junction, the place it leads to (none: just the road to its end)].
+    const ways=new Map<string,Array<[number,string|null]>>();
+    for(const [k,p] of states)ways.set(k,this.decisions(p).flatMap(d=>{
+      const to=Math.abs(d.along-p.along);
+      return [[to,null] as [number,string|null],...d.options.map(o=>[to,this.stateKey(o.road,o.dir,o.from)] as [number,string|null])];
+    }));
+    const reach=new Map<string,number>([...states.keys()].map(k=>[k,0]));
+    for(let changed=true,round=0;changed&&round<500;round++){
+      changed=false;
+      for(const [k,w] of ways){
+        let r=0;
+        for(const [to,next] of w)r=Math.max(r,to+(next?reach.get(next)??0:0));
+        r=Math.min(LEADS_ON,r);
+        if(r>reach.get(k)!+.5){reach.set(k,r);changed=true}
+      }
+    }
+    return this.reachOf=reach;
+  }
+  private reachOf:Map<string,number>|null=null;
 }

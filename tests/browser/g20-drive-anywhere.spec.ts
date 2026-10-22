@@ -16,6 +16,9 @@ test('G20: search a postcode, build the area on the device and drive there',asyn
   await page.route('https://api.openstreetmap.org/**',route=>{osmCalls++;return route.fulfill({contentType:'text/xml',body:fixture('osm-ig3-9qj.osm'),headers:{'access-control-allow-origin':'*'}})});
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  // Typed key by key, letters that are also driving keys (W A S D, mirrors…) included: they go into the box.
+  await page.locator('#area-query').pressSequentially('Wasdqe');
+  await expect(page.locator('#area-query')).toHaveValue('Wasdqe');
   await page.fill('#area-query','IG3 9QJ');
   await expect(page.locator('#area-results button').first()).toContainText('IG3 9QJ');
   await page.locator('#area-results button').first().click();

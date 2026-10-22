@@ -42,8 +42,9 @@ export function appearance(seed:number):Appearance{
   return {top:pick(TOPS),legs:pick(LEGS),skin:pick(SKIN),hair:pick(HAIR),height:1.58+r()*.28,build:.9+r()*.25,coat:r()<.35?r()*.3:0,hair_style:Math.floor(r()*3) as 0|1|2};
 }
 
-/** Seconds a walker spends at each end of their stretch: stopping, looking about, turning (each their own). */
-const pauseOf=(p:Walker)=>3+(p.offset*7.1%5);
+/** Seconds a walker spends at each end of their stretch, turning round: brief, and not looking up and down the road
+ * (standing at the kerb looking about reads as waiting to cross, and leaves a driver unsure). */
+const pauseOf=(p:Walker)=>TURN+.3+(p.offset*7.1%1.2);
 /** Seconds to turn round at the end of a stretch. */
 const TURN=1.2;
 
@@ -70,9 +71,8 @@ export function personPose(p:Person,t:number):FigurePose{
     const f=(inLeg-(leg-TURN))/TURN,e=f*f*(3-2*f);
     heading=(back?reverse:forward)+Math.PI*e;
   }
-  const look=!walking&&inLeg-walk<pause-TURN?(((inLeg-walk)%3)<1.5?'left' as const:'right' as const):undefined;
   const stride=(laps*2+(back?1:0))*L+k;
-  return {x:p.a.x+ux*along,y:p.y,z:p.a.z+uz*along,heading,stride,walking,...(look?{look}:{})};
+  return {x:p.a.x+ux*along,y:p.y,z:p.a.z+uz*along,heading,stride,walking};
 }
 
 export interface CrowdOptions{
@@ -98,19 +98,34 @@ export function layoutCrowd(location:Location,layout:StreetLayout|null,signs:Sig
     ...(layout?.town?.busStops??[]).map(s=>({x:s.x,z:s.z,r:.6})),
     ...signs.panels.flatMap(p=>p.posts.map(q=>({x:q.x,z:q.z,r:.5})))
   ];
+  // Obstacles by 4 m grid cell (thousands of lamps and trees in a city).
+  const cell=(x:number,z:number)=>`${Math.floor(x/4)},${Math.floor(z/4)}`;
+  const grid=new Map<string,typeof points>();
+  for(const o of points){const k=cell(o.x,o.z);(grid.get(k)??grid.set(k,[]).get(k)!).push(o)}
+  const blocked=(p:Vec2,margin:number)=>{
+    for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)
+      if(grid.get(cell(p.x+4*i,p.z+4*j))?.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r+margin-.3))return true;
+    return false;
+  };
   const inShelter=(p:Vec2,margin:number)=>signs.shelters.some(s=>{
     const dx=p.x-s.x,dz=p.z-s.z;
     return Math.abs(dx*s.axis.x+dz*s.axis.z)<s.length/2+margin&&Math.abs(dx*s.back.x+dz*s.back.z)<s.depth/2+margin;
   });
-  const nearBuilding=(p:Vec2,margin:number)=>location.buildings.some(b=>insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin);
+  // Each building's bounding box first (a city centre has hundreds of footprints and this is asked every metre).
+  const boxes=location.buildings.map(b=>{
+    const xs=b.footprint.map(q=>q.x),zs=b.footprint.map(q=>q.z);
+    return {b,x0:Math.min(...xs),x1:Math.max(...xs),z0:Math.min(...zs),z1:Math.max(...zs)};
+  });
+  const nearBuilding=(p:Vec2,margin:number)=>boxes.some(({b,x0,x1,z0,z1})=>p.x>x0-margin&&p.x<x1+margin&&p.z>z0-margin&&p.z<z1+margin
+    &&(insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin));
   // Kept clear of assessed hazards: crossings (zebra crossings widely), parked vans that hide a pedestrian,
   // and the learner's start (the nearside behind it is where a cyclist is checked for in the mirrors).
+  const crossingsAt=location.crossings.map(c=>{
+    const at=pointAtAlong(location.roads.find(r=>r.id===c.roadId)!,c.along);
+    return {x:at.x,z:at.z,r:c.kind==='zebra'?45:8};
+  });
   const excluded=(p:Vec2)=>{
-    for(const c of location.crossings){
-      const road=location.roads.find(r=>r.id===c.roadId)!;
-      const at=pointAtAlong(road,c.along);
-      if(Math.hypot(p.x-at.x,p.z-at.z)<(c.kind==='zebra'?45:8))return true;
-    }
+    for(const c of crossingsAt)if(Math.hypot(p.x-c.x,p.z-c.z)<c.r)return true;
     if(location.blocks.some(b=>b.vehicleModel&&Math.hypot(p.x-b.position.x,p.z-b.position.z)<20))return true;
     const sp=location.spawn,h=sp.headingDeg*Math.PI/180;
     const f={x:Math.sin(h),z:-Math.cos(h)};
@@ -125,7 +140,7 @@ export function layoutCrowd(location:Location,layout:StreetLayout|null,signs:Sig
     if(s?.kind!=='pavement')return false;
     if(location.junctions.some(j=>Math.hypot(p.x-j.position.x,p.z-j.position.z)<j.radius+3))return false;
     if(onOtherCarriageway(location,p.x,p.z,s.roadId,.8))return false;
-    if(points.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r+margin-.3))return false;
+    if(blocked(p,margin))return false;
     return !inShelter(p,.45)&&!nearBuilding(p,.45)&&!excluded(p);
   };
 

@@ -1,3 +1,4 @@
+import {typing} from '../input/keyboard';
 /**
  * Physical controls for scored driving in the phone viewer: a Bluetooth game
  * controller (Gamepad API) or a Bluetooth keyboard. Nothing here assumes a
@@ -35,7 +36,7 @@ export function describeBinding(b:Binding|undefined):string{
 export interface PadLike{id:string;connected:boolean;mapping?:string;buttons:ReadonlyArray<{pressed:boolean;value:number}>;axes:ReadonlyArray<number>}
 export interface InputEnvironment{
   getGamepads():ReadonlyArray<PadLike|null>;
-  addEventListener(type:'keydown'|'keyup'|'blur',listener:(e:{code?:string})=>void):void;
+  addEventListener(type:'keydown'|'keyup'|'blur',listener:(e:{code?:string;target?:EventTarget|null})=>void):void;
 }
 
 /** Axis value treated as pressed, and button value treated as pressed (analogue triggers). */
@@ -67,7 +68,7 @@ export class ControllerInput{
 
   constructor(private readonly env:InputEnvironment,bindings?:Bindings){
     this.bindings={...(bindings??{})};
-    env.addEventListener('keydown',e=>{if(e.code){this.keys.add(e.code);this.keyboardSeen=true;this.lastKeys=[e.code,...this.lastKeys.filter(k=>k!==e.code)].slice(0,4)}});
+    env.addEventListener('keydown',e=>{if(e.code&&!typing(e)){this.keys.add(e.code);this.keyboardSeen=true;this.lastKeys=[e.code,...this.lastKeys.filter(k=>k!==e.code)].slice(0,4)}});
     env.addEventListener('keyup',e=>{if(e.code)this.keys.delete(e.code)});
     env.addEventListener('blur',()=>this.keys.clear());
   }

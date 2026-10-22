@@ -172,8 +172,10 @@ export class Examiner implements SimModule{
     }
     if(this.phase==='pull-up'){
       this.sincePullUp+=l.speed*dt;
-      // Some distance after the last turn, then the request.
-      if(this.sincePullUp>60&&!this.pullUpAsked){
+      // Some distance after the last turn, then the request (sooner if the road ahead ends: never driven into a
+      // dead end or off the edge of the map to find a place).
+      const pos=this.pullUpAsked?null:this.net.locate(l.x,l.z,l.heading);
+      if((this.sincePullUp>60||!!pos&&this.net.roomAhead(pos)<120)&&!this.pullUpAsked){
         this.pullUpAsked=true;
         this.say(this.pullUpWords);
         this.options.events.emit('examiner.direction',{text:this.pullUpWords,turn:'pull-up'});
