@@ -60,6 +60,7 @@ export const CORRECTIONS:Record<string,(severity:string,limit:number)=>{say:stri
   'traffic-lights':severity=>severity==='minor'
     ?{say:'That amber light: there was room to stop. Stop at the line next time.',lesson:'stop at amber when there is room to'}
     :{say:'That light was red. You must stop at the stop line.',lesson:'stop at the line when the light is red'},
+  'traffic-signs':()=>({say:'That was a STOP sign. You must stop at the line, even if the road is clear.',lesson:'stop at the line at a STOP sign, every time'}),
   'traffic-lights-hesitation':()=>({say:'The light is green: go when the way is clear.',lesson:'move off promptly on green when the way is clear'}),
   'positioning-normal':()=>({say:'Keep to the left.',lesson:'keep to the left'}),
   'following-distance':()=>({say:'Leave more room to the car in front: at least two seconds.',lesson:'keep a two-second gap'}),

@@ -68,8 +68,14 @@ for(const w of ways){
     const layer=parseInt(w.tags.layer??'',10);
     const bridge=w.tags.bridge&&w.tags.bridge!=='no',tunnel=w.tags.tunnel&&w.tags.tunnel!=='no'&&w.tags.tunnel!=='building_passage';
     const level=bridge?(Number.isFinite(layer)&&layer>0?Math.min(3,layer):1):tunnel?(Number.isFinite(layer)&&layer<0?Math.max(-3,layer):-1):0;
+    // A STOP or give way sign mapped on the road near one of its ends (highway=stop / give_way nodes) controls
+    // traffic leaving at that end.
+    const ends={};
+    {let acc=0;const at=nodesRun.map((n,i)=>{if(i>0)acc+=Math.hypot(P(n).x-P(nodesRun[i-1]).x,P(n).z-P(nodesRun[i-1]).z);return acc});
+      nodesRun.forEach((n,i)=>{const h=n.tags?.highway,kind=h==='stop'?'stop':h==='give_way'?'give-way':null;if(!kind)return;
+        if(at[i]<=20)ends.start??=kind;else if(acc-at[i]<=20)ends.end??=kind});}
     roads.push({
-      id:roadId,...(w.tags.name?{name:w.tags.name}:{}),...(level?{level}:{}),
+      id:roadId,...(w.tags.name?{name:w.tags.name}:{}),...(level?{level}:{}),...(Object.keys(ends).length?{ends}:{}),
       ...(Number.isFinite(mph)&&/mph/.test(w.tags.maxspeed??'')?{speedLimitMph:mph,speedLimitSource:`OSM way ${w.id} maxspeed`}:{}),
       oneway,centreline:line,
       lanes:{count,width:Math.min(4.5,Math.max(2.5,width))},

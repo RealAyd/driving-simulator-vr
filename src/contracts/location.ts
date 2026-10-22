@@ -19,6 +19,11 @@ export const RoadSchema=z.object({
   /** One-way roads carry traffic only along the centreline direction. */
   oneway:z.boolean().default(false),
   /**
+   * How traffic leaving this road at each end is controlled, where the map says (a STOP sign, or a give way sign).
+   * Where it says nothing, a side road meeting another has give way lines (the usual UK marking).
+   */
+  ends:z.object({start:z.enum(['stop','give-way']).optional(),end:z.enum(['stop','give-way']).optional()}).strict().optional(),
+  /**
    * Level: 0 on the ground, above on a bridge (1, 2…), below in a tunnel (−1…). Roads at different levels only meet
    * where one ends and the next begins (the ends of a bridge); one passing over another is not a junction.
    */

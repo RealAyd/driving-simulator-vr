@@ -22,6 +22,7 @@ export const DL25_SECTIONS:ReadonlyArray<{label:string;rules:readonly string[]}>
   {label:'Signals – necessary',rules:['signals-necessary']},
   {label:'Signals – correctly',rules:['signals-correctly']},
   {label:'Signals – timed',rules:['signals-timed']},
+  {label:'Response to signs/signals – traffic signs',rules:['traffic-signs']},
   {label:'Response to signs/signals – traffic lights',rules:['traffic-lights']},
   {label:'Use of speed',rules:['speed-limit']},
   {label:'Following distance',rules:['following-distance']},

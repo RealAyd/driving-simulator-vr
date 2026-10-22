@@ -1,6 +1,7 @@
 import {INFO,IMPROVE,type AttemptResult,type Location,type Pose,type Seconds,type SimEvent,type SimModule,type Severity} from '../contracts';
 import {FindingLog} from './findingLog';
-import {sampleRoad} from '../world/roadGeometry';
+import {pointAtAlong,roadHalfWidth,sampleRoad} from '../world/roadGeometry';
+import {junctionMouths,type JunctionMouth} from '../world/junctionControls';
 import type {EventLog} from '../app/eventLog';
 import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
@@ -62,6 +63,9 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   /** After the request to pull up: what was done before stopping. */
   private pulling:{mirror:boolean;signalled:boolean;others:boolean;event:string|null}|null=null;
   private readonly junctions:Vec2[];
+  /** STOP lines (mapped STOP signs), and the approach to each: how far past the line, the slowest speed on it. */
+  private readonly stopLines:JunctionMouth[];
+  private stopApproach=new Map<string,{past:number;slowest:number}>();
   /** Each stop line being approached: where the car's front was, the light then, and the amber judgement. */
   private lights=new Map<string,{front:number;last:Aspect;couldStop:boolean;waitingGreen:number}>();
   /** Points on the routine that are not faults on the marking sheet (the report's "to improve"). */
@@ -72,7 +76,11 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   /** When the show me question was asked (driving while answering it is watched). */
   private showMeFrom:number|null=null;
 
-  constructor(private readonly input:MockTestInput){this.junctions=junctionPoints(input.location);this.reset()}
+  constructor(private readonly input:MockTestInput){
+    this.junctions=junctionPoints(input.location);
+    this.stopLines=junctionMouths(input.location).filter(m=>m.kind==='stop');
+    this.reset();
+  }
 
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
@@ -327,6 +335,19 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
           `Response to signals – traffic lights: did not move off for over 5 s on green on ${st.road.name??'the road'} (undue hesitation).`);
       }else m.waitingGreen=0;
       m.front=along;m.last=st.state;
+    }
+
+    // STOP signs: the car must come to a stop at the line, even when the way is clear.
+    for(const m of this.stopLines){
+      const s=sampleRoad(m.road,front.x,front.z),p=pointAtAlong(m.road,s.along);
+      const past=(s.along-m.lineAlong)*m.dir,towards=(p.direction.x*fwd.x+p.direction.z*fwd.z)*m.dir;
+      if(s.distance>roadHalfWidth(m.road)+1||towards<.6||past<-25||past>6){this.stopApproach.delete(m.id);continue}
+      let a=this.stopApproach.get(m.id);
+      if(!a){a={past,slowest:speed};this.stopApproach.set(m.id,a)}
+      if(past<.5)a.slowest=Math.min(a.slowest,speed);
+      if(a.past<.5&&past>=.5&&a.slowest>.3)this.fault('traffic-signs',`stop-${m.id}-${Math.round(now)}`,'serious',
+        `Response to signs – traffic signs: did not stop at the STOP line coming out of ${m.road.name??'the road'} (slowest ${mph(a.slowest).toFixed(0)} mph). At a STOP sign you must stop, even when the road is clear.`);
+      a.past=past;
     }
 
     // Mounting the pavement, or leaving the road.

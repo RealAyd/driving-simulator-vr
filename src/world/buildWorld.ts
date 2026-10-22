@@ -1,5 +1,5 @@
 import {
-  Color3,CreateBox,CreateCylinder,CreateDisc,CreateGround,CreateRibbon,CreateSphere,Mesh,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
+  Color3,CreateBox,CreateCylinder,CreateDisc,CreateGround,CreateRibbon,CreateSphere,DynamicTexture,Mesh,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
   Scene
 } from '../engine/babylon';
 import {degToRad,type Location,type Road} from '../contracts';
@@ -7,6 +7,7 @@ import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
 import {buildSky,configureTone,mapWorldUVs,texture,type SurfaceKind} from './surfaces';
+import {junctionMouths,mouthLane,mouthPoint,schoolFrontages} from './junctionControls';
 import type {Terrain} from './terrain';
 
 export interface BuiltWorld{
@@ -311,6 +312,65 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
       globe.material=amber;
       place(globe,poleLateral,-crossing.width/2-.3,road.surfaceHeight+road.kerbHeight+2.7);
     }
+  }
+
+  // ---- Junction mouths: give way lines (and the triangle before them), or a STOP line and STOP on the road;
+  // outside schools, yellow zig-zags and SCHOOL KEEP CLEAR (junctionControls.ts) ----
+  const yellow=material(scene,'road-yellow',new Color3(.95,.78,.12));
+  const paint=(name:string,w:number,h:number,p:{x:number;z:number},heading:number,y:number,mat:StandardMaterial)=>{
+    const g=CreateGround(name,{width:w,height:h},scene);
+    g.position.set(p.x,y,p.z);g.rotation.y=rotationYFromHeading(heading);g.parent=root;add(mat,g);
+  };
+  const legends=new Map<string,StandardMaterial>();
+  /** Words painted on the road (STOP, SCHOOL KEEP CLEAR), tall and narrow as UK road legends are, read on approach. */
+  const legend=(text:string,colour:string,p:{x:number;z:number},heading:number,y:number,w:number,h:number)=>{
+    let mat=legends.get(text);
+    if(!mat){
+      mat=new StandardMaterial(`legend-${text}`,scene);
+      const tex=new DynamicTexture(`legend-${text}`,{width:256,height:512},scene,true);
+      const ctx=tex.getContext() as unknown as CanvasRenderingContext2D;
+      ctx.clearRect(0,0,256,512);
+      ctx.fillStyle=colour;ctx.textAlign='center';ctx.textBaseline='middle';
+      const lines=text.split(' ');
+      lines.forEach((line,i)=>{ctx.save();ctx.translate(128,512*(i+.5)/lines.length);ctx.scale(1,2.2);ctx.font='700 64px Arial,sans-serif';
+        let size=64;while(size>16&&ctx.measureText(line).width>240){size-=4;ctx.font=`700 ${size}px Arial,sans-serif`}
+        ctx.fillText(line,0,0);ctx.restore()});
+      tex.update(true);tex.hasAlpha=true;
+      mat.diffuseTexture=tex;mat.useAlphaFromDiffuseTexture=true;mat.specularColor=new Color3(0,0,0);mat.emissiveColor=new Color3(.25,.25,.25);
+      mat.freeze();
+      legends.set(text,mat);
+    }
+    const g=CreateGround(`legend-${text}-${p.x.toFixed(1)}`,{width:w,height:h},scene);
+    g.position.set(p.x,y,p.z);g.rotation.y=rotationYFromHeading(heading);g.parent=root;g.material=mat;
+  };
+  for(const m of junctionMouths(location)){
+    const [from,to]=mouthLane(m),y=m.road.surfaceHeight+.013;
+    const c0=mouthPoint(m,0,0),heading=Math.atan2(c0.dir.x,-c0.dir.z);
+    if(m.kind==='stop'){
+      const mid=mouthPoint(m,.15,(from+to)/2);
+      paint(`${m.id}-stop-line`,to-from-.2,.3,mid,heading,y,white);
+      legend('STOP','#f4f4f0',mouthPoint(m,4.5,(from+to)/2),heading,y+.001,Math.min(2.2,to-from-.4),2.8);
+      continue;
+    }
+    // Two rows of broken lines across the lane, then the triangle a few metres back, its point towards the driver
+    // approaching (diagrams 1003 and 1023).
+    for(const row of [.1,.55])for(let l=from+.15;l<to-.4;l+=.9)paint(`${m.id}-gw-${row}-${l.toFixed(1)}`,.6,.2,mouthPoint(m,row,l+.3),heading,y,white);
+    const centre=(from+to)/2,apex=mouthPoint(m,9.75,centre),baseL=mouthPoint(m,6,centre-.7),baseR=mouthPoint(m,6,centre+.7);
+    for(const [a,b] of [[apex,baseL],[apex,baseR],[baseL,baseR]] as const){
+      const len=Math.hypot(b.x-a.x,b.z-a.z);
+      paint(`${m.id}-tri-${a.x.toFixed(1)}-${b.x.toFixed(1)}`,.12,len,{x:(a.x+b.x)/2,z:(a.z+b.z)/2},Math.atan2(b.x-a.x,-(b.z-a.z)),y,white);
+    }
+  }
+  for(const f of schoolFrontages(location)){
+    const half=roadHalfWidth(f.road),y=f.road.surfaceHeight+.012,off=f.side*(half-.35);
+    const at=(along:number,lat:number)=>{const p=pointAtAlong(f.road,along);return {x:p.x-p.direction.z*lat,z:p.z+p.direction.x*lat,h:Math.atan2(p.direction.x,-p.direction.z)}};
+    // Zig-zags: 1 m legs, 0.4 m across, along the kerb.
+    for(let s=f.along-f.length/2,k=0;s<f.along+f.length/2;s+=1,k++){
+      const a=at(s,off+(k%2?.2:-.2)*f.side),b=at(s+1,off+(k%2?-.2:.2)*f.side);
+      paint(`${f.id}-zz-${k}`,.1,Math.hypot(b.x-a.x,b.z-a.z),{x:(a.x+b.x)/2,z:(a.z+b.z)/2},Math.atan2(b.x-a.x,-(b.z-a.z)),y,yellow);
+    }
+    const mid=at(f.along,off-f.side*1.1);
+    legend('SCHOOL KEEP CLEAR','#f2c21e',mid,mid.h+(f.side>0?Math.PI:0),y+.001,1.6,6);
   }
 
   const occluders:Mesh[]=[];

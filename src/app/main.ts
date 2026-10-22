@@ -19,6 +19,7 @@ import {Bus,BUS_SIZE} from '../actors/bus';
 import {layoutCrowd,personPose,type Person} from '../world/crowd';
 import {PeopleRenderer} from '../world/peopleMesh';
 import {AnimatedPeople} from '../world/animatedPeople';
+import {junctionMouths,mouthPoint} from '../world/junctionControls';
 import {layoutSignage,type SignPlan} from '../world/signage';
 import {placeLabel,type PlaceLabel} from '../world/placeLabel';
 import {buildSignage,type BuiltSignage} from '../world/signageMesh';
@@ -1844,6 +1845,8 @@ export async function boot():Promise<void>{
     /** The nearest road to a point: the nearest point on its centreline and its direction there. */
     roadAt:(x:number,z:number)=>{let best:{x:number;z:number;dx:number;dz:number;d:number}|null=null;for(const r of place.roads){const s=sampleRoad(r,x,z);if(!best||s.distance<best.d){const p=pointAtAlong(r,s.along);best={x:p.x,z:p.z,dx:s.direction.x,dz:s.direction.z,d:s.distance}}}return best},
     signs:()=>({panels:signPlan.panels.map(p=>({id:p.id,kind:p.face.kind,text:'text' in p.face?p.face.text:null,x:p.x,y:p.y,z:p.z,normal:p.normal})),canopies:signPlan.canopies.map(c=>({id:c.id,x:c.x,z:c.z,away:c.away,text:c.text}))}),
+    /** Junction mouths (give way or STOP lines): a point 12 m back in the lane coming out, facing the line. */
+    mouths:()=>junctionMouths(place).map(m=>{const p=mouthPoint(m,12,1.6);return {id:m.id,kind:m.kind,road:m.road.name??m.road.id,x:p.x,z:p.z,headingDeg:Math.atan2(p.dir.x,-p.dir.z)*180/Math.PI}}),
     signals:()=>runtime?.trafficSignals?.stops.map(s=>({id:s.id,road:s.road.name??s.road.id,state:s.state}))??[],
     examiner:()=>runtime?.examiner?{phase:runtime.examiner.phase,index:runtime.examiner.index,manoeuvre:runtime.examiner.manoeuvre?{kind:runtime.examiner.manoeuvre.kind,phase:runtime.examiner.manoeuvre.phase,faults:runtime.examiner.manoeuvre.faults.map(f=>f.rule),notes:[...runtime.examiner.manoeuvre.notes],waiting:runtime.examiner.manoeuvre.waiting}:null,lastSaid:runtime.examiner.lastSaid,steps:runtime.examiner.steps.map(s=>({say:s.say,at:s.at,to:s.to.road.name??s.to.road.id}))}:null,
     meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled(),at:m.getAbsolutePosition().asArray().map(v=>Math.round(v*10)/10),visible:m.isVisible})),

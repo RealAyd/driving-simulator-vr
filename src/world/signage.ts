@@ -3,10 +3,13 @@ import type {StreetLayout} from './streetscape';
 import {distanceToOutline,insidePolygon,type BusStop} from './townscape';
 import {brandSign,TRADE_SIGNS,tradeFromName} from './brandSigns';
 import {pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
+import {junctionMouths,mouthPoint,schoolFrontages} from './junctionControls';
 
 /**
  * Where signs stand: street-name plates at junctions, the mini-roundabout sign
- * at each entry, bus stop flags and shelters, and shop names on fascias. Pure
+ * at each entry, STOP and GIVE WAY signs where the map has them, speed limit
+ * signs where the limit changes, school warning signs, bus stop flags and
+ * shelters, and shop names on fascias. Pure
  * data (like streetscape.ts and townscape.ts), so placements and their
  * colliders can be tested; signageMesh.ts draws them.
  *
@@ -27,7 +30,9 @@ export type SignFace=
   /** A chemist's green cross, projecting from the wall. */
   |{kind:'cross'}
   /** A pub's hanging sign: its name on a dark board. */
-  |{kind:'hanging';text:string};
+  |{kind:'hanging';text:string}
+  /** Regulatory and warning signs (TSRGD diagrams 601.1, 602, 670/671, 545). */
+  |{kind:'stop'}|{kind:'give-way'}|{kind:'speed-limit';mph:number}|{kind:'school'};
 
 export interface Post{x:number;z:number;y:number;height:number;radius:number}
 
@@ -43,6 +48,8 @@ export interface SignPanel{
   twoSided:boolean;
   /** Circular sign (drawn as a disc). */
   round:boolean;
+  /** Other sign shapes, inscribed in a circle `width` across. */
+  shape?:'octagon'|'triangle-up'|'triangle-down';
   /** Largest width the panel may take (fascias are sized to their lettering). */
   maxWidth?:number;
   posts:Post[];
@@ -82,6 +89,8 @@ const PLATE_HEIGHT=.36;
 const PLATE_BOTTOM=1.8;
 /** Mini-roundabout sign (diagram 611.1): 600 mm disc, lower edge 2.1 m above the footway. */
 const DISC=.6,DISC_BOTTOM=2.1;
+/** STOP (750 mm octagon), GIVE WAY and warning triangles (about 750 mm a side): their circle, and lower edge. */
+const OCTAGON=.75,TRIANGLE=.86,SIGN_BOTTOM=2.1;
 /** Petrol station canopy: the depth of its edge fascia, and where the pump islands stand (share of its length out
  * from the middle; metres either side of the centre line). */
 export const CANOPY_FASCIA=.9,PUMP_ALONG=.32,PUMP_APART=1;
@@ -168,6 +177,64 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
         collider(`mini-roundabout-${j.id}-${road.id}-post`,c,.1,DISC_BOTTOM+DISC);
         break;
       }
+    }
+  }
+
+  // ---- Upright signs facing traffic on the left of a road, a little way back from a point on it. ----
+  const standing=(id:string,face:SignFace,road:Location['roads'][number],at:(back:number)=>{x:number;z:number;dir:Vec2},
+    backs:number[],size:number,shape:'octagon'|'triangle-up'|'triangle-down'|'round',why:string,side:1|-1=1)=>{
+    const half=roadHalfWidth(road);
+    for(const back of backs){
+      const p=at(back),l0=left(p.dir),l={x:l0.x*side,z:l0.z*side};
+      for(const off of [half+.55,half+.9]){
+        const c={x:p.x+l.x*off,z:p.z+l.z*off};
+        if(!onPavement(c)||!clearOfBuildings(c,.4)||!clearOfFurniture(c,1))continue;
+        const y=height(c);
+        plan.panels.push({id,face,x:c.x,y:y+SIGN_BOTTOM+size/2,z:c.z,normal:{x:-p.dir.x,z:-p.dir.z},width:size,height:size,
+          twoSided:false,round:shape==='round',...(shape==='round'?{}:{shape}),
+          posts:[post(c,SIGN_BOTTOM+size*.8,.04)],placement:`estimated: ${why}, ${back.toFixed(0)} m back`});
+        collider(`${id}-post`,c,.1,SIGN_BOTTOM+size);
+        return true;
+      }
+    }
+    return false;
+  };
+  // STOP and GIVE WAY signs, beside the line, where the map has one (unsigned give way lines have none).
+  for(const m of junctionMouths(location)){
+    if(!m.signed)continue;
+    standing(`${m.id}-sign`,{kind:m.kind},m.road,b=>mouthPoint(m,b,0),[1,2,3,4,5],m.kind==='stop'?OCTAGON:TRIANGLE,
+      m.kind==='stop'?'octagon':'triangle-down',`${m.kind==='stop'?'STOP':'GIVE WAY'} at the ${m.road.name??m.road.id} mouth`);
+  }
+  // Speed limit signs where one road runs on into another with a different mapped limit, facing traffic entering it
+  // (both sides of the road on a two-way road, as terminal signs are).
+  for(const road of location.roads){
+    const mph=road.speedLimitMph;
+    if(!mph)continue;
+    const length=roadLength(road);
+    if(length<15)continue;
+    for(const atEnd of [false,true]){
+      if(road.oneway&&atEnd)continue;
+      const end=atEnd?road.centreline.at(-1)!:road.centreline[0]!;
+      const before=location.roads.find(o=>o!==road&&o.speedLimitMph&&o.speedLimitMph!==mph&&
+        [o.centreline[0]!,o.centreline.at(-1)!].some(e=>Math.hypot(e.x-end.x,e.z-end.z)<3));
+      if(!before)continue;
+      // Traffic entering the road (its direction of travel), the sign standing `back` metres in from the end.
+      const enter=(back:number)=>{const p=pointAtAlong(road,atEnd?length-back:back);return {x:p.x,z:p.z,dir:atEnd?{x:-p.direction.x,z:-p.direction.z}:p.direction}};
+      const face:SignFace={kind:'speed-limit',mph};
+      const why=`${mph} mph from ${before.speedLimitMph} mph on ${road.name??road.id}`;
+      standing(`speed-${road.id}-${atEnd?'end':'start'}-l`,face,road,enter,[3,4,6,8],DISC,'round',why);
+      if(!road.oneway)standing(`speed-${road.id}-${atEnd?'end':'start'}-r`,face,road,enter,[3,4,6,8],DISC,'round',why,-1);
+    }
+  }
+  // School warning signs (children going to or from school) on each approach to a school's frontage.
+  for(const f of schoolFrontages(location)){
+    const length=roadLength(f.road);
+    for(const dir of [1,-1] as const){
+      if(f.road.oneway&&dir<0)continue;
+      const signAt=f.along-dir*(f.length/2+25);
+      if(signAt<5||signAt>length-5)continue;
+      standing(`${f.id}-warning-${dir}`,{kind:'school'},f.road,b=>{const p=pointAtAlong(f.road,signAt-dir*b);return {x:p.x,z:p.z,dir:{x:p.direction.x*dir,z:p.direction.z*dir}}},
+        [0,3,6,9],TRIANGLE,'triangle-up',`school ahead on ${f.road.name??f.road.id}`);
     }
   }
 

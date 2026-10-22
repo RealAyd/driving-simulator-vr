@@ -14,7 +14,7 @@ import {hex} from './streetscapeMesh';
 const FONT='"Helvetica Neue",Helvetica,Arial,sans-serif';
 const SHEET_WIDTH=1024;
 /** Pixels per metre for each kind of face. */
-const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110,'name-board':90,cross:200,hanging:220} as const;
+const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110,'name-board':90,cross:200,hanging:220,stop:200,'give-way':200,'speed-limit':213,school:200} as const;
 
 interface Entry{key:string;w:number;h:number;draw:(ctx:CanvasRenderingContext2D,w:number,h:number)=>void;x?:number;y?:number}
 
@@ -148,6 +148,65 @@ function drawLettering(text:string,background:string,colour:string,weight:string
   };
 }
 
+/** Sides and the angle of the first corner (counter-clockwise from the right, y up) of each sign shape. */
+const SHAPES={octagon:{n:8,start:Math.PI/8},'triangle-up':{n:3,start:Math.PI/2},'triangle-down':{n:3,start:-Math.PI/2}} as const;
+/** A shape's outline on the canvas, inscribed in the face's circle and scaled by `k` towards the centre. */
+function shapePath(ctx:CanvasRenderingContext2D,w:number,h:number,shape:keyof typeof SHAPES,k:number){
+  const {n,start}=SHAPES[shape];
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const a=start+i*2*Math.PI/n,x=w/2+Math.cos(a)*w/2*k,y=h/2-Math.sin(a)*h/2*k;
+    if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+  }
+  ctx.closePath();
+}
+/** STOP (diagram 601.1): white STOP on a red octagon with a white edge. */
+function drawStop(ctx:CanvasRenderingContext2D,w:number,h:number){
+  ctx.fillStyle='#fff';shapePath(ctx,w,h,'octagon',1);ctx.fill();
+  ctx.fillStyle='#c8102e';shapePath(ctx,w,h,'octagon',.9);ctx.fill();
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=fit('STOP',Math.round(h*.3),w*.72);ctx.fillText('STOP',w/2,h/2+2);
+}
+/** GIVE WAY (diagram 602): a red-bordered white triangle, point down, GIVE WAY in black. */
+function drawGiveWay(ctx:CanvasRenderingContext2D,w:number,h:number){
+  ctx.fillStyle='#c8102e';shapePath(ctx,w,h,'triangle-down',1);ctx.fill();
+  ctx.fillStyle='#fff';shapePath(ctx,w,h,'triangle-down',.72);ctx.fill();
+  ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=fit('GIVE',Math.round(h*.11),w*.4);ctx.fillText('GIVE',w/2,h*.33);
+  ctx.font=fit('WAY',Math.round(h*.11),w*.32);ctx.fillText('WAY',w/2,h*.45);
+}
+/** Speed limit (diagram 670): the number in a red ring; the national limit (diagram 671): a black diagonal band. */
+function drawSpeedLimit(mph:number){
+  return (ctx:CanvasRenderingContext2D,w:number,h:number)=>{
+    const c=w/2,R=w/2;
+    ctx.fillStyle='#e8e8e8';ctx.fillRect(0,0,w,h);
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(c,c,R-1,0,Math.PI*2);ctx.fill();
+    if(mph>=60){
+      ctx.save();ctx.beginPath();ctx.arc(c,c,R-3,0,Math.PI*2);ctx.clip();
+      ctx.translate(c,c);ctx.rotate(Math.PI/4);ctx.fillStyle='#111';ctx.fillRect(-R,-R*.16,2*R,R*.32);ctx.restore();
+      ctx.strokeStyle='#111';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c,c,R-2,0,Math.PI*2);ctx.stroke();
+      return;
+    }
+    ctx.strokeStyle='#c8102e';ctx.lineWidth=R*.2;ctx.beginPath();ctx.arc(c,c,R*.89,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font=fit(String(mph),Math.round(h*.42),w*.56);ctx.fillText(String(mph),c,c+3);
+  };
+}
+/** Children going to or from school (diagram 545): two children walking, in a red-bordered warning triangle. */
+function drawSchool(ctx:CanvasRenderingContext2D,w:number,h:number){
+  ctx.fillStyle='#c8102e';shapePath(ctx,w,h,'triangle-up',1);ctx.fill();
+  ctx.fillStyle='#fff';shapePath(ctx,w,h,'triangle-up',.72);ctx.fill();
+  ctx.fillStyle='#111';ctx.strokeStyle='#111';ctx.lineCap='round';
+  const child=(x:number,top:number,s:number)=>{
+    ctx.beginPath();ctx.arc(x,top,s*.11,0,Math.PI*2);ctx.fill();
+    ctx.lineWidth=s*.13;ctx.beginPath();ctx.moveTo(x,top+s*.15);ctx.lineTo(x-s*.04,top+s*.5);ctx.stroke();
+    ctx.lineWidth=s*.09;
+    ctx.beginPath();ctx.moveTo(x-s*.04,top+s*.5);ctx.lineTo(x-s*.2,top+s*.78);ctx.moveTo(x-s*.04,top+s*.5);ctx.lineTo(x+s*.12,top+s*.78);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,top+s*.22);ctx.lineTo(x+s*.18,top+s*.42);ctx.moveTo(x,top+s*.22);ctx.lineTo(x-s*.18,top+s*.4);ctx.stroke();
+  };
+  child(w*.43,h*.4,h*.32);child(w*.58,h*.44,h*.27);
+}
+
 /** A chemist's green cross (lit), on a dark square. */
 function drawCross(ctx:CanvasRenderingContext2D,w:number,h:number){
   ctx.fillStyle='#1d2421';ctx.fillRect(0,0,w,h);
@@ -184,6 +243,10 @@ function faceEntry(face:SignFace,panel:SignPanel):Entry{
       draw:drawLettering(face.text,face.background,face.colour,face.weight,.62)};
     case 'cross':return {key:'cross',w:120,h:120,draw:drawCross};
     case 'hanging':return {key:`hanging:${face.text}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),draw:drawHanging(face.text)};
+    case 'stop':return {key:'stop',w:150,h:150,draw:drawStop};
+    case 'give-way':return {key:'give-way',w:172,h:172,draw:drawGiveWay};
+    case 'speed-limit':return {key:`speed-limit:${face.mph}`,w:128,h:128,draw:drawSpeedLimit(face.mph)};
+    case 'school':return {key:'school',w:172,h:172,draw:drawSchool};
   }
 }
 
@@ -200,10 +263,10 @@ function panelCorners(p:SignPanel,offset=0):[V3,V3,V3,V3]{
 function drawPanel(g:Geometry,p:SignPanel,region:Region):void{
   const n:V3=[p.normal.x,0,p.normal.z],back:V3=[-p.normal.x,0,-p.normal.z];
   const uv=(u:number,v:number):[number,number]=>[region.u0+(region.u1-region.u0)*u,region.v0+(region.v1-region.v0)*v];
-  if(p.round){
-    const r={x:p.normal.z,z:-p.normal.x},R=p.width/2,n16=16;
+  if(p.round||p.shape){
+    const r={x:p.normal.z,z:-p.normal.x},R=p.width/2,{n:n16,start}=p.shape?SHAPES[p.shape]:{n:16,start:0};
     const ring=(k:number,off:number,mirror:boolean)=>{
-      const a=k/n16*Math.PI*2,u=Math.cos(a),v=Math.sin(a);
+      const a=start+k/n16*Math.PI*2,u=Math.cos(a),v=Math.sin(a);
       return {pt:[p.x+r.x*u*R+p.normal.x*off,p.y+v*R,p.z+r.z*u*R+p.normal.z*off] as V3,uv:uv((mirror?-u:u)*.5+.5,v*.5+.5)};
     };
     const front=Array.from({length:n16},(_,k)=>ring(k,.012,false));
