@@ -1,8 +1,8 @@
 import {phraseFile,sentences} from '../audio/phrases';
 
 /**
- * The examiner's (and instructor's) voice: recorded clips in a British neural voice (Azure's Sonia,
- * tools/voice/make_voice.mjs) played through the car's sound, and the browser's speech synthesis for any sentence
+ * The examiner's and the instructor's voice: recorded clips in British neural voices (Azure's Ryan for the examiner,
+ * Sonia for the instructor: tools/voice/make_voice.mjs) played through the car's sound, and the browser's speech synthesis for any sentence
  * without a clip (or when the sound cannot play), with the best British voice the device has. Every direction is
  * also shown on screen (the HUD task box), so a muted phone loses nothing. Browsers play sound only after a tap, so
  * `unlock` is called from the first taps (as for the other sounds).
@@ -17,10 +17,11 @@ export class ExaminerVoice{
   /** Called after each sentence is spoken (the car's sound is resumed then: on iPhone speech can pause it). */
   onSpoken:()=>void=()=>{};
 
-  /** Clip files there are (from voice/index.json), and the recorded voice's name. */
-  private clips=new Set<string>();
-  private clipVoice='';
-  /** Clips already downloaded (encoded; small), decoded each time they are played. */
+  /** Recorded voices by folder: the clip files there are (from its index.json), and the voice's name. */
+  private readonly sets=new Map<string,{files:Set<string>;voice:string}>();
+  /** The folder of the recorded voice speaking (`use`). */
+  private base='voice/';
+  /** Clips already downloaded (encoded; small; by path), decoded each time they are played. */
   private readonly bytes=new Map<string,Promise<ArrayBuffer>>();
   /** Sentences waiting, and a count that changes when they are dropped (a new instruction). */
   private waiting:string[]=[];
@@ -42,19 +43,23 @@ export class ExaminerVoice{
       ??(this.synth?.getVoices()??[]).find(v=>v.lang.startsWith('en'))??null;
   }
 
-  /** The voice in use. */
-  get voiceName():string{return this.clipVoice||this.voice?.name||'the device\'s default voice'}
+  private get clips():Set<string>{return this.sets.get(this.base)?.files??new Set()}
 
-  /** Loads the list of recorded clips (none: the device speaks everything). */
+  /** The voice in use. */
+  get voiceName():string{return this.sets.get(this.base)?.voice||this.voice?.name||'the device\'s default voice'}
+
+  /** Loads the list of clips recorded in a folder (none: the device speaks everything). */
   async loadClips(base='voice/'):Promise<void>{
     try{
       const r=await fetch(`${base}index.json`);
       if(!r.ok)return;
       const index=await r.json() as {voice?:string;files?:string[]};
-      this.clips=new Set(index.files??[]);
-      this.clipVoice=index.voice??'';
+      this.sets.set(base,{files:new Set(index.files??[]),voice:index.voice??''});
     }catch{/* no clips */}
   }
+
+  /** Speaks from now on with the clips in `base` (a folder given to `loadClips`). */
+  use(base:string):void{this.base=base}
 
   /** Call from a tap: a silent utterance lets later ones play (iPhone). */
   unlock():void{
@@ -101,12 +106,12 @@ export class ExaminerVoice{
   private async playClip(sentence:string,g:number):Promise<boolean>{
     const ctx=this.audio();
     if(!ctx||ctx.state!=='running')return false;
-    const file=phraseFile(sentence);
-    let bytes=this.bytes.get(file);
+    const path=this.base+phraseFile(sentence);
+    let bytes=this.bytes.get(path);
     if(!bytes){
-      bytes=fetch(`voice/${file}`).then(r=>{if(!r.ok)throw new Error(String(r.status));return r.arrayBuffer()});
-      this.bytes.set(file,bytes);
-      bytes.catch(()=>this.bytes.delete(file));
+      bytes=fetch(path).then(r=>{if(!r.ok)throw new Error(String(r.status));return r.arrayBuffer()});
+      this.bytes.set(path,bytes);
+      bytes.catch(()=>this.bytes.delete(path));
     }
     const buffer=await ctx.decodeAudioData((await bytes).slice(0));
     if(g!==this.generation)return true;

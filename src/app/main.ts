@@ -114,6 +114,8 @@ const MIRROR_FOCUS_FOV={interior:degToRad(50),door:degToRad(40)};
  * (about 110°), the area beside the car that the door mirrors do not cover.
  */
 const SHOULDER_POINTS={left:{x:-1.8,y:1.1,z:.9},right:{x:2.4,y:1.1,z:.9}};
+/** Recorded voices (tools/voice/make_voice.mjs): the instructor (Sonia) and the examiner (Ryan). */
+const INSTRUCTOR_CLIPS='voice/',EXAMINER_CLIPS='voice/examiner/';
 
 function byId<T extends HTMLElement>(id:string):T{
   const el=document.getElementById(id);
@@ -359,9 +361,11 @@ export async function boot():Promise<void>{
   const examinerVoice=new ExaminerVoice();
   // Sound stays on: resumed after each spoken sentence, when the page comes back, and checked each second.
   examinerVoice.onSpoken=()=>sound.keepAlive();
-  // Sonia's recorded sentences, played through the car's sound (the device's voice for anything else).
+  // Recorded sentences, played through the car's sound (the device's voice for anything else): the examiner's in
+  // Ryan's voice, the instructor's (lessons, practice) in Sonia's.
   examinerVoice.audio=()=>sound.context;
-  void examinerVoice.loadClips();
+  void examinerVoice.loadClips(INSTRUCTOR_CLIPS);
+  void examinerVoice.loadClips(EXAMINER_CLIPS);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)sound.keepAlive()});
   addEventListener('pageshow',()=>sound.keepAlive());
   setInterval(()=>{if(session.state==='running')sound.keepAlive()},1000);
@@ -539,6 +543,8 @@ export async function boot():Promise<void>{
     // A lesson runs the same route, directions and marking as a mock test, with an instructor coaching on top.
     const lesson:Lesson|null=scenario.rubricId==='lesson'&&!familiarisation?LESSONS.find(l=>l.id===chosenLessonId)??LESSONS[0]!:null;
     const mock=(scenario.rubricId==='mock-test'||!!lesson)&&!familiarisation;
+    // The examiner speaks on a mock test, the instructor in a lesson.
+    examinerVoice.use(mock&&!lesson?EXAMINER_CLIPS:INSTRUCTOR_CLIPS);
     const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
