@@ -42,6 +42,16 @@ export class Hud{
     this.fps.textContent=`${Math.round(fps)} fps`;
   }
 
+  private readonly limit=$('hud-limit');
+  /** The speed limit sign beside the speed (hidden where none is known); it pulses when the car is over it. */
+  setLimit(mph:number|null,speedMps:number):void{
+    this.limit.hidden=mph===null;
+    if(mph===null)return;
+    const text=String(mph);
+    if(this.limit.textContent!==text){this.limit.textContent=text;this.limit.setAttribute('aria-label',`Speed limit ${mph} mph`)}
+    this.limit.classList.toggle('over',mpsToMph(Math.abs(speedMps))>mph+1);
+  }
+
   setStatus(text:string):void{
     this.status.textContent=text;
   }

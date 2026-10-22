@@ -47,6 +47,21 @@ interface Watch{
   prompted:Set<string>;
 }
 
+/** What the instructor says at once when the marking records a safety fault, and the note for the report. */
+const CORRECTIONS:Record<string,(severity:string,limit:number)=>{say:string;lesson:string}>={
+  'positioning-pavement':()=>({say:'Careful: you\'ve mounted the pavement. Steer gently back onto the road.',lesson:'keep the wheels off the pavement'}),
+  'control-off-road':()=>({say:'You\'ve left the road. Slow down and steer back onto it.',lesson:'keep to the road'}),
+  'control-collision':()=>({say:'Stop. You\'ve hit something. Check it\'s safe, then reverse away if you need to.',lesson:'you hit something: slow down and leave more room'}),
+  'speed-limit':(_,limit)=>({say:`Check your speed: the limit here is ${limit}.`,lesson:`keep to the speed limit (${limit} mph)`}),
+  'traffic-lights':severity=>severity==='minor'
+    ?{say:'That amber light: there was room to stop. Stop at the line next time.',lesson:'stop at amber when there is room to'}
+    :{say:'That light was red. You must stop at the stop line.',lesson:'stop at the line when the light is red'},
+  'traffic-lights-hesitation':()=>({say:'The light is green: go when the way is clear.',lesson:'move off promptly on green when the way is clear'}),
+  'positioning-normal':()=>({say:'Keep to the left.',lesson:'keep to the left'}),
+  'following-distance':()=>({say:'Leave more room to the car in front: at least two seconds.',lesson:'keep a two-second gap'}),
+  'junctions-observation':()=>({say:'Give way to traffic from the right at the roundabout.',lesson:'give way to the right at roundabouts'})
+};
+
 export class Instructor implements SimModule,ExaminerListener{
   readonly id='instructor';
   private watch:Watch|null=null;
@@ -58,6 +73,8 @@ export class Instructor implements SimModule,ExaminerListener{
   private manoeuvres=0;
   private crossingsWarned=new Set<string>();
   private lightsWarned=new Set<string>();
+  /** Safety mistakes (from the marking) since the last direction: none, or no praise for that junction. */
+  private mistakes:string[]=[];
   /** Moving off and stopping: driving since the last stop, the pull-up being asked for, moving off again. */
   private sinceStop=0;
   private stops=0;
@@ -72,7 +89,7 @@ export class Instructor implements SimModule,ExaminerListener{
 
   reset():void{
     this.watch=null;this.looks=[];this.lastPrompt=-99;this.good=[];this.improve=[];this.manoeuvres=0;
-    this.crossingsWarned.clear();this.lightsWarned.clear();
+    this.crossingsWarned.clear();this.lightsWarned.clear();this.mistakes=[];
     this.sinceStop=0;this.stops=0;this.stopPhase='driving';this.stoppedFor=0;this.stoppedAt=0;
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
@@ -93,6 +110,7 @@ export class Instructor implements SimModule,ExaminerListener{
   // ---- Directions (from the examiner) ----
   direction(step:RouteStep):void{
     const now=this.input.now();
+    this.mistakes=[];
     this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set()};
     // How to signal at a mini-roundabout, said with the direction while the lesson is about them.
     if(step.kind==='roundabout'&&this.has('roundabout')&&this.input.reminders!==false){
@@ -131,10 +149,14 @@ export class Instructor implements SimModule,ExaminerListener{
       else bad.push('position just left of the middle of the road before turning right');
     }
     if(w.conflict)bad.push(w.conflict);
+    // A mistake on the way (the pavement, a collision, speeding, a red light…), already corrected and noted: the
+    // junction is not praised, whatever else went well.
+    const hadMistake=this.mistakes.length>0;
+    this.mistakes=[];
     const line=`${what[0]!.toUpperCase()}${what.slice(1)}: `;
     if(bad.length===0){
       this.good.push(`${line}${ok.join(', ')}.`);
-      this.input.say(this.manoeuvres%3===1?'Well done, that was good.':'Good.');
+      if(!hadMistake)this.input.say(this.manoeuvres%3===1?'Well done, that was good.':'Good.');
     }else{
       if(ok.length)this.good.push(`${line}${ok.join(', ')}.`);
       this.improve.push(`${IMPROVE}${line}${bad.join('; ')}.`);
@@ -156,6 +178,12 @@ export class Instructor implements SimModule,ExaminerListener{
     for(let i=evs.length-1;i>=0;i--){
       const e=evs[i] as SimEvent;
       if(Number(e.id.slice(3))<=this.lastEvent)break;
+      // Safety faults the marking records as they happen: corrected at once (whatever the level), and remembered
+      // so the junction is not praised.
+      if(e.type==='assessment.finding'&&!e.payload['upgraded']){
+        const c=CORRECTIONS[String(e.payload['ruleId'])]?.(String(e.payload['severity']),this.limitHere(l));
+        if(c){this.mistakes.push(c.lesson);this.improve.push(`${IMPROVE}${c.lesson[0]!.toUpperCase()}${c.lesson.slice(1)}.`);this.lastPrompt=now;this.input.say(c.say)}
+      }
       if(e.type==='observation.dwell'){
         const target=String(e.payload['target']);
         this.looks.unshift({time:e.time,target});
@@ -254,6 +282,13 @@ export class Instructor implements SimModule,ExaminerListener{
         else{this.improve.push(`${IMPROVE}Moving off after pull-up ${this.stops}: check the right mirror and over your right shoulder (the blind spot) before moving off.`);this.input.say('Remember to look over your right shoulder before moving off.')}
       }
     }
+  }
+
+  /** The speed limit where the car is (30 where none is mapped: the usual limit in towns). */
+  private limitHere(l:{x:number;z:number}):number{
+    let best:{limit:number;d:number}|null=null;
+    for(const r of this.input.location.roads){const d=sampleRoad(r,l.x,l.z).distance;if(!best||d<best.d)best={limit:r.speedLimitMph??30,d}}
+    return best?.limit??30;
   }
 
   /** The lesson report notes: what went well, what to work on. */

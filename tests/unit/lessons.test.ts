@@ -47,7 +47,7 @@ describe('lessons: routes chosen for the topic',()=>{
 
 describe('the instructor',()=>{
   /** Drives the first manoeuvre of a lesson's route: with or without mirror check and signal. */
-  function drive(id:string,careful:boolean){
+  function drive(id:string,careful:boolean,pavement=false){
     let time=0;
     const events=new EventLog(()=>time);
     const learner={x:sp.position.x,z:sp.position.z,heading:sp.headingDeg*Math.PI/180,speed:0,indicator:'off' as 'off'|'left'|'right'};
@@ -64,6 +64,7 @@ describe('the instructor',()=>{
         const p=pointAtAlong(leg.road,leg.from+(leg.to-leg.from)*k/n);
         const d=Math.hypot(p.x-first.at.x,p.z-first.at.z);
         Object.assign(learner,{x:p.x,z:p.z,heading:Math.atan2(p.direction.x*leg.dir,-p.direction.z*leg.dir),speed:d<25?4:8});
+        if(pavement&&d<40&&d>39)events.emit('assessment.finding',{findingId:'f1',incidentId:'kerb-1',severity:'serious',ruleId:'positioning-pavement'});
         if(careful){
           if(d<60&&d>58)events.emit('observation.dwell',{target:'interior'});
           learner.indicator=d<50&&first.turn!=='ahead'?first.turn:'off';
@@ -86,5 +87,11 @@ describe('the instructor',()=>{
     expect(r.said).toContain('Check your mirrors.');
     expect(r.said.some(s=>s.startsWith('Next time,'))).toBe(true);
     expect(r.notes.some(n=>/signal left/.test(n))).toBe(true);
+  });
+  it('a mistake on the way is corrected at once, and the junction is not praised even if the routine was right',()=>{
+    const r=drive('left-turns',true,true);
+    expect(r.said.some(t=>/mounted the pavement/.test(t))).toBe(true);
+    expect(r.said.some(t=>/^(Well done|Good\.)/.test(t))).toBe(false);
+    expect(r.notes.some(n=>/pavement/.test(n))).toBe(true);
   });
 });

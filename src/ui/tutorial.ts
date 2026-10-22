@@ -30,7 +30,7 @@ export const DRIVE_TOUR:readonly TourStep[]=[
   {target:'#steer-buttons,#hud-left',title:'Steering',text:'With assisted steering the car follows the lane and the route for you, so you can concentrate on speed and observation. Change steering on the screen before you start (assisted, tilt or Steer buttons).'},
   {target:'#view-buttons',title:'Mirrors and shoulder checks',text:'Hold a button to look: left and right shoulder (blind spots), the door mirrors and the interior mirror. Look before you signal, change speed or turn: the examiner and instructor see every check.'},
   {target:'#signal-buttons',title:'Signals',text:'Tap to signal left or right; tap again to cancel. Signal after checking the mirrors, in good time, and only when it helps someone. No signal is needed to go straight ahead.'},
-  {target:'#hud-speedbox',title:'Speed and warning lights',text:'Your speed in mph and the gear (D or R). Warning lights show here when headlights, demisters or wipers are on.'},
+  {target:'#hud-speedbox',title:'Speed and warning lights',text:'Your speed in mph and the gear (D or R). The red ring is the speed limit of the road you are on: it pulses if you go over. Warning lights show here when headlights, demisters or wipers are on.'},
   {target:'#hud-controls-toggle',title:'Car controls',text:'Headlights, main beam, fog light, wipers and washers, demisters, horn and window. The examiner’s “show me” question asks you to use one of these.'},
   {target:'#hud-task-toggle',title:'Task',text:'Repeats the last instruction from the examiner or instructor, spoken and on screen.'},
   {target:'#hud-sound',title:'Sound',text:'Engine, traffic and the spoken directions. Turn it off and directions are still shown on screen.'},

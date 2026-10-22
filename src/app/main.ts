@@ -353,6 +353,11 @@ export async function boot():Promise<void>{
   // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
   const sound=new Soundscape();
   const examinerVoice=new ExaminerVoice();
+  // Sound stays on: resumed after each spoken sentence, when the page comes back, and checked each second.
+  examinerVoice.onSpoken=()=>sound.keepAlive();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sound.keepAlive()});
+  addEventListener('pageshow',()=>sound.keepAlive());
+  setInterval(()=>{if(session.state==='running')sound.keepAlive()},1000);
   /** The lesson chosen on the lesson list (a lesson scenario runs it). */
   let chosenLessonId:string|null=null;
   /** How hard: traffic, mock test length, lesson reminders (home screen; remembered on this device). */
@@ -1718,6 +1723,8 @@ export async function boot():Promise<void>{
       placeTimer=.25;
       const label=placeLabel(place,vehicle.state.position.x,vehicle.state.position.z,lastPlace?.road??null);
       if(label.text!==lastPlace?.text){hudPlace.textContent=label.text;hudPlace.title=label.title}
+      // The speed limit sign: the mapped limit, or 30 (the usual limit in towns) on a real street with none mapped.
+      hud.setLimit(label.speedLimitMph??(label.road?30:null),vehicle.state.speed);
       lastPlace=label;
     }
     shadows?.follow(pose.position.x,pose.position.z,dt);

@@ -105,6 +105,19 @@ export class Soundscape{
 
   get running():boolean{return this.ctx?.state==='running'}
 
+  /**
+   * Keeps the sound going: after the phone has interrupted it (a call, Siri, another app, or on iPhone the spoken
+   * directions taking the audio session), it is resumed without waiting for the next tap. Called each second while
+   * driving, when the page comes back into view, and after each spoken direction.
+   */
+  keepAlive():void{
+    const ctx=this.ctx;
+    if(!ctx||ctx.state==='running'||ctx.state==='closed'||document.hidden)return;
+    const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
+    if(session&&session.type!=='playback')session.type='playback';
+    void ctx.resume().catch(()=>{});
+  }
+
   setMuted(muted:boolean):void{
     this.muted=muted;
     try{localStorage.setItem(MUTE_KEY,muted?'1':'0')}catch{/* not kept */}
