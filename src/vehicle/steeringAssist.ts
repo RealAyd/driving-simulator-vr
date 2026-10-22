@@ -112,6 +112,27 @@ export class SteeringAssist{
     return need<.4?0:Math.min(1,need/this.params.brakeDeceleration*1.3);
   }
 
+  /** A path to follow while reversing (a manoeuvre): points in the order the car goes over them. */
+  private reversePath:SteeringAssist|null=null;
+  setReversePath(path:Vec2[]|null):void{this.reversePath=path&&path.length>1?new SteeringAssist(path,this.params):null}
+  get canReverse():boolean{return !!this.reversePath}
+
+  /**
+   * Steering while reversing along the reverse path: pure pursuit on a point behind the car. Going backwards the
+   * wheels turn the car's tail the other way, so the input is the opposite of going forwards.
+   */
+  steerReverse(pose:Pose,speed:number):number{
+    const r=this.reversePath;
+    if(!r||speed>-.2)return 0;
+    const v=Math.abs(speed),lookahead=Math.max(2.5,2.5+.5*v);
+    const target=r.pointAt(r.progress(pose.position.x,pose.position.z)+lookahead);
+    const dx=target.x-pose.position.x,dz=target.z-pose.position.z;
+    // Measured from the way the car is moving (backwards).
+    const alpha=headingDelta(Math.atan2(dx,-dz),pose.heading+Math.PI);
+    const wheel=-Math.atan(2*this.params.wheelbase*Math.sin(Math.max(-Math.PI/2,Math.min(Math.PI/2,alpha)))/lookahead);
+    return Math.max(-1,Math.min(1,wheel/steerLimit(this.params,v)));
+  }
+
   /** Normalised steering input (-1 left … +1 right) for the current pose and speed. */
   steer(pose:Pose,speed:number):number{
     if(speed<.3)return 0;

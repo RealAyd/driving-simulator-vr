@@ -1,4 +1,5 @@
 import {judgeMoveOff,judgeTurn} from '../assessment/routine';
+import {MANOEUVRE_NAMES,type ManoeuvreFault,type ManoeuvreKind} from '../test/manoeuvres';
 import {IMPROVE,INFO,type Location,type Seconds,type SimEvent,type SimModule,type Vec2} from '../contracts';
 import type {EventLog} from '../app/eventLog';
 import type {ExaminerListener} from '../test/examiner';
@@ -93,7 +94,7 @@ export class Instructor implements SimModule,ExaminerListener{
   reset():void{
     this.watch=null;this.looks=[];this.lastPrompt=-99;this.good=[];this.improve=[];this.manoeuvres=0;
     this.crossingsWarned.clear();this.lightsWarned.clear();this.mistakes=[];
-    this.sinceStop=0;this.stops=0;this.stopPhase='driving';this.stoppedFor=0;this.stoppedAt=0;
+    this.sinceStop=0;this.stops=0;this.manoeuvring=null;this.stopPhase='driving';this.stoppedFor=0;this.stoppedAt=0;
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
   }
@@ -175,6 +176,21 @@ export class Instructor implements SimModule,ExaminerListener{
       if(ok.length)this.good.push(`${line}${ok.join(', ')}.`);
       this.improve.push(`${IMPROVE}${line}${bad.join('; ')}.`);
       this.input.say(`Next time, ${bad[0]}.`);
+    }
+  }
+
+  // ---- Manoeuvres (manoeuvres.ts judges them): what went well or what to do next time, said and noted ----
+  private manoeuvring:ManoeuvreKind|null=null;
+  manoeuvreStart(kind:ManoeuvreKind):void{this.manoeuvring=kind;this.watch=null}
+  manoeuvreDone(kind:ManoeuvreKind,faults:readonly ManoeuvreFault[],notes:readonly string[]):void{
+    this.manoeuvring=null;
+    const name=MANOEUVRE_NAMES[kind];
+    if(faults.length===0){
+      this.good.push(`${name}: done well.${notes.length?` ${notes.join(' ')}`:''}`);
+      this.input.say('Well done, that was good.');
+    }else{
+      this.improve.push(`${IMPROVE}${name}: ${faults.map(f=>f.coach).join('; ')}.${notes.length?` ${notes.join(' ')}`:''}`);
+      this.input.say(`Next time, ${faults[0]!.coach}.`);
     }
   }
 
@@ -283,7 +299,7 @@ export class Instructor implements SimModule,ExaminerListener{
     }
 
     // Moving off and stopping: a pull-up on the left every 300 m or so (away from junctions), and moving off again.
-    if(this.has('stops')&&this.stops<3){
+    if(this.has('stops')&&this.stops<3&&!this.manoeuvring){
       if(this.stopPhase==='driving'){
         this.sinceStop+=l.speed*dt;
         const next=this.watch?.step;

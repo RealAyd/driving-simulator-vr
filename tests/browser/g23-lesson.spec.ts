@@ -30,8 +30,8 @@ test('G23: a lesson: syllabus, briefing, the instructor coaching on the drive, a
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.click('[data-drive-mode=lesson]');
   await page.click('[data-exercise=goodmayes]');
-  // The syllabus: ten lessons, and what is coming.
-  await expect(page.locator('#lesson-list [data-lesson]')).toHaveCount(10);
+  // The syllabus: eleven lessons (the last the manoeuvres), and what is coming.
+  await expect(page.locator('#lesson-list [data-lesson]')).toHaveCount(11);
   await expect(page.locator('#start-practice')).toBeDisabled();
   await page.screenshot({path:testInfo.outputPath('g23-syllabus.png')});
   await page.click('[data-lesson=left-turns]');
@@ -56,5 +56,39 @@ test('G23: a lesson: syllabus, briefing, the instructor coaching on the drive, a
   const result=await read(page,'result()');
   expect(result.notes.join(' ')).toMatch(/signal left|mirrors/);
   await page.screenshot({path:testInfo.outputPath('g23-report.png'),fullPage:true});
+  expect(errors).toEqual([]);
+});
+
+test('G23: lesson 11, manoeuvres: the emergency stop (pull in, briefing, STOP on screen and spoken, a prompt stop is not faulted)',async({page},testInfo)=>{
+  test.setTimeout(500_000);
+  const errors:string[]=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('./?routeSeed=1');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=lesson]');
+  await page.click('[data-exercise=goodmayes]');
+  await page.click('[data-lesson=manoeuvres]');
+  await expect(page.locator('#exercise-briefing')).toContainText('emergency stop');
+  await page.click('#start-practice');
+  await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
+  const manoeuvre=async()=>(await read(page,'examiner()'))?.manoeuvre as {kind:string;phase:string;faults:string[];notes:string[];waiting:string}|null;
+  // Drive until the instructor asks for the emergency stop and the car has pulled in.
+  await driveUntil(page,async()=>(await manoeuvre())?.phase==='pull-in',150_000);
+  expect(await manoeuvre()).toMatchObject({kind:'emergency-stop',phase:'pull-in'});
+  // In to the kerb (assisted steering finds a gap between the parked cars), then stop.
+  await driveUntil(page,async()=>{const m=await manoeuvre();return Number(/kerb (-?[\d.]+)/.exec(m?.waiting??'')?.[1]??9)<.8},60_000);
+  await page.keyboard.down('KeyS');await page.waitForTimeout(3500);await page.keyboard.up('KeyS');
+  await expect.poll(async()=>(await manoeuvre())?.phase,{timeout:20_000}).toBe('brief');
+  // Off again, up to speed: on STOP (shown big on screen), brake at once.
+  await page.keyboard.down('KeyW');
+  await expect(page.locator('#hud-flash')).toBeVisible({timeout:120_000});
+  await page.keyboard.up('KeyW');
+  await page.keyboard.down('KeyS');
+  await page.screenshot({path:testInfo.outputPath('g23-stop.png')});
+  await expect.poll(async()=>(await manoeuvre())?.phase,{timeout:20_000}).toBe('after');
+  await page.keyboard.up('KeyS');
+  const m=(await manoeuvre())!;
+  expect(m.faults).not.toContain('controlled-stop-promptness');
+  expect(m.notes.join(' ')).toMatch(/brakes on \d\.\d s after/);
   expect(errors).toEqual([]);
 });

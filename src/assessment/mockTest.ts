@@ -6,6 +6,7 @@ import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
 import {judgePullUp,junctionPoints} from '../test/pullUp';
 import {judgeMoveOff,judgeTurn,MOVE_OFF_FRESH} from './routine';
+import type {ManoeuvreFault,ManoeuvreKind} from '../test/manoeuvres';
 import {DVSA_SOURCE,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
 import type {Aspect,LiveStop} from '../world/trafficSignals';
 import type {Vec2} from '../contracts';
@@ -76,7 +77,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
     this.watch=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
-    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.advice=[];this.showing=null;this.showMeFrom=null;this.lights.clear();
+    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.advice=[];this.manoeuvring=null;this.showing=null;this.showMeFrom=null;this.lights.clear();
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
   }
@@ -136,6 +137,16 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
       // The signal should be cancelled once round the corner.
       this.cancelBy={time:this.input.now()+8,turn:step.turn as 'left'|'right',incident:`${id}-cancel`};
     }
+  }
+
+  // ---- Manoeuvres and the emergency stop (manoeuvres.ts judges them; their faults are recorded here) ----
+  private manoeuvring:ManoeuvreKind|null=null;
+  manoeuvreStart(kind:ManoeuvreKind):void{this.manoeuvring=kind}
+  manoeuvreDone(kind:ManoeuvreKind,faults:readonly ManoeuvreFault[],notes:readonly string[]):void{
+    this.manoeuvring=null;
+    const ev=this.input.events.events.at(-1);
+    for(const f of faults)this.fault(f.rule,`${kind}-${f.rule}`,f.severity,f.text,ev?[ev.id]:[]);
+    for(const n of notes)this.checks.push(`${INFO}${n}`);
   }
 
   pullUp():void{
@@ -274,7 +285,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     }else this.following=0;
 
     // Position: on the right-hand side of a two-way road for no reason (not passing parked cars, not at a junction).
-    if(near&&!near.r.oneway&&near.r.lanes.count>=2&&speed>2){
+    if(near&&!near.r.oneway&&near.r.lanes.count>=2&&speed>2&&this.manoeuvring!=='pull-up-right'){
       const dir=near.s.direction.x*fwd.x+near.s.direction.z*fwd.z>=0?1:-1;
       const right=near.s.lateral*dir;
       const passing=this.input.parked.some(p=>{const dx=p.x-x,dz=p.z-z,a=dx*fwd.x+dz*fwd.z;return a>-6&&a<25&&Math.hypot(dx,dz)<26})
@@ -319,7 +330,8 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     }
 
     // Mounting the pavement, or leaving the road.
-    if(l.surface!=='carriageway'&&speed>.3){
+    // (A slow touch of the kerb while parking or reversing is the manoeuvre's own control fault, judged there.)
+    if(l.surface!=='carriageway'&&speed>(this.manoeuvring&&this.manoeuvring!=='emergency-stop'?2:.3)){
       this.pavement+=dt;
       if(this.pavement>.5&&this.pavement-dt<=.5)this.fault(l.surface==='pavement'?'positioning-pavement':'control-off-road',`kerb-${Math.round(now)}`,l.surface==='pavement'?'serious':'dangerous',
         l.surface==='pavement'?'Control – steering: the car mounted the pavement.':'Control – steering: the car left the road.');

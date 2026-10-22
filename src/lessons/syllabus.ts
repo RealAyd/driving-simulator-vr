@@ -1,3 +1,4 @@
+import type {ManoeuvreKind} from '../test/manoeuvres';
 import type {Location,Road} from '../contracts';
 import type {JunctionChoice,RoadNetwork,RoadPos,Route} from '../test/route';
 
@@ -49,6 +50,8 @@ export interface Lesson{
   routeScore?:(route:Route,location:Location)=>number;
   /** What the lesson needs from the area, said when the area has none. */
   needs?:string;
+  /** Manoeuvres asked for along the drive (manoeuvres.ts). */
+  manoeuvres?:readonly ManoeuvreKind[];
 }
 
 /** Crossings the route drives over (zebra and signal crossings on the roads and stretches it uses). */
@@ -149,7 +152,17 @@ export const LESSONS:readonly Lesson[]=[
       'This drive puts everything together: side roads, emerging, crossroads, traffic lights and roundabouts where the area has them. I\'ll give directions as an examiner would, and remind you less. At the end I\'ll go through what went well.'
     ],
     rules:'The Highway Code, rules 159–199.',
-    coaching:['routine','right-turn','emerge','roundabout','lights','crossings','signals'],length:2400,score:s=>s.kind==='roundabout'||s.kind==='lights'?3:s.crossroads?2:1}
+    coaching:['routine','right-turn','emerge','roundabout','lights','crossings','signals'],length:2400,score:s=>s.kind==='roundabout'||s.kind==='lights'?3:s.crossroads?2:1},
+  {id:'manoeuvres',number:11,title:'Manoeuvres and the emergency stop',summary:'Emergency stop; pulling up on the right and reversing; parallel parking.',
+    objective:'Stop quickly and under control when told to, and carry out the test\'s road manoeuvres with good control and all-round observation.',
+    briefing:[
+      'Today we\'ll practise the manoeuvres from the test: an emergency stop, pulling up on the right and reversing about two car lengths, and parking behind a car at the kerb. I\'ll tell you each one as we go.',
+      'Emergency stop: when I say stop, brake firmly at once, keep both hands on the wheel and the car straight. You don\'t need to check the mirrors first. Afterwards, look all round, both blind spots too, before moving off.',
+      'Reversing: look all round before you start, keep looking while you move (mostly out of the back), go slowly, and stop if anyone comes near. Keep reasonably close to the kerb and finish parallel to it.',
+      'Pulling up on the right: mirrors and a right signal first, and wait for oncoming traffic to pass before you cross.'
+    ],
+    rules:'Highway Code rules 117–126 (stopping), 200–203 (reversing) and 239–243 (parking).',
+    coaching:['routine','signals'],length:2400,score:()=>1,manoeuvres:['emergency-stop','pull-up-right','parallel-park']}
 ];
 
 /** A lesson that still needs the map builder to support it (shown in the list, not started). */

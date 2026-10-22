@@ -17,8 +17,9 @@ const lesson=(id:string)=>LESSONS.find(l=>l.id===id)!;
 const plan=(id:string)=>{const l=lesson(id);return planLesson(net,l,goodmayes,start,l.length,1)};
 
 describe('lessons: routes chosen for the topic',()=>{
-  it('ten lessons, numbered in order, each with a briefing and the Highway Code rules',()=>{
-    expect(LESSONS.map(l=>l.number)).toEqual([1,2,3,4,5,6,7,8,9,10]);
+  it('eleven lessons (the last the manoeuvres), numbered in order, each with a briefing and the Highway Code rules',()=>{
+    expect(LESSONS.map(l=>l.number)).toEqual([1,2,3,4,5,6,7,8,9,10,11]);
+    expect(LESSONS.at(-1)!.manoeuvres).toEqual(['emergency-stop','pull-up-right','parallel-park']);
     for(const l of LESSONS){expect(l.briefing.length).toBeGreaterThan(0);expect(l.rules).toMatch(/Highway Code/)}
   });
   it('turning left: a route with several left turns into side roads',()=>{

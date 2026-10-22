@@ -59,6 +59,17 @@ export class Hud{
   private taskTimer=0;
 
   /** Shows the task briefly, then folds it away so it does not cover the mirrors. The Task button recalls it. */
+  /** Something to act on at once, big in the middle of the screen for a moment (the emergency stop's STOP). */
+  flash(text:string):void{
+    const el=this.flashEl;
+    el.textContent=text;el.hidden=false;
+    el.classList.remove('flash-on');void el.offsetWidth;el.classList.add('flash-on');
+    clearTimeout(this.flashTimer);
+    this.flashTimer=window.setTimeout(()=>{el.hidden=true},1800);
+  }
+  private readonly flashEl=$('hud-flash');
+  private flashTimer=0;
+
   setTask(text:string,show=true):void{
     $('hud-task').textContent=text;
     this.showTask(show);

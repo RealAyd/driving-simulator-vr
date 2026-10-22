@@ -335,6 +335,12 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 .map-key{margin:8px 0 0;padding-left:0;list-style:none;display:grid;gap:4px;font-size:12.5px;color:#292524}
 .map-key b{display:inline-block;min-width:1.6em}
 .map-key .key-minor b{color:#ea580c}.map-key .key-serious b{color:#dc2626}.map-key .key-dangerous b{color:#7f1d1d}
+#hud-flash{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:150px;height:150px;display:grid;place-items:center;
+  background:#d4202a;color:#fff;font:900 40px/1 system-ui,sans-serif;letter-spacing:.04em;border:6px solid #fff;outline:3px solid #d4202a;
+  clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);z-index:5;pointer-events:none}
+#hud-flash.flash-on{animation:flash-pop .25s ease-out}
+@keyframes flash-pop{from{transform:translate(-50%,-50%) scale(.6)}to{transform:translate(-50%,-50%) scale(1)}}
+@media (prefers-reduced-motion:reduce){#hud-flash.flash-on{animation:none}}
 </style>
 </head>
 <body>
@@ -544,6 +550,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
+  <div id="hud-flash" role="alert" hidden></div>
   <div id="hud-view-label" class="hud-pill" aria-live="polite">View: Forward</div>
   <button id="hud-behind" type="button" class="hud-round" aria-pressed="false" aria-label="Camera: switch to behind the car" title="Camera: driver's seat / behind the car (practice only)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v2.1l4.4-2.6a1 1 0 0 1 1.6.8v8.4a1 1 0 0 1-1.6.8L15 14.4v2.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 16.5z"/></svg></button>
   <div id="hud-top" class="hud-panel">

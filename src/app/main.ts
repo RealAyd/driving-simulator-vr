@@ -352,7 +352,9 @@ export async function boot():Promise<void>{
     // The driver's own button/key steering always overrides tilt and the assistance.
     // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
     if(steeringMode==='assist'&&runtime?.freeAssist&&c.steer===0)runtime.freeAssist.update(vehicle.pose,vehicle.indicators.state);
-    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
+    // (Reversing in a manoeuvre: the assistance follows its reverse path where it has one.)
+    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed)
+      :steeringMode==='assist'&&runtime?.assist?.canReverse&&keys.reverse?runtime.assist.steerReverse(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
     // Assisted steering also eases off for a bend too tight for the speed (only what keeps the car on the road: the
@@ -584,7 +586,8 @@ export async function boot():Promise<void>{
     const listener:ExaminerListener={
       direction:step=>{for(const l of listeners)l.direction?.(step)},done:(step,ok)=>{for(const l of listeners)l.done?.(step,ok)},
       pullUp:()=>{for(const l of listeners)l.pullUp?.()},pulledUp:()=>{for(const l of listeners)l.pulledUp?.()},
-      tellMe:(q,ok,a)=>{for(const l of listeners)l.tellMe?.(q,ok,a)},showMe:q=>{for(const l of listeners)l.showMe?.(q)}};
+      tellMe:(q,ok,a)=>{for(const l of listeners)l.tellMe?.(q,ok,a)},showMe:q=>{for(const l of listeners)l.showMe?.(q)},
+      manoeuvreStart:k=>{for(const l of listeners)l.manoeuvreStart?.(k)},manoeuvreDone:(k,f,n)=>{for(const l of listeners)l.manoeuvreDone?.(k,f,n)}};
     const lessonScore=(r:import('../test/route').Route)=>lesson?r.steps.reduce((n,st)=>n+lesson.score(st),0)+(lesson.routeScore?.(r,place)??0):0;
     const lessonWords=lesson?{briefing:`${lesson.briefing[0]} When you're ready: mirrors, look over your right shoulder, and move off.`,
       pullUp:'That\'s the end of the lesson route. Pull up on the left at the next safe place, please.',
@@ -603,7 +606,19 @@ export async function boot():Promise<void>{
       }:{tellMe:pick(TELL_ME,testSeed),showMe:pick(SHOW_ME,Math.floor(testSeed/7))}),
       askTellMe:q=>{hud.setTask(examiner!.lastSaid,false);askTellMe(q,testSeed,text=>examiner!.answerTellMe(text))},
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
-      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}}):null;
+      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
+      // The manoeuvres (DVSA: one of them on every test, the emergency stop on about one in three); a lesson's own.
+      manoeuvres:lesson?lesson.manoeuvres??[]:[...(testSeed%3===0?['emergency-stop' as const]:[]),testSeed%2===0?'parallel-park' as const:'pull-up-right' as const],
+      manoeuvreInput:{location:place,parked:kerbCars,now:()=>clock.time,
+        learner:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:vehicle.state.speed,indicator:vehicle.indicators.state}),
+        looks:()=>{const out:Array<{time:number;target:string}>=[];for(let i=events.events.length-1;i>=0&&out.length<40;i--){const e=events.events[i]!;if(e.type==='observation.dwell')out.push({time:e.time,target:String(e.payload['target'])})}return out},
+        traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
+        flash:text=>hud.flash(text),
+        setPath:(forward,reverse)=>{
+          if(forward)routeAssist?.setPath(forward);
+          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}
+          routeAssist?.setReversePath(reverse);
+        }}}):null;
     if(examiner){
       examiner.reset();
       const path=routeLanePath(examiner.legs,kerbCars);
@@ -1790,7 +1805,7 @@ export async function boot():Promise<void>{
     roadAt:(x:number,z:number)=>{let best:{x:number;z:number;dx:number;dz:number;d:number}|null=null;for(const r of place.roads){const s=sampleRoad(r,x,z);if(!best||s.distance<best.d){const p=pointAtAlong(r,s.along);best={x:p.x,z:p.z,dx:s.direction.x,dz:s.direction.z,d:s.distance}}}return best},
     signs:()=>({panels:signPlan.panels.map(p=>({id:p.id,kind:p.face.kind,text:'text' in p.face?p.face.text:null,x:p.x,y:p.y,z:p.z,normal:p.normal})),canopies:signPlan.canopies.map(c=>({id:c.id,x:c.x,z:c.z,away:c.away,text:c.text}))}),
     signals:()=>runtime?.trafficSignals?.stops.map(s=>({id:s.id,road:s.road.name??s.road.id,state:s.state}))??[],
-    examiner:()=>runtime?.examiner?{phase:runtime.examiner.phase,index:runtime.examiner.index,lastSaid:runtime.examiner.lastSaid,steps:runtime.examiner.steps.map(s=>({say:s.say,at:s.at,to:s.to.road.name??s.to.road.id}))}:null,
+    examiner:()=>runtime?.examiner?{phase:runtime.examiner.phase,index:runtime.examiner.index,manoeuvre:runtime.examiner.manoeuvre?{kind:runtime.examiner.manoeuvre.kind,phase:runtime.examiner.manoeuvre.phase,faults:runtime.examiner.manoeuvre.faults.map(f=>f.rule),notes:[...runtime.examiner.manoeuvre.notes],waiting:runtime.examiner.manoeuvre.waiting}:null,lastSaid:runtime.examiner.lastSaid,steps:runtime.examiner.steps.map(s=>({say:s.say,at:s.at,to:s.to.road.name??s.to.road.id}))}:null,
     meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled(),at:m.getAbsolutePosition().asArray().map(v=>Math.round(v*10)/10),visible:m.isVisible})),
     driver:()=>({loaded:!!driverBody,arms:driverBody?.debug()??null,grips:cockpit.grips().map(g=>g.point.asArray()),eye:camera.position.asArray()}),
     gear:()=>input.reverse?'reverse':'drive',

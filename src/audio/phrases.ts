@@ -2,6 +2,7 @@ import {BRIEFING,END,PULL_UP,REDIRECT,TELL_ME_INTRO} from '../test/examiner';
 import {SHOW_ME,TELL_ME} from '../test/vehicleChecks';
 import {CORRECTIONS} from '../lessons/instructor';
 import {LESSONS} from '../lessons/syllabus';
+import {MANOEUVRE_COACHING,MANOEUVRE_SENTENCES} from '../test/manoeuvres';
 
 /**
  * Everything the examiner and the instructor say, sentence by sentence: the clips recorded in the British neural
@@ -74,7 +75,7 @@ function instructor():string[]{
     'you turned across an oncoming vehicle: wait for it to pass when turning right',
     'you came out in front of a vehicle on the main road: wait for a gap so nobody has to slow down'
   ];
-  out.push(...next.map(n=>`Next time, ${n}.`));
+  out.push(...next.map(n=>`Next time, ${n}.`),...MANOEUVRE_COACHING.map(n=>`Next time, ${n}.`));
   for(const [rule,c] of Object.entries(CORRECTIONS))for(const severity of rule==='traffic-lights'?['minor','serious']:['minor'])
     for(const limit of rule==='speed-limit'?[20,30,40,50,60,70]:[30])out.push(c(severity,limit).say);
   return out;

@@ -19,6 +19,7 @@ export type SimEventType=
   |'examiner.redirected'
   /** Mock test: a vehicle safety question (tell me before driving, show me while driving). */
   |'examiner.question'
+  |'examiner.manoeuvre'
   /** A control other than driving: lights, washers, demisters, horn, window (`control`, `on`). */
   |'vehicle.control'
   |'vehicle.surface.changed'

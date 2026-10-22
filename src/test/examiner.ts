@@ -2,6 +2,7 @@ import type {EventSink,Seconds,SimModule} from '../contracts';
 import {RoadNetwork,type RoadPos,type Route,type RouteLeg,type RouteStep} from './route';
 import {stopPlace} from './pullUp';
 import type {ShowMeQuestion,TellMeQuestion} from './vehicleChecks';
+import {Manoeuvre,type ManoeuvreFault,type ManoeuvreInput,type ManoeuvreKind} from './manoeuvres';
 
 /**
  * The examiner on a mock test: the briefing, each direction in good time before the junction (spoken and shown),
@@ -24,6 +25,9 @@ export interface ExaminerListener{
   tellMe?(question:TellMeQuestion,correct:boolean,answer:string):void;
   /** The show me question was asked (while driving). */
   showMe?(question:ShowMeQuestion):void;
+  /** A manoeuvre (or the emergency stop) was asked for, and how it went once finished. */
+  manoeuvreStart?(kind:ManoeuvreKind):void;
+  manoeuvreDone?(kind:ManoeuvreKind,faults:readonly ManoeuvreFault[],notes:readonly string[]):void;
 }
 
 export const TELL_ME_INTRO='Before we start, I\'m going to ask you a vehicle safety question.';
@@ -34,6 +38,8 @@ export const REDIRECT='That\'s fine, I\'ll give you new directions.';
 
 /** Spoken this far before the junction (metres): about five seconds at 30 mph, more where roads are quicker. */
 const ANNOUNCE=70;
+/** A manoeuvre is asked for only this far (metres) from the next junction on the route: room to do it. */
+const QUIET=90;
 
 export class Examiner implements SimModule{
   readonly id='examiner';
@@ -41,7 +47,10 @@ export class Examiner implements SimModule{
   /** The planned way (for assisted steering along the route). */
   legs:RouteLeg[]=[];
   index=0;
-  phase:'tell-me'|'briefing'|'driving'|'pull-up'|'stopping'|'finished'='briefing';
+  phase:'tell-me'|'briefing'|'driving'|'manoeuvre'|'pull-up'|'stopping'|'finished'='briefing';
+  /** The manoeuvre being done (phase 'manoeuvre'). */
+  manoeuvre:Manoeuvre|null=null;
+  private manoeuvresDone=0;
   /** The last thing said (the Task button repeats it). */
   lastSaid='';
   private time=0;
@@ -73,7 +82,10 @@ export class Examiner implements SimModule{
     /** Plans the route instead of the usual mix of junctions (a lesson's route). */
     planner?:(start:RoadPos,target:number,seed:number)=>Route;
     /** What is said to begin, to ask for the pull-up, and at the end (an instructor's words on a lesson). */
-    words?:{briefing?:string;pullUp?:string;end?:string}}){}
+    words?:{briefing?:string;pullUp?:string;end?:string};
+    /** Manoeuvres to ask for, in order, spread over the drive (manoeuvres.ts), and what they need from the car. */
+    manoeuvres?:readonly ManoeuvreKind[];
+    manoeuvreInput?:Omit<ManoeuvreInput,'say'>}){}
 
   private get briefing(){return this.options.words?.briefing??BRIEFING}
   private get pullUpWords(){return this.options.words?.pullUp??PULL_UP}
@@ -95,7 +107,7 @@ export class Examiner implements SimModule{
 
   reset():void{
     this.time=0;this.phase=this.options.tellMe?'tell-me':'briefing';this.stoppedFor=0;this.sincePullUp=0;this.routeDone=0;this.lastSaid='';this.pullUpAsked=false;
-    this.tellMeAsked=false;this.showMeAsked=false;this.sinceDirection=0;this.lastRedirect=-Infinity;
+    this.tellMeAsked=false;this.showMeAsked=false;this.sinceDirection=0;this.lastRedirect=-Infinity;this.manoeuvre=null;this.manoeuvresDone=0;
     this.plan(this.options.target,this.options.seed);
   }
 
@@ -127,9 +139,35 @@ export class Examiner implements SimModule{
       if(this.time>.3){this.say(this.briefing);this.phase='driving'}
       return;
     }
+    if(this.phase==='manoeuvre'){
+      const m=this.manoeuvre!;
+      m.update(dt);
+      if(m.done){
+        this.manoeuvre=null;this.manoeuvresDone++;
+        this.options.listener?.manoeuvreDone?.(m.kind,m.faults,m.notes);
+        this.options.events.emit('examiner.manoeuvre',{kind:m.kind,done:true,faults:m.faults.length});
+        // On from here: the rest of the route planned from where the car now is.
+        this.phase='driving';this.sinceDirection=0;
+        this.plan(Math.max(600,this.options.target-this.routeDone),this.options.seed+101*this.manoeuvresDone);
+      }
+      return;
+    }
     if(this.phase==='driving'){
       this.sinceDirection+=dt;
       const step=this.steps[this.index];
+      // A manoeuvre, spread over the drive: once that share of the route is done, on a quiet stretch (moving, no
+      // direction coming up).
+      const kinds=this.options.manoeuvres??[],input=this.options.manoeuvreInput;
+      const next=kinds[this.manoeuvresDone];
+      // (A lesson: one after each junction. A test: spread over the drive.)
+      const share=this.options.words?1:Math.min(this.steps.length-1,Math.ceil((this.manoeuvresDone+1)*this.steps.length/(kinds.length+1)));
+      if(next&&input&&this.index>=Math.max(1,share)&&this.sinceDirection>3&&l.speed>3&&!this.spoken&&(!step||Math.hypot(l.x-step.at.x,l.z-step.at.z)>QUIET)){
+        this.manoeuvre=new Manoeuvre(next,{...input,say:text=>this.say(text)});
+        this.phase='manoeuvre';
+        this.options.listener?.manoeuvreStart?.(next);
+        this.options.events.emit('examiner.manoeuvre',{kind:next,done:false});
+        return;
+      }
       // The show me question: once, after the first manoeuvre, on a quiet stretch (moving, nothing to do for a while).
       const q=this.options.showMe;
       if(q&&!this.showMeAsked&&this.index>=1&&this.sinceDirection>8&&l.speed>3&&(!step||Math.hypot(l.x-step.at.x,l.z-step.at.z)>130)){

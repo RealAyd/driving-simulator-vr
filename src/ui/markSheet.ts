@@ -8,6 +8,12 @@ import type {AttemptResult,Finding,Severity,Vec2} from '../contracts';
 
 /** DL25 sections, in the sheet's order, and the marking rules recorded under each. */
 export const DL25_SECTIONS:ReadonlyArray<{label:string;rules:readonly string[]}>=[
+  {label:'Controlled stop – promptness',rules:['controlled-stop-promptness']},
+  {label:'Controlled stop – control',rules:['controlled-stop-control']},
+  {label:'Reverse / right – control',rules:['reverse-right-control']},
+  {label:'Reverse / right – observation',rules:['reverse-right-observation']},
+  {label:'Reverse park – control',rules:['reverse-park-control']},
+  {label:'Reverse park – observation',rules:['reverse-park-observation']},
   {label:'Vehicle checks',rules:['vehicle-checks']},
   {label:'Move off – safely',rules:['moving-off-safety']},
   {label:'Use of mirrors – signalling',rules:['mirrors-signalling']},
