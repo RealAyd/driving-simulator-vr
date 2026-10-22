@@ -427,6 +427,8 @@ export async function boot():Promise<void>{
     const label=byId('hud-view-label');
     label.textContent=`View: ${VIEW_LABELS[view]}`;
     label.classList.toggle('mirror',view!=='forward'&&view!=='free');
+    // Looking ahead needs no label (it would sit over the interior mirror); any other view says what it is.
+    label.classList.toggle('forward',view==='forward');
     for(const b of document.querySelectorAll<HTMLButtonElement>('[data-view]')){
       b.classList.toggle('selected',b.dataset.view===view);
       b.setAttribute('aria-pressed',String(b.dataset.view===view));
@@ -1608,7 +1610,7 @@ export async function boot():Promise<void>{
     document.body.classList.toggle('behind',on);
     behindButton.setAttribute('aria-label',on?'Camera: back to the driver\'s seat':'Camera: switch to behind the car');
     const label=byId('hud-view-label');
-    if(on){label.textContent='View: Behind the car (not a driver\'s view)';label.classList.add('behind')}
+    if(on){label.textContent='View: Behind the car (not a driver\'s view)';label.classList.add('behind');label.classList.remove('forward')}
     else{label.classList.remove('behind');showView(heldView??'forward')}
   };
   behindButton.addEventListener('click',()=>{if(session.state==='running'&&!viewer.active)setBehind(!behind)});

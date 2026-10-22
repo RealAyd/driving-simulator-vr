@@ -191,7 +191,9 @@ test('G3: with the iPhone 14 Pro Max landscape safe areas (59 px each side, 21 p
     await read(page,`selectView('${view}')`);
     await page.waitForTimeout(900);
     for(const id of ['hud-left','hud-centre','touch-controls','hud-top','hud-view-label','hud-behind']){
-      const b=(await page.locator('#'+id).boundingBox())!;
+      // (The view label shows only away from the forward view.)
+      const b=await page.locator('#'+id).boundingBox();
+      if(!b)continue;
       expect(b.x,`#${id} left of the cut-out`).toBeGreaterThanOrEqual(id==='hud-centre'?59:58);
       expect(b.x+b.width,`#${id} right edge`).toBeLessThanOrEqual(932-58);
       expect(b.y+b.height,`#${id} above the home indicator`).toBeLessThanOrEqual(430-20);
