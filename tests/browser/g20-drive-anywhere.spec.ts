@@ -52,3 +52,24 @@ test('G20: test centres show at once, even with no answer from the place search;
   await expect(page.locator('#centre-browser .centre-list button',{hasText:'Brentwood'}).first()).toBeVisible();
   await page.screenshot({path:testInfo.outputPath('g20-browse.png'),fullPage:true});
 });
+
+test('G20: a test centre built in advance opens from its pack, with no call to OpenStreetMap',async({page},testInfo)=>{
+  test.setTimeout(240_000);
+  const errors:string[]=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  let osmCalls=0;
+  await page.route('https://api.openstreetmap.org/**',route=>{osmCalls++;return route.abort()});
+  await page.route('https://api.postcodes.io/**',()=>new Promise(()=>{}));
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.fill('#area-query','Leeds');
+  await page.locator('#area-results button',{hasText:/^Leeds test centre/}).first().click();
+  await expect(page.locator('#exercise-detail')).toBeVisible({timeout:90_000});
+  await expect(page.locator('#exercise-title')).toContainText('Leeds test centre');
+  await expect(page.locator('#exercise-briefing')).toContainText('Built from OpenStreetMap data');
+  expect(osmCalls).toBe(0);
+  await page.click('#start-practice');
+  await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
+  await page.screenshot({path:testInfo.outputPath('g20-pack.png')});
+  expect(errors).toEqual([]);
+});

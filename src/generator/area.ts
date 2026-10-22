@@ -14,44 +14,91 @@ export interface AreaRequest{
   lat:number;lon:number;
   /** A test centre: the drive starts near it and the briefing says so. */
   testCentre?:boolean;
+  /** The test centre's name in the list (its streets may have been built in advance). */
+  centre?:string;
 }
 export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
 
 const OSM_API='https://api.openstreetmap.org/api/0.6/map';
 const slug=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'area';
 
-/** Downloads the map data (smaller squares where the map is too dense for one call) and builds the area. */
-/** `progress` gets each step with the percent done (0–100). */
-export async function buildArea(request:AreaRequest,progress:(step:string,percent:number)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
-  let xml:string|null=null,half=350;
+/**
+ * A test centre's streets built in advance (tools/centres/build_all.mjs), served gzipped beside the app: one small
+ * download and no building on the phone. Areas not built in advance (postcodes, places) are built from the OSM API.
+ */
+export interface CentrePack{version:1;centre:string;half:number;date:string;summary:string;location:unknown}
+/** The file a test centre's pack is served as (under centres/). */
+export const centreFile=(centre:string)=>`${slug(centre)}.json.gz`;
+
+/** Rounds coordinates and sizes to the centimetre (smaller files; nothing in a street needs finer). */
+export function packCentre(centre:string,half:number,date:string,summary:string,location:unknown):string{
+  return JSON.stringify({version:1,centre,half,date,summary,location} satisfies CentrePack,(_,v)=>typeof v==='number'&&!Number.isInteger(v)?Math.round(v*100)/100:v);
+}
+
+/** A test centre's pack, if it was built in advance and this browser can unpack it (null: build it here). */
+async function loadPack(centre:string,fetcher:typeof fetch):Promise<CentrePack|null>{
+  const Stream=(globalThis as {DecompressionStream?:typeof DecompressionStream}).DecompressionStream;
+  if(!Stream)return null;
+  try{
+    const r=await fetcher(`centres/${centreFile(centre)}`);
+    if(!r.ok)return null;
+    // Gzipped as stored; some servers unzip it on the way (Content-Encoding), then it is the JSON already.
+    const bytes=new Uint8Array(await r.arrayBuffer());
+    const zipped=bytes[0]===0x1f&&bytes[1]===0x8b;
+    const text=zipped?await new Response(new Blob([bytes]).stream().pipeThrough(new Stream('gzip'))).text():new TextDecoder().decode(bytes);
+    const pack=JSON.parse(text) as CentrePack;
+    return pack.version===1&&pack.centre===centre?pack:null;
+  }catch{return null}
+}
+
+/** Downloads the map data (smaller squares where the map is too dense for one call). */
+export async function downloadArea(lat:number,lon:number,fetcher:typeof fetch=fetch.bind(globalThis),progress:(step:string,percent:number)=>void=()=>{}):Promise<{xml:string;half:number}>{
   // Map data already downloaded on this device is reused (Cache Storage): a second drive there starts at once.
   const cache=await (globalThis as {caches?:CacheStorage}).caches?.open('driving-practice-osm').catch(()=>null)??null;
   for(const size of [350,250,180]){
-    half=size;
-    const url=`${OSM_API}?bbox=${centreBbox(request.lat,request.lon,size).join(',')}`;
+    const url=`${OSM_API}?bbox=${centreBbox(lat,lon,size).join(',')}`;
     const cached=await cache?.match(url).catch(()=>undefined);
-    if(cached){xml=await cached.text();break}
+    if(cached)return {xml:await cached.text(),half:size};
     progress('Downloading map data…',10);
     const response=await fetcher(url);
     // 400: more than the API's 50 000 nodes in the square (a city centre): try a smaller one.
     if(response.status===400)continue;
     if(!response.ok)throw new Error(`OpenStreetMap did not answer (HTTP ${response.status}). Try again in a minute.`);
-    xml=await response.text();
+    const xml=await response.text();
     void cache?.put(url,new Response(xml,{headers:{'content-type':'text/xml'}})).catch(()=>{});
-    break;
+    return {xml,half:size};
   }
-  if(!xml)throw new Error('The map is too dense here to download in one go.');
-  progress('Building the streets…',55);
-  // Let the message show before the (synchronous) generator runs.
-  await new Promise(r=>setTimeout(r,30));
+  throw new Error('The map is too dense here to download in one go.');
+}
+
+/** The location built from map data (what a pack holds, and what the phone builds where there is none). */
+export function locationFromMap(request:AreaRequest,xml:string,half:number){
+  return buildCentre({xml,id:`area-${slug(request.label)}`,name:request.label,lat:request.lat,lon:request.lon,half});
+}
+
+/** Builds the area: a test centre's pack where there is one, otherwise from the OSM API on the phone. */
+/** `progress` gets each step with the percent done (0–100). */
+export async function buildArea(request:AreaRequest,progress:(step:string,percent:number)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
   const id=`area-${slug(request.label)}`;
-  const {location:raw,summary}=buildCentre({xml,id,name:request.label,lat:request.lat,lon:request.lon,half});
+  progress('Getting the streets…',5);
+  const pack=request.centre?await loadPack(request.centre,fetcher):null;
+  let raw:unknown,summary:string,half:number,built:string;
+  if(pack){({location:raw,summary,half}=pack);built=`Built from OpenStreetMap data (${pack.date})`}
+  else{
+    const map=await downloadArea(request.lat,request.lon,fetcher,progress);
+    half=map.half;
+    progress('Building the streets…',55);
+    // Let the message show before the (synchronous) generator runs.
+    await new Promise(r=>setTimeout(r,30));
+    ({location:raw,summary}=locationFromMap(request,map.xml,half));
+    built='Built just now from OpenStreetMap data';
+  }
   const location=parseLocation(raw);
   const scenario=parseScenario({
     schemaVersion:1,id:`${id}-free-drive`,locationId:id,
     title:`${request.label} (free drive)`,
     learningObjective:`Practise driving the streets ${request.testCentre?'round the test centre':'here'}: junctions, crossings, bus stops and parked cars, at your own pace.`,
-    briefing:`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after ten minutes, if you leave the road or if you hit something.\n\nBuilt just now from OpenStreetMap data: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
+    briefing:`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after ten minutes, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
     rubricId:'none',
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
     end:{completeAfterSeconds:600,timeLimitSeconds:660}

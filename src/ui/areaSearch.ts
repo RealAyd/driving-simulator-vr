@@ -20,7 +20,7 @@ interface Result{label:string;detail:string;pick:()=>Promise<AreaRequest|null>}
 
 const norm=(s:string)=>s.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 
-const centreRequest=(c:TestCentre):AreaRequest=>({label:`${c.name} test centre`,lat:c.lat,lon:c.lon,testCentre:c.located!=='town'});
+const centreRequest=(c:TestCentre):AreaRequest=>({label:`${c.name} test centre`,lat:c.lat,lon:c.lon,testCentre:c.located!=='town',centre:c.name});
 const centreDetail=(c:TestCentre)=>[c.passRate!==null?`pass rate ${c.passRate.toFixed(0)}%`:'test centre',c.located==='town'?'area approximate':''].filter(Boolean).join(' · ');
 
 /** Every test centre, alphabetically, in a few folded letter groups (A–D, E–H…): each opens to a list to tap. */
