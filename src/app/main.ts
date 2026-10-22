@@ -71,6 +71,8 @@ import {ZoneTracker} from '../scenarios/zones';
 import {openAttemptStore} from '../storage/attempts';
 import {Hud} from '../ui/hud';
 import {renderResults} from '../ui/results';
+import {applyTextSize,loadTextSize,openGlossary} from '../ui/glossary';
+import {lessonsDone,markLessonDone} from '../lessons/progress';
 import type {SheetExtras} from '../ui/markSheet';
 import type {SimModule} from '../contracts';
 import {SteeringAssist} from '../vehicle/steeringAssist';
@@ -788,6 +790,8 @@ export async function boot():Promise<void>{
       head.hold(null);
       clock.pause();
       const result=runtime!.finish(outcome);
+      // A lesson driven to its end counts as done (the home screen then offers the next one).
+      if(result.lesson&&outcome==='completed'){const l=LESSONS.find(x=>x.number===result.lesson!.number);if(l)markLessonDone(l.id)}
       lastResult=result;
       session.to('finished');
       let saved=0,saveFailed=false;
@@ -1419,6 +1423,42 @@ export async function boot():Promise<void>{
   };
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-exercise]'))
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
+
+  // ---- First steps: a new learner starts lesson 1; after that, the next lesson not yet finished ----
+  const nextLesson=()=>{const done=lessonsDone();return LESSONS.find(l=>!done.includes(l.id))??null};
+  const showFirstSteps=()=>{
+    const done=lessonsDone(),next=nextLesson();
+    byId('first-title').textContent=done.length===0?'New to driving? Start here':next?'Welcome back':'All the lessons done';
+    byId('first-body').textContent=done.length===0
+      ?'Your first lesson, with an instructor beside you: moving off and stopping, on real streets. The steering is done for you, so you can learn the checks first.'
+      :next?`Next: lesson ${next.number}, ${next.title.toLowerCase()}. ${next.summary}`
+      :'Well done. Try a mock test: the examiner gives directions and marks you as on the real test.';
+    byId('first-start').textContent=done.length===0?'Start lesson 1':next?`Continue: lesson ${next.number}`:'Try a mock test';
+  };
+  byId('first-start').addEventListener('click',()=>{
+    const next=nextLesson();
+    if(!next){document.querySelector<HTMLButtonElement>('[data-drive-mode=test]')!.click();showExercise('goodmayes');return}
+    // The first lesson: the easiest level and assisted steering (both can be changed on the next screen).
+    if(lessonsDone().length===0){difficulty='easy';saveDifficulty(difficulty);showDifficulty();setSteeringMode('assist')}
+    document.querySelector<HTMLButtonElement>('[data-drive-mode=lesson]')!.click();
+    showExercise('goodmayes');
+    showLesson(next);
+  });
+  showFirstSteps();
+  session.onChange(state=>{if(state==='ready')showFirstSteps()});
+  // What each mode is, in a line.
+  const MODE_SUMMARY={lesson:'Lesson: an instructor teaches one topic at a time and coaches you as you drive.',
+    test:'Mock test: practise the real test. An examiner gives directions and marks you as on the DVSA sheet.',
+    free:'Free drive: drive anywhere at your own pace. Nothing is marked.'} as const;
+  const showMode=()=>{byId('mode-summary').textContent=MODE_SUMMARY[driveMode]};
+  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',showMode);
+  showMode();
+  // Words explained, and text size.
+  for(const id of ['words-home','words-briefing','words-results'])byId(id).addEventListener('click',()=>openGlossary());
+  let textSize=loadTextSize();
+  const showTextSize=()=>{applyTextSize(textSize);byId('text-size').setAttribute('aria-label',`Text size: ${textSize}. Tap to change`)};
+  byId('text-size').addEventListener('click',()=>{textSize=textSize==='normal'?'large':textSize==='large'?'larger':'normal';showTextSize()});
+  showTextSize();
   byId('exercise-back').addEventListener('click',()=>showExercise(null));
 
   // ---- Full screen (or, on iPhone, how to add the app to the Home Screen) ----

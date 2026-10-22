@@ -13,6 +13,7 @@ export interface TourStep{
 }
 
 export const HOME_TOUR:readonly TourStep[]=[
+  {target:'#first-steps',title:'Start here',text:'New to driving? This starts your first lesson, with the steering done for you. Afterwards it offers the next lesson you have not done.'},
   {target:'.mode-switch',title:'What would you like to do?',
     text:'Lesson: an instructor teaches one topic at a time (junctions, roundabouts, traffic lights…) and coaches you as you drive. Mock test: an examiner gives directions and marks you to DVSA’s standard, with a report at the end. Free drive: just drive.'},
   {target:'.difficulty-row',title:'Level',text:'Easy, Standard or Test day: how busy the roads are, how long a mock test lasts (10, 20 or 40 minutes), and whether the instructor reminds you before each junction on a lesson.'},
@@ -20,6 +21,8 @@ export const HOME_TOUR:readonly TourStep[]=[
   {target:'#centre-browser',title:'Every test centre',text:'Or browse all the UK’s car test centres by letter.'},
   {target:'[data-exercise=goodmayes]',title:'Ready to go',text:'Goodmayes is ready now: the streets round the test centre, with traffic, parked cars, crossings and traffic lights.'},
   {target:'.choices:last-of-type',title:'Short skills',text:'Short scored exercises: mini-roundabouts, zebra crossings, moving off safely.'},
+  {target:'#words-home',title:'Words explained',text:'Driving test words in plain English: blind spot, give way, driving fault and more.'},
+  {target:'#text-size',title:'Text size',text:'Tap for larger text, again for larger still, and once more to go back.'},
   {target:'#tutorial-home',title:'See this again',text:'Tap Tutorial at any time to replay this tour. There is one for the driving screen too.'}
 ];
 
