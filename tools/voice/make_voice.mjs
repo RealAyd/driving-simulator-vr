@@ -3,14 +3,15 @@
 // sentences are recorded; clips for sentences no longer said are removed.
 //
 //   AZURE_SPEECH_KEY=… [AZURE_SPEECH_REGION=uksouth] [VOICE=en-GB-SoniaNeural] node tools/voice/make_voice.mjs
+//   (SPEECH_KEY and SPEECH_REGION, Azure's own names, are read too.)
 //
 // Needs a Speech resource in Azure (the free tier covers it). Sentences not recorded are spoken by the device.
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createServer} from 'vite';
 
-const key=process.env.AZURE_SPEECH_KEY;
-const region=process.env.AZURE_SPEECH_REGION??'uksouth';
+const key=process.env.AZURE_SPEECH_KEY??process.env.SPEECH_KEY;
+const region=process.env.AZURE_SPEECH_REGION??process.env.SPEECH_REGION??'uksouth';
 const voice=process.env.VOICE??'en-GB-SoniaNeural';
 if(!key)throw new Error('Set AZURE_SPEECH_KEY (and AZURE_SPEECH_REGION if the resource is not in uksouth).');
 
