@@ -180,9 +180,10 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   box('centre-console',.24,.18,.7,0,.5,-.3,trim);
 
   // Steering column tilted towards the driver; `wheel` spins about the column (local Y). A 38 cm wheel, close enough
-  // to the driver that its upper half and the hands on it are in the forward view (with the slight downward glance).
+  // to the driver that its upper half and the hands on it are in the forward view (with the slight downward glance);
+  // its top about level with the dashboard, a car's usual height (the road ahead shows above it).
   const column=new TransformNode('steering-column',scene);
-  column.position.set(eye.x,.95,-.44);
+  column.position.set(eye.x,.9,-.44);
   column.rotation.x=Math.PI/2-.42;
   column.parent=root;
   const wheel=new TransformNode('steering-wheel',scene);

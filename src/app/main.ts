@@ -105,7 +105,7 @@ const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
  * Camera only: the head direction, and so observations, are unchanged. Not applied to mirror and shoulder views. */
-const FORWARD_GLANCE=degToRad(12);
+const FORWARD_GLANCE=degToRad(11);
 /** While a mirror view is selected the view narrows, like focusing on the glass (door mirrors are smaller). */
 const MIRROR_FOCUS_FOV={interior:degToRad(50),door:degToRad(40)};
 /**

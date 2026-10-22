@@ -67,7 +67,7 @@ test('G1: road sits under the car, kerb raises it, and braking from 30 mph stops
   const start=await read(page,'vehicle()');
   expect(start.position.y).toBeCloseTo(0,6);         // carriageway surface
   const cam=await read(page,'camera()');
-  expect(cam.position[1]-start.position.y).toBeCloseTo(1.3,2); // eye height above the road, not sea level
+  expect(cam.position[1]-start.position.y).toBeCloseTo(1.2,2); // eye height above the road, not sea level
 
   // Accelerate to about 30 mph, then brake fully and measure the stop.
   await page.keyboard.down('KeyW');

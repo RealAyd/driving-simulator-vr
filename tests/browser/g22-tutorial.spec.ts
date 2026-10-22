@@ -18,6 +18,8 @@ test('G22: tutorial tours on the home screen and while driving',async({page},tes
   await expect(page.locator('.tour-tip b')).toHaveText('What would you like to do?');
   await page.screenshot({path:testInfo.outputPath('g22-home-1.png')});
   await page.click('.tour-next');
+  await expect(page.locator('.tour-tip b')).toHaveText('Level');
+  await page.click('.tour-next');
   await expect(page.locator('.tour-tip b')).toHaveText('Drive anywhere');
   await page.click('.tour-skip');
   await expect(page.locator('#tour')).toBeHidden();
