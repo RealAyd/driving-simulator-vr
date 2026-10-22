@@ -248,6 +248,15 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 #hud-question-choices{display:grid;gap:6px}
 #hud-question-source{font-size:10px;color:var(--soft)}
 #hud-question-choices button{text-align:left;padding:8px 11px!important;font-weight:500!important;font-size:12.5px!important;line-height:1.3!important}
+#hud-question-choices button:disabled{opacity:1;cursor:default}
+#hud-question-choices button.right{border-color:#22c55e;background:rgba(34,197,94,.16)}
+#hud-question-choices button.wrong{border-color:#ef4444;background:rgba(239,68,68,.16)}
+#hud-question-choices button.right::before{content:"✓ ";color:#4ade80;font-weight:800}
+#hud-question-choices button.wrong::before{content:"✗ ";color:#f87171;font-weight:800}
+#hud-question-after:not([hidden]){display:flex;gap:10px;align-items:center;justify-content:space-between}
+#hud-question-feedback{font-size:12.5px;color:var(--soft)}
+#hud-question-feedback.ok{color:#4ade80}
+#hud-question-go{width:auto!important;margin:0!important;padding:9px 18px!important;font-size:14px!important;flex:none}
 /* Loading: a spinner (a compositor animation, so it keeps turning while the page is busy building). */
 .busy{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(3,7,18,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .busy-card{display:grid;justify-items:center;gap:10px;padding:22px 28px;border-radius:18px;background:#0f172a;border:1px solid rgba(255,255,255,.12);box-shadow:0 12px 40px rgba(0,0,0,.45);max-width:min(420px,calc(100vw - 32px));text-align:center}
@@ -297,6 +306,35 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 .notes li{color:#a7f3d0;font-size:13px}.notes li::before{content:"✓ "}
 .notes li.improve{color:#fcd34d}.notes li.improve::before{content:"→ "}
 .notes li.info{color:var(--soft)}.notes li.info::before{content:"ⓘ "}
+/* The mock test's marking sheet (DL25 layout): printed-paper look inside the dark card. */
+.results-card:has(.results-sheet:not([hidden])){width:min(100%,760px)}
+.results-sheet{background:#faf8f3;color:#1c1917;border-radius:14px;padding:16px 18px 14px;margin:12px 0;position:relative}
+.results-sheet p{color:#57534e}
+.stamp{display:inline-block;transform:rotate(-3deg);border:3px solid currentColor;border-radius:8px;padding:4px 14px;font:800 22px/1.2 system-ui,sans-serif;letter-spacing:.04em;margin:2px 0 8px}
+.stamp-pass{color:#15803d}.stamp-fail{color:#dc2626}.stamp-early{color:#a16207}
+.sheet-route{margin:0 0 10px!important;font-size:13.5px}
+.mark-sheet{width:100%;border-collapse:collapse;font-size:13.5px}
+.mark-sheet th{font:600 11px ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;text-align:left;background:#ece8df;color:#44403c}
+.mark-sheet th,.mark-sheet td{border:1px solid #d6d3cb;padding:6px 9px}
+.mark-sheet .drv,.mark-sheet .s,.mark-sheet .d{text-align:center;width:16%}
+.mark-sheet th.drv,.mark-sheet th.s,.mark-sheet th.d{text-align:center}
+.mark-sheet .tally{color:#c2410c;font:700 15px ui-monospace,monospace;letter-spacing:.18em;word-break:break-all}
+.mark-sheet tfoot td{font-weight:800;background:#ece8df}
+.mark-sheet tbody td.s,.mark-sheet tbody td.d{font-weight:700;color:#b91c1c}
+.mark-sheet tfoot td.nonzero{color:#b91c1c}
+.mark-sheet td.none{text-align:center;color:#15803d}
+.sheet-rule{font-size:12.5px;margin:6px 0 0!important}
+.sheet-map{margin:12px 0 0}
+.drive-map{width:100%;height:auto;max-height:340px;background:#efede6;border:1px solid #d6d3cb;border-radius:10px;display:block}
+.map-road{fill:none;stroke:#d4d0c4;stroke-linecap:round;stroke-linejoin:round}
+.map-track{fill:none;stroke:#0d9488;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.map-start{fill:#0d9488;stroke:#fff}.map-end{fill:#1c1917}
+.map-pin circle{stroke:#fff;stroke-width:.6}.map-pin text{fill:#fff;font-weight:800;font-family:system-ui,sans-serif}
+.pin-driving circle{fill:#ea580c}.pin-serious circle{fill:#dc2626}.pin-dangerous circle{fill:#7f1d1d}
+.sheet-map figcaption{font-size:11.5px;color:#78716c;margin-top:4px}
+.map-key{margin:8px 0 0;padding-left:0;list-style:none;display:grid;gap:4px;font-size:12.5px;color:#292524}
+.map-key b{display:inline-block;min-width:1.6em}
+.map-key .key-minor b{color:#ea580c}.map-key .key-serious b{color:#dc2626}.map-key .key-dangerous b{color:#7f1d1d}
 </style>
 </head>
 <body>
@@ -474,6 +512,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
   <div class="card results-card">
     <h1 id="results-title">Results</h1>
     <p id="results-summary"></p>
+    <div id="results-sheet" class="results-sheet" hidden></div>
     <ul id="results-findings" class="findings"></ul>
     <ul id="results-notes" class="notes"></ul>
     <p id="results-meta" class="unit"></p>
@@ -518,6 +557,7 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
     <div id="hud-question-kind">Tell me</div>
     <p id="hud-question-text"></p>
     <div id="hud-question-choices"></div>
+    <div id="hud-question-after" hidden><span id="hud-question-feedback" role="status"></span><button id="hud-question-go" type="button" class="primary">Start the drive</button></div>
     <small id="hud-question-source"></small>
   </div>
   <div id="hud-left" class="hud-panel">

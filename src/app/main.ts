@@ -71,6 +71,7 @@ import {ZoneTracker} from '../scenarios/zones';
 import {openAttemptStore} from '../storage/attempts';
 import {Hud} from '../ui/hud';
 import {renderResults} from '../ui/results';
+import type {SheetExtras} from '../ui/markSheet';
 import type {SimModule} from '../contracts';
 import {SteeringAssist} from '../vehicle/steeringAssist';
 import {VehicleController,type ControlSource} from '../vehicle/vehicleController';
@@ -329,6 +330,8 @@ export async function boot():Promise<void>{
 
   const clock=new FixedStepClock(SIM_STEP);
   const events=new EventLog(()=>clock.time);
+  /** The car's position about once a second during the attempt (the mock test report draws it). */
+  const driveTrack:Array<{t:number;x:number;z:number}>=[];
   const input=new KeyboardInput(window,window,document);
   const spawn=spawnOf(place);
 
@@ -736,6 +739,7 @@ export async function boot():Promise<void>{
     camera.fov=HORIZONTAL_FOV;
     clock.reset();
     events.clear();
+    driveTrack.length=0;
     stoppedEarlyFor=0;
     if(runtime){
       // The Task button shows the briefing again; nothing reveals where road users are.
@@ -744,6 +748,13 @@ export async function boot():Promise<void>{
     }
     // Calibrated on the exercise screen, or else where the phone is held as the drive begins.
     if(steeringMode==='tilt'&&tilt.receiving&&!tilt.calibrated)tilt.calibrate();
+  };
+  /** The mock test report's route line and map: the way driven, and the kinds of junction directed through. */
+  const sheetExtras=(result:AttemptResult):SheetExtras=>{
+    const metres=driveTrack.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-driveTrack[i]!.x,p.z-driveTrack[i]!.z),0);
+    const said=events.events.filter(e=>e.type==='examiner.direction').map(e=>String(e.payload['text']??''));
+    const kinds=[...new Set(said.map(t=>/traffic lights/i.test(t)?'traffic lights':/roundabout/i.test(t)?'roundabout':/pull up/i.test(t)?null:'junction').filter((k):k is NonNullable<typeof k>=>!!k))];
+    return {route:{metres,seconds:result.durationSeconds,kinds},map:{roads:place.roads.map(r=>r.centreline),track:[...driveTrack]}};
   };
   const attachRunner=()=>{
     runtime!.runner.onEnded=async outcome=>{
@@ -764,7 +775,7 @@ export async function boot():Promise<void>{
         saveFailed=true;
         console.warn('[Driving Practice] could not save attempt',error);
       }
-      renderResults(result,id=>events.events.find(e=>e.id===id)?.time,saved,store.kind,saveFailed);
+      renderResults(result,id=>events.events.find(e=>e.id===id)?.time,saved,store.kind,saveFailed,result.mockTest?sheetExtras(result):null);
       const next=runtime!.scenario.next;
       const nextButton=byId<HTMLButtonElement>('next-button');
       nextButton.hidden=!next;
@@ -1686,6 +1697,8 @@ export async function boot():Promise<void>{
     }
     runtime?.renderVisuals();
     people.update(clock.time,vehicle.state.position);
+    // Where the car goes, once a second (the report's map).
+    if(session.state==='running'&&clock.time-(driveTrack.at(-1)?.t??-9)>=1)driveTrack.push({t:clock.time,x:vehicle.state.position.x,z:vehicle.state.position.z});
     tiltSteer=tilt.read(dt);
     const wheelTurn=`rotate(${Math.round((steeringMode==='tilt'?tiltSteer:vehicle.state.steerAngle/.6)*120)}deg)`;
     hudWheel.style.transform=wheelTurn;

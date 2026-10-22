@@ -43,6 +43,11 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   await expect(page.locator('#hud-question-choices button')).toHaveCount(3);
   await page.screenshot({path:testInfo.outputPath('g21-tell-me.png')});
   await page.locator('#hud-question-choices button').first().click();
+  // Marked at once: DVSA's answer in green, what a wrong one means; then on to the drive.
+  await expect(page.locator('#hud-question-choices button.right')).toHaveCount(1);
+  await expect(page.locator('#hud-question-feedback')).toContainText(/Correct|driving fault/);
+  await page.screenshot({path:testInfo.outputPath('g21-tell-me-marked.png')});
+  await page.click('#hud-question-go');
   await expect(page.locator('#hud-question')).toBeHidden();
   await expect(page.locator('#hud-task')).toContainText('mock driving test',{timeout:20_000});
   // The car's controls (show me): dipped headlights on shows the tell-tale.
@@ -71,6 +76,14 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   await expect(page.locator('#screen-results')).toBeVisible({timeout:30_000});
   await expect(page.locator('#results-title')).toContainText('Mock test:');
   await expect(page.locator('#results-summary')).toContainText('driving fault');
+  // The marking sheet (DL25 layout): verdict stamp, sections, totals, the pass rule, and a map of the drive.
+  await expect(page.locator('#results-sheet .stamp')).toBeVisible();
+  await expect(page.locator('#results-sheet .mark-sheet tfoot')).toContainText('Total');
+  await expect(page.locator('#results-sheet .sheet-rule')).toContainText('15 or fewer driving faults');
+  await expect(page.locator('#results-sheet .drive-map .map-track')).toHaveCount(1);
+  await page.locator('#results-sheet').screenshot({path:testInfo.outputPath('g21-sheet.png')});
+  await page.locator('#results-sheet .sheet-map').scrollIntoViewIfNeeded();
+  await page.locator('#results-sheet .sheet-map').screenshot({path:testInfo.outputPath('g21-map.png')});
   await page.screenshot({path:testInfo.outputPath('g21-result.png')});
   expect(errors).toEqual([]);
 });

@@ -1,4 +1,5 @@
 import {IMPROVE,INFO,type AttemptResult,type Severity} from '../contracts';
+import {renderMarkSheet,type SheetExtras} from './markSheet';
 
 const OUTCOME_TEXT:Record<AttemptResult['outcome'],string>={
   completed:'Exercise completed',
@@ -17,7 +18,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string,className?
 }
 
 /** Renders an attempt result. Text only (no innerHTML), so content cannot inject markup. */
-export function renderResults(result:AttemptResult,eventTime:(id:string)=>number|undefined,attemptsSaved:number,storage:'indexeddb'|'memory',saveFailed=false):void{
+export function renderResults(result:AttemptResult,eventTime:(id:string)=>number|undefined,attemptsSaved:number,storage:'indexeddb'|'memory',saveFailed=false,sheet:SheetExtras|null=null):void{
   const mock=result.mockTest,lesson=result.lesson;
   // A mock test reads like the examiner's verdict: pass or fail, then the faults in the marking sheet's terms.
   // A lesson has no verdict: what went well and what to work on.
@@ -34,8 +35,11 @@ export function renderResults(result:AttemptResult,eventTime:(id:string)=>number
     :result.findings.length===0?'No findings recorded for this attempt.'
     :`${result.findings.length} finding${result.findings.length===1?'':'s'}; most significant: ${SEVERITY_TEXT[worst!]}.`;
 
+  // A mock test: the marking sheet, the route and a map of the drive with the faults on it.
+  const keyed=renderMarkSheet(document.getElementById('results-sheet')!,result,sheet);
   const list=document.getElementById('results-findings')!;
   list.replaceChildren();
+  list.hidden=keyed;
   for(const f of result.findings){
     const item=el('li',undefined,`finding sev-${f.severity}`);
     const head=el('div',undefined,'finding-head');

@@ -24,6 +24,8 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   dwell:number;served:Set<number>;
   /** Seconds stood still (not at a bus stop): after a while, a car stuck behind another that is also waiting creeps on. */
   waited:number;
+  /** Seconds stopped nose to nose with the stopped learner, in each other's way. */
+  faceOff?:number;
   /** Tucked in to the kerb to let a stopped learner through a narrow gap (until the learner has gone by). */
   squeezing?:boolean;
   /** Diagnostics: what it slowed for last. */
@@ -339,6 +341,16 @@ export class Traffic implements SimModule{
       const lfx=Math.sin(learner.pose.heading),lfz=-Math.cos(learner.pose.heading);
       const behindLearner=(car.pose.position.x-learner.pose.position.x)*lfx+(car.pose.position.z-learner.pose.position.z)*lfz<-3;
       if((d.waited>20&&fromLearner>50)||(d.waited>25&&behindLearner)){car.visible=false;continue}
+      // Nose to nose with the learner, stopped, and in the way (the learner out in the road past parked cars, this
+      // car waiting by its own): neither can get by, so after a while it goes (as if into a drive) rather than leave
+      // both waiting for ever.
+      {
+        const lx=learner.pose.position.x-car.pose.position.x,lz=learner.pose.position.z-car.pose.position.z;
+        const along=lx*fwd.x+lz*fwd.z,side=Math.abs(lx*fwd.z-lz*fwd.x);
+        const noseToNose=Math.cos(learner.pose.heading-car.pose.heading)<-.5&&along>0&&along<25&&side<car.halfWidth+1.3;
+        d.faceOff=noseToNose&&Math.abs(learner.speed)<.5&&car.speed<.2?(d.faceOff??0)+dt:0;
+        if(d.faceOff>10){d.faceOff=0;car.visible=false;continue}
+      }
       // Too far from the learner: come back somewhere nearer, out of sight.
       if(Math.hypot(car.pose.position.x-learner.pose.position.x,car.pose.position.z-learner.pose.position.z)>320)car.visible=false;
     }

@@ -61,18 +61,29 @@ export class CarControlsPanel{
 
 /**
  * The tell me question on screen: DVSA's question and three of DVSA's answers (its answer to this question and to
- * two others), in an order set by `seed`. Calls `answer` with the chosen text and closes.
+ * two others), in an order set by `seed`. A choice is marked at once (DVSA's answer in green, a wrong choice in red,
+ * and what it means on the test); "Start the drive" then closes it and calls `answer` with the chosen text.
  */
 export function askTellMe(q:TellMeQuestion,seed:number,answer:(text:string)=>void):void{
-  const card=$('hud-question');
+  const card=$('hud-question'),after=$('hud-question-after'),feedback=$('hud-question-feedback'),go=$('hud-question-go') as HTMLButtonElement;
   $('hud-question-kind').textContent='Tell me';
   $('hud-question-text').textContent=q.question;
-  $('hud-question-choices').replaceChildren(...tellMeChoices(q,seed).map(text=>{
+  after.hidden=true;
+  const buttons=tellMeChoices(q,seed).map(text=>{
     const b=document.createElement('button');
     b.type='button';b.textContent=text;
-    b.addEventListener('click',()=>{card.hidden=true;answer(text)});
+    b.addEventListener('click',()=>{
+      const right=text===q.answer;
+      for(const x of buttons){x.disabled=true;x.classList.toggle('right',x.textContent===q.answer);x.classList.toggle('wrong',x===b&&!right)}
+      feedback.textContent=right?'Correct: that is DVSA’s answer.':'Not quite: DVSA’s answer is in green. On the test that is one driving fault.';
+      feedback.classList.toggle('ok',right);
+      after.hidden=false;
+      go.onclick=()=>{card.hidden=true;answer(text)};
+      go.focus({preventScroll:true});
+    });
     return b;
-  }));
+  });
+  $('hud-question-choices').replaceChildren(...buttons);
   $('hud-question-source').textContent=`Question and answers: ${DVSA_SOURCE}`;
   card.hidden=false;
 }
