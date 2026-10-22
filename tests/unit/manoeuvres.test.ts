@@ -16,7 +16,7 @@ const parked=layoutTownscape(goodmayes)!.cars.filter(c=>c.id.startsWith('kerb-ca
  * A learner driving a manoeuvre with assisted steering and the car's own model: looks round where `looks` says,
  * signals, brakes `reaction` seconds after "Stop!", reverses at walking pace.
  */
-function run(kind:ManoeuvreKind,o:{reaction?:number;lookRound?:boolean;signal?:boolean}={}){
+function run(kind:ManoeuvreKind,o:{reaction?:number;lookRound?:boolean;signal?:boolean;lookAfter?:boolean}={}){
   let time=0;
   const looks:Array<{time:number;target:string}>=[];
   const look=(...t:string[])=>{for(const target of t){time+=.4;looks.push({time,target})}};
@@ -39,7 +39,7 @@ function run(kind:ManoeuvreKind,o:{reaction?:number;lookRound?:boolean;signal?:b
     if(m.phase!==phase){
       phase=m.phase;
       // The routine at each new stage: a look round, and the signal where one is due.
-      if(o.lookRound!==false&&['brief','after','rejoin','reverse'].includes(phase))look('left-shoulder','left-door','interior','right-door','right-shoulder');
+      if(o.lookRound!==false&&['brief','after','rejoin','reverse'].includes(phase)&&!(phase==='after'&&o.lookAfter===false))look('left-shoulder','left-door','interior','right-door','right-shoulder');
       if(phase==='crossing'){if(o.lookRound!==false)look('interior','right-door');if(o.signal!==false)indicator='right'}
       if(phase==='stopping')stopAt=time;
     }
@@ -89,6 +89,12 @@ describe('manoeuvres',()=>{
   it('emergency stop: slow to brake is a driving fault, very slow a serious one',()=>{
     expect(run('emergency-stop',{reaction:2}).m.faults.map(f=>[f.rule,f.severity])).toContainEqual(['controlled-stop-promptness','minor']);
     expect(run('emergency-stop',{reaction:3.2}).m.faults.map(f=>[f.rule,f.severity])).toContainEqual(['controlled-stop-promptness','serious']);
+  });
+  it('emergency stop: no interior mirror check after the stop is a fault, even after a look round before it',()=>{
+    const {m}=run('emergency-stop',{lookAfter:false});
+    const f=m.faults.filter(f=>f.rule==='moving-off-safety');
+    expect(f.map(f=>f.text).join(' ')).toMatch(/no check of the interior mirror.*before the stop don't count/);
+    expect(f.map(f=>f.coach)).toContain('check the interior mirror after you stop, then look all round before moving off');
   });
   it('pull up on the right and reverse: done with the routine and assisted steering, close to the kerb, about two car lengths',()=>{
     const {m,said}=run('pull-up-right');

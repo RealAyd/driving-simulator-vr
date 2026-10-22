@@ -157,7 +157,7 @@ export const LESSONS:readonly Lesson[]=[
     objective:'Stop quickly and under control when told to, and carry out the test\'s road manoeuvres with good control and all-round observation.',
     briefing:[
       'Today we\'ll practise the manoeuvres from the test: an emergency stop, pulling up on the right and reversing about two car lengths, and parking behind a car at the kerb. I\'ll tell you each one as we go.',
-      'Emergency stop: when I say stop, brake firmly at once, keep both hands on the wheel and the car straight. You don\'t need to check the mirrors first. Afterwards, look all round, both blind spots too, before moving off.',
+      'Emergency stop: when I say stop, brake firmly at once, keep both hands on the wheel and the car straight. You don\'t need to check the mirrors before you brake. Once you\'ve stopped, check the interior mirror (traffic behind may have closed up), then look all round, both blind spots too, before moving off.',
       'Reversing: look all round before you start, keep looking while you move (mostly out of the back), go slowly, and stop if anyone comes near. Keep reasonably close to the kerb and finish parallel to it.',
       'Pulling up on the right: mirrors and a right signal first, and wait for oncoming traffic to pass before you cross.'
     ],

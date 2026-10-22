@@ -59,6 +59,7 @@ export const PARK_DONE='Thank you. Move off when you\'re ready.';
 export const MANOEUVRE_COACHING:readonly string[]=[
   'brake as soon as I say stop',
   'brake at once when I say stop: foot straight to the brake',
+  'check the interior mirror after you stop, then look all round before moving off',
   'check the interior mirror, then the right mirror, before signalling and crossing',
   'check the right mirror too before you cross',
   'come back slowly and steer away from the kerb in time',
@@ -83,6 +84,8 @@ export const MANOEUVRE_COACHING:readonly string[]=[
 export const MANOEUVRE_SENTENCES=[PULL_IN,STOP_BRIEFING,STOP_NOW,STOP_DONE,RIGHT_ASK,RIGHT_REVERSE,RIGHT_DONE,PARK_ASK,PARK_DONE];
 
 const CAR_LENGTH=4.2,HALF_WIDTH=.9;
+/** How judgeMoveOff names the interior mirror among the looks missing. */
+const INTERIOR='the interior mirror';
 /** Brakes on within this long after "Stop!" (s): later is a driving fault; over STOP_SERIOUS, serious. */
 export const STOP_PROMPT=1.6,STOP_SERIOUS=2.6;
 
@@ -140,7 +143,12 @@ export class Manoeuvre{
   /** Moving off after the manoeuvre: a look all round, and right again just before going. */
   private judgeMovingOff(what:string){
     const m=judgeMoveOff(this.input.looks(),this.input.now(),this.moveOffFrom);
-    if(!m.allRound)this.fault('moving-off-safety','minor',`Moving off – safety: after ${what}, no look at ${m.missing.join(', ')} before moving off.`,
+    // After an emergency stop, the interior mirror first: what is behind has changed since before the stop (no
+    // mirrors are needed before braking; a look from before the stop does not count).
+    if(this.kind==='emergency-stop'&&m.missing.includes(INTERIOR))this.fault('moving-off-safety','minor',
+      `Moving off – safety: after ${what}, no check of the interior mirror before moving off${m.missing.length>1?` (nor the ${m.missing.filter(t=>t!==INTERIOR).join(', ')})`:''}. Looks from before the stop don't count: traffic behind may have closed up.`,
+      'check the interior mirror after you stop, then look all round before moving off');
+    else if(!m.allRound)this.fault('moving-off-safety','minor',`Moving off – safety: after ${what}, no look at ${m.missing.join(', ')} before moving off.`,
       'look all round, both blind spots too, before you move off');
     else if(!m.fresh)this.fault('moving-off-safety','minor',`Moving off – safety: after ${what}, the look round was not current when you moved off.`,
       'look right again just before you move off');

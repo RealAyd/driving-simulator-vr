@@ -16,7 +16,7 @@ export const GLOSSARY:ReadonlyArray<{term:string;means:string}>=[
   {term:'Kerb',means:'The raised edge between the road and the pavement.'},
   {term:'Moving off',means:'Pulling away from where the car is parked or stopped. Look all round first, and look right again just before you go.'},
   {term:'Pull up',means:'Stop at the side of the road, close to the kerb, somewhere safe and legal.'},
-  {term:'Emergency stop (controlled stop)',means:'Stopping as quickly and safely as you can, as if a child had run out. Brake firmly at once and keep the car straight.'},
+  {term:'Emergency stop (controlled stop)',means:'Stopping as quickly and safely as you can, as if a child had run out. Brake firmly at once and keep the car straight; no mirror check before braking. Once stopped, check the interior mirror, then look all round before moving off.'},
   {term:'Parallel parking',means:'Reversing into a space at the kerb behind a parked car, finishing close to the kerb and level with it.'},
   {term:'Reverse / right',means:'Pulling up on the right-hand side of the road, reversing about two car lengths, then rejoining the traffic.'},
   {term:'Tell me / show me questions',means:'The vehicle safety questions on the test: one asked before you drive (tell me how you would…), one while driving (show me how you would…).'},
