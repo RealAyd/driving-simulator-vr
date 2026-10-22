@@ -35,6 +35,7 @@ import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
 import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
 import {LESSONS,LESSONS_COMING,planLesson,type Lesson} from '../lessons/syllabus';
 import {Instructor} from '../lessons/instructor';
+import {DIFFICULTIES,savedDifficulty,saveDifficulty,type Difficulty} from './difficulty';
 import type {ExaminerListener} from '../test/examiner';
 import {Examiner} from '../test/examiner';
 import {ExaminerVoice} from '../test/voice';
@@ -354,6 +355,8 @@ export async function boot():Promise<void>{
   const examinerVoice=new ExaminerVoice();
   /** The lesson chosen on the lesson list (a lesson scenario runs it). */
   let chosenLessonId:string|null=null;
+  /** How hard: traffic, mock test length, lesson reminders (home screen; remembered on this device). */
+  let difficulty:Difficulty=savedDifficulty();
   // Lights, washers and wipers, demisters, horn and window (the Controls panel; the show me questions use them).
   const carControls=new CarControls(events);
   const pressControl=(id:CarControlId)=>{
@@ -491,7 +494,8 @@ export async function boot():Promise<void>{
     const signalLights=trafficSignals?buildSignalLights(scene,trafficSignals.stops):null;
     for(const pole of signalLights?.poles??[])dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
     // Background traffic on generated areas' roads: solid, never assessed.
-    const traffic=place.streetParking>0?new Traffic(place,{count:12,buses:2,busStops:place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position),
+    const level=DIFFICULTIES[difficulty];
+    const traffic=place.streetParking>0?new Traffic(place,{count:level.traffic.cars+level.traffic.buses,buses:level.traffic.buses,busStops:place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position),
       parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed}),signals:()=>trafficSignals?.stops??[]}):null;
     for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
     // Background buses: solid road users that slow for the learner; never assessed.
@@ -547,7 +551,7 @@ export async function boot():Promise<void>{
       learner:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:Math.abs(vehicle.state.speed),indicator:vehicle.indicators.state}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
       signals:()=>trafficSignals?.stops??[],parked:kerbCars,
-      say:text=>{examinerVoice.say(text,true);hud.setTask(text)}}):null;
+      say:text=>{examinerVoice.say(text,true);hud.setTask(text)},reminders:level.reminders}):null;
     // The examiner tells the marking and the instructor about each direction.
     const listeners:ExaminerListener[]=[mockAssessor,instructor].filter((x):x is NonNullable<typeof x>=>!!x);
     const listener:ExaminerListener={
@@ -564,7 +568,7 @@ export async function boot():Promise<void>{
       const blocked=(traffic?.cars??[]).some(c=>{const dx=c.pose.position.x-x,dz=c.pose.position.z-z,a=dx*fx+dz*fz;return c.visible&&a>0&&a<12&&Math.abs(dx*fz-dz*fx)<2});
       return {x,z,heading:h,speed:Math.abs(vehicle.state.speed),blocked};
     },{
-      target:lesson?.length??2800,seed:testSeed,events,listener,
+      target:lesson?.length??level.mockMetres,seed:testSeed,events,listener,
       // A lesson: its own route (the topic's junctions), the instructor's words, no vehicle safety questions.
       ...(lesson?{
         planner:(start,target,seed)=>planLesson(net,lesson,place,start,target,seed),
@@ -586,7 +590,8 @@ export async function boot():Promise<void>{
     const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):routeAssist;
     const road=place.roads[0]!;
     let lastCollision:string|null=null;
-    const runner=new ScenarioRunner(scenario,zones,new Map(pedestrian?[[pedestrian.id,pedestrian]]:[]),()=>{
+    // A mock test lasts as long as the level says (the examiner ends it when the route is done).
+    const runner=new ScenarioRunner(scenario.rubricId==='mock-test'?{...scenario,end:{...scenario.end,timeLimitSeconds:level.mockSeconds}}:scenario,zones,new Map(pedestrian?[[pedestrian.id,pedestrian]]:[]),()=>{
       const {x,z}=vehicle.state.position;
       // Wrong way is judged against the exercise route where there is one (junctions join several roads).
       // Free driving on a road network: the nearest road, either way along it unless it is one-way.
@@ -1304,6 +1309,15 @@ export async function boot():Promise<void>{
     vehicle.reset();
     head.recentre();
   };
+  // Difficulty: three levels on the home screen.
+  const showDifficulty=()=>{
+    for(const b of document.querySelectorAll<HTMLButtonElement>('[data-difficulty]'))b.setAttribute('aria-pressed',String(b.dataset['difficulty']===difficulty));
+    byId('difficulty-summary').textContent=DIFFICULTIES[difficulty].summary;
+  };
+  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-difficulty]'))b.addEventListener('click',()=>{
+    difficulty=b.dataset['difficulty'] as Difficulty;saveDifficulty(difficulty);showDifficulty();
+  });
+  showDifficulty();
   /** Lessons: the place's lessons are listed first; choosing one shows its briefing, and Start begins it. */
   const lessonList=byId('lesson-list'),lessonBack=byId('lesson-back'),startButton=byId<HTMLButtonElement>('start-practice');
   const showLesson=(lesson:Lesson|null)=>{

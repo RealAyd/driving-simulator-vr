@@ -166,7 +166,7 @@ export class RoadNetwork{
       const uses=(r:Road)=>driven.get(key(r))??0;
       const forced=[...(options.forced??[])];
       const want=(d:Decision,o:Option)=>options.prefer?.(this.choice(d,o))??0;
-      while(distance<target&&steps.length<20){
+      while(distance<target&&steps.length<80){
         const ds=this.decisions(pos);
         // A road that ends in a dead end (the edge of the area): the last side road off it is the way on.
         const end=ds.at(-1),deadEnd=!!end&&end.kind==='end'&&!end.options.some(o=>this.leadsOn(o));

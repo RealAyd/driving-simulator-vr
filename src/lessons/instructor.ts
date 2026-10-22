@@ -31,6 +31,8 @@ export interface InstructorInput{
   parked:Vec2[];
   /** Speaks (queued after anything being said) and shows a reminder. */
   say:(text:string)=>void;
+  /** Reminders before junctions (mirrors, signal, lights, crossings…); off at the hardest level: feedback only. */
+  reminders?:boolean;
 }
 
 interface Watch{
@@ -78,6 +80,7 @@ export class Instructor implements SimModule,ExaminerListener{
 
   /** A reminder, at most one every 3 s (and each kind once per junction). */
   private prompt(key:string,text:string){
+    if(this.input.reminders===false)return;
     const w=this.watch,now=this.input.now();
     if(w?.prompted.has(key)||now-this.lastPrompt<3)return;
     w?.prompted.add(key);
@@ -92,7 +95,7 @@ export class Instructor implements SimModule,ExaminerListener{
     const now=this.input.now();
     this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set()};
     // How to signal at a mini-roundabout, said with the direction while the lesson is about them.
-    if(step.kind==='roundabout'&&this.has('roundabout')){
+    if(step.kind==='roundabout'&&this.has('roundabout')&&this.input.reminders!==false){
       this.input.say(step.turn==='left'?'Signal left on the approach.'
         :step.turn==='ahead'?'No signal on the approach. Signal left after you pass the exit before ours.'
         :'Signal right on the approach, then left after you pass the exit before ours.');
@@ -203,7 +206,7 @@ export class Instructor implements SimModule,ExaminerListener{
     }
 
     // Traffic lights ahead at red or amber.
-    if(this.has('lights'))for(const st of this.input.signals()){
+    if(this.has('lights')&&this.input.reminders!==false)for(const st of this.input.signals()){
       if(st.state==='green'||Math.cos(st.heading-l.heading)<.8)continue;
       const dx=st.lane.x-l.x,dz=st.lane.z-l.z,a=dx*fwd.x+dz*fwd.z;
       if(a>8&&a<45&&Math.abs(dx*fwd.z-dz*fwd.x)<4&&!this.lightsWarned.has(`${st.id}-${st.state}`)&&l.speed>2){
@@ -212,7 +215,7 @@ export class Instructor implements SimModule,ExaminerListener{
       }
     }
     // Pedestrian crossings ahead.
-    if(this.has('crossings'))for(const c of this.input.location.crossings){
+    if(this.has('crossings')&&this.input.reminders!==false)for(const c of this.input.location.crossings){
       const road=this.input.location.roads.find(r=>r.id===c.roadId);
       if(!road||this.crossingsWarned.has(c.id))continue;
       const s=sampleRoad(road,l.x,l.z);

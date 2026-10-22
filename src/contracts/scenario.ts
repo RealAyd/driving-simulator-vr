@@ -164,7 +164,7 @@ export const ScenarioSchema=z.object({
     zone:z.string().optional(),
     /** Completes after this long (introductions with nothing to reach). */
     completeAfterSeconds:z.number().min(5).max(600).optional(),
-    timeLimitSeconds:z.number().min(30).max(900).default(180)
+    timeLimitSeconds:z.number().min(30).max(3600).default(180)
   }).strict()
 }).strict().superRefine((s,ctx)=>{
   const zones=new Set(s.zones.map(z=>z.id));

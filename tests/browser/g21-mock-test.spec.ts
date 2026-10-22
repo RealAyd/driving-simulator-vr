@@ -30,6 +30,10 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   await page.goto('./?routeSeed=1');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await expect(page.locator('[data-drive-mode=test]')).toHaveAttribute('aria-pressed','true');
+  // Levels: Easy is a 10-minute mock test (Standard 20, Test day 40, as the real test).
+  await expect(page.locator('[data-difficulty=standard]')).toHaveAttribute('aria-pressed','true');
+  await page.click('[data-difficulty=easy]');
+  await expect(page.locator('#difficulty-summary')).toContainText('about 10 minutes');
   await page.click('[data-exercise=goodmayes]');
   await expect(page.locator('#exercise-title')).toContainText('mock test');
   await page.click('#start-practice');
