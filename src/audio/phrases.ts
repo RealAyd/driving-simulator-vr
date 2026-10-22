@@ -5,7 +5,7 @@ import {LESSONS} from '../lessons/syllabus';
 
 /**
  * Everything the examiner and the instructor say, sentence by sentence: the clips recorded in the British neural
- * voice (tools/voice/make_voice.mjs) are these. A sentence not here (a road name in it, a number out of range) is
+ * voices (tools/voice/make_voice.mjs: the instructor Sonia, the examiner Ryan) are these. A sentence not here (a road name in it, a number out of range) is
  * spoken by the device's own voice instead, so the list can lag the code without anything going silent.
  */
 
@@ -74,11 +74,17 @@ function instructor():string[]{
   return out;
 }
 
-/** Every sentence there is a clip for, each once. */
-export function allPhrases():string[]{
-  const texts=[TELL_ME_INTRO,BRIEFING,PULL_UP,END,REDIRECT,...TELL_ME.map(q=>q.question),...SHOW_ME.map(q=>q.question),
-    ...LESSONS.map(l=>l.briefing[0]!),...directions(),...instructor()];
+/** Each sentence once (the first spelling of it). */
+function unique(texts:string[]):string[]{
   const seen=new Map<string,string>();
   for(const t of texts)for(const s of sentences(t))if(!seen.has(phraseKey(s)))seen.set(phraseKey(s),s);
   return [...seen.values()];
 }
+
+/** What the examiner says on a mock test (recorded in the examiner's voice). */
+export const examinerPhrases=():string[]=>unique([TELL_ME_INTRO,BRIEFING,PULL_UP,END,REDIRECT,
+  ...TELL_ME.map(q=>q.question),...SHOW_ME.map(q=>q.question),...directions()]);
+
+/** Every sentence there is a clip for in the instructor's voice: the examiner's too, since the instructor gives the
+ * directions in a lesson. */
+export const allPhrases=():string[]=>unique([...examinerPhrases(),...LESSONS.map(l=>l.briefing[0]!),...instructor()]);
