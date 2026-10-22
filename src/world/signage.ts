@@ -1,7 +1,7 @@
 import {headingFromDirection,type Block,type Location,type Vec2} from '../contracts';
 import type {StreetLayout} from './streetscape';
 import {distanceToOutline,insidePolygon,type BusStop} from './townscape';
-import {brandSign} from './brandSigns';
+import {brandSign,TRADE_SIGNS,tradeFromName} from './brandSigns';
 import {pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 
 /**
@@ -19,7 +19,15 @@ export type SignFace=
   |{kind:'street-name';text:string}
   |{kind:'mini-roundabout'}
   |{kind:'bus-flag';name:string;indicator:string|null}
-  |{kind:'fascia';text:string;background:string};
+  |{kind:'fascia';text:string;background:string;colour:string;weight:string;
+    /** A chain's sign: its colours run the whole fascia (others are as wide as their lettering). */
+    full?:boolean}
+  /** A business's name on a board on its wall (set-back stores, churches, schools). */
+  |{kind:'name-board';text:string;background:string;colour:string;weight:string}
+  /** A chemist's green cross, projecting from the wall. */
+  |{kind:'cross'}
+  /** A pub's hanging sign: its name on a dark board. */
+  |{kind:'hanging';text:string};
 
 export interface Post{x:number;z:number;y:number;height:number;radius:number}
 
@@ -40,6 +48,18 @@ export interface SignPanel{
   posts:Post[];
   /** How the position was chosen (documentation and review). */
   placement:string;
+  /** Hung from a bracket fixed to the wall at this point (projecting signs). */
+  bracket?:{x:number;y:number;z:number};
+}
+
+/** A petrol station's canopy over its pumps (position estimated round the mapped station). */
+export interface Canopy{
+  id:string;x:number;z:number;y:number;
+  /** Along the road, and away from it. */
+  axis:Vec2;away:Vec2;
+  length:number;width:number;height:number;
+  /** Fascia round the canopy edge: the chain's or a plain one. */
+  text:string;background:string;colour:string;
 }
 
 export interface Shelter{
@@ -51,18 +71,23 @@ export interface Shelter{
   length:number;depth:number;height:number;
 }
 
-export interface SignPlan{panels:SignPanel[];shelters:Shelter[];colliders:Block[]}
+export interface SignPlan{panels:SignPanel[];shelters:Shelter[];canopies:Canopy[];colliders:Block[]}
 
 const roadLength=(road:Location['roads'][number])=>road.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
 const left=(d:Vec2):Vec2=>({x:d.z,z:-d.x});
-const PLATE_HEIGHT=.3;
-// Raised on posts (lower edge 2.1 m, like other signs over a footway), so a plate never hides traffic at a junction.
-const PLATE_BOTTOM=2.1;
+// A little larger than the usual 0.3 m plate, so the name reads on a phone screen from a car's length or two away.
+const PLATE_HEIGHT=.36;
+// Raised on posts (lower edge 1.8 m: above a car's roof line and a child's head), so a plate never hides traffic or
+// people at a junction, yet low enough to be in a driver's view.
+const PLATE_BOTTOM=1.8;
 /** Mini-roundabout sign (diagram 611.1): 600 mm disc, lower edge 2.1 m above the footway. */
 const DISC=.6,DISC_BOTTOM=2.1;
+/** Petrol station canopy: the depth of its edge fascia, and where the pump islands stand (share of its length out
+ * from the middle; metres either side of the centre line). */
+export const CANOPY_FASCIA=.9,PUMP_ALONG=.32,PUMP_APART=1;
 
 export function layoutSignage(location:Location,layout:StreetLayout|null):SignPlan{
-  const plan:SignPlan={panels:[],shelters:[],colliders:[]};
+  const plan:SignPlan={panels:[],shelters:[],canopies:[],colliders:[]};
   const lamps=layout?.lamps??[],trees=layout?.trees??[],stops=layout?.town?.busStops??[];
   const buildings=location.buildings;
   const clearOfFurniture=(p:Vec2,margin:number)=>
@@ -97,7 +122,7 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
   for(const e of ends){
     if(placed.has(e.key))continue;
     const text=e.road.name!;
-    const width=Math.min(2.2,Math.max(1.1,text.length*.11+.35));
+    const width=Math.min(2.6,Math.max(1.3,text.length*.13+.4));
     const half=roadHalfWidth(e.road);
     search:for(let d=e.clearFrom+width/2;d<=e.clearFrom+width/2+9;d+=1)for(const side of [-1,1]){
       const s=sampleRoad(e.road,e.at.x+e.into.x*d,e.at.z+e.into.z*d);
@@ -149,19 +174,123 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
   // ---- Bus stops: a flag across the traffic on a tall pole, and a shelter where one is mapped. ----
   for(const s of stops)busStopSigns(plan,s,p=>onPavement(p)&&clearOfBuildings(p,.3));
 
-  // ---- Shop names (map data only) on the fascia of the longest shopfront facing a road. ----
+  // ---- Businesses (map data only): each named shop's fascia in its chain's or its trade's colours, a name board
+  // on the road side of a store set back behind its car park (and of a named church or school), a chemist's green
+  // cross and a pub's hanging sign. ----
   for(const t of layout?.town?.buildings??[]){
-    const name=location.buildings.find(b=>b.id===t.id)?.name;
-    // Background buildings get no shop names, except a branded store (its sign reads from a distance).
-    if(!name||(t.detail==='low'&&!brandSign(name)))continue;
+    const b=location.buildings.find(x=>x.id===t.id);
+    const name=b?.name;
+    if(!b||!name)continue;
+    const trade=b.business??(b.use==='shop'?tradeFromName(name)??'shop':null);
+    const brand=brandSign(name,b.brand);
+    const tradeStyle=trade?TRADE_SIGNS[trade]:null;
+    const style={background:brand?.background??(tradeStyle?.background||t.fascia),colour:brand?.colour??tradeStyle?.colour??'#f1ead6',
+      weight:brand?.weight??tradeStyle?.weight??'600'};
+    const text=brand?.text??name;
     const wall=t.walls.filter(w=>w.shopfront).sort((a,b)=>Math.hypot(b.b.x-b.a.x,b.b.z-b.a.z)-Math.hypot(a.b.x-a.a.x,a.b.z-a.a.z))[0];
-    if(!wall)continue;
-    const len=Math.hypot(wall.b.x-wall.a.x,wall.b.z-wall.a.z);
-    const mid={x:(wall.a.x+wall.b.x)/2+wall.out.x*.075,z:(wall.a.z+wall.b.z)/2+wall.out.z*.075};
-    plan.panels.push({id:`fascia-${t.id}`,face:{kind:'fascia',text:name,background:t.fascia},x:mid.x,y:t.y+3.175,z:mid.z,normal:wall.out,
-      width:Math.min(len-.6,6),height:.46,maxWidth:Math.min(len-.6,6),twoSided:false,round:false,posts:[],placement:'shop fascia (name from map data)'});
+    if(wall){
+      const len=Math.hypot(wall.b.x-wall.a.x,wall.b.z-wall.a.z);
+      const mid={x:(wall.a.x+wall.b.x)/2+wall.out.x*.075,z:(wall.a.z+wall.b.z)/2+wall.out.z*.075};
+      const width=Math.min(len-.6,6);
+      plan.panels.push({id:`fascia-${t.id}`,face:{kind:'fascia',text,...style,full:!!brand},x:mid.x,y:t.y+3.175,z:mid.z,normal:wall.out,
+        width,height:.46,maxWidth:width,twoSided:false,round:false,posts:[],placement:'shop fascia (name from map data)'});
+      // Projecting signs at the end of the fascia, square to the street so they are seen along it.
+      const along={x:(wall.b.x-wall.a.x)/len,z:(wall.b.z-wall.a.z)/len};
+      const end={x:mid.x+along.x*(width/2-.2),z:mid.z+along.z*(width/2-.2)};
+      const out=(d:number)=>({x:end.x+wall.out.x*d,z:end.z+wall.out.z*d});
+      if(trade==='pharmacy'){
+        const c=out(.5);
+        plan.panels.push({id:`cross-${t.id}`,face:{kind:'cross'},x:c.x,y:t.y+3.55,z:c.z,normal:along,width:.6,height:.6,twoSided:true,round:false,
+          posts:[],placement:'chemist\'s projecting cross (estimated position)',bracket:{x:end.x,y:t.y+3.85,z:end.z}});
+      }else if(trade==='pub'){
+        const c=out(.62);
+        plan.panels.push({id:`hanging-${t.id}`,face:{kind:'hanging',text:name},x:c.x,y:t.y+3.0,z:c.z,normal:along,width:.72,height:.92,twoSided:true,round:false,
+          posts:[],placement:'pub sign on a bracket (estimated position)',bracket:{x:end.x,y:t.y+3.55,z:end.z}});
+      }
+      continue;
+    }
+    // No shopfront on a road (a store behind its car park; a church; a school): a board high on the wall that
+    // faces the nearest road, sized to be read from it.
+    if(!['shop','church','school','civic'].includes(b.use))continue;
+    const board=nameBoardWall(location,t.walls);
+    if(!board)continue;
+    const len=Math.hypot(board.b.x-board.a.x,board.b.z-board.a.z);
+    const big=b.use==='shop'&&t.ring.length>0&&len>12;
+    const width=Math.min(len-1,big?Math.min(10,len*.5):4.5),height=big?1.1:.6;
+    if(width<1.5)continue;
+    const mid={x:(board.a.x+board.b.x)/2+board.out.x*.08,z:(board.a.z+board.b.z)/2+board.out.z*.08};
+    const civicStyle={background:'#f4f2ec',colour:'#1f2a36',weight:'700'};
+    const boardStyle=b.use==='shop'?style:civicStyle;
+    plan.panels.push({id:`board-${t.id}`,face:{kind:'name-board',text,...boardStyle},x:mid.x,y:t.y+Math.min(t.height-height/2-.3,big?4.6:3.4),z:mid.z,
+      normal:board.out,width,height,maxWidth:width,twoSided:false,round:false,posts:[],placement:'name board on the wall facing the road (name from map data)'});
+  }
+
+  // ---- Petrol stations: a canopy over the pumps beside the road, with the chain's fascia, and a price board. ----
+  for(const [i,f] of location.furniture.entries()){
+    if(f.kind!=='fuel-station')continue;
+    const brand=brandSign(f.name??'',f.brand);
+    const style=brand??{text:f.name??'PETROL',background:TRADE_SIGNS.fuel.background,colour:TRADE_SIGNS.fuel.colour,weight:'800'};
+    const facing=f.facingDeg*Math.PI/180,toRoad={x:Math.sin(facing),z:-Math.cos(facing)},axis={x:-toRoad.z,z:toRoad.x};
+    const H=4.8;
+    // The canopy as near the mapped point as it fits (smaller on a tight forecourt): clear of the carriageway and
+    // of buildings.
+    const tries=[[14,8],[10,7]].flatMap(([L,W])=>[0,-3,3,-6,6,9,12].flatMap(back=>[0,-4,4,-8,8].map(side=>({L:L!,W:W!,back,side}))));
+    for(const {L,W,back,side} of tries){
+      const c={x:f.position.x-toRoad.x*back+axis.x*side,z:f.position.z-toRoad.z*back+axis.z*side};
+      const corners=[-1,1].flatMap(a=>[-1,1].map(k=>({x:c.x+axis.x*a*L/2+toRoad.x*k*W/2,z:c.z+axis.z*a*L/2+toRoad.z*k*W/2})));
+      // Every point of the canopy (a grid over it, not only its corners) off the carriageway and clear of buildings,
+      // and no building's corner under it.
+      const grid=[-1,-.5,0,.5,1].flatMap(a=>[-1,0,1].map(k=>({x:c.x+axis.x*a*L/2+toRoad.x*k*W/2,z:c.z+axis.z*a*L/2+toRoad.z*k*W/2})));
+      if(!grid.every(p=>surfaceAt(location,p.x,p.z)?.kind!=='carriageway'&&clearOfBuildings(p,.5))||
+        buildings.some(b=>b.footprint.some(q=>insidePolygon(q,corners.length===4?[corners[0]!,corners[1]!,corners[3]!,corners[2]!]:corners))))continue;
+      plan.canopies.push({id:`fuel-${i}`,x:c.x,z:c.z,y:height(c),axis,away:{x:-toRoad.x,z:-toRoad.z},length:L,width:W,height:H,text:style.text,background:style.background,colour:style.colour});
+      // Columns (and the pump islands between them) are solid.
+      for(const a of [-1,1])for(const k of [-1,1]){
+        const p={x:c.x+axis.x*a*L*PUMP_ALONG+toRoad.x*k*PUMP_APART,z:c.z+axis.z*a*L*PUMP_ALONG+toRoad.z*k*PUMP_APART};
+        collider(`fuel-${i}-pump-${a}-${k}`,p,.9,1.6);
+      }
+      // The chain's name on the canopy's edge, facing the road and facing the forecourt.
+      for(const side of [1,-1]){
+        const n={x:toRoad.x*side,z:toRoad.z*side};
+        plan.panels.push({id:`fuel-${i}-canopy-${side}`,face:{kind:'name-board',text:style.text,background:style.background,colour:style.colour,weight:style.weight},
+          x:c.x+n.x*(W/2+.02),y:height(c)+H+CANOPY_FASCIA/2,z:c.z+n.z*(W/2+.02),normal:n,width:L*.6,height:CANOPY_FASCIA*.85,maxWidth:L*.6,
+          twoSided:false,round:false,posts:[],placement:'petrol station canopy fascia'});
+      }
+      // The price board by the road, end on to the traffic.
+      const totem={x:c.x+toRoad.x*(W/2+2)+axis.x*(L/2),z:c.z+toRoad.z*(W/2+2)+axis.z*(L/2)};
+      if(surfaceAt(location,totem.x,totem.z)?.kind!=='carriageway'){
+        plan.panels.push({id:`fuel-${i}-totem`,face:{kind:'name-board',text:style.text,background:style.background,colour:style.colour,weight:style.weight},
+          x:totem.x,y:height(totem)+3.2,z:totem.z,normal:axis,width:1.4,height:1.2,twoSided:true,round:false,
+          posts:[post({x:totem.x-toRoad.x*.4,z:totem.z-toRoad.z*.4},2.6,.07),post({x:totem.x+toRoad.x*.4,z:totem.z+toRoad.z*.4},2.6,.07)],
+          placement:'petrol station sign by the road (estimated position)'});
+        collider(`fuel-${i}-totem`,totem,1,3.8);
+      }
+      break;
+    }
   }
   return plan;
+}
+
+/** The wall to hang a name board on: the longest that faces a road, else the one facing the nearest road. */
+function nameBoardWall(location:Location,walls:readonly import('./townscape').TownWall[]){
+  const len=(w:import('./townscape').TownWall)=>Math.hypot(w.b.x-w.a.x,w.b.z-w.a.z);
+  const facing=walls.filter(w=>w.facesRoad).sort((a,b)=>len(b)-len(a))[0];
+  if(facing)return facing;
+  let best:{w:import('./townscape').TownWall;score:number}|null=null;
+  for(const w of walls){
+    if(len(w)<3)continue;
+    const mid={x:(w.a.x+w.b.x)/2,z:(w.a.z+w.b.z)/2};
+    for(const r of location.roads){
+      const s=sampleRoad(r,mid.x,mid.z);
+      if(s.distance>80)continue;
+      const p=pointAtAlong(r,s.along),to={x:(p.x-mid.x)/(s.distance||1),z:(p.z-mid.z)/(s.distance||1)};
+      const facingIt=to.x*w.out.x+to.z*w.out.z;
+      if(facingIt<.5)continue;
+      const score=facingIt*len(w)/(1+s.distance/20);
+      if(!best||score>best.score)best={w,score};
+    }
+  }
+  return best?.w??null;
 }
 
 /** A bus stop's flag and timetable on its pole, and its shelter if mapped. */

@@ -106,15 +106,21 @@ describe('Signs',()=>{
     expect(fascias.length).toBeGreaterThan(20);
     for(const p of fascias){
       const b=brentwood.buildings.find(x=>`fascia-${x.id}`===p.id)!;
-      expect(p.face.kind==='fascia'&&p.face.text).toBe(b.name);
+      // The chain's own lettering where the map names a chain, otherwise the map's name.
+      expect(p.face.kind==='fascia'&&p.face.text).toBe(brandSign(b.name!,b.brand)?.text??b.name);
       expect(b.use).toBe('shop');
     }
   });
 
-  it('brand sign styles apply only where the map names exactly that business',()=>{
-    const branded=panels('fascia').filter(p=>p.face.kind==='fascia'&&brandSign(p.face.text));
-    expect(branded.map(p=>p.face.kind==='fascia'&&p.face.text).sort()).toEqual(["KFC","McDonald's",'Tesco Express']);
-    for(const p of branded)expect(brentwood.buildings.find(b=>`fascia-${b.id}`===p.id)!.name).toBe(p.face.kind==='fascia'&&p.face.text);
+  it('brand sign styles apply only where the map names that chain (by name or brand tag)',()=>{
+    const branded=panels('fascia').filter(p=>p.face.kind==='fascia'&&p.face.full);
+    expect(branded.map(p=>p.face.kind==='fascia'&&p.face.text)).toEqual(expect.arrayContaining(['KFC',"McDonald's",'TESCO express']));
+    for(const p of branded){
+      const b=brentwood.buildings.find(x=>`fascia-${x.id}`===p.id)!;
+      expect(brandSign(b.name!,b.brand)?.text).toBe(p.face.kind==='fascia'&&p.face.text);
+    }
+    // An independent business keeps its own name, in its trade's colours (a chemist's green).
+    expect(brandSign('Eden Pharmacy Ltd')).toBeNull();
   });
 
   it('the representative streets get no invented names on plates or fascias',()=>{

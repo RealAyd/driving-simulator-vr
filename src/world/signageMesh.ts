@@ -1,8 +1,8 @@
 import {Color3,DynamicTexture,StandardMaterial,Texture,type Mesh,type Scene,type TransformNode} from '../engine/babylon';
 import {box,flatFace,Geometry,prism,type RGB,type V3} from './streetscapeMesh';
 import type {Region} from './sceneryTextures';
-import type {Shelter,SignFace,SignPanel,SignPlan} from './signage';
-import {brandSign} from './brandSigns';
+import {CANOPY_FASCIA,PUMP_ALONG,PUMP_APART,type Canopy,type Shelter,type SignFace,type SignPanel,type SignPlan} from './signage';
+import {hex} from './streetscapeMesh';
 
 /**
  * Draws a sign plan: every face is lettered at load time onto one shared
@@ -14,7 +14,7 @@ import {brandSign} from './brandSigns';
 const FONT='"Helvetica Neue",Helvetica,Arial,sans-serif';
 const SHEET_WIDTH=1024;
 /** Pixels per metre for each kind of face. */
-const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110} as const;
+const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110,'name-board':90,cross:200,hanging:220} as const;
 
 interface Entry{key:string;w:number;h:number;draw:(ctx:CanvasRenderingContext2D,w:number,h:number)=>void;x?:number;y?:number}
 
@@ -138,15 +138,37 @@ function drawBusFlag(name:string,indicator:string|null){
   };
 }
 
-/** Shop name: plain light lettering on the fascia colour, or the brand's own sign colours where the map names a brand. */
-function drawFascia(text:string,background:string){
-  const brand=brandSign(text);
+/** A business's name in its chain's or trade's colours (fascias and name boards). */
+function drawLettering(text:string,background:string,colour:string,weight:string,scale:number){
   return (ctx:CanvasRenderingContext2D,w:number,h:number)=>{
-    ctx.fillStyle=brand?.background??background;ctx.fillRect(0,0,w,h);
-    ctx.fillStyle=brand?.colour??'#f1ead6';ctx.textAlign='center';ctx.textBaseline='middle';
-    const label=brand?.text??text;
-    ctx.font=fit(label,Math.round(h*(brand?.7:.6)),w-h*.4,brand?.weight??'600');
-    ctx.fillText(label,w/2,h*.54);
+    ctx.fillStyle=background;ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=colour;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font=fit(text,Math.round(h*scale),w-h*.4,weight);
+    ctx.fillText(text,w/2,h*.54);
+  };
+}
+
+/** A chemist's green cross (lit), on a dark square. */
+function drawCross(ctx:CanvasRenderingContext2D,w:number,h:number){
+  ctx.fillStyle='#1d2421';ctx.fillRect(0,0,w,h);
+  const a=w*.27,t=w*.12;
+  ctx.fillStyle='#2fd36a';
+  ctx.fillRect(w/2-t,h/2-a,2*t,2*a);ctx.fillRect(w/2-a,h/2-t,2*a,2*t);
+  ctx.fillStyle='#b6f5cb';
+  ctx.fillRect(w/2-t*.45,h/2-a*.9,t*.9,a*1.8);ctx.fillRect(w/2-a*.9,h/2-t*.45,a*1.8,t*.9);
+}
+
+/** A pub's hanging sign: its name in gilt lettering on a dark board, with a frame. */
+function drawHanging(text:string){
+  return (ctx:CanvasRenderingContext2D,w:number,h:number)=>{
+    ctx.fillStyle='#3a1f1a';ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='#c9a14a';ctx.lineWidth=w*.04;ctx.strokeRect(w*.05,h*.05,w*.9,h*.9);
+    ctx.fillStyle='#e3c779';ctx.textAlign='center';ctx.textBaseline='middle';
+    const words=text.replace(/^the /i,'THE ').split(' ');
+    const lines:string[]=[];
+    for(const word of words){const last=lines.at(-1);if(last&&textWidth(`${last} ${word}`,`700 ${Math.round(h*.13)}px ${FONT}`)<w*.78)lines[lines.length-1]=`${last} ${word}`;else lines.push(word)}
+    const shown=lines.slice(0,4),lh=h*.8/Math.max(3,shown.length);
+    shown.forEach((line,i)=>{ctx.font=fit(line,Math.round(lh*.75),w*.8);ctx.fillText(line,w/2,h/2+(i-(shown.length-1)/2)*lh)});
   };
 }
 
@@ -156,7 +178,12 @@ function faceEntry(face:SignFace,panel:SignPanel):Entry{
     case 'street-name':return {key:`street-name:${face.text}:${panel.width}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),draw:drawStreetName(face.text)};
     case 'mini-roundabout':return {key:'mini-roundabout',w:128,h:128,draw:drawMiniRoundabout};
     case 'bus-flag':return {key:`bus-flag:${face.name}:${face.indicator}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),draw:drawBusFlag(face.name,face.indicator)};
-    case 'fascia':return {key:`fascia:${face.text}:${face.background}:${panel.width.toFixed(2)}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),draw:drawFascia(face.text,face.background)};
+    case 'fascia':return {key:`fascia:${face.text}:${face.background}:${face.colour}:${panel.width.toFixed(2)}:${panel.height}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),
+      draw:drawLettering(face.text,face.background,face.colour,face.weight,face.full?.7:.6)};
+    case 'name-board':return {key:`board:${face.text}:${face.background}:${face.colour}:${panel.width.toFixed(2)}:${panel.height}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),
+      draw:drawLettering(face.text,face.background,face.colour,face.weight,.62)};
+    case 'cross':return {key:'cross',w:120,h:120,draw:drawCross};
+    case 'hanging':return {key:`hanging:${face.text}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),draw:drawHanging(face.text)};
   }
 }
 
@@ -217,19 +244,54 @@ function drawShelter(g:Geometry,s:Shelter):void{
   box(g,{x:s.x+B.x*(D-.3),z:s.z+B.z*(D-.3)},s.y+.45,A,s.length*.6,.32,.05,flatFace(FRAME));
 }
 
+/** A projecting sign's bracket: an arm from the wall over the sign, and two short hangers down to it. */
+function drawBracket(g:Geometry,p:SignPanel):void{
+  const a=p.bracket!,dx=p.x-a.x,dz=p.z-a.z,len=Math.hypot(dx,dz)+p.width*.1;
+  const f={x:dx/(Math.hypot(dx,dz)||1),z:dz/(Math.hypot(dx,dz)||1)};
+  box(g,{x:a.x+f.x*len/2,z:a.z+f.z*len/2},a.y,f,.05,len,.05,flatFace(FRAME));
+  const top=p.y+p.height/2;
+  for(const k of [-.35,.35]){
+    const c={x:p.x+p.normal.z*k*p.width,z:p.z-p.normal.x*k*p.width};
+    if(a.y>top)box(g,c,top,f,.02,.02,a.y-top,flatFace(FRAME),false);
+  }
+}
+
+/** A petrol station's canopy: a deep slab in the chain's colour on columns, white beneath, over two pump islands. */
+function drawCanopy(g:Geometry,c:Canopy):void{
+  const colour=hex(c.background),under:RGB=[.93,.93,.92];
+  const centre={x:c.x,z:c.z};
+  box(g,centre,c.y+c.height,c.away,c.length,c.width,CANOPY_FASCIA,flatFace(colour));
+  g.flat(((y:number)=>{
+    const A=c.axis,B=c.away,L=c.length/2,W=c.width/2,P=(u:number,v:number):V3=>[c.x+A.x*u+B.x*v,y,c.z+A.z*u+B.z*v];
+    return [P(-L,-W),P(L,-W),P(L,W),P(-L,W)];
+  })(c.y+c.height-.01),under,[0,-1,0]);
+  for(const a of [-1,1]){
+    const at={x:c.x+c.axis.x*a*c.length*PUMP_ALONG,z:c.z+c.axis.z*a*c.length*PUMP_ALONG};
+    // Island, column and a pump at each end.
+    box(g,at,c.y,c.away,.9,PUMP_APART*2+1.6,.18,flatFace([.75,.74,.7]));
+    prism(g,at.x,at.z,c.y,c.height,.16,.16,[.85,.85,.84],8);
+    for(const k of [-1,1]){
+      const pump={x:at.x+c.away.x*k*PUMP_APART,z:at.z+c.away.z*k*PUMP_APART};
+      box(g,pump,c.y+.18,c.away,.55,.75,1.45,flatFace([.86,.86,.86]));
+      box(g,pump,c.y+1.3,c.away,.57,.77,.33,flatFace(colour));
+    }
+  }
+}
+
 export interface BuiltSignage{mesh:Mesh|null;faces:number;sheet:{width:number;height:number};dispose():void}
 
 export function buildSignage(scene:Scene,plan:SignPlan,parent:TransformNode):BuiltSignage{
-  if(plan.panels.length===0&&plan.shelters.length===0)return {mesh:null,faces:0,sheet:{width:0,height:0},dispose(){}};
+  if(plan.panels.length===0&&plan.shelters.length===0&&plan.canopies.length===0)return {mesh:null,faces:0,sheet:{width:0,height:0},dispose(){}};
   const sheet=new FaceSheet();
   // Fascias are as wide as their lettering (within the shopfront).
-  for(const p of plan.panels)if(p.face.kind==='fascia'){
-    const h=Math.round(p.height*DENSITY.fascia);
-    const brand=brandSign(p.face.text);
-    const needed=(textWidth(brand?.text??p.face.text,`${brand?.weight??'600'} ${Math.round(h*(brand?.7:.6))}px ${FONT}`)+h*.6)/DENSITY.fascia;
-    // A brand's colours run along the whole fascia of its shopfront (up to 6 m); other names are as wide as their lettering.
-    p.width=Math.max(1,brand?Math.max(needed,p.maxWidth??p.width):Math.min(p.maxWidth??p.width,needed));
-    if(brand)p.height=.6;
+  for(const p of plan.panels){
+    if(p.face.kind!=='fascia'&&p.face.kind!=='name-board')continue;
+    const full=p.face.kind==='fascia'&&!!p.face.full,scale=full?.7:p.face.kind==='fascia'?.6:.62;
+    if(full)p.height=.6;
+    const density=DENSITY[p.face.kind],h=Math.round(p.height*density);
+    const needed=(textWidth(p.face.text,`${p.face.weight} ${Math.round(h*scale)}px ${FONT}`)+h*.6)/density;
+    // A chain's colours run along the whole fascia of its shopfront (up to 6 m); other names are as wide as their lettering.
+    p.width=Math.max(1,full?Math.max(needed,p.maxWidth??p.width):Math.min(p.maxWidth??p.width,needed));
   }
   const keys=plan.panels.map(p=>sheet.add(faceEntry(p.face,p)));
   sheet.add({key:'white',w:6,h:6,draw:(ctx,w,h)=>{ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h)}});
@@ -239,8 +301,10 @@ export function buildSignage(scene:Scene,plan:SignPlan,parent:TransformNode):Bui
   plan.panels.forEach((p,i)=>{
     drawPanel(g,p,sheet.region(keys[i]!));
     for(const q of p.posts)prism(g,q.x,q.z,q.y,q.height,q.radius,q.radius,POST,6);
+    if(p.bracket)drawBracket(g,p);
   });
   for(const s of plan.shelters)drawShelter(g,s);
+  for(const c of plan.canopies)drawCanopy(g,c);
   const material=new StandardMaterial('signage',scene);
   material.diffuseTexture=sheet.texture(scene);
   material.specularColor=new Color3(.05,.05,.05);

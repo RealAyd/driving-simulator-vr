@@ -81,7 +81,7 @@ import {layoutTownscape} from '../world/townscape';
 import {buildStreetscape} from '../world/streetscapeMesh';
 import {CompositeCollisions,pointToBox,type DynamicFootprint} from '../world/collisions';
 import {StaticObstacles} from '../world/obstacles';
-import {sampleRoad,surfaceAt} from '../world/roadGeometry';
+import {pointAtAlong,sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {buildGuide} from '../world/guide';
 import {buildSignalHeads} from '../world/signals';
 import {TrafficSignals} from '../world/trafficSignals';
@@ -262,7 +262,7 @@ export async function boot():Promise<void>{
   // Houses, gardens and street furniture (streetscape) and parked cars; collisions match what is drawn.
   let carModels=new Map<CarModelId,CarModel|null>();
   let sceneryStats={houses:0,parkedCars:0,colliders:0};
-  let signPlan:SignPlan={panels:[],shelters:[],colliders:[]};
+  let signPlan:SignPlan={panels:[],shelters:[],canopies:[],colliders:[]};
   let signage:BuiltSignage|null=null;
   let crowd:Person[]=[];
   /** Cars parked at the kerb (generated areas): background traffic passes them. */
@@ -1785,6 +1785,10 @@ export async function boot():Promise<void>{
     events:()=>events.events.map(e=>({...e})),
     simTime:()=>clock.time,
     sound:()=>sound.stats,
+    surfaceAt:(x:number,z:number)=>surfaceAt(place,x,z)?.kind??null,
+    /** The nearest road to a point: the nearest point on its centreline and its direction there. */
+    roadAt:(x:number,z:number)=>{let best:{x:number;z:number;dx:number;dz:number;d:number}|null=null;for(const r of place.roads){const s=sampleRoad(r,x,z);if(!best||s.distance<best.d){const p=pointAtAlong(r,s.along);best={x:p.x,z:p.z,dx:s.direction.x,dz:s.direction.z,d:s.distance}}}return best},
+    signs:()=>({panels:signPlan.panels.map(p=>({id:p.id,kind:p.face.kind,text:'text' in p.face?p.face.text:null,x:p.x,y:p.y,z:p.z,normal:p.normal})),canopies:signPlan.canopies.map(c=>({id:c.id,x:c.x,z:c.z,away:c.away,text:c.text}))}),
     signals:()=>runtime?.trafficSignals?.stops.map(s=>({id:s.id,road:s.road.name??s.road.id,state:s.state}))??[],
     examiner:()=>runtime?.examiner?{phase:runtime.examiner.phase,index:runtime.examiner.index,lastSaid:runtime.examiner.lastSaid,steps:runtime.examiner.steps.map(s=>({say:s.say,at:s.at,to:s.to.road.name??s.to.road.id}))}:null,
     meshMaterials:(pattern:string)=>scene.meshes.filter(m=>new RegExp(pattern).test(m.name)).slice(0,60).map(m=>({name:m.name,material:m.material?.name??null,alpha:m.material?.alpha??null,diffuse:(m.material as unknown as {diffuseColor?:{asArray():number[]}}|null)?.diffuseColor?.asArray()??null,enabled:m.isEnabled(),at:m.getAbsolutePosition().asArray().map(v=>Math.round(v*10)/10),visible:m.isVisible})),

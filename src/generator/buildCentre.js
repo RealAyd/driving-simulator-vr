@@ -187,11 +187,36 @@ for(const first of stops){
 const roadDistance=p=>Math.min(...roads.map(r=>alongOf(r.centreline,p).d));
 const polygonOf=w=>w.nds.map(r=>nodes.get(r)).filter(Boolean).map(P);
 const insidePoly=(p,poly)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.z>p.z)!==(b.z>p.z)&&p.x<(b.x-a.x)*(p.z-a.z)/(b.z-a.z)+a.x)c=!c}return c};
-const shopPoints=[...nodes.values()].filter(n=>(n.tags.shop||n.tags.amenity&&['cafe','restaurant','fast_food','pub','bank','pharmacy','post_office'].includes(n.tags.amenity))&&inside(P(n)));
+const shopPoints=[...nodes.values()].filter(n=>(n.tags.shop||n.tags.amenity&&['cafe','restaurant','fast_food','pub','bar','bank','pharmacy','post_office'].includes(n.tags.amenity))&&inside(P(n)));
+/** The kind of business (its sign's style) from map tags; null when the tags name none. */
+const businessOf=t=>{
+  if(!t)return null;
+  const a=t.amenity,sh=t.shop;
+  if(a==='pharmacy'||sh==='chemist'&&t.dispensing==='yes')return 'pharmacy';
+  if(a==='pub'||a==='bar')return 'pub';
+  if(a==='cafe')return 'cafe';
+  if(a==='restaurant')return 'restaurant';
+  if(a==='fast_food')return 'takeaway';
+  if(a==='bank'||a==='bureau_de_change')return 'bank';
+  if(a==='post_office'||sh==='post_office')return 'post-office';
+  if(a==='fuel')return 'fuel';
+  if(sh==='supermarket')return 'supermarket';
+  if(['convenience','newsagent','off_licence','alcohol','kiosk'].includes(sh))return 'convenience';
+  if(sh==='chemist')return 'pharmacy';
+  if(['hairdresser','beauty','barber'].includes(sh))return 'hairdresser';
+  if(sh==='bookmaker'||sh==='lottery')return 'bookmaker';
+  if(sh==='charity'||sh==='second_hand')return 'charity';
+  if(a==='estate_agent'||t.office==='estate_agent')return 'estate-agent';
+  return sh?'shop':null;
+};
 const buildings=[];
+// Open roofs on posts (building=roof: a petrol station's canopy, a car port): not solid buildings. A petrol station's
+// is where its canopy is drawn (below).
+const roofs=[];
 for(const w of ways){
   const b=w.tags.building;
   if(!b||b==='no'||w.nds[0]!==w.nds.at(-1))continue;
+  if(b==='roof'){const poly=polygonOf(w).slice(0,-1);if(poly.length>=3)roofs.push({x:poly.reduce((s,p)=>s+p.x,0)/poly.length,z:poly.reduce((s,p)=>s+p.z,0)/poly.length});continue}
   let poly=polygonOf(w).slice(0,-1);
   if(poly.length<3||!poly.every(p=>inside(p,20)))continue;
   const levelsTag=parseInt(w.tags['building:levels']??'',10);
@@ -204,10 +229,12 @@ for(const w of ways){
   const centre={x:poly.reduce((s,p)=>s+p.x,0)/poly.length,z:poly.reduce((s,p)=>s+p.z,0)/poly.length};
   const near=roadDistance(centre);
   const label=(w.tags.name??shop?.tags.name??w.tags.brand??shop?.tags.brand);
+  const business=businessOf(w.tags.shop||w.tags.amenity?w.tags:shop?.tags)??(use==='shop'?'shop':null);
+  const brand=w.tags.brand??shop?.tags.brand;
   buildings.push({id:`osm-${w.id}`,footprint:poly.map(p=>({x:r2(p.x),z:r2(p.z)})),
     height:r2(Math.min(60,levels*3+(use==='residential'?1.4:.6))),levels,
     heightSource:Number.isFinite(levelsTag)?'map-levels':'estimated',use,
-    ...(label?{name:label}:{}),source:'map',
+    ...(label?{name:label}:{}),...(business?{business}:{}),...(brand?{brand}:{}),source:'map',
     roof:use==='residential'&&poly.length===4?'pitched':'flat',detail:near>70?'low':'full'});
 }
 
@@ -236,6 +263,22 @@ for(const n of nodes.values()){
     ...(n.tags.name?{name:n.tags.name}:{}),...(n.tags.local_ref?{indicator:`Stop ${n.tags.local_ref}`}:{}),shelter:n.tags.shelter==='yes'});
 }
 
+// Petrol stations (a node or the forecourt's outline): a canopy over the pumps, drawn by the app.
+for(const f of [...nodes.values(),...ways.filter(w=>w.nds[0]===w.nds.at(-1))]){
+  if(f.tags.amenity!=='fuel')continue;
+  const p=f.nds?(()=>{const poly=polygonOf(f).slice(0,-1);return poly.length?{x:poly.reduce((s,q)=>s+q.x,0)/poly.length,z:poly.reduce((s,q)=>s+q.z,0)/poly.length}:null})():P(f);
+  if(!p||!inside(p))continue;
+  // Its canopy where the map has one (an open roof within the forecourt).
+  const roof=roofs.filter(r=>Math.hypot(r.x-p.x,r.z-p.z)<35).sort((a,b)=>Math.hypot(a.x-p.x,a.z-p.z)-Math.hypot(b.x-p.x,b.z-p.z))[0];
+  if(roof){p.x=roof.x;p.z=roof.z}
+  let best=null;
+  for(const r of roads){const a=alongOf(r.centreline,p);if(!best||a.d<best.d)best=a}
+  if(!best||best.d>60)continue;
+  const facing=Math.atan2(best.point.x-p.x,-(best.point.z-p.z))*180/Math.PI;
+  furniture.push({kind:'fuel-station',position:{x:r2(p.x),z:r2(p.z)},facingDeg:r2((facing+360)%360),source:`OSM ${f.nds?'way':'node'} ${f.id}`,
+    ...(f.tags.name?{name:f.tags.name}:{}),...(f.tags.brand?{brand:f.tags.brand}:{})});
+}
+
 // ---- Terraces where residential streets have no mapped buildings ----
 // Many residential streets have no building outlines in OSM. Along such streets, typical terraced houses
 // (5.2 m wide, 9 m deep, 2 storeys, pitched roof) are placed behind a front garden, marked 'approximate'.
@@ -251,8 +294,12 @@ const blocked=(corners,ownRoad,ownClear=1.5)=>{
   }
   for(const j of junctions)if(corners.some(c=>Math.hypot(c.x-j.position.x,c.z-j.position.z)<j.radius+8))return true;
   for(const a of areas)if(corners.some(c=>insidePoly(c,a.polygon)))return true;
+  // A petrol station's forecourt stays open.
+  for(const f of furniture)if(f.kind==='fuel-station'&&corners.some(c=>Math.hypot(c.x-f.position.x,c.z-f.position.z)<FORECOURT))return true;
   return false;
 };
+/** Clear round a mapped petrol station (no typical houses placed there): its forecourt and canopy. */
+const FORECOURT=18;
 // On main roads near mapped businesses: a parade (three storeys, shops below and flats above, built up to the back of
 // the pavement); each business the map has only as a point is given the nearest unit's shopfront.
 const loosePoints=shopPoints.filter(s=>!buildings.some(b=>b.source==='map'&&insidePoly(P(s),b.footprint))&&s.tags.name);
@@ -284,7 +331,7 @@ for(const s of loosePoints){
 for(const [i,f] of filled.entries()){
   const shop=named.get(i);
   buildings.push({id:`terrace-${i}`,footprint:f.corners,height:f.parade?9.6:7.4,levels:f.parade?3:2,heightSource:'estimated',
-    use:shop?'shop':'residential',...(shop?{name:shop.tags.name}:{}),source:'approximate',
+    use:shop?'shop':'residential',...(shop?{name:shop.tags.name,business:businessOf(shop.tags)??'shop',...(shop.tags.brand?{brand:shop.tags.brand}:{})}:{}),source:'approximate',
     evidence:shop?`business mapped only as a point (${shop.tags.name}) on ${f.road.name??f.road.id}: typical parade unit`
       :`street (${f.road.name??f.road.id}) with no mapped building outlines: typical ${f.parade?'parade with flats':'terraced house'}`,
     roof:f.parade?'flat':'pitched',detail:Math.hypot(f.c.x,f.c.z)<160?'full':'low'});
@@ -339,5 +386,5 @@ const location={
   roads:roads.map(({_way,_class,...r})=>r),
   blocks,crossings,junctions,signals,buildings,trees,ground:'grass',areas,furniture,townLampSpacing:32,streetParking:.3,spawn
 };
-return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${signals.length} sets of traffic lights, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.length} bus stops, ${blocks.length} edge barriers; start on ${sr.name??sr.id}`};
+return {location,summary:`${id}: ${filled.length} approximate houses and parade units added (${named.size} named businesses from map points); ${roads.length} roads, ${junctions.length} mini-roundabouts, ${crossings.filter(c=>c.kind==='zebra').length} zebras, ${crossings.filter(c=>c.kind==='signal').length} signal crossings, ${signals.length} sets of traffic lights, ${buildings.length} buildings, ${trees.length} trees, ${areas.length} areas, ${furniture.filter(f=>f.kind==='bus-stop').length} bus stops, ${furniture.filter(f=>f.kind==='fuel-station').length} petrol stations, ${blocks.length} edge barriers; start on ${sr.name??sr.id}`};
 }

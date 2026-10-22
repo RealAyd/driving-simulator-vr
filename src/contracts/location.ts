@@ -119,6 +119,11 @@ export const SignalGroupSchema=z.object({
   source:z.string().optional()
 }).strict();
 
+/** Kinds of business a sign is styled for (anything else that is a shop: 'shop'). */
+export const BUSINESS_KINDS=['supermarket','convenience','pharmacy','pub','cafe','restaurant','takeaway','bank','post-office',
+  'hairdresser','bookmaker','charity','estate-agent','fuel','shop'] as const;
+export type BusinessKind=typeof BUSINESS_KINDS[number];
+
 /**
  * Building outline (from map data) drawn with brick or render walls, windows
  * on each storey, a flat roof and, where a business is mapped, shopfronts on
@@ -136,6 +141,10 @@ export const BuildingSchema=z.object({
   use:z.enum(['shop','residential','office','civic','church','school','parking','utility','other']).default('other'),
   /** Optional name from map data: drawn as plain lettering on a shop's fascia (signage.ts), and shown in review documents. */
   name:z.string().optional(),
+  /** What kind of business is here (map data: shop=* / amenity=*): the style of its sign (signage.ts). */
+  business:z.enum(BUSINESS_KINDS).optional(),
+  /** The chain it belongs to (map data: brand=*), when the map gives one: its sign colours (brandSigns.ts). */
+  brand:z.string().optional(),
   /**
    * 'map': the outline is from map data (OpenStreetMap). 'reference': from a
    * licensed reference where the map has none (machine-detected outlines,
@@ -164,9 +173,9 @@ export const AreaSchema=z.object({
   polygon:z.array(point).min(3)
 }).strict();
 
-/** Street furniture placed from map data (a bus stop pole where one is mapped). */
+/** Street furniture placed from map data: a bus stop pole where one is mapped, a petrol station's forecourt. */
 export const FurnitureSchema=z.object({
-  kind:z.enum(['bus-stop']),
+  kind:z.enum(['bus-stop','fuel-station']),
   position:point,
   /** Compass direction the flag faces (towards the road), degrees. */
   facingDeg:z.number().default(0),
@@ -175,7 +184,9 @@ export const FurnitureSchema=z.object({
   name:z.string().optional(),
   indicator:z.string().optional(),
   /** A shelter is mapped at this stop. */
-  shelter:z.boolean().default(false)
+  shelter:z.boolean().default(false),
+  /** A petrol station's chain (map data: brand=*). */
+  brand:z.string().optional()
 }).strict();
 
 /**
