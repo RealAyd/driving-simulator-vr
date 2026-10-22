@@ -63,7 +63,7 @@ export const LESSONS:readonly Lesson[]=[
   {id:'moving-off-stopping',number:1,title:'Moving off and stopping',summary:'Prepare, observe, move off; pull up on the left safely.',
     objective:'Move off safely from the side of the road and pull up again close to the kerb in a safe, legal place.',
     briefing:[
-      'In this lesson we\'ll practise moving off and stopping. Before you move off: check your mirrors, look over your right shoulder into the blind spot, and signal only if it would help someone. When I ask you to pull up, check your mirrors, signal left if it helps others, and stop close to the kerb.',
+      'In this lesson we\'ll practise moving off and stopping. Before you move off: look all round (mirrors and both blind spots), then look right again just before you go, as things keep changing. Signal only if it would help someone. When I ask you to pull up, check your mirrors, signal left if it helps others, and stop close to the kerb.',
       'Moving off: prepare the car, then observe all round (mirrors and the blind spot over your right shoulder), and move off only when it is safe, without making anyone change speed or direction.',
       'Pulling up: choose a safe, legal place. Not within 10 metres of a junction, not on the zig-zags of a crossing, not at a bus stop, and not tight behind a parked car. Stop parallel to and close to the kerb, about a drain\'s width away.'
     ],
@@ -72,7 +72,7 @@ export const LESSONS:readonly Lesson[]=[
   {id:'left-turns',number:2,title:'Turning left into side roads',summary:'Mirrors, signal, position, speed, look (MSPSL) for left turns.',
     objective:'Turn left into side roads using the full routine, at a safe speed, keeping to the left.',
     briefing:[
-      'This lesson is about turning left into side roads. For every turn use the routine: Mirrors, Signal, Position, Speed, Look. Check the interior and left mirrors, signal left in good time, keep to the left, slow to about 10 miles an hour, and look into the new road before you turn.',
+      'This lesson is about turning left into side roads. For every turn use the routine: Mirrors, Signal, Position, Speed, Look. Check the interior mirror first, then the left mirror, then signal left in good time (never the signal before the mirrors), keep to the left, slow to about 10 miles an hour, and look into the new road before you turn.',
       'Watch for cyclists and pedestrians on your left: give way to anyone crossing the road you are turning into. Do not swing out to the right before turning left, and do not cut the corner.',
       'Signal after checking your mirrors, early enough that others know what you will do, but not so early that they think you are turning into an earlier road.'
     ],
@@ -81,7 +81,7 @@ export const LESSONS:readonly Lesson[]=[
   {id:'right-turns',number:3,title:'Turning right into side roads',summary:'Position just left of the middle; give way to oncoming traffic.',
     objective:'Turn right into side roads from just left of the middle of the road, waiting for a safe gap in oncoming traffic.',
     briefing:[
-      'Today we\'re turning right into side roads. Mirrors (interior and right), signal right, then position just left of the middle of the road so traffic can pass on your left. Slow down, and look for oncoming traffic.',
+      'Today we\'re turning right into side roads. Mirrors (the interior one first, then the right), then signal right, then position just left of the middle of the road so traffic can pass on your left. Slow down, and look for oncoming traffic.',
       'Oncoming traffic going straight ahead or turning left has priority: wait at the turning point, opposite the centre of the new road, until there is a safe gap. Do not cut the corner.',
       'Before you turn, look into the new road for pedestrians crossing and for anything waiting to come out.'
     ],

@@ -47,7 +47,7 @@ describe('lessons: routes chosen for the topic',()=>{
 
 describe('the instructor',()=>{
   /** Drives the first manoeuvre of a lesson's route: with or without mirror check and signal. */
-  function drive(id:string,careful:boolean,pavement=false){
+  function drive(id:string,careful:boolean,pavement=false,signalFirst=false){
     let time=0;
     const events=new EventLog(()=>time);
     const learner={x:sp.position.x,z:sp.position.z,heading:sp.headingDeg*Math.PI/180,speed:0,indicator:'off' as 'off'|'left'|'right'};
@@ -65,8 +65,15 @@ describe('the instructor',()=>{
         const d=Math.hypot(p.x-first.at.x,p.z-first.at.z);
         Object.assign(learner,{x:p.x,z:p.z,heading:Math.atan2(p.direction.x*leg.dir,-p.direction.z*leg.dir),speed:d<25?4:8});
         if(pavement&&d<40&&d>39)events.emit('assessment.finding',{findingId:'f1',incidentId:'kerb-1',severity:'serious',ruleId:'positioning-pavement'});
+        // Signal first (at 58 m), mirrors only after it (at 45 m): the wrong order.
+        if(signalFirst&&first.turn!=='ahead'){
+          learner.indicator=d<58?first.turn:'off';
+          if(d<45&&d>44)events.emit('observation.dwell',{target:'interior'});
+        }
         if(careful){
-          if(d<60&&d>58)events.emit('observation.dwell',{target:'interior'});
+          // The routine in order: interior mirror, the turn's side mirror, then (from 50 m) the signal.
+          if(d<60&&d>59)events.emit('observation.dwell',{target:'interior'});
+          if(d<57&&d>56&&first.turn!=='ahead')events.emit('observation.dwell',{target:`${first.turn}-door`});
           learner.indicator=d<50&&first.turn!=='ahead'?first.turn:'off';
         }
         const dt=1/Math.max(1,learner.speed);
@@ -78,15 +85,20 @@ describe('the instructor',()=>{
   it('careful: no reminders, "well done", and the turn listed as done well',()=>{
     const r=drive('left-turns',true);
     expect(r.counts.manoeuvres).toBe(1);
-    expect(r.said).not.toContain('Check your mirrors.');
+    expect(r.said.some(t=>/mirror/i.test(t)&&!/^Well done|^Good/.test(t))).toBe(false);
     expect(r.said.some(s=>/^(Well done|Good)/.test(s))).toBe(true);
     expect(r.counts.improve).toBe(0);
   });
   it('no mirrors, no signal: reminded in good time, then told what to do next time',()=>{
     const r=drive('left-turns',false);
-    expect(r.said).toContain('Check your mirrors.');
+    expect(r.said).toContain('Interior mirror first, then your left mirror.');
     expect(r.said.some(s=>s.startsWith('Next time,'))).toBe(true);
     expect(r.notes.some(n=>/signal left/.test(n))).toBe(true);
+  });
+  it('signalling before the mirrors: told at once that the mirrors come first, and the turn is not praised',()=>{
+    const r=drive('left-turns',false,false,true);
+    expect(r.said).toContain('Mirrors before you signal: interior mirror, then the side mirror, then signal.');
+    expect(r.notes.some(n=>/before you signal, not after/.test(n))).toBe(true);
   });
   it('a mistake on the way is corrected at once, and the junction is not praised even if the routine was right',()=>{
     const r=drive('left-turns',true,true);

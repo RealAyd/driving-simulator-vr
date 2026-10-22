@@ -1,3 +1,4 @@
+import {judgeMoveOff,judgeTurn} from '../assessment/routine';
 import {IMPROVE,INFO,type Location,type Seconds,type SimEvent,type SimModule,type Vec2} from '../contracts';
 import type {EventLog} from '../app/eventLog';
 import type {ExaminerListener} from '../test/examiner';
@@ -38,6 +39,8 @@ export interface InstructorInput{
 interface Watch{
   step:RouteStep;
   mirror:boolean;signal:'off'|'right'|'wrong';maxSpeed:number;
+  /** When the direction was given, the turn's signal first went on, and the car reached the junction (routine.ts). */
+  directionAt:number;signalAt:number|null;turnAt:number|null;
   /** Metres left of the centreline, measured 8–25 m before a right turn. */
   position:number[];
   /** Another vehicle had to be given way to and was not (oncoming when turning right, main road when emerging). */
@@ -111,7 +114,8 @@ export class Instructor implements SimModule,ExaminerListener{
   direction(step:RouteStep):void{
     const now=this.input.now();
     this.mistakes=[];
-    this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set()};
+    this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set(),
+      directionAt:now,signalAt:null,turnAt:null};
     // How to signal at a mini-roundabout, said with the direction while the lesson is about them.
     if(step.kind==='roundabout'&&this.has('roundabout')&&this.input.reminders!==false){
       this.input.say(step.turn==='left'?'Signal left on the approach.'
@@ -129,7 +133,17 @@ export class Instructor implements SimModule,ExaminerListener{
       :step.turn==='ahead'?`straight ahead at the ${step.kind==='lights'?'lights':'junction'}`:`turning ${step.turn} into ${road}`;
     const ok:string[]=[],bad:string[]=[];
     const turning=step.turn!=='ahead';
-    if(w.mirror)ok.push('mirrors');else bad.push(`check your mirrors before ${turning?'signalling':'the junction'}`);
+    if(turning&&step.kind!=='roundabout'){
+      // The routine in order: interior mirror, the mirror on the side of the turn, then the signal (routine.ts).
+      const side=step.turn as 'left'|'right';
+      const j=judgeTurn(side,this.looks,w.directionAt-4,w.signalAt,w.turnAt??this.input.now());
+      if(j.interior&&j.side&&j.inOrder)ok.push(`mirrors in order (interior, then ${side})`);
+      else if(j.mirrorsAfterSignal)bad.push('check your mirrors before you signal, not after');
+      else if(!j.interior&&!j.side)bad.push(`check the interior mirror, then the ${side} mirror, before signalling`);
+      else if(!j.side)bad.push(`check the ${side} mirror too, after the interior mirror`);
+      else bad.push(`check the interior mirror first, then the ${side} mirror`);
+      if(w.signal==='right'&&j.signalLate)bad.push('signal in good time: after the mirrors, before you slow down and turn');
+    }else if(w.mirror)ok.push('mirrors');else bad.push(`check your mirrors before ${turning?'signalling':'the junction'}`);
     if(step.kind==='roundabout'){
       const want=step.turn==='left'?'left':step.turn==='right'?'right':'off';
       if(w.approachSignal===want)ok.push(want==='off'?'no signal on the approach':`${want} signal on the approach`);
@@ -197,14 +211,27 @@ export class Instructor implements SimModule,ExaminerListener{
     const w=this.watch;
     if(w){
       const s=w.step,d=Math.hypot(l.x-s.at.x,l.z-s.at.z),turning=s.turn!=='ahead';
+      if(d<10)w.turnAt??=now;
       if(l.indicator!=='off'&&d<60){
         if(s.kind==='roundabout'){if(d>8&&d<35)w.approachSignal=l.indicator}
-        else if(turning&&l.indicator===s.turn)w.signal='right';
+        else if(turning&&l.indicator===s.turn){
+          if(w.signalAt===null){
+            w.signalAt=now;
+            // Signalled before any mirror check: said at once, so the order is learnt.
+            if(!this.lookedSince(w.directionAt-4,['interior',`${s.turn}-door`]))this.prompt('mirrors-first','Mirrors before you signal: interior mirror, then the side mirror, then signal.');
+          }
+          w.signal='right';
+        }
         else w.signal='wrong';
       }else if(s.kind==='roundabout'&&d>8&&d<35&&w.approachSignal===null)w.approachSignal='off';
       if(d<12)w.maxSpeed=Math.max(w.maxSpeed,l.speed);
       // Reminders, only when something is not yet done.
-      if(d<55&&d>30&&!w.mirror)this.prompt('mirrors','Check your mirrors.');
+      const sideMirror=`${s.turn}-door`;
+      if(turning&&s.kind!=='roundabout'&&w.signalAt===null&&d<55&&d>30&&!this.lookedSince(w.directionAt-4,['interior']))
+        this.prompt('mirrors',`Interior mirror first, then your ${s.turn} mirror.`);
+      else if(turning&&s.kind!=='roundabout'&&w.signalAt===null&&d<50&&d>25&&!this.lookedSince(w.directionAt-4,[sideMirror]))
+        this.prompt('side-mirror',`Now your ${s.turn} mirror, then signal.`);
+      else if((!turning||s.kind==='roundabout')&&d<55&&d>30&&!w.mirror)this.prompt('mirrors','Check your mirrors.');
       else if(turning&&s.kind!=='roundabout'&&d<42&&d>18&&w.signal==='off'&&w.mirror)this.prompt('signal',`Signal ${s.turn} now.`);
       else if(!turning&&s.kind!=='roundabout'&&w.signal!=='off'&&d<40)this.prompt('no-signal','No need to signal: we are going straight ahead.');
       else if(turning&&d<30&&d>10&&l.speed>TURN_SPEED+1.5)this.prompt('speed','Slow down for the turn.');
@@ -278,8 +305,11 @@ export class Instructor implements SimModule,ExaminerListener{
         }
       }else if(this.stopPhase==='stopped'&&l.speed>.5){
         this.stopPhase='driving';this.sinceStop=0;
-        if(this.lookedSince(this.stoppedAt,['right-door','right-shoulder'])||this.lookedSince(now-10,['right-shoulder']))this.good.push(`Moving off after pull-up ${this.stops}: looked round first.`);
-        else{this.improve.push(`${IMPROVE}Moving off after pull-up ${this.stops}: check the right mirror and over your right shoulder (the blind spot) before moving off.`);this.input.say('Remember to look over your right shoulder before moving off.')}
+        // A look all round, and a current one to the right just before going (routine.ts).
+        const m=judgeMoveOff(this.looks,now,this.stoppedAt);
+        if(m.allRound&&m.fresh)this.good.push(`Moving off after pull-up ${this.stops}: looked all round, and right again just before going.`);
+        else if(m.allRound){this.improve.push(`${IMPROVE}Moving off after pull-up ${this.stops}: you looked all round, but a while before moving off. Things change: look right again (mirror and blind spot) just before you go.`);this.input.say('Look right again just before you move off: things change while you wait.')}
+        else{this.improve.push(`${IMPROVE}Moving off after pull-up ${this.stops}: look all round before moving off: ${m.missing.join(', ')}.`);this.input.say('Remember to look over your right shoulder before moving off.')}
       }
     }
   }

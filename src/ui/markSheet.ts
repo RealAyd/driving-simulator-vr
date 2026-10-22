@@ -10,6 +10,7 @@ import type {AttemptResult,Finding,Severity,Vec2} from '../contracts';
 export const DL25_SECTIONS:ReadonlyArray<{label:string;rules:readonly string[]}>=[
   {label:'Vehicle checks',rules:['vehicle-checks']},
   {label:'Move off – safely',rules:['moving-off-safety']},
+  {label:'Use of mirrors – signalling',rules:['mirrors-signalling']},
   {label:'Use of mirrors – change direction',rules:['mirrors-change-direction']},
   {label:'Use of mirrors – change speed',rules:['mirrors-change-speed']},
   {label:'Signals – necessary',rules:['signals-necessary']},

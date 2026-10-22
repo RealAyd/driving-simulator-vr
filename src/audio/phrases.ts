@@ -41,6 +41,9 @@ function instructor():string[]{
     'Signal left on the approach.','No signal on the approach.','Signal left after you pass the exit before ours.',
     'Signal right on the approach, then left after you pass the exit before ours.',
     'Well done, that was good.','Good.','Check your mirrors.','Signal left now.','Signal right now.',
+    ...TURNS.flatMap(t=>[`Interior mirror first, then your ${t} mirror.`,`Now your ${t} mirror, then signal.`]),
+    'Mirrors before you signal: interior mirror, then the side mirror, then signal.',
+    'Look right again just before you move off: things change while you wait.',
     'No need to signal: we are going straight ahead.','Slow down for the turn.','Move over to just left of the middle of the road.',
     'Give way to the oncoming car: it has priority when you are turning right.','Look right, left, and right again before you go.',
     'Give way to traffic from the right.','Amber: stop at the line if you safely can.','The lights are red: stop at the line.',
@@ -59,7 +62,10 @@ function instructor():string[]{
   ];
   // "Next time, …": what went wrong at a junction.
   const next=[
-    'check your mirrors before signalling','check your mirrors before the junction',
+    'check your mirrors before signalling','check your mirrors before the junction','check your mirrors before you signal, not after',
+    ...TURNS.flatMap(t=>[`check the interior mirror, then the ${t} mirror, before signalling`,`check the ${t} mirror too, after the interior mirror`,
+      `check the interior mirror first, then the ${t} mirror`]),
+    'signal in good time: after the mirrors, before you slow down and turn',
     'going ahead, do not signal on the approach (signal left after passing the exit before yours)',
     ...TURNS.flatMap(t=>[`signal ${t} on the approach`,`you signalled the wrong way: signal ${t}`,`signal ${t} after your mirror check`]),
     'no signal is needed to go straight ahead (it suggests you are turning)',

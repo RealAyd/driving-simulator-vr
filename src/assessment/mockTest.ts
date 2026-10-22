@@ -5,6 +5,7 @@ import type {EventLog} from '../app/eventLog';
 import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
 import {judgePullUp,junctionPoints} from '../test/pullUp';
+import {judgeMoveOff,judgeTurn,MOVE_OFF_FRESH} from './routine';
 import {DVSA_SOURCE,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
 import type {Aspect,LiveStop} from '../world/trafficSignals';
 import type {Vec2} from '../contracts';
@@ -34,7 +35,9 @@ export interface MockTestInput{
 }
 
 /** A manoeuvre the examiner asked for, being watched. */
-interface Watch{step:RouteStep;mirror:boolean;signalled:boolean;wrongSignal:boolean;maxSpeed:number;directionEvent:string|null}
+interface Watch{step:RouteStep;signalled:boolean;wrongSignal:boolean;maxSpeed:number;directionEvent:string|null;
+  /** When the direction was given, the signal for this turn first went on, and the car reached the junction. */
+  directionAt:number;signalAt:number|null;turnAt:number|null}
 
 export class MockTestAssessor implements SimModule,ExaminerListener{
   readonly id='mock-test';
@@ -60,6 +63,8 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   private readonly junctions:Vec2[];
   /** Each stop line being approached: where the car's front was, the light then, and the amber judgement. */
   private lights=new Map<string,{front:number;last:Aspect;couldStop:boolean;waitingGreen:number}>();
+  /** Points on the routine that are not faults on the marking sheet (the report's "to improve"). */
+  private advice:string[]=[];
   /** The vehicle safety questions and how they went (for the report). */
   private checks:string[]=[];
   private showing:{q:ShowMeQuestion;time:number;shown:boolean;other:string|null;event:string|null}|null=null;
@@ -71,7 +76,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
     this.watch=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
-    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.showing=null;this.showMeFrom=null;this.lights.clear();
+    this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.advice=[];this.showing=null;this.showMeFrom=null;this.lights.clear();
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
   }
@@ -90,7 +95,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     this.directions++;
     const ev=this.input.events.events.at(-1);
     // A mirror check just before the direction counts too (planning ahead).
-    this.watch={step,mirror:!!this.recentLook(4),signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null};
+    this.watch={step,signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null,directionAt:this.input.now(),signalAt:null,turnAt:null};
   }
 
   done(step:RouteStep,followed:boolean):void{
@@ -102,8 +107,23 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const ev=w.directionEvent?[w.directionEvent]:[];
     const turning=step.turn!=='ahead';
     const id=`turn-${this.directions}`;
-    if(turning&&!w.mirror)this.fault('mirrors-change-direction',`${id}-mirrors`,'minor',
-      `Use of mirrors – change direction: no mirror check between the direction and turning ${step.turn} into ${into}.`,ev);
+    // The routine, in order: interior mirror, the mirror on the side of the turn, signal, turn (routine.ts).
+    if(turning){
+      const turn=step.turn as 'left'|'right';
+      // A mirror check just before the direction counts too (planning ahead).
+      const j=judgeTurn(turn,this.looks,w.directionAt-4,w.signalAt,w.turnAt??this.input.now());
+      if(!j.interior&&!j.side){
+        if(j.mirrorsAfterSignal)this.fault('mirrors-signalling',`${id}-mirrors`,'minor',
+          `Use of mirrors – signalling: the mirrors were checked only after signalling ${turn} for ${into}. Check them first, then signal.`,ev);
+        else this.fault('mirrors-change-direction',`${id}-mirrors`,'minor',
+          `Use of mirrors – change direction: no mirror check before ${w.signalled?'signalling and ':''}turning ${turn} into ${into}.`,ev);
+      }else if(!j.side)this.fault('mirrors-change-direction',`${id}-mirrors`,'minor',
+        `Use of mirrors – change direction: no check of the ${turn} mirror before ${w.signalled?'signalling and ':''}turning ${turn} into ${into} (the interior mirror alone does not show what is beside you).`,ev);
+      else if(!j.interior)this.advice.push(`${IMPROVE}Turning ${turn} into ${into}: check the interior mirror first, then the ${turn} mirror, then signal.`);
+      else if(!j.inOrder)this.advice.push(`${IMPROVE}Turning ${turn} into ${into}: the interior mirror comes first, then the ${turn} mirror.`);
+      if(w.signalled&&j.signalLate)this.fault('signals-timed',`${id}-late-signal`,'minor',
+        `Signals – timed: the ${turn} signal for ${into} came only as you turned; signal in good time, after the mirrors.`,ev);
+    }
     if(turning&&!w.signalled)this.fault('signals-necessary',`${id}-signal`,'minor',
       `Signals – necessary: no ${step.turn} signal before turning ${step.turn} into ${into}.`,ev);
     if(w.wrongSignal)this.fault('signals-correctly',`${id}-wrong-signal`,w.signalled?'minor':'serious',
@@ -169,7 +189,6 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
       if(n<=this.lastEvent)break;
       if(e.type==='observation.dwell'){
         this.looks.unshift({time:e.time,target:String(e.payload['target']),id:e.id});
-        if(this.watch)this.watch.mirror=true;
         if(this.pulling&&['interior','left-door'].includes(String(e.payload['target'])))this.pulling.mirror=true;
       }
       if(e.type==='vehicle.control'&&this.showing&&!this.showing.shown){
@@ -182,11 +201,13 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     if(evs.length)this.lastEvent=Math.max(this.lastEvent,Number(evs.at(-1)!.id.slice(3)));
     this.looks=this.looks.filter(lk=>now-lk.time<30);
 
-    // Moving off: a look round (right mirror, right shoulder or interior mirror) in the 10 s before first moving.
+    // Moving off: a look all round, and a current look to the right just before going (routine.ts).
     if(!this.movedOff&&speed>.5){
       this.movedOff=true;
-      if(!this.recentLook(10,['right-door','right-shoulder','interior']))
-        this.fault('moving-off-safety','moving-off','minor','Moving off – safety: no check of the mirrors or over the right shoulder in the 10 s before moving off.');
+      const m=judgeMoveOff(this.looks,now);
+      if(!m.allRound)this.fault('moving-off-safety','moving-off','minor',`Moving off – safety: before moving off, no look at ${m.missing.join(', ')}.`);
+      else if(!m.fresh)this.fault('moving-off-safety','moving-off','minor',`Moving off – safety: you looked all round, but not again just before moving off (more than ${MOVE_OFF_FRESH} s before). Things change: look right again (mirror and blind spot) just before you go.`);
+      if(!m.left)this.advice.push(`${IMPROVE}Moving off: look to the left too (mirror and over the left shoulder) for cyclists and people on the pavement.`);
     }
 
     // The show me question: the control asked for within 30 s.
@@ -213,8 +234,9 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const w=this.watch;
     if(w){
       const turn=w.step.turn;
+      if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<10)w.turnAt??=now;
       if(l.indicator!=='off'){
-        if(turn!=='ahead'&&l.indicator===turn)w.signalled=true;
+        if(turn!=='ahead'&&l.indicator===turn){w.signalled=true;w.signalAt??=now}
         else if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<40)w.wrongSignal=true;
       }
       if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<12)w.maxSpeed=Math.max(w.maxSpeed,speed);
@@ -338,7 +360,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     if(this.showMeFrom!==null&&findings.some(f=>(f.severity==='serious'||f.severity==='dangerous')&&f.time>=this.showMeFrom!&&f.time<=this.showMeFrom!+30))
       this.checks.push(`${INFO}A serious or dangerous fault came while answering the show me question: DVSA fails the test for driving dangerously or potentially dangerously while answering it.`);
     if(this.checks.length)this.checks.push(`${INFO}Vehicle safety questions and answers: ${DVSA_SOURCE}.`);
-    notes.push(...this.checks);
+    notes.push(...this.checks,...this.advice);
     if(this.redirects)notes.push(`${INFO}You went a different way ${this.redirects} time${this.redirects===1?'':'s'}: not a fault in itself; the examiner gave new directions.`);
     const byHeading=new Map<string,number>();
     for(const f of findings)if(f.severity==='minor'){const h=f.explanation.split(':')[0]!;byHeading.set(h,(byHeading.get(h)??0)+1)}

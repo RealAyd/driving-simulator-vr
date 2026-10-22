@@ -12,7 +12,13 @@ import goodmayesMockTestJson from '../../content/scenarios/goodmayes-mock-test.j
 const goodmayes=parseLocation(goodmayesJson);
 
 /** Drives a planned route: positions every metre, the speed given, signalling and checking mirrors if asked. */
-function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:number)=>number}){
+function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:number)=>number;
+  /** How the mirrors are checked at each turn: in order (interior, the turn's side, then signal), only the
+   *  interior, or only after signalling. */
+  routine?:'in-order'|'interior-only'|'after-signal';
+  /** Seconds between the look round and moving off. */
+  waitBeforeMovingOff?:number}){
+  const routine=options.routine??'in-order';
   let time=0;
   const events=new EventLog(()=>time);
   const net=new RoadNetwork(goodmayes);
@@ -27,8 +33,9 @@ function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:n
   const route=net.plan(net.locate(learner.x,learner.z,learner.heading)!,1500,3);
   const last=route.steps.at(-1)!,from=sampleRoad(last.to.road,last.at.x,last.at.z).along;
   const legs:RouteLeg[]=[...route.legs,{road:last.to.road,dir:last.to.dir,from,to:Math.max(0,Math.min(net.length(last.to.road),from+last.to.dir*80))}];
-  // Look round before moving off.
-  if(options.mirrors){time+=.5;events.emit('observation.dwell',{target:'right-door'})}
+  // Look all round before moving off (the left side, the interior mirror, then the right mirror and blind spot).
+  if(options.mirrors)for(const target of ['left-shoulder','left-door','interior','right-door','right-shoulder']){time+=.5;events.emit('observation.dwell',{target})}
+  time+=options.waitBeforeMovingOff??1;
   let i=0;
   for(const l of legs){
     const n=Math.max(1,Math.ceil(Math.abs(l.to-l.from)));
@@ -38,8 +45,12 @@ function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:n
       const step=examiner.steps[examiner.index];
       const d=step?Math.hypot(p.x-step.at.x,p.z-step.at.z):Infinity;
       Object.assign(learner,{x:p.x,z:p.z,heading:Math.atan2(p.direction.x*l.dir,-p.direction.z*l.dir),speed:options.speed(i,step&&step.turn!=='ahead'?d:Infinity)});
-      if(options.signals)learner.indicator=step&&step.turn!=='ahead'&&d<60?step.turn:'off';
-      if(options.mirrors&&step&&d<55&&d>53)events.emit('observation.dwell',{target:'interior'});
+      const turning=!!step&&step.turn!=='ahead';
+      // In order: the interior mirror at 56 m, the mirror on the turn's side at 54 m, the signal from 50 m.
+      if(options.mirrors&&turning&&routine!=='after-signal'&&d<56&&d>55)events.emit('observation.dwell',{target:'interior'});
+      if(options.mirrors&&turning&&routine==='in-order'&&d<54&&d>53)events.emit('observation.dwell',{target:`${step!.turn}-door`});
+      if(options.mirrors&&turning&&routine==='after-signal'&&d<40&&d>39)events.emit('observation.dwell',{target:'interior'});
+      if(options.signals)learner.indicator=turning&&d<50?step!.turn as 'left'|'right':'off';
       const dt=1/Math.max(1,learner.speed);
       time+=dt;examiner.fixedUpdate(dt);assessor.fixedUpdate(dt);
     }
@@ -59,6 +70,21 @@ describe('Mock test marking',()=>{
     expect(result.outcome).toBe('completed');
     expect(result.findings.filter(f=>/mirrors|signals|normal-stops/.test(f.ruleId)).map(f=>f.explanation)).toEqual([]);
     expect(result.mockTest?.passed).toBe(true);
+  });
+  it('the routine in the wrong order: mirrors only after the signal, or only the interior mirror, is a driving fault',()=>{
+    const turns=(r:ReturnType<typeof drive>['route'])=>r.steps.filter(s=>s.turn!=='ahead').length;
+    const late=drive({signals:true,mirrors:true,routine:'after-signal',speed:(_,d)=>d<25?5.4:11});
+    expect(late.result.findings.filter(f=>f.ruleId==='mirrors-signalling')).toHaveLength(turns(late.route));
+    const interior=drive({signals:true,mirrors:true,routine:'interior-only',speed:(_,d)=>d<25?5.4:11});
+    const side=interior.result.findings.filter(f=>f.ruleId==='mirrors-change-direction');
+    expect(side).toHaveLength(turns(interior.route));
+    expect(side[0]!.explanation).toMatch(/the (left|right) mirror/);
+  });
+  it('moving off: a look all round that is not current (a long wait after it) is a fault; a fresh one is not',()=>{
+    const stale=drive({signals:true,mirrors:true,waitBeforeMovingOff:12,speed:(_,d)=>d<25?5.4:11});
+    expect(stale.result.findings.find(f=>f.ruleId==='moving-off-safety')?.explanation).toMatch(/not again just before moving off/);
+    const fresh=drive({signals:true,mirrors:true,waitBeforeMovingOff:2,speed:(_,d)=>d<25?5.4:11});
+    expect(fresh.result.findings.some(f=>f.ruleId==='moving-off-safety')).toBe(false);
   });
   it('no signals and no mirror checks: a driving fault for each at every turn',()=>{
     const {result,route}=drive({signals:false,mirrors:false,speed:(_,d)=>d<25?5.4:11});
