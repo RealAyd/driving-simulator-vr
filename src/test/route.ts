@@ -329,6 +329,46 @@ export class RoadNetwork{
     return best!.route;
   }
 
+  /**
+   * The way ahead for free driving (no route): along the road from `pos`; the next turning on the side signalled
+   * (`turn`, at least `from` metres on); at a road's end the way signalled, else straight on, else the way that leads
+   * furthest. About `metres` long, or to a dead end; with how far along it the signalled turning is (null: none).
+   */
+  wayAhead(pos:RoadPos,turn:'left'|'right'|null,metres=220,from=8):{legs:RouteLeg[];turnAt:number|null}{
+    const legs:RouteLeg[]=[];
+    const side=(o:Option)=>Math.abs(o.angle)<.6?null:o.angle>0?'right':'left';
+    let at=pos,driven=0,want=turn,turnAt:number|null=null;
+    // (Further while the turning signalled is still to come.)
+    while((driven<metres||want&&driven<700)&&legs.length<16){
+      const ds=this.decisions(at);
+      let taken:{d:Decision;o:Option}|null=null;
+      for(const d of ds){
+        const to=Math.abs(d.along-at.along);
+        if(d.kind==='side'){
+          const o=d.options[0]!;
+          if(want&&side(o)===want&&driven+to>=from&&this.reach(o)>0){taken={d,o};break}
+          continue;
+        }
+        const os=d.options.filter(o=>this.reach(o)>0);
+        const pick=(list:Option[])=>[...list].sort((a,b)=>this.reach(b)-this.reach(a)||Math.abs(a.angle)-Math.abs(b.angle))[0];
+        const o=(want?pick(os.filter(x=>side(x)===want)):undefined)??(d.straight&&os.includes(d.straight)?d.straight:undefined)??pick(os);
+        if(o)taken={d,o};
+      }
+      const end=taken?taken.d.along:at.dir>0?len(at.road):0;
+      legs.push({road:at.road,dir:at.dir,from:at.along,to:end});
+      driven+=Math.abs(end-at.along);
+      if(!taken)break;
+      if(want&&side(taken.o)===want){want=null;turnAt=driven}
+      at={road:taken.o.road,dir:taken.o.dir,along:taken.o.from};
+      // Stopped at a junction: some of the road beyond it too (a path ending at a corner would not turn into it).
+      if(!(driven<metres||want&&driven<700)||legs.length>=16){
+        const room=at.dir>0?len(at.road)-at.along:at.along;
+        legs.push({road:at.road,dir:at.dir,from:at.along,to:at.along+at.dir*Math.min(80,room)});
+      }
+    }
+    return {legs,turnAt};
+  }
+
   /** Metres to a dead end or the edge of the area ahead (Infinity when the road ends at a junction). */
   roomAhead(pos:RoadPos):number{
     const end=this.decisions(pos).at(-1);

@@ -6,7 +6,7 @@ test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
 test('G19: Goodmayes free drive starts on real ground and drives off along the road',async({page},testInfo)=>{
-  test.setTimeout(300_000);
+  test.setTimeout(420_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
@@ -37,5 +37,21 @@ test('G19: Goodmayes free drive starts on real ground and drives off along the r
   await page.waitForTimeout(1500);
   expect(await read(page,'session()')).toBe('running');
   await page.screenshot({path:testInfo.outputPath('g19-driving.png')});
+  // Assisted steering with no route: along the lane past the parked cars, then (signalling left) into the next
+  // turning on the left, Granton Road, without hitting anything or leaving the road.
+  await page.click('#hud-ind-left');
+  const end=Date.now()+150_000;
+  let held:string|null=null;
+  const hold=async(key:string|null)=>{if(held===key)return;if(held)await page.keyboard.up(held);if(key)await page.keyboard.down(key);held=key};
+  while(Date.now()<end&&!(await page.locator('#hud-place').textContent())?.includes('Granton Road')){
+    const v=await read(page,'vehicle()');
+    await hold(Math.abs(v.speed)<5?'KeyW':Math.abs(v.speed)>7?'KeyS':null);
+    await page.waitForTimeout(150);
+    expect(await read(page,'session()')).toBe('running');
+  }
+  await hold(null);
+  await expect(page.locator('#hud-place')).toContainText('Granton Road');
+  expect(await read(page,'session()')).toBe('running');
+  await page.screenshot({path:testInfo.outputPath('g19-turned-left.png')});
   expect(errors).toEqual([]);
 });

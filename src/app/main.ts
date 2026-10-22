@@ -29,6 +29,7 @@ import {Soundscape,type RoadUserSound} from '../audio/soundscape';
 import {Traffic} from '../actors/traffic';
 import {RoadNetwork} from '../test/route';
 import {routeLanePath} from '../test/routePath';
+import {FreeDriveAssist} from '../test/freeDriveAssist';
 import {SHOW_ME,TELL_ME,pick} from '../test/vehicleChecks';
 import {CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
@@ -129,6 +130,8 @@ interface ExerciseRuntime{
   runner:ScenarioRunner;
   zones:ZoneTracker;
   assist:SteeringAssist|null;
+  /** The free-driving assistance (no route): its way ahead is kept up to date each frame. */
+  freeAssist:FreeDriveAssist|null;
   pedestrian:Pedestrian|null;
   follower:FollowingVehicle|null;
   passers:PassingVehicle[];
@@ -343,6 +346,7 @@ export async function boot():Promise<void>{
     const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
     // The driver's own button/key steering always overrides tilt and the assistance.
     // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
+    if(steeringMode==='assist'&&runtime?.freeAssist&&c.steer===0)runtime.freeAssist.update(vehicle.pose,vehicle.indicators.state);
     const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
@@ -598,6 +602,8 @@ export async function boot():Promise<void>{
     if(lessonMissing&&lessonWords)lessonWords.briefing+=` ${lessonMissing}`;
     const zones=new ZoneTracker(place,scenario.zones,()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,speed:vehicle.state.speed}),events);
     const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):routeAssist;
+    // Free driving (no route): the assistance keeps to the lane, past parked cars, and takes the turning signalled.
+    const freeAssist=assist?null:new FreeDriveAssist(net,kerbCars,vehicle.params);
     const road=place.roads[0]!;
     let lastCollision:string|null=null;
     // A mock test lasts as long as the level says (the examiner ends it when the route is done).
@@ -644,7 +650,7 @@ export async function boot():Promise<void>{
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,familiarisation,modules,runner,zones,assist,pedestrian,follower,passers,buses,traffic,examiner,trafficSignals,
+      scenario,familiarisation,modules,runner,zones,assist:assist??freeAssist?.assist??null,freeAssist,pedestrian,follower,passers,buses,traffic,examiner,trafficSignals,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.

@@ -25,6 +25,9 @@ export class SteeringAssist{
     });
   }
 
+  /** The path's length (metres). */
+  get length():number{return this.lengths.at(-1)??0}
+
   /** Where the car was last found along the path (a route can pass the same road twice, once each way). */
   private last:number|null=null;
 
