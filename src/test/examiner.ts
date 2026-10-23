@@ -214,6 +214,10 @@ export class Examiner implements SimModule{
         // already into the next one close after it.
         const along=(pos.fit?.alignment??1)>.7&&(pos.fit?.distance??0)<8;
         const followed=along&&(this.key(pos.road)===this.key(step.to.road)||quick&&this.key(pos.road)===this.key(after!.to.road));
+        // Still crossing (the far carriageway of a dual carriageway, turning right) or on a short link in the
+        // junction (a slip or a stub between carriageways, often unnamed): not decided until it is along a road
+        // proper, or well past.
+        if(!followed&&(!along||!pos.road.name||this.net.length(pos.road)<40)&&d<this.closest+60)return;
         this.options.listener?.done?.(step,followed);
         this.routeDone=Math.max(this.routeDone,step.distance);
         if(followed){
