@@ -36,6 +36,8 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   why?:string}
 
 const HALF_LENGTH=2.2,HALF_WIDTH=.95,BUS={halfLength:5.75,halfWidth:1.275};
+/** Parked cars this far ahead (metres) are passed: the car eases out this fast (m/s sideways) to clear them. */
+const PASS_AHEAD=24,SIDEWAYS=1.3;
 const ACCEL=1.6,BRAKE=4.5,GAP=7;
 const COLOURS=['#1f2a44','#c9ccd1','#7a1e1e','#2e3a2f','#f1f1ee','#3f444b','#24476b','#5b6168','#8a8f96','#14161a'];
 const mph=(v:number)=>v/2.237;
@@ -200,6 +202,8 @@ export class Traffic implements SimModule{
       const dist=Math.hypot(p.x-learner.x,p.z-learner.z);
       if(dist<90||dist>260)continue;
       if(this.drivers.some(o=>o!==d&&Math.hypot(o.car.pose.position.x-p.x,o.car.pose.position.z-p.z)<20))continue;
+      // Not on top of a parked car (it would appear out of it), nor just behind one with no room to pull out.
+      if(this.options.parked.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<9))continue;
       // Not just short of traffic lights (a car appearing there could not stop for red).
       if((this.options.signals?.()??[]).some(st=>Math.hypot(st.lane.x-p.x,st.lane.z-p.z)<50))continue;
       const car=d?.car??this.newCar(i);
@@ -309,6 +313,8 @@ export class Traffic implements SimModule{
           if(o===d||!o.car.visible||d.through===o)return false;
           const r=Math.hypot(o.car.pose.position.x-point.x,o.car.pose.position.z-point.z);
           // Nearer the junction and moving, or nearer and waiting with the turn first.
+          // (A bus standing at a stop just past the junction keeps it busy: there is no room to turn in beside it.)
+          if(o.dwell>0&&r<reach+o.car.halfLength)return true;
           return r<reach&&r<mine-.5&&(o.car.speed>.3||d.waited<2||this.drivers.indexOf(o)<i||d.waited<8);
         })||(()=>{
           // The learner holds the junction while moving through it or standing in it, not when parked near it.
@@ -347,13 +353,13 @@ export class Traffic implements SimModule{
         const dx=q.x-pos.x,dz=q.z-pos.z,along=dx*fwd.x+dz*fwd.z,left=dx*fwd.z-dz*fwd.x;
         // Already alongside with someone coming: back into the lane rather than hold the middle of the road.
         if(along<1&&q!==learner.pose.position&&oncoming.some(o=>o.along<25))continue;
-        if(along>(q===learner.pose.position?-7:-5)&&along<16&&left>(q===learner.pose.position?-.8:.4)&&left<3.2){
+        if(along>(q===learner.pose.position?-7:-5)&&along<PASS_AHEAD&&left>(q===learner.pose.position?-.8:.4)&&left<3.2){
           if(oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2&&along>3){target=Math.min(target,Math.max(0,(along-7)*.5));car.speed=Math.min(car.speed,target+.5)}
           else want=q===learner.pose.position?d.leg.lane-2.6:.15;
           break;
         }
       }
-      d.lat+=Math.max(-.9*dt,Math.min(.9*dt,want-d.lat));
+      d.lat+=Math.max(-SIDEWAYS*dt,Math.min(SIDEWAYS*dt,want-d.lat));
       car.speed=car.speed<target?Math.min(target,car.speed+ACCEL*dt):Math.max(target,car.speed-BRAKE*dt);
       // (Waiting at a red light is not being stuck.)
       d.waited=car.speed<.2&&d.dwell<=0&&why!=='lights'?d.waited+dt:0;

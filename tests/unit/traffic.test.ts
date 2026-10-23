@@ -134,4 +134,20 @@ describe('Background traffic: no gridlock',()=>{
     expect(seen).toBeGreaterThan(100);
     expect(vanished).toBe(0);
   });
+  it('traffic does not drive through parked cars (nor appear out of one): under 3 s in two minutes',()=>{
+    const layout=layoutTownscape(goodmayes)!;
+    const parked=layout.cars.map(c=>({x:c.x,z:c.z,h:c.heading}));
+    const sp=goodmayes.spawn.position;
+    const learner={pose:{position:{x:sp.x,y:0,z:sp.z},heading:goodmayes.spawn.headingDeg*Math.PI/180},speed:0};
+    for(const seed of [1,2,3]){
+      const traffic=new Traffic(goodmayes,{count:14,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:parked.map(p=>({x:p.x,z:p.z})),learner:()=>learner,seed});
+      let frames=0;
+      for(let t=0;t<120;t+=1/30){
+        traffic.fixedUpdate(1/30);
+        for(const c of traffic.cars)if(c.visible)for(const p of parked)
+          if(Math.hypot(c.pose.position.x-p.x,c.pose.position.z-p.z)<6&&overlap(box(c),{x:p.x,z:p.z,h:p.h,hw:.85,hl:2}))frames++;
+      }
+      expect(frames,`seed ${seed}`).toBeLessThan(90);
+    }
+  });
 });

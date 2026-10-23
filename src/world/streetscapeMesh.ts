@@ -415,8 +415,11 @@ function townBuilding(b:Builders,t:TownBuilding):void{
 function pitchedRoof(b:Builders,t:TownBuilding,colour:RGB,brick:boolean):void{
   const r=t.ring,H=t.y+t.height;
   const len=(i:number)=>Math.hypot(r[(i+1)%4]!.x-r[i]!.x,r[(i+1)%4]!.z-r[i]!.z);
-  // Long sides are edges k and k+2.
-  const k=len(0)+len(2)>=len(1)+len(3)?0:1;
+  // The ridge runs along edges k and k+2: along the street where a wall faces one (a terraced house is deeper
+  // than it is wide, but its ridge runs along the street, its gable ends against its neighbours); otherwise along
+  // the long sides.
+  const facing=t.walls.findIndex(w=>w.facesRoad);
+  const k=facing>=0?facing%2:len(0)+len(2)>=len(1)+len(3)?0:1;
   const a=r[k]!,bq=r[(k+1)%4]!,c=r[(k+2)%4]!,d=r[(k+3)%4]!;
   const short=Math.min(len(k+1),len((k+3)%4));
   const rise=Math.min(3.2,Math.max(1.6,short*.35));
