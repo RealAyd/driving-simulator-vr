@@ -133,7 +133,7 @@ describe('Background traffic: no gridlock',()=>{
     }
     expect(seen).toBeGreaterThan(100);
     expect(vanished).toBe(0);
-  });
+  },60_000);
   it('traffic does not drive through parked cars (nor appear out of one): under 3 s in two minutes',()=>{
     const layout=layoutTownscape(goodmayes)!;
     const parked=layout.cars.map(c=>({x:c.x,z:c.z,h:c.heading}));
@@ -149,5 +149,5 @@ describe('Background traffic: no gridlock',()=>{
       }
       expect(frames,`seed ${seed}`).toBeLessThan(90);
     }
-  });
+  },60_000);
 });

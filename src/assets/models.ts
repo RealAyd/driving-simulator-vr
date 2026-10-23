@@ -5,7 +5,7 @@ import type {AssetContainer} from '@babylonjs/core/assetContainer';
 import type {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
 import type {BaseTexture} from '@babylonjs/core/Materials/Textures/baseTexture';
 
-import {CAR_MODELS,parkedSize,type CarModelId,type CarModelSpec} from './carSpecs';
+import {CAR_MODELS,parkedModelIds,parkedSize,type CarModelId,type CarModelSpec} from './carSpecs';
 export {CAR_MODEL,CAR_MODELS,type CarModelSpec} from './carSpecs';
 
 /** The glTF PBR material properties we carry over (Babylon's PBRMaterial). */
@@ -105,7 +105,12 @@ export class CarModel{
     for(const root of entries.rootNodes){
       root.parent=holder;
       for(const mesh of root.getChildMeshes(false) as AbstractMesh[])
-        if(mesh.material?.name===this.spec.paintMaterial)mesh.material=paint;
+        if(mesh.material?.name===this.spec.paintMaterial){
+          // A body with its detail in a grey texture (the new set's): painted over it.
+          const texture=(mesh.material as StandardMaterial).diffuseTexture;
+          if(texture&&!paint.diffuseTexture)paint.diffuseTexture=texture;
+          mesh.material=paint;
+        }
     }
     if(this.spec.glassShell)this.addGlassShell(holder);
     return holder;
@@ -160,12 +165,16 @@ export class CarModel{
       const world=mesh.computeWorldMatrix(true);
       const positions=mesh.getVerticesData(VertexBuffer.PositionKind)!,normals=mesh.getVerticesData(VertexBuffer.NormalKind),indices=mesh.getIndices()!;
       const c=mesh.material?.name===this.spec.paintMaterial?paint:(mesh.material as StandardMaterial|null)?.diffuseColor??Color3.Gray();
+      // Colours baked into the vertices (the new set's parked models, from their textures), where there are some.
+      const vc=mesh.material?.name===this.spec.paintMaterial?null:mesh.getVerticesData(VertexBuffer.ColorKind);
+      const stride=vc&&positions.length?vc.length/(positions.length/3):4;
+      const colourAt=(v:number):[number,number,number]=>vc?[Math.pow(vc[v*stride]!,1/2.2),Math.pow(vc[v*stride+1]!,1/2.2),Math.pow(vc[v*stride+2]!,1/2.2)]:[c.r,c.g,c.b];
       const base=target.positions.length/3;
       if(normals){
         for(let i=0;i<positions.length;i+=3){
           Vector3.TransformCoordinatesFromFloatsToRef(positions[i]!,positions[i+1]!,positions[i+2]!,world,p);
           Vector3.TransformNormalFromFloatsToRef(normals[i]!,normals[i+1]!,normals[i+2]!,world,n);n.normalize();
-          target.positions.push(p.x,p.y,p.z);target.normals.push(n.x,n.y,n.z);target.colors.push(c.r,c.g,c.b,1);
+          target.positions.push(p.x,p.y,p.z);target.normals.push(n.x,n.y,n.z);target.colors.push(...colourAt(i/3),1);
         }
         for(const i of indices)target.indices.push(base+i);
         continue;
@@ -181,7 +190,7 @@ export class CarModel{
         const e1=new Vector3(w[b2]!-w[a]!,w[b2+1]!-w[a+1]!,w[b2+2]!-w[a+2]!),e2=new Vector3(w[d]!-w[a]!,w[d+1]!-w[a+1]!,w[d+2]!-w[a+2]!);
         Vector3.CrossToRef(e1,e2,n);n.normalize();
         const v0=target.positions.length/3;
-        for(const k of [a,b2,d]){target.positions.push(w[k]!,w[k+1]!,w[k+2]!);target.normals.push(n.x,n.y,n.z);target.colors.push(c.r,c.g,c.b,1)}
+        for(const k of [a,b2,d]){target.positions.push(w[k]!,w[k+1]!,w[k+2]!);target.normals.push(n.x,n.y,n.z);target.colors.push(...colourAt(k/3),1)}
         target.indices.push(v0,v0+1,v0+2);
       }
     }
@@ -194,7 +203,7 @@ export interface BakedGeometry{positions:number[];normals:number[];colors:number
 
 /** Loads every parked-car model once (null where one cannot load). */
 export async function loadCarModels(scene:Scene):Promise<Map<CarModelId,CarModel|null>>{
-  const ids=Object.keys(CAR_MODELS) as CarModelId[];
+  const ids=parkedModelIds();
   const models=await Promise.all(ids.map(id=>CarModel.load(scene,CAR_MODELS[id],'parked')));
   return new Map(ids.map((id,i)=>[id,models[i]!]));
 }

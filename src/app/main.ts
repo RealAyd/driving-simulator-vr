@@ -51,7 +51,7 @@ import {setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
-import {ROAD_USER_CAR_MODELS} from '../assets/carSpecs';
+import {roadUserCarModels,useVehicleSet,activeVehicleSet} from '../assets/carSpecs';
 import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
@@ -199,6 +199,8 @@ export async function boot():Promise<void>{
   byId('tutorial-home').addEventListener('click',()=>tutorial.start(HOME_TOUR));
   byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
+  // ?cars=new: the new set of vehicles, being tried (the plain link keeps the current set). Before any street is laid out.
+  useVehicleSet(new URLSearchParams(location.search).get('cars')==='new'?'new':'current');
   // A page from before an update: reload for the current version (not during a drive).
   reloadWhenStale(()=>session.state==='running');
   // Every failure is shown on screen rather than leaving a blank canvas.
@@ -333,15 +335,17 @@ export async function boot():Promise<void>{
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
   const showCredit=()=>{
     const osm=place.sources.some(source=>source.licence.includes('ODbL'));
-    byId('hud-credit').hidden=!osm&&!terrain;
+    // The test car set's models are CC BY 4.0: their authors are credited while they are on screen.
+    const cars=activeVehicleSet()==='new';
+    byId('hud-credit').hidden=!osm&&!terrain&&!cars;
     // Terrain data (AWS Terrain Tiles: SRTM, EU-DEM/Copernicus and others) asks for attribution too.
-    byId('hud-credit').textContent=[osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'',terrain?'terrain: AWS Terrain Tiles (Mapzen; SRTM, Copernicus)':''].filter(Boolean).join(' · ');
+    byId('hud-credit').textContent=[osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'',terrain?'terrain: AWS Terrain Tiles (Mapzen; SRTM, Copernicus)':'',cars?'cars: muha692, Comrade1280, Max (Sketchfab, CC BY 4.0)':''].filter(Boolean).join(' · ');
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
   // Animated people load in the background: the light figures are drawn until they are ready.
   void AnimatedPeople.load(scene).then(a=>{animatedPeople=a;if(people)people.animated=a});
-  const [loadedParked,roadUserModels,loadedStreet,singleDecker,doubleDecker]=await Promise.all([loadCarModels(scene),Promise.all(ROAD_USER_CAR_MODELS.map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)]);
+  const [loadedParked,roadUserModels,loadedStreet,singleDecker,doubleDecker]=await Promise.all([loadCarModels(scene),Promise.all(roadUserCarModels().map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)]);
   // Red buses (asset Batch A): each deck falls back to the other, then to the drawn bus.
   const busModels={single:singleDecker??doubleDecker,double:doubleDecker??singleDecker};
   // Other road users' cars alternate between the models that loaded (simple shapes if none did).

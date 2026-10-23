@@ -1,6 +1,6 @@
 import {headingFromDirection,type Block,type Building,type Location,type Vec2} from '../contracts';
 import type {Palette,StreetLayout,Tree} from './streetscape';
-import {CAR_MODELS,PARKED_CAR_COLOURS,parkedSize,type CarModelId} from '../assets/carSpecs';
+import {CAR_MODELS,PARKED_CAR_COLOURS,kerbCarModels,parkedSize,type CarModelId} from '../assets/carSpecs';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 
 /**
@@ -234,7 +234,6 @@ export function layoutTownscape(location:Location):StreetLayout|null{
 }
 
 /** The everyday cars parked on residential streets (most often the smaller ones). */
-const KERB_MODELS:CarModelId[]=['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon'];
 
 /**
  * Cars parked along residential streets (two-way, no centre line): nose to tail at the kerb with gaps, clear of
@@ -252,7 +251,7 @@ function parkAtKerbs(location:Location,out:StreetLayout):void{
     const length=road.centreline.slice(1).reduce((s,p,i)=>s+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
     for(const side of [-1,1]){
       for(let s=14+rand()*6;s<length-14;){
-        const model=KERB_MODELS[Math.floor(rand()*KERB_MODELS.length)]!;
+        const kerb=kerbCarModels(),model=kerb[Math.floor(rand()*kerb.length)]!;
         const size=parkedSize(CAR_MODELS[model]);
         const along=s+size.length/2;
         s+=size.length+1.2+(rand()<.3?4+rand()*8:0);

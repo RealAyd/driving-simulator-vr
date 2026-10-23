@@ -218,6 +218,60 @@
       ],
       "storage": "public: the four pedestrians, rebuilt smaller (below); the pack archives are not stored",
       "notes": "Not used: action_performer_03 (no Walk clip; its Cycling clip is body motion with no bicycle), SeatedIdle and the other extra clips, and the FBX exports. The supplied GLBs' texture coordinates are flipped vertically (FBX convention), which shows as a patchwork of texture pieces; the build flips them back."
+    },
+    {
+      "id": "sketchfab-muha692-peugeot-208",
+      "title": "Peugeot 208 low poly",
+      "author": "muha692 (https://sketchfab.com/muha692)",
+      "source": "https://sketchfab.com/3d-models/peugeot-208-low-poly-1acd0a4c70ea47888040f0c2cda3f408, GLB supplied by the project owner, received 2026-10-23",
+      "licence": "CC BY 4.0 (Creative Commons Attribution 4.0 International), per the licence recorded in the GLB",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "redistributionAllowed": true,
+      "attributionRequired": true,
+      "contents": [
+        "Peugeot 208"
+      ],
+      "storage": "public",
+      "notes": "Test set only: used when the app is opened with ?cars=new; the default set is unchanged. Credited in the on-screen credit line while the set is in use. Number plates and badges stripped."
+    },
+    {
+      "id": "sketchfab-comrade1280-generic-car-pack",
+      "title": "Generic passenger car pack",
+      "author": "Comrade1280 (https://sketchfab.com/comrade1280)",
+      "source": "https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5, GLB supplied by the project owner, received 2026-10-23",
+      "licence": "CC BY 4.0 (Creative Commons Attribution 4.0 International), per the licence recorded in the GLB",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "redistributionAllowed": true,
+      "attributionRequired": true,
+      "contents": [
+        "compact",
+        "coupe",
+        "hatchback",
+        "minivan",
+        "offroad",
+        "pickup",
+        "sedan",
+        "suv",
+        "wagon",
+        "sports car (not used)"
+      ],
+      "storage": "public",
+      "notes": "Test set only: used when the app is opened with ?cars=new; the default set is unchanged. Credited in the on-screen credit line while the set is in use. Number plates and badges stripped."
+    },
+    {
+      "id": "sketchfab-max-sprinter-2006",
+      "title": "Mercedes Benz Sprinter 2006",
+      "author": "Max (https://sketchfab.com/Max-5532)",
+      "source": "https://sketchfab.com/3d-models/mercedes-benz-sprinter-2006-f69de1315bb049c8946d57f6006acd73, GLB supplied by the project owner, received 2026-10-23",
+      "licence": "CC BY 4.0 (Creative Commons Attribution 4.0 International), per the licence recorded in the GLB",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "redistributionAllowed": true,
+      "attributionRequired": true,
+      "contents": [
+        "Mercedes Benz Sprinter 2006 (supplied as an optimised *_mobile.glb)"
+      ],
+      "storage": "public",
+      "notes": "Test set only: used when the app is opened with ?cars=new; the default set is unchanged. Credited in the on-screen credit line while the set is in use. Number plates and badges stripped."
     }
   ],
   "models": [
@@ -605,6 +659,448 @@
       },
       "build": "ONLY=parked tools/assets/build-batch-b-cars.sh <extracted Batch B corrected folder>",
       "storage": "public"
+    },
+    {
+      "id": "v2-compact-parked",
+      "file": "public/assets/models/vehicles/v2/v2-compact-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-compact",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1606,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24784
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-compact",
+      "file": "public/assets/models/vehicles/v2/v2-compact.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-compact",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 7257,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 206392
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-coupe-parked",
+      "file": "public/assets/models/vehicles/v2/v2-coupe-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-coupe",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1583,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24756
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-coupe",
+      "file": "public/assets/models/vehicles/v2/v2-coupe.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-coupe",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 6022,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 202300
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-hatchback-parked",
+      "file": "public/assets/models/vehicles/v2/v2-hatchback-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-hatchback",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1580,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24572
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-hatchback",
+      "file": "public/assets/models/vehicles/v2/v2-hatchback.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-hatchback",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 6808,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 195876
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-minivan-parked",
+      "file": "public/assets/models/vehicles/v2/v2-minivan-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-minivan",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1591,
+        "materials": 4,
+        "textures": 0,
+        "bytes": 24472
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-minivan",
+      "file": "public/assets/models/vehicles/v2/v2-minivan.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-minivan",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 7450,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 211736
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-offroad-parked",
+      "file": "public/assets/models/vehicles/v2/v2-offroad-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-offroad",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1595,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 23784
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-offroad",
+      "file": "public/assets/models/vehicles/v2/v2-offroad.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-offroad",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 6502,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 192612
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-peugeot-208-parked",
+      "file": "public/assets/models/vehicles/v2/v2-peugeot-208-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-muha692-peugeot-208",
+      "sourceFile": "v2-peugeot-208",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 3996,
+        "materials": 1,
+        "textures": 0,
+        "bytes": 51508
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-peugeot-208",
+      "file": "public/assets/models/vehicles/v2/v2-peugeot-208.glb",
+      "storage": "public",
+      "pack": "sketchfab-muha692-peugeot-208",
+      "sourceFile": "v2-peugeot-208",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Windows (painted pale blue in its texture) tinted dark",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 15495,
+        "materials": 4,
+        "textures": 2,
+        "bytes": 677616
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-pickup-parked",
+      "file": "public/assets/models/vehicles/v2/v2-pickup-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-pickup",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1596,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24388
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-pickup",
+      "file": "public/assets/models/vehicles/v2/v2-pickup.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-pickup",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 6918,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 204100
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-sedan-parked",
+      "file": "public/assets/models/vehicles/v2/v2-sedan-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-sedan",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1584,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24664
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-sedan",
+      "file": "public/assets/models/vehicles/v2/v2-sedan.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-sedan",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 7122,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 238452
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-sprinter-van-parked",
+      "file": "public/assets/models/vehicles/v2/v2-sprinter-van-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-max-sprinter-2006",
+      "sourceFile": "v2-sprinter-van",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 3729,
+        "materials": 5,
+        "textures": 0,
+        "bytes": 80556
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-suv-parked",
+      "file": "public/assets/models/vehicles/v2/v2-suv-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-suv",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1592,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24908
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-suv",
+      "file": "public/assets/models/vehicles/v2/v2-suv.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-suv",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 7951,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 230196
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-wagon-parked",
+      "file": "public/assets/models/vehicles/v2/v2-wagon-parked.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-wagon",
+      "use": "Parked cars in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Single static mesh",
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+      ],
+      "stats": {
+        "triangles": 1579,
+        "materials": 3,
+        "textures": 0,
+        "bytes": 24320
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "v2-wagon",
+      "file": "public/assets/models/vehicles/v2/v2-wagon.glb",
+      "storage": "public",
+      "pack": "sketchfab-comrade1280-generic-car-pack",
+      "sourceFile": "v2-wagon",
+      "use": "Moving traffic in the ?cars=new test set only",
+      "modifications": [
+        "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
+        "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
+        "Wheels split out and given a WheelSpin animation",
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+      ],
+      "stats": {
+        "triangles": 6982,
+        "materials": 4,
+        "textures": 3,
+        "bytes": 225508
+      },
+      "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     }
   ]
 }
