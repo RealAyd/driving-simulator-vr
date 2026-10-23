@@ -51,3 +51,16 @@ STRIPE_SECRET_KEY are available, but failed with exactly:
 Asked owner to add that exact name or supply its current name (never value).
 The workflow stopped before release publication, app creation or Mongo user
 provisioning. No hosted backend health claim is made.
+
+## Successful hosted staging startup
+
+After mapping GitHub secret RESEND to runtime RESEND_API_KEY and the owner
+updating STRIPE_SECRET_KEY to a test key, Actions run 40036203680 succeeded.
+https://github.com/RealAyd/driving-practice-preview/actions/runs/40036203680
+Created dp-sim-staging app with a scoped Mongo readWrite user for dp_sim_staging.
+Verified health HTTP 200, gate=true, devCheckout=false and exact source d4da039.
+URL: https://dp-sim-staging.hostless.app
+Hostless deployment: 6adbe4fe9600443a5d3b1fff.
+Added staging.drivingpractice.live as custom domain (DNS Pending); no DNS edits.
+Remaining: configure four supplied test Payment Links and Starter mode quotas,
+verify Resend domain, configure custom DNS and verify webhook/payment/email flows.
