@@ -91,7 +91,8 @@ export class Service{
     if(!a)return null;
     const ledger=await this.store.ledger({accountId});
     return {
-      email:a.email,balance:a.balance,starterBought:!!a.starterBought,referralCode:a.referralCode,
+      // (The id goes on the Payment Link as client_reference_id, so the webhook knows whose payment it is.)
+      id:a.id,email:a.email,balance:a.balance,starterBought:!!a.starterBought,referralCode:a.referralCode,
       invited:await this.store.countReferred(a.id),rewarded:ledger.filter(e=>e.type==='referral_bonus').length,
       history:ledger.slice(-20).reverse().map(e=>({type:e.type,sessions:e.sessionsDelta,amountPence:e.amountPence,reason:e.reason,at:e.createdAt.toISOString()})),
       admin:!!a.email&&this.config.adminEmails.includes(a.email)
