@@ -63,7 +63,7 @@ test('G23: lesson 11, manoeuvres: the emergency stop (pull in, briefing, STOP on
   test.setTimeout(700_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('./?routeSeed=1');
+  await page.goto('./?routeSeed=2');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.click('[data-drive-mode=lesson]');
   await page.click('[data-exercise=goodmayes]');

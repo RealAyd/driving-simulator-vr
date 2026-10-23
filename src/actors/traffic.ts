@@ -56,6 +56,8 @@ export interface TrafficOptions{
 export class Traffic implements SimModule{
   readonly id='traffic';
   readonly cars:TrafficCar[]=[];
+  /** Diagnostics: why each car is slowing or waiting, and for how long it has stood. */
+  reasons():Array<{id:string;why:string;waited:number}>{return this.drivers.map(d=>({id:d.car.id,why:d.why??'',waited:d.waited}))}
   private drivers:Driver[]=[];
   private readonly nodes:Array<{x:number;z:number;junction:boolean;radius:number}>=[];
   /** Road ends at each node: road, and whether the road starts (+1, leaves the node along its direction) there. */

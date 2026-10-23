@@ -1885,7 +1885,7 @@ export async function boot():Promise<void>{
     showActor:(id:string,on:boolean)=>{for(const m of scene.getTransformNodeByName(`actor-${id}`)?.getChildMeshes()??[])m.isVisible=on},
     follower:()=>runtime?.follower?{gap:runtime.follower.gap,speed:runtime.follower.speed,pose:runtime.follower.pose}:null,
     passers:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose}))??[],
-    traffic:()=>runtime?.traffic?.cars.map(c=>({id:c.id,visible:c.visible,speed:c.speed,pose:c.pose}))??[],
+    traffic:()=>{const why=new Map((runtime?.traffic?.reasons()??[]).map(r=>[r.id,r]));return runtime?.traffic?.cars.map(c=>({id:c.id,visible:c.visible,speed:c.speed,pose:c.pose,why:why.get(c.id)?.why??'',waited:why.get(c.id)?.waited??0}))??[]},
     findings:()=>(runtime?.current()??[]).map(f=>({...(f as object)})),
     result:()=>lastResult,
     assist:()=>steeringMode==='assist',
