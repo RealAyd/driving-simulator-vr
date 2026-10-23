@@ -165,12 +165,15 @@ export function loadBindings(storage:Pick<Storage,'getItem'>|null,device:string)
   }catch{return null}
 }
 
-export function saveBindings(storage:Pick<Storage,'getItem'|'setItem'>|null,device:string,bindings:Bindings):void{
+/** Saves a device's bindings; false when the browser is not keeping data (Private Browsing, blocked site data). */
+export function saveBindings(storage:Pick<Storage,'getItem'|'setItem'>|null,device:string,bindings:Bindings):boolean{
   try{
-    const all=JSON.parse(storage?.getItem('dp.controller.bindings.v1')??'{}') as Record<string,Bindings>;
+    if(!storage)return false;
+    const all=JSON.parse(storage.getItem('dp.controller.bindings.v1')??'{}') as Record<string,Bindings>;
     all[device]=bindings;
-    storage?.setItem('dp.controller.bindings.v1',JSON.stringify(all));
-  }catch{/* storage unavailable: bindings last for this visit only */}
+    storage.setItem('dp.controller.bindings.v1',JSON.stringify(all));
+    return JSON.stringify((JSON.parse(storage.getItem('dp.controller.bindings.v1')??'{}') as Record<string,Bindings>)[device])===JSON.stringify(bindings);
+  }catch{return false}
 }
 
 /** The device that last passed the controller check (remembered between visits), or null. */
@@ -178,6 +181,17 @@ export function loadCheckedDevice(storage:Pick<Storage,'getItem'>|null):string|n
   try{return storage?.getItem('dp.controller.checked.v1')??null}catch{return null}
 }
 
-export function saveCheckedDevice(storage:Pick<Storage,'setItem'>|null,device:string):void{
-  try{storage?.setItem('dp.controller.checked.v1',device)}catch{/* storage unavailable: check again next visit */}
+export function saveCheckedDevice(storage:Pick<Storage,'setItem'>|null,device:string):boolean{
+  try{if(!storage)return false;storage.setItem('dp.controller.checked.v1',device);return true}catch{return false}
+}
+
+/** Whether this browser keeps what is saved (false in some Private Browsing modes, or with website data blocked). */
+export function storageWorks(storage:Pick<Storage,'getItem'|'setItem'|'removeItem'>|null):boolean{
+  try{
+    if(!storage)return false;
+    storage.setItem('dp.storage.probe','1');
+    const ok=storage.getItem('dp.storage.probe')==='1';
+    storage.removeItem('dp.storage.probe');
+    return ok;
+  }catch{return false}
 }

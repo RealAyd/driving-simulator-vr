@@ -97,7 +97,7 @@ import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
 import {MENU,ViewerHud,type GazeItem} from '../xr/viewerHud';
-import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,type ControllerState,type DriveAction} from '../xr/controllerInput';
+import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type ControllerState,type DriveAction} from '../xr/controllerInput';
 import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
 import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
@@ -941,8 +941,10 @@ export async function boot():Promise<void>{
   const driveButton=byId<HTMLButtonElement>('viewer-drive');
   let driveStatus='';
   const refreshDriveButton=()=>{
-    const ready=!!checkedDevice&&!!controllerState?.connected&&controllerState.device===checkedDevice;
-    const text=ready?`Controller checked: ${checkedDevice}.`
+    // (A keyboard, or a headset remote that acts as one, cannot be seen until a key is pressed: once checked, it is
+    // ready; its first key press starts the drive.)
+    const ready=!!checkedDevice&&(checkedDevice==='keyboard'||!!controllerState?.connected&&controllerState.device===checkedDevice);
+    const text=ready?`Controller checked: ${checkedDevice} (saved on this phone).`
       :checkedDevice?`Checked before: ${checkedDevice}. Connect it (or press one of its controls) to drive, or check another.`
       :'Not available yet: run the controller check first.';
     if(text===driveStatus&&driveButton.disabled===!ready)return;
@@ -955,6 +957,11 @@ export async function boot():Promise<void>{
   let viewerSharpness:AdaptiveScale|null=null;
   const leaveViewer=()=>{
     if(!viewer.active)return;
+    // Calibration: say what was kept.
+    if(viewerMode==='calibration'){
+      const s=viewerSettings,p=VIEWER_PROFILES.find(v=>v.id===s.profileId)!;
+      viewerStatus.textContent=`Viewer settings saved for ${viewers.active}: ${p.label.split(' (')[0]}, eye spacing ${s.ipdMm} mm, image alignment ${s.lensSeparationMm} mm, field of view ${s.fovDeg}°.`;
+    }
     viewer.exit();
     viewerHud.setVisible(false);
     viewerHud.setItems([]);
@@ -1022,8 +1029,18 @@ export async function boot():Promise<void>{
       checkRows.set(action,{binding,state,tested});
     }
   }
+  /** What is saved on this phone, and whether this browser keeps it at all. */
+  const showSavedControls=(note='')=>{
+    const saved=checkedDevice?loadBindings(localStore,checkedDevice):null;
+    byId('controller-saved').textContent=!storageWorks(localStore)
+      ?'This browser is not keeping settings (Private Browsing, or website data blocked in Settings › Safari), so controls must be set again on each visit.'
+      :saved?`Saved on this phone: ${checkedDevice}, ${Object.keys(saved).length} controls.${note}`
+      :`Nothing saved yet on this phone.${note}`;
+    byId('controller-saved').classList.toggle('warn',!storageWorks(localStore));
+  };
   const openControllerCheck=()=>{
     byId('screen-controller').hidden=false;
+    showSavedControls();
     checkTested.clear();
     capturing=null;
     checkDevice=null;
@@ -1042,7 +1059,10 @@ export async function boot():Promise<void>{
     if(capturing){
       const b=controller.capture();
       // (Saved at once: leaving the check part-way keeps what was set.)
-      if(b){controller.bindings={...controller.bindings,[capturing]:b};capturing=null;if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}}
+      if(b){
+        controller.bindings={...controller.bindings,[capturing]:b};capturing=null;
+        if(checkDevice){const ok=saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;byId('controller-saved').textContent=ok?`Saved: ${describeBinding(b)} for ${checkDevice}.`:'Could not save: this browser is not keeping settings.'}
+      }
     }
     for(const action of DRIVE_ACTIONS){
       const row=checkRows.get(action)!;
@@ -1076,8 +1096,8 @@ export async function boot():Promise<void>{
     const st=controllerState;
     if(!st?.device)return;
     checkedDevice=st.device;
-    saveBindings(localStore,st.device,controller.bindings);
-    saveCheckedDevice(localStore,st.device);
+    const kept=saveBindings(localStore,st.device,controller.bindings)&&saveCheckedDevice(localStore,st.device);
+    if(!kept)viewerStatus.textContent='Controller checked for this visit only: this browser is not keeping settings (Private Browsing, or website data blocked).';
     boundDevice=st.device;
     byId('screen-controller').hidden=true;
     refreshDriveButton();
@@ -1159,10 +1179,12 @@ export async function boot():Promise<void>{
   };
   const calibrationItems=():GazeItem[]=>[
     ...CAL_ROWS.flatMap((r,i)=>[
-      {id:`cal-${i}-minus`,label:'−',x:MENU_PANEL.x+.29,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.07,h:.05,dwell:.7},
-      {id:`cal-${i}-plus`,label:'+',x:MENU_PANEL.x+.38,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.07,h:.05,dwell:.7}
+      {id:`cal-${i}-minus`,label:'−',x:MENU_PANEL.x+.29,y:menuLineY(i+2),z:MENU_PANEL.z+.02,w:.07,h:.05,dwell:.7},
+      {id:`cal-${i}-plus`,label:'+',x:MENU_PANEL.x+.38,y:menuLineY(i+2),z:MENU_PANEL.z+.02,w:.07,h:.05,dwell:.7}
     ]),
-    ...belowMenu([['cal-reset','Reset'],['cal-recentre','Recentre'],['cal-done','Done']],1.2)
+    // Done finishes (2 s look); Reset back to the preset needs a deliberate 3 s look, well apart from Done.
+    ...belowMenu([['cal-reset','Reset to preset'],['cal-recentre','Recentre'],['cal-done','Done']],1.2).map(item=>
+      item.id==='cal-reset'?{...item,x:item.x-.08,dwell:3}:item.id==='cal-done'?{...item,x:item.x+.08,dwell:2}:item)
   ];
   const viewerItem=(id:string)=>{
     if(id==='start'){
@@ -1279,10 +1301,10 @@ export async function boot():Promise<void>{
       const s=viewerSettings,p=VIEWER_PROFILES.find(v=>v.id===s.profileId)!;
       const value=(k:typeof CAL_ROWS[number]['key'])=>k==='profileId'?p.label.split(' (')[0]:k==='distortionScale'?`${Math.round(s[k]*100)}%`:k==='verticalOffsetMm'?`${s[k].toFixed(1)} mm`:k==='fovDeg'?`${s[k]}°`:`${s[k]} mm`;
       const drift=headTracker.driftDegPerMinute;
-      menu=[`Viewer calibration: ${viewers.active} (presets are provisional)`,
+      menu=[`Adjust the picture: ${viewers.active} (saves as you go)`,
+        'Look at − or + to change a setting until the crosses look like one.',
         ...CAL_ROWS.map((r,i)=>`${checkedDevice&&i===calRow?'▶ ':''}${r.label}: ${value(r.key)}`),
-        `Tracking ${headTracker.rate}/s, newest reading ${Number.isFinite(headTracker.readingAge)?Math.round(headTracker.readingAge):'–'} ms; offset ${Number.isFinite(headTracker.offsetDeg)?headTracker.offsetDeg.toFixed(1):'–'}°`,
-        `Drift (hold still): ${drift===null?'measuring…':`${drift.toFixed(1)}°/min`}. Lag: turn quickly and judge.`];
+        `Head tracking ${headTracker.rate}/s; drift ${drift===null?'measuring (hold still)':`${drift.toFixed(1)}°/min`}`];
       items=calibrationItems();
     }else if(session.state==='paused'){
       if(viewerMode==='driving'){

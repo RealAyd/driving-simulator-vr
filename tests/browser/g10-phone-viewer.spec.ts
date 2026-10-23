@@ -253,6 +253,18 @@ test('G10: controls set on the controller check are kept: part-way (Cancel) and,
   await unplug(page,true);
   await expect(page.locator('#viewer-drive')).toBeEnabled({timeout:10_000});
   await expect(page.locator('#viewer-drive-status')).toContainText('Controller checked: Test controller (odd layout)');
+  // Calibrating the viewer in between leaves the controller as it was.
+  await page.click('#viewer-calibrate');
+  await expect.poll(()=>read(page,'viewer().mode')).toBe('calibration');
+  await look(page,0,0);
+  await page.waitForTimeout(3500);
+  const done=aimAt({x:EYE.x+.35,y:EYE.y+.02-.29-.07,z:EYE.z-1.3+.02});
+  await look(page,done.yaw,done.pitch);
+  await expect.poll(()=>read(page,'viewer().mode'),{timeout:15_000}).toBe(null);
+  await expect(page.locator('#viewer-drive')).toBeEnabled();
+  await page.click('#controller-check-open');
+  await expect(page.locator('#controller-saved')).toContainText('Saved on this phone: Test controller (odd layout), 6 controls');
+  await expect(brakeRow).toContainText('button 0');
 });
 
 for(const angle of [90,270] as const){
@@ -278,11 +290,11 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await page.click('#viewer-calibrate');
   await expect.poll(()=>read(page,'viewer().mode')).toBe('calibration');
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(63);
-  // Eye spacing "+" by gaze (first row, right-hand button).
+  // Eye spacing "+" by gaze (first setting, below the title and the instruction line; right-hand button).
   // (The menu panel: viewerHud MENU, 0.9 × 0.58 m at 1.3 m, lines 104 px apart from 100 px on a 990 px texture.)
   const panel={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.3};
   const rowY=(i:number)=>panel.y+.29-(100+i*104-66*.35)/990*.58;
-  const plus=aimAt({x:panel.x+.38,y:rowY(1),z:panel.z+.02});
+  const plus=aimAt({x:panel.x+.38,y:rowY(2),z:panel.z+.02});
   // Look straight ahead while the viewer settles, then at "+" (as for Reset below).
   await look(page,0,0);
   await page.waitForTimeout(1500);
@@ -321,7 +333,13 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   // Look straight ahead while the viewer settles after the reload, then at Reset.
   await look(page,0,0);
   await page.waitForTimeout(1500);
-  const reset=aimAt({x:panel.x-.27,y:panel.y-.29-.07,z:panel.z+.02});
+  // Reset to the preset needs a deliberate look (3 s), set apart from Done.
+  const reset=aimAt({x:panel.x-.35,y:panel.y-.29-.07,z:panel.z+.02});
   await look(page,reset.yaw,reset.pitch);
   await expect.poll(async()=>(await read(page,'viewer()')).settings.ipdMm,{timeout:20_000}).toBe(63);
+  // Done: back to the exercise screen, which says what was saved.
+  const done=aimAt({x:panel.x+.35,y:panel.y-.29-.07,z:panel.z+.02});
+  await look(page,done.yaw,done.pitch);
+  await expect.poll(()=>read(page,'viewer().mode'),{timeout:15_000}).toBe(null);
+  await expect(page.locator('#viewer-status')).toContainText('Viewer settings saved for Viewer 1');
 });

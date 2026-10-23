@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {ControllerInput,STANDARD_BINDINGS,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
+import {ControllerInput,STANDARD_BINDINGS,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
 import {activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers} from '../../src/xr/viewerSettings';
 import {eyeLayout,IPHONE_14_PRO_MAX} from '../../src/xr/viewerProfiles';
 
@@ -104,6 +104,20 @@ describe('phone viewer: controller input (no layout assumed)',()=>{
     // No storage (private browsing): nothing remembered, nothing thrown.
     expect(loadCheckedDevice(null)).toBeNull();
     expect(()=>saveCheckedDevice({setItem:()=>{throw new Error('full')}},'Pad A')).not.toThrow();
+  });
+
+  it('says when the browser is not keeping settings (Private Browsing, blocked website data), so the screen can tell the user',()=>{
+    const mem=new Map<string,string>();
+    const good={getItem:(k:string)=>mem.get(k)??null,setItem:(k:string,v:string)=>{mem.set(k,v)},removeItem:(k:string)=>{mem.delete(k)}};
+    expect(storageWorks(good)).toBe(true);
+    expect(saveBindings(good,'Pad A',{brake:{kind:'button',index:1}})).toBe(true);
+    const blocked={getItem:()=>null,setItem:()=>{throw new Error('SecurityError')},removeItem:()=>{}};
+    expect(storageWorks(blocked)).toBe(false);
+    expect(saveBindings(blocked,'Pad A',{brake:{kind:'button',index:1}})).toBe(false);
+    // Accepts writes but keeps nothing.
+    const forgetful={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
+    expect(storageWorks(forgetful)).toBe(false);
+    expect(storageWorks(null)).toBe(false);
   });
 });
 
