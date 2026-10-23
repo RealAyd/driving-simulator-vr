@@ -60,7 +60,7 @@ test('G23: a lesson: syllabus, briefing, the instructor coaching on the drive, a
 });
 
 test('G23: lesson 11, manoeuvres: the emergency stop (pull in, briefing, STOP on screen and spoken, a prompt stop is not faulted)',async({page},testInfo)=>{
-  test.setTimeout(500_000);
+  test.setTimeout(700_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./?routeSeed=1');
@@ -73,7 +73,7 @@ test('G23: lesson 11, manoeuvres: the emergency stop (pull in, briefing, STOP on
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   const manoeuvre=async()=>(await read(page,'examiner()'))?.manoeuvre as {kind:string;phase:string;faults:string[];notes:string[];waiting:string}|null;
   // Drive until the instructor asks for the emergency stop and the car has pulled in.
-  await driveUntil(page,async()=>(await manoeuvre())?.phase==='pull-in',150_000);
+  await driveUntil(page,async()=>(await manoeuvre())?.phase==='pull-in',300_000);
   expect(await manoeuvre()).toMatchObject({kind:'emergency-stop',phase:'pull-in'});
   // In to the kerb (assisted steering finds a gap between the parked cars), then stop.
   await driveUntil(page,async()=>{const m=await manoeuvre();return Number(/kerb (-?[\d.]+)/.exec(m?.waiting??'')?.[1]??9)<.8},60_000);

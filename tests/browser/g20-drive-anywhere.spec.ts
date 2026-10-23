@@ -29,6 +29,10 @@ test('G20: search a postcode, build the area on the device and drive there',asyn
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   expect(await read(page,'location()')).toMatch(/^area-ig3-9qj/);
+  // A mock test: the tell me question first (the car is held until it is answered).
+  await expect(page.locator('#hud-question')).toBeVisible({timeout:20_000});
+  await page.locator('#hud-question-choices button').first().click();
+  await page.click('#hud-question-go');
   // Drives off along the street without leaving the route.
   await page.keyboard.down('KeyW');
   await expect.poll(async()=>(await read(page,'vehicle()')).speed,{timeout:60_000}).toBeGreaterThan(4);
