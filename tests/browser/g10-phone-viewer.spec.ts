@@ -39,12 +39,14 @@ async function wearPhone(page:Page,screenAngle:90|270=90){
 const look=(page:Page,yaw:number,pitch:number)=>page.evaluate(([y,p])=>{const h=(window as any).__head;h.yaw=y;h.pitch=p},[yaw,pitch]);
 const pad=(page:Page,index:number,down:boolean)=>page.evaluate(([i,d])=>{const p=(window as any).__pad;p.connected=true;p.buttons[i]={pressed:d,value:d?1:0}},[index,down] as const);
 const unplug=(page:Page,on:boolean)=>page.evaluate(v=>{(window as any).__pad.connected=v},on);
-/** Presses until the app has seen it (buttons are read once per frame), then releases. */
+/** Presses until the app has seen it (buttons are read once per frame), then releases until it has seen that too. */
 async function tap(page:Page,index:number,until:()=>Promise<boolean>){
   await pad(page,index,true);
   await expect.poll(until,{timeout:10_000}).toBe(true);
   await pad(page,index,false);
-  await page.waitForTimeout(150);
+  // Frames can be slow in this test browser: wait for two to pass, so the next press is a new one.
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(null)))));
+  await page.waitForTimeout(50);
 }
 
 /** This controller's (deliberately non-standard) layout. */
