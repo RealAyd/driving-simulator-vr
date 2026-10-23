@@ -23,6 +23,12 @@ export interface GazeItem{
 
 interface Placed extends GazeItem{mesh:Mesh;texture:DynamicTexture;centre:Vector3;normal:Vector3;right:Vector3;up:Vector3;drawn:string}
 
+/**
+ * The menu panel straight ahead (metres, and its texture in pixels): large, sharp text, as the headset's lenses
+ * magnify the screen. Lines are `step` pixels apart from `first` (baselines); main.ts lines buttons up with them.
+ */
+export const MENU={w:.9,h:.58,distance:1.3,texW:1536,texH:990,titlePx:76,linePx:58,first:96,step:96} as const;
+
 export class ViewerHud{
   private items:Placed[]=[];
   private readonly panel:Mesh;
@@ -52,10 +58,13 @@ export class ViewerHud{
       return {mesh,texture};
     };
     // Status panel on top of the dashboard, left of the steering wheel.
-    ({mesh:this.panel,texture:this.panelTexture}=text('viewer-panel',.44,.11,640,new Vector3(-.2,1.075,-1.0)));
+    ({mesh:this.panel,texture:this.panelTexture}=text('viewer-panel',.52,.14,1024,new Vector3(-.05,1.085,-1.0)));
     // Menu panel straight ahead at eye level (pause, calibration, instructions); hidden unless needed.
-    ({mesh:this.menu,texture:this.menuTexture}=text('viewer-menu',.74,.42,900,new Vector3(eye.x,eye.y+.02,eye.z-1.35)));
+    ({mesh:this.menu,texture:this.menuTexture}=text('viewer-menu',MENU.w,MENU.h,MENU.texW,new Vector3(eye.x,eye.y+.02,eye.z-MENU.distance)));
     this.menu.renderingGroupId=1;
+    // (Transparent below its last line: the panel is only as tall as what it says.)
+    this.menuTexture.hasAlpha=true;
+    (this.menu.material as StandardMaterial).useAlphaFromDiffuseTexture=true;
 
     this.reticle=CreateDisc('viewer-reticle',{radius:.004,tessellation:16,sideOrientation:Mesh.DOUBLESIDE},scene);
     this.reticle.parent=parent;
@@ -112,7 +121,7 @@ export class ViewerHud{
     if(key(items)===key(this.items))return;
     for(const i of this.items)i.mesh.dispose(false,true);
     this.items=items.map(item=>{
-      const texture=new DynamicTexture(`viewer-item-${item.id}`,{width:256,height:Math.max(32,Math.round(256*item.h/item.w))},this.scene,true);
+      const texture=new DynamicTexture(`viewer-item-${item.id}`,{width:512,height:Math.max(64,Math.round(512*item.h/item.w))},this.scene,true);
       const mesh=CreatePlane(`viewer-item-${item.id}`,{width:item.w,height:item.h},this.scene);
       mesh.parent=this.parent;
       const centre=new Vector3(item.x,item.y,item.z);
@@ -136,9 +145,10 @@ export class ViewerHud{
     if(text===this.panelText)return;
     this.panelText=text;
     const ctx=this.panelTexture.getContext() as unknown as CanvasRenderingContext2D;
-    ctx.fillStyle='#0f172a';ctx.fillRect(0,0,640,160);
-    ctx.fillStyle='#e2e8f0';
-    lines.slice(0,3).forEach((line,i)=>{ctx.font=i===0?'bold 44px sans-serif':'30px sans-serif';ctx.fillText(line,18,48+i*50,604)});
+    const {width,height}=this.panelTexture.getSize();
+    ctx.fillStyle='#1e293b';ctx.fillRect(0,0,width,height);
+    ctx.fillStyle='#f1f5f9';
+    lines.slice(0,3).forEach((line,i)=>{ctx.font=i===0?'bold 64px sans-serif':'50px sans-serif';ctx.fillText(line,28,70+i*82,width-56)});
     this.panelTexture.update(true);
   }
 
@@ -151,12 +161,14 @@ export class ViewerHud{
     if(!lines)return;
     const {width,height}=this.menuTexture.getSize();
     const ctx=this.menuTexture.getContext() as unknown as CanvasRenderingContext2D;
-    ctx.fillStyle='#0b1220f2';ctx.fillRect(0,0,width,height);
-    ctx.strokeStyle='#64748b';ctx.lineWidth=6;ctx.strokeRect(3,3,width-6,height-6);
+    const used=Math.min(height,MENU.first+(lines.length-1)*MENU.step+MENU.linePx*.6+28);
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle='#1e293b';ctx.fillRect(0,0,width,used);
+    ctx.strokeStyle='#94a3b8';ctx.lineWidth=8;ctx.strokeRect(4,4,width-8,used-8);
     lines.forEach((line,i)=>{
-      ctx.fillStyle=i===0?'#fbbf24':'#e2e8f0';
-      ctx.font=i===0?'bold 48px sans-serif':'32px sans-serif';
-      ctx.fillText(line,28,62+i*46,width-56);
+      ctx.fillStyle=i===0?'#fbbf24':'#f1f5f9';
+      ctx.font=i===0?`bold ${MENU.titlePx}px sans-serif`:`${MENU.linePx}px sans-serif`;
+      ctx.fillText(line,40,MENU.first+i*MENU.step,width-80);
     });
     this.menuTexture.update(true);
   }
@@ -216,10 +228,10 @@ export class ViewerHud{
     const ctx=b.texture.getContext() as unknown as CanvasRenderingContext2D;
     const {width,height}=b.texture.getSize();
     ctx.fillStyle=lit?'#0f766e':'#1e293b';ctx.fillRect(0,0,width,height);
-    if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-12,width*progress,12)}
-    ctx.strokeStyle='#94a3b8';ctx.lineWidth=6;ctx.strokeRect(3,3,width-6,height-6);
-    ctx.fillStyle='#f8fafc';ctx.font=`bold ${Math.round(Math.min(height*.42,40))}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(b.label,width/2,height/2-3,width-14);
+    if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-20,width*progress,20)}
+    ctx.strokeStyle='#94a3b8';ctx.lineWidth=10;ctx.strokeRect(5,5,width-10,height-10);
+    ctx.fillStyle='#f8fafc';ctx.font=`bold ${Math.round(Math.min(height*.5,96))}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(b.label,width/2,height/2-4,width-28);
     b.texture.update(true);
   }
 

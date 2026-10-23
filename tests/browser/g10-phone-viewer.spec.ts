@@ -103,7 +103,7 @@ test('G10: without a checked controller, scored viewer driving is unavailable an
   await expect.poll(()=>read(page,'viewer().mode')).toBe('familiarisation');
   await page.waitForTimeout(3300);
   // Start by looking at it.
-  const start=aimAt({x:EYE.x,y:EYE.y-.02,z:EYE.z-1.2});
+  const start=aimAt({x:EYE.x,y:EYE.y-.3,z:EYE.z-1.2});
   await look(page,start.yaw,start.pitch);
   await expect.poll(()=>read(page,'viewer().starting'),{timeout:10_000}).toBe(false);
 
@@ -126,7 +126,7 @@ test('G10: without a checked controller, scored viewer driving is unavailable an
   await page.screenshot({path:testInfo.outputPath('g10-02-familiarisation-menu.png')});
   expect(await read(page,'viewer().items')).toEqual(['resume','recentre','exit']);
   // Exit: results say not scored and not saved.
-  const exit=aimAt({x:EYE.x+.22,y:EYE.y+.02-.21-.06,z:EYE.z-1.35+.02});
+  const exit=aimAt({x:EYE.x+.27,y:EYE.y+.02-.29-.07,z:EYE.z-1.3+.02});
   await look(page,exit.yaw,exit.pitch);
   await expect(page.locator('#screen-results')).toBeVisible({timeout:15_000});
   await expect(page.locator('#results-meta')).toContainText('not scored and not saved');
@@ -228,6 +228,32 @@ test('G10: controller check with a non-standard layout; scored driving: held acc
   expect(result.notes.join(' ')).toContain('not eye tracking');
 });
 
+test('G10: controls set on the controller check are kept: part-way (Cancel) and, once checked, on the next visit',async({page})=>{
+  await wearPhone(page);
+  await openExercise(page);
+  // Part-way: Brake set to button 5, then Cancel. Back again: still button 5.
+  await unplug(page,true);
+  await page.click('#controller-check-open');
+  await expect(page.locator('#controller-raw')).toContainText('Test controller (odd layout)');
+  await page.click('[data-remap="brake"]');
+  await pad(page,5,true);
+  const brakeRow=page.locator('#controller-actions tr').filter({has:page.locator('[data-remap="brake"]')});
+  await expect(brakeRow).toContainText('button 5');
+  await pad(page,5,false);
+  await page.click('#controller-cancel');
+  await openExercise(page);
+  await unplug(page,true);
+  await page.click('#controller-check-open');
+  await expect(brakeRow).toContainText('button 5');
+  await page.click('#controller-cancel');
+  // Checked in full, then a new visit: the same controller connected is ready to drive with, no check needed.
+  await checkController(page);
+  await openExercise(page);
+  await unplug(page,true);
+  await expect(page.locator('#viewer-drive')).toBeEnabled({timeout:10_000});
+  await expect(page.locator('#viewer-drive-status')).toContainText('Controller checked: Test controller (odd layout)');
+});
+
 for(const angle of [90,270] as const){
   test(`G10: head tracking with the phone in landscape ${angle===90?'one way':'the other way round'} (screen angle ${angle}): right is right, down is down`,async({page})=>{
     await wearPhone(page,angle);
@@ -235,11 +261,12 @@ for(const angle of [90,270] as const){
     await page.click('#viewer-familiarise');
     await expect.poll(()=>read(page,'viewer().receiving')).toBe(true);
     await page.waitForTimeout(3300);
-    const start=aimAt({x:EYE.x,y:EYE.y-.02,z:EYE.z-1.2});
+    const start=aimAt({x:EYE.x,y:EYE.y-.3,z:EYE.z-1.2});
     await look(page,start.yaw,start.pitch);
     await expect.poll(()=>read(page,'viewer().starting'),{timeout:10_000}).toBe(false);
     await look(page,30,-10);
-    await expect.poll(async()=>{const h=await read(page,'head()');return Math.abs(h.yaw*180/Math.PI-30)<2&&Math.abs(h.pitch*180/Math.PI-(-10-start.pitch))<2.5},{timeout:5000}).toBe(true);
+    // (Recentring at Start sets straight ahead from side to side only: up and down stay as looked.)
+    await expect.poll(async()=>{const h=await read(page,'head()');return Math.abs(h.yaw*180/Math.PI-30)<2&&Math.abs(h.pitch*180/Math.PI-(-10))<2.5},{timeout:5000}).toBe(true);
   });
 }
 
@@ -251,9 +278,10 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await expect.poll(()=>read(page,'viewer().mode')).toBe('calibration');
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(63);
   // Eye spacing "+" by gaze (first row, right-hand button).
-  const panel={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.35};
-  const rowY=(i:number)=>panel.y+.21-(62+i*46-12)/511*.42;
-  const plus=aimAt({x:panel.x+.31,y:rowY(1),z:panel.z+.02});
+  // (The menu panel: viewerHud MENU, 0.9 × 0.58 m at 1.3 m, lines 96 px apart from 96 px on a 990 px texture.)
+  const panel={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.3};
+  const rowY=(i:number)=>panel.y+.29-(96+i*96-58*.35)/990*.58;
+  const plus=aimAt({x:panel.x+.38,y:rowY(1),z:panel.z+.02});
   // Look straight ahead while the viewer settles, then at "+" (as for Reset below).
   await look(page,0,0);
   await page.waitForTimeout(1500);
@@ -262,7 +290,7 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await look(page,0,0);
   await page.screenshot({path:testInfo.outputPath('g10-07-calibration.png')});
   // Offset: after Recentre, 0° (this is not lag and not drift).
-  const recentre=aimAt({x:panel.x,y:panel.y-.21-.06,z:panel.z+.02});
+  const recentre=aimAt({x:panel.x,y:panel.y-.29-.07,z:panel.z+.02});
   await look(page,recentre.yaw,recentre.pitch);
   await page.waitForTimeout(1500);
   await look(page,recentre.yaw,recentre.pitch);   // still looking at it: offset is from straight ahead of the recentred view
@@ -292,7 +320,7 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   // Look straight ahead while the viewer settles after the reload, then at Reset.
   await look(page,0,0);
   await page.waitForTimeout(1500);
-  const reset=aimAt({x:panel.x-.22,y:panel.y-.21-.06,z:panel.z+.02});
+  const reset=aimAt({x:panel.x-.27,y:panel.y-.29-.07,z:panel.z+.02});
   await look(page,reset.yaw,reset.pitch);
   await expect.poll(async()=>(await read(page,'viewer()')).settings.ipdMm,{timeout:20_000}).toBe(63);
 });

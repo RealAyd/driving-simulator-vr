@@ -2,10 +2,11 @@
  * Picture sharpness on phones: the scene is drawn at fewer pixels than the screen has (a Babylon hardware scaling
  * level above 1) to keep the frame rate up, which looks blurry on a sharp phone screen. This starts at the
  * profile's level and steps to a sharper one while the phone keeps up (a steady frame rate near 60), and back
- * when it struggles (never coarser than where it started). A level that could not be kept up is not tried again for a minute, so it does not
+ * when it struggles (never coarser than where it started, or than a given coarsest level). A level that could not be kept up is not tried again for a minute, so it does not
  * keep switching. Pure: main.ts feeds it the frame rate and applies the level.
  */
-export const SCALE_LEVELS=[2,1.5,1.25,1,.8] as const;
+/** Device pixels per drawn pixel, coarsest first (1: every pixel the screen has). */
+export const SCALE_LEVELS=[3,2,1.5,1.25,1] as const;
 const SLOW=42,FAST=56,SLOW_FOR=3,FAST_FOR=6,RETRY_AFTER=60;
 
 export class AdaptiveScale{
@@ -16,9 +17,11 @@ export class AdaptiveScale{
   private failed=new Map<number,number>();
   private time=0;
   private readonly floor:number;
-  constructor(start:number){
-    const i=SCALE_LEVELS.findIndex(l=>l<=start);
-    this.index=this.floor=i<0?SCALE_LEVELS.length-1:i;
+  /** `coarsest`: the coarsest level it may step back to (by default where it starts). */
+  constructor(start:number,coarsest=start){
+    const at=(level:number)=>{const i=SCALE_LEVELS.findIndex(l=>l<=level);return i<0?SCALE_LEVELS.length-1:i};
+    this.index=at(start);
+    this.floor=Math.min(this.index,at(coarsest));
   }
   get level():number{return SCALE_LEVELS[this.index]!}
   /** The frame rate over the last `dt` seconds; returns the new level when it changes. */

@@ -17,3 +17,11 @@ it('sharper while the phone keeps up, coarser when it struggles, and no switchin
   // A short dip does nothing.
   expect(run(s,2,30)).toBe(1);
 });
+
+it('in the headset: starts at full sharpness and steps back no further than a given level when the phone struggles',()=>{
+  const s=new AdaptiveScale(1,1.5);
+  expect(s.level).toBe(1);
+  expect(run(s,3.5,30)).toBe(1.25);
+  expect(run(s,3.5,30)).toBe(1.5);
+  expect(run(s,10,20)).toBe(1.5);
+});

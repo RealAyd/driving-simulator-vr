@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {ControllerInput,STANDARD_BINDINGS,loadBindings,saveBindings,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
+import {ControllerInput,STANDARD_BINDINGS,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
 import {activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers} from '../../src/xr/viewerSettings';
 import {eyeLayout,IPHONE_14_PRO_MAX} from '../../src/xr/viewerProfiles';
 
@@ -93,6 +93,17 @@ describe('phone viewer: controller input (no layout assumed)',()=>{
     expect(loadBindings(storage,'Pad A')).toEqual({brake:{kind:'button',index:1}});
     expect(loadBindings(storage,'keyboard')).toEqual({brake:{kind:'key',code:'Space'}});
     expect(loadBindings(storage,'Pad B')).toBeNull();
+  });
+
+  it('the controller that passed the check is remembered for the next visit (none before any check)',()=>{
+    const mem=new Map<string,string>();
+    const storage={getItem:(k:string)=>mem.get(k)??null,setItem:(k:string,v:string)=>{mem.set(k,v)}};
+    expect(loadCheckedDevice(storage)).toBeNull();
+    saveCheckedDevice(storage,'Pad A');
+    expect(loadCheckedDevice(storage)).toBe('Pad A');
+    // No storage (private browsing): nothing remembered, nothing thrown.
+    expect(loadCheckedDevice(null)).toBeNull();
+    expect(()=>saveCheckedDevice({setItem:()=>{throw new Error('full')}},'Pad A')).not.toThrow();
   });
 });
 

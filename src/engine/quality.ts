@@ -6,7 +6,7 @@ export type QualityProfileId='desktop'|'phone';
 
 export interface QualityProfile{
   id:QualityProfileId;
-  /** Babylon hardware scaling: 1 = native resolution, >1 renders fewer pixels. */
+  /** Picture scale: 1 = the screen's own (device) pixels, 2 = half as many each way (main.ts converts for Babylon). */
   hardwareScaling:number;
   antialias:boolean;
   /** Mirror render-target size in pixels (used from G1). */
@@ -18,7 +18,7 @@ export interface QualityProfile{
 
 export const QUALITY_PROFILES:Record<QualityProfileId,QualityProfile>={
   desktop:{id:'desktop',hardwareScaling:1,antialias:true,mirrorResolution:512,mirrorUpdateInterval:1,decorativeDetail:'full'},
-  phone:{id:'phone',hardwareScaling:1.5,antialias:false,mirrorResolution:256,mirrorUpdateInterval:2,decorativeDetail:'reduced'}
+  phone:{id:'phone',hardwareScaling:2,antialias:false,mirrorResolution:256,mirrorUpdateInterval:2,decorativeDetail:'reduced'}
 };
 
 /**

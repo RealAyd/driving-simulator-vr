@@ -96,8 +96,8 @@ import {drape,terrainFor} from '../world/terrain';
 import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
-import {ViewerHud,type GazeItem} from '../xr/viewerHud';
-import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBindings,saveBindings,type ControllerState,type DriveAction} from '../xr/controllerInput';
+import {MENU,ViewerHud,type GazeItem} from '../xr/viewerHud';
+import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,type ControllerState,type DriveAction} from '../xr/controllerInput';
 import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
 import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
@@ -218,8 +218,12 @@ export async function boot():Promise<void>{
     session.fail('This browser could not start 3D graphics (WebGL). Try an up-to-date Chrome, Edge, Safari or Firefox.');
     throw error;
   }
-  engine.setHardwareScalingLevel(quality.hardwareScaling);
-  const sharpness=quality.id==='phone'?new AdaptiveScale(quality.hardwareScaling):null;
+  // Babylon counts its scaling level in CSS pixels; the levels here count the screen's own pixels (an iPhone has three
+  // to each CSS pixel: at level 1 in CSS pixels it drew a third as many each way, at 1.5 under a fifth).
+  const devicePixels=Math.min(window.devicePixelRatio||1,quality.id==='phone'?3:2);
+  const setSharpness=(level:number)=>engine.setHardwareScalingLevel(level/devicePixels);
+  setSharpness(quality.hardwareScaling);
+  const sharpness=quality.id==='phone'?new AdaptiveScale(quality.hardwareScaling,3):null;
 
   const scene=new Scene(engine);
   configureScene(scene);
@@ -882,8 +886,15 @@ export async function boot():Promise<void>{
     addEventListener:(type,listener)=>window.addEventListener(type,listener as EventListener)
   });
   let updateControllerCheck=()=>{};
-  /** The device (controller id or 'keyboard') that passed the input check in this visit, or null. */
-  let checkedDevice:string|null=null;
+  /** The device (controller id or 'keyboard') that passed the input check (remembered between visits), or null. */
+  let checkedDevice:string|null=loadCheckedDevice(localStore);
+  /** The device whose saved controls are in use: a controller's are set up again whenever it is connected. */
+  let boundDevice:string|null=null;
+  const useSavedControls=(device:string)=>{
+    const saved=loadBindings(localStore,device);
+    if(saved){controller.bindings={...saved};boundDevice=device}
+  };
+  if(checkedDevice)useSavedControls(checkedDevice);
   let controllerState:ControllerState|null=null;
   let viewerMode:'familiarisation'|'driving'|'calibration'|null=null;
   /** Waiting for Start: simulated time stopped, the car held. */
@@ -930,7 +941,7 @@ export async function boot():Promise<void>{
   const refreshDriveButton=()=>{
     const ready=!!checkedDevice&&!!controllerState?.connected&&controllerState.device===checkedDevice;
     const text=ready?`Controller checked: ${checkedDevice}.`
-      :checkedDevice?'The checked controller is not connected now. Reconnect it (or check another).'
+      :checkedDevice?`Checked before: ${checkedDevice}. Connect it (or press one of its controls) to drive, or check another.`
       :'Not available yet: run the controller check first.';
     if(text===driveStatus&&driveButton.disabled===!ready)return;
     driveStatus=text;
@@ -938,6 +949,8 @@ export async function boot():Promise<void>{
     byId('viewer-drive-status').textContent=text;
   };
 
+  /** Picture sharpness in the headset (its own: the screen-mode level is restored on leaving). */
+  let viewerSharpness:AdaptiveScale|null=null;
   const leaveViewer=()=>{
     if(!viewer.active)return;
     viewer.exit();
@@ -951,6 +964,8 @@ export async function boot():Promise<void>{
     void wakeLock?.release().catch(()=>{});
     wakeLock=null;
     head.recentre();
+    viewerSharpness=null;
+    setSharpness(sharpness?.level??quality.hardwareScaling);
     engine.resize();
   };
   // A tap on the screen means the phone is out of the headset: pause and leave the viewer.
@@ -1024,7 +1039,8 @@ export async function boot():Promise<void>{
     }
     if(capturing){
       const b=controller.capture();
-      if(b){controller.bindings={...controller.bindings,[capturing]:b};capturing=null}
+      // (Saved at once: leaving the check part-way keeps what was set.)
+      if(b){controller.bindings={...controller.bindings,[capturing]:b};capturing=null;if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}}
     }
     for(const action of DRIVE_ACTIONS){
       const row=checkRows.get(action)!;
@@ -1045,13 +1061,22 @@ export async function boot():Promise<void>{
     byId<HTMLButtonElement>('controller-done').disabled=!all||mixed||!st.connected;
   };
   byId('controller-check-open').addEventListener('click',openControllerCheck);
-  byId('controller-standard').addEventListener('click',()=>{controller.bindings={...controller.defaultsFor({id:'',connected:true,mapping:'standard',buttons:[],axes:[]})};checkTested.clear()});
-  byId('controller-cancel').addEventListener('click',()=>{capturing=null;controller.cancelCapture();byId('screen-controller').hidden=true;refreshDriveButton()});
+  byId('controller-standard').addEventListener('click',()=>{
+    controller.bindings={...controller.defaultsFor({id:'',connected:true,mapping:'standard',buttons:[],axes:[]})};checkTested.clear();
+    if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}
+  });
+  byId('controller-cancel').addEventListener('click',()=>{
+    capturing=null;controller.cancelCapture();byId('screen-controller').hidden=true;
+    if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}
+    refreshDriveButton();
+  });
   byId('controller-done').addEventListener('click',()=>{
     const st=controllerState;
     if(!st?.device)return;
     checkedDevice=st.device;
     saveBindings(localStore,st.device,controller.bindings);
+    saveCheckedDevice(localStore,st.device);
+    boundDevice=st.device;
     byId('screen-controller').hidden=true;
     refreshDriveButton();
   });
@@ -1088,6 +1113,10 @@ export async function boot():Promise<void>{
       accelArmed=false;
       viewerPauseReason='';
       document.body.classList.add('viewer');
+      // In the headset the lenses magnify the screen: as many pixels as the phone has, stepping back only if the
+      // frame rate drops (a low frame rate in a headset is worse than a softer picture).
+      viewerSharpness=new AdaptiveScale(1,2);
+      setSharpness(viewerSharpness.level);
       engine.resize();
       viewer.enter(applySettings(viewerSettings));
       viewerHud.setVisible(true);
@@ -1102,12 +1131,12 @@ export async function boot():Promise<void>{
   // In-headset layout (vehicle-local metres). The familiarisation Menu sits low on the centre of the
   // dashboard, about 24° below and 29° left of straight ahead: no mirror, shoulder or road view is there.
   const EYE=head.seat.eye;
-  const MENU_PANEL={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.35,w:.74,h:.42,px:511};
-  /** World height of text line i on the menu panel (lines 46 px apart from 62 px, on a 511 px panel). */
-  const menuLineY=(i:number)=>MENU_PANEL.y+MENU_PANEL.h/2-(62+i*46-12)/MENU_PANEL.px*MENU_PANEL.h;
-  const belowMenu=(ids:Array<[string,string]>,dwell:number):GazeItem[]=>ids.map(([id,label],i)=>({id,label,x:MENU_PANEL.x+(i-(ids.length-1)/2)*.22,y:MENU_PANEL.y-MENU_PANEL.h/2-.06,z:MENU_PANEL.z+.02,w:.19,h:.07,dwell}));
+  const MENU_PANEL={x:EYE.x,y:EYE.y+.02,z:EYE.z-MENU.distance,w:MENU.w,h:MENU.h};
+  /** World height of the middle of text line i on the menu panel (viewerHud MENU: baselines `step` apart from `first`). */
+  const menuLineY=(i:number)=>MENU_PANEL.y+MENU_PANEL.h/2-(MENU.first+i*MENU.step-MENU.linePx*.35)/MENU.texH*MENU_PANEL.h;
+  const belowMenu=(ids:Array<[string,string]>,dwell:number):GazeItem[]=>ids.map(([id,label],i)=>({id,label,x:MENU_PANEL.x+(i-(ids.length-1)/2)*.27,y:MENU_PANEL.y-MENU_PANEL.h/2-.07,z:MENU_PANEL.z+.02,w:.24,h:.09,dwell}));
   const FAMILIARISATION_MENU:GazeItem={id:'menu',label:'Menu',x:-.05,y:.82,z:-.66,w:.14,h:.06,dwell:1.5};
-  const START_ITEM:GazeItem={id:'start',label:'Start',x:EYE.x,y:EYE.y-.02,z:EYE.z-1.2,w:.2,h:.08,dwell:1.5};
+  const START_ITEM:GazeItem={id:'start',label:'Start',x:EYE.x,y:EYE.y-.3,z:EYE.z-1.2,w:.24,h:.09,dwell:1.5};
   const CAL_ROWS=[
     {key:'ipdMm',label:'Eye spacing',unit:'mm'},
     {key:'lensSeparationMm',label:'Image alignment (lens centres)',unit:'mm'},
@@ -1128,8 +1157,8 @@ export async function boot():Promise<void>{
   };
   const calibrationItems=():GazeItem[]=>[
     ...CAL_ROWS.flatMap((r,i)=>[
-      {id:`cal-${i}-minus`,label:'−',x:MENU_PANEL.x+.23,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.06,h:.04,dwell:.7},
-      {id:`cal-${i}-plus`,label:'+',x:MENU_PANEL.x+.31,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.06,h:.04,dwell:.7}
+      {id:`cal-${i}-minus`,label:'−',x:MENU_PANEL.x+.29,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.07,h:.05,dwell:.7},
+      {id:`cal-${i}-plus`,label:'+',x:MENU_PANEL.x+.38,y:menuLineY(i+1),z:MENU_PANEL.z+.02,w:.07,h:.05,dwell:.7}
     ]),
     ...belowMenu([['cal-reset','Reset'],['cal-recentre','Recentre'],['cal-done','Done']],1.2)
   ];
@@ -1150,6 +1179,11 @@ export async function boot():Promise<void>{
 
   /** Controller input, once per rendered frame before simulation steps (so braking acts this frame). */
   const pollController=()=>{
+    // A controller with saved controls, connected now (outside the check): its controls are set up again.
+    if(byId('screen-controller').hidden&&typeof navigator.getGamepads==='function'){
+      const pad=[...navigator.getGamepads()].find(p=>p&&p.connected);
+      if(pad&&pad.id!==boundDevice&&loadBindings(localStore,pad.id))useSavedControls(pad.id);
+    }
     controllerState=controller.poll();
     const brakeDown=controllerState.values.brake>0;
     if(brakeDown&&!brakeWasDown)brakeInputAt=clock.time;
@@ -1827,7 +1861,8 @@ export async function boot():Promise<void>{
     }
     hud.update(vehicle.state.speed,input.reverse,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
     // Phones: as sharp a picture as the phone can draw at a steady frame rate (renderScale.ts).
-    if(sharpness&&session.state==='running'&&!viewer.active){const level=sharpness.update(dt,engine.getFps());if(level!==null)engine.setHardwareScalingLevel(level)}
+    if(sharpness&&session.state==='running'&&!viewer.active){const level=sharpness.update(dt,engine.getFps());if(level!==null)setSharpness(level)}
+    if(viewerSharpness&&viewer.active){const level=viewerSharpness.update(dt,engine.getFps());if(level!==null){setSharpness(level);viewer.layout()}}
     // Approaching the edge of a generated area: say so, once per approach.
     if((edgeTimer-=dt)<=0){
       edgeTimer=.5;

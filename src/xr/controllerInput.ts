@@ -172,3 +172,12 @@ export function saveBindings(storage:Pick<Storage,'getItem'|'setItem'>|null,devi
     storage?.setItem('dp.controller.bindings.v1',JSON.stringify(all));
   }catch{/* storage unavailable: bindings last for this visit only */}
 }
+
+/** The device that last passed the controller check (remembered between visits), or null. */
+export function loadCheckedDevice(storage:Pick<Storage,'getItem'>|null):string|null{
+  try{return storage?.getItem('dp.controller.checked.v1')??null}catch{return null}
+}
+
+export function saveCheckedDevice(storage:Pick<Storage,'setItem'>|null,device:string):void{
+  try{storage?.setItem('dp.controller.checked.v1',device)}catch{/* storage unavailable: check again next visit */}
+}
