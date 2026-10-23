@@ -75,8 +75,10 @@ it('every test centre: start, routes, directions, marking, scenery',()=>{
         add(`careful-driver-fault:${x.ruleId}`,`seed ${seed}: ${x.explanation.slice(0,160)}`);
       }
     }
-    // Scenery: nothing solid in the carriageway.
+    // Scenery: nothing solid in the carriageway. (Laid out from the start the app uses, as main.ts does.)
+    location.spawn={position:{x:st.x,z:st.z},headingDeg:(st.heading*180/Math.PI+360)%360,roadId:start.road.id};
     const layout=layoutStreetscape(location)??layoutTownscape(location);
+    for(const c of layout?.cars??[])if(Math.hypot(c.x-st.x,c.z-st.z)<6)add('parked-car-at-start',`${c.x.toFixed(0)},${c.z.toFixed(0)}`);
     const plan=layoutSignage(location,layout);
     for(const c of plan.colliders)if(surfaceAt(location,c.position.x,c.position.z)?.kind==='carriageway')add('sign-in-road',c.id);
     for(const t of layout?.trees??[])if(surfaceAt(location,t.x,t.z)?.kind==='carriageway')add('tree-in-road',`${t.x.toFixed(0)},${t.z.toFixed(0)}`);

@@ -90,7 +90,7 @@ function unique(texts:string[]):string[]{
 
 /** What the examiner says on a mock test (recorded in the examiner's voice). */
 export const examinerPhrases=():string[]=>unique([TELL_ME_INTRO,BRIEFING,PULL_UP,END,REDIRECT,
-  ...TELL_ME.map(q=>q.question),...SHOW_ME.map(q=>q.question),...directions()]);
+  ...TELL_ME.map(q=>q.question),...SHOW_ME.map(q=>q.question),...directions(),...MANOEUVRE_SENTENCES]);
 
 /** Every sentence there is a clip for in the instructor's voice: the examiner's too, since the instructor gives the
  * directions in a lesson. */

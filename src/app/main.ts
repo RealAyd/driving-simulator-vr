@@ -237,13 +237,18 @@ export async function boot():Promise<void>{
   let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
   let staticObstacles=new StaticObstacles(place.blocks);
   // Streets from map data: a start facing somewhere to go (RoadNetwork.startNear), worked out once per place.
-  const starts=new WeakMap<typeof place,Pose>();
+  // Set as the place's own start before its streets are laid out, so parked cars keep clear of where the car is.
+  const settled=new WeakSet<typeof place>();
+  const settleStart=(l:typeof place)=>{
+    if(l.roads.length<20||settled.has(l))return;
+    settled.add(l);
+    const net=new RoadNetwork(l),b=net.startNear(l.spawn.position.x,l.spawn.position.z,degToRad(l.spawn.headingDeg));
+    const on=net.locate(b.x,b.z,b.heading);
+    l.spawn={position:{x:b.x,z:b.z},headingDeg:(b.heading*180/Math.PI+360)%360,roadId:on?.road.id??l.spawn.roadId};
+  };
   const spawnOf=(l:typeof place):Pose=>{
-    const given:Pose={position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)};
-    if(l.roads.length<20)return given;
-    let s=starts.get(l);
-    if(!s){const b=new RoadNetwork(l).startNear(given.position.x,given.position.z,given.heading);s={position:{x:b.x,y:0,z:b.z},heading:b.heading};starts.set(l,s)}
-    return s;
+    settleStart(l);
+    return {position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)};
   };
   /** Building a place, in stages: [percent done, what comes next] after each (the loading screen shows them). */
   function* locationStages(id:string):Generator<[number,string]>{
@@ -252,6 +257,7 @@ export async function boot():Promise<void>{
     shadows?.dispose();
     world.dispose();
     place=locations.get(id)!;
+    settleStart(place);
     terrain=terrainFor(place.id);
     setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
     yield [8,'Laying the roads and buildings'];
