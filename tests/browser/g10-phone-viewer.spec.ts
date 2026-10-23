@@ -439,3 +439,48 @@ test('G10: steering in the headset: chosen on the controller screen or with Sign
   await tap(page,LAYOUT['signal-left'],async()=>(await read(page,'steering()'))==='assist');
   expect(await page.evaluate(()=>localStorage.getItem('dp.viewer.steering.v1'))).toBe('assist');
 });
+
+test('G10: a controller checked before: Done is ready straight away; on the screen it drives a lesson too; the headset waits for a lesson to be chosen',async({page})=>{
+  test.setTimeout(400_000);
+  await wearPhone(page);
+  await openExercise(page);
+  await checkController(page,true);
+  // Back to the settings: its saved controls loaded and already shown to work, so Done is ready.
+  await page.click('#controller-check-open');
+  await expect(page.locator('#controller-done')).toBeEnabled();
+  await expect(page.locator('#controller-done')).toHaveText('Done');
+  // Set one control again: that one must be pressed before Done, and Done says so.
+  await page.click('[data-remap="pause"]');
+  await pad(page,11,true);
+  await expect(page.locator('#controller-actions tr').filter({has:page.locator('[data-remap="pause"]')})).toContainText('button 11');
+  await pad(page,11,false);
+  await expect(page.locator('#controller-done')).toHaveText('Done (press 1 more)');
+  await expect(page.locator('#controller-check-status')).toContainText('press each of these once on the controller: Pause');
+  await tap(page,11,async()=>(await page.locator('#controller-done').textContent())==='Done');
+  await page.click('#controller-done');
+  await expect(page.locator('#screen-controller')).toBeHidden();
+
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=lesson]');
+  await page.click('[data-exercise=goodmayes]');
+  await unplug(page,true);
+  await expect(page.locator('#pad-screen-status')).toContainText('it drives on the screen too');
+  await page.click('#viewer-details > summary');
+  await expect(page.locator('#viewer-drive')).toBeDisabled();
+  await expect(page.locator('#viewer-drive-status')).toContainText('Choose a lesson first');
+  await page.click('[data-lesson=left-turns]');
+  await expect(page.locator('#viewer-drive')).toBeEnabled();
+  // The lesson on the screen, driven with the controller.
+  await page.click('#start-practice');
+  await expect.poll(()=>read(page,'session()'),{timeout:200_000}).toBe('running');
+  await pad(page,LAYOUT.accelerate,true);
+  await expect.poll(async()=>(await read(page,'vehicle()')).speed,{timeout:30_000}).toBeGreaterThan(1);
+  await pad(page,LAYOUT.accelerate,false);
+  await tap(page,LAYOUT['signal-left'],async()=>(await read(page,'vehicle()')).indicator==='left');
+  await tap(page,LAYOUT.pause,async()=>(await read(page,'session()'))==='paused');
+  await tap(page,LAYOUT.pause,async()=>(await read(page,'session()'))==='running');
+  await pad(page,LAYOUT.brake,true);
+  await expect.poll(async()=>(await read(page,'lastControls()')).brake).toBeGreaterThan(0);
+  await pad(page,LAYOUT.brake,false);
+});

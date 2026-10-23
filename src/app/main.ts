@@ -382,9 +382,17 @@ export async function boot():Promise<void>{
     const mode=steeringNow();
     // In the headset only the checked controller steers (its stick or steer buttons); screen and keys are not used.
     const headset=viewer.active&&viewerMode==='driving';
+    // On the screen a game controller drives alongside the touch controls (its stick or steer buttons override
+    // the assistance, as the screen's Steer buttons do).
+    const pad=padOnScreen()?controllerState:null;
     // Called once per fixed simulation step.
-    const c={...keys,steer:buttonSteer.update(headset?(mode==='buttons'?controllerState?.steerButtons??0:0):keys.steer,SIM_STEP)};
+    const c={...keys,steer:buttonSteer.update(headset?(mode==='buttons'?controllerState?.steerButtons??0:0):keys.steer||pad?.steerButtons||0,SIM_STEP)};
     if(headset&&mode==='stick')c.steer=controllerState?.stick??0;
+    if(pad){
+      if(pad.stick!==0)c.steer=pad.stick;
+      c.throttle=Math.max(c.throttle,pad.values.accelerate);
+      c.brake=Math.max(c.brake,pad.values.brake);
+    }
     // The driver's own button/key steering always overrides tilt and the assistance.
     // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
     if(mode==='assist'&&runtime?.freeAssist&&c.steer===0)runtime.freeAssist.update(vehicle.pose,vehicle.indicators.state);
@@ -915,6 +923,9 @@ export async function boot():Promise<void>{
     if(saved){controller.bindings={...saved};boundDevice=device}
   };
   if(checkedDevice)useSavedControls(checkedDevice);
+  /** On the screen, a connected game controller with its controls set up drives too (a keyboard already does, through its keys). */
+  const padOnScreen=()=>!viewer.active&&byId('screen-controller').hidden&&!!controllerState?.connected&&!!controllerState.device
+    &&controllerState.device!=='keyboard'&&controllerState.device===boundDevice&&!controller.usesKeyboard;
   /** Steering when driving in the headset (remembered on this phone): chosen on the controller screen, or with the controller in the headset. */
   type ViewerSteering='assist'|'stick'|'buttons';
   const VIEWER_STEERING:readonly ViewerSteering[]=['assist','stick','buttons'];
@@ -992,10 +1003,21 @@ export async function boot():Promise<void>{
   const refreshDriveButton=()=>{
     // (A keyboard, or a headset remote that acts as one, cannot be seen until a key is pressed: once checked, it is
     // ready; its first key press starts the drive.)
-    const ready=!!checkedDevice&&(checkedDevice==='keyboard'||!!controllerState?.connected&&controllerState.device===checkedDevice);
-    const text=ready?`Controller checked: ${checkedDevice} (saved on this phone).`
+    const checked=!!checkedDevice&&(checkedDevice==='keyboard'||!!controllerState?.connected&&controllerState.device===checkedDevice);
+    // Lessons: the lesson is chosen first (as for Start lesson).
+    const lessonChosen=byId('lesson-list').hidden;
+    const ready=checked&&lessonChosen;
+    const text=checked&&!lessonChosen?'Choose a lesson first, then drive it with the controller.'
+      :ready?`Controller checked: ${checkedDevice} (saved on this phone).`
       :checkedDevice?`Checked before: ${checkedDevice}. Connect it (or press one of its controls) to drive, or check another.`
       :'Not available yet: run the controller check first.';
+    const c=controllerState;
+    const onScreen=c?.connected&&c.device&&c.device!=='keyboard'
+      ?c.device===boundDevice?`🎮 ${c.device} connected: it drives on the screen too (Accelerate ${describeBinding(controller.bindings.accelerate)}, Brake ${describeBinding(controller.bindings.brake)}, steer with ${controlName('steer')}${extraBinding('steer-left')?` or ${controlName('steer-left')}/${controlName('steer-right')}`:''}). For the headset, open Phone headset below.`
+        :`🎮 ${c.device} connected: set it up in Phone headset › Controller settings to drive with it.`
+      :'';
+    const padStatus=byId('pad-screen-status');
+    if(padStatus.textContent!==onScreen){padStatus.textContent=onScreen;padStatus.hidden=!onScreen}
     if(text===driveStatus&&driveButton.disabled===!ready)return;
     driveStatus=text;
     driveButton.disabled=!ready;
@@ -1118,8 +1140,11 @@ export async function boot():Promise<void>{
     const device=pad?.id??(st.raw.keys.length?'keyboard':null);
     if(device&&checkDevice===null){
       checkDevice=device;
-      controller.bindings={...(loadBindings(localStore,device)??controller.defaultsFor(pad))};
+      const saved=loadBindings(localStore,device);
+      controller.bindings={...(saved??controller.defaultsFor(pad))};
       checkTested.clear();
+      // Checked before with these saved controls: they have been shown to work (Done is ready; Set one to check it again).
+      if(saved&&device===checkedDevice)for(const a of DRIVE_ACTIONS)if(saved[a])checkTested.add(a);
       showSavedControls();
     }
     if(capturing){
@@ -1163,9 +1188,12 @@ export async function boot():Promise<void>{
     const mixed=kinds.size>1;
     const all=DRIVE_ACTIONS.every(a=>checkTested.has(a));
     byId('controller-raw').textContent=`Controller: ${st.raw.id??'none detected'}${st.raw.mapping?` (layout reported: ${st.raw.mapping})`:''}. Buttons held: ${st.raw.buttons.join(', ')||'none'}. Axes: ${st.raw.axes.join(', ')||'–'}. Last keys: ${st.raw.keys.join(', ')||'none'}.`;
+    const untested=DRIVE_ACTIONS.filter(a=>!checkTested.has(a)).map(a=>DRIVE_ACTION_LABEL[a].replace(' (hold)',''));
     byId('controller-check-status').textContent=mixed?'Use one device for all six controls (all controller buttons, or all keys).'
-      :all?`All six controls work on ${st.device}. Press Done.`:'Press each control once to show it works (Set changes which button or key it uses).';
+      :!st.connected?'Connect the controller (or press one of its buttons) to finish.'
+      :all?`All six controls work on ${st.device}. Press Done.`:`To finish, press each of these once on the controller: ${untested.join(', ')}. (Set changes which button or key one uses.)`;
     byId<HTMLButtonElement>('controller-done').disabled=!all||mixed||!st.connected;
+    byId('controller-done').textContent=all&&!mixed&&st.connected?'Done':`Done (press ${untested.length||'the controller'}${untested.length?` more`:''})`;
   };
   byId('controller-check-open').addEventListener('click',openControllerCheck);
   byId('controller-standard').addEventListener('click',()=>{
@@ -1301,15 +1329,26 @@ export async function boot():Promise<void>{
     if(byId('screen-controller').hidden&&typeof navigator.getGamepads==='function'){
       const pad=[...navigator.getGamepads()].find(p=>p&&p.connected);
       if(pad&&pad.id!==boundDevice&&loadBindings(localStore,pad.id))useSavedControls(pad.id);
+      else if(pad&&pad.id!==boundDevice&&pad.mapping==='standard'){controller.bindings=controller.defaultsFor(pad);boundDevice=pad.id}
     }
     controllerState=controller.poll();
     const brakeDown=controllerState.values.brake>0;
     if(brakeDown&&!brakeWasDown)brakeInputAt=clock.time;
     brakeWasDown=brakeDown;
     if(!byId('screen-controller').hidden)updateControllerCheck();
-    if(!viewer.active||!viewerMode)return;
     const c=controllerState;
     const pressed=new Set(c.pressed);
+    // On the screen (not in the headset): the controller's buttons do what the screen's do.
+    if(padOnScreen()){
+      if(pressed.has('pause'))onAction('pause');
+      if(session.state!=='running')return;
+      if(pressed.has('signal-left'))onAction('indicator-left');
+      if(pressed.has('signal-right'))onAction('indicator-right');
+      if(pressed.has('recentre'))onAction('recentre');
+      if(c.viewPressed)setBehind(!behind);
+      return;
+    }
+    if(!viewer.active||!viewerMode)return;
     if(viewerMode==='calibration'){
       if(pressed.has('signal-left'))adjustSetting(calRow,-1);
       if(pressed.has('signal-right'))adjustSetting(calRow,1);
