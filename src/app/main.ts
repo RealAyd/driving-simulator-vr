@@ -103,6 +103,7 @@ import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
+import {Access,type PaidDrive} from '../access/access';
 import {reloadWhenStale} from './staleBuild';
 import {AdaptiveScale} from '../engine/renderScale';
 
@@ -852,6 +853,7 @@ export async function boot():Promise<void>{
       if(result.lesson&&outcome==='completed'){const l=LESSONS.find(x=>x.number===result.lesson!.number);if(l)markLessonDone(l.id)}
       lastResult=result;
       session.to('finished');
+      paidAccess.report(paidDrive,'completed');paidDrive=null;
       let saved=0,saveFailed=false;
       // Parked familiarisation is kept apart from scored results: not saved.
       if(runtime!.familiarisation)saved=-1;
@@ -909,6 +911,11 @@ export async function boot():Promise<void>{
   viewerHudAnchor.parent=vehicleNode;
   const viewerHud=new ViewerHud(scene,viewerHudAnchor,head.seat.eye);
   const localStore=(()=>{try{return window.localStorage}catch{return null}})();
+  // Paid access (where hosted with the accounts service): each drive started uses one session.
+  const paidAccess=new Access();
+  /** The drive whose session is in use (its result is reported when it ends). */
+  let paidDrive:PaidDrive|null=null;
+  void paidAccess.init();
   const controller=new ControllerInput({
     getGamepads:()=>typeof navigator.getGamepads==='function'?[...navigator.getGamepads()]:[],
     addEventListener:(type,listener)=>window.addEventListener(type,listener as EventListener)
@@ -1016,6 +1023,8 @@ export async function boot():Promise<void>{
       ?c.device===boundDevice?`🎮 ${c.device} connected: it drives on the screen too (Accelerate ${describeBinding(controller.bindings.accelerate)}, Brake ${describeBinding(controller.bindings.brake)}, steer with ${controlName('steer')}${extraBinding('steer-left')?` or ${controlName('steer-left')}/${controlName('steer-right')}`:''}). For the headset, open Phone headset below.`
         :`🎮 ${c.device} connected: set it up in Phone headset › Controller settings to drive with it.`
       :'';
+    const sessionNote=byId('session-note'),noteText=paidAccess.note();
+    if(sessionNote.textContent!==noteText){sessionNote.textContent=noteText;sessionNote.hidden=!noteText}
     const padStatus=byId('pad-screen-status');
     if(padStatus.textContent!==onScreen){padStatus.textContent=onScreen;padStatus.hidden=!onScreen}
     if(text===driveStatus&&driveButton.disabled===!ready)return;
@@ -1235,12 +1244,16 @@ export async function boot():Promise<void>{
         return;
       }
       viewerStatus.textContent='';
+      // Scored driving uses a session (sitting in the car and calibrating do not).
+      const drive=mode==='driving'?await paidAccess.begin(`headset-${driveMode}`,scenarioId):null;
+      if(drive===false){void (await lock)?.release().catch(()=>{});return}
       wakeLock=(await lock)??null;
       viewerMode=mode;
       if(mode!=='calibration'){
         // Tilt steering needs the phone in the hands: use the assistance (or the controller's stick) instead.
         if(steeringMode==='tilt')setSteeringMode('assist');
         start(mode==='familiarisation'?(introId??scenarioId):scenarioId,{familiarisation:mode==='familiarisation'});
+        if(drive){paidDrive=drive;paidAccess.report(drive,session.state==='running'?'loaded':'failed')}
         if(session.state!=='running'){viewerMode=null;return}
         // Nothing moves until the driver has the headset on, looks straight ahead and starts.
         viewerStarting=true;
@@ -1780,18 +1793,31 @@ export async function boot():Promise<void>{
   };
   // Real streets (traffic, people, lights to set up) take a moment: the loading screen first. The small practice
   // streets start at once.
-  const startShowing=(id:string)=>{
+  const startShowing=async(id:string):Promise<void>=>{
     const sc=scenarios.get(id);
-    if(placeLoading){const waiting=placeLoading;void waiting.then(()=>startShowing(id));return}
-    if(sc&&(locations.get(sc.locationId)?.streetParking??0)>0)void withLoading('Starting…',async rep=>{
+    if(placeLoading){const waiting=placeLoading;await waiting;return startShowing(id)}
+    if(sc&&(locations.get(sc.locationId)?.streetParking??0)>0)await withLoading('Starting…',async rep=>{
       await loadLocation(sc.locationId,rep,0,40);
       await rep(45,'Traffic, people, lights and your route');
       start(id);
     });
     else start(id);
   };
-  byId('start-practice').addEventListener('click',()=>{if(chosen)startShowing(chosen.scenario)});
-  byId('start-intro').addEventListener('click',()=>{if(chosen?.intro)startShowing(chosen.intro)});
+  /** A drive that uses a session: started only once the session is taken; given back if it fails to load. */
+  const startPaid=async(id:string)=>{
+    const drive=await paidAccess.begin(driveMode,id);
+    if(drive===false)return;
+    try{await startShowing(id)}catch(e){paidAccess.report(drive,'failed');throw e}
+    paidAccess.report(drive,session.state==='running'?'loaded':'failed');
+    if(session.state==='running')paidDrive=drive;
+  };
+  let startingPaid=false;
+  byId('start-practice').addEventListener('click',()=>{
+    if(!chosen||startingPaid)return;
+    startingPaid=true;
+    void startPaid(chosen.scenario).finally(()=>{startingPaid=false});
+  });
+  byId('start-intro').addEventListener('click',()=>{if(chosen?.intro)void startShowing(chosen.intro)});
 
   const soundButton=byId<HTMLButtonElement>('hud-sound');
   const showSound=()=>{soundButton.setAttribute('aria-pressed',String(!sound.muted));soundButton.setAttribute('aria-label',sound.muted?'Sound off. Tap to turn on':'Sound on. Tap to mute')};
@@ -1820,6 +1846,19 @@ export async function boot():Promise<void>{
   const restart=()=>{
     if(session.state!=='running'&&session.state!=='paused'&&session.state!=='finished')return;
     const wasPaused=session.state==='paused',wasFinished=session.state==='finished';
+    // Trying again once a drive has ended is a new drive (starting over part-way is not).
+    if(wasFinished&&paidAccess.gate&&runtime&&!runtime.familiarisation){
+      const scenario=runtime.scenario.id;
+      void paidAccess.begin(driveMode,scenario).then(drive=>{
+        if(drive===false||session.state!=='finished')return;
+        paidDrive=drive;
+        resetAttempt();
+        events.emit('session.reset',{variant:runtime?.variant?.id??null});
+        session.to('running');clock.resume();canvas.focus();
+        paidAccess.report(drive,'loaded');
+      });
+      return;
+    }
     resetAttempt();
     events.emit('session.reset',{variant:runtime?.variant?.id??null});
     if(wasPaused)resume();

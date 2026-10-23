@@ -21,7 +21,9 @@ export default defineConfig({
   root:fileURLToPath(new URL('.',import.meta.url)),
   base:'./',
   publicDir:`${repoRoot}public`,
-  server:{fs:{allow:[repoRoot]}},
+  // The accounts service (server/), when run locally: same origin, as when hosted.
+  server:{fs:{allow:[repoRoot]},proxy:{'/api':'http://localhost:8787'}},
+  preview:{proxy:{'/api':'http://localhost:8787'}},
   build:{
     outDir:`${repoRoot}dist-sim`,
     emptyOutDir:true,
