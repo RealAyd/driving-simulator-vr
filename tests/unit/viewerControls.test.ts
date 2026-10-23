@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {ControllerInput,STANDARD_BINDINGS,STANDARD_STEER,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
+import {ControllerInput,STANDARD_BINDINGS,STANDARD_EXTRA,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
 import {activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers} from '../../src/xr/viewerSettings';
 import {eyeLayout,IPHONE_14_PRO_MAX} from '../../src/xr/viewerProfiles';
 
@@ -24,7 +24,7 @@ describe('phone viewer: controller input (no layout assumed)',()=>{
     const f=fakeEnv();
     const c=new ControllerInput(f.env);
     expect(c.defaultsFor(f.pad)).toEqual({});
-    expect(c.defaultsFor({...f.pad,mapping:'standard'})).toEqual({...STANDARD_BINDINGS,...STANDARD_STEER});
+    expect(c.defaultsFor({...f.pad,mapping:'standard'})).toEqual({...STANDARD_BINDINGS,...STANDARD_EXTRA});
   });
 
   it('binds whatever is pressed next, ignoring anything already held, and reads it back as the action',()=>{
@@ -196,5 +196,18 @@ describe('phone viewer: steering with the controller',()=>{
     const c=new ControllerInput(f.env,{steer:{kind:'axis',index:0,direction:1}});
     f.axis(0,1);
     expect(c.poll().pressed).toEqual([]);
+  });
+
+  it('Change view is pressed once per press (B / Circle on the standard layout) and is not a driving control',()=>{
+    const f=fakeEnv();
+    f.pad.mapping='standard';
+    const c=new ControllerInput(f.env,{...STANDARD_BINDINGS});
+    f.press(1);
+    const first=c.poll();
+    expect(first.viewPressed).toBe(true);
+    expect(first.pressed).toEqual([]);
+    expect(c.poll().viewPressed).toBe(false);   // still held
+    f.press(1,false);c.poll();f.press(1);
+    expect(c.poll().viewPressed).toBe(true);
   });
 });

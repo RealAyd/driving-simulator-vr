@@ -97,7 +97,7 @@ import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
 import {MENU,ViewerHud,type GazeItem} from '../xr/viewerHud';
-import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,STANDARD_STEER,STEER_ACTIONS,STEER_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type ControllerState,type DriveAction,type SteerAction} from '../xr/controllerInput';
+import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,STANDARD_EXTRA,EXTRA_ACTIONS,EXTRA_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type ControllerState,type DriveAction,type ExtraAction} from '../xr/controllerInput';
 import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
 import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
@@ -896,7 +896,10 @@ export async function boot():Promise<void>{
   // moves the car or signals is ever done by gaze. Calibration: parked, adjusts the viewer.
   const headTracker=new HeadTracker();
   const viewer=new PhoneViewer(scene,camera);
-  const viewerHud=new ViewerHud(scene,vehicleNode,head.seat.eye);
+  // The headset's menus and status sit in front of the eye: moved with it to behind the car in that view.
+  const viewerHudAnchor=new TransformNode('viewer-hud-anchor',scene);
+  viewerHudAnchor.parent=vehicleNode;
+  const viewerHud=new ViewerHud(scene,viewerHudAnchor,head.seat.eye);
   const localStore=(()=>{try{return window.localStorage}catch{return null}})();
   const controller=new ControllerInput({
     getGamepads:()=>typeof navigator.getGamepads==='function'?[...navigator.getGamepads()]:[],
@@ -930,16 +933,17 @@ export async function boot():Promise<void>{
   const stepViewerSteering=(by:1|-1)=>setViewerSteering(VIEWER_STEERING[(VIEWER_STEERING.indexOf(viewerSteering)+by+VIEWER_STEERING.length)%VIEWER_STEERING.length]!);
   /** The steering in use: the headset's own choice while driving in it. */
   const steeringNow=():SteeringMode=>viewer.active&&viewerMode==='driving'?viewerSteering:steeringMode;
-  /** A steering control's binding (the standard one when unset and the controller reports that layout). */
-  const steerBinding=(a:SteerAction)=>controller.bindings[a]??(controllerState?.raw.mapping==='standard'?STANDARD_STEER[a]:undefined);
-  const steerName=(a:SteerAction)=>{
-    const b=steerBinding(a);
-    return b?.kind==='axis'&&b.index===0?'the left stick':b?.kind==='button'&&b.index===14?'D-pad left':b?.kind==='button'&&b.index===15?'D-pad right':describeBinding(b);
+  /** An optional control's binding (the standard one when unset and the controller reports that layout). */
+  const extraBinding=(a:ExtraAction)=>controller.bindings[a]??(controllerState?.raw.mapping==='standard'?STANDARD_EXTRA[a]:undefined);
+  const controlName=(a:ExtraAction)=>{
+    const b=extraBinding(a);
+    return b?.kind==='axis'&&b.index===0?'the left stick':b?.kind==='button'&&b.index===14?'D-pad left':b?.kind==='button'&&b.index===15?'D-pad right'
+      :b?.kind==='button'&&b.index===1&&controllerState?.raw.mapping==='standard'?'Circle / B':describeBinding(b);
   };
   /** How the headset steering is used, for its menus. */
-  const viewerSteeringHelp=()=>viewerSteering==='assist'?'the car follows the lane; you control speed and look'
-    :viewerSteering==='stick'?(steerBinding('steer')?`move ${steerName('steer')} left and right`:'set the stick on the controller screen first')
-    :steerBinding('steer-left')&&steerBinding('steer-right')?`${steerName('steer-left')} steers left, ${steerName('steer-right')} right`:'set the steer buttons on the controller screen first';
+  const viewerSteeringHelp=()=>viewerSteering==='assist'?'the car follows the lane'
+    :viewerSteering==='stick'?(extraBinding('steer')?`move ${controlName('steer')} left and right`:'set the stick on the controller screen first')
+    :extraBinding('steer-left')&&extraBinding('steer-right')?`${controlName('steer-left')} steers left, ${controlName('steer-right')} right`:'set the steer buttons on the controller screen first';
   let controllerState:ControllerState|null=null;
   let viewerMode:'familiarisation'|'driving'|'calibration'|null=null;
   /** Waiting for Start: simulated time stopped, the car held. */
@@ -1008,6 +1012,7 @@ export async function boot():Promise<void>{
       viewerStatus.textContent=`Viewer settings saved for ${viewers.active}: ${p.label.split(' (')[0]}, eye spacing ${s.ipdMm} mm, image alignment ${s.lensSeparationMm} mm, field of view ${s.fovDeg}°.`;
     }
     viewer.exit();
+    setBehind(false);
     viewerHud.setVisible(false);
     viewerHud.setItems([]);
     viewerHud.setMenu(null);
@@ -1054,30 +1059,30 @@ export async function boot():Promise<void>{
     :viewer.active&&viewerMode==='familiarisation'?'phone-viewer-familiarisation':xr.active?'webxr':quality.id==='phone'?'touch':'keyboard';
 
   // ---- Controller check: the driver shows each control working before scored viewer driving ----
-  const checkTested=new Set<DriveAction|SteerAction>();
+  const checkTested=new Set<DriveAction|ExtraAction>();
   let capturing:DriveAction|null=null;
   let checkDevice:string|null=null;
-  const checkRows=new Map<DriveAction|SteerAction,{binding:HTMLElement;state:HTMLElement;tested:HTMLElement}>();
-  let capturingSteer:SteerAction|null=null;
+  const checkRows=new Map<DriveAction|ExtraAction,{binding:HTMLElement;state:HTMLElement;tested:HTMLElement}>();
+  let capturingExtra:ExtraAction|null=null;
   {
     const table=byId('controller-actions');
-    for(const action of [...DRIVE_ACTIONS,...STEER_ACTIONS]){
-      const steerRow=(STEER_ACTIONS as readonly string[]).includes(action);
-      if(action===STEER_ACTIONS[0]){
+    for(const action of [...DRIVE_ACTIONS,...EXTRA_ACTIONS]){
+      const steerRow=(EXTRA_ACTIONS as readonly string[]).includes(action);
+      if(action===EXTRA_ACTIONS[0]){
         const head=document.createElement('tr');
-        head.innerHTML='<th colspan="5">Steering in the headset (only if Steering below is Left stick or Steer buttons)</th>';
+        head.innerHTML='<th colspan="5">Optional: steering (if Steering below is Left stick or Steer buttons) and Change view in the headset</th>';
         table.append(head);
       }
       const row=document.createElement('tr');
       const cell=(text='')=>{const td=document.createElement('td');td.textContent=text;row.append(td);return td};
-      cell(steerRow?STEER_ACTION_LABEL[action as SteerAction]:DRIVE_ACTION_LABEL[action as DriveAction]);
+      cell(steerRow?EXTRA_ACTION_LABEL[action as ExtraAction]:DRIVE_ACTION_LABEL[action as DriveAction]);
       const binding=cell();
       const state=cell('–');state.className='live';
       const tested=cell('');tested.className='tested';
       const remap=document.createElement('button');remap.type='button';remap.textContent='Set';remap.dataset.remap=action;
       remap.addEventListener('click',()=>{
-        if(steerRow){capturingSteer=action as SteerAction;capturing=null;controller.beginCapture(action==='steer')}
-        else{capturing=action as DriveAction;capturingSteer=null;controller.beginCapture()}
+        if(steerRow){capturingExtra=action as ExtraAction;capturing=null;controller.beginCapture(action==='steer')}
+        else{capturing=action as DriveAction;capturingExtra=null;controller.beginCapture()}
         checkTested.delete(action);
       });
       const td=document.createElement('td');td.append(remap);row.append(td);
@@ -1101,7 +1106,7 @@ export async function boot():Promise<void>{
   const openControllerCheck=()=>{
     byId('screen-controller').hidden=false;
     checkTested.clear();
-    capturing=null;capturingSteer=null;
+    capturing=null;capturingExtra=null;
     checkDevice=null;
     showSavedControls();
   };
@@ -1125,20 +1130,20 @@ export async function boot():Promise<void>{
         if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls(`just now: ${describeBinding(b)}`)}
       }
     }
-    if(capturingSteer){
+    if(capturingExtra){
       const b=controller.capture();
       if(b){
-        controller.bindings={...controller.bindings,[capturingSteer]:b};
-        if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls(`just now: ${STEER_ACTION_LABEL[capturingSteer]} ${describeBinding(b)}`)}
-        capturingSteer=null;
+        controller.bindings={...controller.bindings,[capturingExtra]:b};
+        if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls(`just now: ${EXTRA_ACTION_LABEL[capturingExtra]} ${describeBinding(b)}`)}
+        capturingExtra=null;
       }
     }
-    for(const action of STEER_ACTIONS){
+    for(const action of EXTRA_ACTIONS){
       const row=checkRows.get(action)!;
-      row.binding.textContent=capturingSteer===action?(action==='steer'?'move the stick left or right now…':'press the button now…')
-        :controller.bindings[action]?describeBinding(controller.bindings[action]):steerBinding(action)?`${describeBinding(steerBinding(action))} (standard)`:'not set';
-      const v=action==='steer'?st.stick:action==='steer-left'?-st.steerButtons:st.steerButtons;
-      const on=!capturingSteer&&(action==='steer'?v!==0:v>0);
+      row.binding.textContent=capturingExtra===action?(action==='steer'?'move the stick left or right now…':'press the button now…')
+        :controller.bindings[action]?describeBinding(controller.bindings[action]):extraBinding(action)?`${describeBinding(extraBinding(action))} (standard)`:'not set';
+      const v=action==='steer'?st.stick:action==='view'?(st.view?1:0):action==='steer-left'?-st.steerButtons:st.steerButtons;
+      const on=!capturingExtra&&(action==='steer'?v!==0:v>0);
       if(on)checkTested.add(action);
       row.state.textContent=on?(action==='steer'?`● ${v<0?'left':'right'} ${Math.round(Math.abs(v)*100)}%`:'● received'):'–';
       row.state.classList.toggle('on',on);
@@ -1168,7 +1173,7 @@ export async function boot():Promise<void>{
     if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls('just now: the standard layout')}
   });
   byId('controller-cancel').addEventListener('click',()=>{
-    capturing=null;capturingSteer=null;controller.cancelCapture();byId('screen-controller').hidden=true;
+    capturing=null;capturingExtra=null;controller.cancelCapture();byId('screen-controller').hidden=true;
     if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}
     refreshDriveButton();
   });
@@ -1235,6 +1240,10 @@ export async function boot():Promise<void>{
   // In-headset layout (vehicle-local metres). The familiarisation Menu sits low on the centre of the
   // dashboard, about 24° below and 29° left of straight ahead: no mirror, shoulder or road view is there.
   const EYE=head.seat.eye;
+  /** Behind the car in the headset: where the eye is (car-local, as the screen's behind view), tipped down this much (radians). */
+  const BEHIND_EYE={x:0,y:3.2,z:7.5},BEHIND_TILT=degToRad(12);
+  /** A car-local direction tipped down by `a` radians (about the car's across axis). */
+  const pitchDown=(v:{x:number;y:number;z:number},a:number)=>({x:v.x,y:v.y*Math.cos(a)+v.z*Math.sin(a),z:-v.y*Math.sin(a)+v.z*Math.cos(a)});
   const MENU_PANEL={x:EYE.x,y:EYE.y+.02,z:EYE.z-MENU.distance,w:MENU.w,h:MENU.h};
   /** World height of the middle of text line i on the menu panel (viewerHud MENU: baselines `step` apart from `first`). */
   const menuLineY=(i:number)=>MENU_PANEL.y+MENU_PANEL.h/2-(MENU.first+i*MENU.step-MENU.linePx*.35)/MENU.texH*MENU_PANEL.h;
@@ -1338,6 +1347,8 @@ export async function boot():Promise<void>{
     if(headTracker.readingAge>TRACKING_STALE_MS){viewerPause('Head tracking stopped');return}
     if(!ours)return;
     if(pressed.has('pause')){viewerPause('Paused');return}
+    // Change view: the driver's seat or behind the car (practice only: no mirrors or shoulder checks from there).
+    if(c.viewPressed)setBehind(!behind);
     if(pressed.has('recentre'))headTracker.recentre();
     if(viewerMode==='driving'){
       if(pressed.has('signal-left'))onAction('indicator-left');
@@ -1373,11 +1384,15 @@ export async function boot():Promise<void>{
     // The driver's head follows the real head: observation evidence is head direction (not eye tracking).
     const {yaw,pitch}=yawPitch(local);
     head.release();
-    head.yaw=Math.max(-head.seat.yawLimit,Math.min(head.seat.yawLimit,yaw));
-    head.pitch=Math.max(-head.seat.pitchDown,Math.min(head.seat.pitchUp,pitch));
-    const eye=head.eyeWorld(pose);
-    const forward=localDirectionToWorld(pose.heading,local.forward);
-    viewer.update(eye,{forward,up:localDirectionToWorld(pose.heading,local.up)});
+    // Behind the car the driver's head stays facing ahead: nothing seen from there counts as an observation.
+    head.yaw=behind?0:Math.max(-head.seat.yawLimit,Math.min(head.seat.yawLimit,yaw));
+    head.pitch=behind?0:Math.max(-head.seat.pitchDown,Math.min(head.seat.pitchUp,pitch));
+    // Behind the car: the same camera place as on the screen, looking where the head looks, tipped down to the car.
+    const view=behind?{forward:pitchDown(local.forward,BEHIND_TILT),up:pitchDown(local.up,BEHIND_TILT)}:local;
+    const eye=behind?localToWorld(pose,BEHIND_EYE):head.eyeWorld(pose);
+    viewerHudAnchor.position.set(behind?BEHIND_EYE.x-EYE.x:0,behind?BEHIND_EYE.y-EYE.y:0,behind?BEHIND_EYE.z-EYE.z:0);
+    const forward=localDirectionToWorld(pose.heading,view.forward);
+    viewer.update(eye,{forward,up:localDirectionToWorld(pose.heading,view.up)});
     // The main camera follows too: mirrors render only while their glass is in its view.
     camera.position.set(eye.x,eye.y,eye.z);
     camera.setTarget(new Vector3(eye.x+forward.x,eye.y+forward.y,eye.z+forward.z));
@@ -1416,10 +1431,10 @@ export async function boot():Promise<void>{
       else if(!settled)menu=['Put the phone in the headset…'];
       else if(viewerMode==='driving'){
         // (No gaze buttons while driving with a controller: everything is on the controller.)
-        menu=['Look straight ahead','To start: press Accelerate, Brake or any other button.',
-          `Steering: ◀ ${VIEWER_STEERING_LABEL[viewerSteering]} ▶ (Signal left/right to change): ${viewerSteeringHelp()}.`,
-          `Accelerate (${describeBinding(controller.bindings.accelerate)}): hold to move, release to coast.`,
-          `Brake (${describeBinding(controller.bindings.brake)}) acts at once. Up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`];
+        menu=['Look straight ahead','To start: press Accelerate or Brake.',
+          `Steering ◀ ${VIEWER_STEERING_LABEL[viewerSteering]} ▶ (Signal left/right): ${viewerSteeringHelp()}.`,
+          `Accelerate (${describeBinding(controller.bindings.accelerate)}): hold to move. Brake (${describeBinding(controller.bindings.brake)}): at once. Up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`,
+          extraBinding('view')?`Change view (${controlName('view')}): seat or behind the car.`:'Change view: set its button on the controller screen.'];
         wrapMenu=true;
       }
       else{menu=['Look straight ahead at Start','Parked practice: look around, check the mirrors,','and practise shoulder checks. Not scored.'];items=[START_ITEM]}
@@ -1453,7 +1468,8 @@ export async function boot():Promise<void>{
       viewerMode==='calibration'?'Calibration (parked)'
         :viewerMode==='familiarisation'?'Parked practice (not scored)'
         :braking?'BRAKE':accel?'ACCELERATE (held)':vehicle.state.speed>.2?'Coasting (Accelerate released)':'Stopped',
-      viewerMode==='driving'?(byId('hud-task').textContent||runtime?.scenario.title||''):'Menu: look at it for a moment · tap screen to leave'
+      behind?`Behind the car: no mirrors from here (${controlName('view')}: back to the seat)`
+        :viewerMode==='driving'?(byId('hud-task').textContent||runtime?.scenario.title||''):'Menu: look at it for a moment · tap screen to leave'
     ]);
   };
 
@@ -1956,7 +1972,7 @@ export async function boot():Promise<void>{
     }
     // From behind, the learner's car is drawn with a car model (wheels turning) in place of the plain body box.
     if(learnerBody){
-      const show=behind&&!viewer.active;
+      const show=behind;
       if(learnerBody.isEnabled()!==show){learnerBody.setEnabled(show);lPlates?.setEnabled(show);if(learnerBox)learnerBox.isVisible=!show;cockpit.root.setEnabled(!show)}
       if(show&&carModel){learnerTravelled+=vehicle.state.speed*dt;carModel.roll(learnerBody,learnerTravelled)}
     }

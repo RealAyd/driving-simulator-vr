@@ -60,7 +60,7 @@ async function openExercise(page:Page){
 
 /**
  * The input check: remap each control to this controller's layout, press each once, Done.
- * `slowScene`: a full route renders slowly enough that a remap press can also count as working.
+ * `slowScene`: when frames are slow (a full route, or a busy machine) a remap press can also count as working.
  */
 async function checkController(page:Page,slowScene=false){
   await unplug(page,true);
@@ -380,10 +380,10 @@ test('G10: mock test in the headset: the tell me question and its answers are sh
   expect((await read(page,'examiner()')).phase).toBe('briefing');
 });
 
-test('G10: steering in the headset: chosen on the controller screen or with Signal left/right before the start and while paused; the stick steers; settings say they are saved',async({page})=>{
+test('G10: steering in the headset: chosen on the controller screen or with Signal left/right before the start and while paused; the stick steers, also from behind the car (Change view); settings say they are saved',async({page})=>{
   await wearPhone(page);
   await openExercise(page);
-  await checkController(page);
+  await checkController(page,true);
   await expect(page.locator('#viewer-status')).toContainText('✓ Controller settings saved on this phone for Test controller (odd layout)');
   // Back on the controller screen: what is saved is listed, and each change says it was saved.
   await page.click('#controller-check-open');
@@ -394,6 +394,10 @@ test('G10: steering in the headset: chosen on the controller screen or with Sign
   await page.evaluate(()=>{(window as any).__pad.axes[0]=-.95});
   await expect(page.locator('#controller-actions tr').filter({has:page.locator('[data-remap="steer"]')})).toContainText('stick/axis 0 +');
   await page.evaluate(()=>{(window as any).__pad.axes[0]=0});
+  await page.click('[data-remap="view"]');
+  await pad(page,5,true);
+  await expect(page.locator('#controller-actions tr').filter({has:page.locator('[data-remap="view"]')})).toContainText('button 5');
+  await pad(page,5,false);
   await page.selectOption('#controller-steering','stick');
   await expect(page.locator('#controller-saved')).toContainText('Steering in the headset: Left stick');
   await page.click('#controller-cancel');
@@ -408,13 +412,28 @@ test('G10: steering in the headset: chosen on the controller screen or with Sign
   await tap(page,LAYOUT['signal-left'],async()=>(await read(page,'steering()'))==='stick');
   expect(await read(page,'viewer().starting')).toBe(true);
   await tap(page,LAYOUT.brake,async()=>!(await read(page,'viewer().starting')));
-  await pad(page,LAYOUT.accelerate,true);
+  // Accelerate counts once the app has seen it released after the start (frames are slow in this test browser).
+  await expect(async()=>{
+    await pad(page,LAYOUT.accelerate,false);
+    await page.waitForTimeout(500);
+    await pad(page,LAYOUT.accelerate,true);
+    await expect.poll(async()=>(await read(page,'lastControls()')).throttle,{timeout:2000}).toBeGreaterThan(0);
+  }).toPass({timeout:20_000});
   await expect.poll(async()=>(await read(page,'vehicle()')).speed,{timeout:20_000}).toBeGreaterThan(2);
   await page.evaluate(()=>{(window as any).__pad.axes[0]=.9});
   await expect.poll(async()=>(await read(page,'lastControls()')).steer).toBeGreaterThan(.6);
   await page.evaluate(()=>{(window as any).__pad.axes[0]=0});
   await expect.poll(async()=>(await read(page,'lastControls()')).steer).toBe(0);
   await pad(page,LAYOUT.accelerate,false);
+  // Change view (set to button 5 on this controller): behind the car and back; the stick still steers from there.
+  await tap(page,5,async()=>(await read(page,'behind()')).on);
+  expect((await read(page,'behind()')).carModel).toBe(true);
+  await page.evaluate(()=>{(window as any).__pad.axes[0]=-.9});
+  await expect.poll(async()=>(await read(page,'lastControls()')).steer).toBeLessThan(-.6);
+  await page.evaluate(()=>{(window as any).__pad.axes[0]=0});
+  await page.waitForTimeout(1200);
+  expect((await read(page,'behind()')).seconds).toBeGreaterThan(.5);
+  await tap(page,5,async()=>!(await read(page,'behind()')).on);
   // Paused: Signal left changes the steering (it is remembered on this phone).
   await tap(page,LAYOUT.pause,async()=>(await read(page,'session()'))==='paused');
   await tap(page,LAYOUT['signal-left'],async()=>(await read(page,'steering()'))==='assist');

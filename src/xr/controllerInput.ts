@@ -15,13 +15,16 @@ export const DRIVE_ACTION_LABEL:Record<DriveAction,string>={
   accelerate:'Accelerate (hold)',brake:'Brake (hold)','signal-left':'Signal left','signal-right':'Signal right',pause:'Pause',recentre:'Recentre'
 };
 
-/** Steering with the controller (optional: used when the headset's steering is set to stick or buttons). */
-export type SteerAction='steer'|'steer-left'|'steer-right';
-export const STEER_ACTIONS:readonly SteerAction[]=['steer','steer-left','steer-right'];
-export const STEER_ACTION_LABEL:Record<SteerAction,string>={steer:'Steer (stick left/right)','steer-left':'Steer left (button)','steer-right':'Steer right (button)'};
+/**
+ * Optional controls: steering (used when the headset's steering is set to stick or buttons) and Change view
+ * (the driver's seat or behind the car).
+ */
+export type ExtraAction='steer'|'steer-left'|'steer-right'|'view';
+export const EXTRA_ACTIONS:readonly ExtraAction[]=['steer','steer-left','steer-right','view'];
+export const EXTRA_ACTION_LABEL:Record<ExtraAction,string>={steer:'Steer (stick left/right)','steer-left':'Steer left (button)','steer-right':'Steer right (button)',view:'Change view (seat / behind the car)'};
 
 export type Binding={kind:'button';index:number}|{kind:'axis';index:number;direction:1|-1}|{kind:'key';code:string};
-export type Bindings=Partial<Record<DriveAction|SteerAction,Binding>>;
+export type Bindings=Partial<Record<DriveAction|ExtraAction,Binding>>;
 
 /** The standard controller layout (Xbox/PlayStation-style), offered as a starting point only. */
 export const STANDARD_BINDINGS:Readonly<Record<DriveAction,Binding>>={
@@ -29,9 +32,9 @@ export const STANDARD_BINDINGS:Readonly<Record<DriveAction,Binding>>={
   'signal-left':{kind:'button',index:4},'signal-right':{kind:'button',index:5},
   pause:{kind:'button',index:9},recentre:{kind:'button',index:3}
 };
-/** Standard layout steering: left stick across, D-pad left and right. */
-export const STANDARD_STEER:Readonly<Record<SteerAction,Binding>>={
-  steer:{kind:'axis',index:0,direction:1},'steer-left':{kind:'button',index:14},'steer-right':{kind:'button',index:15}
+/** Standard layout extras: left stick across, D-pad left and right; Change view on the right face button (B / Circle). */
+export const STANDARD_EXTRA:Readonly<Record<ExtraAction,Binding>>={
+  steer:{kind:'axis',index:0,direction:1},'steer-left':{kind:'button',index:14},'steer-right':{kind:'button',index:15},view:{kind:'button',index:1}
 };
 
 export function describeBinding(b:Binding|undefined):string{
@@ -64,6 +67,8 @@ export interface ControllerState{
   stick:number;
   /** Steer buttons: −1 left, 1 right, 0 neither (or both). */
   steerButtons:number;
+  /** Change view: held now, and pressed since the last poll. */
+  view:boolean;viewPressed:boolean;
   /** Actions that went from released to pressed since the last poll. */
   pressed:DriveAction[];
   /** What the browser reports, for the check screen. */
@@ -105,13 +110,14 @@ export class ControllerInput{
     return v>=AXIS_ON?Math.min(1,(v-AXIS_ON)/(1-AXIS_ON)+.01):0;
   }
 
-  /** A steering control's binding: the driver's, else the standard one when the controller reports that layout. */
-  private steerBinding(a:SteerAction,pad:PadLike|null):Binding|undefined{
-    return this.bindings[a]??(pad?.mapping==='standard'?STANDARD_STEER[a]:undefined);
+  /** An optional control's binding: the driver's, else the standard one when the controller reports that layout. */
+  private extraBinding(a:ExtraAction,pad:PadLike|null):Binding|undefined{
+    return this.bindings[a]??(pad?.mapping==='standard'?STANDARD_EXTRA[a]:undefined);
   }
+  private viewWasDown=false;
 
   private stick(pad:PadLike|null):number{
-    const b=this.steerBinding('steer',pad);
+    const b=this.extraBinding('steer',pad);
     if(!b)return 0;
     if(b.kind!=='axis')return this.value(b,pad);
     const v=(pad?.axes[b.index]??0)*b.direction,m=Math.min(1,Math.abs(v));
@@ -131,9 +137,11 @@ export class ControllerInput{
     const usesPad=Object.values(this.bindings).some(b=>b&&b.kind!=='key');
     const device=usesPad?pad?.id??null:this.usesKeyboard?(this.keyboardSeen?'keyboard':null):pad?.id??(this.keyboardSeen?'keyboard':null);
     const stick=this.stick(pad);
-    const steerButtons=(this.value(this.steerBinding('steer-right',pad),pad)>0?1:0)-(this.value(this.steerBinding('steer-left',pad),pad)>0?1:0);
+    const steerButtons=(this.value(this.extraBinding('steer-right',pad),pad)>0?1:0)-(this.value(this.extraBinding('steer-left',pad),pad)>0?1:0);
+    const view=this.value(this.extraBinding('view',pad),pad)>0,viewPressed=view&&!this.viewWasDown;
+    this.viewWasDown=view;
     return {
-      stick,steerButtons,
+      stick,steerButtons,view,viewPressed,
       connected:usesPad?!!pad:this.usesKeyboard?this.keyboardSeen:!!pad||this.keyboardSeen,
       device,values,pressed,
       raw:{id:pad?.id??null,mapping:pad?.mapping??null,
@@ -179,7 +187,7 @@ export class ControllerInput{
 
   /** The standard layout if the controller says it uses it; otherwise nothing is assumed. */
   defaultsFor(pad:PadLike|null):Bindings{
-    return pad?.mapping==='standard'?{...STANDARD_BINDINGS,...STANDARD_STEER}:{};
+    return pad?.mapping==='standard'?{...STANDARD_BINDINGS,...STANDARD_EXTRA}:{};
   }
 
   /**
