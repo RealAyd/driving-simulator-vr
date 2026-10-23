@@ -236,7 +236,15 @@ export async function boot():Promise<void>{
   const shadowsOn=shadowsWanted(location.search,rendererName(engine._gl as WebGLRenderingContext|null));
   let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
   let staticObstacles=new StaticObstacles(place.blocks);
-  const spawnOf=(l:typeof place):Pose=>({position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)});
+  // Streets from map data: a start facing somewhere to go (RoadNetwork.startNear), worked out once per place.
+  const starts=new WeakMap<typeof place,Pose>();
+  const spawnOf=(l:typeof place):Pose=>{
+    const given:Pose={position:{x:l.spawn.position.x,y:0,z:l.spawn.position.z},heading:degToRad(l.spawn.headingDeg)};
+    if(l.roads.length<20)return given;
+    let s=starts.get(l);
+    if(!s){const b=new RoadNetwork(l).startNear(given.position.x,given.position.z,given.heading);s={position:{x:b.x,y:0,z:b.z},heading:b.heading};starts.set(l,s)}
+    return s;
+  };
   /** Building a place, in stages: [percent done, what comes next] after each (the loading screen shows them). */
   function* locationStages(id:string):Generator<[number,string]>{
     if(place.id===id)return;
@@ -1842,6 +1850,8 @@ export async function boot():Promise<void>{
     place:()=>lastPlace,
     scenario:()=>runtime?.scenario.id??null,
     vehicle:()=>({...vehicle.state,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
+    /** The examiner's and instructor's voice: what was said, how (recorded clips or the device's voice). */
+    voice:()=>({...examinerVoice.stats,voice:examinerVoice.voiceName,muted:examinerVoice.muted,audio:sound.context?.state??null}),
     head:()=>({yaw:head.yaw,pitch:head.pitch}),
     look:(yaw:number,pitch:number)=>{head.recentre();head.look(yaw,pitch)},
     holdView:(view:ViewTarget|null)=>holdView(view,'touch'),

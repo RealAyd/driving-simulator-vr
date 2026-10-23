@@ -42,6 +42,10 @@ interface Watch{
   mirror:boolean;signal:'off'|'right'|'wrong';maxSpeed:number;
   /** When the direction was given, the turn's signal first went on, and the car reached the junction (routine.ts). */
   directionAt:number;signalAt:number|null;turnAt:number|null;
+  /** The signal was already on this way from the turn before. */
+  carried:boolean;
+  /** The other way's signal still on from the turn just made. */
+  leftover:'off'|'left'|'right'|undefined;
   /** Metres left of the centreline, measured 8–25 m before a right turn. */
   position:number[];
   /** Another vehicle had to be given way to and was not (oncoming when turning right, main road when emerging). */
@@ -119,7 +123,10 @@ export class Instructor implements SimModule,ExaminerListener{
     const now=this.input.now();
     this.mistakes=[];
     this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set(),
-      directionAt:now,signalAt:null,turnAt:null};
+      directionAt:now,signalAt:null,turnAt:null,
+      // Still signalling this way from the turn just before: fine kept on (judged only if it goes off and on again).
+      carried:step.turn!=='ahead'&&this.input.learner().indicator===step.turn,
+      leftover:this.input.learner().indicator!=='off'&&this.input.learner().indicator!==step.turn?this.input.learner().indicator:undefined};
     // How to signal at a mini-roundabout, said with the direction while the lesson is about them.
     if(step.kind==='roundabout'&&this.has('roundabout')&&this.input.reminders!==false){
       this.input.say(step.turn==='left'?'Signal left on the approach.'
@@ -240,17 +247,18 @@ export class Instructor implements SimModule,ExaminerListener{
     if(w){
       const s=w.step,d=Math.hypot(l.x-s.at.x,l.z-s.at.z),turning=s.turn!=='ahead';
       if(d<10)w.turnAt??=now;
+      if(l.indicator==='off'){w.carried=false;w.leftover=undefined}
       if(l.indicator!=='off'&&d<60){
         if(s.kind==='roundabout'){if(d>8&&d<35)w.approachSignal=l.indicator}
         else if(turning&&l.indicator===s.turn){
-          if(w.signalAt===null){
+          if(w.signalAt===null&&!w.carried){
             w.signalAt=now;
             // Signalled before any mirror check: said at once, so the order is learnt.
             if(!this.lookedSince(w.directionAt-4,['interior',`${s.turn}-door`]))this.prompt('mirrors-first','Mirrors before you signal: interior mirror, then the side mirror, then signal.');
           }
           w.signal='right';
         }
-        else w.signal='wrong';
+        else if(l.indicator!==w.leftover)w.signal='wrong';
       }else if(s.kind==='roundabout'&&d>8&&d<35&&w.approachSignal===null)w.approachSignal='off';
       if(d<12)w.maxSpeed=Math.max(w.maxSpeed,l.speed);
       // Reminders, only when something is not yet done.

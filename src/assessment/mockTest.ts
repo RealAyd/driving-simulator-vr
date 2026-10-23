@@ -39,7 +39,11 @@ export interface MockTestInput{
 /** A manoeuvre the examiner asked for, being watched. */
 interface Watch{step:RouteStep;signalled:boolean;wrongSignal:boolean;maxSpeed:number;directionEvent:string|null;
   /** When the direction was given, the signal for this turn first went on, and the car reached the junction. */
-  directionAt:number;signalAt:number|null;turnAt:number|null}
+  directionAt:number;signalAt:number|null;turnAt:number|null;
+  /** The signal for this turn was already on from the turn before (see `direction`). */
+  carried?:boolean;
+  /** The other way's signal still on from the turn just made (see `direction`). */
+  leftover?:'left'|'right'|undefined}
 
 export class MockTestAssessor implements SimModule,ExaminerListener{
   readonly id='mock-test';
@@ -105,6 +109,13 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const ev=this.input.events.events.at(-1);
     // A mirror check just before the direction counts too (planning ahead).
     this.watch={step,signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null,directionAt:this.input.now(),signalAt:null,turnAt:null};
+    // Still signalling this way from the turn just before (two turns the same way close together): the signal is
+    // fine kept on, and its timing is judged only if it goes off and on again.
+    const l=this.input.learner();
+    if(step.turn!=='ahead'&&l.indicator===step.turn)this.watch.carried=true;
+    // Still on the other way from the turn just made: not a signal for this one (leaving it on is marked as not
+    // cancelled, below), until it goes off.
+    else if(l.indicator!=='off'&&l.indicator!==step.turn)this.watch.leftover=l.indicator;
   }
 
   done(step:RouteStep,followed:boolean):void{
@@ -254,9 +265,10 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     if(w){
       const turn=w.step.turn;
       if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<10)w.turnAt??=now;
+      if(l.indicator==='off'){w.carried=false;w.leftover=undefined}
       if(l.indicator!=='off'){
-        if(turn!=='ahead'&&l.indicator===turn){w.signalled=true;w.signalAt??=now}
-        else if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<40)w.wrongSignal=true;
+        if(turn!=='ahead'&&l.indicator===turn){w.signalled=true;if(!w.carried)w.signalAt??=now}
+        else if(l.indicator!==w.leftover&&Math.hypot(x-w.step.at.x,z-w.step.at.z)<40)w.wrongSignal=true;
       }
       if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<12)w.maxSpeed=Math.max(w.maxSpeed,speed);
     }

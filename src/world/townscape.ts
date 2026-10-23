@@ -194,6 +194,8 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       const outer=at(along,side*(half+Math.min(road.pavementWidth,pavementWidthAt(road,along,side))));
       if(nearJunction(p,4))return null;
       if(onOtherCarriageway(location,p.x,p.z,road.id,.4)||onOtherCarriageway(location,outer.x,outer.z,road.id,.2))return null;
+      // (Nor in any road's surface as the car meets it: a junction's mouth or a turning circle.)
+      if(surfaceAt(location,p.x,p.z)?.kind==='carriageway')return null;
       if(crossingsOn(road.id).some(c=>Math.abs(c.along-along)<c.width/2+5))return null;
       if(inBuilding(p,.8)||out.trees.some(t=>Math.hypot(t.x-p.x,t.z-p.z)<1.5))return null;
       return p;

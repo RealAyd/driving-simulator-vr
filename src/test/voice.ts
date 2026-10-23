@@ -110,6 +110,11 @@ export class ExaminerVoice{
   /** Called with true while a sentence is being spoken, false after (the car's sound is turned down meanwhile). */
   onSpeaking:(speaking:boolean)=>void=()=>{};
 
+  /** What happened to the sentences given (diagnostics: the browser checks read them). */
+  readonly stats={requested:0,clips:0,device:0,dropped:0,cut:0,longestWait:0};
+  /** When each waiting sentence was given (seconds, performance clock). */
+  private queuedAt=new Map<string,number>();
+  private clock=()=>(globalThis.performance?.now()??Date.now())/1000;
   /** Sentences queued by the instructor (follow-up words), still waiting: kept when a direction comes first. */
   private queued=new Set<string>();
   /** The sentence being spoken was queued (an instructor's words, not a direction). */
@@ -124,9 +129,14 @@ export class ExaminerVoice{
     if(this.muted||!text||(!this.synth&&this.clips.size===0))return;
     // Sentence by sentence: each has its own clip, and some browsers cut off an utterance after about 15 seconds.
     const parts=sentences(text);
+    this.stats.requested+=parts.length;
+    for(const p of parts)if(!this.queuedAt.has(p))this.queuedAt.set(p,this.clock());
     if(queue){for(const p of parts)this.queued.add(p);this.waiting.push(...parts);if(!this.busy)void this.run();return}
     const keep=this.waiting.filter(w=>this.queued.has(w));
+    // Directions still waiting are replaced by the new one (said no more).
+    for(const w of this.waiting)if(!this.queued.has(w)){this.stats.dropped++;this.queuedAt.delete(w)}
     if(this.busy&&this.speakingQueued){
+      this.stats.cut++;
       // Cut the instructor short for the direction: restart the queue with it first.
       this.halt();
       this.waiting=[...parts,...keep];
@@ -149,7 +159,7 @@ export class ExaminerVoice{
   /** Silences it at once (paused, ended, sound off). */
   stop():void{
     this.generation++;
-    this.waiting=[];this.queued.clear();this.busy=false;
+    this.waiting=[];this.queued.clear();this.queuedAt.clear();this.busy=false;
     this.onSpeaking(false);
     try{this.source?.stop()}catch{/* ended */}
     this.source=null;
@@ -163,9 +173,12 @@ export class ExaminerVoice{
     while(this.waiting.length&&g===this.generation){
       const s=this.waiting.shift()!;
       this.speakingQueued=this.queued.delete(s);
+      const given=this.queuedAt.get(s);this.queuedAt.delete(s);
+      if(given!==undefined)this.stats.longestWait=Math.max(this.stats.longestWait,this.clock()-given);
       const played=this.clips.has(phraseFile(s))&&await this.playClip(s,g).catch(()=>false);
+      if(played)this.stats.clips++;
       if(g!==this.generation)return;
-      if(!played)await this.speak(s);
+      if(!played){this.stats.device++;await this.speak(s)}
       if(g===this.generation)this.onSpoken();
     }
     if(g===this.generation){this.busy=false;this.speakingQueued=false;this.onSpeaking(false)}
@@ -188,11 +201,14 @@ export class ExaminerVoice{
       const src=ctx.createBufferSource();
       src.buffer=buffer;
       src.connect(this.output(ctx));
+      // Only the speech: the recordings have about 0.2 s of silence before and 0.4 s after, which made each pause
+      // between sentences (a direction and the instructor's words after it) longer than a person's.
+      const {from,to}=spoken(buffer);
       // Ended, stopped, or (the context suspended by the phone) given up on after the clip's length and a margin.
-      const timer=setTimeout(()=>{try{src.stop()}catch{/* ended */}resolve(true)},buffer.duration*1000+1500);
+      const timer=setTimeout(()=>{try{src.stop()}catch{/* ended */}resolve(true)},(to-from)*1000+1500);
       src.onended=()=>{clearTimeout(timer);if(this.source===src)this.source=null;resolve(true)};
       this.source=src;
-      src.start();
+      src.start(0,from,to-from);
     });
   }
 
@@ -222,4 +238,13 @@ export class ExaminerVoice{
       if(synth.paused)synth.resume();
     });
   }
+}
+
+/** Where the speech in a clip starts and ends (seconds), with 60 ms kept either side: the silence trimmed off. */
+export function spoken(buffer:{sampleRate:number;length:number;duration:number;getChannelData(c:number):Float32Array}):{from:number;to:number}{
+  const data=buffer.getChannelData(0),rate=buffer.sampleRate,threshold=.01,keep=.06;
+  let first=0;while(first<data.length&&Math.abs(data[first]!)<threshold)first++;
+  let last=data.length-1;while(last>first&&Math.abs(data[last]!)<threshold)last--;
+  if(first>=last)return {from:0,to:buffer.duration};
+  return {from:Math.max(0,first/rate-keep),to:Math.min(buffer.duration,last/rate+keep)};
 }

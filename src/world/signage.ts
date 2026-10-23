@@ -379,7 +379,7 @@ function busStopSigns(plan:SignPlan,s:BusStop,fits:(p:Vec2)=>boolean):void{
   for(const upstream of [4,6,8,2.5,10]){
     const centre={x:s.x-s.traffic.x*upstream+back.x*(fromKerb-.5),z:s.z-s.traffic.z*upstream+back.z*(fromKerb-.5)};
     const corners=[-1,1].flatMap(a=>[-1,1].map(b=>({x:centre.x+s.traffic.x*a*length/2+back.x*b*depth/2,z:centre.z+s.traffic.z*a*length/2+back.z*b*depth/2})));
-    if(!corners.every(fits))continue;
+    if(![...corners,centre].every(fits))continue;
     plan.shelters.push({id:`${s.id}-shelter`,x:centre.x,z:centre.z,y:s.y,axis:s.traffic,back,length,depth,height:2.45});
     plan.colliders.push({id:`${s.id}-shelter`,kind:'wall',position:centre,headingDeg:headingFromDirection(s.traffic)*180/Math.PI,
       size:{width:depth,depth:length,height:2.45},occludes:false,shape:'box'});

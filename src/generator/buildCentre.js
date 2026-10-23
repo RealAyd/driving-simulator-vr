@@ -56,7 +56,9 @@ for(const w of ways){
   const oneway=w.tags.oneway==='yes'||w.tags.oneway==='1'||w.tags.junction==='roundabout';
   const lanesTag=parseInt(w.tags.lanes??'',10);
   const count=Math.min(4,Math.max(1,Number.isFinite(lanesTag)?lanesTag:oneway?1:2));
-  const mph=parseInt((w.tags.maxspeed??'').replace(/[^0-9]/g,''),10);
+  // The first number given ("20 mph", or "20 mph;30 mph" where the map gives two), and only a UK limit (5–70).
+  const given=parseInt(/\d+/.exec(w.tags.maxspeed??'')?.[0]??'',10);
+  const mph=given>=5&&given<=70?given:NaN;
   runs.forEach((nodesRun,k)=>{
     const roadId=`${slug(w.tags.name??w.tags.ref??w.tags.highway)}-${w.id}${runs.length>1?`-${k}`:''}`;
     const centreline=nodesRun.map(P);

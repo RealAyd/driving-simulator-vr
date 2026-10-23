@@ -36,7 +36,9 @@ describe('Examiner',()=>{
     learner.speed=8;
     for(const p of pts){Object.assign(learner,p);for(let k=0;k<4;k++)ex.fixedUpdate(1/32)}
     expect(said[0]).toBe(BRIEFING);
-    for(const s of route.steps)expect(said).toContain(s.say);
+    // Each direction said (a junction close after another is told with it: "…, then …").
+    const all=said.join(' ');
+    for(const s of route.steps)expect(all.includes(s.say)||all.includes(`Then ${s.say[0]!.toLowerCase()}${s.say.slice(1)}`),s.say).toBe(true);
     expect(log.filter(e=>e.type==='examiner.redirected')).toEqual([]);
     // Each direction came before its junction (when the car was still at least 25 m away).
     expect(ex.phase).toBe('pull-up');

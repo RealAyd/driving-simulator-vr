@@ -36,7 +36,7 @@ function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:n
   // Look all round before moving off (the left side, the interior mirror, then the right mirror and blind spot).
   if(options.mirrors)for(const target of ['left-shoulder','left-door','interior','right-door','right-shoulder']){time+=.5;events.emit('observation.dwell',{target})}
   time+=options.waitBeforeMovingOff??1;
-  let i=0;
+  let i=0,checked=-1;
   for(const l of legs){
     const n=Math.max(1,Math.ceil(Math.abs(l.to-l.from)));
     for(let k=0;k<=n;k++,i++){
@@ -46,11 +46,15 @@ function drive(options:{signals:boolean;mirrors:boolean;speed:(i:number,toTurn:n
       const d=step?Math.hypot(p.x-step.at.x,p.z-step.at.z):Infinity;
       Object.assign(learner,{x:p.x,z:p.z,heading:Math.atan2(p.direction.x*l.dir,-p.direction.z*l.dir),speed:options.speed(i,step&&step.turn!=='ahead'?d:Infinity)});
       const turning=!!step&&step.turn!=='ahead';
-      // In order: the interior mirror at 56 m, the mirror on the turn's side at 54 m, the signal from 50 m.
-      if(options.mirrors&&turning&&routine!=='after-signal'&&d<56&&d>55)events.emit('observation.dwell',{target:'interior'});
-      if(options.mirrors&&turning&&routine==='in-order'&&d<54&&d>53)events.emit('observation.dwell',{target:`${step!.turn}-door`});
+      // In order, once the direction applies (within 56 m, or as soon as it is this turn's when it comes after a
+      // turn just before): the interior mirror, then the mirror on the turn's side; the signal after, from 50 m.
+      if(turning&&checked!==examiner.index&&d<56){
+        checked=examiner.index;
+        if(options.mirrors&&routine!=='after-signal'){events.emit('observation.dwell',{target:'interior'});time+=.4}
+        if(options.mirrors&&routine==='in-order'){events.emit('observation.dwell',{target:`${step!.turn}-door`});time+=.4}
+      }
       if(options.mirrors&&turning&&routine==='after-signal'&&d<40&&d>39)events.emit('observation.dwell',{target:'interior'});
-      if(options.signals)learner.indicator=turning&&d<50?step!.turn as 'left'|'right':'off';
+      if(options.signals)learner.indicator=turning&&d<50&&checked===examiner.index?step!.turn as 'left'|'right':'off';
       const dt=1/Math.max(1,learner.speed);
       time+=dt;examiner.fixedUpdate(dt);assessor.fixedUpdate(dt);
     }

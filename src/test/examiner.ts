@@ -40,6 +40,10 @@ export const REDIRECT='That\'s fine, I\'ll give you new directions.';
 const ANNOUNCE=70;
 /** A manoeuvre is asked for only this far (metres) from the next junction on the route: room to do it. */
 const QUIET=90;
+/** A junction this close after the one just announced (metres along the route) is announced with it. */
+const CLOSE_AFTER=90;
+/** A junction this close after another: the learner is through the first one sooner (and may be into this one). */
+const QUICK_AFTER=40;
 
 export class Examiner implements SimModule{
   readonly id='examiner';
@@ -47,6 +51,8 @@ export class Examiner implements SimModule{
   /** The planned way (for assisted steering along the route). */
   legs:RouteLeg[]=[];
   index=0;
+  /** The step announced together with the one before it (not said again when it comes). */
+  private toldAhead=-1;
   phase:'tell-me'|'briefing'|'driving'|'manoeuvre'|'pull-up'|'stopping'|'finished'='briefing';
   /** The manoeuvre being done (phase 'manoeuvre'). */
   manoeuvre:Manoeuvre|null=null;
@@ -98,9 +104,13 @@ export class Examiner implements SimModule{
     const l=this.learner();
     const pos=this.net.locate(l.x,l.z,l.heading);
     if(!pos)return false;
-    const route=this.options.planner?this.options.planner(pos,length,seed):this.net.plan(pos,length,seed);
+    let route=this.options.planner?this.options.planner(pos,length,seed):this.net.plan(pos,length,seed);
+    // Hardly a direction in it (a long road with few turns that lead anywhere, out of town): of a few routes, the
+    // one with the most directions (a test is about following them).
+    if(!this.options.planner&&route.steps.length<length/600)
+      route=this.net.planFor(pos,length,seed,r=>r.steps.length+r.length/length,8);
     this.steps=route.steps;this.legs=route.legs;
-    this.index=0;this.spoken=false;this.near=false;this.offRoute=0;this.closest=Infinity;
+    this.index=0;this.toldAhead=-1;this.spoken=false;this.near=false;this.offRoute=0;this.closest=Infinity;
     this.options.onPlan?.();
     return true;
   }
@@ -181,7 +191,13 @@ export class Examiner implements SimModule{
       // In good time: before the junction (or straight after the last manoeuvre when the next one is close).
       if(!this.spoken&&d<ANNOUNCE+Math.max(0,l.speed-9)*4){
         this.spoken=true;
-        this.say(step.say);
+        // The next junction straight after this one (too close to be told after this turn in good time): both at
+        // once, as examiners do ("Take the next road on the left, then at the end of the road, turn right").
+        const after=this.steps[this.index+1];
+        if(after&&after.distance-step.distance<CLOSE_AFTER){
+          this.say(`${step.say} ${/^Then /.test(after.say)?after.say:`Then ${after.say[0]!.toLowerCase()}${after.say.slice(1)}`}`);
+          this.toldAhead=this.index+1;
+        }else this.say(step.say);
         this.sinceDirection=0;
         this.options.events.emit('examiner.direction',{text:step.say,turn:step.turn,step:this.index});
         this.options.listener?.direction?.(step);
@@ -189,19 +205,40 @@ export class Examiner implements SimModule{
       this.closest=Math.min(this.closest,d);
       if(d<20)this.near=true;
       const pos=this.net.locate(l.x,l.z,l.heading);
-      // Through the junction: it came within 20 m and is now well past its closest point.
-      if(this.near&&d>this.closest+10&&pos){
-        // On the road asked for, and along it (not crossing near it, or off the end of the map beside it).
-        const followed=this.key(pos.road)===this.key(step.to.road)&&(pos.fit?.alignment??1)>.7&&(pos.fit?.distance??0)<8;
+      // Through the junction: it came within 20 m and is now well past its closest point (just past it when the next
+      // junction is only a few metres on: the learner is soon into that one too).
+      const after=this.steps[this.index+1];
+      const quick=!!after&&after.distance-step.distance<QUICK_AFTER;
+      if(this.near&&d>this.closest+(quick?3:10)&&pos){
+        // On the road asked for, and along it (not crossing near it, or off the end of the map beside it); or
+        // already into the next one close after it.
+        const along=(pos.fit?.alignment??1)>.7&&(pos.fit?.distance??0)<8;
+        const followed=along&&(this.key(pos.road)===this.key(step.to.road)||quick&&this.key(pos.road)===this.key(after!.to.road));
         this.options.listener?.done?.(step,followed);
         this.routeDone=Math.max(this.routeDone,step.distance);
-        if(followed){this.index++;this.spoken=false;this.near=false;this.offRoute=0;this.closest=Infinity}
+        if(followed){
+          this.index++;this.spoken=false;this.near=false;this.offRoute=0;this.closest=Infinity;
+          // Already told (with the last one): it counts as given now, without saying it again.
+          const next=this.steps[this.index];
+          if(next&&this.toldAhead===this.index){
+            this.spoken=true;this.sinceDirection=0;
+            this.options.events.emit('examiner.direction',{text:next.say,turn:next.turn,step:this.index,told:'with the last'});
+            this.options.listener?.direction?.(next);
+            // And the one after it, if that is close too (three junctions in a row): told now.
+            const after=this.steps[this.index+1];
+            if(after&&after.distance-next.distance<CLOSE_AFTER){
+              this.say(/^Then /.test(after.say)?after.say:`Then ${after.say[0]!.toLowerCase()}${after.say.slice(1)}`);
+              this.toldAhead=this.index+1;
+            }
+          }
+        }
         else this.redirect(step);
         return;
       }
       // Gone another way before reaching the junction (more than a few seconds on a road not on the route).
       if(pos&&!this.near){
-        const onRoute=[step.from.road,step.to.road].some(r=>this.key(r)===this.key(pos.road));
+        // (Any road the route follows to this junction: a road's name can change along the way with no turn.)
+        const onRoute=[step.from.road,step.to.road,...this.legs.map(g=>g.road)].some(r=>this.key(r)===this.key(pos.road));
         this.offRoute=onRoute||l.speed<1?0:this.offRoute+dt;
         // (Not again within 20 s of the last new directions: driving on to find a way back is fine.)
         if(this.offRoute>5&&this.time-this.lastRedirect>20)this.redirect(step);

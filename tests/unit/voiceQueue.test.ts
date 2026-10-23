@@ -33,3 +33,13 @@ it('a new direction replaces one still waiting, but waits for the direction bein
   await vi.advanceTimersByTimeAsync(3000);
   expect(spoken).toEqual(['At the end of the road, turn right.','Take the next road on the left.']);
 });
+
+it('clips are played without the silence recorded before and after the speech',async()=>{
+  const {spoken}=await import('../../src/test/voice');
+  const rate=1000,data=new Float32Array(2000);
+  for(let i=300;i<1500;i++)data[i]=Math.sin(i)*.5;
+  const r=spoken({sampleRate:rate,length:data.length,duration:2,getChannelData:()=>data});
+  expect(r.from).toBeCloseTo(.24,1);expect(r.to).toBeCloseTo(1.56,1);
+  // All silence: played whole.
+  expect(spoken({sampleRate:rate,length:10,duration:.01,getChannelData:()=>new Float32Array(10)})).toEqual({from:0,to:.01});
+});
