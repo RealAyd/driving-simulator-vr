@@ -28,6 +28,7 @@ it('every test centre: start, routes, directions, marking, scenery',()=>{
   let routes=0;
   for(const f of files){
     const centre=f.replace('.json.gz','');
+    if(process.env.STRESS_PROGRESS)process.stderr.write(`${new Date().toISOString().slice(11,19)} ${centre}\n`);
     const add=(kind:string,detail:string)=>issues.push({centre,kind,detail});
     let location:Location;
     try{location=parseLocation(JSON.parse(gunzipSync(readFileSync(`${DIR}/${f}`)).toString()).location)}
