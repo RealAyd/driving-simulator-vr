@@ -41,3 +41,13 @@ lint and JavaScript syntax checks passed. Hosted result remains pending.
 Owner is supplying test Payment Links. Resend currently has another verified
 domain: the new key does not verify drivingpractice.live. Owner needs to add
 Resend's records at Namecheap before email delivery can be verified.
+
+First Actions run failed because checkout treated abbreviated commit d4da039
+as a branch. Added full-SHA resolution and reran:
+https://github.com/RealAyd/driving-practice-preview/actions/runs/40034741800
+Checkout/setup passed. Secret check confirmed HOSTLESS_TOKEN and
+STRIPE_SECRET_KEY are available, but failed with exactly:
+`Missing environment secrets: RESEND_API_KEY`.
+Asked owner to add that exact name or supply its current name (never value).
+The workflow stopped before release publication, app creation or Mongo user
+provisioning. No hosted backend health claim is made.
