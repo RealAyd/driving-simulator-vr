@@ -351,6 +351,9 @@ for(const r of roads){
     if(Math.max(Math.abs(end.x),Math.abs(end.z))<HALF-1)continue;
     // Not where another road carries on from this end (a corner or junction at the edge): only dead ends.
     if(roads.some(o=>o!==r&&alongOf(o.centreline,end).d<3))continue;
+    // Nor where another road meets it just short of the edge (a T-junction there): the barrier would stand across the
+    // junction and look like the side road is closed. The hedge round the area stops cars there.
+    if(roads.some(o=>o!==r&&alongOf(o.centreline,end).d<r.lanes.width*r.lanes.count/2+r.pavementWidth+8))continue;
     const dx=next.x-end.x,dz=next.z-end.z,l=Math.hypot(dx,dz)||1;
     const back=Math.min(4,l*.5),at={x:r2(end.x+dx/l*back),z:r2(end.z+dz/l*back)};
     const width=r.lanes.width*r.lanes.count+2*r.pavementWidth+1;

@@ -75,6 +75,8 @@ export class Instructor implements SimModule,ExaminerListener{
   private lastPrompt=-99;
   private good:string[]=[];
   private improve:string[]=[];
+  /** Each correction: its line in the report, how often, when last said. */
+  private corrections=new Map<string,{index:number;count:number;said:number}>();
   private manoeuvres=0;
   private crossingsWarned=new Set<string>();
   private lightsWarned=new Set<string>();
@@ -93,7 +95,7 @@ export class Instructor implements SimModule,ExaminerListener{
   private has(c:Coaching){return this.input.lesson.coaching.includes(c)}
 
   reset():void{
-    this.watch=null;this.looks=[];this.lastPrompt=-99;this.good=[];this.improve=[];this.manoeuvres=0;
+    this.watch=null;this.looks=[];this.lastPrompt=-99;this.good=[];this.improve=[];this.corrections.clear();this.manoeuvres=0;
     this.crossingsWarned.clear();this.lightsWarned.clear();this.mistakes=[];
     this.sinceStop=0;this.stops=0;this.manoeuvring=null;this.stopPhase='driving';this.stoppedFor=0;this.stoppedAt=0;
     const last=this.input.events.events.at(-1);
@@ -213,7 +215,16 @@ export class Instructor implements SimModule,ExaminerListener{
       // so the junction is not praised.
       if(e.type==='assessment.finding'&&!e.payload['upgraded']){
         const c=CORRECTIONS[String(e.payload['ruleId'])]?.(String(e.payload['severity']),this.limitHere(l));
-        if(c){this.mistakes.push(c.lesson);this.improve.push(`${IMPROVE}${c.lesson[0]!.toUpperCase()}${c.lesson.slice(1)}.`);this.lastPrompt=now;this.input.say(c.say)}
+        if(c){
+          this.mistakes.push(c.lesson);
+          // Once in the report however often it happens (with a count), and not said again within 20 s.
+          const line=`${IMPROVE}${c.lesson[0]!.toUpperCase()}${c.lesson.slice(1)}`;
+          const seen=this.corrections.get(line);
+          if(seen){seen.count++;this.improve[seen.index]=`${line} (${seen.count} times).`}
+          else{this.corrections.set(line,{index:this.improve.length,count:1,said:-99});this.improve.push(`${line}.`)}
+          const k=this.corrections.get(line)!;
+          if(now-k.said>20){k.said=now;this.lastPrompt=now;this.input.say(c.say)}
+        }
       }
       if(e.type==='observation.dwell'){
         const target=String(e.payload['target']);

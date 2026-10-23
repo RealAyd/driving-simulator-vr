@@ -55,11 +55,46 @@ export class ExaminerVoice{
       if(!r.ok)return;
       const index=await r.json() as {voice?:string;files?:string[]};
       this.sets.set(base,{files:new Set(index.files??[]),voice:index.voice??''});
+      if(this.inUse&&base===this.base)this.prefetch();
     }catch{/* no clips */}
   }
 
-  /** Speaks from now on with the clips in `base` (a folder given to `loadClips`). */
-  use(base:string):void{this.base=base}
+  /** Speaks from now on with the clips in `base` (a folder given to `loadClips`), downloading them meanwhile. */
+  use(base:string):void{this.base=base;this.inUse=true;this.prefetch()}
+  /** A voice has been chosen for a drive (clips are not downloaded before then). */
+  private inUse=false;
+
+  /**
+   * Downloads the clips of the voice in use in the background, two at a time, so a sentence plays the moment it is
+   * said rather than after a download (a second or more on a phone connection). A few MB, once (the browser keeps
+   * them too).
+   */
+  private prefetching:string|null=null;
+  private prefetch():void{
+    const base=this.base,files=[...this.clips];
+    if(this.prefetching===base||files.length===0)return;
+    this.prefetching=base;
+    let next=0;
+    const one=async():Promise<void>=>{
+      while(next<files.length&&this.base===base){
+        const path=base+files[next++]!;
+        if(this.bytes.has(path))continue;
+        await this.fetchClip(path).catch(()=>{});
+      }
+      if(this.base!==base&&this.prefetching===base)this.prefetching=null;
+    };
+    void one();void one();
+  }
+
+  private fetchClip(path:string):Promise<ArrayBuffer>{
+    let bytes=this.bytes.get(path);
+    if(!bytes){
+      bytes=fetch(path).then(r=>{if(!r.ok)throw new Error(String(r.status));return r.arrayBuffer()});
+      this.bytes.set(path,bytes);
+      bytes.catch(()=>this.bytes.delete(path));
+    }
+    return bytes;
+  }
 
   /** Call from a tap: a silent utterance lets later ones play (iPhone). */
   unlock():void{
@@ -75,22 +110,46 @@ export class ExaminerVoice{
   /** Called with true while a sentence is being spoken, false after (the car's sound is turned down meanwhile). */
   onSpeaking:(speaking:boolean)=>void=()=>{};
 
+  /** Sentences queued by the instructor (follow-up words), still waiting: kept when a direction comes first. */
+  private queued=new Set<string>();
+  /** The sentence being spoken was queued (an instructor's words, not a direction). */
+  private speakingQueued=false;
+
   /**
-   * Speaks `text`: next, instead of anything still waiting (a new direction), or after it all (`queue`, for an
-   * instructor's follow-up words). The sentence being spoken is never cut off half way: it finishes first.
+   * Speaks `text`. A direction (not `queue`) is said at once: a queued sentence being spoken is cut short, an earlier
+   * direction still waiting is replaced, and the instructor's words still waiting are said after it (they are on
+   * screen too). Queued words (`queue`, the instructor's) wait their turn.
    */
   say(text:string,queue=false):void{
     if(this.muted||!text||(!this.synth&&this.clips.size===0))return;
     // Sentence by sentence: each has its own clip, and some browsers cut off an utterance after about 15 seconds.
-    if(queue)this.waiting.push(...sentences(text));
-    else this.waiting=sentences(text);
+    const parts=sentences(text);
+    if(queue){for(const p of parts)this.queued.add(p);this.waiting.push(...parts);if(!this.busy)void this.run();return}
+    const keep=this.waiting.filter(w=>this.queued.has(w));
+    if(this.busy&&this.speakingQueued){
+      // Cut the instructor short for the direction: restart the queue with it first.
+      this.halt();
+      this.waiting=[...parts,...keep];
+      void this.run();
+      return;
+    }
+    this.waiting=[...parts,...keep];
     if(!this.busy)void this.run();
+  }
+
+  /** Stops the sentence being spoken (not what is waiting). */
+  private halt():void{
+    this.generation++;
+    this.busy=false;
+    try{this.source?.stop()}catch{/* ended */}
+    this.source=null;
+    this.synth?.cancel();
   }
 
   /** Silences it at once (paused, ended, sound off). */
   stop():void{
     this.generation++;
-    this.waiting=[];this.busy=false;
+    this.waiting=[];this.queued.clear();this.busy=false;
     this.onSpeaking(false);
     try{this.source?.stop()}catch{/* ended */}
     this.source=null;
@@ -103,12 +162,13 @@ export class ExaminerVoice{
     this.onSpeaking(true);
     while(this.waiting.length&&g===this.generation){
       const s=this.waiting.shift()!;
+      this.speakingQueued=this.queued.delete(s);
       const played=this.clips.has(phraseFile(s))&&await this.playClip(s,g).catch(()=>false);
       if(g!==this.generation)return;
       if(!played)await this.speak(s);
       if(g===this.generation)this.onSpoken();
     }
-    if(g===this.generation){this.busy=false;this.onSpeaking(false)}
+    if(g===this.generation){this.busy=false;this.speakingQueued=false;this.onSpeaking(false)}
   }
 
   /** Plays a sentence's clip through the car's sound; false if it cannot (sound not running, download failed). */
@@ -122,13 +182,7 @@ export class ExaminerVoice{
       if((ctx.state as string)!=='running')return false;
     }
     const path=this.base+phraseFile(sentence);
-    let bytes=this.bytes.get(path);
-    if(!bytes){
-      bytes=fetch(path).then(r=>{if(!r.ok)throw new Error(String(r.status));return r.arrayBuffer()});
-      this.bytes.set(path,bytes);
-      bytes.catch(()=>this.bytes.delete(path));
-    }
-    const buffer=await ctx.decodeAudioData((await bytes).slice(0));
+    const buffer=await ctx.decodeAudioData((await this.fetchClip(path)).slice(0));
     if(g!==this.generation)return true;
     return new Promise<boolean>(resolve=>{
       const src=ctx.createBufferSource();

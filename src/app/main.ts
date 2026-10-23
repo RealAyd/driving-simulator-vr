@@ -102,6 +102,7 @@ import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
+import {reloadWhenStale} from './staleBuild';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
@@ -197,6 +198,8 @@ export async function boot():Promise<void>{
   byId('tutorial-home').addEventListener('click',()=>tutorial.start(HOME_TOUR));
   byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
+  // A page from before an update: reload for the current version (not during a drive).
+  reloadWhenStale(()=>session.state==='running');
   // Every failure is shown on screen rather than leaving a blank canvas.
   window.addEventListener('error',event=>session.fail(event.message||'Unexpected error'));
   window.addEventListener('unhandledrejection',event=>session.fail(String((event.reason as Error)?.message??event.reason)));
@@ -1819,6 +1822,9 @@ export async function boot():Promise<void>{
     scene.render();
   });
   window.addEventListener('resize',()=>{engine.resize();viewer.layout()});
+  // Turning the phone, or opening from the Home Screen, can report the new size only after the resize event: the
+  // picture is resized whenever the canvas itself changes size, so it is never drawn small and stretched.
+  if(typeof ResizeObserver==='function')new ResizeObserver(()=>{engine.resize();viewer.layout()}).observe(canvas);
 
   let instrumentation:import('@babylonjs/core/Instrumentation/sceneInstrumentation').SceneInstrumentation|null=null;
   // Read-only handle for automated browser tests and manual diagnostics.

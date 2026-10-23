@@ -28,6 +28,10 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   faceOff?:number;
   /** Tucked in to the kerb to let a stopped learner through a narrow gap (until the learner has gone by). */
   squeezing?:boolean;
+  /** Driving on out of a tangle with this car (ignoring it until clear of it). */
+  through?:Driver|undefined;
+  /** The current leg ends with no way on (worked out near its end; cleared with each new leg). */
+  deadEnd?:boolean|undefined;
   /** Diagnostics: what it slowed for last. */
   why?:string}
 
@@ -129,23 +133,39 @@ export class Traffic implements SimModule{
 
   /** The way on at the end of a leg: a side road it turns into, or another road at the node (not straight back). */
   private choose(leg:Leg,bus=false):Leg|null{
-    if(!leg.road)return null;
-    if(leg.exit)return this.legOf(leg.exit.road,leg.exit.dir,undefined,bus);
+    const options=this.waysOn(leg,bus);
+    if(options.length===0)return null;
+    // Not into a road that leads nowhere (it stops at the edge of the area, where the map data ends): a car there
+    // would have to vanish in view. Only when there is nothing else.
+    const onward=options.filter(o=>this.waysOn(this.probe(o.road,o.dir),bus).length>0);
+    const pick=onward.length?onward:options;
+    return pick[Math.floor(this.rand()*pick.length)]!.make();
+  }
+
+  /** The end of a road driven one way, as a leg (to ask what way on there is from it). */
+  private probe(road:Road,dir:1|-1):Leg{
+    const [na,nb]=this.roadNodes.get(road)!;
+    return {points:[dir>0?road.centreline.at(-1)!:road.centreline[0]!],lengths:[0],road,dir,cruise:0,lane:0,endNode:dir>0?nb:na};
+  }
+
+  /** The ways on at the end of a leg (none: a dead end, such as a road leaving the area). */
+  private waysOn(leg:Leg,bus:boolean):Array<{road:Road;dir:1|-1;make:()=>Leg}>{
+    if(!leg.road)return [];
+    if(leg.exit){const exit=leg.exit;return [{road:exit.road,dir:exit.dir,make:()=>this.legOf(exit.road,exit.dir,undefined,bus)}]}
     const end=leg.points.at(-1)!;
-    let options:Array<{road:Road;make:()=>Leg}>=[];
-    if(leg.endNode>=0)for(const e of this.ends[leg.endNode]!)if(e.road!==leg.road)options.push({road:e.road,make:()=>this.legOf(e.road,e.dir,undefined,bus)});
+    let options:Array<{road:Road;dir:1|-1;make:()=>Leg}>=[];
+    if(leg.endNode>=0)for(const e of this.ends[leg.endNode]!)if(e.road!==leg.road)options.push({road:e.road,dir:e.dir,make:()=>this.legOf(e.road,e.dir,undefined,bus)});
     // The end of a side road at a T-junction: on to the road it meets, either way (unless one way).
     for(const road of this.location.roads){
       if(road===leg.road||(leg.road&&road.level!==leg.road.level))continue;
       const at=sampleRoad(road,end.x,end.z);
       if(at.distance>7||at.along<3||at.along>roadLength(road)-3)continue;
-      options.push({road,make:()=>this.legOf(road,1,at.along,bus)});
-      if(!road.oneway)options.push({road,make:()=>this.legOf(road,-1,at.along,bus)});
+      options.push({road,dir:1,make:()=>this.legOf(road,1,at.along,bus)});
+      if(!road.oneway)options.push({road,dir:-1,make:()=>this.legOf(road,-1,at.along,bus)});
     }
     // Buses keep to the through roads where they can.
     if(bus&&options.some(o=>o.road.markings.centre!=='none'))options=options.filter(o=>o.road.markings.centre!=='none');
-    if(options.length===0)return null;
-    return options[Math.floor(this.rand()*options.length)]!.make();
+    return options;
   }
 
   private at(leg:Leg,s:number):{x:number;z:number;dir:Vec2}{
@@ -215,6 +235,12 @@ export class Traffic implements SimModule{
       for(const o of this.drivers){
         if(o===d||!o.car.visible)continue;
         const op=o.car.pose.position,ofx=Math.sin(o.car.pose.heading),ofz=-Math.cos(o.car.pose.heading);
+        // Two cars tangled together (met in a junction, each waiting for the other): the first of them drives on
+        // out of it, as if it had been waved through; the other waits until it has gone.
+        const apart=Math.hypot(op.x-pos.x,op.z-pos.z);
+        if(d.through===o&&apart>car.halfLength+o.car.halfLength+2)d.through=undefined;
+        if(!d.through&&d.waited>3&&o.waited>3&&o.car.speed<.3&&this.drivers.indexOf(o)>i&&apart<car.halfLength+o.car.halfLength+.5)d.through=o;
+        if(d.through===o)continue;
         const facing=fwd.x*ofx+fwd.z*ofz;
         if(facing>.3){
           // Following: unless both have been waiting a long time (a knot at a junction), then only the nose-to-tail gap counts.
@@ -278,7 +304,7 @@ export class Traffic implements SimModule{
         target=Math.min(target,Math.max(3.5,remaining*.45));
         const mine=Math.hypot(pos.x-point.x,pos.z-point.z);
         const busy=this.drivers.some(o=>{
-          if(o===d||!o.car.visible)return false;
+          if(o===d||!o.car.visible||d.through===o)return false;
           const r=Math.hypot(o.car.pose.position.x-point.x,o.car.pose.position.z-point.z);
           // Nearer the junction and moving, or nearer and waiting with the turn first.
           return r<reach&&r<mine-.5&&(o.car.speed>.3||d.waited<2||this.drivers.indexOf(o)<i||d.waited<8);
@@ -288,6 +314,9 @@ export class Traffic implements SimModule{
           return r<reach&&(Math.abs(learner.speed)>.5||r<5);
         })();
         if(busy&&remaining<7){target=0;why='junction busy'}
+        // A dead end (the edge of the area): stop short of it, and go only once the learner cannot see (below).
+        d.deadEnd??=this.waysOn(d.leg,car.kind==='bus').length===0;
+        if(d.deadEnd){target=Math.min(target,Math.max(0,(remaining-car.halfLength-1)*.5));if(remaining<car.halfLength+2)why='dead end'}
       }
       // Buses: pull up at each bus stop on their side, wait, then go on.
       if(car.kind==='bus'){
@@ -333,11 +362,11 @@ export class Traffic implements SimModule{
         const over=d.s-d.leg.lengths.at(-1)!;
         if(d.leg.road===null){
           if(!d.next){car.visible=false;break}
-          d.leg=d.next;d.next=null;d.s=over;continue;
+          d.leg=d.next;d.next=null;d.s=over;d.deadEnd=undefined;continue;
         }
         const next=this.choose(d.leg,car.kind==='bus');
         if(!next){car.visible=false;break}
-        d.next=next;d.leg=this.connector(d.leg,next);d.s=over;
+        d.next=next;d.leg=this.connector(d.leg,next);d.s=over;d.deadEnd=undefined;
       }
       if(!car.visible)continue;
       this.place(d);
@@ -347,6 +376,8 @@ export class Traffic implements SimModule{
       const lfx=Math.sin(learner.pose.heading),lfz=-Math.cos(learner.pose.heading);
       const behindLearner=(car.pose.position.x-learner.pose.position.x)*lfx+(car.pose.position.z-learner.pose.position.z)*lfz<-3;
       if((d.waited>20&&fromLearner>50)||(d.waited>25&&behindLearner)){car.visible=false;continue}
+      // Stopped at a dead end: gone as soon as it is out of the learner's sight.
+      if(d.why==='dead end'&&car.speed<.2&&(behindLearner||fromLearner>90)){car.visible=false;continue}
       // Nose to nose with the learner, stopped, and in the way (the learner out in the road past parked cars, this
       // car waiting by its own): neither can get by, so after a while it goes (as if into a drive) rather than leave
       // both waiting for ever.

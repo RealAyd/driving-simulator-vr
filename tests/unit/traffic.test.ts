@@ -111,4 +111,27 @@ describe('Background traffic: no gridlock',()=>{
       expect(worst,`seed ${seed}`).toBeLessThan(40);
     }
   },180_000);
+  it('at the edge of the area, traffic does not vanish in front of the learner (Gartmore Road at Green Lane)',()=>{
+    const layout=layoutTownscape(goodmayes)!;
+    // Stopped near the end of Gartmore Road, looking across Green Lane to where it leaves the area.
+    const learner={pose:{position:{x:-463,y:0,z:325},heading:Math.PI},speed:0};
+    const fwd={x:Math.sin(learner.pose.heading),z:-Math.cos(learner.pose.heading)};
+    let vanished=0,seen=0;
+    for(const seed of [1,2,3]){
+      const traffic=new Traffic(goodmayes,{count:14,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:layout.cars.map(c=>({x:c.x,z:c.z})),learner:()=>learner,seed});
+      let before=new Map<string,{x:number;z:number}|null>();
+      for(let t=0;t<180;t+=1/30){
+        traffic.fixedUpdate(1/30);
+        const now=new Map(traffic.cars.map(c=>[c.id,c.visible?{x:c.pose.position.x,z:c.pose.position.z}:null]));
+        for(const [id,p] of before){
+          if(!p)continue;
+          const dx=p.x-learner.pose.position.x,dz=p.z-learner.pose.position.z,ahead=dx*fwd.x+dz*fwd.z;
+          if(ahead>0&&Math.hypot(dx,dz)<70){seen++;if(!now.get(id))vanished++}
+        }
+        before=now;
+      }
+    }
+    expect(seen).toBeGreaterThan(100);
+    expect(vanished).toBe(0);
+  });
 });

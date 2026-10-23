@@ -4314,22 +4314,6 @@
  ],
  "blocks": [
   {
-   "id": "edge-barrier-0",
-   "kind": "wall",
-   "position": {
-    "x": -464.88,
-    "z": 345.46
-   },
-   "headingDeg": 72.5,
-   "size": {
-    "width": 12,
-    "depth": 0.5,
-    "height": 1.1
-   },
-   "occludes": true,
-   "colour": "#d62828"
-  },
-  {
    "id": "edge-barrier-1",
    "kind": "wall",
    "position": {

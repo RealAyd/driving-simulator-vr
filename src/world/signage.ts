@@ -189,6 +189,8 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
       for(const off of [half+.55,half+.9]){
         const c={x:p.x+l.x*off,z:p.z+l.z*off};
         if(!onPavement(c)||!clearOfBuildings(c,.4)||!clearOfFurniture(c,1))continue;
+        // Not on a corner: well back from every other road's kerb, where a turning car could clip the post.
+        if(location.roads.some(o=>o!==road&&sampleRoad(o,c.x,c.z).distance<roadHalfWidth(o)+2.5))continue;
         const y=height(c);
         plan.panels.push({id,face,x:c.x,y:y+SIGN_BOTTOM+size/2,z:c.z,normal:{x:-p.dir.x,z:-p.dir.z},width:size,height:size,
           twoSided:false,round:shape==='round',...(shape==='round'?{}:{shape}),
@@ -202,7 +204,7 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
   // STOP and GIVE WAY signs, beside the line, where the map has one (unsigned give way lines have none).
   for(const m of junctionMouths(location)){
     if(!m.signed)continue;
-    standing(`${m.id}-sign`,{kind:m.kind},m.road,b=>mouthPoint(m,b,0),[1,2,3,4,5],m.kind==='stop'?OCTAGON:TRIANGLE,
+    standing(`${m.id}-sign`,{kind:m.kind},m.road,b=>mouthPoint(m,b,0),[1,2,3,4,5,6,8],m.kind==='stop'?OCTAGON:TRIANGLE,
       m.kind==='stop'?'octagon':'triangle-down',`${m.kind==='stop'?'STOP':'GIVE WAY'} at the ${m.road.name??m.road.id} mouth`);
   }
   // Speed limit signs where one road runs on into another with a different mapped limit, facing traffic entering it
@@ -222,8 +224,8 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
       const enter=(back:number)=>{const p=pointAtAlong(road,atEnd?length-back:back);return {x:p.x,z:p.z,dir:atEnd?{x:-p.direction.x,z:-p.direction.z}:p.direction}};
       const face:SignFace={kind:'speed-limit',mph};
       const why=`${mph} mph from ${before.speedLimitMph} mph on ${road.name??road.id}`;
-      standing(`speed-${road.id}-${atEnd?'end':'start'}-l`,face,road,enter,[3,4,6,8],DISC,'round',why);
-      if(!road.oneway)standing(`speed-${road.id}-${atEnd?'end':'start'}-r`,face,road,enter,[3,4,6,8],DISC,'round',why,-1);
+      standing(`speed-${road.id}-${atEnd?'end':'start'}-l`,face,road,enter,[4,6,8,10,12],DISC,'round',why);
+      if(!road.oneway)standing(`speed-${road.id}-${atEnd?'end':'start'}-r`,face,road,enter,[4,6,8,10,12],DISC,'round',why,-1);
     }
   }
   // School warning signs (children going to or from school) on each approach to a school's frontage.

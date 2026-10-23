@@ -1,4 +1,5 @@
 import {Color3,CreateBox,Matrix,Mesh,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
+import {isStaleImport,reportStaleBuild} from '../app/staleBuild';
 import {VertexBuffer} from '@babylonjs/core/Buffers/buffer';
 import type {AssetContainer} from '@babylonjs/core/assetContainer';
 import type {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
@@ -62,6 +63,7 @@ export async function loadModel(scene:Scene,url:string):Promise<AssetContainer|n
     return container;
   }catch(error){
     console.warn(`[Driving Practice] model not loaded: ${url}`,error);
+    if(isStaleImport(error))reportStaleBuild();
     return null;
   }
 }
