@@ -47,7 +47,7 @@ import goodmayesLessonJson from '../../content/scenarios/goodmayes-lesson.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
-import {setUpFullscreen} from '../ui/fullscreen';
+import {installed,setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -915,6 +915,8 @@ export async function boot():Promise<void>{
   let viewers=loadViewers(localStore);
   let viewerSettings=activeSettings(viewers);
   const viewerStatus=byId('viewer-status');
+  // In the browser (not opened from the Home Screen) the address bar takes part of the screen the lenses look at.
+  byId('viewer-install').hidden=installed();
   const slotSelect=byId<HTMLSelectElement>('viewer-slot');
   for(const name of VIEWER_SLOTS){const o=document.createElement('option');o.value=name;o.textContent=name;slotSelect.append(o)}
   slotSelect.value=viewers.active;
@@ -1115,7 +1117,7 @@ export async function boot():Promise<void>{
       document.body.classList.add('viewer');
       // In the headset the lenses magnify the screen: as many pixels as the phone has, stepping back only if the
       // frame rate drops (a low frame rate in a headset is worse than a softer picture).
-      viewerSharpness=new AdaptiveScale(1,2);
+      viewerSharpness=new AdaptiveScale(1,1.25,{slowFps:28});
       setSharpness(viewerSharpness.level);
       engine.resize();
       viewer.enter(applySettings(viewerSettings));
@@ -1212,7 +1214,8 @@ export async function boot():Promise<void>{
     }
     if(session.state!=='running')return;
     if(viewerStarting){
-      if(viewerMode==='driving'&&pressed.has('recentre')&&headTracker.receiving){
+      // Any of the checked controller's controls starts (Accelerate counts only once released and pressed again).
+      if(viewerMode==='driving'&&c.pressed.length>0&&headTracker.receiving&&performance.now()-viewerEnteredAt>=VIEWER_SETTLE*1000){
         viewerStarting=false;headTracker.recentre();clock.resume();
       }
       return;
@@ -1285,8 +1288,8 @@ export async function boot():Promise<void>{
       if(viewerMode==='driving'){
         const ok=!!(c?.connected&&c.device===checkedDevice);
         menu=[`Paused${viewerPauseReason&&viewerPauseReason!=='Paused'?`: ${viewerPauseReason.toLowerCase()}`:''}`,
-          ok?'Resume: press Pause':'Reconnect the checked controller to resume',
-          'Recentre: press Recentre','Exit: hold Brake for 2 seconds',
+          ok?`Resume: press Pause (${describeBinding(controller.bindings.pause)})`:'Reconnect the checked controller to resume',
+          `Recentre: press Recentre (${describeBinding(controller.bindings.recentre)})`,`Exit: hold Brake (${describeBinding(controller.bindings.brake)}) for 2 seconds`,
           headTracker.readingAge>TRACKING_STALE_MS?'Head tracking has stopped: it must return before resuming':'',
           'Traffic and timing are frozen while paused.'].filter(Boolean);
       }else{
@@ -1296,7 +1299,12 @@ export async function boot():Promise<void>{
     }else if(viewerStarting){
       if(!headTracker.receiving)menu=['Waiting for head tracking…','Check that motion access is allowed.'];
       else if(!settled)menu=['Put the phone in the headset…'];
-      else if(viewerMode==='driving')menu=['Look straight ahead','Then press Recentre to start.','Hold Accelerate to move; release to coast.',`Brake acts at once. Assisted speed up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`];
+      else if(viewerMode==='driving'){
+        // (No gaze buttons while driving with a controller: everything is on the controller.)
+        menu=['Look straight ahead','To start: press any button on your controller.',
+          `Accelerate (${describeBinding(controller.bindings.accelerate)}): hold to move, release to coast.`,
+          `Brake (${describeBinding(controller.bindings.brake)}) acts at once. Up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`];
+      }
       else{menu=['Look straight ahead at Start','Parked practice: look around, check the mirrors,','and practise shoulder checks. Not scored.'];items=[START_ITEM]}
     }else if(viewerMode==='familiarisation')items=[FAMILIARISATION_MENU];
     viewerHud.setItems(items);

@@ -17,8 +17,11 @@ export class AdaptiveScale{
   private failed=new Map<number,number>();
   private time=0;
   private readonly floor:number;
-  /** `coarsest`: the coarsest level it may step back to (by default where it starts). */
-  constructor(start:number,coarsest=start){
+  private readonly slowFps:number;
+  /** `coarsest`: the coarsest level it may step back to (by default where it starts); `slowFps`: below this frame
+   * rate for a few seconds, it steps back (a headset keeps sharpness down to a lower rate: its text must be read). */
+  constructor(start:number,coarsest=start,options:{slowFps?:number}={}){
+    this.slowFps=options.slowFps??SLOW;
     const at=(level:number)=>{const i=SCALE_LEVELS.findIndex(l=>l<=level);return i<0?SCALE_LEVELS.length-1:i};
     this.index=at(start);
     this.floor=Math.min(this.index,at(coarsest));
@@ -27,7 +30,7 @@ export class AdaptiveScale{
   /** The frame rate over the last `dt` seconds; returns the new level when it changes. */
   update(dt:number,fps:number):number|null{
     this.time+=dt;
-    this.slowFor=fps<SLOW?this.slowFor+dt:0;
+    this.slowFor=fps<this.slowFps?this.slowFor+dt:0;
     this.fastFor=fps>FAST?this.fastFor+dt:0;
     if(this.slowFor>=SLOW_FOR&&this.index>this.floor){
       this.failed.set(this.index,this.time);

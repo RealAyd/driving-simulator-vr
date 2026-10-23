@@ -27,7 +27,7 @@ interface Placed extends GazeItem{mesh:Mesh;texture:DynamicTexture;centre:Vector
  * The menu panel straight ahead (metres, and its texture in pixels): large, sharp text, as the headset's lenses
  * magnify the screen. Lines are `step` pixels apart from `first` (baselines); main.ts lines buttons up with them.
  */
-export const MENU={w:.9,h:.58,distance:1.3,texW:1536,texH:990,titlePx:76,linePx:58,first:96,step:96} as const;
+export const MENU={w:.9,h:.58,distance:1.3,texW:1536,texH:990,titlePx:84,linePx:66,first:100,step:104} as const;
 
 export class ViewerHud{
   private items:Placed[]=[];
@@ -42,6 +42,8 @@ export class ViewerHud{
   private panelText='';
   private menuText='';
   private gazed:Placed|null=null;
+  /** Height of the menu panel's top edge (vehicle-local metres). */
+  private menuTop=0;
   private dwell=0;
   private visible=false;
   private targets=false;
@@ -62,9 +64,7 @@ export class ViewerHud{
     // Menu panel straight ahead at eye level (pause, calibration, instructions); hidden unless needed.
     ({mesh:this.menu,texture:this.menuTexture}=text('viewer-menu',MENU.w,MENU.h,MENU.texW,new Vector3(eye.x,eye.y+.02,eye.z-MENU.distance)));
     this.menu.renderingGroupId=1;
-    // (Transparent below its last line: the panel is only as tall as what it says.)
-    this.menuTexture.hasAlpha=true;
-    (this.menu.material as StandardMaterial).useAlphaFromDiffuseTexture=true;
+    this.menuTop=this.menu.position.y+MENU.h/2;
 
     this.reticle=CreateDisc('viewer-reticle',{radius:.004,tessellation:16,sideOrientation:Mesh.DOUBLESIDE},scene);
     this.reticle.parent=parent;
@@ -161,9 +161,13 @@ export class ViewerHud{
     if(!lines)return;
     const {width,height}=this.menuTexture.getSize();
     const ctx=this.menuTexture.getContext() as unknown as CanvasRenderingContext2D;
-    const used=Math.min(height,MENU.first+(lines.length-1)*MENU.step+MENU.linePx*.6+28);
-    ctx.clearRect(0,0,width,height);
-    ctx.fillStyle='#1e293b';ctx.fillRect(0,0,width,used);
+    // The panel is only as tall as what it says (its top stays put: lines line up with buttons beside them): the
+    // plane is shortened and shows just the top of the texture.
+    const used=Math.min(height,MENU.first+(lines.length-1)*MENU.step+MENU.linePx*.6+28),k=used/height;
+    this.menu.scaling.y=k;
+    this.menu.position.y=this.menuTop-MENU.h*k/2;
+    this.menuTexture.vScale=k;this.menuTexture.vOffset=1-k;
+    ctx.fillStyle='#1e293b';ctx.fillRect(0,0,width,height);
     ctx.strokeStyle='#94a3b8';ctx.lineWidth=8;ctx.strokeRect(4,4,width-8,used-8);
     lines.forEach((line,i)=>{
       ctx.fillStyle=i===0?'#fbbf24':'#f1f5f9';
@@ -230,7 +234,8 @@ export class ViewerHud{
     ctx.fillStyle=lit?'#0f766e':'#1e293b';ctx.fillRect(0,0,width,height);
     if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-20,width*progress,20)}
     ctx.strokeStyle='#94a3b8';ctx.lineWidth=10;ctx.strokeRect(5,5,width-10,height-10);
-    ctx.fillStyle='#f8fafc';ctx.font=`bold ${Math.round(Math.min(height*.5,96))}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    // (A one-character label, − or +, fills its button.)
+    ctx.fillStyle='#f8fafc';ctx.font=`bold ${Math.round(b.label.length<=1?height*.85:Math.min(height*.5,96))}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(b.label,width/2,height/2-4,width-28);
     b.texture.update(true);
   }

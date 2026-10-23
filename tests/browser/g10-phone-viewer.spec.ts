@@ -148,7 +148,8 @@ test('G10: controller check with a non-standard layout; scored driving: held acc
   const simBefore=await read(page,'simTime()');
   await page.waitForTimeout(1000);
   expect(await read(page,'simTime()')).toBe(simBefore);        // nothing moves before Start
-  await tap(page,LAYOUT.recentre,async()=>!(await read(page,'viewer().starting')));
+  // Any of its controls starts it (here Brake: it does not move the car, and Accelerate still needs a fresh press).
+  await tap(page,LAYOUT.brake,async()=>!(await read(page,'viewer().starting')));
   await page.screenshot({path:testInfo.outputPath('g10-04-driving-started.png')});
 
   // Accelerate is held: speed rises, never beyond the exercise's assisted speed (12 mph); released, the car coasts.
@@ -278,9 +279,9 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await expect.poll(()=>read(page,'viewer().mode')).toBe('calibration');
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(63);
   // Eye spacing "+" by gaze (first row, right-hand button).
-  // (The menu panel: viewerHud MENU, 0.9 × 0.58 m at 1.3 m, lines 96 px apart from 96 px on a 990 px texture.)
+  // (The menu panel: viewerHud MENU, 0.9 × 0.58 m at 1.3 m, lines 104 px apart from 100 px on a 990 px texture.)
   const panel={x:EYE.x,y:EYE.y+.02,z:EYE.z-1.3};
-  const rowY=(i:number)=>panel.y+.29-(96+i*96-58*.35)/990*.58;
+  const rowY=(i:number)=>panel.y+.29-(100+i*104-66*.35)/990*.58;
   const plus=aimAt({x:panel.x+.38,y:rowY(1),z:panel.z+.02});
   // Look straight ahead while the viewer settles, then at "+" (as for Reset below).
   await look(page,0,0);
