@@ -42,8 +42,8 @@ it('every test centre: start, routes, directions, marking, scenery',()=>{
       routes++;
       let run;
       try{run=careful(location,net,seed,3000)}catch(e){add('route-crash',`seed ${seed}: ${String(e).slice(0,200)}`);continue}
-      const {result,steps,legs,late,parkedOk,events}=run;
-      for(const e of events.filter(e=>e.type==='examiner.redirected'))add('careful-driver-redirected',`seed ${seed}: told new directions (expected ${String(e.payload['expected'])})`);
+      const {result,steps,legs,late,parkedOk,events,drivenUntil}=run;
+      for(const e of events.filter(e=>e.type==='examiner.redirected'&&e.time<drivenUntil))add('careful-driver-redirected',`seed ${seed}: told new directions (expected ${String(e.payload['expected'])})`);
       for(const x of late)add('direction-late',`seed ${seed}: ${x}`);
       if(!parkedOk)add('no-legal-place-to-pull-up',`seed ${seed}: near the end of ${legs.at(-1)?.road.name??'?'}`);
       const length=legs.reduce((n,l)=>n+Math.abs(l.to-l.from),0);
@@ -60,6 +60,9 @@ it('every test centre: start, routes, directions, marking, scenery',()=>{
       const taken=new Map<string,number>();
       for(const st of steps){const k=st.to.road.name??st.to.road.id;taken.set(k,(taken.get(k)??0)+1)}
       for(const [k,n] of taken)if(n>4)add('route-loops',`seed ${seed}: into ${k} ${n} times`);
+      // The last turn into a road too short to pull up in (a stub at a cul-de-sac's mouth).
+      const lastStep=steps.at(-1);
+      if(lastStep&&len(lastStep.to.road)<30)add('route-ends-in-stub',`seed ${seed}: "${lastStep.say}" into ${lastStep.to.road.name??lastStep.to.road.id} (${len(lastStep.to.road).toFixed(0)} m)`);
       // Where the drive ends: room on to pull up, not at the edge.
       const end=legs.at(-1);
       if(end){
@@ -90,8 +93,9 @@ it('every test centre: start, routes, directions, marking, scenery',()=>{
     // A building across a road: the road's centreline runs through its outline (an arch over a road is mapped so,
     // and drawn solid it would block the way).
     const inside=(p:{x:number;z:number},poly:Array<{x:number;z:number}>)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i]!,b=poly[j]!;if((a.z>p.z)!==(b.z>p.z)&&p.x<(b.x-a.x)*(p.z-a.z)/(b.z-a.z)+a.x)c=!c}return c};
+    const drawn=new Set((layout?.town?.buildings??[]).map(b=>b.id));
     for(const b of location.buildings){
-      if(b.use==='parking'||/roof|canopy/i.test(b.evidence??''))continue;
+      if(b.use==='parking'||/roof|canopy/i.test(b.evidence??'')||!drawn.has(b.id))continue;
       const across=location.roads.find(r=>{for(let a=2;a<len(r)-2;a+=2){const p=pointAtAlong(r,a);if(inside(p,b.footprint))return true}return false});
       if(across)add('building-across-road',`${b.id} over ${across.name??across.id}`);
     }

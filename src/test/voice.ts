@@ -130,7 +130,8 @@ export class ExaminerVoice{
     // Sentence by sentence: each has its own clip, and some browsers cut off an utterance after about 15 seconds.
     const parts=sentences(text);
     this.stats.requested+=parts.length;
-    for(const p of parts)if(!this.queuedAt.has(p))this.queuedAt.set(p,this.clock());
+    // (The wait measured is before the first sentence of each: the rest follow it, as they should.)
+    if(parts[0]&&!this.queuedAt.has(parts[0]))this.queuedAt.set(parts[0],this.clock());
     if(queue){for(const p of parts)this.queued.add(p);this.waiting.push(...parts);if(!this.busy)void this.run();return}
     const keep=this.waiting.filter(w=>this.queued.has(w));
     // Directions still waiting are replaced by the new one (said no more).

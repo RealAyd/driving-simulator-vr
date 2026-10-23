@@ -36,12 +36,15 @@ for(const centre of CENTRES)test(`soak: mock test at ${centre}`,async({page},tes
   await expect(page.locator('#exercise-detail')).toBeVisible({timeout:90_000});
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
-  if(await page.locator('#hud-question').isVisible({timeout:20_000}).catch(()=>false)){
-    await page.locator('#hud-question-choices button').first().click();
-    await page.click('#hud-question-go');
-  }
+  const report0:any={};
+  // The tell me question first (the car is held until it is answered).
+  await expect(page.locator('#hud-question')).toBeVisible({timeout:30_000});
+  await page.keyboard.down('KeyW');await page.waitForTimeout(1500);await page.keyboard.up('KeyW');
+  report0.heldDuringQuestion=Math.abs((await read(page,'vehicle()')).speed)<.1;
+  await page.locator('#hud-question-choices button').first().click();
+  await page.click('#hud-question-go');
   const heap=async()=>page.evaluate(()=>((performance as any).memory?.usedJSHeapSize??0)/1e6);
-  const report:any={centre,samples:0,offRoad:0,stuckEpisodes:[] as string[],fpsMin:999,fpsSum:0,heapStart:await heap(),indexMax:0,phases:new Set<string>()};
+  const report:any={...report0,centre,samples:0,offRoad:0,stuckEpisodes:[] as string[],fpsMin:999,fpsSum:0,heapStart:await heap(),indexMax:0,phases:new Set<string>()};
   const end=Date.now()+MINUTES*60_000;
   let held:string|null=null,stillSince=Date.now();
   const hold=async(key:string|null)=>{if(held===key)return;if(held)await page.keyboard.up(held);if(key)await page.keyboard.down(key);held=key};

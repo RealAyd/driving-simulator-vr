@@ -383,7 +383,8 @@ const at=alongOf(sr.centreline,{x:0,z:0});
 const pt=(()=>{let acc=0;for(let i=1;i<sr.centreline.length;i++){const a=sr.centreline[i-1],b=sr.centreline[i],l=Math.hypot(b.x-a.x,b.z-a.z);
   if(acc+l>=along){const t=(along-acc)/l;return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,dx:(b.x-a.x)/l,dz:(b.z-a.z)/l}}acc+=l}})();
 // Left of travel (UK): the left lane's middle.
-const lane=sr.oneway?0:sr.lanes.width/2;
+// (On a narrow two-way road with one lane mapped, half the carriageway's half: a full lane's half is its edge.)
+const lane=sr.oneway?0:sr.lanes.count>=2?sr.lanes.width/2:sr.lanes.width*sr.lanes.count/4;
 const spawn={position:{x:r2(pt.x+pt.dz*lane),z:r2(pt.z-pt.dx*lane)},headingDeg:r2((Math.atan2(pt.dx,-pt.dz)*180/Math.PI+360)%360),roadId:sr.id};
 void at;
 

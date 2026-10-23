@@ -1,5 +1,5 @@
 import type {Location,Road,Vec2} from '../contracts';
-import {pointAtAlong,sampleRoad} from '../world/roadGeometry';
+import {pointAtAlong,roadHalfWidth,sampleRoad} from '../world/roadGeometry';
 
 /**
  * Mock test routes on a location's road network, and the examiner's directions for them. A route is a series of
@@ -425,7 +425,17 @@ export class RoadNetwork{
     const here=this.locate(x,z,heading);
     // Room to move off and get going before the first junction (its direction is given in good time).
     const room=(road:Road,dir:1|-1,along:number)=>{const d=this.decisions({road,dir,along})[0];return d?Math.abs(d.along-along):Infinity};
-    if(!here||this.leadsOn({road:here.road,dir:here.dir,from:here.along})&&room(here.road,here.dir,here.along)>=START_ROOM)return {x,z,heading};
+    // The left lane's middle (half of half the width of a narrow two-way road with one lane mapped).
+    const laneOf=(road:Road)=>road.oneway?0:road.lanes.count>=2?road.lanes.width/2:road.lanes.width*road.lanes.count/4;
+    const place=(road:Road,dir:1|-1,along:number)=>{
+      const p=pointAtAlong(road,along),d={x:p.direction.x*dir,z:p.direction.z*dir},lane=laneOf(road);
+      // Left of travel (UK) is (dz, −dx).
+      return {x:p.x+d.z*lane,z:p.z-d.x*lane,heading:Math.atan2(d.x,-d.z)};
+    };
+    if(here&&this.leadsOn({road:here.road,dir:here.dir,from:here.along})&&room(here.road,here.dir,here.along)>=START_ROOM)
+      // Where it is, unless at the kerb's edge (then in the lane).
+      return (here.fit?.distance??0)>roadHalfWidth(here.road)-.9?place(here.road,here.dir,here.along):{x,z,heading};
+    if(!here)return {x,z,heading};
     let best:{road:Road;dir:1|-1;along:number;reach:number;distance:number}|null=null;
     const consider=(road:Road,dir:1|-1,along:number)=>{
       if(road.oneway&&dir<0)return;
@@ -443,11 +453,7 @@ export class RoadNetwork{
       }
     }
     const b=best!;
-    if(b.road===here.road&&b.dir===here.dir&&Math.abs(b.along-here.along)<1)return {x,z,heading};
-    const p=pointAtAlong(b.road,b.along),d={x:p.direction.x*b.dir,z:p.direction.z*b.dir};
-    // Left of travel (UK) is (dz, −dx): the left lane's middle.
-    const lane=b.road.oneway?0:b.road.lanes.width/2;
-    return {x:p.x+d.z*lane,z:p.z-d.x*lane,heading:Math.atan2(d.x,-d.z)};
+    return place(b.road,b.dir,b.along);
   }
   /** How far one can drive on from an option (metres, up to LEADS_ON), by the longest way. */
   reach(o:{road:Road;dir:1|-1;from:number}):number{

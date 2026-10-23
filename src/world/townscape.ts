@@ -111,7 +111,22 @@ export function layoutTownscape(location:Location):StreetLayout|null{
   const town=out.town!;
 
   // Buildings: walls with outward normals; colliders are the walls themselves (0.3 m thick, just inside the outline).
+  // (Not one mapped across a road: an arch or a building over a lane, drawn solid, would wall the road off.)
+  const roadPoints=new Map<string,Vec2[]>(),cell=(x:number,z:number)=>`${Math.floor(x/10)},${Math.floor(z/10)}`;
+  for(const r of location.roads)r.centreline.forEach((p,i)=>{
+    const q=r.centreline[i+1];if(!q)return;
+    const L=Math.hypot(q.x-p.x,q.z-p.z);
+    for(let t=0;t<=L;t+=2){const k=L?t/L:0,pt={x:p.x+(q.x-p.x)*k,z:p.z+(q.z-p.z)*k},c=cell(pt.x,pt.z);(roadPoints.get(c)??roadPoints.set(c,[]).get(c)!).push(pt)}
+  });
+  const acrossRoad=(ring:readonly Vec2[])=>{
+    const xs=ring.map(p=>p.x),zs=ring.map(p=>p.z);
+    for(let cx=Math.floor(Math.min(...xs)/10);cx<=Math.floor(Math.max(...xs)/10);cx++)
+      for(let cz=Math.floor(Math.min(...zs)/10);cz<=Math.floor(Math.max(...zs)/10);cz++)
+        for(const pt of roadPoints.get(`${cx},${cz}`)??[])if(insidePolygon(pt,ring))return true;
+    return false;
+  };
   for(const b of location.buildings){
+    if(acrossRoad(b.footprint))continue;
     const ring=[...b.footprint];
     const first=ring[0]!,last=ring.at(-1)!;
     if(first.x===last.x&&first.z===last.z)ring.pop();

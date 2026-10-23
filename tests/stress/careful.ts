@@ -34,7 +34,7 @@ export function careful(location:Location,net:RoadNetwork,seed:number,target:num
   const legs0=examiner.legs,steps=examiner.steps;
   const last=steps.at(-1);
   const legs:RouteLeg[]=[...legs0];
-  if(last){const from=sampleRoad(last.to.road,last.at.x,last.at.z).along;legs.push({road:last.to.road,dir:last.to.dir,from,to:Math.max(0,Math.min(len(last.to.road),from+last.to.dir*80))})}
+  if(last){const from=sampleRoad(last.to.road,last.at.x,last.at.z).along;legs.push({road:last.to.road,dir:last.to.dir,from,to:Math.max(0,Math.min(len(last.to.road),from+last.to.dir*200))})}
   for(const target of ['left-shoulder','left-door','interior','right-door','right-shoulder']){time+=.5;events.emit('observation.dwell',{target})}
   time+=1;
   const stops=junctionMouths(location).filter(m=>m.kind==='stop');
@@ -78,6 +78,7 @@ export function careful(location:Location,net:RoadNetwork,seed:number,target:num
       tick(1/Math.max(1,learner.speed));
     }
   }
+  const drivenUntil=time;
   // Pulling up: the first legal place ahead on the last stretch (clear of junctions and parked cars).
   events.emit('observation.dwell',{target:'interior'});
   const lastLeg=legs.at(-1);
@@ -94,6 +95,6 @@ export function careful(location:Location,net:RoadNetwork,seed:number,target:num
   }
   learner.speed=0;learner.indicator='off';
   for(let k=0;k<400&&!finished;k++)tick(1/30);
-  return {result:assessor.finish('mock',finished?'completed':'time-limit',time),steps,legs,late,parkedOk,events:events.events};
+  return {result:assessor.finish('mock',finished?'completed':'time-limit',time),steps,legs,late,parkedOk,events:events.events,drivenUntil};
 }
 

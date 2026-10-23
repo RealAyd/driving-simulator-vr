@@ -377,6 +377,8 @@ export async function boot():Promise<void>{
     // speed a test expects is slower, and still the learner's to judge).
     const bendBrake=steeringMode==='assist'&&c.steer===0&&runtime?.assist&&vehicle.state.speed>0&&!keys.reverse?runtime.assist.brakeFor(vehicle.pose,vehicle.state.speed):0;
     lastControls=viewerDrive??{throttle:bendBrake>0?0:c.throttle,brake:Math.max(c.brake,bendBrake),steer,reverse:!!keys.reverse,...(bendBrake>0?{driverBrake:c.brake}:{})};
+    // The tell me question comes before the drive: the car stays where it is until it is answered.
+    if(runtime?.examiner?.phase==='tell-me')lastControls={throttle:0,brake:1,steer:0};
     return lastControls;
   }};
   let lastControls:Controls={throttle:0,brake:0,steer:0};

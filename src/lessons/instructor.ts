@@ -79,6 +79,8 @@ export class Instructor implements SimModule,ExaminerListener{
   private lastPrompt=-99;
   private good:string[]=[];
   private improve:string[]=[];
+  /** The last direction: where it was on the route, and from when its mirror checks count. */
+  private lastTurn:{distance:number;at:number}|null=null;
   /** Each correction: its line in the report, how often, when last said. */
   private corrections=new Map<string,{index:number;count:number;said:number}>();
   private manoeuvres=0;
@@ -99,7 +101,7 @@ export class Instructor implements SimModule,ExaminerListener{
   private has(c:Coaching){return this.input.lesson.coaching.includes(c)}
 
   reset():void{
-    this.watch=null;this.looks=[];this.lastPrompt=-99;this.good=[];this.improve=[];this.corrections.clear();this.manoeuvres=0;
+    this.watch=null;this.looks=[];this.lastPrompt=-99;this.good=[];this.improve=[];this.corrections.clear();this.lastTurn=null;this.manoeuvres=0;
     this.crossingsWarned.clear();this.lightsWarned.clear();this.mistakes=[];
     this.sinceStop=0;this.stops=0;this.manoeuvring=null;this.stopPhase='driving';this.stoppedFor=0;this.stoppedAt=0;
     const last=this.input.events.events.at(-1);
@@ -120,7 +122,9 @@ export class Instructor implements SimModule,ExaminerListener{
 
   // ---- Directions (from the examiner) ----
   direction(step:RouteStep):void{
-    const now=this.input.now();
+    // A turn a few metres after the last (one junction, split in two on the map): its mirror checks count here too.
+    const now=this.lastTurn&&step.distance-this.lastTurn.distance<20?Math.min(this.input.now(),this.lastTurn.at):this.input.now();
+    this.lastTurn={distance:step.distance,at:now};
     this.mistakes=[];
     this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set(),
       directionAt:now,signalAt:null,turnAt:null,

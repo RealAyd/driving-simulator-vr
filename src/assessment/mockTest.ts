@@ -22,6 +22,8 @@ import type {Vec2} from '../contracts';
 
 export const MOCK_TEST_RUBRIC='mock-test-0.1';
 const mph=(v:number)=>v*2.237;
+/** Turns this close together on the route (metres) are one junction for the mirror checks. */
+const SAME_JUNCTION=20;
 
 export interface MockTestInput{
   location:Location;
@@ -74,6 +76,8 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   private lights=new Map<string,{front:number;last:Aspect;couldStop:boolean;waitingGreen:number}>();
   /** Points on the routine that are not faults on the marking sheet (the report's "to improve"). */
   private advice:string[]=[];
+  /** The last direction: where it was on the route, and from when its mirror checks count. */
+  private lastTurn:{distance:number;at:number}|null=null;
   /** The vehicle safety questions and how they went (for the report). */
   private checks:string[]=[];
   private showing:{q:ShowMeQuestion;time:number;shown:boolean;other:string|null;event:string|null}|null=null;
@@ -88,7 +92,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
 
   reset():void{
     this.log=new FindingLog(MOCK_TEST_RUBRIC,this.input.events,this.input.now);
-    this.watch=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
+    this.watch=null;this.lastTurn=null;this.looks=[];this.movedOff=false;this.speeding=null;this.speedIncidents=0;this.following=0;this.followingIncidents=0;
     this.wrongSide=0;this.wrongSideIncident=0;this.pavement=0;this.cancelBy=null;this.redirects=0;this.inRoundabout=-1;this.directions=0;this.pulling=null;this.checks=[];this.advice=[];this.manoeuvring=null;this.showing=null;this.showMeFrom=null;this.lights.clear();
     const last=this.input.events.events.at(-1);
     this.lastEvent=last?Number(last.id.slice(3)):0;
@@ -108,7 +112,11 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     this.directions++;
     const ev=this.input.events.events.at(-1);
     // A mirror check just before the direction counts too (planning ahead).
-    this.watch={step,signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null,directionAt:this.input.now(),signalAt:null,turnAt:null};
+    // A turn just after the last one (a few metres on: one junction, split in two on the map): the mirror checks
+    // for that one count for this one too.
+    const directionAt=this.lastTurn&&step.distance-this.lastTurn.distance<SAME_JUNCTION?Math.min(this.input.now(),this.lastTurn.at):this.input.now();
+    this.lastTurn={distance:step.distance,at:directionAt};
+    this.watch={step,signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null,directionAt,signalAt:null,turnAt:null};
     // Still signalling this way from the turn just before (two turns the same way close together): the signal is
     // fine kept on, and its timing is judged only if it goes off and on again.
     const l=this.input.learner();
