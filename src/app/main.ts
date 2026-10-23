@@ -51,6 +51,7 @@ import {setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
+import {addLPlates} from '../cockpit/lPlates';
 import {roadUserCarModels,useVehicleSet,activeVehicleSet} from '../assets/carSpecs';
 import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
@@ -80,7 +81,7 @@ import {SteeringAssist} from '../vehicle/steeringAssist';
 import {VehicleController,type ControlSource} from '../vehicle/vehicleController';
 import {buildWorld} from '../world/buildWorld';
 import {layoutStreetscape} from '../world/streetscape';
-import {layoutTownscape} from '../world/townscape';
+import {kerbFootprints,layoutTownscape,type KerbFootprint} from '../world/townscape';
 import {buildStreetscape} from '../world/streetscapeMesh';
 import {CompositeCollisions,pointToBox,type DynamicFootprint} from '../world/collisions';
 import {StaticObstacles} from '../world/obstacles';
@@ -290,7 +291,7 @@ export async function boot():Promise<void>{
   let signage:BuiltSignage|null=null;
   let crowd:Person[]=[];
   /** Cars parked at the kerb (generated areas): background traffic passes them. */
-  let kerbCars:Array<{x:number;z:number}>=[];
+  let kerbCars:KerbFootprint[]=[];
   let people!:PeopleRenderer;
   let animatedPeople:AnimatedPeople|null=null;
   /** Street furniture models (asset Batch A); null until loaded. */
@@ -301,7 +302,7 @@ export async function boot():Promise<void>{
     yield [at(0),'Planning houses, shops and parked cars'];
     const layout=layoutStreetscape(place)??layoutTownscape(place);
     yield [at(.25),'Building houses and gardens'];
-    kerbCars=(layout?.cars??[]).filter(c=>c.id.startsWith('kerb-car')).map(c=>({x:c.x,z:c.z}));
+    kerbCars=kerbFootprints(layout);
     const parked:ParkedCar[]=[
       ...place.blocks.filter(b=>b.vehicleModel&&b.vehicleModel in CAR_MODELS).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
       ...(layout?.cars??[]).map(c=>({model:c.model,colour:c.colour,x:c.x,y:c.y,z:c.z,heading:c.heading}))
@@ -446,7 +447,9 @@ export async function boot():Promise<void>{
   const mirrors=ALL_MIRRORS.map(spec=>new Mirror(scene,vehicleNode,cockpit.root,spec,quality,head.seat.eye));
   // The learner's own car as seen from behind (hidden from the driver's seat).
   const learnerBody=carModel?.instantiate(vehicleNode,'learner-car','#c81e1e',4.3)??null;
-  learnerBody?.setEnabled(false);
+  // L plates, front and back: this is the learner's car.
+  const lPlates=learnerBody?addLPlates(learnerBody):null;
+  learnerBody?.setEnabled(false);lPlates?.setEnabled(false);
   const learnerBox=scene.getMeshByName('car-body');
   let learnerTravelled=0;
 
@@ -1777,7 +1780,7 @@ export async function boot():Promise<void>{
     // From behind, the learner's car is drawn with a car model (wheels turning) in place of the plain body box.
     if(learnerBody){
       const show=behind&&!viewer.active;
-      if(learnerBody.isEnabled()!==show){learnerBody.setEnabled(show);if(learnerBox)learnerBox.isVisible=!show;cockpit.root.setEnabled(!show)}
+      if(learnerBody.isEnabled()!==show){learnerBody.setEnabled(show);lPlates?.setEnabled(show);if(learnerBox)learnerBox.isVisible=!show;cockpit.root.setEnabled(!show)}
       if(show&&carModel){learnerTravelled+=vehicle.state.speed*dt;carModel.roll(learnerBody,learnerTravelled)}
     }
     for(const mirror of mirrors){
@@ -1967,7 +1970,7 @@ export async function boot():Promise<void>{
     /** Same as tapping a view button (or Forward). */
     selectView:(view:ViewTarget|'forward')=>selectView(view),
     hands:()=>cockpit.handsTurn,
-    behind:()=>({on:behind,seconds:behindSeconds,carModel:!!learnerBody?.isEnabled()}),
+    behind:()=>({on:behind,seconds:behindSeconds,carModel:!!learnerBody?.isEnabled(),lPlates:!!lPlates?.isEnabled()}),
     viewLabel:()=>byId('hud-view-label').textContent,
     buses:()=>runtime?.buses.map(b=>({id:b.id,pose:b.pose,speed:b.speed,state:b.state,visible:b.visible,indicating:b.indicating}))??[],
     passersDetail:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose,speed:p.speed,started:p.started}))??[],

@@ -342,7 +342,9 @@ function townBuilding(b:Builders,t:TownBuilding):void{
     u+=len;
     // Parapet coping (flat roofs).
     if(!pitched)b.detail.flat(q(0,len,H-.22,H,.04),COLOURS.stone,o);
-    if(t.use==='utility'||t.detail==='low'||len<1.6)continue;
+    if(t.use==='utility'||len<1.6)continue;
+    // Far from the centre ('low'), only walls that face a road are detailed: the fronts a driver sees from it.
+    if(t.detail==='low'&&!w.facesRoad)continue;
     const f=.02;
     if(t.use==='parking'){
       // Open decks: a dark opening along each level, with the deck edge between.
@@ -354,12 +356,33 @@ function townBuilding(b:Builders,t:TownBuilding):void{
       for(let i=0;i<n;i++){const s=(i+.5)*len/n;b.detail.regionQuad(q(s-.55,s+.55,y0+2.2,y0+6.6,f),REGIONS.window,[1,1,1],o)}
       continue;
     }
+    // (Far from the centre, no stone sills or door surrounds: they are not made out from the road there.)
+    const plain=t.detail==='low';
+    const windowAt=(s:number,sill:number,width=1.2,height=1.45)=>{
+      b.detail.regionQuad(q(s-width/2,s+width/2,sill,sill+height,f),REGIONS.window,[1,1,1],o);
+      if(!plain)b.detail.flat(q(s-width/2-.08,s+width/2+.08,sill-.08,sill,.06),COLOURS.stone,o);
+    };
+    if(w.front){
+      // A home's front: per house along it (about 5 m each, pairs mirrored), a front door with a stone surround and a
+      // small window over it, and the main windows beside it on each floor.
+      const units=Math.max(1,Math.round(len/5.2)),uw=len/units,door=hex(t.doorColour);
+      for(let k=0;k<units;k++){
+        const s0=k*uw,left=k%2===0;
+        const du=uw<3?s0+uw/2:left?s0+.95:s0+uw-.95,wu=left?s0+uw*.64:s0+uw*.36;
+        if(!plain)b.detail.flat(q(du-.6,du+.6,y0,y0+2.25,f),COLOURS.stone,o);
+        b.detail.regionQuad(q(du-.47,du+.47,y0,y0+2.05,f+.01),REGIONS.door,door,o);
+        if(uw>=3)windowAt(wu,y0+.9,Math.min(1.8,uw*.38),1.35);
+        for(let level=1;level<t.levels;level++){
+          const sill=y0+level*STOREY+.95;
+          if(sill+1.4>H-.2)break;
+          if(uw>=3)windowAt(wu,sill,Math.min(1.5,uw*.3),1.25);
+          windowAt(du,sill+.15,.7,1);
+        }
+      }
+      continue;
+    }
     const bays=Math.floor((len-.8)/2.8);
     if(bays<1)continue;
-    const windowAt=(s:number,sill:number)=>{
-      b.detail.regionQuad(q(s-.6,s+.6,sill,sill+1.45,f),REGIONS.window,[1,1,1],o);
-      b.detail.flat(q(s-.68,s+.68,sill-.08,sill,.06),COLOURS.stone,o);
-    };
     for(let level=0;level<t.levels;level++){
       const sill=y0+level*STOREY+.95;
       if(sill+1.6>H-.2)break;
@@ -418,7 +441,7 @@ function pitchedRoof(b:Builders,t:TownBuilding,colour:RGB,brick:boolean):void{
   // The ridge runs along edges k and k+2: along the street where a wall faces one (a terraced house is deeper
   // than it is wide, but its ridge runs along the street, its gable ends against its neighbours); otherwise along
   // the long sides.
-  const facing=t.walls.findIndex(w=>w.facesRoad);
+  const front=t.walls.findIndex(w=>w.front),facing=front>=0?front:t.walls.findIndex(w=>w.facesRoad);
   const k=facing>=0?facing%2:len(0)+len(2)>=len(1)+len(3)?0:1;
   const a=r[k]!,bq=r[(k+1)%4]!,c=r[(k+2)%4]!,d=r[(k+3)%4]!;
   const short=Math.min(len(k+1),len((k+3)%4));

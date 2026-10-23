@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {parseLocation} from '../../src/contracts';
 import {Traffic} from '../../src/actors/traffic';
-import {layoutTownscape} from '../../src/world/townscape';
+import {kerbFootprints,layoutTownscape} from '../../src/world/townscape';
 import {surfaceAt} from '../../src/world/roadGeometry';
 import goodmayesJson from '../../content/locations/goodmayes.json';
 
@@ -23,7 +23,7 @@ describe('Background traffic (generated areas)',()=>{
     const layout=layoutTownscape(goodmayes)!;
     const sp=goodmayes.spawn.position;
     const learner={pose:{position:{x:sp.x,y:0,z:sp.z},heading:goodmayes.spawn.headingDeg*Math.PI/180},speed:0};
-    const traffic=new Traffic(goodmayes,{count:12,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:layout.cars.map(c=>({x:c.x,z:c.z})),learner:()=>learner,seed:7});
+    const traffic=new Traffic(goodmayes,{count:12,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:kerbFootprints(layout),learner:()=>learner,seed:7});
     let onRoad=0,samples=0,moved=0,busStopped=0,overlaps=0;
     const start=traffic.cars.map(c=>({...c.pose.position}));
     for(let t=0;t<120;t+=1/30){
@@ -71,7 +71,7 @@ describe('Background traffic and a stopped learner',()=>{
     const learner={pose:{position:{x:sp.position.x,y:0,z:sp.position.z},heading:h},speed:0};
     let passed=0,touched=0;
     for(const seed of [1,2,3,4,5,6]){
-      const traffic=new Traffic(goodmayes,{count:12,parked:layout.cars.map(c=>({x:c.x,z:c.z})),learner:()=>learner,seed});
+      const traffic=new Traffic(goodmayes,{count:12,parked:kerbFootprints(layout),learner:()=>learner,seed});
       const fx=Math.sin(h),fz=-Math.cos(h);
       const along=(c:{pose:{position:{x:number;z:number}}})=>(c.pose.position.x-sp.position.x)*fx+(c.pose.position.z-sp.position.z)*fz;
       const behind=new Map<string,boolean>();
@@ -97,7 +97,7 @@ describe('Background traffic: no gridlock',()=>{
     // The learner parked out of the way (far corner), so nothing waits for it.
     const learner={pose:{position:{x:goodmayes.spawn.position.x,y:0,z:goodmayes.spawn.position.z},heading:0},speed:0};
     for(const seed of [7,11,19]){
-      const traffic=new Traffic(goodmayes,{count:12,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:layout.cars.map(c=>({x:c.x,z:c.z})),learner:()=>learner,seed});
+      const traffic=new Traffic(goodmayes,{count:12,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:kerbFootprints(layout),learner:()=>learner,seed});
       const still=new Map<string,number>();
       let worst=0;
       for(let t=0;t<300;t+=1/30){
@@ -118,7 +118,7 @@ describe('Background traffic: no gridlock',()=>{
     const fwd={x:Math.sin(learner.pose.heading),z:-Math.cos(learner.pose.heading)};
     let vanished=0,seen=0;
     for(const seed of [1,2,3]){
-      const traffic=new Traffic(goodmayes,{count:14,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:layout.cars.map(c=>({x:c.x,z:c.z})),learner:()=>learner,seed});
+      const traffic=new Traffic(goodmayes,{count:14,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:kerbFootprints(layout),learner:()=>learner,seed});
       let before=new Map<string,{x:number;z:number}|null>();
       for(let t=0;t<180;t+=1/30){
         traffic.fixedUpdate(1/30);
@@ -134,20 +134,20 @@ describe('Background traffic: no gridlock',()=>{
     expect(seen).toBeGreaterThan(100);
     expect(vanished).toBe(0);
   },60_000);
-  it('traffic does not drive through parked cars (nor appear out of one): under 3 s in two minutes',()=>{
+  it('traffic does not drive through parked cars (their drawn size; nor appear out of one): under 1 s in two minutes',()=>{
     const layout=layoutTownscape(goodmayes)!;
-    const parked=layout.cars.map(c=>({x:c.x,z:c.z,h:c.heading}));
+    const parked=kerbFootprints(layout);
     const sp=goodmayes.spawn.position;
     const learner={pose:{position:{x:sp.x,y:0,z:sp.z},heading:goodmayes.spawn.headingDeg*Math.PI/180},speed:0};
     for(const seed of [1,2,3]){
-      const traffic=new Traffic(goodmayes,{count:14,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:parked.map(p=>({x:p.x,z:p.z})),learner:()=>learner,seed});
+      const traffic=new Traffic(goodmayes,{count:14,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked,learner:()=>learner,seed});
       let frames=0;
       for(let t=0;t<120;t+=1/30){
         traffic.fixedUpdate(1/30);
         for(const c of traffic.cars)if(c.visible)for(const p of parked)
-          if(Math.hypot(c.pose.position.x-p.x,c.pose.position.z-p.z)<6&&overlap(box(c),{x:p.x,z:p.z,h:p.h,hw:.85,hl:2}))frames++;
+          if(Math.hypot(c.pose.position.x-p.x,c.pose.position.z-p.z)<6&&overlap(box(c),{x:p.x,z:p.z,h:p.heading,hw:p.halfWidth-.05,hl:p.halfLength-.1}))frames++;
       }
-      expect(frames,`seed ${seed}`).toBeLessThan(90);
+      expect(frames,`seed ${seed}`).toBeLessThan(30);
     }
   },60_000);
 });

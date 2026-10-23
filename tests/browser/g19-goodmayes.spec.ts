@@ -6,7 +6,7 @@ test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
 test('G19: Goodmayes free drive starts on real ground and drives off along the road',async({page},testInfo)=>{
-  test.setTimeout(420_000);
+  test.setTimeout(540_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
@@ -40,12 +40,22 @@ test('G19: Goodmayes free drive starts on real ground and drives off along the r
   // Assisted steering with no route: along the lane past the parked cars, then (signalling left) into the next
   // turning on the left, Granton Road, without hitting anything or leaving the road.
   await page.click('#hud-ind-left');
-  const end=Date.now()+150_000;
+  // (Wall-clock time: on a slow software-rendered test machine the simulation runs at a few frames a second.)
+  const end=Date.now()+240_000;
   let held:string|null=null;
   const hold=async(key:string|null)=>{if(held===key)return;if(held)await page.keyboard.up(held);if(key)await page.keyboard.down(key);held=key};
   while(Date.now()<end&&!(await page.locator('#hud-place').textContent())?.includes('Granton Road')){
     const v=await read(page,'vehicle()');
-    await hold(Math.abs(v.speed)<5?'KeyW':Math.abs(v.speed)>7?'KeyS':null);
+    // Giving way as a learner should: held back for a car close ahead in the car's path (one coming the other way
+    // while the learner is out past parked cars on its own side included).
+    const fx=Math.sin(v.heading),fz=-Math.cos(v.heading);
+    const blocked=(await read(page,'traffic()')).some((c:{visible:boolean;pose:{position:{x:number;z:number}}})=>{
+      if(!c.visible)return false;
+      const ox=c.pose.position.x-v.position.x,oz=c.pose.position.z-v.position.z,a=ox*fx+oz*fz;
+      // (Or alongside, going by: wait for it to clear before moving on.)
+      return a>0&&a<14&&Math.abs(ox*fz-oz*fx)<2.1||Math.abs(a)<5&&Math.abs(ox*fz-oz*fx)<2.6;
+    });
+    await hold(blocked?(Math.abs(v.speed)>.2?'KeyS':null):Math.abs(v.speed)<5?'KeyW':Math.abs(v.speed)>7?'KeyS':null);
     await page.waitForTimeout(150);
     expect(await read(page,'session()')).toBe('running');
   }

@@ -1,5 +1,7 @@
 import {pointAtAlong,sampleRoad} from '../world/roadGeometry';
 import type {LiveStop} from '../world/trafficSignals';
+import type {KerbFootprint} from '../world/townscape';
+import {boxesOverlap} from '../world/obstacles';
 import {headingFromDirection,type Location,type Pose,type Road,type Seconds,type SimModule,type Vec2} from '../contracts';
 const roadLength=(road:Road)=>road.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
 
@@ -18,7 +20,10 @@ interface Leg{points:Vec2[];lengths:number[];road:Road|null;dir:1|-1;cruise:numb
   /** Where it turns off into a side road part-way along (the leg ends there). */
   exit?:{road:Road;dir:1|-1}|undefined;
   /** Where on the road the leg ends (metres along the road's own direction). */
-  endAlong?:number}
+  endAlong?:number;
+  /** A one-way carriageway that meets a two-way road at its start or end (a split): the lane offset kept there, eased
+   * to the carriageway's own over SPLIT_EASE metres, so the two directions pass each side of the meeting point. */
+  splitStart?:number;splitEnd?:number}
 interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   /** Buses: seconds left at the current stop, and the stops already served on this leg. */
   dwell:number;served:Set<number>;
@@ -39,13 +44,21 @@ const HALF_LENGTH=2.2,HALF_WIDTH=.95,BUS={halfLength:5.75,halfWidth:1.275};
 /** Parked cars this far ahead (metres) are passed: the car eases out this fast (m/s sideways) to clear them. */
 const PASS_AHEAD=24,SIDEWAYS=1.3;
 const ACCEL=1.6,BRAKE=4.5,GAP=7;
+const SPLIT_EASE=25;
+/** The lane offset a car keeps at distance `s` along a leg (left of the road's centre, metres). */
+function laneAt(leg:Leg,s:number):number{
+  const end=leg.lengths.at(-1)!-s;
+  if(leg.splitStart!==undefined&&s<SPLIT_EASE)return leg.splitStart+(leg.lane-leg.splitStart)*s/SPLIT_EASE;
+  if(leg.splitEnd!==undefined&&end<SPLIT_EASE)return leg.splitEnd+(leg.lane-leg.splitEnd)*Math.max(0,end)/SPLIT_EASE;
+  return leg.lane;
+}
 const COLOURS=['#1f2a44','#c9ccd1','#7a1e1e','#2e3a2f','#f1f1ee','#3f444b','#24476b','#5b6168','#8a8f96','#14161a'];
 const mph=(v:number)=>v/2.237;
 
 export interface TrafficOptions{
   count:number;
-  /** Parked cars (their centres): traffic eases towards the crown of the road to pass them. */
-  parked:Vec2[];
+  /** Parked cars (their centres, and sizes where known): traffic eases towards the crown of the road to pass them. */
+  parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>;
   learner:()=>{pose:Pose;speed:number};
   /** How many of `count` are buses (they stop at the bus stops on their way, at the kerb). */
   buses?:number;
@@ -122,7 +135,20 @@ export class Traffic implements SimModule{
     const limit=road.speedLimitMph?mph(road.speedLimitMph):road.markings.centre==='none'?mph(22):mph(29);
     const lane=road.oneway?0:road.lanes.width/2;
     const [na,nb]=this.roadNodes.get(road)!;
-    return {points,lengths,road,dir,cruise:Math.min(limit,mph(30))*(.85+this.rand()*.12),lane,endNode:exit?-1:dir>0?nb:na,exit,endAlong:a1};
+    // A one-way carriageway meeting a two-way road (the two-way road's own lane offset there).
+    // (One carrying straight on from it, as the map draws a split: not a side road meeting it there.)
+    const twoWayAt=(node:number)=>{
+      const mine=pointAtAlong(road,node===na?0:len).direction;
+      return this.ends[node]!.find(e=>{
+        if(e.road===road||e.road.oneway)return false;
+        const theirs=pointAtAlong(e.road,e.dir>0?0:roadLength(e.road)).direction;
+        return Math.abs(mine.x*theirs.x+mine.z*theirs.z)>.85;
+      })?.road.lanes.width;
+    };
+    const fromStart=a0===(dir>0?0:len),toEnd=!exit&&a1===(dir>0?len:0);
+    const splitStart=road.oneway&&fromStart?twoWayAt(dir>0?na:nb):undefined,splitEnd=road.oneway&&toEnd?twoWayAt(dir>0?nb:na):undefined;
+    return {points,lengths,road,dir,cruise:Math.min(limit,mph(30))*(.85+this.rand()*.12),lane,endNode:exit?-1:dir>0?nb:na,exit,endAlong:a1,
+      ...(splitStart!==undefined?{splitStart:splitStart/2}:{}),...(splitEnd!==undefined?{splitEnd:splitEnd/2}:{})};
   }
 
   /** Through a node from one leg to the next: a short curve round the junction's middle. */
@@ -132,7 +158,10 @@ export class Traffic implements SimModule{
     const pts:Vec2[]=[];
     for(let k=0;k<=8;k++){const t=k/8,u=1-t;pts.push({x:u*u*a.x+2*u*t*c.x+t*t*b.x,z:u*u*a.z+2*u*t*c.z+t*t*b.z})}
     const lengths=[0];for(let i=1;i<pts.length;i++)lengths.push(lengths[i-1]!+Math.hypot(pts[i]!.x-pts[i-1]!.x,pts[i]!.z-pts[i-1]!.z));
-    return {points:pts,lengths,road:null,dir:1,cruise:n?.junction?4.5:Math.min(6,to.cruise),lane:Math.min(from.lane,to.lane),endNode:-1};
+    // Where a two-way road splits into one-way carriageways (or they join into one), the map has them meet at one
+    // point: each direction keeps to its own side of the two-way road through it, not the middle (head on).
+    const split=!!from.road&&!!to.road&&from.road.oneway!==to.road.oneway;
+    return {points:pts,lengths,road:null,dir:1,cruise:n?.junction?4.5:Math.min(6,to.cruise),lane:split?Math.max(from.lane,to.lane):Math.min(from.lane,to.lane),endNode:-1};
   }
 
   /** The way on at the end of a leg: a side road it turns into, or another road at the node (not straight back). */
@@ -201,7 +230,13 @@ export class Traffic implements SimModule{
       const p=this.at(leg,s);
       const dist=Math.hypot(p.x-learner.x,p.z-learner.z);
       if(dist<90||dist>260)continue;
-      if(this.drivers.some(o=>o!==d&&Math.hypot(o.car.pose.position.x-p.x,o.car.pose.position.z-p.z)<20))continue;
+      // Clear of other traffic: well clear on the same road (a car appearing just ahead of one coming the other way,
+      // perhaps out passing parked cars, would meet it head on).
+      if(this.drivers.some(o=>{
+        if(o===d||!o.car.visible)return false;
+        const apart=Math.hypot(o.car.pose.position.x-p.x,o.car.pose.position.z-p.z);
+        return apart<20||o.leg.road===road&&apart<70;
+      }))continue;
       // Not on top of a parked car (it would appear out of it), nor just behind one with no room to pull out.
       if(this.options.parked.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<9))continue;
       // Not just short of traffic lights (a car appearing there could not stop for red).
@@ -265,6 +300,9 @@ export class Traffic implements SimModule{
           if(along>0&&along<40&&side<4)oncoming.push({along});
           // Nose to nose in the same strip of road (a narrow street): stop well short.
           if(side<1.5)ahead(op.x,op.z,o.car.halfLength+3,`facing ${o.car.id}`);
+          // Coming out past parked cars on its side towards this one (this one still in its lane): wait well back,
+          // so it can pass them and pull back in before the two meet.
+          else if(o.leg.road&&o.lat<o.leg.lane-.4&&d.lat>d.leg.lane-.4&&side<car.halfWidth+o.car.halfWidth+.6)ahead(op.x,op.z,o.car.halfLength+9,`waiting for ${o.car.id}`);
         }
       }
       // The learner: followed when moving; when stopped in this lane, passed like a parked car (below) once there is room.
@@ -281,6 +319,10 @@ export class Traffic implements SimModule{
       if(!facingLearner)d.squeezing=false;
       else if(Math.abs(learner.speed)<.5&&learnerAlong<20&&d.waited>2&&d.leg.road!==null&&d.leg.lane>0)d.squeezing=true;
       const squeeze=!!d.squeezing;
+      // Coming towards this car out past parked cars on its own side (near or over the middle of the road): there is
+      // not room for both, so wait well back, tucked in to this side's kerb, until it is back in its lane or by.
+      const learnerOut=Math.cos(learner.pose.heading-car.pose.heading)<-.5&&learnerAlong>0&&learnerAlong<40&&learnerLeft+d.lat>-1.1&&d.leg.road!==null&&d.leg.lane>0;
+      if(learnerOut)ahead(learner.pose.position.x,learner.pose.position.z,12,'learner passing');
       if(squeeze){if(Math.abs(learnerLeft)<car.halfWidth+.95)ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner')}
       else if(!(learnerStopped&&learnerLeft>2.15))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
       // Traffic lights ahead in this lane: stop about 1.5 m short of the line at red (and red and amber), and at
@@ -289,9 +331,11 @@ export class Traffic implements SimModule{
         if(st.state==='green'||Math.cos(st.heading-car.pose.heading)<.8)continue;
         const dx=st.lane.x-pos.x,dz=st.lane.z-pos.z,along=dx*fwd.x+dz*fwd.z;
         const front=along-car.halfLength;
-        if(front<-.5||along>45||Math.abs(dx*fwd.z-dz*fwd.x)>2.5)continue;
+        // (Wider where the car keeps to one side of its carriageway, coming out of a split.)
+        if(front<-.5||along>45||Math.abs(dx*fwd.z-dz*fwd.x)>2.5+Math.abs(d.lat-d.leg.lane))continue;
         if(st.state==='amber'&&front<car.speed*car.speed/6+1)continue;
-        ahead(st.lane.x,st.lane.z,-(GAP-1.5),'lights');
+        // (Its distance along the car's way, not through the strip ahead: on a bend the line is off to one side.)
+        if(front-1.5+GAP<gap){gap=front-1.5+GAP;why='lights'}
       }
       let target=d.leg.cruise;
       if(gap<Infinity)target=Math.min(target,Math.max(0,(gap-GAP)*.55));
@@ -299,7 +343,15 @@ export class Traffic implements SimModule{
       {
         const lx=learner.pose.position.x-pos.x,lz=learner.pose.position.z-pos.z;
         const along=lx*fwd.x+lz*fwd.z,side=Math.abs(lx*fwd.z-lz*fwd.x);
-        if(along>-1&&along<car.halfLength+3.2&&side<car.halfWidth+1.25){target=0;car.speed=Math.min(car.speed,.5);why='learner'}
+        // (Except creeping on past it, the other way, while it is stopped and there is room: frozen alongside with
+        // centimetres to spare, the learner would clip it moving off.)
+        const creepPast=Math.abs(learner.speed)<.3&&Math.cos(learner.pose.heading-car.pose.heading)<-.8&&!boxesOverlap(
+          {id:'next',cx:pos.x+fwd.x*.6,cz:pos.z+fwd.z*.6,heading:car.pose.heading,halfW:car.halfWidth+.1,halfD:car.halfLength+.1},
+          {id:'learner',cx:learner.pose.position.x,cz:learner.pose.position.z,heading:learner.pose.heading,halfW:.9,halfD:2.15});
+        if(along>-1&&along<car.halfLength+3.2&&side<car.halfWidth+1.25){
+          if(creepPast){target=Math.min(target,1.5);why='learner (creeping past)'}
+          else{target=0;car.speed=Math.min(car.speed,.5);why='learner'}
+        }
       }
       // The end of a road: slow for the turn; at a mini-roundabout or a T-junction, give way to anyone nearer to it.
       const remaining=d.leg.lengths.at(-1)!-d.s;
@@ -346,18 +398,25 @@ export class Traffic implements SimModule{
       if(turn>.15)target=Math.min(target,Math.max(4,Math.sqrt(2.6*12/turn)));
       // Parked cars on this side ahead: ease towards the crown of the road to pass them, back to the lane after;
       // with traffic coming the other way, wait behind them until it has passed.
-      let want=d.leg.lane;
-      if(squeeze&&d.leg.road)want=Math.min(d.leg.lane+.55,d.leg.road.lanes.width*d.leg.road.lanes.count/2-car.halfWidth-.1);
+      let want=laneAt(d.leg,d.s);
+      if((squeeze||learnerOut)&&d.leg.road)want=Math.min(d.leg.lane+.55,d.leg.road.lanes.width*d.leg.road.lanes.count/2-car.halfWidth-.1);
       const obstacles=learnerStopped&&learnerAlong>-7&&learnerAlong<30?[...this.options.parked,learner.pose.position]:this.options.parked;
       if(d.leg.lane>0&&car.kind==='car')for(const q of obstacles){
         const dx=q.x-pos.x,dz=q.z-pos.z,along=dx*fwd.x+dz*fwd.z,left=dx*fwd.z-dz*fwd.x;
-        // Already alongside with someone coming: back into the lane rather than hold the middle of the road.
-        if(along<1&&q!==learner.pose.position&&oncoming.some(o=>o.along<25))continue;
-        if(along>(q===learner.pose.position?-7:-5)&&along<PASS_AHEAD&&left>(q===learner.pose.position?-.8:.4)&&left<3.2){
-          if(oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2&&along>3){target=Math.min(target,Math.max(0,(along-7)*.5));car.speed=Math.min(car.speed,target+.5)}
-          else want=q===learner.pose.position?d.leg.lane-2.6:.15;
-          break;
+        const isLearner=q===learner.pose.position;
+        const qHalfLength=isLearner?2.15:(q as Partial<KerbFootprint>).halfLength??2.2;
+        // Behind it once the two cars no longer overlap along the road (and a little more).
+        if(along<-(qHalfLength+car.halfLength+.5)||along>=PASS_AHEAD||left<=(isLearner?-.8:.4)||left>=3.2)continue;
+        // Not yet out, and someone coming: wait behind it until they have passed. Once out alongside it, carry on
+        // past it (oncoming traffic waits): never back into the lane through it.
+        if(oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2&&along>qHalfLength+car.halfLength+.8){target=Math.min(target,Math.max(0,(along-qHalfLength-car.halfLength-2.5)*.5));car.speed=Math.min(car.speed,target+.5)}
+        else if(isLearner)want=d.leg.lane-2.6;
+        else{
+          // Out far enough to clear its side (its own width, not a typical car's) with a little room.
+          const qHalfWidth=(q as Partial<KerbFootprint>).halfWidth??.9;
+          want=Math.min(d.leg.lane,d.lat+left-qHalfWidth-car.halfWidth-.35);
         }
+        break;
       }
       d.lat+=Math.max(-SIDEWAYS*dt,Math.min(SIDEWAYS*dt,want-d.lat));
       car.speed=car.speed<target?Math.min(target,car.speed+ACCEL*dt):Math.max(target,car.speed-BRAKE*dt);

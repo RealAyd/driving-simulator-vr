@@ -22,6 +22,8 @@ export interface TownWall{
   facesRoad:boolean;
   /** Ground floor drawn as shopfronts (a mapped business, facing a road). */
   shopfront:boolean;
+  /** A home's front: the road-facing wall nearest its road, drawn with front doors (one per house along it). */
+  front:boolean;
 }
 export interface TownBuilding{
   id:string;
@@ -38,6 +40,8 @@ export interface TownBuilding{
   roof:'flat'|'pitched';
   detail:'full'|'low';
   roofColour:'slate'|'clay';
+  /** Front door paint (homes). */
+  doorColour:string;
   y:number;
 }
 export interface TownArea{kind:'grass'|'parking'|'garden'|'green'|'access'|'street';polygon:Vec2[]}
@@ -59,8 +63,10 @@ export interface TownLayout{buildings:TownBuilding[];areas:TownArea[];busStops:B
 const STOREY=3.2;
 const roadLength=(road:Location['roads'][number])=>road.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
 const WALL=.3;
+const wallLength=(w:TownWall)=>Math.hypot(w.b.x-w.a.x,w.b.z-w.a.z);
 /** Furthest a wall can be behind the pavement (widened to shop fronts where mapped) and still count as facing the road, metres. */
 const FACING_GAP=6;
+const DOOR_COLOURS=['#f2f1ec','#1d2024','#26412f','#1f2b47','#7d1d17','#5b6168','#3d5f6e'];
 const FASCIAS=['#1f2a37','#14261c','#3b1f24','#22252a','#2b3a55','#4a3b2a','#0f3d3e'];
 
 /** Point in polygon (ray casting). */
@@ -130,7 +136,7 @@ export function layoutTownscape(location:Location):StreetLayout|null{
     const ring=[...b.footprint];
     const first=ring[0]!,last=ring.at(-1)!;
     if(first.x===last.x&&first.z===last.z)ring.pop();
-    const walls:TownWall[]=[];
+    const walls:TownWall[]=[],gaps:number[]=[];
     for(let i=0;i<ring.length;i++){
       const a=ring[i]!,c=ring[(i+1)%ring.length]!;
       const len=Math.hypot(c.x-a.x,c.z-a.z);
@@ -140,21 +146,29 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       if(insidePolygon({x:mid.x+n.x*.05,z:mid.z+n.z*.05},ring))n={x:-n.x,z:-n.z};
       // Faces a road: a carriageway is in front of this wall, with at most a small forecourt between the wall and
       // the back of the pavement (pavements are widened to the shop fronts where map data shows them).
-      const facesRoad=location.roads.some(road=>{
+      let roadGap=Infinity;
+      for(const road of location.roads){
         const s=sampleRoad(road,mid.x,mid.z);
         // Only a road that runs past the wall (not one that ends before it).
-        if(s.along<=.01||s.along>=roadLength(road)-.01)return false;
+        if(s.along<=.01||s.along>=roadLength(road)-.01)continue;
         const gap=s.distance-roadHalfWidth(road)-pavementWidthAt(road,s.along,Math.sign(s.lateral)||1);
-        if(gap>FACING_GAP)return false;
+        if(gap>FACING_GAP)continue;
         const p=pointAtAlong(road,s.along);
         const toRoad={x:(p.x-mid.x)/(s.distance||1),z:(p.z-mid.z)/(s.distance||1)};
-        return toRoad.x*n.x+toRoad.z*n.z>.4;
-      });
-      walls.push({a,b:c,out:n,facesRoad,shopfront:b.use==='shop'&&facesRoad&&len>=2.5});
+        if(toRoad.x*n.x+toRoad.z*n.z>.4)roadGap=Math.min(roadGap,gap);
+      }
+      const facesRoad=roadGap<Infinity;
+      walls.push({a,b:c,out:n,facesRoad,shopfront:b.use==='shop'&&facesRoad&&len>=2.5,front:false});
+      gaps.push(roadGap);
       out.colliders.push({id:`${b.id}-wall-${i}`,kind:'building',position:{x:mid.x-n.x*WALL/2,z:mid.z-n.z*WALL/2},
         headingDeg:headingFromDirection({x:c.x-a.x,z:c.z-a.z})*180/Math.PI,size:{width:WALL,depth:len,height:b.height},occludes:true,shape:'box'});
     }
-    town.buildings.push({id:b.id,use:b.use,...(b.name?{name:b.name}:{}),ring,walls,height:b.height,levels:b.levels??Math.max(1,Math.round((b.height-.6)/STOREY)),
+    // A home's front door is on the wall nearest its street (a corner house has one front, not two).
+    if(b.use==='residential'){
+      const k=gaps.reduce((best,g,i)=>g<gaps[best]!?i:best,0);
+      if(gaps[k]!<Infinity&&wallLength(walls[k]!)>=2.5)walls[k]!.front=true;
+    }
+    town.buildings.push({id:b.id,doorColour:DOOR_COLOURS[hash(`${b.id}-door`)%DOOR_COLOURS.length]!,use:b.use,...(b.name?{name:b.name}:{}),ring,walls,height:b.height,levels:b.levels??Math.max(1,Math.round((b.height-.6)/STOREY)),
       palette:paletteFor(b),fascia:FASCIAS[hash(b.id)%FASCIAS.length]!,roof:b.roof,detail:b.detail,roofColour:hash(b.id)%3===0?'clay':'slate',y:-.02});
   }
   const inBuilding=(p:Vec2,margin:number)=>location.buildings.some(b=>insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin);
@@ -233,6 +247,16 @@ export function layoutTownscape(location:Location):StreetLayout|null{
   return out;
 }
 
+/** A car parked at the kerb as other road users must pass it: where, which way, and its half-size (metres). */
+export interface KerbFootprint extends Vec2{heading:number;halfWidth:number;halfLength:number}
+/** The cars parked at the kerbs in a layout, with their drawn sizes. */
+export function kerbFootprints(layout:StreetLayout|null):KerbFootprint[]{
+  return (layout?.cars??[]).filter(c=>c.id.startsWith('kerb-car')).map(c=>{
+    const size=parkedSize(CAR_MODELS[c.model]);
+    return {x:c.x,z:c.z,heading:c.heading,halfWidth:size.width/2,halfLength:size.length/2};
+  });
+}
+
 /** The everyday cars parked on residential streets (most often the smaller ones). */
 
 /**
@@ -240,11 +264,21 @@ export function layoutTownscape(location:Location):StreetLayout|null{
  * junctions, side-road mouths, crossings and their zig-zags, bus stops, lamp columns and the learner's start, and
  * never opposite another parked car (a car can always get through). Deterministic for a location.
  */
+/** Gap along the road between a parked car and the next one parked across the road from it (metres). */
+const OPPOSITE_GAP=10;
+/** No parking this close to another road's carriageway (metres): Highway Code rule 243, 10 m from a junction. */
+const JUNCTION_CLEAR=10;
+
 function parkAtKerbs(location:Location,out:StreetLayout):void{
   const sp=location.spawn.position;
   let seed=2166136261;
   const rand=()=>{seed=Math.imul(seed^(seed>>>15),2246822507)+0x9e3779b9>>>0;return (seed>>>8)/16777216};
-  const parked:Array<{x:number;z:number}>=[];
+  const parked:Array<{x:number;z:number;road:string;side:number;along:number;length:number}>=[];
+  // Each road's outline, widened by the clearance kept from junctions (a quick test before measuring to it).
+  const boxes=location.roads.map(road=>{
+    const xs=road.centreline.map(p=>p.x),zs=road.centreline.map(p=>p.z),m=JUNCTION_CLEAR+roadHalfWidth(road);
+    return {road,box:{x0:Math.min(...xs)-m,x1:Math.max(...xs)+m,z0:Math.min(...zs)-m,z1:Math.max(...zs)+m}};
+  });
   for(const road of location.roads){
     if(road.oneway||road.lanes.count<2||road.markings.centre!=='none'||road.pavementWidth<=0)continue;
     const half=roadHalfWidth(road);
@@ -262,6 +296,12 @@ function parkAtKerbs(location:Location,out:StreetLayout):void{
         const ends=[-1,1].map(k=>pointAtAlong(road,along+k*(size.length/2+1)));
         const kerbOf=(q:{x:number;z:number;direction:Vec2})=>({x:q.x-q.direction.z*side*(half+.3),z:q.z+q.direction.x*side*(half+.3)});
         if(location.junctions.some(j=>Math.hypot(c.x-j.position.x,c.z-j.position.z)<j.radius+14))continue;
+        // Not on a bend (rule 243): the road turns little over the car's length and a few metres either side.
+        const [d0,d1]=[-1,1].map(k=>pointAtAlong(road,along+k*(size.length/2+5)).direction);
+        if(d0!.x*d1!.x+d0!.z*d1!.z<Math.cos(.3))continue;
+        // Not within 10 m of a junction (Highway Code rule 243), whether or not the junction is listed: no other
+        // road's carriageway within 10 m of either end of the car. (A car turning in has straightened up by then.)
+        if(boxes.some(({road:o,box})=>o.id!==road.id&&ends.some(q=>q.x>box.x0&&q.x<box.x1&&q.z>box.z0&&q.z<box.z1&&sampleRoad(o,q.x,q.z).distance-roadHalfWidth(o)<JUNCTION_CLEAR-1)))continue;
         // A side road joins here (its carriageway at the kerb, or just ahead or behind): keep the mouth clear.
         if([p,...ends].some(q=>{const k=kerbOf(q);return onOtherCarriageway(location,k.x,k.z,road.id,6)}))continue;
         if(location.crossings.some(x=>x.roadId===road.id&&Math.abs(x.along-along)<(x.kind==='zebra'?x.zigzagMarks*2+8:14)))continue;
@@ -269,10 +309,12 @@ function parkAtKerbs(location:Location,out:StreetLayout):void{
         if(out.lamps.some(l=>Math.hypot(l.x-c.x,l.z-c.z)<size.length/2+.3))continue;
         if(Math.hypot(c.x-sp.x,c.z-sp.z)<30)continue;
         if(location.blocks.some(b=>Math.hypot(b.position.x-c.x,b.position.z-c.z)<12))continue;
-        // Never opposite (or overlapping) another parked car.
+        // Never opposite (or overlapping) another parked car: across the road from one, the next is far enough along
+        // for a car to pass the first, pull back in and pass the second (and for traffic to wait in the gap).
         if(parked.some(q=>Math.hypot(q.x-c.x,q.z-c.z)<size.length+.6))continue;
+        if(parked.some(q=>q.road===road.id&&q.side!==side&&Math.abs(q.along-along)<(q.length+size.length)/2+OPPOSITE_GAP))continue;
         const heading=headingFromDirection(side<0?p.direction:{x:-p.direction.x,z:-p.direction.z});
-        parked.push(c);
+        parked.push({...c,road:road.id,side,along,length:size.length});
         const id=`kerb-car-${out.cars.length}`;
         out.cars.push({id,model,colour:PARKED_CAR_COLOURS[Math.floor(rand()*PARKED_CAR_COLOURS.length)]!,x:c.x,z:c.z,heading,y:road.surfaceHeight+.006});
         out.colliders.push({id,kind:'parked-vehicle',position:c,headingDeg:heading*180/Math.PI,size:{width:size.width*.9,depth:size.length,height:size.height},occludes:true,shape:'box'});

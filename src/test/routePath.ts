@@ -1,14 +1,23 @@
-import type {Vec2} from '../contracts';
+import {forwardFromHeading,rightFromHeading,type Vec2} from '../contracts';
 import {pointAtAlong} from '../world/roadGeometry';
+import type {KerbFootprint} from '../world/townscape';
 import type {RouteLeg} from './route';
+
+/** The learner's car: half its width and length (metres). */
+const HALF_WIDTH=.9,HALF_LENGTH=2.15;
+/** Room kept between the learner's car and a parked one beside it (metres): enough that it never clips one. */
+const CLEARANCE=.6;
+/** How far before and after a parked car the path is fully out (metres, beyond the two cars' half-lengths): the car
+ * follows the path a few metres ahead, so it would otherwise turn back in while still alongside. */
+const ALONGSIDE=4;
 
 /**
  * The lane path along a mock test route, for assisted steering: points every 3 m in the left lane; past parked
  * cars, out towards the crown of the road (as a driver would), or between cars parked on both sides, easing in and
- * out over several metres. Offsets are metres left of the centreline: a car parked `left` metres out leaves room
- * for the learner up to `left - 2.1` (two half-widths and a little), one on the right from `left + 2.1`.
+ * out over several metres. Offsets are metres left of the centreline. Each parked car is passed by its own size
+ * (a van is wider than a small hatchback) with a clear gap; one given only as a point is taken as a typical car.
  */
-export function routeLanePath(legs:RouteLeg[],parked:Vec2[]):Vec2[]{
+export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>):Vec2[]{
   const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number}>=[];
   for(const [legIndex,leg] of legs.entries()){
     const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=leg.road.oneway?0:leg.road.lanes.width/2;
@@ -17,8 +26,15 @@ export function routeLanePath(legs:RouteLeg[],parked:Vec2[]):Vec2[]{
       let hi=lane,lo=-Infinity;
       for(const c of parked){
         const ox=c.x-p.x,oz=c.z-p.z,along=ox*dx+oz*dz,left=ox*dz-oz*dx;
-        if(Math.abs(along)>7||Math.abs(left)>3.5||Math.abs(left)<.5)continue;
-        if(left>0)hi=Math.min(hi,left-2.1);else lo=Math.max(lo,left+2.1);
+        if(Math.abs(along)>12||Math.abs(left)>4.5||Math.abs(left)<.3)continue;
+        // The parked car's extent along the road and across it.
+        const hw=c.halfWidth??.9,hl=c.halfLength??2.2;
+        const f=c.heading===undefined?{x:dx,z:dz}:forwardFromHeading(c.heading),r=c.heading===undefined?{x:-dz,z:dx}:rightFromHeading(c.heading);
+        const extAlong=hl*Math.abs(f.x*dx+f.z*dz)+hw*Math.abs(r.x*dx+r.z*dz);
+        const extAcross=hl*Math.abs(f.x*dz-f.z*dx)+hw*Math.abs(r.x*dz-r.z*dx);
+        if(Math.abs(along)>extAlong+HALF_LENGTH+ALONGSIDE)continue;
+        const room=extAcross+HALF_WIDTH+CLEARANCE;
+        if(left>0)hi=Math.min(hi,left-room);else lo=Math.max(lo,left+room);
       }
       raw.push({x:p.x,z:p.z,dx,dz,lane,hi,lo,leg:legIndex});
     }

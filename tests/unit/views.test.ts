@@ -70,7 +70,7 @@ describe('steering assistance (pure pursuit)',()=>{
     let s:VehicleState={position:{x:-1.3,y:0,z:-10},heading:.02,speed:8,steerAngle:0};
     for(let t=0;t<6;t+=DT)s=stepVehicle(s,{throttle:.2,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
     expect(s.position.z).toBeLessThan(-50);
-    expect(Math.abs(s.heading)).toBeLessThan(.05);
+    expect(Math.abs(headingDelta(s.heading,0))).toBeLessThan(.05);
     expect(Math.abs(s.position.x+1.6)).toBeLessThan(.2);
   });
   it('steers a car that has drifted 3 m off at an angle back into its lane',()=>{
@@ -80,9 +80,12 @@ describe('steering assistance (pure pursuit)',()=>{
     expect(Math.abs(s.position.x+1.6)).toBeLessThan(.3);
     expect(Math.abs(headingDelta(s.heading,0))).toBeLessThan(.05);
   });
-  it('gives no steering when the car is stopped',()=>{
+  it('gives no steering when the car is stopped on its path, and sets the wheels to pull out when stopped off it',()=>{
     const assist=new SteeringAssist([{x:0,z:0},{x:10,z:-10}],LEARNER_CAR);
     expect(assist.steer({position:{x:0,y:0,z:0},heading:0},0)).toBe(0);
+    // At the kerb 2 m left of a straight lane (pulled in behind a parked car): wheels to the right, towards it.
+    const lane=new SteeringAssist(STRAIGHT_LANE,LEARNER_CAR);
+    expect(lane.steer({position:{x:-3.6,y:0,z:-20},heading:0},0)).toBeGreaterThan(.3);
   });
 });
 

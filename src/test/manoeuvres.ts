@@ -2,6 +2,7 @@ import type {Location,Road,Vec2} from '../contracts';
 import {pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from '../world/roadGeometry';
 import {judgeMoveOff,judgeTurn,type Look} from '../assessment/routine';
 import {junctionPoints} from './pullUp';
+import {routeLanePath} from './routePath';
 
 /**
  * The test's manoeuvres, asked for by the examiner part-way through the drive (DVSA: one of parallel parking, bay
@@ -187,13 +188,15 @@ export class Manoeuvre{
         // Assisted: into the next free stretch of kerb (between parked cars, away from junctions).
         const spot=k?Manoeuvre.kerbGapAhead(this.input.location,this.input.parked,k):null;
         if(spot&&k){
-          const half=roadHalfWidth(k.road),lane=k.road.lanes.width/2,kerb=half-HALF_WIDTH-.35,path:Vec2[]=[];
-          // (Ending in the middle of the gap: room in front to pull out again.)
+          const half=roadHalfWidth(k.road),kerb=half-HALF_WIDTH-.35;
+          // Along the lane (out past any parked cars before the gap, as the lane path does), then in to the kerb
+          // within the gap, ending in its middle: room in front to pull out again.
           const stopAt=spot.start+k.dir*11;
-          for(let s=k.along;(s-stopAt)*k.dir<0;s+=k.dir*2){
-            const f=Math.min(1,Math.max(0,((s-spot.start)*k.dir+12)/12)),e=f*f*(3-2*f);
-            path.push(at(k.road,s,k.dir,lane+(kerb-lane)*e));
-          }
+          const path=routeLanePath([{road:k.road,dir:k.dir,from:k.along,to:stopAt}],this.input.parked).map(p=>{
+            const s=sampleRoad(k.road,p.x,p.z).along,f=Math.min(1,Math.max(0,((s-spot.start)*k.dir-1)/8)),e=f*f*(3-2*f);
+            const q=at(k.road,s,k.dir,kerb);
+            return {x:p.x+(q.x-p.x)*e,z:p.z+(q.z-p.z)*e};
+          });
           if(path.length>1)this.input.setPath?.(path,null);
         }
         this.go('pull-in');return;

@@ -37,6 +37,8 @@ test('G17: the hands follow the steering; the behind-the-car view is practice on
   // The Steer buttons stay.
   await expect(page.locator('#steer-buttons')).toBeVisible();
   await expect.poll(async()=>(await read(page,'behind()')).carModel,{timeout:30_000}).toBe(true);
+  // L plates (and the roof box) on the learner's car, seen from behind.
+  expect((await read(page,'behind()')).lPlates).toBe(true);
   const out=await read(page,'camera()');
   expect(out.position[1]).toBeGreaterThan(seat.position[1]+1.5);
   await page.screenshot({path:testInfo.outputPath('g17-behind.png')});

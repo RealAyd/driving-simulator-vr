@@ -135,9 +135,15 @@ export class SteeringAssist{
 
   /** Normalised steering input (-1 left … +1 right) for the current pose and speed. */
   steer(pose:Pose,speed:number):number{
-    if(speed<.3)return 0;
+    if(speed<0)return 0;
     const at=this.progress(pose.position.x,pose.position.z);
-    const lookahead=Math.min(15,Math.max(4,4+.6*speed));
+    // Well off the path at walking pace (pulling out from behind a parked car): a nearer point, so the wheel is turned
+    // well over to get out in the room there is.
+    const on=this.pointAt(at),off=Math.hypot(on.x-pose.position.x,on.z-pose.position.z);
+    // Stopped: the wheels stay straight (waiting to turn, a shunt from behind would push the car into the way of
+    // oncoming traffic), except at the kerb about to pull out, when they are set to go round whatever is in front.
+    if(speed<.3&&off<=.8)return 0;
+    const lookahead=speed<5&&off>.8?2.5+.6*speed:Math.min(15,Math.max(4,4+.6*speed));
     const target=this.pointAt(at+lookahead);
     const dx=target.x-pose.position.x,dz=target.z-pose.position.z;
     const alpha=headingDelta(Math.atan2(dx,-dz),pose.heading);

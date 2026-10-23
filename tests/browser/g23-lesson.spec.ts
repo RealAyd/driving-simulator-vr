@@ -76,7 +76,8 @@ test('G23: lesson 11, manoeuvres: the emergency stop (pull in, briefing, STOP on
   await driveUntil(page,async()=>(await manoeuvre())?.phase==='pull-in',300_000);
   expect(await manoeuvre()).toMatchObject({kind:'emergency-stop',phase:'pull-in'});
   // In to the kerb (assisted steering finds a gap between the parked cars), then stop.
-  await driveUntil(page,async()=>{const m=await manoeuvre();return Number(/kerb (-?[\d.]+)/.exec(m?.waiting??'')?.[1]??9)<.8},60_000);
+  // (At the kerb: nearer it than the lane keeps, about 0.6 m.)
+  await driveUntil(page,async()=>{const m=await manoeuvre();return Number(/kerb (-?[\d.]+)/.exec(m?.waiting??'')?.[1]??9)<.45},90_000);
   await page.keyboard.down('KeyS');await page.waitForTimeout(3500);await page.keyboard.up('KeyS');
   await expect.poll(async()=>(await manoeuvre())?.phase,{timeout:20_000}).toBe('brief');
   // Off again, up to speed: on STOP (shown big on screen), brake at once.
