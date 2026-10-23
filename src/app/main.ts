@@ -103,6 +103,7 @@ import {VIEWER_PROFILES} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
 import {reloadWhenStale} from './staleBuild';
+import {AdaptiveScale} from '../engine/renderScale';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
@@ -215,6 +216,7 @@ export async function boot():Promise<void>{
     throw error;
   }
   engine.setHardwareScalingLevel(quality.hardwareScaling);
+  const sharpness=quality.id==='phone'?new AdaptiveScale(quality.hardwareScaling):null;
 
   const scene=new Scene(engine);
   configureScene(scene);
@@ -1671,7 +1673,7 @@ export async function boot():Promise<void>{
     byId('about-branch').textContent=__BUILD_BRANCH__;
     byId('about-commit').textContent=__BUILD_COMMIT__;
     byId('about-built').textContent=__BUILD_TIME__;
-    byId('about-quality').textContent=`${quality.id} (render scale 1/${quality.hardwareScaling}, ${engine.getRenderWidth()}×${engine.getRenderHeight()} px)`;
+    byId('about-quality').textContent=`${quality.id} (render scale 1/${engine.getHardwareScalingLevel()}, ${engine.getRenderWidth()}×${engine.getRenderHeight()} px)`;
     const p=perf.stats();
     byId('about-perf').textContent=p.frames?`${p.averageFps.toFixed(0)} fps average, ${p.p95Ms.toFixed(0)} ms at the 95th percentile, over the last ${p.frames} frames`:'start an exercise to measure';
     byId('about-models').textContent=[
@@ -1801,6 +1803,8 @@ export async function boot():Promise<void>{
         {x:pose.position.x,z:pose.position.z,heading:pose.heading},vehicle.indicators.isLit(clock.time));
     }
     hud.update(vehicle.state.speed,input.reverse,vehicle.indicators.state,vehicle.indicators.isLit(clock.time),engine.getFps());
+    // Phones: as sharp a picture as the phone can draw at a steady frame rate (renderScale.ts).
+    if(sharpness&&session.state==='running'&&!viewer.active){const level=sharpness.update(dt,engine.getFps());if(level!==null)engine.setHardwareScalingLevel(level)}
     // Approaching the edge of a generated area: say so, once per approach.
     if((edgeTimer-=dt)<=0){
       edgeTimer=.5;
