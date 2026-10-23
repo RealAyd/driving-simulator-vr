@@ -1,0 +1,12 @@
+.git
+node_modules
+dist-sim
+server/dist
+.env
+.env.*
+*.pem
+*.key
+*.p8
+test-results
+playwright-report
+assets-incoming
