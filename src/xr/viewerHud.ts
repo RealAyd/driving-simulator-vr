@@ -17,8 +17,26 @@ export interface GazeItem{
   /** Centre, vehicle-local metres. */
   x:number;y:number;z:number;
   w:number;h:number;
-  /** Seconds of looking needed to press it. */
+  /** Seconds of looking needed to press it (Infinity: a label, never pressed). */
   dwell:number;
+  /** A longer text under the label, wrapped (an answer to choose, a question): drawn sharper and smaller. */
+  text?:string;
+  /** Marked after a choice: DVSA's answer (right) or the one chosen that was not (wrong). */
+  tone?:'right'|'wrong';
+}
+
+/** Splits text into lines that fit `width` pixels in the context's current font. */
+function wrap(ctx:CanvasRenderingContext2D,text:string,width:number):string[]{
+  const out:string[]=[];
+  for(const para of text.split('\n')){
+    let line='';
+    for(const word of para.split(/\s+/)){
+      const next=line?`${line} ${word}`:word;
+      if(line&&ctx.measureText(next).width>width){out.push(line);line=word}else line=next;
+    }
+    out.push(line);
+  }
+  return out;
 }
 
 interface Placed extends GazeItem{mesh:Mesh;texture:DynamicTexture;centre:Vector3;normal:Vector3;right:Vector3;up:Vector3;drawn:string}
@@ -117,11 +135,13 @@ export class ViewerHud{
 
   /** Replaces the gaze items (an empty list while driving: nothing to press by looking). */
   setItems(items:GazeItem[]):void{
-    const key=(l:GazeItem[])=>l.map(i=>`${i.id}|${i.label}|${i.x}|${i.y}|${i.z}`).join(';');
+    const key=(l:GazeItem[])=>l.map(i=>`${i.id}|${i.label}|${i.x}|${i.y}|${i.z}|${i.text??''}|${i.tone??''}`).join(';');
     if(key(items)===key(this.items))return;
     for(const i of this.items)i.mesh.dispose(false,true);
     this.items=items.map(item=>{
-      const texture=new DynamicTexture(`viewer-item-${item.id}`,{width:512,height:Math.max(64,Math.round(512*item.h/item.w))},this.scene,true);
+      // (A text card is drawn on a larger texture: its smaller type stays sharp.)
+      const px=item.text?1024:512;
+      const texture=new DynamicTexture(`viewer-item-${item.id}`,{width:px,height:Math.max(64,Math.round(px*item.h/item.w))},this.scene,true);
       const mesh=CreatePlane(`viewer-item-${item.id}`,{width:item.w,height:item.h},this.scene);
       mesh.parent=this.parent;
       const centre=new Vector3(item.x,item.y,item.z);
@@ -152,8 +172,9 @@ export class ViewerHud{
     this.panelTexture.update(true);
   }
 
-  /** The menu panel straight ahead: a title and lines, or null to hide it. */
-  setMenu(lines:string[]|null):void{
+  /** The menu panel straight ahead: a title and lines, or null to hide it. `wrap`: long lines run on to the next
+   * (a question); otherwise each line stays one line (calibration lines up its buttons with them). */
+  setMenu(lines:string[]|null,wrapLines=false):void{
     const text=lines?lines.join('\n'):'';
     if(text===this.menuText)return;
     this.menuText=text;
@@ -161,18 +182,24 @@ export class ViewerHud{
     if(!lines)return;
     const {width,height}=this.menuTexture.getSize();
     const ctx=this.menuTexture.getContext() as unknown as CanvasRenderingContext2D;
+    // Each line as drawn (title first), run on where wrapping is asked for.
+    const drawn:Array<{text:string;title:boolean}>=[];
+    lines.forEach((line,i)=>{
+      ctx.font=i===0?`bold ${MENU.titlePx}px sans-serif`:`${MENU.linePx}px sans-serif`;
+      for(const part of wrapLines?wrap(ctx,line,width-80):[line])drawn.push({text:part,title:i===0});
+    });
     // The panel is only as tall as what it says (its top stays put: lines line up with buttons beside them): the
     // plane is shortened and shows just the top of the texture.
-    const used=Math.min(height,MENU.first+(lines.length-1)*MENU.step+MENU.linePx*.6+28),k=used/height;
+    const used=Math.min(height,MENU.first+(drawn.length-1)*MENU.step+MENU.linePx*.6+28),k=used/height;
     this.menu.scaling.y=k;
     this.menu.position.y=this.menuTop-MENU.h*k/2;
     this.menuTexture.vScale=k;this.menuTexture.vOffset=1-k;
     ctx.fillStyle='#1e293b';ctx.fillRect(0,0,width,height);
     ctx.strokeStyle='#94a3b8';ctx.lineWidth=8;ctx.strokeRect(4,4,width-8,used-8);
-    lines.forEach((line,i)=>{
-      ctx.fillStyle=i===0?'#fbbf24':'#f1f5f9';
-      ctx.font=i===0?`bold ${MENU.titlePx}px sans-serif`:`${MENU.linePx}px sans-serif`;
-      ctx.fillText(line,40,MENU.first+i*MENU.step,width-80);
+    drawn.forEach((line,i)=>{
+      ctx.fillStyle=line.title?'#fbbf24':'#f1f5f9';
+      ctx.font=line.title?`bold ${MENU.titlePx}px sans-serif`:`${MENU.linePx}px sans-serif`;
+      ctx.fillText(line.text,40,MENU.first+i*MENU.step,width-80);
     });
     this.menuTexture.update(true);
   }
@@ -231,6 +258,19 @@ export class ViewerHud{
     b.drawn=key;
     const ctx=b.texture.getContext() as unknown as CanvasRenderingContext2D;
     const {width,height}=b.texture.getSize();
+    if(b.text!==undefined){
+      // A card: its label as a heading, then its text wrapped (an answer to choose); green or red once marked.
+      ctx.fillStyle=b.tone==='right'?'#14532d':b.tone==='wrong'?'#7f1d1d':lit?'#0f766e':'#1e293b';ctx.fillRect(0,0,width,height);
+      if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-24,width*progress,24)}
+      ctx.strokeStyle=b.tone==='right'?'#4ade80':b.tone==='wrong'?'#f87171':'#94a3b8';ctx.lineWidth=12;ctx.strokeRect(6,6,width-12,height-12);
+      ctx.textAlign='left';ctx.textBaseline='alphabetic';
+      ctx.fillStyle='#fbbf24';ctx.font='bold 60px sans-serif';
+      if(b.label)ctx.fillText(b.label,36,82,width-72);
+      ctx.fillStyle='#f8fafc';ctx.font='52px sans-serif';
+      wrap(ctx,b.text,width-72).forEach((line,i)=>ctx.fillText(line,36,(b.label?160:84)+i*66,width-72));
+      b.texture.update(true);
+      return;
+    }
     ctx.fillStyle=lit?'#0f766e':'#1e293b';ctx.fillRect(0,0,width,height);
     if(progress>0){ctx.fillStyle='#f59e0b';ctx.fillRect(0,height-20,width*progress,20)}
     ctx.strokeStyle='#94a3b8';ctx.lineWidth=10;ctx.strokeRect(5,5,width-10,height-10);

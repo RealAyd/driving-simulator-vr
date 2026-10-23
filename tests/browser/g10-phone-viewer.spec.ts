@@ -58,8 +58,11 @@ async function openExercise(page:Page){
   await page.click('#viewer-details > summary');
 }
 
-/** The input check: remap each control to this controller's layout, press each once, Done. */
-async function checkController(page:Page){
+/**
+ * The input check: remap each control to this controller's layout, press each once, Done.
+ * `slowScene`: a full route renders slowly enough that a remap press can also count as working.
+ */
+async function checkController(page:Page,slowScene=false){
   await unplug(page,true);
   await page.click('#controller-check-open');
   await expect(page.locator('#controller-raw')).toContainText('Test controller (odd layout)');
@@ -69,7 +72,7 @@ async function checkController(page:Page){
     await expect(page.locator('#controller-actions tr',{hasText:''}).filter({has:page.locator(`[data-remap="${action}"]`)})).toContainText(`button ${index}`);
     await pad(page,index,false);
   }
-  await expect(page.locator('#controller-done')).toBeDisabled();
+  if(!slowScene)await expect(page.locator('#controller-done')).toBeDisabled();
   // Press each one until the check has seen it (the controller is read once per frame).
   for(const [action,index] of Object.entries(LAYOUT)){
     await pad(page,index,true);
@@ -342,4 +345,37 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await look(page,done.yaw,done.pitch);
   await expect.poll(()=>read(page,'viewer().mode'),{timeout:15_000}).toBe(null);
   await expect(page.locator('#viewer-status')).toContainText('Viewer settings saved for Viewer 1');
+});
+
+test('G10: mock test in the headset: the tell me question and its answers are shown, an answer is chosen by looking at it, then the drive starts',async({page})=>{
+  test.setTimeout(400_000);
+  await wearPhone(page);
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=test]');
+  await page.click('[data-exercise=goodmayes]');
+  await expect(page.locator('#busy')).toBeHidden({timeout:300_000});
+  await page.click('#viewer-details > summary');
+  await checkController(page,true);
+  await page.click('#viewer-drive');
+  await expect.poll(()=>read(page,'viewer().mode')).toBe('driving');
+  await look(page,0,0);
+  await page.waitForTimeout(3500);
+  await tap(page,LAYOUT.brake,async()=>!(await read(page,'viewer().starting')));
+  // The question is in the headset as three answer cards, not only on the (unseen) phone screen.
+  await expect.poll(async()=>(await read(page,'viewer().items')).join(),{timeout:60_000}).toContain('tell-0');
+  expect(await read(page,'viewer().items')).toEqual(expect.arrayContaining(['tell-0','tell-1','tell-2']));
+  // Glancing across the cards chooses nothing.
+  await look(page,0,-14);
+  await page.waitForTimeout(1500);
+  expect((await read(page,'viewer().items')).join()).not.toContain('tell-go');
+  // Looking at answer A for a couple of seconds chooses it; then "Start the drive" appears.
+  const a=aimAt({x:EYE.x-.5,y:EYE.y-.34,z:EYE.z-1.25});
+  await look(page,a.yaw,a.pitch);
+  await expect.poll(async()=>(await read(page,'viewer().items')).join(),{timeout:20_000}).toContain('tell-go');
+  const g=aimAt({x:EYE.x,y:EYE.y-.63,z:EYE.z-1.25});
+  await look(page,g.yaw,g.pitch);
+  await expect.poll(async()=>(await read(page,'viewer().items')).join(),{timeout:20_000}).not.toContain('tell');
+  await expect(page.locator('#hud-question')).toBeHidden();
+  expect((await read(page,'examiner()')).phase).toBe('briefing');
 });

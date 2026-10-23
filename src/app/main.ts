@@ -31,8 +31,8 @@ import {Traffic} from '../actors/traffic';
 import {RoadNetwork} from '../test/route';
 import {routeLanePath} from '../test/routePath';
 import {FreeDriveAssist} from '../test/freeDriveAssist';
-import {SHOW_ME,TELL_ME,pick} from '../test/vehicleChecks';
-import {CarControls,type CarControlId} from '../vehicle/carControls';
+import {SHOW_ME,TELL_ME,pick,tellMeChoices,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
+import {CAR_CONTROLS,CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
 import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
 import {LESSONS,LESSONS_COMING,planLesson,type Lesson} from '../lessons/syllabus';
@@ -417,6 +417,10 @@ export async function boot():Promise<void>{
   let difficulty:Difficulty=savedDifficulty();
   // Lights, washers and wipers, demisters, horn and window (the Controls panel; the show me questions use them).
   const carControls=new CarControls(events);
+  /** The tell me question in the headset (the screen's card cannot be seen there): its answers, and the one chosen. */
+  let viewerTellMe:{q:TellMeQuestion;choices:string[];chosen:string|null;answer:(text:string)=>void}|null=null;
+  /** A show me question asked while driving: in the headset, the car's controls show on the dashboard until used. */
+  let viewerShowMe:{q:ShowMeQuestion;until:number}|null=null;
   const pressControl=(id:CarControlId)=>{
     if(session.state!=='running')return;
     carControls.press(id);
@@ -621,7 +625,7 @@ export async function boot():Promise<void>{
     const listener:ExaminerListener={
       direction:step=>{for(const l of listeners)l.direction?.(step)},done:(step,ok)=>{for(const l of listeners)l.done?.(step,ok)},
       pullUp:()=>{for(const l of listeners)l.pullUp?.()},pulledUp:()=>{for(const l of listeners)l.pulledUp?.()},
-      tellMe:(q,ok,a)=>{for(const l of listeners)l.tellMe?.(q,ok,a)},showMe:q=>{for(const l of listeners)l.showMe?.(q)},
+      tellMe:(q,ok,a)=>{for(const l of listeners)l.tellMe?.(q,ok,a)},showMe:q=>{for(const l of listeners)l.showMe?.(q);viewerShowMe={q,until:clock.time+60}},
       manoeuvreStart:k=>{for(const l of listeners)l.manoeuvreStart?.(k)},manoeuvreDone:(k,f,n)=>{for(const l of listeners)l.manoeuvreDone?.(k,f,n)}};
     const lessonScore=(r:import('../test/route').Route)=>lesson?r.steps.reduce((n,st)=>n+lesson.score(st),0)+(lesson.routeScore?.(r,place)??0):0;
     const lessonWords=lesson?{briefing:`${lesson.briefing[0]} When you're ready: mirrors, look over your right shoulder, and move off.`,
@@ -639,7 +643,13 @@ export async function boot():Promise<void>{
         planner:(start,target,seed)=>planLesson(net,lesson,place,start,target,seed),
         words:lessonWords!
       }:{tellMe:pick(TELL_ME,testSeed),showMe:pick(SHOW_ME,Math.floor(testSeed/7))}),
-      askTellMe:q=>{hud.setTask(examiner!.lastSaid,false);askTellMe(q,testSeed,text=>examiner!.answerTellMe(text))},
+      askTellMe:q=>{
+        hud.setTask(examiner!.lastSaid,false);
+        // On the screen (a card), and in the headset (cards to look at): whichever answers it closes both.
+        const answer=(text:string)=>{viewerTellMe=null;hideQuestion();examiner!.answerTellMe(text)};
+        viewerTellMe={q,choices:tellMeChoices(q,testSeed),chosen:null,answer};
+        askTellMe(q,testSeed,answer);
+      },
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
       onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
       // The manoeuvres (DVSA: one of them on every test, the emergency stop on about one in three); a lesson's own.
@@ -704,7 +714,7 @@ export async function boot():Promise<void>{
 
     // The car's controls: off at the start of each attempt (and any question card closed).
     const controlsModule:SimModule={id:'car-controls',fixedUpdate:dt=>carControls.update(dt),
-      reset:()=>{carControls.reset();hideQuestion();controlsPanel.open(false)},dispose(){}};
+      reset:()=>{carControls.reset();hideQuestion();controlsPanel.open(false);viewerTellMe=null;viewerShowMe=null},dispose(){}};
     const modules:SimModule[]=[
       controlsModule,...(trafficSignals?[trafficSignals]:[]),...(instructor?[instructor]:[]),
       ...(pedestrian?[pedestrian]:[]),...(follower?[follower]:[]),...passers,...buses,...(traffic?[traffic]:[]),
@@ -1187,6 +1197,9 @@ export async function boot():Promise<void>{
       item.id==='cal-reset'?{...item,x:item.x-.08,dwell:3}:item.id==='cal-done'?{...item,x:item.x+.08,dwell:2}:item)
   ];
   const viewerItem=(id:string)=>{
+    if(viewerTellMe&&/^tell-\d$/.test(id)&&viewerTellMe.chosen===null){viewerTellMe.chosen=viewerTellMe.choices[Number(id.slice(5))]!;return}
+    if(id==='tell-go'&&viewerTellMe?.chosen){viewerTellMe.answer(viewerTellMe.chosen);return}
+    if(id.startsWith('control-')){pressControl(id.slice(8) as CarControlId);viewerShowMe=null;return}
     if(id==='start'){
       if(performance.now()-viewerEnteredAt<VIEWER_SETTLE*1000)return;
       viewerStarting=false;headTracker.recentre();clock.resume();return;
@@ -1296,6 +1309,7 @@ export async function boot():Promise<void>{
     const signal=vehicle.indicators.state,lit=vehicle.indicators.isLit(clock.time);
     const signalText=signal==='off'?'':`${signal==='left'?(lit?'◀':'◁'):(lit?'▶':'▷')} signal ${signal}`;
     let items:GazeItem[]=[];
+    let wrapMenu=false;
     let menu:string[]|null=null;
     if(viewerMode==='calibration'){
       const s=viewerSettings,p=VIEWER_PROFILES.find(v=>v.id===s.profileId)!;
@@ -1328,9 +1342,27 @@ export async function boot():Promise<void>{
           `Brake (${describeBinding(controller.bindings.brake)}) acts at once. Up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`];
       }
       else{menu=['Look straight ahead at Start','Parked practice: look around, check the mirrors,','and practise shoulder checks. Not scored.'];items=[START_ITEM]}
-    }else if(viewerMode==='familiarisation')items=[FAMILIARISATION_MENU];
+    }else if(viewerTellMe){
+      // Tell me (before the drive, the car held): the question ahead, three answers below to look at.
+      const t=viewerTellMe;
+      menu=['Tell me',t.q.question,t.chosen===null?'Look at an answer for a moment to choose it.'
+        :t.chosen===t.q.answer?'Correct: that is DVSA’s answer. Look at Start the drive.'
+        :'Not quite: DVSA’s answer is in green. On the test that is one driving fault. Look at Start the drive.'];
+      wrapMenu=true;
+      items=t.choices.map((text,i)=>({id:`tell-${i}`,label:`Answer ${'ABC'[i]}`,text,x:EYE.x+(i-1)*.5,y:EYE.y-.34,z:EYE.z-1.25,w:.46,h:.42,
+        dwell:t.chosen===null?2:Infinity,...(t.chosen!==null&&text===t.q.answer?{tone:'right' as const}:t.chosen===text?{tone:'wrong' as const}:{})}));
+      if(t.chosen!==null)items.push({id:'tell-go',label:'Start the drive',x:EYE.x,y:EYE.y-.63,z:EYE.z-1.25,w:.3,h:.09,dwell:1.5});
+    }else{
+      if(viewerMode==='familiarisation')items=[FAMILIARISATION_MENU];
+      // Show me (while driving): the car's controls low on the dashboard, as a glance down to the switches;
+      // looking at one operates it. They never move the car or signal.
+      if(viewerShowMe&&clock.time>viewerShowMe.until)viewerShowMe=null;
+      if(viewerShowMe)items=[...items,
+        {id:'show-me-q',label:'Show me',text:viewerShowMe.q.question.replace(/^When it’s safe to do so, can you /,'Can you '),x:-.34,y:.96,z:-.66,w:.34,h:.2,dwell:Infinity},
+        ...CAR_CONTROLS.map((c,i)=>({id:`control-${c.id}`,label:c.label,x:-.02+(i%3)*.17,y:1.0-Math.floor(i/3)*.07,z:-.64,w:.16,h:.06,dwell:1.2}))];
+    }
     viewerHud.setItems(items);
-    viewerHud.setMenu(menu);
+    viewerHud.setMenu(menu,wrapMenu);
     const fired=viewerHud.update(dt,local);
     if(fired)viewerItem(fired);
     const accel=viewerMode==='driving'&&c?c.values.accelerate>0&&accelArmed:false;
