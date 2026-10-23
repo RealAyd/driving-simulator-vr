@@ -266,7 +266,7 @@ test('G10: controls set on the controller check are kept: part-way (Cancel) and,
   await expect.poll(()=>read(page,'viewer().mode'),{timeout:15_000}).toBe(null);
   await expect(page.locator('#viewer-drive')).toBeEnabled();
   await page.click('#controller-check-open');
-  await expect(page.locator('#controller-saved')).toContainText('Saved on this phone: Test controller (odd layout), 6 controls');
+  await expect(page.locator('#controller-saved')).toContainText('✓ Saved on this phone for Test controller (odd layout): Accelerate button 1');
   await expect(brakeRow).toContainText('button 0');
 });
 
@@ -378,4 +378,45 @@ test('G10: mock test in the headset: the tell me question and its answers are sh
   await expect.poll(async()=>(await read(page,'viewer().items')).join(),{timeout:20_000}).not.toContain('tell');
   await expect(page.locator('#hud-question')).toBeHidden();
   expect((await read(page,'examiner()')).phase).toBe('briefing');
+});
+
+test('G10: steering in the headset: chosen on the controller screen or with Signal left/right before the start and while paused; the stick steers; settings say they are saved',async({page})=>{
+  await wearPhone(page);
+  await openExercise(page);
+  await checkController(page);
+  await expect(page.locator('#viewer-status')).toContainText('✓ Controller settings saved on this phone for Test controller (odd layout)');
+  // Back on the controller screen: what is saved is listed, and each change says it was saved.
+  await page.click('#controller-check-open');
+  await expect(page.locator('#controller-saved')).toContainText('✓ Saved on this phone for Test controller (odd layout): Accelerate button 1, Brake button 0');
+  await expect(page.locator('#controller-saved')).toContainText('Checked: ready to drive');
+  // This controller reports no standard layout: the stick is set like any other control (pushed either way).
+  await page.click('[data-remap="steer"]');
+  await page.evaluate(()=>{(window as any).__pad.axes[0]=-.95});
+  await expect(page.locator('#controller-actions tr').filter({has:page.locator('[data-remap="steer"]')})).toContainText('stick/axis 0 +');
+  await page.evaluate(()=>{(window as any).__pad.axes[0]=0});
+  await page.selectOption('#controller-steering','stick');
+  await expect(page.locator('#controller-saved')).toContainText('Steering in the headset: Left stick');
+  await page.click('#controller-cancel');
+
+  await page.click('#viewer-drive');
+  await expect.poll(()=>read(page,'viewer().mode')).toBe('driving');
+  await look(page,0,0);
+  await page.waitForTimeout(3300);
+  expect(await read(page,'steering()')).toBe('stick');
+  // Signal right/left step through the choices and do not start the drive.
+  await tap(page,LAYOUT['signal-right'],async()=>(await read(page,'steering()'))==='buttons');
+  await tap(page,LAYOUT['signal-left'],async()=>(await read(page,'steering()'))==='stick');
+  expect(await read(page,'viewer().starting')).toBe(true);
+  await tap(page,LAYOUT.brake,async()=>!(await read(page,'viewer().starting')));
+  await pad(page,LAYOUT.accelerate,true);
+  await expect.poll(async()=>(await read(page,'vehicle()')).speed,{timeout:20_000}).toBeGreaterThan(2);
+  await page.evaluate(()=>{(window as any).__pad.axes[0]=.9});
+  await expect.poll(async()=>(await read(page,'lastControls()')).steer).toBeGreaterThan(.6);
+  await page.evaluate(()=>{(window as any).__pad.axes[0]=0});
+  await expect.poll(async()=>(await read(page,'lastControls()')).steer).toBe(0);
+  await pad(page,LAYOUT.accelerate,false);
+  // Paused: Signal left changes the steering (it is remembered on this phone).
+  await tap(page,LAYOUT.pause,async()=>(await read(page,'session()'))==='paused');
+  await tap(page,LAYOUT['signal-left'],async()=>(await read(page,'steering()'))==='assist');
+  expect(await page.evaluate(()=>localStorage.getItem('dp.viewer.steering.v1'))).toBe('assist');
 });

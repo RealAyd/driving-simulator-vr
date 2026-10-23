@@ -143,6 +143,9 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .controller-table td,.controller-table th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left}
 .controller-table .live.on{color:#4ade80;font-weight:700}
 .controller-table .tested{color:#4ade80}
+.saved-box{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.saved-box.ok{border-color:#4ade80;color:#bbf7d0;background:rgba(74,222,128,.08)}
+.saved-box.warn{border-color:#f59e0b}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
 .viewer-panel{display:grid;gap:6px}
 .viewer-panel select,.tilt-options select{font:inherit;font-size:13px;background:var(--surface-3);color:var(--ink);border:1px solid var(--line-strong);border-radius:10px;padding:5px 8px;max-width:100%}
@@ -480,9 +483,9 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <button id="viewer-familiarise" type="button" class="wide">Sit in the car (no controller needed)</button>
         <p class="unit">Parked and not scored: look around, check the mirrors and practise shoulder checks. Menus work by looking at a button for a moment; tap the screen to leave.</p>
         <button id="viewer-drive" type="button" class="wide" disabled>Drive with a controller (scored)</button>
-        <p class="unit">Moving, scored driving needs a physical controller that has passed the check: a Bluetooth game controller or keyboard. Accelerating, braking and signalling are never done by looking at buttons. <b>Do the check before putting the phone in the headset.</b></p>
+        <p class="unit">Moving, scored driving needs a physical controller that has passed the check: a Bluetooth game controller or keyboard. Accelerating, braking, signalling and steering are never done by looking at buttons. <b>Do the check before putting the phone in the headset.</b> Steering is Assisted, the Left stick or Steer buttons: choose it on the controller screen, or in the headset with Signal left/right before you start (or while paused).</p>
         <p id="viewer-drive-status" class="unit" role="status"></p>
-        <button id="controller-check-open" type="button">Check controller…</button>
+        <button id="controller-check-open" type="button">Controller settings and check…</button>
         <div class="viewer-row"><label>Viewer <select id="viewer-slot"></select></label> <button id="viewer-calibrate" type="button">Calibrate viewer…</button></div>
         <p class="unit"><b>Calibrate viewer</b> makes the picture comfortable in your headset: with the phone in it, adjust the settings until the picture is sharp and the two yellow crosses straight ahead look like one. Look at <b>−</b> or <b>+</b> beside a setting for a moment to change it; changes save as you go. Look at <b>Done</b> to finish (or tap the screen). No controller needed.</p>
         <p id="viewer-summary" class="unit"></p>
@@ -498,11 +501,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
 <section id="screen-controller" class="screen" hidden aria-labelledby="controller-title">
   <div class="card">
     <h1 id="controller-title">Controller check</h1>
+    <p id="controller-saved" class="unit saved-box" role="status"></p>
     <p class="unit">Connect a Bluetooth game controller (or keyboard) to this iPhone, then press each control once. This screen shows exactly what Safari receives. If your controller uses a different layout, press <b>Set</b> and then the button you want. A headset remote that pairs over Bluetooth may not appear here at all: many act as a mouse or media keys, which a web page cannot read.</p>
     <table class="controller-table"><thead><tr><th>Control</th><th>Bound to</th><th>Now</th><th>Check</th><th></th></tr></thead><tbody id="controller-actions"></tbody></table>
     <p id="controller-raw" class="unit mono"></p>
     <p id="controller-check-status" class="unit" role="status"></p>
-    <p id="controller-saved" class="unit" role="status"></p>
+    <label class="unit">Steering in the headset <select id="controller-steering"><option value="assist">Assisted (the car follows the lane)</option><option value="stick">Left stick</option><option value="buttons">Steer buttons (D-pad)</option></select></label>
     <p class="unit">Settings are kept on this phone, separately in Safari and in the Home Screen app: set the controller up in the one you will use with the headset.</p>
     <div class="viewer-row"><button id="controller-standard" type="button">Use the standard layout</button> <button id="controller-cancel" type="button">Cancel</button> <button id="controller-done" type="button" class="primary" disabled>Done</button></div>
     <p class="unit">Accelerate is held: the car speeds up while you hold it, up to the exercise's assisted speed, and coasts when you let go. Brake acts the moment you press it. Pause opens a menu in the headset; only pressing Pause again resumes.</p>

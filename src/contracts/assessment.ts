@@ -46,7 +46,7 @@ export interface AttemptResult{
 export interface AttemptConditions{
   /** touch: phone screen controls; keyboard: desktop keys; phone-viewer-controller: headset with a checked physical controller; webxr: WebXR headset. */
   controlMode:'touch'|'keyboard'|'phone-viewer-controller'|'phone-viewer-familiarisation'|'webxr';
-  steering:'assist'|'tilt'|'wheel'|'buttons';
+  steering:'assist'|'tilt'|'wheel'|'buttons'|'stick';
   /** Route guidance painted on the road. */
   guidance:boolean;
   /** Observation evidence came from head direction (phone viewer or WebXR), not view buttons. Not eye tracking. */

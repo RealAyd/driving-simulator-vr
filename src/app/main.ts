@@ -97,7 +97,7 @@ import {SeatedXr,detectXr} from '../xr/xrSession';
 import {yawPitch} from '../xr/headOrientation';
 import {HeadTracker,PhoneViewer} from '../xr/phoneViewer';
 import {MENU,ViewerHud,type GazeItem} from '../xr/viewerHud';
-import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type ControllerState,type DriveAction} from '../xr/controllerInput';
+import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,STANDARD_STEER,STEER_ACTIONS,STEER_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type ControllerState,type DriveAction,type SteerAction} from '../xr/controllerInput';
 import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
 import type {Controls} from '../vehicle/kinematics';
 import {VIEWER_PROFILES} from '../xr/viewerProfiles';
@@ -108,7 +108,8 @@ import {AdaptiveScale} from '../engine/renderScale';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
-type SteeringMode='assist'|'tilt'|'buttons';
+/** 'stick': a game controller's stick (in the headset; 'buttons' there are the controller's steer buttons). */
+type SteeringMode='assist'|'tilt'|'buttons'|'stick';
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
@@ -378,19 +379,23 @@ export async function boot():Promise<void>{
   let vehicle!:VehicleController;
   const controls:ControlSource={read:()=>{
     const keys=input.read();
+    const mode=steeringNow();
+    // In the headset only the checked controller steers (its stick or steer buttons); screen and keys are not used.
+    const headset=viewer.active&&viewerMode==='driving';
     // Called once per fixed simulation step.
-    const c={...keys,steer:buttonSteer.update(keys.steer,SIM_STEP)};
+    const c={...keys,steer:buttonSteer.update(headset?(mode==='buttons'?controllerState?.steerButtons??0:0):keys.steer,SIM_STEP)};
+    if(headset&&mode==='stick')c.steer=controllerState?.stick??0;
     // The driver's own button/key steering always overrides tilt and the assistance.
     // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
-    if(steeringMode==='assist'&&runtime?.freeAssist&&c.steer===0)runtime.freeAssist.update(vehicle.pose,vehicle.indicators.state);
+    if(mode==='assist'&&runtime?.freeAssist&&c.steer===0)runtime.freeAssist.update(vehicle.pose,vehicle.indicators.state);
     // (Reversing in a manoeuvre: the assistance follows its reverse path where it has one.)
-    const steer=c.steer!==0?c.steer:steeringMode==='tilt'?tiltSteer:steeringMode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed)
-      :steeringMode==='assist'&&runtime?.assist?.canReverse&&keys.reverse?runtime.assist.steerReverse(vehicle.pose,vehicle.state.speed):0;
+    const steer=c.steer!==0?c.steer:mode==='tilt'?tiltSteer:mode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed)
+      :mode==='assist'&&runtime?.assist?.canReverse&&keys.reverse?runtime.assist.steerReverse(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
     // Assisted steering also eases off for a bend too tight for the speed (only what keeps the car on the road: the
     // speed a test expects is slower, and still the learner's to judge).
-    const bendBrake=steeringMode==='assist'&&c.steer===0&&runtime?.assist&&vehicle.state.speed>0&&!keys.reverse?runtime.assist.brakeFor(vehicle.pose,vehicle.state.speed):0;
+    const bendBrake=mode==='assist'&&c.steer===0&&runtime?.assist&&vehicle.state.speed>0&&!keys.reverse?runtime.assist.brakeFor(vehicle.pose,vehicle.state.speed):0;
     lastControls=viewerDrive??{throttle:bendBrake>0?0:c.throttle,brake:Math.max(c.brake,bendBrake),steer,reverse:!!keys.reverse,...(bendBrake>0?{driverBrake:c.brake}:{})};
     // The tell me question comes before the drive: the car stays where it is until it is answered.
     if(runtime?.examiner?.phase==='tell-me')lastControls={throttle:0,brake:1,steer:0};
@@ -748,15 +753,17 @@ export async function boot():Promise<void>{
           scenarioId:scenario.id,rubricVersion:'none (practice)',outcome,findings:[],
           notes:route?route.notes():practice!.notes(names),durationSeconds:runner.elapsed,finishedAt:new Date().toISOString()
         };
-        if(steeringMode==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
+        const steering=steeringNow();
+        if(steering==='assist'&&assist)base.notes.push('Steering assistance was on: it kept the car on the lane path while you controlled speed and observations.');
         if(guided)base.notes.push('Route guidance was shown on the road (the pull-out path).');
-        if(steeringMode==='tilt')base.notes.push('You steered by tilting the phone.');
+        if(steering==='tilt')base.notes.push('You steered by tilting the phone.');
+        if(steering==='stick')base.notes.push('You steered with the controller’s stick.');
         if(behindSeconds>=1)base.notes.push(`${INFO}You used the behind-the-car view for ${Math.round(behindSeconds)} s. It is not a driver's view: only the mirrors, shoulder checks and forward view count as observations.`);
         if(variant)base.notes.push(`${INFO}Timing this attempt: ${variant.label.toLowerCase()}.`);
         const mode=controlMode();
         if(mode==='phone-viewer-controller'||mode==='webxr')base.notes.push(`${INFO}Observations were recorded from your head direction (motion sensors), not eye tracking.`);
         if(familiarisation)base.notes.push(`${INFO}Parked familiarisation in the phone viewer: not scored and not saved.`);
-        base.conditions={controlMode:mode,steering:steeringMode,guidance:guided,headDirectionEvidence:mode==='phone-viewer-controller'||mode==='webxr'||!!viewerMode,
+        base.conditions={controlMode:mode,steering,guidance:guided,headDirectionEvidence:mode==='phone-viewer-controller'||mode==='webxr'||!!viewerMode,
           ...(mode==='phone-viewer-controller'&&checkedDevice?{controller:checkedDevice}:{})};
         return base;
       },
@@ -905,6 +912,34 @@ export async function boot():Promise<void>{
     if(saved){controller.bindings={...saved};boundDevice=device}
   };
   if(checkedDevice)useSavedControls(checkedDevice);
+  /** Steering when driving in the headset (remembered on this phone): chosen on the controller screen, or with the controller in the headset. */
+  type ViewerSteering='assist'|'stick'|'buttons';
+  const VIEWER_STEERING:readonly ViewerSteering[]=['assist','stick','buttons'];
+  const VIEWER_STEERING_LABEL:Record<ViewerSteering,string>={assist:'Assisted',stick:'Left stick',buttons:'Steer buttons'};
+  let viewerSteering:ViewerSteering=(()=>{
+    try{const v=localStore?.getItem('dp.viewer.steering.v1');return VIEWER_STEERING.includes(v as ViewerSteering)?v as ViewerSteering:'assist'}catch{return 'assist'}
+  })();
+  const setViewerSteering=(mode:ViewerSteering)=>{
+    viewerSteering=mode;
+    try{localStore?.setItem('dp.viewer.steering.v1',mode)}catch{/* kept for this visit only */}
+    byId<HTMLSelectElement>('controller-steering').value=mode;
+    events.emit('assist.changed',{enabled:steeringNow()==='assist'&&!!runtime?.assist,steering:steeringNow()});
+  };
+  byId<HTMLSelectElement>('controller-steering').value=viewerSteering;
+  /** Signal left/right in the headset (before the start, and paused) step through the steering choices. */
+  const stepViewerSteering=(by:1|-1)=>setViewerSteering(VIEWER_STEERING[(VIEWER_STEERING.indexOf(viewerSteering)+by+VIEWER_STEERING.length)%VIEWER_STEERING.length]!);
+  /** The steering in use: the headset's own choice while driving in it. */
+  const steeringNow=():SteeringMode=>viewer.active&&viewerMode==='driving'?viewerSteering:steeringMode;
+  /** A steering control's binding (the standard one when unset and the controller reports that layout). */
+  const steerBinding=(a:SteerAction)=>controller.bindings[a]??(controllerState?.raw.mapping==='standard'?STANDARD_STEER[a]:undefined);
+  const steerName=(a:SteerAction)=>{
+    const b=steerBinding(a);
+    return b?.kind==='axis'&&b.index===0?'the left stick':b?.kind==='button'&&b.index===14?'D-pad left':b?.kind==='button'&&b.index===15?'D-pad right':describeBinding(b);
+  };
+  /** How the headset steering is used, for its menus. */
+  const viewerSteeringHelp=()=>viewerSteering==='assist'?'the car follows the lane; you control speed and look'
+    :viewerSteering==='stick'?(steerBinding('steer')?`move ${steerName('steer')} left and right`:'set the stick on the controller screen first')
+    :steerBinding('steer-left')&&steerBinding('steer-right')?`${steerName('steer-left')} steers left, ${steerName('steer-right')} right`:'set the steer buttons on the controller screen first';
   let controllerState:ControllerState|null=null;
   let viewerMode:'familiarisation'|'driving'|'calibration'|null=null;
   /** Waiting for Start: simulated time stopped, the car held. */
@@ -1019,41 +1054,56 @@ export async function boot():Promise<void>{
     :viewer.active&&viewerMode==='familiarisation'?'phone-viewer-familiarisation':xr.active?'webxr':quality.id==='phone'?'touch':'keyboard';
 
   // ---- Controller check: the driver shows each control working before scored viewer driving ----
-  const checkTested=new Set<DriveAction>();
+  const checkTested=new Set<DriveAction|SteerAction>();
   let capturing:DriveAction|null=null;
   let checkDevice:string|null=null;
-  const checkRows=new Map<DriveAction,{binding:HTMLElement;state:HTMLElement;tested:HTMLElement}>();
+  const checkRows=new Map<DriveAction|SteerAction,{binding:HTMLElement;state:HTMLElement;tested:HTMLElement}>();
+  let capturingSteer:SteerAction|null=null;
   {
     const table=byId('controller-actions');
-    for(const action of DRIVE_ACTIONS){
+    for(const action of [...DRIVE_ACTIONS,...STEER_ACTIONS]){
+      const steerRow=(STEER_ACTIONS as readonly string[]).includes(action);
+      if(action===STEER_ACTIONS[0]){
+        const head=document.createElement('tr');
+        head.innerHTML='<th colspan="5">Steering in the headset (only if Steering below is Left stick or Steer buttons)</th>';
+        table.append(head);
+      }
       const row=document.createElement('tr');
       const cell=(text='')=>{const td=document.createElement('td');td.textContent=text;row.append(td);return td};
-      cell(DRIVE_ACTION_LABEL[action]);
+      cell(steerRow?STEER_ACTION_LABEL[action as SteerAction]:DRIVE_ACTION_LABEL[action as DriveAction]);
       const binding=cell();
       const state=cell('–');state.className='live';
       const tested=cell('');tested.className='tested';
       const remap=document.createElement('button');remap.type='button';remap.textContent='Set';remap.dataset.remap=action;
-      remap.addEventListener('click',()=>{capturing=action;controller.beginCapture();checkTested.delete(action)});
+      remap.addEventListener('click',()=>{
+        if(steerRow){capturingSteer=action as SteerAction;capturing=null;controller.beginCapture(action==='steer')}
+        else{capturing=action as DriveAction;capturingSteer=null;controller.beginCapture()}
+        checkTested.delete(action);
+      });
       const td=document.createElement('td');td.append(remap);row.append(td);
       table.append(row);
       checkRows.set(action,{binding,state,tested});
     }
   }
-  /** What is saved on this phone, and whether this browser keeps it at all. */
+  /** What is saved on this phone for the controller (the one connected, else the one checked before), and whether this browser keeps it at all. */
   const showSavedControls=(note='')=>{
-    const saved=checkedDevice?loadBindings(localStore,checkedDevice):null;
-    byId('controller-saved').textContent=!storageWorks(localStore)
-      ?'This browser is not keeping settings (Private Browsing, or website data blocked in Settings › Safari), so controls must be set again on each visit.'
-      :saved?`Saved on this phone: ${checkedDevice}, ${Object.keys(saved).length} controls.${note}`
-      :`Nothing saved yet on this phone.${note}`;
-    byId('controller-saved').classList.toggle('warn',!storageWorks(localStore));
+    const device=checkDevice??checkedDevice;
+    const saved=device?loadBindings(localStore,device):null;
+    const keeps=storageWorks(localStore);
+    const el=byId('controller-saved');
+    el.textContent=!keeps
+      ?'⚠ Not saved: this browser is not keeping settings (Private Browsing, or website data blocked in Settings › Safari), so controls must be set again on each visit.'
+      :saved?`✓ Saved on this phone${note?` (${note})`:''} for ${device}: ${DRIVE_ACTIONS.map(a=>`${DRIVE_ACTION_LABEL[a].replace(' (hold)','')} ${describeBinding(saved[a])}`).join(', ')}. Steering in the headset: ${VIEWER_STEERING_LABEL[viewerSteering]}.${checkedDevice===device?' Checked: ready to drive.':' Press each control once, then Done.'}`
+      :'Nothing saved yet on this phone: press Set for a control, or Use the standard layout. Each change is saved at once.';
+    el.classList.toggle('warn',!keeps);
+    el.classList.toggle('ok',keeps&&!!saved);
   };
   const openControllerCheck=()=>{
     byId('screen-controller').hidden=false;
-    showSavedControls();
     checkTested.clear();
-    capturing=null;
+    capturing=null;capturingSteer=null;
     checkDevice=null;
+    showSavedControls();
   };
   /** Live state of the check screen; called every frame while it is open. */
   updateControllerCheck=()=>{
@@ -1065,14 +1115,34 @@ export async function boot():Promise<void>{
       checkDevice=device;
       controller.bindings={...(loadBindings(localStore,device)??controller.defaultsFor(pad))};
       checkTested.clear();
+      showSavedControls();
     }
     if(capturing){
       const b=controller.capture();
       // (Saved at once: leaving the check part-way keeps what was set.)
       if(b){
         controller.bindings={...controller.bindings,[capturing]:b};capturing=null;
-        if(checkDevice){const ok=saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;byId('controller-saved').textContent=ok?`Saved: ${describeBinding(b)} for ${checkDevice}.`:'Could not save: this browser is not keeping settings.'}
+        if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls(`just now: ${describeBinding(b)}`)}
       }
+    }
+    if(capturingSteer){
+      const b=controller.capture();
+      if(b){
+        controller.bindings={...controller.bindings,[capturingSteer]:b};
+        if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls(`just now: ${STEER_ACTION_LABEL[capturingSteer]} ${describeBinding(b)}`)}
+        capturingSteer=null;
+      }
+    }
+    for(const action of STEER_ACTIONS){
+      const row=checkRows.get(action)!;
+      row.binding.textContent=capturingSteer===action?(action==='steer'?'move the stick left or right now…':'press the button now…')
+        :controller.bindings[action]?describeBinding(controller.bindings[action]):steerBinding(action)?`${describeBinding(steerBinding(action))} (standard)`:'not set';
+      const v=action==='steer'?st.stick:action==='steer-left'?-st.steerButtons:st.steerButtons;
+      const on=!capturingSteer&&(action==='steer'?v!==0:v>0);
+      if(on)checkTested.add(action);
+      row.state.textContent=on?(action==='steer'?`● ${v<0?'left':'right'} ${Math.round(Math.abs(v)*100)}%`:'● received'):'–';
+      row.state.classList.toggle('on',on);
+      row.tested.textContent=checkTested.has(action)?'✓ works':'';
     }
     for(const action of DRIVE_ACTIONS){
       const row=checkRows.get(action)!;
@@ -1095,19 +1165,21 @@ export async function boot():Promise<void>{
   byId('controller-check-open').addEventListener('click',openControllerCheck);
   byId('controller-standard').addEventListener('click',()=>{
     controller.bindings={...controller.defaultsFor({id:'',connected:true,mapping:'standard',buttons:[],axes:[]})};checkTested.clear();
-    if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}
+    if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice;showSavedControls('just now: the standard layout')}
   });
   byId('controller-cancel').addEventListener('click',()=>{
-    capturing=null;controller.cancelCapture();byId('screen-controller').hidden=true;
+    capturing=null;capturingSteer=null;controller.cancelCapture();byId('screen-controller').hidden=true;
     if(checkDevice){saveBindings(localStore,checkDevice,controller.bindings);boundDevice=checkDevice}
     refreshDriveButton();
   });
+  byId('controller-steering').addEventListener('change',e=>{setViewerSteering((e.target as HTMLSelectElement).value as ViewerSteering);showSavedControls('just now: steering')});
   byId('controller-done').addEventListener('click',()=>{
     const st=controllerState;
     if(!st?.device)return;
     checkedDevice=st.device;
     const kept=saveBindings(localStore,st.device,controller.bindings)&&saveCheckedDevice(localStore,st.device);
-    if(!kept)viewerStatus.textContent='Controller checked for this visit only: this browser is not keeping settings (Private Browsing, or website data blocked).';
+    viewerStatus.textContent=kept?`✓ Controller settings saved on this phone for ${st.device} (steering in the headset: ${VIEWER_STEERING_LABEL[viewerSteering]}). They are used automatically next time.`
+      :'Controller checked for this visit only: this browser is not keeping settings (Private Browsing, or website data blocked).';
     boundDevice=st.device;
     byId('screen-controller').hidden=true;
     refreshDriveButton();
@@ -1241,6 +1313,8 @@ export async function boot():Promise<void>{
     const ours=viewerMode==='familiarisation'||(c.connected&&c.device===checkedDevice);
     if(session.state==='paused'){
       if(!ours)return;
+      if(viewerMode==='driving'&&pressed.has('signal-left'))stepViewerSteering(-1);
+      if(viewerMode==='driving'&&pressed.has('signal-right'))stepViewerSteering(1);
       if(pressed.has('pause'))viewerResume();
       if(pressed.has('recentre'))headTracker.recentre();
       exitHeld=c.values.brake>0?exitHeld+engine.getDeltaTime()/1000:0;
@@ -1249,8 +1323,12 @@ export async function boot():Promise<void>{
     }
     if(session.state!=='running')return;
     if(viewerStarting){
-      // Any of the checked controller's controls starts (Accelerate counts only once released and pressed again).
-      if(viewerMode==='driving'&&c.pressed.length>0&&headTracker.receiving&&performance.now()-viewerEnteredAt>=VIEWER_SETTLE*1000){
+      // Signal left/right choose the steering; any other of the checked controller's controls starts (Accelerate
+      // counts only once released and pressed again).
+      const ready=viewerMode==='driving'&&headTracker.receiving&&performance.now()-viewerEnteredAt>=VIEWER_SETTLE*1000;
+      if(ready&&pressed.has('signal-left'))stepViewerSteering(-1);
+      if(ready&&pressed.has('signal-right'))stepViewerSteering(1);
+      if(ready&&c.pressed.some(a=>a!=='signal-left'&&a!=='signal-right')){
         viewerStarting=false;headTracker.recentre();clock.resume();
       }
       return;
@@ -1326,6 +1404,7 @@ export async function boot():Promise<void>{
         menu=[`Paused${viewerPauseReason&&viewerPauseReason!=='Paused'?`: ${viewerPauseReason.toLowerCase()}`:''}`,
           ok?`Resume: press Pause (${describeBinding(controller.bindings.pause)})`:'Reconnect the checked controller to resume',
           `Recentre: press Recentre (${describeBinding(controller.bindings.recentre)})`,`Exit: hold Brake (${describeBinding(controller.bindings.brake)}) for 2 seconds`,
+          `Steering: ${VIEWER_STEERING_LABEL[viewerSteering]} (Signal left/right to change)`,
           headTracker.readingAge>TRACKING_STALE_MS?'Head tracking has stopped: it must return before resuming':'',
           'Traffic and timing are frozen while paused.'].filter(Boolean);
       }else{
@@ -1337,9 +1416,11 @@ export async function boot():Promise<void>{
       else if(!settled)menu=['Put the phone in the headset…'];
       else if(viewerMode==='driving'){
         // (No gaze buttons while driving with a controller: everything is on the controller.)
-        menu=['Look straight ahead','To start: press any button on your controller.',
+        menu=['Look straight ahead','To start: press Accelerate, Brake or any other button.',
+          `Steering: ◀ ${VIEWER_STEERING_LABEL[viewerSteering]} ▶ (Signal left/right to change): ${viewerSteeringHelp()}.`,
           `Accelerate (${describeBinding(controller.bindings.accelerate)}): hold to move, release to coast.`,
           `Brake (${describeBinding(controller.bindings.brake)}) acts at once. Up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`];
+        wrapMenu=true;
       }
       else{menu=['Look straight ahead at Start','Parked practice: look around, check the mirrors,','and practise shoulder checks. Not scored.'];items=[START_ITEM]}
     }else if(viewerTellMe){
@@ -1639,7 +1720,7 @@ export async function boot():Promise<void>{
     clock.resume();
     events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,variant:runtime.variant?.id??null,guidance:!!scenario.guide&&showGuide,
       controlMode:options.familiarisation?'phone-viewer-familiarisation':controlMode(),scored:!options.familiarisation});
-    events.emit('assist.changed',{enabled:steeringMode==='assist'&&!!runtime.assist,steering:steeringMode});
+    events.emit('assist.changed',{enabled:steeringNow()==='assist'&&!!runtime.assist,steering:steeringNow()});
     canvas.focus();
   };
   // Real streets (traffic, people, lights to set up) take a moment: the loading screen first. The small practice
@@ -1992,8 +2073,8 @@ export async function boot():Promise<void>{
     traffic:()=>{const why=new Map((runtime?.traffic?.reasons()??[]).map(r=>[r.id,r]));return runtime?.traffic?.cars.map(c=>({id:c.id,visible:c.visible,speed:c.speed,pose:c.pose,why:why.get(c.id)?.why??'',waited:why.get(c.id)?.waited??0}))??[]},
     findings:()=>(runtime?.current()??[]).map(f=>({...(f as object)})),
     result:()=>lastResult,
-    assist:()=>steeringMode==='assist',
-    steering:()=>steeringMode,
+    assist:()=>steeringNow()==='assist',
+    steering:()=>steeringNow(),
     location:()=>place.id,
     carModel:()=>carModel?.spec.id??null,
     /** The bus models loaded (red buses, asset Batch A). */

@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {ControllerInput,STANDARD_BINDINGS,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
+import {ControllerInput,STANDARD_BINDINGS,STANDARD_STEER,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type InputEnvironment,type PadLike} from '../../src/xr/controllerInput';
 import {activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers} from '../../src/xr/viewerSettings';
 import {eyeLayout,IPHONE_14_PRO_MAX} from '../../src/xr/viewerProfiles';
 
@@ -24,7 +24,7 @@ describe('phone viewer: controller input (no layout assumed)',()=>{
     const f=fakeEnv();
     const c=new ControllerInput(f.env);
     expect(c.defaultsFor(f.pad)).toEqual({});
-    expect(c.defaultsFor({...f.pad,mapping:'standard'})).toEqual(STANDARD_BINDINGS);
+    expect(c.defaultsFor({...f.pad,mapping:'standard'})).toEqual({...STANDARD_BINDINGS,...STANDARD_STEER});
   });
 
   it('binds whatever is pressed next, ignoring anything already held, and reads it back as the action',()=>{
@@ -147,5 +147,54 @@ describe('phone viewer: calibration settings',()=>{
     expect(a.vcentre).toBeCloseTo(.5+.002/IPHONE_14_PRO_MAX.height);
     expect(a.vshift).toBeGreaterThan(0);
     expect(eyeLayout(applySettings({...s,distortionScale:0}),IPHONE_14_PRO_MAX.width,aspect).scale).toBe(1);
+  });
+});
+
+describe('phone viewer: steering with the controller',()=>{
+  it('reads a bound stick across with a centre dead zone, finer near the centre, full at the end',()=>{
+    const f=fakeEnv();
+    const c=new ControllerInput(f.env,{steer:{kind:'axis',index:2,direction:1}});
+    f.axis(2,.08);
+    expect(c.poll().stick).toBe(0);
+    f.axis(2,.5);
+    const half=c.poll().stick;
+    expect(half).toBeGreaterThan(0);
+    expect(half).toBeLessThan(.5);
+    f.axis(2,-1);
+    expect(c.poll().stick).toBeCloseTo(-1);
+  });
+
+  it('a controller reporting the standard layout steers with the left stick and D-pad without being set up',()=>{
+    const f=fakeEnv();
+    f.pad.mapping='standard';
+    (f.pad.buttons as unknown[]).push(...Array.from({length:6},()=>({pressed:false,value:0})));
+    const c=new ControllerInput(f.env,{...STANDARD_BINDINGS});   // controls saved before steering existed
+    f.axis(0,.9);
+    expect(c.poll().stick).toBeGreaterThan(.8);
+    f.axis(0,0);
+    f.press(14);
+    expect(c.poll().steerButtons).toBe(-1);
+    f.press(14,false);f.press(15);
+    expect(c.poll().steerButtons).toBe(1);
+  });
+
+  it('a non-standard controller does not steer until a stick is set; setting it takes only a stick, pushed either way',()=>{
+    const f=fakeEnv();
+    const c=new ControllerInput(f.env);
+    f.axis(0,.9);
+    expect(c.poll().stick).toBe(0);
+    f.axis(0,0);
+    c.beginCapture(true);
+    f.press(3);                       // a button is ignored while setting the stick
+    expect(c.capture()).toBeNull();
+    f.axis(3,-.95);                   // pushed left
+    expect(c.capture()).toEqual({kind:'axis',index:3,direction:1});
+  });
+
+  it('steering never counts as a press (it does not start the drive or act as another control)',()=>{
+    const f=fakeEnv();
+    const c=new ControllerInput(f.env,{steer:{kind:'axis',index:0,direction:1}});
+    f.axis(0,1);
+    expect(c.poll().pressed).toEqual([]);
   });
 });
