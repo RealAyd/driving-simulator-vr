@@ -73,9 +73,9 @@ export function askTellMe(q:TellMeQuestion,seed:number,answer:(text:string)=>voi
     const b=document.createElement('button');
     b.type='button';b.textContent=text;
     b.addEventListener('click',()=>{
-      const right=text===q.answer;
-      for(const x of buttons){x.disabled=true;x.classList.toggle('right',x.textContent===q.answer);x.classList.toggle('wrong',x===b&&!right)}
-      feedback.textContent=right?'Correct: that is DVSA’s answer.':'Not quite: DVSA’s answer is in green. On the test that is one driving fault.';
+      const right=text===q.short;
+      for(const x of buttons){x.disabled=true;x.classList.toggle('right',x.textContent===q.short);x.classList.toggle('wrong',x===b&&!right)}
+      feedback.textContent=`${right?'Correct.':'Not quite: the right answer is in green. On the test that is one driving fault.'} DVSA’s answer: “${q.answer}”`;
       feedback.classList.toggle('ok',right);
       after.hidden=false;
       go.onclick=()=>{card.hidden=true;answer(text)};

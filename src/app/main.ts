@@ -48,7 +48,7 @@ import goodmayesLessonJson from '../../content/scenarios/goodmayes-lesson.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
-import {installed,setUpFullscreen} from '../ui/fullscreen';
+import {fullScreenNow,installed,setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -1512,11 +1512,11 @@ export async function boot():Promise<void>{
       // Tell me (before the drive, the car held): the question ahead, three answers below to look at.
       const t=viewerTellMe;
       menu=['Tell me',t.q.question,t.chosen===null?'Look at an answer for a moment to choose it.'
-        :t.chosen===t.q.answer?'Correct: that is DVSA’s answer. Look at Start the drive.'
+        :t.chosen===t.q.short?'Correct: that is DVSA’s answer. Look at Start the drive.'
         :'Not quite: DVSA’s answer is in green. On the test that is one driving fault. Look at Start the drive.'];
       wrapMenu=true;
       items=t.choices.map((text,i)=>({id:`tell-${i}`,label:`Answer ${'ABC'[i]}`,text,x:EYE.x+(i-1)*.5,y:EYE.y-.34,z:EYE.z-1.25,w:.46,h:.42,
-        dwell:t.chosen===null?2:Infinity,...(t.chosen!==null&&text===t.q.answer?{tone:'right' as const}:t.chosen===text?{tone:'wrong' as const}:{})}));
+        dwell:t.chosen===null?2:Infinity,...(t.chosen!==null&&text===t.q.short?{tone:'right' as const}:t.chosen===text?{tone:'wrong' as const}:{})}));
       if(t.chosen!==null)items.push({id:'tell-go',label:'Start the drive',x:EYE.x,y:EYE.y-.63,z:EYE.z-1.25,w:.3,h:.09,dwell:1.5});
     }else{
       if(viewerMode==='familiarisation')items=[FAMILIARISATION_MENU];
@@ -1533,9 +1533,11 @@ export async function boot():Promise<void>{
     if(fired)viewerItem(fired);
     const accel=viewerMode==='driving'&&c?c.values.accelerate>0&&accelArmed:false;
     const braking=viewerMode==='driving'&&c?c.values.brake>0:false;
-    // The page not filling the screen (Safari's bars showing): the two pictures cannot sit under the lenses.
+    // The page not filling the screen (Safari's bars showing): the two pictures cannot sit under the lenses. Full
+    // screen, or opened from the Home Screen, is taken as the browser says it is (a camera cut-out or the home bar
+    // can leave the page a little smaller than the screen); otherwise only a clear shortfall (a browser bar) counts.
     const short=Math.min(screen.width,screen.height),long=Math.max(screen.width,screen.height);
-    const partScreen=Math.min(innerWidth,innerHeight)<short-4||Math.max(innerWidth,innerHeight)<long-4;
+    const partScreen=!fullScreenNow()&&(Math.min(innerWidth,innerHeight)<short-30||Math.max(innerWidth,innerHeight)<long-30);
     viewerHud.setStatus([
       partScreen?'Not full screen: open Driving Practice from the Home Screen':`${Math.round(vehicle.state.speed*2.237)} mph   ${signalText}`,
       viewerMode==='calibration'?'Calibration (parked)'

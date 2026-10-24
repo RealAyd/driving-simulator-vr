@@ -30,19 +30,22 @@ function setUp(tellMe=TELL_ME[0]!,showMe=SHOW_ME[2]!){
 }
 
 describe('vehicle safety questions',()=>{
-  it('DVSA\'s main questions: 14 tell me and 7 show me; the choices are DVSA answers, the right one once',()=>{
+  it('DVSA\'s main questions: 14 tell me and 7 show me; the choices are DVSA answers as short lines, the right one once',()=>{
     expect(TELL_ME).toHaveLength(14);
     expect(SHOW_ME).toHaveLength(7);
-    const answers=new Set(TELL_ME.map(q=>q.answer));
+    const answers=new Set(TELL_ME.map(q=>q.short));
+    // The choices are short lines (DVSA's answer in full is shown after choosing), all different.
+    expect(answers.size).toBe(TELL_ME.length);
+    for(const q of TELL_ME)expect(q.short.length).toBeLessThanOrEqual(90);
     for(const q of TELL_ME)for(const seed of [0,1,2,5,9]){
       const c=tellMeChoices(q,seed);
       expect(c).toHaveLength(3);
       expect(new Set(c).size).toBe(3);
-      expect(c.filter(a=>a===q.answer)).toHaveLength(1);
+      expect(c.filter(a=>a===q.short)).toHaveLength(1);
       for(const a of c)expect(answers.has(a)).toBe(true);
     }
     // The order varies with the seed.
-    expect(new Set([0,1,2].map(seed=>tellMeChoices(TELL_ME[0]!,seed).indexOf(TELL_ME[0]!.answer))).size).toBe(3);
+    expect(new Set([0,1,2].map(seed=>tellMeChoices(TELL_ME[0]!,seed).indexOf(TELL_ME[0]!.short))).size).toBe(3);
   });
 
   it('tell me comes first: the drive waits for the answer, then the briefing',()=>{
@@ -51,7 +54,7 @@ describe('vehicle safety questions',()=>{
     expect(t.examiner.phase).toBe('tell-me');
     expect(t.said[0]).toBe(`${TELL_ME_INTRO} ${TELL_ME[0]!.question}`);
     expect(t.asked()).toBe(TELL_ME[0]!.question);
-    t.examiner.answerTellMe(TELL_ME[0]!.answer);
+    t.examiner.answerTellMe(TELL_ME[0]!.short);
     t.run(1);
     expect(t.said).toContain(BRIEFING);
     expect(t.assessor.current.filter(f=>f.ruleId==='vehicle-checks')).toEqual([]);
@@ -60,7 +63,7 @@ describe('vehicle safety questions',()=>{
   it('a wrong tell me answer is one driving fault, with the right answer in the report',()=>{
     const t=setUp();
     t.run(1);
-    t.examiner.answerTellMe(TELL_ME[5]!.answer);
+    t.examiner.answerTellMe(TELL_ME[5]!.short);
     const f=t.assessor.current.filter(x=>x.ruleId==='vehicle-checks');
     expect(f.map(x=>x.severity)).toEqual(['minor']);
     expect(f[0]!.explanation).toContain(TELL_ME[0]!.answer);

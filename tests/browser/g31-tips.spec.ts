@@ -25,6 +25,8 @@ test('G31: a control tip at the start of each drive',async({page},testInfo)=>{
   await expect(page.locator('#hud-tip')).toBeHidden();
   // Pause and resume: no tip again.
   await page.click('#hud-pause');
+  // Help from the pause menu opens beside the drive (the drive is kept).
+  await expect(page.locator('#help-paused')).toHaveAttribute('target','_blank');
   await page.click('#resume-button');
   await page.waitForTimeout(2500);
   await expect(page.locator('#hud-tip')).toBeHidden();

@@ -46,6 +46,9 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   // Marked at once: DVSA's answer in green, what a wrong one means; then on to the drive.
   await expect(page.locator('#hud-question-choices button.right')).toHaveCount(1);
   await expect(page.locator('#hud-question-feedback')).toContainText(/Correct|driving fault/);
+  // Short choices; DVSA's answer in full once chosen.
+  for(const b of await page.locator('#hud-question-choices button').allTextContents())expect(b.length).toBeLessThanOrEqual(90);
+  await expect(page.locator('#hud-question-feedback')).toContainText('DVSA’s answer: “');
   await page.screenshot({path:testInfo.outputPath('g21-tell-me-marked.png')});
   await page.click('#hud-question-go');
   await expect(page.locator('#hud-question')).toBeHidden();

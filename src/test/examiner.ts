@@ -1,7 +1,7 @@
 import type {EventSink,Seconds,SimModule} from '../contracts';
 import {RoadNetwork,type RoadPos,type Route,type RouteLeg,type RouteStep} from './route';
 import {stopPlace} from './pullUp';
-import type {ShowMeQuestion,TellMeQuestion} from './vehicleChecks';
+import {isTellMeAnswer,type ShowMeQuestion,type TellMeQuestion} from './vehicleChecks';
 import {Manoeuvre,type ManoeuvreFault,type ManoeuvreInput,type ManoeuvreKind} from './manoeuvres';
 
 /**
@@ -125,7 +125,7 @@ export class Examiner implements SimModule{
   answerTellMe(answer:string):void{
     const q=this.options.tellMe;
     if(this.phase!=='tell-me'||!q)return;
-    this.options.listener?.tellMe?.(q,answer===q.answer,answer);
+    this.options.listener?.tellMe?.(q,isTellMeAnswer(q,answer),answer);
     this.phase='briefing';this.time=0;
   }
 

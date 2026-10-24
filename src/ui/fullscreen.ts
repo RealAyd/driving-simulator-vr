@@ -8,6 +8,12 @@ type FsEl=HTMLElement&{webkitRequestFullscreen?:()=>void};
 
 export const installed=()=>matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||(navigator as {standalone?:boolean}).standalone===true;
 
+/** The page is in full screen (the Fullscreen API), or opened as the installed app (which is full screen). */
+export function fullScreenNow():boolean{
+  const doc=document as FsDoc;
+  return installed()||!!(doc.fullscreenElement||doc.webkitFullscreenElement);
+}
+
 export function setUpFullscreen(buttons:HTMLButtonElement[],showHowTo:()=>void):void{
   const doc=document as FsDoc;
   const canGoFull=!!(doc.fullscreenEnabled||doc.webkitFullscreenEnabled);
