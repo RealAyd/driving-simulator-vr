@@ -88,7 +88,7 @@ export function activeVehicleSet():VehicleSet{return vehicleSet}
 
 const SETS:Record<VehicleSet,{road:CarModelId[];kerb:CarModelId[]}>={
   mixed:{road:['v2-peugeot-208','batch-b-compact-hatchback','batch-b-saloon','v2-pickup'],
-    kerb:['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon','v2-peugeot-208','v2-peugeot-208','v2-pickup']},
+    kerb:['v2-peugeot-208','batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon','v2-pickup']},
   current:{road:['batch-b-compact-hatchback','batch-b-saloon'],
     kerb:['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon']},
   // Everyday cars most, the pickup and the van now and then.
