@@ -186,6 +186,12 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .balance{font-size:15px;margin:6px 0}
 .balance b{font-size:34px;color:var(--accent)}
 .pack-list{display:grid;gap:8px;margin:10px 0}
+.breakdown{list-style:none;margin:6px 0 8px;padding:0;display:grid;gap:6px}
+.breakdown li{border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.breakdown li>span{color:var(--soft);font-size:13px}
+.breakdown .kinds{display:flex;gap:6px;flex-wrap:wrap}
+.breakdown .kinds i{font-style:normal;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.breakdown .kinds i.used{background:transparent;color:var(--faint);text-decoration:line-through}
 .pack-list button{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:12px 14px;border-radius:14px}
 .pack-list button b{font-size:16px}
 .pack-list button .price{font-weight:700;color:var(--accent)}
@@ -572,12 +578,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p id="signin-status" class="unit" role="status"></p>
     </div>
     <div id="account-main" hidden>
-      <h1>Your sessions</h1>
+      <h1>Your drives</h1>
       <p id="account-email" class="unit"></p>
-      <p class="balance"><b id="account-balance">0</b> <span id="account-balance-unit">sessions</span></p>
-      <p id="account-starter" class="unit starter-left"></p>
+      <p class="balance"><b id="account-balance">0</b> <span id="account-balance-unit">drives you can start</span></p>
+      <ul id="account-breakdown" class="breakdown"></ul>
       <p id="account-note" class="unit" role="status"></p>
-      <p class="unit">Each drive, lesson or mock test you start uses one session (the Starter Pass: one of each kind). If one fails to load, it comes back.</p>
+      <p class="unit">Starting a lesson, mock test or free drive uses one drive. Starter Pass drives are used first, each for its own kind; sessions work for any kind. If a drive fails to load, it comes back.</p>
       <div id="pack-list" class="pack-list"></div>
       <p class="unit">Payments are taken by Stripe. Have a promotion code? Enter it on the payment page.</p>
       <div class="invite-box">

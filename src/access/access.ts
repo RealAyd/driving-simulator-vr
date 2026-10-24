@@ -159,12 +159,33 @@ export class Access{
     document.querySelector<HTMLElement>('#account-signin .divider')!.hidden=!this.config?.googleClientId&&!this.config?.appleServicesId;
     const chip=byId('account-chip');
     const starterLeft=signedIn?(['lesson','test','free'] as const).filter(p=>me.allowances[p]>0):[];
-    chip.textContent=signedIn?`${me.balance} session${me.balance===1?'':'s'}${starterLeft.length?' + Starter':''}`:'Sign in';
+    const drives=total(me);
+    chip.textContent=signedIn?`${drives} drive${drives===1?'':'s'}`:'Sign in';
     if(!signedIn)return;
     byId('account-email').textContent=me.email?`Signed in as ${me.email}`:'Signed in with Apple';
-    byId('account-balance').textContent=String(me.balance);
-    byId('account-balance-unit').textContent=me.balance===1?'session':'sessions';
-    byId('account-starter').textContent=starterLeft.length?`Starter Pass left: ${starterLeft.map(p=>`1 ${POT_NAME[p]}`).join(', ')}. Each is used by its own kind of drive.`:'';
+    // The headline is everything that can be started; below it, what that is made of.
+    byId('account-balance').textContent=String(drives);
+    byId('account-balance-unit').textContent=drives===1?'drive you can start':'drives you can start';
+    const rows:HTMLElement[]=[];
+    if(me.starterBought||starterLeft.length){
+      const li=document.createElement('li');
+      const b=document.createElement('b');b.textContent='Starter Pass';
+      const kinds=document.createElement('div');kinds.className='kinds';
+      for(const p of ['lesson','test','free'] as const){
+        const i=document.createElement('i');const left=me.allowances[p]>0;
+        i.className=left?'':'used';
+        i.textContent=`${POT_NAME[p][0]!.toUpperCase()}${POT_NAME[p].slice(1)}: ${left?'ready':'used'}`;
+        kinds.append(i);
+      }
+      li.append(b,kinds);rows.push(li);
+    }
+    {
+      const li=document.createElement('li');
+      const b=document.createElement('b');b.textContent=`${me.balance} session${me.balance===1?'':'s'}`;
+      const span=document.createElement('span');span.textContent=me.balance>0?'for any lesson, mock test or free drive':'buy a pack below';
+      li.append(b,span);rows.push(li);
+    }
+    byId('account-breakdown').replaceChildren(...rows);
     const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&p.onSale);
     byId('pack-list').replaceChildren(...packs.map(p=>{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;
@@ -192,7 +213,7 @@ export class Access{
 
   private async buy(p:Pack){
     if(!this.me.signedIn)return;
-    store.set(BUY_KEY,JSON.stringify({total:total(this.me),at:Date.now()}));
+    store.set(BUY_KEY,JSON.stringify({total:total(this.me),balance:this.me.balance,starter:this.me.starterBought,at:Date.now()}));
     if(this.config?.devCheckout){
       // Local development: a pretend payment, delivered to the server as Stripe would.
       await api('dev/checkout',{pack:p.id});
@@ -209,14 +230,17 @@ export class Access{
 
   /** Back from checkout: Stripe tells the server a moment later, so the balance is checked until it rises. */
   private async awaitPayment(){
-    const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {total:number}|null}catch{return null}})();
+    const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {total:number;balance?:number;starter?:boolean}|null}catch{return null}})();
     this.open();
     const note=byId('account-note');
     note.textContent='Payment received: adding your sessions…';
     for(let i=0;i<30;i++){
       await this.refresh();
       if(this.me.signedIn&&total(this.me)>(before?.total??-1)){
-        note.textContent=`Done: you have ${this.me.balance} session${this.me.balance===1?'':'s'}${(['lesson','test','free'] as const).some(p=>this.me.signedIn&&this.me.allowances[p]>0)?' and your Starter Pass':''}. Choose a drive and press Start.`;
+        // What this payment added, said plainly.
+        const added=this.me.balance-(before?.balance??0),starterNow=this.me.starterBought&&before?.starter===false;
+        const parts=[...(starterNow?['Starter Pass added: 1 lesson, 1 mock test and 1 free drive']:[]),...(added>0?[`${added} session${added===1?'':'s'} added`]:[])];
+        note.textContent=`Payment received. ${parts.length?`${parts.join('; ')}.`:'Your drives are updated.'} Choose a drive and press Start.`;
         store.set(BUY_KEY,null);
         return;
       }
