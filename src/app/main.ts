@@ -203,8 +203,8 @@ export async function boot():Promise<void>{
   byId('tutorial-home').addEventListener('click',()=>tutorial.start(HOME_TOUR));
   byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
-  // ?cars=new: the new set of vehicles, being tried (the plain link keeps the current set). Before any street is laid out.
-  useVehicleSet(new URLSearchParams(location.search).get('cars')==='new'?'new':'current');
+  // The new set of vehicles (approved 2026-10-24); ?cars=old: the earlier set. Before any street is laid out.
+  useVehicleSet(new URLSearchParams(location.search).get('cars')==='old'?'current':'new');
   // A page from before an update: reload for the current version (not during a drive).
   reloadWhenStale(()=>session.state==='running');
   // Every failure is shown on screen rather than leaving a blank canvas.

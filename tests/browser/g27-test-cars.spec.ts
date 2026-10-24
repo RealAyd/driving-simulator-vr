@@ -1,7 +1,7 @@
 import {expect,test,type Page} from '@playwright/test';
 
-// The test car set (?cars=new): CC BY models in traffic and at the kerb, credited on screen. The normal link keeps
-// the current cars.
+// The car set (the default since 2026-10-24): CC BY models in traffic and at the kerb, credited on screen.
+// ?cars=old keeps the earlier cars.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
@@ -15,12 +15,12 @@ const startGoodmayes=async(page:Page,url:string)=>{
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
 };
 
-test('G27: the test car set loads, drives and is credited; the normal link is unchanged',async({page},testInfo)=>{
+test('G27: the car set loads, drives and is credited by default; ?cars=old gives the earlier cars',async({page},testInfo)=>{
   test.setTimeout(600_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
 
-  await startGoodmayes(page,'./?cars=new');
+  await startGoodmayes(page,'./');
   await expect.poll(async()=>(await read(page,'scenery()')).carModels.filter((id:string)=>id.startsWith('v2-')).length,{timeout:60_000}).toBeGreaterThan(8);
   await expect(page.locator('#hud-credit')).toContainText('Comrade1280');
   await page.screenshot({path:testInfo.outputPath('g27-new-start.png')});
@@ -36,7 +36,7 @@ test('G27: the test car set loads, drives and is credited; the normal link is un
   const fpsNew=await read(page,'fps()');
   expect(await read(page,'session()')).toBe('running');
 
-  await startGoodmayes(page,'./');
+  await startGoodmayes(page,'./?cars=old');
   await expect.poll(async()=>(await read(page,'scenery()')).carModels.length,{timeout:60_000}).toBeGreaterThan(2);
   expect((await read(page,'scenery()')).carModels.some((id:string)=>id.startsWith('v2-'))).toBe(false);
   await expect(page.locator('#hud-credit')).not.toContainText('Comrade1280');
