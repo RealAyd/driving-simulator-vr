@@ -104,6 +104,7 @@ import {VIEWER_PROFILES} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
 import {Access,type PaidDrive} from '../access/access';
+import {setUpTheme} from '../ui/theme';
 import {reloadWhenStale} from './staleBuild';
 import {AdaptiveScale} from '../engine/renderScale';
 
@@ -665,7 +666,7 @@ export async function boot():Promise<void>{
         askTellMe(q,testSeed,answer);
       },
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
-      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
+      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars,place.junctions);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
       // The manoeuvres (DVSA: one of them on every test, the emergency stop on about one in three); a lesson's own.
       manoeuvres:lesson?lesson.manoeuvres??[]:[...(testSeed%3===0?['emergency-stop' as const]:[]),testSeed%2===0?'parallel-park' as const:'pull-up-right' as const],
       manoeuvreInput:{location:place,parked:kerbCars,now:()=>clock.time,
@@ -675,12 +676,12 @@ export async function boot():Promise<void>{
         flash:text=>hud.flash(text),
         setPath:(forward,reverse)=>{
           if(forward)routeAssist?.setPath(forward);
-          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars);if(path.length>1)routeAssist?.setPath(path)}
+          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars,place.junctions);if(path.length>1)routeAssist?.setPath(path)}
           routeAssist?.setReversePath(reverse);
         }}}):null;
     if(examiner){
       examiner.reset();
-      const path=routeLanePath(examiner.legs,kerbCars);
+      const path=routeLanePath(examiner.legs,kerbCars,place.junctions);
       if(path.length>1)routeAssist=new SteeringAssist(path,vehicle.params);
     }
     // A lesson about something these streets do not have (no mini-roundabout, no lights): said once at the start.
@@ -912,6 +913,7 @@ export async function boot():Promise<void>{
   const viewerHud=new ViewerHud(scene,viewerHudAnchor,head.seat.eye);
   const localStore=(()=>{try{return window.localStorage}catch{return null}})();
   // Paid access (where hosted with the accounts service): each drive started uses one session.
+  setUpTheme(byId<HTMLButtonElement>('theme-toggle'));
   const paidAccess=new Access();
   /** The drive whose session is in use (its result is reported when it ends). */
   let paidDrive:PaidDrive|null=null;
@@ -1941,12 +1943,17 @@ export async function boot():Promise<void>{
   document.body.classList.toggle('phone',quality.id==='phone');
 
   // A hidden tab pauses; losing focus clears held controls (KeyboardInput).
-  document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden)return;
-    // In the headset this also drops any held acceleration; it stays paused until resumed deliberately.
-    if(viewer.active)viewerPause('The page was hidden');
+  /** The phone took over (the page hidden, an alarm or a call): the drive pauses and waits to be resumed deliberately. */
+  const interrupted=(reason:string)=>{
+    // In the headset this also drops any held acceleration.
+    if(viewer.active)viewerPause(reason);
     else if(session.state==='running')pause();
-  });
+  };
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupted('The page was hidden')});
+  // An alarm or a call on iPhone can leave the page showing but take its sound (and the screen's touches).
+  sound.onInterrupted=()=>interrupted('The phone interrupted (an alarm or a call)');
+  // On a phone, losing focus to the system (a call screen, an alarm, Control Centre) pauses too.
+  if(quality.id==='phone')window.addEventListener('blur',()=>interrupted('The phone interrupted'));
 
   // Seated VR for a WebXR headset (desktop). Phone-viewer VR is a separate feasibility task.
   const xrSupport=await detectXr();

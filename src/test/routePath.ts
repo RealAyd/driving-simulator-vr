@@ -1,4 +1,5 @@
 import {forwardFromHeading,rightFromHeading,type Vec2} from '../contracts';
+import {aroundMini,miniAt,type MiniRoundabout} from '../world/miniRoundabout';
 import {pointAtAlong} from '../world/roadGeometry';
 import type {KerbFootprint} from '../world/townscape';
 import type {RouteLeg} from './route';
@@ -17,7 +18,7 @@ const ALONGSIDE=4;
  * out over several metres. Offsets are metres left of the centreline. Each parked car is passed by its own size
  * (a van is wider than a small hatchback) with a clear gap; one given only as a point is taken as a typical car.
  */
-export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>):Vec2[]{
+export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>,minis:readonly MiniRoundabout[]=[]):Vec2[]{
   const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number}>=[];
   for(const [legIndex,leg] of legs.entries()){
     const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=leg.road.oneway?0:leg.road.lanes.width/2;
@@ -60,7 +61,10 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
     const from=out.at(-1),to=kept[0];
     if(prev&&from&&to){
       const c={x:(prev.x+start.x)/2,z:(prev.z+start.z)/2};
-      for(let k=1;k<6;k++){const t=k/6,u=1-t;out.push({x:u*u*from.x+2*u*t*c.x+t*t*to.x,z:u*u*from.z+2*u*t*c.z+t*t*to.z})}
+      // A mini-roundabout: clockwise round its disc (from where the road in meets it to where the road out leaves).
+      const mini=miniAt(minis,c);
+      if(mini)out.push(...aroundMini(mini,prev,start));
+      else for(let k=1;k<6;k++){const t=k/6,u=1-t;out.push({x:u*u*from.x+2*u*t*c.x+t*t*to.x,z:u*u*from.z+2*u*t*c.z+t*t*to.z})}
     }
     for(const p of kept)out.push({x:p.x,z:p.z});
   }

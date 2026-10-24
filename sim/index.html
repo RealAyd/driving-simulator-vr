@@ -29,6 +29,24 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 /* Phone viewer: only the stereo picture; a tap anywhere pauses and leaves the viewer. */
 body.viewer #hud,body.viewer .screen{display:none!important}
 
+/* ---- Light mode: the menus (home and the other screens); the driving view keeps its look over the road ---- */
+html[data-theme="light"] .screen{color-scheme:light;
+  --ink:#0f172a;--soft:#475569;--faint:#64748b;
+  --surface:rgba(255,255,255,.95);--surface-2:rgba(241,245,249,.96);--surface-3:rgba(226,232,240,.96);
+  --line:rgba(15,23,42,.12);--line-strong:rgba(15,23,42,.24);
+  --accent:#0f766e;--accent-ink:#ffffff;--accent-soft:rgba(15,118,110,.1);--panel:rgba(255,255,255,.85);
+  color:var(--ink);background:linear-gradient(100deg,rgba(241,245,249,.95) 0%,rgba(241,245,249,.86) 55%,rgba(241,245,249,.72) 100%)}
+html[data-theme="light"] .screen .card{box-shadow:0 20px 50px rgba(15,23,42,.18)}
+html[data-theme="light"] .screen .badge,html[data-theme="light"] .screen .tags i.real,html[data-theme="light"] #area-status,html[data-theme="light"] .screen .invited{color:#0f766e}
+html[data-theme="light"] .screen .tags i{background:rgba(15,23,42,.06);color:#334155}
+html[data-theme="light"] .screen .tags i.real{background:rgba(15,118,110,.1)}
+html[data-theme="light"] .screen details.more{background:rgba(255,255,255,.75)}
+html[data-theme="light"] .screen .controller-table .live.on,html[data-theme="light"] .screen .controller-table .tested{color:#15803d}
+html[data-theme="light"] .screen .saved-box.ok{color:#166534;background:rgba(22,163,74,.08);border-color:#16a34a}
+html[data-theme="light"] .theme-toggle .moon,.theme-toggle .sun{display:none}
+html[data-theme="light"] .theme-toggle .sun{display:inline}
+.theme-toggle{display:inline-flex;align-items:center;gap:6px}
+
 /* ---- Screens: one card over the live scene ---- */
 .screen{position:fixed;inset:0;display:grid;place-items:center;padding:calc(var(--st) + 6px) var(--sr) calc(var(--sb) + 6px) var(--sl);
   background:linear-gradient(100deg,rgba(4,8,18,.92) 0%,rgba(4,8,18,.74) 55%,rgba(4,8,18,.55) 100%);z-index:20;overflow-y:auto;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
@@ -397,7 +415,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <span class="brand-mark"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M3.8 11h5.9M14.3 11h5.9M12 14.2V20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
           <div><h1>Driving Practice</h1><p id="location-label">Real UK streets from the driver's seat</p></div>
         </div>
-        <div class="head-actions"><button id="account-chip" type="button" class="account-chip" hidden>Sign in</button><button id="tutorial-home" type="button" class="tutorial-button">Tutorial</button><button id="words-home" type="button" class="tutorial-button">Words explained</button><button id="text-size" type="button" class="tutorial-button" aria-label="Text size: normal. Tap for larger text">A<span class="a2">A</span></button><span class="badge">Preview · draft feedback, not instructor-reviewed</span><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button></div>
+        <div class="head-actions"><button id="account-chip" type="button" class="account-chip" hidden>Sign in</button><button id="tutorial-home" type="button" class="tutorial-button">Tutorial</button><button id="words-home" type="button" class="tutorial-button">Words explained</button><button id="theme-toggle" type="button" class="tutorial-button theme-toggle" aria-pressed="false"><svg class="moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg><svg class="sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dark</span></button><button id="text-size" type="button" class="tutorial-button" aria-label="Text size: normal. Tap for larger text">A<span class="a2">A</span></button><span class="badge">Preview · draft feedback, not instructor-reviewed</span><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button></div>
       </div>
       <div id="first-steps" class="first-steps">
         <div class="first-text"><b id="first-title">New to driving? Start here</b><p id="first-body">Your first lesson, with an instructor beside you: moving off and stopping, on real streets. The steering is done for you, so you can learn the checks first.</p></div>
@@ -434,7 +452,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <div class="choices">
         <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b><small>The streets round Goodmayes test centre: lessons with an instructor, a mock test with the examiner's directions, or a free drive (switch above). Built from map data, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Lessons</i><i>Mock test</i><i>Free drive</i></span></span></button>
       </div>
-      <h2 class="group">Skills</h2>
+      <h2 class="group">Drills</h2>
       <div class="choices">
         <button class="choice" type="button" data-exercise="brentwood" style="--c:#a78bfa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m14.8 7.2 1.6-1.9.4 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt"><b>Brentwood mini-roundabouts</b><small>Two mini-roundabouts close together: plan, slow down, give way to the right. Area-inspired, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Scored</i></span></span></button>
         <button class="choice" type="button" data-exercise="kings-road" style="--c:#22d3ee"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 10h14M8 21v-3M16 21v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor"/><circle cx="15.5" cy="14" r="1.1" fill="currentColor"/></svg></span><span class="txt"><b>Kings Road zebra</b><small>Pass a bus at its stop, check your mirror, give way at a real zebra crossing. Area-inspired, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Scored</i></span></span></button>

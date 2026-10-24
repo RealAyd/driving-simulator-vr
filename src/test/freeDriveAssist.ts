@@ -39,7 +39,7 @@ export class FreeDriveAssist{
       const pos=this.net.locate(x+Math.sin(pose.heading)*ahead,z-Math.cos(pose.heading)*ahead,pose.heading);
       if(!pos)continue;
       const {legs,turnAt}=this.net.wayAhead(pos,turn);
-      const path=routeLanePath(legs,this.parked);
+      const path=routeLanePath(legs,this.parked,this.net.location.junctions);
       if(path.length<2)continue;
       plan={path,turnAt};
       if(pathLength(path)>=15)break;

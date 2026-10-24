@@ -220,7 +220,9 @@ export class Service{
 
   async stripeWebhook(raw:Buffer,signature:string):Promise<'ok'|'bad-signature'>{
     let event:StripeEvent;
-    try{event=this.stripe!.constructEvent(raw,signature)}catch{return 'bad-signature'}
+    // (Logged without anything secret: whether deliveries arrive, and whether they are signed with this endpoint's secret.)
+    try{event=this.stripe!.constructEvent(raw,signature)}catch{console.log(`Stripe webhook refused: the signature does not match STRIPE_WEBHOOK_SECRET (${raw.length} bytes)`);return 'bad-signature'}
+    console.log(`Stripe webhook: ${event.type} ${event.id}`);
     await this.handleStripeEvent(event);
     return 'ok';
   }

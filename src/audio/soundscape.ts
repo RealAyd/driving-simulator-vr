@@ -47,6 +47,14 @@ export class Soundscape{
         if(!Context)return;
         this.ctx=new Context();
         this.build(this.ctx);
+        // The phone taking the sound away while it was playing (an alarm, a call, Siri): Safari reports
+        // 'interrupted', other browsers 'suspended'. This app never suspends it itself.
+        let was=this.ctx.state as string;
+        this.ctx.addEventListener('statechange',()=>{
+          const now=this.ctx!.state as string;
+          if(was==='running'&&(now==='interrupted'||now==='suspended'))this.onInterrupted();
+          was=now;
+        });
       }
       // iPhone: play as media, so the ring/silent switch does not mute the car (Safari 16.4+), and a silent sound
       // through an <audio> element in the same tap does the same on older versions.
@@ -64,6 +72,8 @@ export class Soundscape{
     }catch{/* no audio on this device */}
   }
   private primed=false;
+  /** Called when the phone interrupts the sound while it is playing (the drive pauses). */
+  onInterrupted:()=>void=()=>{};
 
   private build(ctx:AudioContext):void{
     this.master=ctx.createGain();

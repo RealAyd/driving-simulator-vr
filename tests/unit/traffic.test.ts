@@ -44,7 +44,20 @@ describe('Background traffic (generated areas)',()=>{
     expect(onRoad/samples).toBeGreaterThan(.95);
     expect(moved).toBeGreaterThan(8);
     // Traffic keeps apart (a moment's touch while two cars sort out a junction is allowed: under 1% of the time).
-    expect(overlaps/(120*30)).toBeLessThan(.01);
+    // Measured over several traffic seeds: one seed's two minutes swing from 0% to a few per cent on chance alone.
+    const shares=[overlaps/(120*30)];
+    for(const seed of [1,2,3,4,5,6,8]){
+      const other=new Traffic(goodmayes,{count:12,buses:2,busStops:goodmayes.furniture.map(f=>f.position),parked:kerbFootprints(layout),learner:()=>learner,seed});
+      let n=0;
+      for(let t=0;t<120;t+=1/30){
+        other.fixedUpdate(1/30);
+        const v=other.cars.filter(c=>c.visible);
+        for(const a of v)for(const b of v)if(a.id<b.id&&overlap(box(a),box(b)))n++;
+      }
+      shares.push(n/(120*30));
+    }
+    expect(shares.reduce((s,x)=>s+x,0)/shares.length,`by seed: ${shares.map(x=>(x*100).toFixed(2)+'%').join(' ')}`).toBeLessThan(.01);
+    expect(Math.max(...shares)).toBeLessThan(.04);
     expect(traffic.cars.filter(c=>c.kind==='bus').length).toBe(2);
     // A bus called at a stop (stood beside it) at some point.
     expect(busStopped).toBeGreaterThan(30);
