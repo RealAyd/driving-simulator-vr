@@ -163,4 +163,17 @@ describe('the admin hub API',()=>{
     const r=(await (await as('boss@example.com'))('/api/admin/referrals')).json;
     expect(r.referrers.find((x:{id:string})=>x.id===inviter.id)).toEqual({id:inviter.id,email:'inviter-admin@example.com',code:inviter.code,joined:2,paid:1,rewards:1});
   });
+
+  it('the admins drive without sessions: a drive starts with none, nothing is taken, nothing given back; a learner still needs one',async()=>{
+    const boss=await as('boss@example.com');
+    const d=await boss('/api/drives',{kind:'test',scenario:'goodmayes-mock-test'});
+    expect(d.status).toBe(200);
+    expect(d.json.balance).toBe(0);
+    expect((await boss(`/api/drives/${d.json.driveId}/failed`,{})).status).toBe(200);
+    const me=(await boss('/api/me')).json;
+    expect(me).toMatchObject({admin:true,balance:0});
+    expect(me.history.filter((h:{type:string})=>h.type==='consumed'||h.type==='drive_refund')).toEqual([]);
+    expect((await (await as('learner-nodrive@example.com'))('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
+  });
 });
+

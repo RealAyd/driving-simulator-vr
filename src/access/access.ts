@@ -85,6 +85,7 @@ export class Access{
   note(scenario:string|null):string{
     if(!this.gate)return '';
     if(!this.me.signedIn)return 'Sign in to start: each drive uses one session.';
+    if(this.me.admin)return 'Admin: drives do not use sessions';
     const pot=scenario?modeOf(scenario):null;
     if(pot&&this.me.allowances[pot]>0)return `Uses your Starter Pass ${POT_NAME[pot]}`;
     const n=this.me.balance;
@@ -99,7 +100,8 @@ export class Access{
     if(!this.gate)return null;
     if(!this.me.signedIn){this.open('Sign in to start. Each drive, lesson or mock test uses one session.');return false}
     const pot=modeOf(scenario);
-    if(this.me.balance<1&&this.me.allowances[pot]<1){this.open(`You have no ${POT_NAME[pot]}s or sessions left. Buy more to start.`);return false}
+    // Admins drive without sessions (the server checks it too).
+    if(!this.me.admin&&this.me.balance<1&&this.me.allowances[pot]<1){this.open(`You have no ${POT_NAME[pot]}s or sessions left. Buy more to start.`);return false}
     const r=await api<{driveId:string;balance:number}>('drives',{kind,scenario});
     if(r.status===200&&r.data){void this.refresh();return {id:r.data.driveId}}
     if(r.status===401){await this.refresh();this.open('Please sign in again.');return false}
@@ -167,7 +169,7 @@ export class Access{
     const chip=byId('account-chip');
     const starterLeft=signedIn?(['lesson','test','free'] as const).filter(p=>me.allowances[p]>0):[];
     const drives=total(me);
-    chip.textContent=signedIn?`${drives} drive${drives===1?'':'s'}`:'Sign in';
+    chip.textContent=signedIn?(me.admin?'Admin':`${drives} drive${drives===1?'':'s'}`):'Sign in';
     if(!signedIn)return;
     byId('account-email').textContent=me.email?`Signed in as ${me.email}`:'Signed in with Apple';
     // The headline is everything that can be started; below it, what that is made of.

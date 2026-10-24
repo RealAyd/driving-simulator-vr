@@ -65,8 +65,8 @@ export interface Drive{
   /** 'unpaid': not started, for want of a session. */
   status:'started'|'loaded'|'failed'|'completed'|'unpaid';
   mode:Mode;
-  /** Where its session came from (a refund goes back there). */
-  paidFrom:Pot|'sessions';
+  /** Where its session came from (a refund goes back there); 'admin': an ADMIN_EMAILS account's drive, uses none. */
+  paidFrom:Pot|'sessions'|'admin';
   refunded?:boolean;
 }
 

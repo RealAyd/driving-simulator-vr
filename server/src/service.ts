@@ -163,6 +163,12 @@ export class Service{
   async startDrive(accountId:string,kind:string,scenario:string):Promise<DriveStart>{
     if(!SCENARIO.test(scenario))return {ok:false,reason:'no-sessions'};
     const mode=modeOf(scenario);
+    // The admins (ADMIN_EMAILS) drive without using sessions: recorded as a drive, nothing taken.
+    const account=await this.store.findAccount({id:accountId});
+    if(account?.email&&this.config.adminEmails.includes(account.email)){
+      const drive=await this.store.createDrive({accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'admin',startedAt:new Date(),status:'started'});
+      return {ok:true,drive,balance:account.balance};
+    }
     const drive=await this.store.createDrive({accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'sessions',startedAt:new Date(),status:'started'});
     const take=(pot:Pot|undefined)=>this.store.appendLedger({product:'simulator',accountId,type:'consumed',sessionsDelta:-1,...(pot?{pot}:{}),amountPence:0,currency:'gbp',actor:'customer',
       reason:`${kind}: ${scenario}`,idempotencyKey:`drive:${drive.id}`},{requireBalance:true});
@@ -178,7 +184,7 @@ export class Service{
   async driveStatus(accountId:string,driveId:string,status:'loaded'|'failed'|'completed'):Promise<boolean>{
     const d=await this.store.getDrive(driveId);
     if(!d||d.accountId!==accountId||d.status==='unpaid')return false;
-    if(status==='failed'&&d.status==='started'&&!d.refunded&&Date.now()-d.startedAt.getTime()<=REFUND_WINDOW_MS){
+    if(status==='failed'&&d.status==='started'&&d.paidFrom!=='admin'&&!d.refunded&&Date.now()-d.startedAt.getTime()<=REFUND_WINDOW_MS){
       const today=await this.store.countDrives({accountId,since:new Date(Date.now()-24*3600_000),refunded:true});
       if(today>=REFUNDS_PER_DAY){await this.store.flag('drive-refunds',{account:accountId,drive:driveId});await this.store.updateDrive(driveId,{status});return true}
       const r=await this.store.appendLedger({product:'simulator',accountId,type:'drive_refund',sessionsDelta:1,...(d.paidFrom!=='sessions'?{pot:d.paidFrom}:{}),
