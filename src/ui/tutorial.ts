@@ -2,7 +2,8 @@
  * The tutorial: a short tour that points at each part of the screen and says what it is for, one step at a time
  * (Back, Next, Done). It runs by itself the first time the home screen and the driving screen are seen, and the
  * Tutorial buttons show it again. A step whose target is not on screen (another steering mode, a hidden button)
- * is skipped.
+ * is skipped. The highlighted part still works: tapping it ends the tour and does what it does. A tap anywhere else
+ * just ends the tour, so it can never leave the screen stuck.
  */
 
 export interface TourStep{
@@ -21,6 +22,7 @@ export const HOME_TOUR:readonly TourStep[]=[
   {target:'#centre-browser',title:'Every test centre',text:'Or browse all the UK’s car test centres by letter.'},
   {target:'[data-exercise=goodmayes]',title:'Ready to go',text:'Goodmayes is ready now: the streets round the test centre, with traffic, parked cars, crossings and traffic lights.'},
   {target:'.choices:last-of-type',title:'Drills',text:'Short scored drills: mini-roundabouts, zebra crossings, moving off safely.'},
+  {target:'#help-home',title:'Help',text:'Something not working, or a question? This emails our support team.'},
   {target:'#words-home',title:'Words explained',text:'Driving test words in plain English: blind spot, give way, driving fault and more.'},
   {target:'#text-size',title:'Text size',text:'Tap for larger text, again for larger still, and once more to go back.'},
   {target:'#tutorial-home',title:'See this again',text:'Tap Tutorial at any time to replay this tour. There is one for the driving screen too.'}
@@ -56,6 +58,7 @@ export class Tutorial{
   private steps:TourStep[]=[];
   private index=0;
   private onEnd:()=>void=()=>{};
+  private target:HTMLElement|null=null;
 
   constructor(){
     this.root=document.createElement('div');
@@ -67,7 +70,16 @@ export class Tutorial{
     this.tip=document.createElement('div');this.tip.className='tour-tip';
     this.root.append(this.spot,this.tip);
     document.body.append(this.root);
-    addEventListener('resize',()=>{if(!this.root.hidden)this.show()});
+    addEventListener('resize',()=>{if(!this.root.hidden)this.place()});
+    // (Capture: before the page's own handlers.) Scrolling moves the highlight with the page.
+    document.addEventListener('scroll',()=>{if(!this.root.hidden)this.place()},{capture:true,passive:true});
+    const outside=(e:Event)=>!this.root.hidden&&!this.tip.contains(e.target as Node)&&!this.target?.contains(e.target as Node);
+    document.addEventListener('pointerdown',e=>{if(outside(e)){e.preventDefault();e.stopPropagation()}},true);
+    document.addEventListener('click',e=>{
+      if(this.root.hidden||this.tip.contains(e.target as Node))return;
+      if(outside(e)){e.preventDefault();e.stopPropagation()}
+      this.close();
+    },true);
   }
 
   get active(){return !this.root.hidden}
@@ -92,6 +104,7 @@ export class Tutorial{
   close():void{
     if(this.root.hidden)return;
     this.root.hidden=true;
+    this.target=null;
     this.onEnd();
   }
 
@@ -106,8 +119,8 @@ export class Tutorial{
     const step=this.steps[this.index]!;
     const el=this.targetOf(step);
     if(!el){this.next();return}
-    const r=el.getBoundingClientRect(),pad=6;
-    Object.assign(this.spot.style,{left:`${r.left-pad}px`,top:`${r.top-pad}px`,width:`${r.width+2*pad}px`,height:`${r.height+2*pad}px`});
+    this.target=el;
+    el.scrollIntoView({block:'nearest',inline:'nearest'});
     const last=this.index===this.steps.length-1;
     const h=document.createElement('b');h.textContent=step.title;
     const p=document.createElement('p');p.textContent=step.text;
@@ -120,16 +133,24 @@ export class Tutorial{
     next.addEventListener('click',()=>this.next());
     const row=document.createElement('div');row.className='tour-row';row.append(count,skip,back,next);
     this.tip.replaceChildren(h,p,row);
-    // Below the target if there is room, otherwise above; kept on screen.
+    this.place();
+    next.focus({preventScroll:true});
+  }
+
+  /** Puts the highlight on the target and the box below it if there is room, otherwise above; always on screen. */
+  private place():void{
+    const el=this.target;
+    if(!el)return;
+    const r=el.getBoundingClientRect(),pad=6;
+    Object.assign(this.spot.style,{left:`${r.left-pad}px`,top:`${r.top-pad}px`,width:`${r.width+2*pad}px`,height:`${r.height+2*pad}px`});
     const tw=Math.min(340,innerWidth-24);
     this.tip.style.width=`${tw}px`;
     const th=this.tip.getBoundingClientRect().height||140;
     const below=r.bottom+pad+10+th<innerHeight;
-    const top=below?r.bottom+pad+10:Math.max(8,r.top-pad-10-th);
+    const top=Math.max(8,Math.min(below?r.bottom+pad+10:r.top-pad-10-th,innerHeight-th-8));
     const left=Math.min(Math.max(12,r.left+r.width/2-tw/2),innerWidth-tw-12);
     Object.assign(this.tip.style,{top:`${top}px`,left:`${left}px`});
     this.tip.dataset['side']=below?'below':'above';
-    next.focus({preventScroll:true});
   }
 
   private next():void{

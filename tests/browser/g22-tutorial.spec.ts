@@ -25,6 +25,23 @@ test('G22: tutorial tours on the home screen and while driving',async({page},tes
   await expect(page.locator('.tour-tip b')).toHaveText('Drive anywhere');
   await page.click('.tour-skip');
   await expect(page.locator('#tour')).toBeHidden();
+  // A tap outside the highlight ends the tour (and does nothing else).
+  await page.click('#tutorial-home');
+  await expect(page.locator('#tour')).toBeVisible();
+  await page.mouse.click(5,425);
+  await expect(page.locator('#tour')).toBeHidden();
+  await expect(page.locator('#screen-start')).toBeVisible();
+  // The highlighted part works: Start lesson 1 ends the tour and opens the lesson.
+  await page.click('#tutorial-home');
+  await expect(page.locator('.tour-tip b')).toHaveText('Start here');
+  await page.click('#first-start');
+  await expect(page.locator('#tour')).toBeHidden();
+  await expect(page.locator('#exercise-list')).toBeHidden();
+  await expect(page.locator('#start-practice')).toBeVisible();
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  // Help is on the home screen.
+  await expect(page.locator('#help-home')).toHaveAttribute('href',/^mailto:support\.drivingpractice@gmail\.com/);
 
   await page.click('[data-drive-mode=free]');
   await page.click('[data-exercise=goodmayes]');
