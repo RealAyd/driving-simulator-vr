@@ -36,6 +36,9 @@ const loadScript=(src:string)=>new Promise<void>((ok,fail)=>{
   const s=document.createElement('script');s.src=src;s.async=true;s.onload=()=>ok();s.onerror=()=>fail(new Error(src));document.head.append(s);
 });
 
+/** The paid app's own addresses. */
+const PAID_HOSTS=new Set(['vr.drivingpractice.live','staging.drivingpractice.live']);
+
 export class Access{
   /** Whether drives need sessions here. */
   gate=false;
@@ -46,7 +49,11 @@ export class Access{
 
   async init():Promise<void>{
     const local=await fetch('./access.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null) as {gate?:boolean}|null;
-    if(!local?.gate)return;
+    // Gated where the file says so, always on the paid addresses (blocking the file does not open them), and wherever
+    // the accounts service answers. Only a copy with neither (a preview) is open.
+    let gated=!!local?.gate||PAID_HOSTS.has(location.hostname)||/\.hostless\.app$/.test(location.hostname);
+    if(!gated&&!local){const cfg=await api<Config>('config');gated=cfg.status===200&&cfg.data?.gate===true}
+    if(!gated)return;
     this.gate=true;
     // A referral link (?ref=CODE) is kept until sign-in; the return from sign-in or checkout says what happened.
     const params=new URLSearchParams(location.search);

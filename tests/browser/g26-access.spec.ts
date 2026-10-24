@@ -100,7 +100,41 @@ test('G26: an invite link: the friend signs in and has one free drive; the invit
   await expect(inviter.locator('#invite-stats')).toContainText('1 joined with your link · 1 free session earned');
 });
 
-test('G26: without access.json (the preview copies) nothing is gated',async({page})=>{
+test('G26: blocking access.json does not open the paid app: where the accounts service answers, Start still asks to sign in',async({page})=>{
+  await page.route('**/access.json',r=>r.abort());
+  await page.goto('./');
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
+  await page.click('[data-exercise=moving-off]');
+  await page.click('#start-practice');
+  await expect(page.locator('#screen-account')).toBeVisible();
+  expect(await read(page,'session()')).toBe('ready');
+});
+
+test('G26: the guided introduction needs no session because it is parked: the car cannot be driven, and nothing is saved',async({page})=>{
+  test.setTimeout(180_000);
+  await gated(page);
+  await page.click('[data-exercise=moving-off]');
+  await page.click('#start-intro');
+  await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
+  // Accelerate with the keyboard (the on-screen Go is not shown here): the car stays put.
+  await page.locator('canvas').first().focus();
+  await page.keyboard.down('KeyW');
+  await page.waitForTimeout(3000);
+  await page.keyboard.up('KeyW');
+  expect((await read(page,'vehicle()')).speed).toBeLessThan(.05);
+  // Ended from the pause menu: not saved; trying again is free (still parked).
+  await page.click('#hud-pause');
+  await page.click('#end-button');
+  await expect(page.locator('#screen-results')).toBeVisible();
+  await expect(page.locator('#results-meta')).toContainText('parked practice: not scored and not saved');
+  await page.click('#retry-button');
+  await expect.poll(()=>read(page,'session()'),{timeout:20_000}).toBe('running');
+  await expect(page.locator('#screen-account')).toBeHidden();
+});
+
+test('G26: without access.json or an accounts service (the preview copies) nothing is gated',async({page})=>{
+  await page.route('**/api/**',r=>r.fulfill({status:404,contentType:'text/html',body:'no service here'}));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.waitForTimeout(500);

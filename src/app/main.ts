@@ -408,11 +408,14 @@ export async function boot():Promise<void>{
     // speed a test expects is slower, and still the learner's to judge).
     const bendBrake=mode==='assist'&&c.steer===0&&runtime?.assist&&vehicle.state.speed>0&&!keys.reverse?runtime.assist.brakeFor(vehicle.pose,vehicle.state.speed):0;
     lastControls=viewerDrive??{throttle:bendBrake>0?0:c.throttle,brake:Math.max(c.brake,bendBrake),steer,reverse:!!keys.reverse,...(bendBrake>0?{driverBrake:c.brake}:{})};
-    // The tell me question comes before the drive: the car stays where it is until it is answered.
-    if(runtime?.examiner?.phase==='tell-me')lastControls={throttle:0,brake:1,steer:0};
+    // The tell me question comes before the drive: the car stays where it is until it is answered. A parked
+    // practice (an introduction, or sitting in the car in the headset) holds the car whatever key or button is pressed.
+    if(runtime?.examiner?.phase==='tell-me'||parkedOnly())lastControls={throttle:0,brake:1,steer:0};
     return lastControls;
   }};
   let lastControls:Controls={throttle:0,brake:0,steer:0};
+  /** A parked practice: the car cannot move, nothing is scored or saved, and it needs no session. */
+  const parkedOnly=()=>!!runtime&&(runtime.familiarisation||runtime.scenario.stationary);
   // ---- Sound: starts with the first tap or key press (browsers allow audio only after one) ----
   const sound=new Soundscape();
   const examinerVoice=new ExaminerVoice();
@@ -857,8 +860,8 @@ export async function boot():Promise<void>{
       session.to('finished');
       paidAccess.report(paidDrive,'completed');paidDrive=null;
       let saved=0,saveFailed=false;
-      // Parked familiarisation is kept apart from scored results: not saved.
-      if(runtime!.familiarisation)saved=-1;
+      // Parked practice is kept apart from results: not saved.
+      if(parkedOnly())saved=-1;
       else try{
         await store.save(result);
         saved=(await store.list(result.scenarioId)).length;
@@ -1920,7 +1923,7 @@ export async function boot():Promise<void>{
     if(session.state!=='running'&&session.state!=='paused'&&session.state!=='finished')return;
     const wasPaused=session.state==='paused',wasFinished=session.state==='finished';
     // Trying again once a drive has ended is a new drive (starting over part-way is not).
-    if(wasFinished&&paidAccess.gate&&runtime&&!runtime.familiarisation){
+    if(wasFinished&&paidAccess.gate&&runtime&&!parkedOnly()){
       const scenario=runtime.scenario.id;
       void paidAccess.begin(driveMode,scenario).then(drive=>{
         if(drive===false||session.state!=='finished')return;
