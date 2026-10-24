@@ -1,6 +1,12 @@
 import {readFileSync} from 'node:fs';
 
-export interface Pack{id:string;label:string;price:string;sessions:number;starter?:boolean;links:{test:string;live:string}}
+import type {Pot} from './store.js';
+
+/**
+ * A pack on sale. `sessions`: general sessions (any drive). `allowances`: drives of one kind only (the Starter Pass).
+ * `starter`: once per account. `links`: its Stripe Payment Link in each mode (public addresses).
+ */
+export interface Pack{id:string;label:string;price:string;description?:string;sessions:number;allowances?:Partial<Record<Pot,number>>;starter?:boolean;links:{test:string;live:string}}
 
 export interface Config{
   port:number;

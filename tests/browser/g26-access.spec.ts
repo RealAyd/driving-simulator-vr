@@ -44,22 +44,25 @@ test('G26: nothing is free: Start asks to sign in; signed in with no sessions it
   await signInByEmail(page,'learner@example.com');
   await expect(page.locator('#account-balance')).toHaveText('0');
   // The packs on sale; the starter once per account.
-  await expect(page.locator('#pack-list [data-pack]')).toHaveCount(3);
+  await expect(page.locator('#pack-list [data-pack]')).toHaveCount(4);
+  await expect(page.locator('#pack-list [data-pack=starter]')).toContainText('1 lesson, 1 mock test and 1 free drive · once per account');
   await page.click('#account-close');
   await page.click('#start-practice');
-  await expect(page.locator('#account-note')).toContainText('no sessions left');
+  await expect(page.locator('#account-note')).toContainText('You have no free drives or sessions left');
   await page.click('#pack-list [data-pack=starter]');
-  await expect(page.locator('#account-note')).toContainText('Done: you have 3 sessions',{timeout:20_000});
+  await expect(page.locator('#account-note')).toContainText('Done: you have 0 sessions and your Starter Pass',{timeout:20_000});
+  await expect(page.locator('#account-starter')).toContainText('Starter Pass left: 1 lesson, 1 mock test, 1 free drive');
+  // Once per account: no longer offered.
   await expect(page.locator('#pack-list [data-pack=starter]')).toHaveCount(0);
-  await expect(page.locator('#account-chip')).toHaveText('3 sessions');
+  await expect(page.locator('#account-chip')).toHaveText('0 sessions + Starter');
   await page.click('#account-close');
-  await expect(page.locator('#session-note')).toContainText('Uses 1 session · you have 3');
+  // This practice drive is a free drive: it uses the Starter's free drive (not the lesson or the mock test).
+  await expect(page.locator('#session-note')).toContainText('Uses your Starter Pass free drive');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
-  await expect(page.locator('#account-chip')).toHaveText('2 sessions');
-  // The drive was reported as loaded (it keeps its session).
   const me=await (await page.request.get('/api/me')).json();
-  expect(me.history.map((h:{type:string})=>h.type)).toEqual(['consumed','purchase']);
+  expect(me.allowances).toEqual({lesson:1,test:1,free:0});
+  expect(me.history[0].type).toBe('consumed');
 });
 
 test('G26: an invite link: the friend signs in and has one free drive; the inviter is rewarded with one session after the friend first pays',async({browser})=>{
@@ -76,8 +79,8 @@ test('G26: an invite link: the friend signs in and has one free drive; the invit
   await expect(friend.locator('#account-invited')).toBeVisible();
   await signInByEmail(friend,'friend@example.com');
   await expect(friend.locator('#account-balance')).toHaveText('1');
-  await friend.click('#pack-list [data-pack=starter]');
-  await expect(friend.locator('#account-balance')).toHaveText('4',{timeout:20_000});
+  await friend.click('#pack-list [data-pack=vr-5]');
+  await expect(friend.locator('#account-balance')).toHaveText('6',{timeout:20_000});
   await friend.close();
   await inviter.reload();
   await expect(inviter.locator('#screen-start')).toBeVisible({timeout:60_000});

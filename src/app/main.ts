@@ -1023,7 +1023,7 @@ export async function boot():Promise<void>{
       ?c.device===boundDevice?`🎮 ${c.device} connected: it drives on the screen too (Accelerate ${describeBinding(controller.bindings.accelerate)}, Brake ${describeBinding(controller.bindings.brake)}, steer with ${controlName('steer')}${extraBinding('steer-left')?` or ${controlName('steer-left')}/${controlName('steer-right')}`:''}). For the headset, open Phone headset below.`
         :`🎮 ${c.device} connected: set it up in Phone headset › Controller settings to drive with it.`
       :'';
-    const sessionNote=byId('session-note'),noteText=paidAccess.note();
+    const sessionNote=byId('session-note'),noteText=paidAccess.note(chosen?.scenario??null);
     if(sessionNote.textContent!==noteText){sessionNote.textContent=noteText;sessionNote.hidden=!noteText}
     const padStatus=byId('pad-screen-status');
     if(padStatus.textContent!==onScreen){padStatus.textContent=onScreen;padStatus.hidden=!onScreen}

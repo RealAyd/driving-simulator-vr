@@ -4,9 +4,10 @@
  * sells sessions through Stripe Payment Links and shows the balance and invite link. Without access.json (the
  * preview copies) nothing is gated.
  */
-type Pack={id:string;label:string;price:string;sessions:number;starter:boolean;url:string|null};
+type Pot='lesson'|'test'|'free';
+type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean};
-type Me={signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;starterBought:boolean;referralCode:string;invited:number;rewarded:number;
+type Me={signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;
   history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>};
 /** A drive the server has started (its session used). */
 export type PaidDrive={id:string};
@@ -17,6 +18,11 @@ const store={
   set:(k:string,v:string|null)=>{try{if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch{/* kept for this visit only */}}
 };
 const REF_KEY='dp.referral.v1',BUY_KEY='dp.buying.v1';
+/** What a drive is, from its scenario (as the server decides it). */
+const modeOf=(scenario:string):Pot=>scenario.endsWith('-mock-test')?'test':scenario.endsWith('-lesson')?'lesson':'free';
+const POT_NAME:Record<Pot,string>={lesson:'lesson',test:'mock test',free:'free drive'};
+/** Everything the account can start: general sessions plus Starter allowances. */
+const total=(me:Me)=>me.signedIn?me.balance+me.allowances.lesson+me.allowances.test+me.allowances.free:0;
 
 async function api<T>(path:string,body?:unknown):Promise<{status:number;data:T|null}>{
   try{
@@ -68,12 +74,14 @@ export class Access{
     this.onChange();
   }
 
-  /** A line for the exercise screen under Start. */
-  note():string{
+  /** A line for the exercise screen under Start, for the drive about to start. */
+  note(scenario:string|null):string{
     if(!this.gate)return '';
     if(!this.me.signedIn)return 'Sign in to start: each drive uses one session.';
+    const pot=scenario?modeOf(scenario):null;
+    if(pot&&this.me.allowances[pot]>0)return `Uses your Starter Pass ${POT_NAME[pot]}`;
     const n=this.me.balance;
-    return n>0?`Uses 1 session · you have ${n}`:'No sessions left: buy more to start.';
+    return n>0?`Uses 1 session · you have ${n}`:`No ${pot?`${POT_NAME[pot]} or `:''}sessions left: buy more to start.`;
   }
 
   /**
@@ -83,9 +91,10 @@ export class Access{
   async begin(kind:string,scenario:string):Promise<PaidDrive|null|false>{
     if(!this.gate)return null;
     if(!this.me.signedIn){this.open('Sign in to start. Each drive, lesson or mock test uses one session.');return false}
-    if(this.me.balance<1){this.open('You have no sessions left. Buy more to start.');return false}
+    const pot=modeOf(scenario);
+    if(this.me.balance<1&&this.me.allowances[pot]<1){this.open(`You have no ${POT_NAME[pot]}s or sessions left. Buy more to start.`);return false}
     const r=await api<{driveId:string;balance:number}>('drives',{kind,scenario});
-    if(r.status===200&&r.data){this.me={...this.me,balance:r.data.balance};this.render();this.onChange();return {id:r.data.driveId}}
+    if(r.status===200&&r.data){void this.refresh();return {id:r.data.driveId}}
     if(r.status===401){await this.refresh();this.open('Please sign in again.');return false}
     if(r.status===402){await this.refresh();this.open('You have no sessions left. Buy more to start.');return false}
     this.open('Driving Practice could not be reached. Check your connection and try again.');
@@ -149,19 +158,19 @@ export class Access{
     // "or with your email" only under a Google or Apple button.
     document.querySelector<HTMLElement>('#account-signin .divider')!.hidden=!this.config?.googleClientId&&!this.config?.appleServicesId;
     const chip=byId('account-chip');
-    chip.textContent=signedIn?`${me.balance} session${me.balance===1?'':'s'}`:'Sign in';
+    const starterLeft=signedIn?(['lesson','test','free'] as const).filter(p=>me.allowances[p]>0):[];
+    chip.textContent=signedIn?`${me.balance} session${me.balance===1?'':'s'}${starterLeft.length?' + Starter':''}`:'Sign in';
     if(!signedIn)return;
     byId('account-email').textContent=me.email?`Signed in as ${me.email}`:'Signed in with Apple';
     byId('account-balance').textContent=String(me.balance);
     byId('account-balance-unit').textContent=me.balance===1?'session':'sessions';
-    const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&(p.url||this.config?.devCheckout));
+    byId('account-starter').textContent=starterLeft.length?`Starter Pass left: ${starterLeft.map(p=>`1 ${POT_NAME[p]}`).join(', ')}. Each is used by its own kind of drive.`:'';
+    const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&p.onSale);
     byId('pack-list').replaceChildren(...packs.map(p=>{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;
       const left=document.createElement('span');
       const t=document.createElement('b');t.textContent=p.label;
-      // (The count only where the name does not already say it.)
-      const count=p.label.includes(String(p.sessions))?'':` ${p.sessions} session${p.sessions===1?'':'s'}`;
-      const d=document.createElement('small');d.textContent=`${count}${p.starter?`${count?' ·':''} once per account`:''}`;
+      const d=document.createElement('small');d.textContent=` ${p.description}${p.starter?' · once per account':''}`;
       left.append(t,d);
       const price=document.createElement('span');price.className='price';price.textContent=p.price;
       b.append(left,price);
@@ -172,39 +181,42 @@ export class Access{
     byId<HTMLInputElement>('invite-link').value=`${location.origin}${location.pathname}?ref=${me.referralCode}`;
     byId('invite-stats').textContent=me.invited?`${me.invited} joined with your link · ${me.rewarded} free session${me.rewarded===1?'':'s'} earned`:'';
     const LABEL:Record<string,string>={purchase:'Bought',promo:'Promotion',referral_free_drive:'Free drive (invited)',referral_bonus:'Free session (you invited someone)',
-      consumed:'Used',drive_refund:'Given back (did not load)',refund:'Refunded',adjustment:'Adjusted'};
+      consumed:'Used',drive_refund:'Given back (did not load)',refund:'Refunded',adjustment:'Adjusted',allowance:'Starter Pass',
+      starter_duplicate:'Starter Pass already bought: payment refunded'};
     byId('account-history').replaceChildren(...me.history.map(h=>{
       const li=document.createElement('li');
-      li.textContent=`${new Date(h.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}: ${LABEL[h.type]??h.type} ${h.sessions>0?'+':''}${h.sessions}${h.amountPence>0?` (£${(h.amountPence/100).toFixed(2)})`:''}`;
+      li.textContent=`${new Date(h.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}: ${h.type==='allowance'||h.type==='starter_duplicate'?h.reason:LABEL[h.type]??h.type}${h.sessions?` ${h.sessions>0?'+':''}${h.sessions}`:''}${h.amountPence>0?` (£${(h.amountPence/100).toFixed(2)})`:''}`;
       return li;
     }));
   }
 
   private async buy(p:Pack){
     if(!this.me.signedIn)return;
-    store.set(BUY_KEY,JSON.stringify({balance:this.me.balance,at:Date.now()}));
+    store.set(BUY_KEY,JSON.stringify({total:total(this.me),at:Date.now()}));
     if(this.config?.devCheckout){
       // Local development: a pretend payment, delivered to the server as Stripe would.
       await api('dev/checkout',{pack:p.id});
       await this.awaitPayment();
       return;
     }
-    const url=new URL(p.url!);
-    url.searchParams.set('client_reference_id',this.me.id);
-    if(this.me.email)url.searchParams.set('prefilled_email',this.me.email);
-    location.href=url.toString();
+    // The payment page's address comes from the server, made for this account.
+    const r=await api<{url?:string;error?:string}>('checkout',{pack:p.id});
+    if(r.status===200&&r.data?.url){location.href=r.data.url;return}
+    byId('account-note').textContent=r.data?.error==='starter-bought'?'You already have the Starter Pass: it can be bought once per account.'
+      :r.status===401?'Please sign in again.':'Could not open the payment page. Check your connection and try again.';
+    await this.refresh();
   }
 
   /** Back from checkout: Stripe tells the server a moment later, so the balance is checked until it rises. */
   private async awaitPayment(){
-    const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {balance:number}|null}catch{return null}})();
+    const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {total:number}|null}catch{return null}})();
     this.open();
     const note=byId('account-note');
     note.textContent='Payment received: adding your sessions…';
     for(let i=0;i<30;i++){
       await this.refresh();
-      if(this.me.signedIn&&this.me.balance>(before?.balance??-1)){
-        note.textContent=`Done: you have ${this.me.balance} session${this.me.balance===1?'':'s'}. Choose a drive and press Start.`;
+      if(this.me.signedIn&&total(this.me)>(before?.total??-1)){
+        note.textContent=`Done: you have ${this.me.balance} session${this.me.balance===1?'':'s'}${(['lesson','test','free'] as const).some(p=>this.me.signedIn&&this.me.allowances[p]>0)?' and your Starter Pass':''}. Choose a drive and press Start.`;
         store.set(BUY_KEY,null);
         return;
       }

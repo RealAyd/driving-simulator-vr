@@ -46,6 +46,11 @@ export function stripeApi(config:Config):StripeApi{
       const v={url:link.url,metadata:{...link.metadata}};
       links.set(id,v);
       return v;
+    },
+    async refund(paymentIntent,reason){
+      // (Idempotent at Stripe too: one refund per payment, however often this is asked.)
+      const r=await stripe.refunds.create({payment_intent:paymentIntent,reason:'duplicate',metadata:{why:reason}},{idempotencyKey:`dp-refund-${paymentIntent}`});
+      return r.status==='succeeded'||r.status==='pending';
     }
   };
 }
@@ -63,6 +68,8 @@ export const fakeIdentities:IdentityVerifier={
   async apple(t){const [sub='',email='']=t.split('|');return {sub,email:email||null,emailVerified:true}}
 };
 
+/** Refunds the fake Stripe was asked for (tests read them). */
+export const refunds:string[]=[];
 /** Fake Stripe: events are trusted JSON (signature "dev"); a payment link's id is its pack's id. */
 export function fakeStripe(config:Config):StripeApi{
   return {
@@ -73,6 +80,7 @@ export function fakeStripe(config:Config):StripeApi{
     async paymentLink(id){
       const pack=config.packs.find(p=>p.id===id);
       return pack?{url:pack.links[config.stripeMode],metadata:{}}:null;
-    }
+    },
+    async refund(paymentIntent){refunds.push(paymentIntent);return !paymentIntent.includes('refuse')}
   };
 }

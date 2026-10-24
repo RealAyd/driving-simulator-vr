@@ -35,7 +35,7 @@ describe('the API over HTTP',()=>{
     const c=client();
     const cfg=await c('/api/config');
     expect(cfg.json).toMatchObject({gate:true,devCheckout:true});
-    expect((cfg.json!['packs'] as unknown[]).length).toBe(3);
+    expect((cfg.json!['packs'] as Array<{id:string}>).map(p=>p.id)).toEqual(['starter','vr-5','vr-15','vr-35']);
     expect((await c('/api/me')).json).toEqual({signedIn:false});
     expect((await c('/api/drives',{kind:'free',scenario:'x'})).status).toBe(401);
   });
@@ -51,9 +51,13 @@ describe('the API over HTTP',()=>{
     expect(readSession(config.sessionSecret,decodeURIComponent(c.length?r.cookie().split('=').slice(1).join('='):''))).not.toBeNull();
     expect((await c('/api/me')).json).toMatchObject({signedIn:true,email:'h@example.com',balance:0});
     expect((await c('/api/drives',{kind:'free',scenario:'x'})).status).toBe(402);
-    await c('/api/dev/checkout',{pack:'starter'});
-    const d=await c('/api/drives',{kind:'free',scenario:'goodmayes'});
-    expect(d.json).toMatchObject({balance:2});
+    // The checkout address comes from the server, for this account; the browser cannot name another price or account.
+    const link=await c('/api/checkout',{pack:'vr-5'});
+    expect(new URL(String(link.json!['url'])).searchParams.get('client_reference_id')).toBeTruthy();
+    expect((await c('/api/checkout',{pack:'vr-5',sessions:99,price:1})).json!['url']).toBe(link.json!['url']);
+    await c('/api/dev/checkout',{pack:'vr-5'});
+    const d=await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
+    expect(d.json).toMatchObject({balance:4});
     expect((await c(`/api/drives/${d.json!['driveId']}/loaded`,{})).status).toBe(200);
     await c('/api/auth/logout',{});
     expect((await c('/api/me')).json).toEqual({signedIn:false});

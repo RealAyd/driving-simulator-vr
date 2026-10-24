@@ -63,21 +63,30 @@ export class MongoStore implements Store{
     await this.accounts.updateOne({_id:id},{$set:set});
   }
   async countReferred(referrerId:string){return this.accounts.countDocuments({referredBy:referrerId})}
+  async claimStarter(accountId:string,checkoutSession:string){
+    const won=await this.accounts.updateOne({_id:accountId,starterCheckout:{$exists:false}},{$set:{starterCheckout:checkoutSession,starterBought:true}});
+    if(won.modifiedCount===1)return 'won' as const;
+    const a=await this.accounts.findOne({_id:accountId},{projection:{starterCheckout:1}});
+    return a?.starterCheckout===checkoutSession?'same' as const:'lost' as const;
+  }
   async appendLedger(e:Omit<LedgerEntry,'id'|'createdAt'>,opts:{requireBalance?:boolean}={}){
     const doc={...e,_id:randomUUID(),createdAt:new Date()} as Doc<LedgerEntry>;
+    const field=e.pot?`allowances.${e.pot}`:'balance';
     if(opts.requireBalance&&e.sessionsDelta<0){
-      // Take the sessions first (only if there are enough), then record why; undone if this was recorded already.
-      const taken=await this.accounts.updateOne({_id:e.accountId,balance:{$gte:-e.sessionsDelta}},{$inc:{balance:e.sessionsDelta}});
+      // Take the sessions first (only if there are enough: one atomic update, so two drives started at once cannot
+      // both have the last one), then record why; undone if this was recorded already.
+      const taken=await this.accounts.updateOne({_id:e.accountId,[field]:{$gte:-e.sessionsDelta}},{$inc:{[field]:e.sessionsDelta}});
       if(taken.modifiedCount===0)return 'insufficient' as const;
       try{await this.entries.insertOne(doc)}catch(err){
-        await this.accounts.updateOne({_id:e.accountId},{$inc:{balance:-e.sessionsDelta}});
+        await this.accounts.updateOne({_id:e.accountId},{$inc:{[field]:-e.sessionsDelta}});
         if(duplicate(err))return 'duplicate' as const;
         throw err;
       }
       return 'ok' as const;
     }
+    // The unique idempotency key first: a webhook delivered twice (even at the same moment) moves the balance once.
     try{await this.entries.insertOne(doc)}catch(err){if(duplicate(err))return 'duplicate' as const;throw err}
-    await this.accounts.updateOne({_id:e.accountId},{$inc:{balance:e.sessionsDelta}});
+    await this.accounts.updateOne({_id:e.accountId},{$inc:{[field]:e.sessionsDelta}});
     return 'ok' as const;
   }
   async ledger(q:{accountId?:string;paymentIntent?:string;type?:LedgerType}){

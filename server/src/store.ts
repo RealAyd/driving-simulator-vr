@@ -16,15 +16,24 @@ export interface Account{
   referralCode:string;
   /** The account whose link brought this one (set once, at creation). */
   referredBy?:string;
-  /** Cached sum of the ledger (kept in the same operation as each entry). */
+  /** Sessions usable for any drive: the cached sum of the ledger's entries without a pot. */
   balance:number;
+  /** Starter Pass allowances, one pot per mode (each used only for its own kind of drive). */
+  allowances?:Partial<Record<Pot,number>>;
   createdAt:Date;
   /** First payment with money (not a 100% promo code): starts the referrer's reward. */
   firstPaidAt?:Date;
   starterBought?:boolean;
+  /** The checkout that bought the Starter Pass (a second one is refunded, not granted). */
+  starterCheckout?:string;
 }
 
-export type LedgerType='purchase'|'promo'|'referral_free_drive'|'referral_bonus'|'consumed'|'drive_refund'|'refund'|'adjustment';
+/** What a drive is: the server decides from the scenario, never from what the browser says. */
+export type Mode='lesson'|'test'|'free';
+/** A Starter Pass allowance pot (absent on an entry: the general sessions balance). */
+export type Pot=Mode;
+
+export type LedgerType='purchase'|'promo'|'allowance'|'referral_free_drive'|'referral_bonus'|'consumed'|'drive_refund'|'refund'|'starter_duplicate'|'adjustment';
 
 export interface LedgerEntry{
   id:string;
@@ -32,6 +41,8 @@ export interface LedgerEntry{
   accountId:string;
   type:LedgerType;
   sessionsDelta:number;
+  /** Which balance the delta moves: a Starter allowance pot, or (absent) the general sessions. */
+  pot?:Pot;
   amountPence:number;
   currency:string;
   stripe?:{event?:string;checkoutSession?:string;paymentIntent?:string;paymentLink?:string;charge?:string};
@@ -49,6 +60,9 @@ export interface Drive{
   scenario:string;
   startedAt:Date;
   status:'started'|'loaded'|'failed'|'completed';
+  mode:Mode;
+  /** Where its session came from (a refund goes back there). */
+  paidFrom:Pot|'sessions';
   refunded?:boolean;
 }
 
@@ -72,11 +86,17 @@ export interface Store{
   /** Fails (null) if the email is already used. */
   createAccount(a:Omit<Account,'id'|'balance'|'createdAt'>):Promise<Account|null>;
   updateAccount(id:string,set:Partial<Omit<Account,'id'|'balance'>>):Promise<void>;
+  /**
+   * Marks the Starter Pass bought by this checkout: 'won' the first time, 'same' when it was this checkout already
+   * (a replayed event), 'lost' when another checkout bought it before. Atomic.
+   */
+  claimStarter(accountId:string,checkoutSession:string):Promise<'won'|'same'|'lost'>;
   /** How many accounts this one's link brought in. */
   countReferred(referrerId:string):Promise<number>;
   /**
-   * Records an entry and moves the balance by its delta. 'duplicate': the idempotency key was already recorded (nothing
-   * changes). With `requireBalance` a debit happens only if the balance stays at or above zero ('insufficient' if not).
+   * Records an entry and moves the balance (or the entry's pot) by its delta. 'duplicate': the idempotency key was
+   * already recorded (nothing changes). With `requireBalance` a debit happens only if what it comes from stays at or
+   * above zero ('insufficient' if not).
    */
   appendLedger(e:Omit<LedgerEntry,'id'|'createdAt'>,opts?:{requireBalance?:boolean}):Promise<'ok'|'duplicate'|'insufficient'>;
   ledger(q:{accountId?:string;paymentIntent?:string;type?:LedgerType}):Promise<LedgerEntry[]>;
@@ -103,7 +123,8 @@ export class MemoryStore implements Store{
 
   async findAccount(q:AccountQuery){
     const [k,v]=Object.entries(q)[0] as [keyof Account,string];
-    return [...this.accounts.values()].find(a=>a[k]===v)??null;
+    const a=[...this.accounts.values()].find(x=>x[k]===v);
+    return a?{...a,allowances:{...a.allowances}}:null;
   }
   async createAccount(a:Omit<Account,'id'|'balance'|'createdAt'>){
     if(a.email&&[...this.accounts.values()].some(x=>x.email===a.email))return null;
@@ -116,13 +137,22 @@ export class MemoryStore implements Store{
     if(a)Object.assign(a,set);
   }
   async countReferred(referrerId:string){return [...this.accounts.values()].filter(a=>a.referredBy===referrerId).length}
+  async claimStarter(accountId:string,checkoutSession:string){
+    const a=this.accounts.get(accountId);
+    if(!a)return 'lost' as const;
+    if(a.starterCheckout)return a.starterCheckout===checkoutSession?'same' as const:'lost' as const;
+    a.starterCheckout=checkoutSession;a.starterBought=true;
+    return 'won' as const;
+  }
   async appendLedger(e:Omit<LedgerEntry,'id'|'createdAt'>,opts:{requireBalance?:boolean}={}){
     if(this.entries.some(x=>x.idempotencyKey===e.idempotencyKey))return 'duplicate' as const;
     const a=this.accounts.get(e.accountId);
     if(!a)throw new Error('no such account');
-    if(opts.requireBalance&&a.balance+e.sessionsDelta<0)return 'insufficient' as const;
+    const have=e.pot?a.allowances?.[e.pot]??0:a.balance;
+    if(opts.requireBalance&&have+e.sessionsDelta<0)return 'insufficient' as const;
     this.entries.push({...e,id:randomUUID(),createdAt:new Date()});
-    a.balance+=e.sessionsDelta;
+    if(e.pot)a.allowances={...a.allowances,[e.pot]:have+e.sessionsDelta};
+    else a.balance+=e.sessionsDelta;
     return 'ok' as const;
   }
   async ledger(q:{accountId?:string;paymentIntent?:string;type?:LedgerType}){
