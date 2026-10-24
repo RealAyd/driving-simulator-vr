@@ -26,7 +26,8 @@ test('G9: the Moving off street is dressed from every view; parked cars and scen
   const scenery=await read(page,'scenery()');
   expect(scenery.houses).toBeGreaterThan(40);
   expect(scenery.parkedCars).toBeGreaterThanOrEqual(8);
-  expect(scenery.carModels).toEqual(['batch-b-compact-hatchback','batch-b-saloon','batch-b-large-saloon','batch-b-pickup']);
+  expect(scenery.carModels).toEqual(['batch-b-compact-hatchback','batch-b-saloon','batch-b-large-saloon','batch-b-pickup',
+    'v2-peugeot-208','v2-compact','v2-coupe','v2-hatchback','v2-minivan','v2-offroad','v2-pickup','v2-sedan','v2-suv','v2-wagon','v2-sprinter-van']);
   // Only cleared assets: nothing from the private (git-ignored) folder.
   expect(await read(page,'sceneryModels()')).toEqual([]);
 

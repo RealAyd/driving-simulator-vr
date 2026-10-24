@@ -65,7 +65,8 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
   await page.click('#start-practice');
   expect(await read(page,'location()')).toBe('representative-residential-straight');
   expect(await read(page,'passers()')).toEqual([]);
-  await expect(page.locator('#hud-credit')).toBeHidden();
+  // Not a mapped street: only the car models' credit (CC BY), no map data credit.
+  await expect(page.locator('#hud-credit')).toHaveText('cars: muha692, Comrade1280, Max (Sketchfab, CC BY 4.0)');
   const car=await read(page,'vehicle()');
   expect(car.position.z).toBeCloseTo(0,3);
   expect(car.surface).toBe('carriageway');

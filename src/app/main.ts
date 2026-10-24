@@ -887,6 +887,13 @@ export async function boot():Promise<void>{
     if(event.pointerId!==dragging||session.state!=='running')return;
     const dx=event.clientX-lastX,dy=event.clientY-lastY;
     if(Math.abs(dx)+Math.abs(dy)<1)return;
+    // Behind the car: a drag swings the camera round the car (all the way round), and up or down.
+    if(behind){
+      orbit.yaw-=dx*ORBIT_SENSITIVITY;
+      orbit.pitch=Math.max(.08,Math.min(1.25,orbit.pitch+dy*ORBIT_SENSITIVITY));
+      lastX=event.clientX;lastY=event.clientY;
+      return;
+    }
     if(head.target||heldView){
       if(heldBy==='key')return;
       head.release();heldBy=null;heldView=null;
@@ -2010,14 +2017,18 @@ export async function boot():Promise<void>{
   // Behind-the-car view: a camera following the car, for getting a feel for its position on the road. Not a driver's
   // view: the head (and so observations) stays in the driver's seat, and the results say how long it was used.
   let behind=false,behindSeconds=0;
+  /** Where the behind-the-car camera is on its circle round the car (radians: 0 straight behind; height angle). */
+  const orbit={yaw:0,pitch:Math.atan2(BEHIND_EYE.y,BEHIND_EYE.z)};
+  const ORBIT_SENSITIVITY=.008;
   const behindButton=byId('hud-behind');
   const setBehind=(on:boolean)=>{
     behind=on;
+    if(on){orbit.yaw=0;orbit.pitch=Math.atan2(BEHIND_EYE.y,BEHIND_EYE.z)}
     behindButton.setAttribute('aria-pressed',String(on));
     document.body.classList.toggle('behind',on);
     behindButton.setAttribute('aria-label',on?'Camera: back to the driver\'s seat':'Camera: switch to behind the car');
     const label=byId('hud-view-label');
-    if(on){label.textContent='View: Behind the car (not a driver\'s view)';label.classList.add('behind');label.classList.remove('forward')}
+    if(on){label.textContent='View: Behind the car (drag to look all round; not a driver\'s view)';label.classList.add('behind');label.classList.remove('forward')}
     else{label.classList.remove('behind');showView(heldView??'forward')}
   };
   behindButton.addEventListener('click',()=>{if(session.state==='running'&&!viewer.active)setBehind(!behind)});
@@ -2056,7 +2067,10 @@ export async function boot():Promise<void>{
       const t=overhead.target;
       camera.setTarget(t?new Vector3(t.x,t.y,t.z):new Vector3(overhead.x,0,overhead.z));
     }else if(behind){
-      const from=localToWorld(pose,{x:0,y:3.2,z:7.5}),to=localToWorld(pose,{x:0,y:0,z:-7});
+      // On a circle round the car (straight behind at first): looking at the car, and on past it when behind it.
+      const r=Math.hypot(BEHIND_EYE.y,BEHIND_EYE.z),flat=r*Math.cos(orbit.pitch),ahead=Math.max(0,Math.cos(orbit.yaw));
+      const from=localToWorld(pose,{x:flat*Math.sin(orbit.yaw),y:r*Math.sin(orbit.pitch),z:flat*Math.cos(orbit.yaw)});
+      const to=localToWorld(pose,{x:0,y:.6*(1-ahead),z:-7*ahead*ahead});
       camera.position.set(from.x,from.y,from.z);
       camera.setTarget(new Vector3(to.x,to.y,to.z));
     }else{
@@ -2259,7 +2273,7 @@ export async function boot():Promise<void>{
     /** Same as tapping a view button (or Forward). */
     selectView:(view:ViewTarget|'forward')=>selectView(view),
     hands:()=>cockpit.handsTurn,
-    behind:()=>({on:behind,seconds:behindSeconds,carModel:!!learnerBody?.isEnabled(),lPlates:!!lPlates?.isEnabled()}),
+    behind:()=>({on:behind,seconds:behindSeconds,orbitYaw:orbit.yaw,camera:{x:camera.position.x,z:camera.position.z},carModel:!!learnerBody?.isEnabled(),lPlates:!!lPlates?.isEnabled()}),
     viewLabel:()=>byId('hud-view-label').textContent,
     buses:()=>runtime?.buses.map(b=>({id:b.id,pose:b.pose,speed:b.speed,state:b.state,visible:b.visible,indicating:b.indicating}))??[],
     passersDetail:()=>runtime?.passers.map(p=>({id:p.id,pose:p.pose,speed:p.speed,started:p.started}))??[],

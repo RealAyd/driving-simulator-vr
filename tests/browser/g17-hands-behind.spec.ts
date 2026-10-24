@@ -33,7 +33,7 @@ test('G17: the hands follow the steering; the behind-the-car view is practice on
   // Behind the car: the camera moves out behind and above the car; the head (observations) stays in the seat.
   const seat=await read(page,'camera()');
   await page.click('#hud-behind');
-  await expect(page.locator('#hud-view-label')).toHaveText(/Behind the car \(not a driver's view\)/);
+  await expect(page.locator('#hud-view-label')).toHaveText(/Behind the car \(drag to look all round; not a driver's view\)/);
   // The Steer buttons stay.
   await expect(page.locator('#steer-buttons')).toBeVisible();
   await expect.poll(async()=>(await read(page,'behind()')).carModel,{timeout:30_000}).toBe(true);
@@ -42,6 +42,17 @@ test('G17: the hands follow the steering; the behind-the-car view is practice on
   const out=await read(page,'camera()');
   expect(out.position[1]).toBeGreaterThan(seat.position[1]+1.5);
   await page.screenshot({path:testInfo.outputPath('g17-behind.png')});
+  // Dragging swings the camera round the car (here, to its side).
+  const view=(await page.locator('canvas').first().boundingBox())!;
+  const cx=view.x+view.width/2,cy=view.y+view.height/2;
+  await page.mouse.move(cx,cy);
+  await page.mouse.down();
+  for(let i=1;i<=10;i++)await page.mouse.move(cx-i*20,cy);
+  await page.mouse.up();
+  const side=await read(page,'behind()');
+  expect(side.orbitYaw).toBeGreaterThan(1.2);
+  await expect.poll(async()=>{const b=await read(page,'behind()');return Math.hypot(b.camera.x-out.position[0],b.camera.z-out.position[2])},{timeout:10_000}).toBeGreaterThan(3);
+  await page.screenshot({path:testInfo.outputPath('g17-orbit.png')});
   await expect.poll(async()=>(await read(page,'behind()')).seconds,{timeout:60_000}).toBeGreaterThan(1.5);
   // A view button is a driver's view: it returns to the driver's seat.
   await page.click('[data-view=forward]');
