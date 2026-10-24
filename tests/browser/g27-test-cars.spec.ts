@@ -1,7 +1,7 @@
 import {expect,test,type Page} from '@playwright/test';
 
-// The car set (the default since 2026-10-24): CC BY models in traffic and at the kerb, credited on screen.
-// ?cars=old keeps the earlier cars.
+// The car set by default: the earlier cars with the new Peugeot 208 (the learner's car) and pickup (CC BY, credited
+// on screen); none of the rest of the new pack (white ghost-like shapes on the owner's phone). ?cars=old: the earlier cars.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
@@ -15,14 +15,14 @@ const startGoodmayes=async(page:Page,url:string)=>{
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
 };
 
-test('G27: the car set loads, drives and is credited by default; ?cars=old gives the earlier cars',async({page},testInfo)=>{
+test('G27: the default cars (earlier set, Peugeot 208, pickup) load, drive and are credited; ?cars=old gives the earlier cars',async({page},testInfo)=>{
   test.setTimeout(600_000);
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
 
   await startGoodmayes(page,'./');
-  await expect.poll(async()=>(await read(page,'scenery()')).carModels.filter((id:string)=>id.startsWith('v2-')).length,{timeout:60_000}).toBeGreaterThan(8);
-  await expect(page.locator('#hud-credit')).toContainText('Comrade1280');
+  await expect.poll(async()=>(await read(page,'scenery()')).carModels.filter((id:string)=>id.startsWith('v2-')).sort(),{timeout:60_000}).toEqual(['v2-peugeot-208','v2-pickup']);
+  await expect(page.locator('#hud-credit')).toContainText('cars: muha692, Comrade1280 (Sketchfab, CC BY 4.0)');
   await page.screenshot({path:testInfo.outputPath('g27-new-start.png')});
   await page.click('#hud-behind');
   await expect.poll(async()=>(await read(page,'behind()')).carModel,{timeout:30_000}).toBe(true);

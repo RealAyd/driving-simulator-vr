@@ -53,7 +53,7 @@ import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
 import {addLPlates} from '../cockpit/lPlates';
-import {roadUserCarModels,useVehicleSet,activeVehicleSet} from '../assets/carSpecs';
+import {roadUserCarModels,useVehicleSet,vehicleCredit} from '../assets/carSpecs';
 import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
@@ -204,8 +204,8 @@ export async function boot():Promise<void>{
   byId('tutorial-home').addEventListener('click',()=>tutorial.start(HOME_TOUR));
   byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
-  // The new set of vehicles (approved 2026-10-24); ?cars=old: the earlier set. Before any street is laid out.
-  useVehicleSet(new URLSearchParams(location.search).get('cars')==='old'?'current':'new');
+  // The earlier cars with the new Peugeot 208 and pickup (2026-10-24); ?cars=old: the earlier set; ?cars=new: the new pack. Before any street is laid out.
+  {const cars=new URLSearchParams(location.search).get('cars');useVehicleSet(cars==='old'?'current':cars==='new'?'new':'mixed')}
   // A page from before an update: reload for the current version (not during a drive).
   reloadWhenStale(()=>session.state==='running');
   // Every failure is shown on screen rather than leaving a blank canvas.
@@ -345,10 +345,10 @@ export async function boot():Promise<void>{
   const showCredit=()=>{
     const osm=place.sources.some(source=>source.licence.includes('ODbL'));
     // The test car set's models are CC BY 4.0: their authors are credited while they are on screen.
-    const cars=activeVehicleSet()==='new';
+    const cars=vehicleCredit();
     byId('hud-credit').hidden=!osm&&!terrain&&!cars;
     // Terrain data (AWS Terrain Tiles: SRTM, EU-DEM/Copernicus and others) asks for attribution too.
-    byId('hud-credit').textContent=[osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'',terrain?'terrain: AWS Terrain Tiles (Mapzen; SRTM, Copernicus)':'',cars?'cars: muha692, Comrade1280, Max (Sketchfab, CC BY 4.0)':''].filter(Boolean).join(' · ');
+    byId('hud-credit').textContent=[osm?'Map data © OpenStreetMap contributors (ODbL) · area-inspired, not an official test route':'',terrain?'terrain: AWS Terrain Tiles (Mapzen; SRTM, Copernicus)':'',cars].filter(Boolean).join(' · ');
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.

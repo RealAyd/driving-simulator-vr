@@ -76,15 +76,19 @@ export const BUS_MODELS={
 } as const satisfies Record<string,CarModelSpec>;
 
 /**
- * Which set of vehicles is drawn: the current one, or the new one being tried (?cars=new). Chosen once at start
- * (main.ts), before any street is laid out.
+ * Which set of vehicles is drawn. 'mixed' (the default, 2026-10-24): the earlier cars with the two new ones that
+ * worked well on the owner's phone, the Peugeot 208 (also the learner's car) and the pickup (Hilux); the rest of the
+ * new pack showed as white ghost-like shapes there. 'current' (?cars=old): the earlier set only. 'new'
+ * (?cars=new): the whole new pack, kept for checking. Chosen once at start (main.ts), before any street is laid out.
  */
-export type VehicleSet='current'|'new';
-let vehicleSet:VehicleSet='current';
+export type VehicleSet='current'|'new'|'mixed';
+let vehicleSet:VehicleSet='mixed';
 export function useVehicleSet(set:VehicleSet):void{vehicleSet=set}
 export function activeVehicleSet():VehicleSet{return vehicleSet}
 
 const SETS:Record<VehicleSet,{road:CarModelId[];kerb:CarModelId[]}>={
+  mixed:{road:['v2-peugeot-208','batch-b-compact-hatchback','batch-b-saloon','v2-pickup'],
+    kerb:['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon','v2-peugeot-208','v2-peugeot-208','v2-pickup']},
   current:{road:['batch-b-compact-hatchback','batch-b-saloon'],
     kerb:['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon']},
   // Everyday cars most, the pickup and the van now and then.
@@ -96,11 +100,22 @@ const SETS:Record<VehicleSet,{road:CarModelId[];kerb:CarModelId[]}>={
 export function roadUserCarModels():CarModelSpec[]{return SETS[vehicleSet].road.map(id=>CAR_MODELS[id])}
 /** Models for cars parked at the kerb (drawn in proportion: some appear more than once). */
 export function kerbCarModels():readonly CarModelId[]{return SETS[vehicleSet].kerb}
-/** Parked models to load: every one of the current set's (as before; hand-made places use them), and the new set's when in use. */
+/** Parked models to load: every one of the earlier set's (hand-made places use them), and the new pack's that the set uses. */
 export function parkedModelIds():CarModelId[]{
-  const ids=Object.keys(CAR_MODELS) as CarModelId[];
-  return ids.filter(id=>!id.startsWith('v2-')||vehicleSet==='new');
+  const used=new Set<CarModelId>([...SETS[vehicleSet].road,...SETS[vehicleSet].kerb]);
+  return (Object.keys(CAR_MODELS) as CarModelId[]).filter(id=>!id.startsWith('v2-')||used.has(id));
 }
+/**
+ * The CC BY 4.0 credit for the new pack's models in the set in use (shown while they are on screen), or '' when the
+ * set uses none: the Peugeot 208 by muha692, the passenger car pack by Comrade1280, the Sprinter by Max (Sketchfab).
+ */
+export function vehicleCredit():string{
+  const used=new Set([...SETS[vehicleSet].road,...SETS[vehicleSet].kerb]);
+  const authors=[...new Set([...used].filter(id=>id.startsWith('v2-')).map(id=>id==='v2-peugeot-208'?'muha692':id==='v2-sprinter-van'?'Max':'Comrade1280'))]
+    .sort((a,b)=>['muha692','Comrade1280','Max'].indexOf(a)-['muha692','Comrade1280','Max'].indexOf(b));
+  return authors.length?`cars: ${authors.join(', ')} (Sketchfab, CC BY 4.0)`:'';
+}
+
 /** @deprecated The current set's road-user models (tests); use roadUserCarModels(). */
 export const ROAD_USER_CAR_MODELS:readonly CarModelSpec[]=SETS.current.road.map(id=>CAR_MODELS[id]);
 export const CAR_MODEL:CarModelSpec=ROAD_USER_CAR_MODELS[0]!;

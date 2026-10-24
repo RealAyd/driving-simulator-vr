@@ -1,15 +1,25 @@
 import {afterEach,describe,expect,it} from 'vitest';
-import {CAR_MODELS,ROAD_USER_CAR_MODELS,activeVehicleSet,kerbCarModels,parkedModelIds,roadUserCarModels,useVehicleSet} from '../../src/assets/carSpecs';
+import {CAR_MODELS,ROAD_USER_CAR_MODELS,activeVehicleSet,kerbCarModels,parkedModelIds,roadUserCarModels,useVehicleSet,vehicleCredit} from '../../src/assets/carSpecs';
 
 const shipped=import.meta.glob('/public/assets/models/vehicles/v2/*.glb');
 const isV2=(id:string)=>id.startsWith('v2-');
 
 describe('vehicle sets',()=>{
-  afterEach(()=>useVehicleSet('current'));
+  afterEach(()=>useVehicleSet('mixed'));
 
-  it('uses the current cars unless the test set is asked for',()=>{
-    expect(activeVehicleSet()).toBe('current');
+  it('by default: the earlier cars with the new Peugeot 208 (the learner\'s car) and pickup; none of the rest of the new pack',()=>{
+    expect(activeVehicleSet()).toBe('mixed');
+    expect(roadUserCarModels()[0]!.id).toBe('v2-peugeot-208');
+    const v2=new Set([...roadUserCarModels().map(m=>m.id),...kerbCarModels(),...parkedModelIds()].filter(isV2));
+    expect([...v2].sort()).toEqual(['v2-peugeot-208','v2-pickup']);
+    expect(roadUserCarModels().map(m=>m.id)).toEqual(expect.arrayContaining(['batch-b-compact-hatchback','batch-b-saloon']));
+    expect(vehicleCredit()).toBe('cars: muha692, Comrade1280 (Sketchfab, CC BY 4.0)');
+  });
+
+  it('?cars=old: the earlier cars only',()=>{
+    useVehicleSet('current');
     expect(roadUserCarModels()).toEqual([...ROAD_USER_CAR_MODELS]);
+    expect(vehicleCredit()).toBe('');
     expect(kerbCarModels().some(isV2)).toBe(false);
     expect(parkedModelIds().some(isV2)).toBe(false);
   });
@@ -24,6 +34,7 @@ describe('vehicle sets',()=>{
     }
     expect(kerbCarModels().every(isV2)).toBe(true);
     for(const id of kerbCarModels())expect(parkedModelIds()).toContain(id);
+    expect(vehicleCredit()).toBe('cars: muha692, Comrade1280, Max (Sketchfab, CC BY 4.0)');
     for(const id of parkedModelIds().filter(isV2)){
       const spec:{url?:string;parkedUrl?:string}=CAR_MODELS[id];
       for(const url of [spec.url,spec.parkedUrl].filter(Boolean))expect(shipped[`/public/${url}`],url).toBeTruthy();
