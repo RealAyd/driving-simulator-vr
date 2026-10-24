@@ -167,6 +167,26 @@ describe('sessions: nothing is free; a drive uses one session',()=>{
     expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
   });
 
+  it('partial refunds: under £5 in all, recorded and the sessions kept; from £5, recorded, sessions kept and flagged; a later full refund records only the rest',async()=>{
+    const {service,checkout,store}=setup();
+    const a=await signUp(service,'partial@example.com');
+    const ev=checkout(a.id,'vr-5',999);
+    await service.handleStripeEvent(ev);
+    const pi=ev.data.object['payment_intent'];
+    const refund=(id:string,total:number,whole=false):StripeEvent=>({id,type:'charge.refunded',data:{object:{id:'ch_p',payment_intent:pi,amount:999,amount_refunded:total,refunded:whole,currency:'gbp'}}});
+    await service.handleStripeEvent(refund('evt_p1',200));
+    await service.handleStripeEvent(refund('evt_p1_again',200));
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
+    expect((await store.flags()).map(f=>f.kind)).not.toContain('partial-refund');
+    await service.handleStripeEvent(refund('evt_p2',600));
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
+    expect((await store.flags()).filter(f=>f.kind==='partial-refund')).toHaveLength(1);
+    await service.handleStripeEvent(refund('evt_full',999,true));
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
+    const money=(await store.ledger({accountId:a.id})).filter(e=>e.type==='refund').map(e=>e.amountPence);
+    expect(money).toEqual([-200,-400,-399]);
+  });
+
   it('a full refund takes general sessions back even if spent (the balance can go below zero), once; a partial refund is flagged; a dispute is flagged',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'g@example.com');
@@ -184,6 +204,7 @@ describe('sessions: nothing is free; a drive uses one session',()=>{
     expect((await store.findAccount({id:a.id}))!.balance).toBe(10);
     await service.handleStripeEvent({id:'evt_d',type:'charge.dispute.created',data:{object:{charge:'ch_1',amount:999,reason:'fraudulent'}}});
     expect((await store.flags()).map(f=>f.kind)).toEqual(expect.arrayContaining(['partial-refund','dispute']));
+    // (1000p of 2499p refunded: from £5, so flagged; the sessions stay.)
   });
 });
 

@@ -57,10 +57,10 @@ reference to the pack).
   nothing more can be started until it is topped up.
 - **Full refund of a Starter Pass:** each unused allowance is taken back; one already used stays used and is flagged
   (`refund-after-use`).
-- **Partial refunds:** nothing is changed automatically; flagged (`partial-refund`) for a person to decide.
-  *(Policy not yet decided: how many sessions a partial refund should remove.)*
-- **Referral rewards** earned by a payment that is later refunded stay with the referrer and are flagged
-  (`refund-after-referral-reward`). *(Policy not yet decided.)*
+- **Partial refunds** (a goodwill gesture, a missed promotion code): the money is recorded and the sessions stay.
+  Under £5 in all on one payment, that is all. From £5, it is also flagged (`partial-refund`) for a person to decide
+  whether to remove sessions (by hand, with an adjustment).
+- **Referral rewards** earned by a payment that is later refunded stay with the referrer.
 - **Disputes:** flagged (`dispute`); access is not changed automatically.
 
 Flags are in the `flags` collection for review.
