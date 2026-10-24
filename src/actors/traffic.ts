@@ -289,6 +289,9 @@ export class Traffic implements SimModule{
         if(along>0&&along<40&&side<car.halfWidth+1.15&&along-len-car.halfLength<gap){gap=along-len-car.halfLength;why=what}
       };
       const oncoming:Array<{along:number}>=[];
+      // Meeting a car out past parked cars on a narrow street: the one in its lane tucks in to its kerb and waits
+      // (tuck); the one out passing squeezes by, closer to the parked cars (tight).
+      let tuck=false,tight=false,blocked=false;
       for(const o of this.drivers){
         if(o===d||!o.car.visible)continue;
         const op=o.car.pose.position,ofx=Math.sin(o.car.pose.heading),ofz=-Math.cos(o.car.pose.heading);
@@ -314,8 +317,13 @@ export class Traffic implements SimModule{
         else if(facing<-.5){
           const dx=op.x-pos.x,dz=op.z-pos.z,along=dx*fwd.x+dz*fwd.z,side=Math.abs(dx*fwd.z-dz*fwd.x);
           if(along>0&&along<40&&side<4)oncoming.push({along});
+          const oOut=!!o.leg.road&&o.lat<o.leg.lane-.4,meOut=!!d.leg.road&&d.lat<d.leg.lane-.4,near=along>0&&along<40&&side<car.halfWidth+o.car.halfWidth+.8;
+          // Out past parked cars with it coming: carry on by it (it tucks in), stopping only while there is no room.
+          if(meOut&&!oOut&&near){tight=true;if(side<car.halfWidth+o.car.halfWidth+.05){blocked=true;ahead(op.x,op.z,o.car.halfLength+1.5,`facing ${o.car.id}`)}}
+          // In this lane with it coming out past parked cars: tuck in and wait well back for it.
+          else if(oOut&&!meOut&&near){tuck=true;ahead(op.x,op.z,o.car.halfLength+9,`waiting for ${o.car.id}`)}
           // Nose to nose in the same strip of road (a narrow street): stop well short.
-          if(side<1.5)ahead(op.x,op.z,o.car.halfLength+3,`facing ${o.car.id}`);
+          else if(side<1.5)ahead(op.x,op.z,o.car.halfLength+3,`facing ${o.car.id}`);
           // Coming out past parked cars on its side towards this one (this one still in its lane): wait well back,
           // so it can pass them and pull back in before the two meet.
           else if(o.leg.road&&o.lat<o.leg.lane-.4&&d.lat>d.leg.lane-.4&&side<car.halfWidth+o.car.halfWidth+.6)ahead(op.x,op.z,o.car.halfLength+9,`waiting for ${o.car.id}`);
@@ -436,14 +444,18 @@ export class Traffic implements SimModule{
         const {q,along,left,isLearner,qHalfLength}=pass;
         // Not yet out, and someone coming: wait behind it until they have passed. Once out alongside it, carry on
         // past it (oncoming traffic waits): never back into the lane through it.
-        if(oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2&&along>qHalfLength+car.halfLength+.8){target=Math.min(target,Math.max(0,(along-qHalfLength-car.halfLength-2.5)*.5));car.speed=Math.min(car.speed,target+.5)}
+        // Out but not yet alongside it, and no room to squeeze by a car coming: back into the lane behind it.
+        if(((oncoming.some(o=>o.along<along+25)&&d.lat>d.leg.lane-.2)||blocked)&&along>qHalfLength+car.halfLength+.8){target=Math.min(target,Math.max(0,(along-qHalfLength-car.halfLength-2.5)*.5));car.speed=Math.min(car.speed,target+.5)}
         else if(isLearner)want=d.leg.lane-2.6;
         else{
           // Out far enough to clear its side (its own width, not a typical car's) with a little room.
           const qHalfWidth=(q as Partial<KerbFootprint>).halfWidth??.9;
-          want=Math.min(d.leg.lane,d.lat+left-qHalfWidth-car.halfWidth-.35);
+          want=Math.min(d.leg.lane,d.lat+left-qHalfWidth-car.halfWidth-(tight?.15:.35));
         }
       }
+      // Tucked in for a car coming out past parked cars (not while alongside a parked car on this side).
+      const besideParked=!!pass&&!pass.isLearner&&pass.along<pass.qHalfLength+car.halfLength+1;
+      if(tuck&&!besideParked&&d.leg.road)want=Math.max(want,Math.min(d.leg.lane+.55,d.leg.road.lanes.width*d.leg.road.lanes.count/2-car.halfWidth-.1));
       d.lat+=Math.max(-SIDEWAYS*dt,Math.min(SIDEWAYS*dt,want-d.lat));
       car.speed=car.speed<target?Math.min(target,car.speed+ACCEL*dt):Math.max(target,car.speed-BRAKE*dt);
       // (Waiting at a red light is not being stuck.)
