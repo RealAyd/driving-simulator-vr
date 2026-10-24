@@ -47,6 +47,8 @@ export interface LedgerEntry{
   currency:string;
   stripe?:{event?:string;checkoutSession?:string;paymentIntent?:string;paymentLink?:string;charge?:string};
   actor:'customer'|'system'|'stripe'|'admin';
+  /** The admin's email, on an entry an admin recorded. */
+  by?:string;
   reason:string;
   /** Unique: the same payment, drive or reward can never be recorded twice. */
   idempotencyKey:string;
@@ -59,7 +61,8 @@ export interface Drive{
   kind:string;
   scenario:string;
   startedAt:Date;
-  status:'started'|'loaded'|'failed'|'completed';
+  /** 'unpaid': not started, for want of a session. */
+  status:'started'|'loaded'|'failed'|'completed'|'unpaid';
   mode:Mode;
   /** Where its session came from (a refund goes back there). */
   paidFrom:Pot|'sessions';
@@ -77,7 +80,11 @@ export interface LoginCode{
   ref?:string;
 }
 
-export interface Flag{id:string;kind:string;data:Record<string,unknown>;createdAt:Date}
+export interface Flag{id:string;kind:string;data:Record<string,unknown>;createdAt:Date;resolvedAt?:Date;resolvedBy?:string;note?:string}
+
+export type LedgerQuery={accountId?:string;paymentIntent?:string;type?:LedgerType;types?:LedgerType[];since?:Date;until?:Date};
+/** Sign-ups through each referrer's link: how many joined, and how many of those have paid with money. */
+export interface ReferrerCount{referrerId:string;joined:number;paid:number}
 
 export type AccountQuery={id:string}|{email:string}|{emailKey:string}|{googleSub:string}|{appleSub:string}|{referralCode:string};
 
@@ -99,7 +106,8 @@ export interface Store{
    * above zero ('insufficient' if not).
    */
   appendLedger(e:Omit<LedgerEntry,'id'|'createdAt'>,opts?:{requireBalance?:boolean}):Promise<'ok'|'duplicate'|'insufficient'>;
-  ledger(q:{accountId?:string;paymentIntent?:string;type?:LedgerType}):Promise<LedgerEntry[]>;
+  /** Oldest first. `since` inclusive, `until` exclusive. */
+  ledger(q:LedgerQuery):Promise<LedgerEntry[]>;
   createDrive(d:Omit<Drive,'id'>):Promise<Drive>;
   getDrive(id:string):Promise<Drive|null>;
   updateDrive(id:string,set:Partial<Omit<Drive,'id'>>):Promise<void>;
@@ -110,7 +118,23 @@ export interface Store{
   /** Counts a hit in a fixed window; false once `max` is reached. */
   rateHit(key:string,windowMs:number,max:number):Promise<boolean>;
   flag(kind:string,data:Record<string,unknown>):Promise<void>;
-  flags():Promise<Flag[]>;
+  /** Newest first (at most 200). */
+  flags(q?:{state?:'open'|'resolved'|'all'}):Promise<Flag[]>;
+  /** false if there is no such flag or it was resolved already. */
+  resolveFlag(id:string,by:string,note:string):Promise<boolean>;
+
+  // ---- For the admin hub ----
+  /** Newest first. `search`: part of the email, or an exact referral code or account id. */
+  listAccounts(q:{search?:string;limit:number}):Promise<Account[]>;
+  findAccounts(ids:string[]):Promise<Account[]>;
+  countAccounts(q:{since?:Date;paid?:boolean;referred?:boolean}):Promise<number>;
+  /** Sessions and Starter Pass drives held by all accounts. */
+  heldTotals():Promise<{sessions:number;allowances:number}>;
+  /** Newest first. */
+  listDrives(q:{accountId?:string;since?:Date;limit:number}):Promise<Drive[]>;
+  referrers():Promise<ReferrerCount[]>;
+  /** Drives started since then, by kind, and how many failed to load. */
+  driveCounts(since:Date):Promise<Record<Mode|'failed'|'total',number>>;
 }
 
 export class MemoryStore implements Store{
@@ -155,8 +179,9 @@ export class MemoryStore implements Store{
     else a.balance+=e.sessionsDelta;
     return 'ok' as const;
   }
-  async ledger(q:{accountId?:string;paymentIntent?:string;type?:LedgerType}){
-    return this.entries.filter(e=>(!q.accountId||e.accountId===q.accountId)&&(!q.paymentIntent||e.stripe?.paymentIntent===q.paymentIntent)&&(!q.type||e.type===q.type));
+  async ledger(q:LedgerQuery){
+    return this.entries.filter(e=>(!q.accountId||e.accountId===q.accountId)&&(!q.paymentIntent||e.stripe?.paymentIntent===q.paymentIntent)&&(!q.type||e.type===q.type)
+      &&(!q.types||q.types.includes(e.type))&&(!q.since||e.createdAt>=q.since)&&(!q.until||e.createdAt<q.until)).map(e=>({...e}));
   }
   async createDrive(d:Omit<Drive,'id'>){
     const drive={...d,id:randomUUID()};
@@ -186,5 +211,47 @@ export class MemoryStore implements Store{
     r.n++;return true;
   }
   async flag(kind:string,data:Record<string,unknown>){this.flagged.push({id:randomUUID(),kind,data,createdAt:new Date()})}
-  async flags(){return [...this.flagged]}
+  async flags(q:{state?:'open'|'resolved'|'all'}={}){
+    const state=q.state??'all';
+    return this.flagged.filter(f=>state==='all'||(state==='open')===!f.resolvedAt).reverse().slice(0,200).map(f=>({...f}));
+  }
+  async resolveFlag(id:string,by:string,note:string){
+    const f=this.flagged.find(x=>x.id===id);
+    if(!f||f.resolvedAt)return false;
+    Object.assign(f,{resolvedAt:new Date(),resolvedBy:by,note});
+    return true;
+  }
+  private newest(){return [...this.accounts.values()].sort((a,b)=>b.createdAt.getTime()-a.createdAt.getTime())}
+  async listAccounts(q:{search?:string;limit:number}){
+    const t=q.search?.trim().toLowerCase();
+    return this.newest().filter(a=>!t||a.email?.includes(t)||a.referralCode.toLowerCase()===t||a.id===t).slice(0,q.limit).map(a=>({...a,allowances:{...a.allowances}}));
+  }
+  async findAccounts(ids:string[]){return ids.flatMap(id=>{const a=this.accounts.get(id);return a?[{...a}]:[]})}
+  async countAccounts(q:{since?:Date;paid?:boolean;referred?:boolean}){
+    return [...this.accounts.values()].filter(a=>(!q.since||a.createdAt>=q.since)&&(!q.paid||!!a.firstPaidAt)&&(!q.referred||!!a.referredBy)).length;
+  }
+  async heldTotals(){
+    let sessions=0,allowances=0;
+    for(const a of this.accounts.values()){sessions+=a.balance;allowances+=Object.values(a.allowances??{}).reduce((n,v)=>n+(v??0),0)}
+    return {sessions,allowances};
+  }
+  async listDrives(q:{accountId?:string;since?:Date;limit:number}){
+    return [...this.drives.values()].filter(d=>(!q.accountId||d.accountId===q.accountId)&&(!q.since||d.startedAt>=q.since))
+      .sort((a,b)=>b.startedAt.getTime()-a.startedAt.getTime()).slice(0,q.limit).map(d=>({...d}));
+  }
+  async referrers(){
+    const by=new Map<string,ReferrerCount>();
+    for(const a of this.accounts.values()){
+      if(!a.referredBy)continue;
+      const r=by.get(a.referredBy)??{referrerId:a.referredBy,joined:0,paid:0};
+      r.joined++;if(a.firstPaidAt)r.paid++;
+      by.set(a.referredBy,r);
+    }
+    return [...by.values()].sort((a,b)=>b.joined-a.joined);
+  }
+  async driveCounts(since:Date){
+    const n={lesson:0,test:0,free:0,failed:0,total:0};
+    for(const d of this.drives.values())if(d.startedAt>=since&&d.status!=='unpaid'){n.total++;n[d.mode]++;if(d.status==='failed')n.failed++}
+    return n;
+  }
 }

@@ -7,7 +7,7 @@
 type Pot='lesson'|'test'|'free';
 type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean};
-type Me={signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;
+type Me={signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
   history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>};
 /** A drive the server has started (its session used). */
 export type PaidDrive={id:string};
@@ -200,6 +200,7 @@ export class Access{
     }));
     if(!packs.length)byId('pack-list').textContent='Sessions are not on sale yet.';
     byId<HTMLInputElement>('invite-link').value=`${location.origin}${location.pathname}?ref=${me.referralCode}`;
+    byId('admin-link').hidden=!me.admin;
     byId('invite-stats').textContent=me.invited?`${me.invited} joined with your link · ${me.rewarded} free session${me.rewarded===1?'':'s'} earned`:'';
     const LABEL:Record<string,string>={purchase:'Bought',promo:'Promotion',referral_free_drive:'Free drive (invited)',referral_bonus:'Free session (you invited someone)',
       consumed:'Used',drive_refund:'Given back (did not load)',refund:'Refunded',adjustment:'Adjusted',allowance:'Starter Pass',

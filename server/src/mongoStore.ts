@@ -1,6 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {MongoClient,MongoServerError,type Collection,type Db} from 'mongodb';
-import type {Account,AccountQuery,Drive,Flag,LedgerEntry,LedgerType,LoginCode,Store} from './store.js';
+import type {Account,AccountQuery,Drive,Flag,LedgerEntry,LedgerQuery,LoginCode,Mode,ReferrerCount,Store} from './store.js';
 
 type Doc<T extends {id:string}>=Omit<T,'id'>&{_id:string};
 const out=<T extends {id:string}>(d:Doc<T>|null):T|null=>{
@@ -9,6 +9,8 @@ const out=<T extends {id:string}>(d:Doc<T>|null):T|null=>{
   return {...rest,id:_id} as unknown as T;
 };
 const duplicate=(e:unknown)=>e instanceof MongoServerError&&e.code===11000;
+/** Text typed into the admin search, matched literally. */
+const literal=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
 /** The hosted store: one database (e.g. dp_sim_staging), its own collections and indexes. */
 export class MongoStore implements Store{
@@ -40,6 +42,10 @@ export class MongoStore implements Store{
     await this.entries.createIndex({idempotencyKey:1},{unique:true});
     await this.entries.createIndex({accountId:1,createdAt:1});
     await this.entries.createIndex({'stripe.paymentIntent':1},{sparse:true});
+    await this.entries.createIndex({type:1,createdAt:1});
+    await this.accounts.createIndex({createdAt:-1});
+    await this.drives.createIndex({startedAt:-1});
+    await this.flagged.createIndex({resolvedAt:1,createdAt:-1});
     await this.drives.createIndex({accountId:1,startedAt:-1});
     await this.codes.createIndex({tokenHash:1});
     await this.codes.createIndex({email:1,expiresAt:-1});
@@ -89,11 +95,13 @@ export class MongoStore implements Store{
     await this.accounts.updateOne({_id:e.accountId},{$inc:{[field]:e.sessionsDelta}});
     return 'ok' as const;
   }
-  async ledger(q:{accountId?:string;paymentIntent?:string;type?:LedgerType}){
-    const filter:Record<string,string>={};
+  async ledger(q:LedgerQuery){
+    const filter:Record<string,unknown>={};
     if(q.accountId)filter['accountId']=q.accountId;
     if(q.paymentIntent)filter['stripe.paymentIntent']=q.paymentIntent;
     if(q.type)filter['type']=q.type;
+    else if(q.types)filter['type']={$in:q.types};
+    if(q.since||q.until)filter['createdAt']={...(q.since?{$gte:q.since}:{}),...(q.until?{$lt:q.until}:{})};
     return (await this.entries.find(filter).sort({createdAt:1}).toArray()).map(d=>out<LedgerEntry>(d)!);
   }
   async createDrive(d:Omit<Drive,'id'>){
@@ -126,5 +134,45 @@ export class MongoStore implements Store{
   async flag(kind:string,data:Record<string,unknown>){
     await this.flagged.insertOne({_id:randomUUID(),kind,data,createdAt:new Date()});
   }
-  async flags(){return (await this.flagged.find().sort({createdAt:-1}).limit(200).toArray()).map(d=>out<Flag>(d)!)}
+  async flags(q:{state?:'open'|'resolved'|'all'}={}){
+    const state=q.state??'all';
+    const filter=state==='open'?{resolvedAt:{$exists:false}}:state==='resolved'?{resolvedAt:{$exists:true}}:{};
+    return (await this.flagged.find(filter).sort({createdAt:-1}).limit(200).toArray()).map(d=>out<Flag>(d)!);
+  }
+  async resolveFlag(id:string,by:string,note:string){
+    const r=await this.flagged.updateOne({_id:id,resolvedAt:{$exists:false}},{$set:{resolvedAt:new Date(),resolvedBy:by,note}});
+    return r.modifiedCount===1;
+  }
+  async listAccounts(q:{search?:string;limit:number}){
+    const t=q.search?.trim().toLowerCase();
+    const filter=t?{$or:[{email:{$regex:literal(t)}},{referralCode:t.toUpperCase()},{_id:t}]}:{};
+    return (await this.accounts.find(filter).sort({createdAt:-1}).limit(q.limit).toArray()).map(d=>out<Account>(d)!);
+  }
+  async findAccounts(ids:string[]){
+    return ids.length?(await this.accounts.find({_id:{$in:ids}}).toArray()).map(d=>out<Account>(d)!):[];
+  }
+  async countAccounts(q:{since?:Date;paid?:boolean;referred?:boolean}){
+    return this.accounts.countDocuments({...(q.since?{createdAt:{$gte:q.since}}:{}),...(q.paid?{firstPaidAt:{$exists:true}}:{}),...(q.referred?{referredBy:{$exists:true}}:{})});
+  }
+  async heldTotals(){
+    const [t]=await this.accounts.aggregate<{sessions:number;allowances:number}>([{$group:{_id:null,sessions:{$sum:'$balance'},
+      allowances:{$sum:{$add:[{$ifNull:['$allowances.lesson',0]},{$ifNull:['$allowances.test',0]},{$ifNull:['$allowances.free',0]}]}}}}]).toArray();
+    return {sessions:t?.sessions??0,allowances:t?.allowances??0};
+  }
+  async listDrives(q:{accountId?:string;since?:Date;limit:number}){
+    const filter={...(q.accountId?{accountId:q.accountId}:{}),...(q.since?{startedAt:{$gte:q.since}}:{})};
+    return (await this.drives.find(filter).sort({startedAt:-1}).limit(q.limit).toArray()).map(d=>out<Drive>(d)!);
+  }
+  async referrers(){
+    return this.accounts.aggregate<ReferrerCount>([{$match:{referredBy:{$exists:true}}},
+      {$group:{_id:'$referredBy',joined:{$sum:1},paid:{$sum:{$cond:[{$ifNull:['$firstPaidAt',false]},1,0]}}}},
+      {$sort:{joined:-1}},{$limit:500},{$project:{_id:0,referrerId:'$_id',joined:1,paid:1}}]).toArray();
+  }
+  async driveCounts(since:Date){
+    const rows=await this.drives.aggregate<{_id:{mode:Mode;status:string};n:number}>([{$match:{startedAt:{$gte:since},status:{$ne:'unpaid'}}},
+      {$group:{_id:{mode:'$mode',status:'$status'},n:{$sum:1}}}]).toArray();
+    const n={lesson:0,test:0,free:0,failed:0,total:0};
+    for(const r of rows){n.total+=r.n;n[r._id.mode]+=r.n;if(r._id.status==='failed')n.failed+=r.n}
+    return n;
+  }
 }

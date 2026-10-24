@@ -60,4 +60,35 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('MongoDB store: concurrency an
     const [x,y]=await Promise.all([service.signIn('email',{sub:'s',email:'twin@example.com',emailVerified:true}),service.signIn('email',{sub:'s',email:'twin@example.com',emailVerified:true})]);
     expect(x.id).toBe(y.id);
   });
+
+  it('admin hub queries: search, counts, totals, drives, referrers, flags, adjustments',async()=>{
+    const {store,service,checkout,account}=await setup();
+    const inviter=await account('mongo-inviter@example.com');
+    const friend=await service.signIn('email',{sub:'f',email:'mongo.friend@example.com',emailVerified:true},inviter.referralCode);
+    await service.handleStripeEvent(checkout(friend.id,'vr-5',999));
+    await service.handleStripeEvent(checkout(inviter.id,'starter',299));
+    await service.startDrive(friend.id,'free','goodmayes-free-drive');
+    await service.startDrive(inviter.id,'lesson','goodmayes-lesson');
+    expect((await store.listAccounts({search:'friend',limit:10})).map(a=>a.email)).toEqual(['mongo.friend@example.com']);
+    expect(await store.listAccounts({search:'.*',limit:10})).toEqual([]);
+    expect((await store.listAccounts({search:inviter.referralCode.toLowerCase(),limit:10}))[0]!.id).toBe(inviter.id);
+    expect((await store.listAccounts({limit:10}))[0]!.id).toBe(friend.id);
+    expect(await store.countAccounts({})).toBe(2);
+    expect(await store.countAccounts({paid:true})).toBe(2);
+    expect(await store.countAccounts({referred:true})).toBe(1);
+    // friend: 1 free drive + 5 - 1 used; inviter: 1 referral session; Starter: 3 - 1 lesson used.
+    expect(await store.heldTotals()).toEqual({sessions:6,allowances:2});
+    expect(await store.driveCounts(new Date(Date.now()-60_000))).toEqual({lesson:1,test:0,free:1,failed:0,total:2});
+    expect((await store.listDrives({accountId:friend.id,limit:5}))).toHaveLength(1);
+    expect(await store.referrers()).toEqual([{referrerId:inviter.id,joined:1,paid:1}]);
+    expect((await store.findAccounts([inviter.id,friend.id,'nobody'])).map(a=>a.id).sort()).toEqual([inviter.id,friend.id].sort());
+    const money=await store.ledger({types:['purchase'],since:new Date(Date.now()-60_000),until:new Date(Date.now()+60_000)});
+    expect(money).toHaveLength(2);
+    await store.flag('dispute',{charge:'ch_x'});
+    const [f]=await store.flags({state:'open'});
+    expect(await store.resolveFlag(f!.id,'boss@example.com','done')).toBe(true);
+    expect(await store.resolveFlag(f!.id,'boss@example.com','again')).toBe(false);
+    expect(await store.flags({state:'open'})).toEqual([]);
+    expect((await store.flags({state:'resolved'}))[0]).toMatchObject({resolvedBy:'boss@example.com',note:'done'});
+  });
 });

@@ -70,3 +70,27 @@ Flags are in the `flags` collection for review.
 A new account arriving through `?ref=CODE` gets one free drive (a general session, usable for any kind of drive),
 once per person (email aliases count as one person). The referrer gets one session after that person's first payment
 with money (once per referred person).
+
+## Admin hub (`/admin.html`)
+
+For the accounts in `ADMIN_EMAILS` (comma-separated, matched against the account's verified email). Everyone else gets
+403. The hub needs a sign-in from the last 12 hours (an older cookie still works for driving, but the hub asks to sign
+in again). Changes are accepted only from this site's own page.
+
+- **Overview:** accounts (new in 7 and 30 days), paying customers, money paid and refunded (from the ledger), drives in
+  the last 30 days by kind and how many failed to load, sessions held by customers, open flags.
+- **Customers:** search by part of the email, a referral code or an account id; each customer's full ledger and
+  recent drives.
+- **Adjust sessions:** add or remove general sessions or one Starter Pass pot, with a reason. It is a new `adjustment`
+  entry in the ledger carrying the admin's email (`by`); entries are never edited. A removal cannot take a balance
+  below zero. Each submission carries a request id, so a double click records once.
+- **Payments:** purchases, promotion-code checkouts, refunds and duplicate Starter Passes in a date range, with a CSV
+  download (spreadsheet formulas in text cells are made plain).
+- **Flags:** everything the service has set aside for a person (partial refunds of £5 or more, disputes, unmatched
+  payments, refused invites, ...). Marking one resolved records who and a note.
+- **Referrals:** each referrer, how many joined with their link, how many of those have paid, sessions earned.
+
+API: `GET /api/admin/overview`, `GET /api/admin/customers?q=`, `GET /api/admin/customers/:id`,
+`POST /api/admin/customers/:id/adjust {sessions, pot|null, reason, requestId}`,
+`GET /api/admin/payments?from=YYYY-MM-DD&to=YYYY-MM-DD[&format=csv]`, `GET /api/admin/flags?state=open|resolved|all`,
+`POST /api/admin/flags/:id/resolve {note}`, `GET /api/admin/referrals`.

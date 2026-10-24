@@ -161,7 +161,7 @@ export class Service{
     let paidFrom:Pot|'sessions'|null=null;
     if(await take(mode)==='ok')paidFrom=mode;
     else if(await take(undefined)==='ok')paidFrom='sessions';
-    if(!paidFrom){await this.store.updateDrive(drive.id,{status:'failed'});return {ok:false,reason:'no-sessions'}}
+    if(!paidFrom){await this.store.updateDrive(drive.id,{status:'unpaid'});return {ok:false,reason:'no-sessions'}}
     await this.store.updateDrive(drive.id,{paidFrom});
     return {ok:true,drive:{...drive,paidFrom},balance:(await this.store.findAccount({id:accountId}))!.balance};
   }
@@ -169,7 +169,7 @@ export class Service{
   /** The app reports how the drive went; one that failed to load gives its session back. */
   async driveStatus(accountId:string,driveId:string,status:'loaded'|'failed'|'completed'):Promise<boolean>{
     const d=await this.store.getDrive(driveId);
-    if(!d||d.accountId!==accountId)return false;
+    if(!d||d.accountId!==accountId||d.status==='unpaid')return false;
     if(status==='failed'&&d.status==='started'&&!d.refunded&&Date.now()-d.startedAt.getTime()<=REFUND_WINDOW_MS){
       const today=await this.store.countDrives({accountId,since:new Date(Date.now()-24*3600_000),refunded:true});
       if(today>=REFUNDS_PER_DAY){await this.store.flag('drive-refunds',{account:accountId,drive:driveId});await this.store.updateDrive(driveId,{status});return true}
