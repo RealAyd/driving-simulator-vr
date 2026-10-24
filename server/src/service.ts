@@ -11,7 +11,10 @@ export interface StripeEvent{id:string;type:string;data:{object:Record<string,un
 export interface StripeApi{
   /** Checks the signature of a webhook delivery; throws if it is not from Stripe. */
   constructEvent(raw:Buffer,signature:string):StripeEvent;
+  /** A Payment Link's address and metadata; null if Stripe has no such link; throws if Stripe could not be asked. */
   paymentLink(id:string):Promise<{url:string;metadata:Record<string,string>}|null>;
+  /** Completed Checkout Sessions created since then (newest first), as the webhook would deliver them. */
+  recentCheckouts(since:Date):Promise<Array<Record<string,unknown>>>;
   /** Refunds a payment in full (a second Starter Pass); false if Stripe refused. */
   refund(paymentIntent:string,reason:string):Promise<boolean>;
 }
@@ -214,9 +217,16 @@ export class Service{
   }
 
   /** The pack a paid Payment Link sells: the link is looked up with Stripe and matched to the server's own packs. */
-  private async packForLink(linkId:string|null):Promise<Pack|null>{
+  private async packForLink(linkId:string|null,amountPence:number):Promise<Pack|null>{
     if(!linkId||!this.stripe)return null;
-    const link=await this.stripe.paymentLink(linkId);
+    let link:Awaited<ReturnType<StripeApi['paymentLink']>>;
+    try{link=await this.stripe.paymentLink(linkId)}catch(e){
+      // Stripe could not be asked (most often: the key cannot read Payment Links). Said in the log; the pack is then
+      // the one whose price is exactly what was paid (a discounted payment cannot be told apart: flagged instead).
+      console.error(`Stripe Payment Link lookup failed (${linkId}): ${e instanceof Error?e.message.slice(0,200):'error'}. Check the key can read Payment Links.`);
+      const byPrice=this.config.packs.filter(p=>Math.round(Number(p.price.replace(/[^\d.]/g,''))*100)===amountPence);
+      return byPrice.length===1?byPrice[0]!:null;
+    }
     if(!link)return null;
     const known=this.config.packs.find(p=>p.links[this.config.stripeMode]===link.url);
     if(known)return known;
@@ -225,10 +235,17 @@ export class Service{
     return Number.isInteger(fromMeta)&&fromMeta>0&&fromMeta<=100?{id:`link-${linkId}`,label:'Sessions',price:'',sessions:fromMeta,links:{test:'',live:''}}:null;
   }
 
+  /** Since this server started: webhook deliveries accepted and refused (for the admin hub). */
+  readonly webhookStats={received:0,lastReceivedAt:null as Date|null,refused:0,lastRefusedAt:null as Date|null};
+
   async stripeWebhook(raw:Buffer,signature:string):Promise<'ok'|'bad-signature'>{
     let event:StripeEvent;
     // (Logged without anything secret: whether deliveries arrive, and whether they are signed with this endpoint's secret.)
-    try{event=this.stripe!.constructEvent(raw,signature)}catch{console.log(`Stripe webhook refused: the signature does not match STRIPE_WEBHOOK_SECRET (${raw.length} bytes)`);return 'bad-signature'}
+    try{event=this.stripe!.constructEvent(raw,signature)}catch{
+      this.webhookStats.refused++;this.webhookStats.lastRefusedAt=new Date();
+      console.log(`Stripe webhook refused: the signature does not match STRIPE_WEBHOOK_SECRET (${raw.length} bytes)`);return 'bad-signature';
+    }
+    this.webhookStats.received++;this.webhookStats.lastReceivedAt=new Date();
     console.log(`Stripe webhook: ${event.type} ${event.id}`);
     await this.handleStripeEvent(event);
     return 'ok';
@@ -295,6 +312,36 @@ export class Service{
   }
 
   /**
+   * Back from paying: Stripe is asked for this account's completed checkouts of the last two days, and any the
+   * webhook has not credited yet are credited now (the same steps, keyed on the checkout, so nothing is ever credited
+   * twice whichever comes first). Crediting then does not depend on the webhook arriving.
+   */
+  async reconcile(accountId:string):Promise<{credited:number}|{error:'slow-down'|'unavailable'|'not-found'}>{
+    const a=await this.store.findAccount({id:accountId});
+    if(!a)return {error:'not-found'};
+    if(!this.stripe)return {error:'unavailable'};
+    if(!await this.store.rateHit(`reconcile:${accountId}`,600_000,30))return {error:'slow-down'};
+    let sessions:Array<Record<string,unknown>>;
+    try{sessions=await this.stripe.recentCheckouts(new Date(Date.now()-48*3600_000))}
+    catch(e){console.error(`Stripe checkout lookup failed: ${e instanceof Error?e.message.slice(0,200):'error'}. Check the key can read Checkout Sessions.`);return {error:'unavailable'}}
+    const credited=new Set((await this.store.ledger({accountId})).map(e=>e.stripe?.checkoutSession).filter(Boolean));
+    const email=a.email;
+    let n=0;
+    for(const o of sessions){
+      const ref=typeof o['client_reference_id']==='string'?o['client_reference_id']:null;
+      const payer=(o['customer_details'] as {email?:string|null}|null|undefined)?.email;
+      // Its own (by the reference the server put on the link), or paid without one from this account's email.
+      const mine=ref?ref===a.id:!!email&&!!payer&&normaliseEmail(payer)===email;
+      const paid=o['payment_status']==='paid'||o['payment_status']==='no_payment_required';
+      if(!mine||!paid||credited.has(String(o['id'])))continue;
+      await this.credit({id:'reconcile',type:'checkout.session.completed',data:{object:o}},o);
+      n++;
+    }
+    if(n)console.log(`Stripe reconcile: ${n} checkout(s) credited that the webhook had not delivered`);
+    return {credited:n};
+  }
+
+  /**
    * A paid checkout: every step is idempotent (keys on the checkout), so a webhook delivered twice, or two deliveries
    * at the same moment, grant once, and a delivery that stopped part-way finishes on the retry.
    */
@@ -305,7 +352,7 @@ export class Service{
     const account=(ref?await this.store.findAccount({id:ref}):null)
       ??(details?.email?await this.store.findAccount({email:normaliseEmail(details.email)}):null);
     const linkId=typeof o['payment_link']==='string'?o['payment_link']:null;
-    const pack=await this.packForLink(linkId);
+    const pack=await this.packForLink(linkId,Number(o['amount_total']??0));
     if(!account||!pack){
       await this.store.flag(account?'payment-unknown-pack':'payment-no-account',{event:event.id,checkoutSession:sessionId,paymentLink:linkId,email:details?.email??null,ref});
       return;

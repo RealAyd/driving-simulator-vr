@@ -236,6 +236,8 @@ export class Access{
     const note=byId('account-note');
     note.textContent='Payment received: adding your sessions…';
     for(let i=0;i<30;i++){
+      // Every few seconds the server also asks Stripe directly (crediting does not wait for Stripe's webhook).
+      if(i%3===0)await api('checkout/reconcile',{}).catch(()=>null);
       await this.refresh();
       if(this.me.signedIn&&total(this.me)>(before?.total??-1)){
         // What this payment added, said plainly.
