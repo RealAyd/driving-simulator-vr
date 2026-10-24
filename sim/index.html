@@ -234,6 +234,9 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 #hud-status{position:absolute;left:var(--sl);bottom:calc(var(--sb) + 100px);font-size:11px;color:var(--soft);background:var(--panel);border-radius:8px;padding:3px 8px}
 body.phone #hud-status{display:none}
 #hud-credit{position:absolute;left:50%;top:1px;transform:translateX(-50%);font-size:9px;color:#e2e8f0;opacity:.7;text-shadow:0 0 3px #000;white-space:nowrap}
+#hud-tip{position:absolute;left:50%;top:calc(var(--st) + 56px);transform:translateX(-50%);width:max-content;max-width:min(520px,calc(100vw - 2 * (var(--sr) + 215px)));display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;background:rgba(10,15,28,.82);border:1px solid var(--accent);border-radius:14px;padding:8px 8px 8px 14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+#hud-tip b{color:var(--accent);flex:none}#hud-tip span{flex:1}
+#hud-tip button{pointer-events:auto;flex:none;min-width:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:var(--ink);font-size:16px;line-height:1}
 #hud-task{position:absolute;left:50%;top:calc(var(--st) + 4px);transform:translateX(-50%);max-width:calc(100vw - 2 * (var(--sr) + 215px));text-align:center;font-size:13px;font-weight:500;background:rgba(10,15,28,.78);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:7px 14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .hud-pill{position:absolute;left:var(--sl);top:var(--st);font-size:12px;font-weight:700;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:4px 11px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .hud-pill.mirror{border-color:var(--accent);color:var(--accent)}
@@ -413,9 +416,9 @@ dialog.glossary{max-width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 
 dialog.glossary::backdrop{background:rgba(2,6,23,.7)}
 dialog.glossary dt{font-weight:700;margin-top:10px}
 dialog.glossary dd{margin:2px 0 0;color:var(--soft);font-size:14px}
-html[data-text=large] .card,html[data-text=large] #hud-task,html[data-text=large] #hud-question,html[data-text=large] dialog.glossary{zoom:1.15}
+html[data-text=large] .card,html[data-text=large] #hud-task,html[data-text=large] #hud-tip,html[data-text=large] #hud-question,html[data-text=large] dialog.glossary{zoom:1.15}
 html[data-text=large] .tour-tip{font-size:15px}html[data-text=larger] .tour-tip{font-size:17px}
-html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=larger] #hud-question,html[data-text=larger] dialog.glossary{zoom:1.32}
+html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=larger] #hud-tip,html[data-text=larger] #hud-question,html[data-text=larger] dialog.glossary{zoom:1.32}
 </style>
 </head>
 <body>
@@ -685,6 +688,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
+  <div id="hud-tip" role="status" aria-live="polite" hidden><b>Tip</b><span id="hud-tip-text"></span><button id="hud-tip-close" type="button" aria-label="Close the tip">×</button></div>
   <div id="hud-flash" role="alert" hidden></div>
   <div id="hud-view-label" class="hud-pill" aria-live="polite">View: Forward</div>
   <button id="hud-behind" type="button" class="hud-round" aria-pressed="false" aria-label="Camera: switch to behind the car" title="Camera: driver's seat / behind the car (practice only)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v2.1l4.4-2.6a1 1 0 0 1 1.6.8v8.4a1 1 0 0 1-1.6.8L15 14.4v2.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 16.5z"/></svg></button>

@@ -35,6 +35,7 @@ import {SHOW_ME,TELL_ME,pick,tellMeChoices,type ShowMeQuestion,type TellMeQuesti
 import {CAR_CONTROLS,CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
 import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
+import {nextTip,type ControllerNames,type TipInput} from '../ui/controlTips';
 import {LESSONS,LESSONS_COMING,planLesson,type Lesson} from '../lessons/syllabus';
 import {Instructor} from '../lessons/instructor';
 import {DIFFICULTIES,savedDifficulty,saveDifficulty,type Difficulty} from './difficulty';
@@ -1502,7 +1503,8 @@ export async function boot():Promise<void>{
         menu=['Look straight ahead','To start: press Accelerate or Brake.',
           `Steering ◀ ${VIEWER_STEERING_LABEL[viewerSteering]} ▶ (Signal left/right): ${viewerSteeringHelp()}.`,
           `Accelerate (${describeBinding(controller.bindings.accelerate)}): hold to move. Brake (${describeBinding(controller.bindings.brake)}): at once. Up to ${runtime?.scenario.controllerDriving.assistedSpeedMph??15} mph.`,
-          extraBinding('view')?`Change view (${controlName('view')}): seat or behind the car.`:'Change view: set its button on the controller screen.'];
+          extraBinding('view')?`Change view (${controlName('view')}): seat or behind the car.`:'Change view: set its button on the controller screen.',
+          ...(tipText?[`Tip: ${tipText}`]:[])];
         wrapMenu=true;
       }
       else{menu=['Look straight ahead at Start','Parked practice: look around, check the mirrors,','and practise shoulder checks. Not scored.'];items=[START_ITEM]}
@@ -1609,6 +1611,33 @@ export async function boot():Promise<void>{
   sensitivity.addEventListener('change',()=>{tilt.tuning=TILT_SENSITIVITY[sensitivity.value as keyof typeof TILT_SENSITIVITY]});
   // Assisted steering by default on phones: the exercises are about judgement.
   setSteeringMode(steeringMode);
+
+  // ---- One control tip at the start of every drive (not on resuming from pause) ----
+  let tipText='',tipTimer=0,lastState=session.state;
+  const tipInput=():TipInput=>viewer.active&&viewerMode==='driving'?'headset':controllerState?.connected&&!viewer.active?'gamepad'
+    :quality.id==='phone'||matchMedia('(pointer: coarse)').matches?'touch':'keyboard';
+  const controllerNames=():ControllerNames=>({accelerate:describeBinding(controller.bindings.accelerate),brake:describeBinding(controller.bindings.brake),
+    signalLeft:describeBinding(controller.bindings['signal-left']),signalRight:describeBinding(controller.bindings['signal-right']),
+    pause:describeBinding(controller.bindings.pause),recentre:describeBinding(controller.bindings.recentre),view:extraBinding('view')?controlName('view'):null});
+  const hideTip=()=>{clearTimeout(tipTimer);byId('hud-tip').hidden=true};
+  const showTip=(tries=0)=>{
+    if(session.state!=='running')return;
+    // Not over the tour (it shows every control) or a Tell me question: after it, or not at all.
+    if(tutorial.active||!byId('hud-question').hidden){if(tries<20)tipTimer=window.setTimeout(()=>showTip(tries+1),1500);return}
+    const input=tipInput();
+    tipText=nextTip(input,steeringNow(),input==='gamepad'||input==='headset'?controllerNames():undefined);
+    byId('hud-tip-text').textContent=tipText;
+    // (In the headset it is on the start panel instead.)
+    byId('hud-tip').hidden=viewer.active;
+    clearTimeout(tipTimer);
+    tipTimer=window.setTimeout(hideTip,12_000);
+  };
+  byId('hud-tip-close').addEventListener('click',hideTip);
+  session.onChange(state=>{
+    if(state==='running'&&lastState!=='paused'){tipText='';clearTimeout(tipTimer);tipTimer=window.setTimeout(()=>showTip(),1500)}
+    else if(state!=='running')hideTip();
+    lastState=state;
+  });
   const wheelPreview=byId('tilt-preview');
 
   // ---- Exercises: menu, settings and briefing, then Start practice ----
@@ -1880,7 +1909,7 @@ export async function boot():Promise<void>{
     }
     resetAttempt();
     events.emit('session.reset',{variant:runtime?.variant?.id??null});
-    if(wasPaused)resume();
+    if(wasPaused){resume();tipText='';tipTimer=window.setTimeout(()=>showTip(),1500)}
     else if(wasFinished){session.to('running');clock.resume();canvas.focus()}
   };
   /** Voluntary exit: results show what happened so far, marked as exited. */
@@ -2273,6 +2302,7 @@ export async function boot():Promise<void>{
     /** Same as tapping a view button (or Forward). */
     selectView:(view:ViewTarget|'forward')=>selectView(view),
     hands:()=>cockpit.handsTurn,
+    tip:()=>({text:tipText,shown:!byId('hud-tip').hidden}),
     behind:()=>({on:behind,seconds:behindSeconds,orbitYaw:orbit.yaw,camera:{x:camera.position.x,z:camera.position.z},carModel:!!learnerBody?.isEnabled(),lPlates:!!lPlates?.isEnabled()}),
     viewLabel:()=>byId('hud-view-label').textContent,
     buses:()=>runtime?.buses.map(b=>({id:b.id,pose:b.pose,speed:b.speed,state:b.state,visible:b.visible,indicating:b.indicating}))??[],
