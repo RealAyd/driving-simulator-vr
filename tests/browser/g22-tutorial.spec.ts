@@ -41,7 +41,7 @@ test('G22: tutorial tours on the home screen and while driving',async({page},tes
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // Help is on the home screen.
-  await expect(page.locator('#help-home')).toHaveAttribute('href',/^mailto:support\.drivingpractice@gmail\.com/);
+  await expect(page.locator('#help-home')).toHaveAttribute('href','support.html');
 
   await page.click('[data-drive-mode=free]');
   await page.click('[data-exercise=goodmayes]');

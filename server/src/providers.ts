@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import {createRemoteJWKSet,jwtVerify} from 'jose';
 import type {Config} from './config.js';
 import type {Identity,IdentityVerifier,Mailer,StripeApi,StripeEvent} from './service.js';
+import type {Pusher} from './support.js';
 
 /** Email through Resend's API. */
 export function resendMailer(config:Config):Mailer{
@@ -13,6 +14,15 @@ export function resendMailer(config:Config):Mailer{
     if(!res.ok)throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0,300)}`);
   }};
 }
+
+/** Phone alerts through ntfy: the topic URL is private (whoever knows it can read it), so it is a secret. */
+export const ntfyPusher:Pusher={async push(url,m){
+  const u=new URL(url),topic=u.pathname.replace(/^\/+|\/+$/g,'');
+  // (JSON publishing: titles and text may be any language; headers could not carry them.)
+  const res=await fetch(`${u.origin}/`,{method:'POST',headers:{'Content-Type':'application/json',...(u.username?{Authorization:`Basic ${Buffer.from(`${decodeURIComponent(u.username)}:${decodeURIComponent(u.password)}`).toString('base64')}`}:{})},
+    body:JSON.stringify({topic,title:m.title,message:m.text,priority:m.urgent?5:3,click:m.click,tags:m.urgent?['rotating_light']:['speech_balloon']}),signal:AbortSignal.timeout(10_000)});
+  if(!res.ok)throw new Error(`ntfy ${res.status}`);
+}};
 
 /** Google and Apple ID tokens, checked against their published keys (signature, issuer, audience, expiry). */
 export function identityVerifier(config:Config):IdentityVerifier{
@@ -60,6 +70,12 @@ export function stripeApi(config:Config):StripeApi{
 export class OutboxMailer implements Mailer{
   readonly sent:Array<{to:string;subject:string;text:string;html:string}>=[];
   async send(m:{to:string;subject:string;text:string;html:string}){this.sent.push(m)}
+}
+
+/** Phone alerts kept in memory (local development and tests). */
+export class OutboxPusher implements Pusher{
+  readonly sent:Array<{url:string;title:string;text:string;urgent:boolean;click:string}>=[];
+  async push(url:string,m:{title:string;text:string;urgent:boolean;click:string}){this.sent.push({url,...m})}
 }
 
 /** Fake identities: the "token" is `sub|email`. */

@@ -1,6 +1,7 @@
 import {createHash,randomBytes,randomInt,timingSafeEqual} from 'node:crypto';
 import type {Config,Pack} from './config.js';
 import type {Account,Drive,Mode,Pot,Store} from './store.js';
+import {Support,type Pusher} from './support.js';
 
 export interface Mailer{send(m:{to:string;subject:string;text:string;html:string}):Promise<void>}
 export interface Identity{sub:string;email:string|null;emailVerified:boolean}
@@ -36,7 +37,7 @@ export function emailKey(email:string):string{
   const gmail=domain==='gmail.com'||domain==='googlemail.com';
   return `${gmail?base.replace(/\./g,''):base}@${gmail?'gmail.com':domain}`;
 }
-const EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** A sign-in code lasts this long; this many wrong guesses end it. */
 const CODE_MINUTES=15,CODE_ATTEMPTS=5;
@@ -48,7 +49,11 @@ const REFUND_WINDOW_MS=15*60_000,REFUNDS_PER_DAY=3;
 export type DriveStart={ok:true;drive:Drive;balance:number}|{ok:false;reason:'no-sessions'};
 
 export class Service{
-  constructor(readonly config:Config,readonly store:Store,private readonly mail:Mailer,private readonly ids:IdentityVerifier,private readonly stripe:StripeApi|null){}
+  /** Support requests (tickets, the response timer, the notification outbox). */
+  readonly support:Support;
+  constructor(readonly config:Config,readonly store:Store,private readonly mail:Mailer,private readonly ids:IdentityVerifier,private readonly stripe:StripeApi|null,pusher:Pusher|null=null){
+    this.support=new Support(config,store,mail,pusher);
+  }
 
   // ---- Accounts and referrals ----
 

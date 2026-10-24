@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import {MemorySupportStore,type SupportStore} from './supportStore.js';
 
 /**
  * What the service keeps: accounts, the append-only sessions ledger, drives (one consumed session each), sign-in
@@ -89,6 +90,8 @@ export interface ReferrerCount{referrerId:string;joined:number;paid:number}
 export type AccountQuery={id:string}|{email:string}|{emailKey:string}|{googleSub:string}|{appleSub:string}|{referralCode:string};
 
 export interface Store{
+  /** Support tickets, their messages and screenshots, and the notification outbox. */
+  readonly support:SupportStore;
   findAccount(q:AccountQuery):Promise<Account|null>;
   /** Fails (null) if the email is already used. */
   createAccount(a:Omit<Account,'id'|'balance'|'createdAt'>):Promise<Account|null>;
@@ -138,6 +141,7 @@ export interface Store{
 }
 
 export class MemoryStore implements Store{
+  readonly support=new MemorySupportStore();
   private accounts=new Map<string,Account>();
   private entries:LedgerEntry[]=[];
   private drives=new Map<string,Drive>();

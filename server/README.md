@@ -94,3 +94,32 @@ API: `GET /api/admin/overview`, `GET /api/admin/customers?q=`, `GET /api/admin/c
 `POST /api/admin/customers/:id/adjust {sessions, pot|null, reason, requestId}`,
 `GET /api/admin/payments?from=YYYY-MM-DD&to=YYYY-MM-DD[&format=csv]`, `GET /api/admin/flags?state=open|resolved|all`,
 `POST /api/admin/flags/:id/resolve {note}`, `GET /api/admin/referrals`.
+
+## Support (`/support.html`, and the hub's Support tab)
+
+- **Asking:** anyone can send a request, signed in or not: contact email (where replies go), optional phone (stored
+  in international form; a UK number starting 0 becomes +44), category, description and up to 5 screenshots (10 MB
+  each; JPEG, PNG, WebP or HEIC, checked by their bytes, never by what the browser says). A hidden field catches
+  bots; requests are rate-limited per address and per email.
+- **References and links:** each request is `DP-0001`, `DP-0002`, … The customer's emails carry a link to that one
+  request (a signature of its id with `SESSION_SECRET`), so they can read replies and answer without signing in.
+  A request is tied to an account only when sent signed in (anyone could type an email address; replies still go
+  only to that address).
+- **Priority** from the category (Highest: refund request; High: paid but cannot get in, sessions missing, a payment
+  or drive failed; Normal: bugs, questions, complaints; Lower: suggestions). An admin can change it; every change is
+  logged on the request.
+- **States:** Awaiting admin (new, or the customer replied) → In progress (acknowledged) / Awaiting customer
+  (answered) → Resolved. A reply to a resolved request reopens it.
+- **Response timer:** 5 minutes from the request (or the first customer reply after an answer). An admin reply or
+  **Acknowledge** stops it; opening the request or an internal note does not. When it passes, the request is marked
+  overdue and a reminder is sent, again every `SUPPORT_REMINDER_MINUTES` (30) until acknowledged. A worker in the
+  server does this every 20 seconds, with or without anyone in the hub; with several servers each reminder is
+  claimed once.
+- **Delivery:** every email and alert goes through `notification_outbox` and is retried after 1, 5, 15 and 60
+  minutes, then shown in the hub as not sent, with Retry now. The request and its messages are saved first, so a
+  failed email never loses one.
+- **Who is told:** new requests, customer replies and reminders go to `SUPPORT_INBOX` (default `EMAIL_REPLY_TO`).
+  Phone alerts are optional: set `SUPPORT_PUSH_URL` to a private ntfy topic URL (e.g. `https://ntfy.sh/<long random
+  name>`, kept as a secret) and install the ntfy app; Highest and High arrive as urgent alerts.
+- **Privacy:** internal notes and logged changes are never shown to the customer; screenshots are served only to the
+  request's customer and admins, as images (never as pages).

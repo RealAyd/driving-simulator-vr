@@ -91,4 +91,30 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('MongoDB store: concurrency an
     expect(await store.flags({state:'open'})).toEqual([]);
     expect((await store.flags({state:'resolved'}))[0]).toMatchObject({resolvedBy:'boss@example.com',note:'done'});
   });
+
+  it('support: numbers, reminders and outbox items are claimed once even by servers at the same moment; screenshots round-trip',async()=>{
+    const {store}=await setup();
+    const db=store.support;
+    const numbers=await Promise.all(Array.from({length:10},()=>db.nextTicketNumber()));
+    expect(new Set(numbers).size).toBe(10);
+    const now=new Date();
+    const t=await db.createTicket({ref:'DP-0001',product:'simulator',email:'m@example.com',category:'bug',priority:'normal',state:'awaiting_admin',summary:'x',
+      createdAt:now,updatedAt:now,awaitingSince:now,responseDueAt:now,nextReminderAt:now,overdue:false,reminders:0,lastCustomerMessageAt:now});
+    const claims=await Promise.all(Array.from({length:8},()=>db.claimDueReminder(new Date(now.getTime()+1),new Date(now.getTime()+60_000))));
+    expect(claims.filter(Boolean)).toHaveLength(1);
+    expect((await db.getTicket(t.id))!).toMatchObject({overdue:true,reminders:1});
+    await db.updateTicket(t.id,{state:'in_progress'},['responseDueAt','nextReminderAt']);
+    expect((await db.getTicket(t.id))!.nextReminderAt).toBeUndefined();
+    expect(await db.claimDueReminder(new Date(now.getTime()+3600_000),new Date())).toBeNull();
+    await db.enqueue({kind:'email',to:'a@example.com',subject:'s',text:'t'},now);
+    const leased=await Promise.all(Array.from({length:8},()=>db.claimOutbox(new Date(now.getTime()+1),new Date(now.getTime()+120_000))));
+    expect(leased.filter(Boolean)).toHaveLength(1);
+    const png=Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,1,2,3]);
+    const a=await db.saveAttachment({type:'image/png',size:png.length,data:png,claimHash:'h',expiresAt:new Date(Date.now()+60_000)});
+    expect((await Promise.all([db.claimAttachment(a.id,'h',t.id),db.claimAttachment(a.id,'h','other')])).filter(Boolean)).toHaveLength(1);
+    expect(await db.claimAttachment(a.id,'wrong',t.id)).toBe(false);
+    const back=(await db.getAttachment(a.id))!;
+    expect(back.data.equals(png)).toBe(true);
+    expect(back.expiresAt).toBeUndefined();
+  });
 });

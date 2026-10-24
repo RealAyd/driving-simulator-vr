@@ -1,5 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {MongoClient,MongoServerError,type Collection,type Db} from 'mongodb';
+import {MongoSupportStore} from './mongoSupportStore.js';
 import type {Account,AccountQuery,Drive,Flag,LedgerEntry,LedgerQuery,LoginCode,Mode,ReferrerCount,Store} from './store.js';
 
 type Doc<T extends {id:string}>=Omit<T,'id'>&{_id:string};
@@ -14,13 +15,15 @@ const literal=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
 /** The hosted store: one database (e.g. dp_sim_staging), its own collections and indexes. */
 export class MongoStore implements Store{
-  private constructor(private readonly db:Db){}
+  readonly support:MongoSupportStore;
+  private constructor(private readonly db:Db){this.support=new MongoSupportStore(db)}
 
   static async connect(uri:string):Promise<MongoStore>{
     const client=new MongoClient(uri);
     await client.connect();
     const store=new MongoStore(client.db());
     await store.indexes();
+    await store.support.indexes();
     return store;
   }
 

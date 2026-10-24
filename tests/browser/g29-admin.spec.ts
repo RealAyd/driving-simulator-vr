@@ -39,7 +39,7 @@ test('G29: a learner is not let in; the admin sees the overview, finds a custome
   await signIn(page,'boss@example.com');
   await expect(page.locator('#tabs')).toBeVisible();
   await expect(page.locator('#who')).toHaveText('boss@example.com');
-  await expect(page.locator('#stats .stat')).toHaveCount(9);
+  await expect(page.locator('#stats .stat')).toHaveCount(11);
   await expect(page.locator('#stats')).toContainText('£24.99');
   await page.screenshot({path:test.info().outputPath('g29-overview.png'),fullPage:true});
 
