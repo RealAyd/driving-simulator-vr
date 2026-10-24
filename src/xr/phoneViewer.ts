@@ -1,7 +1,7 @@
 import {Camera,FreeCamera,Matrix,PostProcess,Quaternion,ShaderStore,Vector3,Viewport,type Scene} from '../engine/babylon';
 import type {Vec3} from '../contracts';
 import {deviceBasis,recentred,rightOf,yawOf,type HeadBasis} from './headOrientation';
-import {IPHONE_14_PRO_MAX,eyeLayout,type ViewerProfile} from './viewerProfiles';
+import {IPHONE_14_PRO_MAX,METRES_PER_POINT,eyeLayout,type ViewerProfile} from './viewerProfiles';
 
 /**
  * Phone-viewer mode: side-by-side stereo for a phone in a cardboard-style
@@ -186,7 +186,10 @@ export class PhoneViewer{
     if(!profile||!this.active)return;
     const engine=this.scene.getEngine();
     const screenAspect=engine.getRenderWidth()/Math.max(1,engine.getRenderHeight());
-    const l=eyeLayout(profile,IPHONE_14_PRO_MAX.width,screenAspect);
+    // The drawing area's real size (the two pictures must sit under the lenses whatever room the page has).
+    const canvas=engine.getRenderingCanvas();
+    const cssWidth=canvas?.clientWidth||window.innerWidth,cssHeight=canvas?.clientHeight||window.innerHeight;
+    const l=eyeLayout(profile,cssWidth>0?cssWidth*METRES_PER_POINT:IPHONE_14_PRO_MAX.width,screenAspect,cssHeight>0?cssHeight*METRES_PER_POINT:IPHONE_14_PRO_MAX.height);
     const fov=profile.fovDeg*Math.PI/180;
     this.eyes.forEach((c,i)=>{
       const shift=i===0?l.shift.left:l.shift.right;

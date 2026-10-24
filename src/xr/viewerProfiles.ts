@@ -33,6 +33,12 @@ export const VIEWER_PROFILES:ViewerProfile[]=[
 
 /** iPhone 14 Pro Max display in landscape (6.7 in, 2796 × 1290 px at 460 ppi): width and height, metres. */
 export const IPHONE_14_PRO_MAX={width:.1544,height:.0712};
+/**
+ * Metres per CSS pixel (point) on iPhones with 460 ppi screens at 3x (iPhone 12 onwards, Pro and Pro Max alike):
+ * 154.4 mm across the 14 Pro Max's 932 points. The picture's real size comes from the area the page actually has
+ * (smaller in Safari with its bars showing, or on a smaller iPhone), not from one phone's full screen.
+ */
+export const METRES_PER_POINT=IPHONE_14_PRO_MAX.width/932;
 
 export interface EyeLayout{
   /** Horizontal shift of each eye's image, as a fraction of the eye's half-width (projection space): + moves right. */

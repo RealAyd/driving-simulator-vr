@@ -1467,6 +1467,13 @@ export async function boot():Promise<void>{
         ...CAL_ROWS.map((r,i)=>`${checkedDevice&&i===calRow?'▶ ':''}${r.label}: ${value(r.key)}`),
         `Head tracking ${headTracker.rate}/s; drift ${drift===null?'measuring (hold still)':`${drift.toFixed(1)}°/min`}`];
       items=calibrationItems();
+      // No motion readings: nothing follows the head, so nothing can be chosen by looking. Said plainly.
+      if(!headTracker.receiving&&performance.now()-viewerEnteredAt>2000){
+        menu=['No head tracking','The picture cannot follow your head, so nothing can be chosen by looking.',
+          'Tap the screen to leave. Then allow Motion & Orientation access, and open Driving Practice from the Home Screen.'];
+        wrapMenu=true;
+        items=[];
+      }
     }else if(session.state==='paused'){
       if(viewerMode==='driving'){
         const ok=!!(c?.connected&&c.device===checkedDevice);
@@ -1517,8 +1524,11 @@ export async function boot():Promise<void>{
     if(fired)viewerItem(fired);
     const accel=viewerMode==='driving'&&c?c.values.accelerate>0&&accelArmed:false;
     const braking=viewerMode==='driving'&&c?c.values.brake>0:false;
+    // The page not filling the screen (Safari's bars showing): the two pictures cannot sit under the lenses.
+    const short=Math.min(screen.width,screen.height),long=Math.max(screen.width,screen.height);
+    const partScreen=Math.min(innerWidth,innerHeight)<short-4||Math.max(innerWidth,innerHeight)<long-4;
     viewerHud.setStatus([
-      `${Math.round(vehicle.state.speed*2.237)} mph   ${signalText}`,
+      partScreen?'Not full screen: open Driving Practice from the Home Screen':`${Math.round(vehicle.state.speed*2.237)} mph   ${signalText}`,
       viewerMode==='calibration'?'Calibration (parked)'
         :viewerMode==='familiarisation'?'Parked practice (not scored)'
         :braking?'BRAKE':accel?'ACCELERATE (held)':vehicle.state.speed>.2?'Coasting (Accelerate released)':'Stopped',
