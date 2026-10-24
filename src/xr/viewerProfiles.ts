@@ -40,6 +40,25 @@ export const IPHONE_14_PRO_MAX={width:.1544,height:.0712};
  */
 export const METRES_PER_POINT=IPHONE_14_PRO_MAX.width/932;
 
+/** What the page can tell about the phone's screen: Apple or not, pixel ratio, and its long side in CSS pixels. */
+export interface ScreenInfo{ios:boolean;dpr:number;longSide:number}
+/**
+ * CSS pixels per inch of the phone's screen, estimated (a page cannot read the screen's physical size; the setting
+ * "Phone screen width" corrects it). iPhones: 3x screens are 458–460 ppi (153 per inch); 2x screens are 326 ppi (163);
+ * the 12 and 13 mini (476 ppi) share 812 points with the X, XS and 11 Pro (458 ppi). Android phones are usually
+ * 140–160; 150 is the middle.
+ */
+export function estimatePointsPerInch(s:ScreenInfo):number{
+  if(s.ios){
+    if(s.dpr<2.5)return 163;
+    if(Math.round(s.longSide)===812)return 159;
+    return 153;
+  }
+  return 150;
+}
+/** The phone's long side in millimetres, from the estimate (one decimal). */
+export const estimatedScreenWidthMm=(s:ScreenInfo)=>Math.round(s.longSide/estimatePointsPerInch(s)*254)/10;
+
 export interface EyeLayout{
   /** Horizontal shift of each eye's image, as a fraction of the eye's half-width (projection space): + moves right. */
   shift:{left:number;right:number};

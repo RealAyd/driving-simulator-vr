@@ -555,6 +555,8 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <div class="viewer-row"><label>Viewer <select id="viewer-slot"></select></label> <button id="viewer-calibrate" type="button">Calibrate viewer…</button></div>
         <p class="unit"><b>Calibrate viewer</b> makes the picture comfortable in your headset: with the phone in it, adjust the settings until the picture is sharp and the two yellow crosses straight ahead look like one. Look at <b>−</b> or <b>+</b> beside a setting for a moment to change it; changes save as you go. Look at <b>Done</b> to finish (or tap the screen). No controller needed.</p>
         <p id="viewer-summary" class="unit"></p>
+        <div class="viewer-row"><label>Phone screen width <input id="viewer-screen-width" type="number" min="90" max="200" step="0.5" inputmode="decimal" style="width:5.5em"> mm</label> <button id="viewer-screen-estimate" type="button">Use the estimate</button></div>
+        <p class="unit">The long side of the lit screen (not the case), measured with a ruler. It keeps the two pictures under the lenses on any phone. We estimate it for your phone; you can also change it in Calibrate viewer.</p>
         <p id="viewer-status" class="unit" role="status"></p>
       </fieldset>
           </div></details>

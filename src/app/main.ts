@@ -101,7 +101,7 @@ import {MENU,ViewerHud,type GazeItem} from '../xr/viewerHud';
 import {ControllerInput,DRIVE_ACTIONS,DRIVE_ACTION_LABEL,STANDARD_EXTRA,EXTRA_ACTIONS,EXTRA_ACTION_LABEL,describeBinding,loadBindings,loadCheckedDevice,saveBindings,saveCheckedDevice,storageWorks,type ControllerState,type DriveAction,type ExtraAction} from '../xr/controllerInput';
 import {SETTINGS_LIMITS,VIEWER_SLOTS,activeSettings,applySettings,clampSettings,defaultSettings,loadViewers,saveViewers,type ViewerSettings} from '../xr/viewerSettings';
 import type {Controls} from '../vehicle/kinematics';
-import {VIEWER_PROFILES} from '../xr/viewerProfiles';
+import {VIEWER_PROFILES,estimatedScreenWidthMm,type ScreenInfo} from '../xr/viewerProfiles';
 import {EventLog} from './eventLog';
 import {Session} from './session';
 import {Access,type PaidDrive} from '../access/access';
@@ -1008,6 +1008,27 @@ export async function boot():Promise<void>{
     byId('viewer-summary').textContent=`${p.label}; eye spacing ${viewerSettings.ipdMm} mm, image alignment ${viewerSettings.lensSeparationMm} mm${viewerSettings.verticalOffsetMm?`, vertical ${viewerSettings.verticalOffsetMm} mm`:''}. Lens presets are provisional: check them through your own holder.`;
   };
   showViewerSummary();
+  // ---- The phone's screen size: estimated for this phone (a page cannot read it), and correctable ----
+  const SCREEN_KEY='dp.viewer.screen.v1';
+  const screenInfo=():ScreenInfo=>({ios:/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),
+    dpr:devicePixelRatio||1,longSide:Math.max(screen.width,screen.height)});
+  /** The saved width counts only on the phone it was set on (the same screen size in CSS pixels). */
+  const savedScreenWidth=()=>{try{const v=JSON.parse(localStore?.getItem(SCREEN_KEY)??'null') as {longSide:number;widthMm:number}|null;
+    return v&&v.longSide===screenInfo().longSide&&v.widthMm>=90&&v.widthMm<=200?v.widthMm:null}catch{return null}};
+  let screenWidthMm=savedScreenWidth()??estimatedScreenWidthMm(screenInfo());
+  const applyScreenWidth=()=>{
+    viewer.setMetresPerPoint(screenWidthMm/1000/Math.max(1,screenInfo().longSide));
+    const input=byId<HTMLInputElement>('viewer-screen-width');
+    if(document.activeElement!==input)input.value=screenWidthMm.toFixed(1);
+  };
+  const setScreenWidth=(mm:number,save=true)=>{
+    screenWidthMm=Math.min(200,Math.max(90,Math.round(mm*2)/2));
+    if(save)try{localStore?.setItem(SCREEN_KEY,JSON.stringify({longSide:screenInfo().longSide,widthMm:screenWidthMm}))}catch{/* kept for this visit */}
+    applyScreenWidth();
+  };
+  byId<HTMLInputElement>('viewer-screen-width').addEventListener('change',e=>{const v=Number((e.target as HTMLInputElement).value);if(v>0)setScreenWidth(v)});
+  byId('viewer-screen-estimate').addEventListener('click',()=>{try{localStore?.removeItem(SCREEN_KEY)}catch{/* nothing saved */}setScreenWidth(estimatedScreenWidthMm(screenInfo()),false)});
+  applyScreenWidth();
   const storeSettings=(s:ViewerSettings)=>{
     viewerSettings=clampSettings(s);
     viewers={...viewers,viewers:{...viewers.viewers,[viewers.active]:viewerSettings}};
@@ -1307,12 +1328,14 @@ export async function boot():Promise<void>{
     {key:'verticalOffsetMm',label:'Vertical alignment',unit:'mm'},
     {key:'profileId',label:'Lens profile',unit:''},
     {key:'distortionScale',label:'Lens correction strength',unit:'%'},
-    {key:'fovDeg',label:'Field of view',unit:'°'}
+    {key:'fovDeg',label:'Field of view',unit:'°'},
+    {key:'screenWidthMm',label:'Phone screen width',unit:'mm'}
   ] as const;
-  let calRow=0,calibrationCentred=false;
+  let calRow=0,calibrationCentred=false,calibrationTracking='';
   const adjustSetting=(row:number,dir:-1|1)=>{
     const r=CAL_ROWS[row]!;
     const s={...viewerSettings};
+    if(r.key==='screenWidthMm'){setScreenWidth(screenWidthMm+dir*.5);return}
     if(r.key==='profileId'){
       const i=VIEWER_PROFILES.findIndex(p=>p.id===s.profileId);
       s.profileId=VIEWER_PROFILES[(i+dir+VIEWER_PROFILES.length)%VIEWER_PROFILES.length]!.id;
@@ -1468,12 +1491,12 @@ export async function boot():Promise<void>{
     let menu:string[]|null=null;
     if(viewerMode==='calibration'){
       const s=viewerSettings,p=VIEWER_PROFILES.find(v=>v.id===s.profileId)!;
-      const value=(k:typeof CAL_ROWS[number]['key'])=>k==='profileId'?p.label.split(' (')[0]:k==='distortionScale'?`${Math.round(s[k]*100)}%`:k==='verticalOffsetMm'?`${s[k].toFixed(1)} mm`:k==='fovDeg'?`${s[k]}°`:`${s[k]} mm`;
+      const value=(k:typeof CAL_ROWS[number]['key'])=>k==='screenWidthMm'?`${screenWidthMm.toFixed(1)} mm`:k==='profileId'?p.label.split(' (')[0]:k==='distortionScale'?`${Math.round(s[k]*100)}%`:k==='verticalOffsetMm'?`${s[k].toFixed(1)} mm`:k==='fovDeg'?`${s[k]}°`:`${s[k]} mm`;
       const drift=headTracker.driftDegPerMinute;
       menu=[`Adjust the picture: ${viewers.active} (saves as you go)`,
         'Look at − or + to change a setting until the crosses look like one.',
-        ...CAL_ROWS.map((r,i)=>`${checkedDevice&&i===calRow?'▶ ':''}${r.label}: ${value(r.key)}`),
-        `Head tracking ${headTracker.rate}/s; drift ${drift===null?'measuring (hold still)':`${drift.toFixed(1)}°/min`}`];
+        ...CAL_ROWS.map((r,i)=>`${checkedDevice&&i===calRow?'▶ ':''}${r.label}: ${value(r.key)}`)];
+      calibrationTracking=`Tracking ${headTracker.rate}/s · drift ${drift===null?'measuring (hold still)':`${drift.toFixed(1)}°/min`}`;
       items=calibrationItems();
       // No motion readings: nothing follows the head, so nothing can be chosen by looking. Said plainly.
       if(!headTracker.receiving&&performance.now()-viewerEnteredAt>2000){
@@ -1540,7 +1563,7 @@ export async function boot():Promise<void>{
     const partScreen=!fullScreenNow()&&(Math.min(innerWidth,innerHeight)<short-30||Math.max(innerWidth,innerHeight)<long-30);
     viewerHud.setStatus([
       partScreen?'Not full screen: open Driving Practice from the Home Screen':`${Math.round(vehicle.state.speed*2.237)} mph   ${signalText}`,
-      viewerMode==='calibration'?'Calibration (parked)'
+      viewerMode==='calibration'?`Calibration (parked) · ${calibrationTracking}`
         :viewerMode==='familiarisation'?'Parked practice (not scored)'
         :braking?'BRAKE':accel?'ACCELERATE (held)':vehicle.state.speed>.2?'Coasting (Accelerate released)':'Stopped',
       behind?`Behind the car: no mirrors from here (${controlName('view')}: back to the seat)`
@@ -2245,7 +2268,7 @@ export async function boot():Promise<void>{
     /** Whether route guidance is painted on the road in this attempt. */
     guidanceShown:()=>!!scene.getTransformNodeByName('exercise-guide'),
     /** Phone viewer state, for tests and diagnostics. */
-    viewer:()=>({active:viewer.active,mode:viewerMode,starting:viewerStarting,pauseReason:viewerPauseReason,settings:viewerSettings,slot:viewers.active,gaze:viewerHud.gaze,items:viewerHud.itemIds,
+    viewer:()=>({active:viewer.active,screenWidthMm,mode:viewerMode,starting:viewerStarting,pauseReason:viewerPauseReason,settings:viewerSettings,slot:viewers.active,gaze:viewerHud.gaze,items:viewerHud.itemIds,
       receiving:headTracker.receiving,readingAge:headTracker.readingAge,rate:headTracker.rate,offsetDeg:headTracker.offsetDeg,driftDegPerMinute:headTracker.driftDegPerMinute,invalidReadings:headTracker.invalidReadings,
       permission:headTracker.permission,checkedDevice,controller:controllerState?{connected:controllerState.connected,device:controllerState.device,values:controllerState.values}:null,
       accelArmed,brakeLatency:brakeAppliedAt>=brakeInputAt&&brakeInputAt>=0?brakeAppliedAt-brakeInputAt:null,activeCameras:scene.activeCameras?.map(c=>c.name)??[]}),

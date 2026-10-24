@@ -145,6 +145,8 @@ export class PhoneViewer{
   private readonly eyes:[FreeCamera,FreeCamera];
   private lens:[PostProcess,PostProcess]|null=null;
   private profile:ViewerProfile|null=null;
+  /** Real size of a CSS pixel on this phone, metres (from the phone's screen width setting). */
+  private metresPerPoint=METRES_PER_POINT;
   active=false;
 
   constructor(private readonly scene:Scene,private readonly main:Camera){
@@ -180,6 +182,13 @@ export class PhoneViewer{
     if(this.active)this.layout();
   }
 
+  /** This phone's real size of a CSS pixel, metres (the pictures must sit under the lenses on any phone). */
+  setMetresPerPoint(m:number):void{
+    if(!(m>0)||m===this.metresPerPoint)return;
+    this.metresPerPoint=m;
+    if(this.active)this.layout();
+  }
+
   /** Recomputes projections and lens passes (on entering, profile change and resize). */
   layout():void{
     const profile=this.profile;
@@ -189,7 +198,7 @@ export class PhoneViewer{
     // The drawing area's real size (the two pictures must sit under the lenses whatever room the page has).
     const canvas=engine.getRenderingCanvas();
     const cssWidth=canvas?.clientWidth||window.innerWidth,cssHeight=canvas?.clientHeight||window.innerHeight;
-    const l=eyeLayout(profile,cssWidth>0?cssWidth*METRES_PER_POINT:IPHONE_14_PRO_MAX.width,screenAspect,cssHeight>0?cssHeight*METRES_PER_POINT:IPHONE_14_PRO_MAX.height);
+    const l=eyeLayout(profile,cssWidth>0?cssWidth*this.metresPerPoint:IPHONE_14_PRO_MAX.width,screenAspect,cssHeight>0?cssHeight*this.metresPerPoint:IPHONE_14_PRO_MAX.height);
     const fov=profile.fovDeg*Math.PI/180;
     this.eyes.forEach((c,i)=>{
       const shift=i===0?l.shift.left:l.shift.right;

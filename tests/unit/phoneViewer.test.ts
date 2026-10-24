@@ -58,3 +58,20 @@ describe('phone viewer: lens layout for iPhone 14 Pro Max',()=>{
     expect(eyeLayout(VIEWER_PROFILES.find(v=>v.id==='flat')!,IPHONE_14_PRO_MAX.width,aspect).scale).toBe(1);
   });
 });
+
+describe('the phone screen size, estimated for each phone',()=>{
+  it('iPhones from their pixel ratio and size; Android phones from the typical density',async()=>{
+    const {estimatedScreenWidthMm,estimatePointsPerInch}=await import('../../src/xr/viewerProfiles');
+    // iPhone 14 Pro Max: 154.4 mm across 932 points.
+    expect(Math.abs(estimatedScreenWidthMm({ios:true,dpr:3,longSide:932})-154.4)).toBeLessThan(1);
+    // iPhone 14 / 13 (844 points, 460 ppi): 140 mm.
+    expect(Math.abs(estimatedScreenWidthMm({ios:true,dpr:3,longSide:844})-139.8)).toBeLessThan(1);
+    // iPhone SE / 8 (667 points at 2x, 326 ppi): 104 mm.
+    expect(Math.abs(estimatedScreenWidthMm({ios:true,dpr:2,longSide:667})-104.1)).toBeLessThan(1);
+    // iPhone 11 / XR (896 points at 2x, 326 ppi): 139.6 mm.
+    expect(Math.abs(estimatedScreenWidthMm({ios:true,dpr:2,longSide:896})-139.6)).toBeLessThan(1);
+    // Android: 150 CSS px per inch (a Pixel 7, 915 px, measures about 147 mm; 155 mm estimated).
+    expect(estimatePointsPerInch({ios:false,dpr:2.625,longSide:915})).toBe(150);
+    expect(Math.abs(estimatedScreenWidthMm({ios:false,dpr:2.625,longSide:915})-147)).toBeLessThan(9);
+  });
+});
