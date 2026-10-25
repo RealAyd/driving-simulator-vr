@@ -137,7 +137,7 @@ export class Access{
 
   open(reason?:string):void{
     byId('screen-account').hidden=false;
-    byId('account-reason').textContent=reason??'Each drive, lesson or mock test uses one session. Sign in to buy sessions and keep them on any device.';
+    byId('account-reason').textContent=reason??'';byId('account-reason').hidden=!reason;
     byId('account-note').textContent=this.me.signedIn&&reason?reason:'';
     this.render();
     if(!this.me.signedIn)void this.providers();
@@ -193,10 +193,10 @@ export class Access{
     const drives=total(me);
     chip.textContent=signedIn?(me.admin?'Admin':`${drives} drive${drives===1?'':'s'}`):'Sign in';
     if(!signedIn)return;
-    byId('account-email').textContent=me.email?`Signed in as ${me.email}`:'Signed in with Apple';
+    byId('account-email').textContent=me.email??'Apple account';
     // The headline is everything that can be started; below it, what that is made of.
     byId('account-balance').textContent=String(drives);
-    byId('account-balance-unit').textContent=drives===1?'drive you can start':'drives you can start';
+    byId('account-balance-unit').textContent=drives===1?'drive':'drives';
     const rows:HTMLElement[]=[];
     if(me.starterBought||starterLeft.length){
       const li=document.createElement('li');

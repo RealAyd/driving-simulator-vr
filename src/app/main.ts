@@ -36,7 +36,7 @@ import {CAR_CONTROLS,CarControls,type CarControlId} from '../vehicle/carControls
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
 import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
 import {nextTip,type ControllerNames,type TipInput} from '../ui/controlTips';
-import {LESSONS,LESSONS_COMING,planLesson,type Lesson} from '../lessons/syllabus';
+import {LESSONS,planLesson,type Lesson} from '../lessons/syllabus';
 import {Instructor} from '../lessons/instructor';
 import {DIFFICULTIES,savedDifficulty,saveDifficulty,type Difficulty} from './difficulty';
 import type {ExaminerListener} from '../test/examiner';
@@ -1718,7 +1718,6 @@ export async function boot():Promise<void>{
   // Difficulty: three levels on the home screen.
   const showDifficulty=()=>{
     for(const b of document.querySelectorAll<HTMLButtonElement>('[data-difficulty]'))b.setAttribute('aria-pressed',String(b.dataset['difficulty']===difficulty));
-    byId('difficulty-summary').textContent=DIFFICULTIES[difficulty].summary;
   };
   for(const b of document.querySelectorAll<HTMLButtonElement>('[data-difficulty]'))b.addEventListener('click',()=>{
     difficulty=b.dataset['difficulty'] as Difficulty;saveDifficulty(difficulty);showDifficulty();
@@ -1732,8 +1731,7 @@ export async function boot():Promise<void>{
     byId('exercise-briefing').hidden=!lesson;
     startButton.disabled=!lesson;
     startButton.textContent=lesson?'Start lesson':'Choose a lesson';
-    if(!lesson){byId('exercise-objective').textContent='Choose a lesson. Each one teaches one topic, with an instructor who coaches you as you drive.';return}
-    byId('exercise-objective').textContent=lesson.objective;
+    if(!lesson)return;
     renderBriefing(byId('exercise-briefing'),[`Lesson ${lesson.number}: ${lesson.title}`,...lesson.briefing,lesson.rules].join('\n\n'));
   };
   lessonBack.addEventListener('click',()=>showLesson(null));
@@ -1741,15 +1739,7 @@ export async function boot():Promise<void>{
     const b=document.createElement('button');b.type='button';b.dataset['lesson']=l.id;b.setAttribute('role','listitem');
     const n=document.createElement('span');n.className='n';n.textContent=String(l.number);
     const t=document.createElement('b');t.textContent=l.title;
-    const d=document.createElement('small');d.textContent=l.summary;
-    b.append(n,t,d);b.addEventListener('click',()=>showLesson(l));
-    return b;
-  }),...LESSONS_COMING.map(l=>{
-    const b=document.createElement('button');b.type='button';b.disabled=true;b.setAttribute('role','listitem');
-    const n=document.createElement('span');n.className='n';n.textContent='·';
-    const t=document.createElement('b');t.textContent=l.title;
-    const d=document.createElement('small');d.textContent=l.summary;
-    b.append(n,t,d);
+    b.append(n,t);b.addEventListener('click',()=>showLesson(l));
     return b;
   }));
   const showExercise=(key:string|null)=>{
@@ -1763,7 +1753,6 @@ export async function boot():Promise<void>{
     if(!chosen)return;
     const scenario=scenarios.get(chosen.scenario)!;
     byId('exercise-title').textContent=scenario.title;
-    byId('exercise-objective').textContent=scenario.learningObjective;
     renderBriefing(byId('exercise-briefing'),scenario.briefing);
     if(lessons)showLesson(null);
     byId('guide-option').hidden=!scenario.guide;
@@ -1784,17 +1773,10 @@ export async function boot():Promise<void>{
   session.onChange(state=>{if(state==='running'&&driveMode==='free')try{localStorage.setItem(FIRST_DRIVE_KEY,'1')}catch{/* this visit only */}});
   const showFirstSteps=()=>{
     if(suggestFreeDrive()){
-      byId('first-title').textContent='New here? Start with a free drive';
-      byId('first-body').textContent=`Drive real streets round Goodmayes test centre, with traffic, crossings and traffic lights, at your own pace.${paidAccess.gate&&!paidAccess.me.signedIn?' Free to try: no sign-up needed.':''} Then take your first lesson.`;
       byId('first-start').textContent='Start a free drive';
       return;
     }
     const done=lessonsDone(),next=nextLesson();
-    byId('first-title').textContent=done.length===0?'New to driving? Start here':next?'Welcome back':'All the lessons done';
-    byId('first-body').textContent=done.length===0
-      ?'Your first lesson, with an instructor beside you: moving off and stopping, on real streets. The steering is done for you, so you can learn the checks first.'
-      :next?`Next: lesson ${next.number}, ${next.title.toLowerCase()}. ${next.summary}`
-      :'Well done. Try a mock test: the examiner gives directions and marks you as on the real test.';
     byId('first-start').textContent=done.length===0?'Start lesson 1':next?`Continue: lesson ${next.number}`:'Try a mock test';
   };
   byId('first-start').addEventListener('click',()=>{
@@ -1822,13 +1804,6 @@ export async function boot():Promise<void>{
   matchMedia('(orientation: portrait)').addEventListener('change',checkRotate);
   addEventListener('resize',checkRotate);
   session.onChange(()=>setTimeout(checkRotate,0));
-  // What each mode is, in a line.
-  const MODE_SUMMARY={lesson:'Lesson: an instructor teaches one topic at a time and coaches you as you drive.',
-    test:'Mock test: practise the real test. An examiner gives directions and marks you as on the DVSA sheet.',
-    free:'Free drive: drive anywhere at your own pace. Nothing is marked.'} as const;
-  const showMode=()=>{byId('mode-summary').textContent=MODE_SUMMARY[driveMode]};
-  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',showMode);
-  showMode();
   // Words explained, and text size.
   for(const id of ['words-home','words-briefing','words-results'])byId(id).addEventListener('click',()=>openGlossary());
   let textSize=loadTextSize();

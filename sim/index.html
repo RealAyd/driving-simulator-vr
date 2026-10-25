@@ -37,9 +37,7 @@ html[data-theme="light"] .screen{color-scheme:light;
   --accent:#0f766e;--accent-ink:#ffffff;--accent-soft:rgba(15,118,110,.1);--panel:rgba(255,255,255,.85);
   color:var(--ink);background:linear-gradient(100deg,rgba(241,245,249,.95) 0%,rgba(241,245,249,.86) 55%,rgba(241,245,249,.72) 100%)}
 html[data-theme="light"] .screen .card{box-shadow:0 20px 50px rgba(15,23,42,.18)}
-html[data-theme="light"] .screen .badge,html[data-theme="light"] .screen .tags i.real,html[data-theme="light"] #area-status,html[data-theme="light"] .screen .invited{color:#0f766e}
-html[data-theme="light"] .screen .tags i{background:rgba(15,23,42,.06);color:#334155}
-html[data-theme="light"] .screen .tags i.real{background:rgba(15,118,110,.1)}
+html[data-theme="light"] #area-status,html[data-theme="light"] .screen .invited{color:#0f766e}
 html[data-theme="light"] .screen details.more{background:rgba(255,255,255,.75)}
 html[data-theme="light"] .screen .area-results{background:#fff;border-color:var(--line-strong)}
 html[data-theme="light"] .screen .area-results button:hover,html[data-theme="light"] .screen .area-results button:focus-visible{background:var(--surface-3)}
@@ -63,7 +61,6 @@ html[data-theme="light"] .theme-toggle .sun{display:inline}
 .card.wide{width:min(100%,980px)}
 .card h1{margin:0 0 4px;font-size:22px;font-weight:700;letter-spacing:-.015em;line-height:1.2}
 .card p{margin:8px 0;color:var(--soft)}
-.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:11.5px;color:#99f6e4;background:var(--accent-soft);white-space:nowrap}
 button{font:inherit;cursor:pointer;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 16px;transition:background .15s,border-color .15s,transform .08s}
 button:hover{border-color:var(--line-strong)}
 button:active{transform:scale(.98)}
@@ -95,10 +92,6 @@ details.more>.more-body{padding:0 14px 12px}
 .choice .ico{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
 .choice .txt{display:grid;gap:2px;min-width:0}
 .choice b{font-size:15px;font-weight:650;letter-spacing:-.005em}
-.choice small{font-size:12.5px;color:var(--soft);line-height:1.38}
-.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.tags i{font-style:normal;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:rgba(148,163,184,.12);color:#cbd5e1}
-.tags i.real{background:rgba(45,212,191,.13);color:#99f6e4}
 .home-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:flex-start}
 .home-foot details{flex:1 1 260px}
 .home-foot button{flex:0 0 auto;margin:0}
@@ -107,8 +100,7 @@ body.phone .keys-box{display:none}
 
 
 /* ---- Drive anywhere: search for a test centre or postcode ---- */
-.mode-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.mode-row .section-label{margin:0}
+.mode-row{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin:0 0 8px}
 .mode-switch{display:inline-flex;padding:3px;gap:3px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
 .mode-switch button{border:none;background:none;border-radius:9px;padding:6px 14px;font-size:13px;font-weight:650;color:var(--soft)}
 .mode-switch button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
@@ -125,7 +117,6 @@ body.phone .keys-box{display:none}
 #area-status:empty{display:none}
 .centre-browser{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-top:4px}
 .centre-group[open]{grid-column:1/-1}
-.centre-group>summary small{font-weight:500;color:var(--faint);margin-left:auto;margin-right:10px}
 .centre-list{max-height:260px;margin:0 8px 8px}
 #area-status{font-size:13px;color:#99f6e4}
 
@@ -141,7 +132,7 @@ body.phone .keys-box{display:none}
 .detail{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
 @media (max-width:720px){.detail{grid-template-columns:1fr}}
 .detail-side{display:grid;gap:10px}
-.objective{color:var(--ink)!important;font-weight:600;font-size:14.5px}
+.objective{color:var(--ink)!important;font-weight:600;font-size:14.5px}.objective:empty{display:none}
 .briefing-box{border:1px solid rgba(245,158,11,.35);border-radius:16px;padding:6px 16px;background:linear-gradient(180deg,rgba(245,158,11,.08),rgba(245,158,11,.02));margin:10px 0 0;max-height:min(52vh,420px);overflow-y:auto}
 .briefing-box h2{font-size:15px;color:#fbbf24;margin:8px 0 4px;font-weight:700}
 .briefing-box p{color:#e2e8f0!important;font-size:13.5px;margin:6px 0;line-height:1.5}
@@ -159,8 +150,7 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .opt:has(input:checked) svg{color:var(--accent)}
 .opt:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
 .opt:has(input:disabled){opacity:.45;cursor:default}
-.guide-option{display:flex;gap:12px;align-items:center;font-size:12.5px;color:var(--soft);padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);cursor:pointer}
-.guide-option b{color:var(--ink)}
+.guide-option{display:flex;gap:12px;align-items:center;font-size:13.5px;color:var(--ink);padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);cursor:pointer}
 .guide-option input{appearance:none;-webkit-appearance:none;flex:none;width:40px;height:24px;border-radius:999px;background:var(--surface-3);border:1px solid var(--line-strong);position:relative;margin:0;cursor:pointer;transition:background .2s}
 .guide-option input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#e2e8f0;transition:transform .2s}
 .guide-option input:checked{background:var(--accent)}
@@ -240,7 +230,7 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 body.phone #hud-status{display:none}
 #hud-credit{position:absolute;left:50%;top:1px;transform:translateX(-50%);font-size:9px;color:#e2e8f0;opacity:.7;text-shadow:0 0 3px #000;white-space:nowrap}
 #hud-tip{position:absolute;left:50%;top:calc(var(--st) + 56px);transform:translateX(-50%);width:max-content;max-width:min(520px,calc(100vw - 2 * (var(--sr) + 215px)));display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;background:rgba(10,15,28,.82);border:1px solid var(--accent);border-radius:14px;padding:8px 8px 8px 14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-#hud-tip b{color:var(--accent);flex:none}#hud-tip span{flex:1}
+#hud-tip span{flex:1}
 #hud-tip button{pointer-events:auto;flex:none;min-width:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:var(--ink);font-size:16px;line-height:1}
 #hud-task{position:absolute;left:50%;top:calc(var(--st) + 4px);transform:translateX(-50%);max-width:calc(100vw - 2 * (var(--sr) + 215px));text-align:center;font-size:13px;font-weight:500;background:rgba(10,15,28,.78);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:7px 14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .hud-pill{position:absolute;left:var(--sl);top:var(--st);font-size:12px;font-weight:700;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:4px 11px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
@@ -335,9 +325,6 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 .spinner{width:38px;height:38px;border-radius:50%;border:4px solid rgba(255,255,255,.15);border-top-color:var(--accent);animation:spin .8s linear infinite;will-change:transform}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Difficulty: under the mode switch. */
-.difficulty-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 8px}
-.difficulty-row .section-label{margin:0}
-.difficulty-row small{color:var(--soft);font-size:12px}
 /* Lessons: the syllabus, one card per lesson. */
 .lesson-list{display:grid;gap:6px;margin:10px 0}
 .lesson-list button{display:grid;grid-template-columns:28px 1fr;gap:2px 10px;text-align:left;padding:9px 11px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--ink)}
@@ -413,12 +400,8 @@ a.wide-link svg{vertical-align:-3px;margin-right:6px}
 @keyframes flash-pop{from{transform:translate(-50%,-50%) scale(.6)}to{transform:translate(-50%,-50%) scale(1)}}
 @media (prefers-reduced-motion:reduce){#hud-flash.flash-on{animation:none}}
 /* First-time path, plain English, text size. */
-.first-steps{display:flex;gap:14px;align-items:center;justify-content:space-between;border:1px solid var(--accent);background:var(--accent-soft);border-radius:16px;padding:12px 14px;margin:10px 0 4px}
-.first-steps b{font-size:16px}
-.first-steps p{margin:2px 0 0;font-size:13.5px;color:var(--ink);opacity:.9}
-.first-steps .primary{width:auto;margin:0;padding:11px 18px;font-size:15px;flex:none}
-@media (max-width:560px){.first-steps{flex-direction:column;align-items:stretch}}
-.mode-summary{margin:4px 0 6px;font-size:13px;color:var(--soft)}
+.first-steps{margin:10px 0 4px}
+.first-steps .primary{width:100%;margin:0;padding:14px 18px;font-size:16px}
 #text-size .a2{font-size:1.3em;margin-left:1px}
 dialog.glossary{max-width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;background:var(--surface,#0f172a);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
 dialog.glossary::backdrop{background:rgba(2,6,23,.7)}
@@ -434,7 +417,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
 
 <!-- Building a place or starting a drive takes a few seconds: shown over everything meanwhile. -->
 <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busy-card"><span class="spinner" aria-hidden="true"></span><p id="busy-text">Loading…</p><b id="busy-pct">1%</b><div class="busy-track" role="progressbar" aria-label="Loading" aria-valuemin="1" aria-valuemax="100" aria-valuenow="1"><span id="busy-bar"></span></div><small id="busy-step"></small></div></div>
-<section id="screen-loading" class="screen" role="status"><div class="card"><h1>Loading simulator…</h1><p>Preparing the road and car.</p></div></section>
+<section id="screen-loading" class="screen" role="status"><div class="card"><h1>Loading…</h1></div></section>
 
 <section id="screen-start" class="screen" hidden>
   <div class="card wide">
@@ -442,36 +425,29 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <div class="home-head">
         <div class="brand">
           <span class="brand-mark"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M3.8 11h5.9M14.3 11h5.9M12 14.2V20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
-          <div><h1>Driving Practice</h1><p id="location-label">Real UK streets from the driver's seat</p></div>
+          <h1>Driving Practice</h1>
         </div>
-        <div class="head-actions"><button id="account-chip" type="button" class="account-chip" hidden>Sign in</button><button id="tutorial-home" type="button" class="tutorial-button">Tutorial</button><button id="words-home" type="button" class="tutorial-button">Words explained</button><a id="help-home" class="tutorial-button help-button" href="support.html" aria-label="Help and support"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M19 18c0 2-2 3-5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Help</span></a><button id="theme-toggle" type="button" class="tutorial-button theme-toggle" aria-pressed="false"><svg class="moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg><svg class="sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dark</span></button><button id="text-size" type="button" class="tutorial-button" aria-label="Text size: normal. Tap for larger text">A<span class="a2">A</span></button><span class="badge">Preview · draft feedback, not instructor-reviewed</span><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button></div>
+        <div class="head-actions"><button id="account-chip" type="button" class="account-chip" hidden>Sign in</button><button id="tutorial-home" type="button" class="tutorial-button">Tutorial</button><button id="words-home" type="button" class="tutorial-button">Words explained</button><a id="help-home" class="tutorial-button help-button" href="support.html" aria-label="Help and support"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M19 18c0 2-2 3-5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Help</span></a><button id="theme-toggle" type="button" class="tutorial-button theme-toggle" aria-pressed="false"><svg class="moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg><svg class="sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dark</span></button><button id="text-size" type="button" class="tutorial-button" aria-label="Text size: normal. Tap for larger text">A<span class="a2">A</span></button><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button></div>
       </div>
       <div id="first-steps" class="first-steps">
-        <div class="first-text"><b id="first-title">New to driving? Start here</b><p id="first-body">Your first lesson, with an instructor beside you: moving off and stopping, on real streets. The steering is done for you, so you can learn the checks first.</p></div>
         <button id="first-start" class="primary" type="button">Start lesson 1</button>
       </div>
       <div class="area-search">
         <div class="mode-row">
-          <label for="area-query" class="section-label">Drive anywhere in the UK</label>
-          <div class="mode-switch" role="group" aria-label="What to do there">
+          <div class="mode-switch" role="group" aria-label="What to do">
             <button type="button" data-drive-mode="free" aria-pressed="true">Free drive</button>
             <button type="button" data-drive-mode="lesson" aria-pressed="false">Lesson</button>
             <button type="button" data-drive-mode="test" aria-pressed="false">Mock test</button>
           </div>
-        </div>
-        <p id="mode-summary" class="mode-summary"></p>
-        <div class="difficulty-row">
-          <span class="section-label">Level</span>
-          <div class="mode-switch" role="group" aria-label="Difficulty">
+          <div class="mode-switch difficulty-row" role="group" aria-label="Level">
             <button type="button" data-difficulty="easy" aria-pressed="false">Easy</button>
             <button type="button" data-difficulty="standard" aria-pressed="true">Standard</button>
             <button type="button" data-difficulty="test" aria-pressed="false">Test day</button>
           </div>
-          <small id="difficulty-summary" class="unit"></small>
         </div>
         <div class="search-row">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <input id="area-query" type="search" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="Test centre or postcode, e.g. Goodmayes or IG3 9QJ" aria-describedby="area-status">
+          <input id="area-query" type="search" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="Test centre or postcode" aria-label="Test centre or postcode" aria-describedby="area-status">
         </div>
         <ul id="area-results" class="area-results" hidden></ul>
         <p id="area-status" class="unit" role="status"></p>
@@ -479,14 +455,14 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       </div>
       <h2 class="group">Test centre drives</h2>
       <div class="choices">
-        <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b><small>The streets round Goodmayes test centre: lessons with an instructor, a mock test with the examiner's directions, or a free drive (switch above). Built from map data, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Lessons</i><i>Mock test</i><i>Free drive</i></span></span></button>
+        <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b></span></button>
       </div>
       <h2 class="group">Drills</h2>
       <div class="choices">
-        <button class="choice" type="button" data-exercise="brentwood" style="--c:#a78bfa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m14.8 7.2 1.6-1.9.4 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt"><b>Brentwood mini-roundabouts</b><small>Two mini-roundabouts close together: plan, slow down, give way to the right. Area-inspired, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Scored</i></span></span></button>
-        <button class="choice" type="button" data-exercise="kings-road" style="--c:#22d3ee"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 10h14M8 21v-3M16 21v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor"/><circle cx="15.5" cy="14" r="1.1" fill="currentColor"/></svg></span><span class="txt"><b>Kings Road zebra</b><small>Pass a bus at its stop, check your mirror, give way at a real zebra crossing. Area-inspired, not an official test route.</small><span class="tags"><i class="real">Real streets</i><i>Scored</i></span></span></button>
-        <button class="choice" type="button" data-exercise="zebra" style="--c:#34d399"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 2"/></svg></span><span class="txt"><b>Zebra crossing</b><small>Pass a parked van with a car behind you, then give way to a pedestrian.</small><span class="tags"><i>Practice street</i><i>Scored</i></span></span></button>
-        <button class="choice" type="button" data-exercise="moving-off" style="--c:#60a5fa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 15v-3l2-5h12l2 5v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 12h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="16.5" r="1.8" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1.8" fill="currentColor"/></svg></span><span class="txt"><b>Moving off safely</b><small>From parked: check all round and move off at a safe moment.</small><span class="tags"><i>Practice street</i><i>Scored</i></span></span></button>
+        <button class="choice" type="button" data-exercise="brentwood" style="--c:#a78bfa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m14.8 7.2 1.6-1.9.4 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt"><b>Brentwood mini-roundabouts</b></span></button>
+        <button class="choice" type="button" data-exercise="kings-road" style="--c:#22d3ee"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 10h14M8 21v-3M16 21v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor"/><circle cx="15.5" cy="14" r="1.1" fill="currentColor"/></svg></span><span class="txt"><b>Kings Road zebra</b></span></button>
+        <button class="choice" type="button" data-exercise="zebra" style="--c:#34d399"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 2"/></svg></span><span class="txt"><b>Zebra crossing</b></span></button>
+        <button class="choice" type="button" data-exercise="moving-off" style="--c:#60a5fa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 15v-3l2-5h12l2 5v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 12h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="16.5" r="1.8" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1.8" fill="currentColor"/></svg></span><span class="txt"><b>Moving off safely</b></span></button>
       </div>
       <div class="home-foot">
         <details class="more keys-box"><summary>Keyboard controls</summary><div class="more-body"><div class="keys">
@@ -500,7 +476,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <span><kbd>C</kbd></span><span>Forward view</span>
           <span><kbd>P</kbd> <kbd>Esc</kbd></span><span>Pause</span>
         </div></div></details>
-        <button id="xr-button" type="button" hidden>VR headset (experimental)</button>
+        <button id="xr-button" type="button" hidden>VR headset</button>
         <button id="about-open" type="button">About</button>
       </div>
     </div>
@@ -509,7 +485,6 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <div class="detail-main">
           <button id="exercise-back" type="button" class="link">← All exercises</button>
           <h1 id="exercise-title" style="margin-top:8px"></h1>
-          <p id="exercise-objective" class="objective"></p>
           <div id="lesson-list" class="lesson-list" role="list" hidden></div>
           <button id="lesson-back" type="button" class="link" hidden>← All lessons</button>
           <div id="exercise-briefing" class="briefing-box"></div>
@@ -518,12 +493,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <div class="detail-side">
       <fieldset id="steering-mode" class="steering">
         <legend>Steering</legend>
-        <div class="opts"><label class="opt"><input type="radio" name="steering" value="assist"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 21 10 3M17 21 14 3M12 6v2M12 11v2M12 16v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span><b>Assisted</b>Keeps you in lane; you do speed, signals and checks.</span></label><label class="opt"><input type="radio" name="steering" value="tilt"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2.5" transform="rotate(-12 12 12)" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span><b>Tilt the phone</b>Steer like a wheel, in landscape.</span></label><label class="opt"><input type="radio" name="steering" value="buttons"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9 7-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Buttons or keys</b>Steer left / right buttons.</span></label></div>
+        <div class="opts"><label class="opt"><input type="radio" name="steering" value="assist"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 21 10 3M17 21 14 3M12 6v2M12 11v2M12 16v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span><b>Assisted</b></span></label><label class="opt"><input type="radio" name="steering" value="tilt"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2.5" transform="rotate(-12 12 12)" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span><b>Tilt the phone</b></span></label><label class="opt"><input type="radio" name="steering" value="buttons"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9 7-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Buttons or keys</b></span></label></div>
         <p id="tilt-unavailable" class="unit warn" hidden></p>
         <div id="tilt-options" class="tilt-panel" hidden>
           <ol class="tilt-steps">
-            <li><button id="tilt-enable" type="button">Enable tilt</button> <span class="unit">asks for motion access</span></li>
-            <li><button id="tilt-calibrate" type="button" disabled>Calibrate</button> <span id="tilt-calibrate-hint" class="unit">hold the phone in landscape as you will drive, then tap</span></li>
+            <li><button id="tilt-enable" type="button">Enable tilt</button></li>
+            <li><button id="tilt-calibrate" type="button" disabled>Calibrate</button></li>
           </ol>
           <dl class="tilt-state" aria-live="polite">
             <dt>Permission</dt><dd id="tilt-permission">not asked yet</dd>
@@ -537,31 +512,24 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           </div>
         </div>
         <p id="tilt-status" class="unit" role="status"></p>
-        <p class="unit" style="margin:0">With tilt, the Steer buttons stay on screen as a fallback and always take priority.</p>
       </fieldset>
-      <label id="guide-option" class="guide-option" hidden><span><b>Show the pull-out path</b> on the road. Useful while learning; leave it off for an independent attempt.</span><input type="checkbox" id="guide-toggle"></label>
+      <label id="guide-option" class="guide-option" hidden><span>Show the pull-out path</span><input type="checkbox" id="guide-toggle"></label>
           <button id="start-practice" class="primary" type="button">Start practice</button>
           <p id="session-note" class="unit session-note" hidden></p>
           <p id="pad-screen-status" class="unit" role="status" hidden></p>
       <div id="intro-option" class="intro-option" hidden>
-        <button id="start-intro" type="button" class="wide">Optional: guided introduction to the view controls</button>
-        <p class="unit">Not assessed. Road users pass while you stay parked and try each view.</p>
+        <button id="start-intro" type="button" class="wide">Try the views, parked</button>
       </div>
-          <details id="viewer-details" class="more"><summary>Phone headset (experimental)</summary><div class="more-body">
+          <details id="viewer-details" class="more"><summary>Phone headset</summary><div class="more-body">
       <fieldset id="viewer-mode" class="steering viewer-panel">
-        <p class="unit">Normal touch-screen practice above is unchanged. With the phone in a headset:</p>
         <p id="viewer-install" class="unit warn" hidden><b>Open Driving Practice from your Home Screen for the headset</b> (in Safari: Share › Add to Home Screen). In the browser its address bar shortens the screen, so the two pictures do not sit under the lenses.</p>
-        <button id="viewer-familiarise" type="button" class="wide">Sit in the car (no controller needed)</button>
-        <p class="unit">Parked and not scored: look around, check the mirrors and practise shoulder checks. Menus work by looking at a button for a moment; tap the screen to leave.</p>
-        <button id="viewer-drive" type="button" class="wide" disabled>Drive with a controller (scored)</button>
-        <p class="unit">Moving, scored driving needs a physical controller that has passed the check: a Bluetooth game controller or keyboard. Accelerating, braking, signalling and steering are never done by looking at buttons. <b>Do the check before putting the phone in the headset.</b> Steering is Assisted, the Left stick or Steer buttons: choose it on the controller screen, or in the headset with Signal left/right before you start (or while paused).</p>
+        <button id="viewer-familiarise" type="button" class="wide">Sit in the car</button>
+        <button id="viewer-drive" type="button" class="wide" disabled>Drive with a controller</button>
         <p id="viewer-drive-status" class="unit" role="status"></p>
-        <button id="controller-check-open" type="button">Controller settings and check…</button>
+        <button id="controller-check-open" type="button">Controller…</button>
         <div class="viewer-row"><label>Viewer <select id="viewer-slot"></select></label> <button id="viewer-calibrate" type="button">Calibrate viewer…</button></div>
-        <p class="unit"><b>Calibrate viewer</b> makes the picture comfortable in your headset: with the phone in it, adjust the settings until the picture is sharp and the two yellow crosses straight ahead look like one. Look at <b>−</b> or <b>+</b> beside a setting for a moment to change it; changes save as you go. Look at <b>Done</b> to finish (or tap the screen). No controller needed.</p>
         <p id="viewer-summary" class="unit"></p>
-        <div class="viewer-row"><label>Phone screen width <input id="viewer-screen-width" type="number" min="90" max="200" step="0.5" inputmode="decimal" style="width:5.5em"> mm</label> <button id="viewer-screen-estimate" type="button">Use the estimate</button></div>
-        <p class="unit">The long side of the lit screen (not the case), measured with a ruler. It keeps the two pictures under the lenses on any phone. We estimate it for your phone; you can also change it in Calibrate viewer.</p>
+        <div class="viewer-row"><label>Lit screen, long side <input id="viewer-screen-width" type="number" min="90" max="200" step="0.5" inputmode="decimal" style="width:5.5em"> mm</label> <button id="viewer-screen-estimate" type="button">Estimate</button></div>
         <p id="viewer-status" class="unit" role="status"></p>
       </fieldset>
           </div></details>
@@ -576,14 +544,14 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
     <button id="account-close" type="button" class="link account-close" aria-label="Close">Close</button>
     <div id="account-signin">
       <h1 id="account-title">Sign in</h1>
-      <p id="account-reason" class="unit">Each drive, lesson or mock test uses one session. Sign in to buy sessions and keep them on any device.</p>
+      <p id="account-reason" class="unit" hidden></p>
       <p id="trial-note" class="unit invited" hidden></p>
       <p id="account-invited" class="unit invited" hidden>You were invited by a friend: your first drive is free once you sign in.</p>
       <div class="signin-buttons">
         <div id="google-button" class="provider" hidden></div>
         <button id="apple-button" type="button" class="provider apple" hidden><svg viewBox="0 0 17 20" width="16" height="18" aria-hidden="true"><path fill="currentColor" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM11.6 3c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span>Continue with Apple</span></button>
       </div>
-      <p class="divider"><span>or with your email</span></p>
+      <p class="divider"><span>or</span></p>
       <form id="email-form" class="email-form" novalidate>
         <input id="email-input" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-label="Email address" required>
         <button id="email-send" type="submit">Email me a code</button>
@@ -598,15 +566,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
     <div id="account-main" hidden>
       <h1>Your drives</h1>
       <p id="account-email" class="unit"></p>
-      <p class="balance"><b id="account-balance">0</b> <span id="account-balance-unit">drives you can start</span></p>
+      <p class="balance"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
       <ul id="account-breakdown" class="breakdown"></ul>
       <p id="account-note" class="unit" role="status"></p>
-      <p class="unit">Starting a lesson, mock test or free drive uses one drive. Starter Pass drives are used first, each for its own kind; sessions work for any kind. If a drive fails to load, it comes back.</p>
       <div id="pack-list" class="pack-list"></div>
-      <p class="unit">Payments are taken by Stripe. Have a promotion code? Enter it on the payment page.</p>
       <div class="invite-box">
-        <b>Invite a friend</b>
-        <p class="unit">They get their first drive free. When they first buy sessions, you get a free session.</p>
+        <b>Give a friend a free drive</b>
         <div class="invite-row"><input id="invite-link" type="text" readonly aria-label="Your invite link"><button id="invite-share" type="button">Share</button></div>
         <p id="invite-stats" class="unit"></p>
       </div>
@@ -621,14 +586,11 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
   <div class="card">
     <h1 id="controller-title">Controller check</h1>
     <p id="controller-saved" class="unit saved-box" role="status"></p>
-    <p class="unit">Connect a Bluetooth game controller (or keyboard) to this iPhone, then press each control once. This screen shows exactly what Safari receives. If your controller uses a different layout, press <b>Set</b> and then the button you want. A headset remote that pairs over Bluetooth may not appear here at all: many act as a mouse or media keys, which a web page cannot read.</p>
     <table class="controller-table"><thead><tr><th>Control</th><th>Bound to</th><th>Now</th><th>Check</th><th></th></tr></thead><tbody id="controller-actions"></tbody></table>
     <p id="controller-raw" class="unit mono"></p>
     <p id="controller-check-status" class="unit" role="status"></p>
     <label class="unit">Steering in the headset <select id="controller-steering"><option value="assist">Assisted (the car follows the lane)</option><option value="stick">Left stick</option><option value="buttons">Steer buttons (D-pad)</option></select></label>
-    <p class="unit">Settings are kept on this phone, separately in Safari and in the Home Screen app: set the controller up in the one you will use with the headset.</p>
     <div class="viewer-row"><button id="controller-standard" type="button">Use the standard layout</button> <button id="controller-cancel" type="button">Cancel</button> <button id="controller-done" type="button" class="primary" disabled>Done</button></div>
-    <p class="unit">Accelerate is held: the car speeds up while you hold it, up to the exercise's assisted speed, and coasts when you let go. Brake acts the moment you press it. Pause opens a menu in the headset; only pressing Pause again resumes.</p>
   </div>
 </section>
 
@@ -644,8 +606,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <dt>Mirrors</dt><dd id="about-mirrors"></dd>
       <dt>Models</dt><dd id="about-models"></dd>
     </dl>
-    <p class="unit">Feedback uses draft rubrics that have not been reviewed by an instructor. They are not DVSA criteria. View evidence records which views were selected, not where your eyes looked.</p>
-    <p class="unit">Phone-viewer VR (an iPhone in a headset viewer) is a separate feasibility task and is not part of this build.</p>
+    <p class="unit">Practice feedback, not a DVSA assessment.</p>
     <p class="unit">Map data for Brentwood © OpenStreetMap contributors (ODbL).</p>
     <p class="unit legal-links"><a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> · <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="legal/refunds.html" target="_blank" rel="noopener">Refunds</a> · <a href="legal/cookies.html" target="_blank" rel="noopener">Cookies</a> · <a href="support.html">Help and support</a> (or email <a href="mailto:support.drivingpractice@gmail.com">support.drivingpractice@gmail.com</a>)</p>
     <p class="unit">Business names and brand signs are shown where the map names them. Trademarks belong to their owners; no affiliation with or endorsement by any business is claimed.</p>
@@ -654,11 +615,11 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
 </section>
 
 <section id="screen-paused" class="screen" hidden>
-  <div class="card"><h1>Paused</h1><p id="paused-title" class="objective"></p><p>Traffic, your car and assessment timing are frozen. Controls are released.</p>
+  <div class="card"><h1>Paused</h1><p id="paused-title" class="objective"></p>
     <button id="resume-button" class="primary" type="button">Resume</button>
     <button id="restart-button" type="button" class="wide">Restart</button>
     <button id="end-button" type="button" class="wide">Exit exercise</button>
-    <button id="about-open-paused" type="button" class="wide">About this build</button>
+    <button id="about-open-paused" type="button" class="wide">About</button>
     <a id="help-paused" class="wide-link" href="support.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M19 18c0 2-2 3-5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Help and support</a>
   </div>
 </section>
@@ -681,8 +642,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
 
 <section id="screen-fullscreen" class="screen" hidden aria-labelledby="fullscreen-title">
   <div class="card">
-    <h1 id="fullscreen-title">Full screen on iPhone</h1>
-    <p>Safari on iPhone does not let a web page cover the whole screen. Add Driving Practice to your Home Screen instead: it then opens full screen in landscape, with no browser bars.</p>
+    <h1 id="fullscreen-title">Add to Home Screen for full screen</h1>
     <ol class="howto">
       <li>Tap <b>Share</b> <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> in Safari's toolbar (or the ••• menu, then Share).</li>
       <li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li>
@@ -700,13 +660,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
 <div id="rotate-hint" role="alertdialog" aria-labelledby="rotate-title" hidden>
   <svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true"><rect x="20" y="6" width="24" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M10 48a22 22 0 0 0 30 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M36 54l5 4-2 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
   <h2 id="rotate-title">Turn your phone sideways</h2>
-  <p>Driving Practice drives in landscape. The drive waits for you: it carries on when the phone is turned.</p>
 </div>
 <div id="hud" hidden>
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
-  <div id="hud-tip" role="status" aria-live="polite" hidden><b>Tip</b><span id="hud-tip-text"></span><button id="hud-tip-close" type="button" aria-label="Close the tip">×</button></div>
+  <div id="hud-tip" role="status" aria-live="polite" hidden><span id="hud-tip-text"></span><button id="hud-tip-close" type="button" aria-label="Close the tip">×</button></div>
   <div id="hud-flash" role="alert" hidden></div>
   <div id="hud-view-label" class="hud-pill" aria-live="polite">View: Forward</div>
   <button id="hud-behind" type="button" class="hud-round" aria-pressed="false" aria-label="Camera: switch to behind the car" title="Camera: driver's seat / behind the car (practice only)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v2.1l4.4-2.6a1 1 0 0 1 1.6.8v8.4a1 1 0 0 1-1.6.8L15 14.4v2.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 16.5z"/></svg></button>

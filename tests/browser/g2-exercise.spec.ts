@@ -97,7 +97,7 @@ test('G2: a careful attempt (mirror check, slow approach, gives way) completes w
   expect(result.findings.filter((f:any)=>f.severity==='serious'||f.severity==='dangerous')).toEqual([]);
   expect(result.notes.join(' ')).toMatch(/Gave way to the pedestrian/);
   expect(result.notes.join(' ')).toMatch(/mouse-controlled view/);
-  await expect(page.locator('#results-meta')).toContainText('draft');
+  await expect(page.locator('#results-meta')).toContainText(/^\d+ s · /);
   await page.screenshot({path:testInfo.outputPath('g2-02-results-careful.png')});
   expect(errors).toEqual([]);
 });

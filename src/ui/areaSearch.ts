@@ -31,7 +31,6 @@ export function setUpCentreBrowser(container:HTMLElement,onPick:(r:AreaRequest)=
     const inGroup=sorted.filter(c=>{const l=c.name[0]!.toUpperCase();return l>=from&&l<=to});
     const details=document.createElement('details');details.className='more centre-group';
     const summary=document.createElement('summary');summary.textContent=`${from}–${to}`;
-    const count=document.createElement('small');count.textContent=`${inGroup.length} centres`;summary.append(count);
     const list=document.createElement('ul');list.className='area-results centre-list';
     details.append(summary,list);
     // Built when first opened: the page stays light.
