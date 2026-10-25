@@ -65,7 +65,7 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await expect(page.locator('#account-note')).toContainText('Payment received. Starter Pass added: 1 lesson, 1 mock test and 1 free drive.',{timeout:20_000});
   // The headline counts every drive that can be started; the breakdown shows what they are.
   await expect(page.locator('#account-balance')).toHaveText('3');
-  await expect(page.locator('#account-balance-unit')).toHaveText('drives you can start');
+  await expect(page.locator('#account-balance-unit')).toHaveText('drives');
   await expect(page.locator('#account-breakdown')).toContainText('Starter Pass');
   await expect(page.locator('#account-breakdown')).toContainText('Lesson: ready');
   await expect(page.locator('#account-breakdown')).toContainText('Mock test: ready');

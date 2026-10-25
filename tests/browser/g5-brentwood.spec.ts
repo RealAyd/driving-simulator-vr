@@ -11,8 +11,8 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await expect(page.locator('[data-exercise=brentwood]')).toContainText('not an official test route');
   await page.click('[data-exercise=brentwood]');
+  await expect(page.locator('#exercise-briefing')).toContainText('not an official test route');
   await expect(page.locator('#exercise-briefing')).toContainText('turn LEFT');
   await page.click('#start-practice');
   expect(await read(page,'location()')).toBe('brentwood-paired-mini-roundabouts');

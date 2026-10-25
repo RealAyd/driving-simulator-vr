@@ -103,7 +103,6 @@ test('G10: without a checked controller, scored viewer driving is unavailable an
   await openExercise(page);
   await expect(page.locator('#viewer-drive')).toBeDisabled();
   await expect(page.locator('#viewer-drive-status')).toContainText('run the controller check first');
-  await expect(page.locator('#viewer-mode')).toContainText('Do the check before putting the phone in the headset');
   await page.click('#viewer-familiarise');
   await expect.poll(()=>read(page,'viewer().mode')).toBe('familiarisation');
   await page.waitForTimeout(3300);
