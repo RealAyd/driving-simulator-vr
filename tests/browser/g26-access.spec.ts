@@ -118,7 +118,8 @@ test('G26: blocking access.json does not open the paid app: where the accounts s
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
   await page.click('[data-exercise=moving-off]');
-  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed');
+  // (The note follows the account check, which waits for the server.)
+  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed',{timeout:20_000});
 });
 
 test('G26: the guided introduction needs no session because it is parked: the car cannot be driven, and nothing is saved',async({page})=>{

@@ -53,8 +53,9 @@ export class Access{
 
   async init():Promise<void>{
     const local=await fetch('./access.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null) as {gate?:boolean}|null;
-    // Gated where the file says so, always on the paid addresses (blocking the file does not open them), and wherever
-    // the accounts service answers. Only a copy with neither (a preview) is open.
+    // Gated where the file says so, always on the paid addresses (blocking the file does not open them), and, if the
+    // file cannot be read, wherever the accounts service answers. A preview copy ships {"gate":false} (the hosted
+    // deploy writes {"gate":true} over it).
     let gated=!!local?.gate||PAID_HOSTS.has(location.hostname)||/\.hostless\.app$/.test(location.hostname);
     if(!gated&&!local){const cfg=await api<Config>('config');gated=cfg.status===200&&cfg.data?.gate===true}
     if(!gated)return;
