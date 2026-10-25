@@ -185,6 +185,8 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .pack-list button{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:12px 14px;border-radius:14px}
 .pack-list button b{font-size:16px}
 .pack-list button .price{font-weight:700;color:var(--accent)}
+.pack-list button[data-pack=starter]{border-color:var(--accent);background:var(--accent-soft)}
+#screen-account[data-mode=paywall] .not-paywall{display:none}
 .admin-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;border:1px solid var(--accent);border-radius:14px;padding:12px;margin:12px 0}
 .admin-tools label{display:grid;gap:4px;font-size:12.5px;font-weight:650;color:var(--soft)}
 .admin-hub{grid-column:1/-1;display:block;text-align:center;padding:11px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
@@ -569,10 +571,10 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p class="unit legal-links">By signing in you agree to the <a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy policy</a>.</p>
     </div>
     <div id="account-main" hidden>
-      <h1>Your drives</h1>
-      <p id="account-email" class="unit"></p>
-      <p class="balance"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
-      <ul id="account-breakdown" class="breakdown"></ul>
+      <h1 id="account-main-title">Your drives</h1>
+      <p id="account-email" class="unit not-paywall"></p>
+      <p class="balance not-paywall"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
+      <ul id="account-breakdown" class="breakdown not-paywall"></ul>
       <div id="admin-tools" class="admin-tools" hidden>
         <a id="admin-hub" class="admin-hub" href="admin.html" target="_blank" rel="noopener">Admin hub</a>
         <label>Cars <select data-sim-option="cars"><option value="">Mixed</option><option value="old">Earlier</option><option value="new">New pack</option></select></label>
@@ -582,12 +584,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       </div>
       <p id="account-note" class="unit" role="status"></p>
       <div id="pack-list" class="pack-list"></div>
-      <div class="invite-box">
+      <div class="invite-box not-paywall">
         <b>Give a friend a free drive</b>
         <div class="invite-row"><input id="invite-link" type="text" readonly aria-label="Your invite link"><button id="invite-share" type="button">Share</button></div>
         <p id="invite-stats" class="unit"></p>
       </div>
-      <details class="more"><summary>History</summary><div class="more-body"><ul id="account-history" class="account-history"></ul></div></details>
+      <details class="more not-paywall"><summary>History</summary><div class="more-body"><ul id="account-history" class="account-history"></ul></div></details>
       <button id="account-signout" type="button" class="link">Sign out</button>
       <p class="unit legal-links"><a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> · <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="legal/refunds.html" target="_blank" rel="noopener">Refunds</a> · <a href="legal/cookies.html" target="_blank" rel="noopener">Cookies</a> · <a href="support.html">Help and support</a></p>
     </div>

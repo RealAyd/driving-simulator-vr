@@ -80,3 +80,18 @@ describe('the free try: one lesson, one mock test and one free drive, without si
     expect(again.json.error).toBe('no-sessions');
   });
 });
+
+describe('progress kept on the account: signing up saves it, another device gets it',()=>{
+  it('lessons finished before signing up are added to the account and come back on a new device',async()=>{
+    const phone=device('203.0.113.40');
+    expect((await phone('/api/progress',{lessons:['moving-off']})).status).toBe(401);
+    await phone('/api/dev/signin',{email:'saver@example.com'});
+    expect((await phone('/api/me')).json.lessonsDone).toEqual([]);
+    expect((await phone('/api/progress',{lessons:['moving-off','turn-left','../bad',7]})).json.lessonsDone).toEqual(['moving-off','turn-left']);
+    // Nothing is lost when a device sends less.
+    expect((await phone('/api/progress',{lessons:['turn-right']})).json.lessonsDone).toEqual(['moving-off','turn-left','turn-right']);
+    const laptop=device('203.0.113.41');
+    await laptop('/api/dev/signin',{email:'saver@example.com'});
+    expect((await laptop('/api/me')).json.lessonsDone).toEqual(['moving-off','turn-left','turn-right']);
+  });
+});

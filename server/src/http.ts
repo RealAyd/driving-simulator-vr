@@ -139,6 +139,10 @@ export function handler(service:Service,outbox:OutboxMailer|null){
         return send(res,'error' in r?(r.error==='slow-down'?429:r.error==='not-found'?404:503):200,r);
       }
       // A drive: an account's sessions; otherwise (signed out, or none left) the device's free try.
+      if(method==='POST'&&path==='/api/progress'){
+        const b=await json(req),lessons=Array.isArray(b['lessons'])?b['lessons'].filter((l):l is string=>typeof l==='string').slice(0,100):[];
+        return send(res,200,{lessonsDone:await service.saveProgress(signedIn(),lessons)});
+      }
       if(method==='POST'&&path==='/api/drives'){
         const b=await json(req),kind=str(b['kind'],40)??'drive',scenario=str(b['scenario'],80)??'';
         if(accountId){

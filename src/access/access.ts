@@ -10,9 +10,15 @@ type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null
 /** The device's free try (no sign-up): what is left of one lesson, one mock test and one free drive. */
 type Trial=Record<Pot,number>;
 type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
+  lessonsDone?:string[];
   history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>})&{trial?:Trial};
 /** A drive the server has started (its session used). */
 export type PaidDrive={id:string};
+/**
+ * What the account screen is for: the account itself; signing up once the free try of a kind is used ("save your
+ * progress", then the drive carries on); or the paywall, the packs from the Starter Pass up.
+ */
+type Mode='account'|'save'|'paywall';
 
 const byId=<T extends HTMLElement=HTMLElement>(id:string)=>document.getElementById(id) as T;
 const store={
@@ -43,6 +49,8 @@ const loadScript=(src:string)=>new Promise<void>((ok,fail)=>{
 /** The paid app's own addresses. */
 const PAID_HOSTS=new Set(['vr.drivingpractice.live','staging.drivingpractice.live']);
 
+import {lessonsDone,mergeLessonsDone} from '../lessons/progress';
+
 export class Access{
   /** Whether drives need sessions here. */
   gate=false;
@@ -50,6 +58,9 @@ export class Access{
   me:Me={signedIn:false};
   /** Called whenever the balance or sign-in changes (the home screen shows it). */
   onChange:()=>void=()=>{};
+  private mode:Mode='account';
+  /** The drive that sent the learner here to sign up or buy, and its kind: started again once it can be. */
+  private pending:{pot:Pot;again:()=>void}|null=null;
 
   async init():Promise<void>{
     const local=await fetch('./access.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null) as {gate?:boolean}|null;
@@ -81,9 +92,34 @@ export class Access{
   async refresh():Promise<void>{
     const r=await api<Me>('me');
     if(r.data)this.me=r.data;
-    if(this.me.signedIn)store.set(REF_KEY,null);
+    if(this.me.signedIn){store.set(REF_KEY,null);await this.syncProgress()}
     this.render();
     this.onChange();
+    this.carryOn();
+  }
+
+  /** Progress both ways: the account's lessons come to this device, and this device's go to the account. */
+  async syncProgress():Promise<void>{
+    if(!this.gate||!this.me.signedIn)return;
+    mergeLessonsDone(this.me.lessonsDone??[]);
+    const local=lessonsDone(),saved=this.me.lessonsDone??[];
+    if(local.some(l=>!saved.includes(l))){
+      const r=await api<{lessonsDone:string[]}>('progress',{lessons:local});
+      if(r.data)this.me.lessonsDone=r.data.lessonsDone;
+    }
+  }
+
+  /** Whether a drive of this kind can start now. */
+  private canStart(pot:Pot):boolean{
+    if((this.me.trial?.[pot]??0)>0)return true;
+    return this.me.signedIn&&(!!this.me.admin||this.me.balance>0||this.me.allowances[pot]>0);
+  }
+
+  /** After signing up or paying: the drive that was waiting starts; signed up with nothing to drive on, the paywall. */
+  private carryOn(){
+    if(!this.me.signedIn||byId('screen-account').hidden)return;
+    if(this.pending&&this.canStart(this.pending.pot)){const {again}=this.pending;this.pending=null;this.close();again();return}
+    if(this.mode==='save')this.open(undefined,this.pending||(!this.me.admin&&total(this.me)===0)?'paywall':'account');
   }
 
   /** Whether this device's free drive is still there to take (someone new: suggest it first). */
@@ -110,19 +146,18 @@ export class Access{
    * Before a drive: false if it cannot start (the account screen opens to sign in or buy); otherwise the drive whose
    * session was used (null where nothing is gated).
    */
-  async begin(kind:string,scenario:string):Promise<PaidDrive|null|false>{
+  async begin(kind:string,scenario:string,again?:()=>void):Promise<PaidDrive|null|false>{
     if(!this.gate)return null;
     const pot=modeOf(scenario);
-    const free=(this.me.trial?.[pot]??0)>0;
-    // Signed out: the device's free try (one of each kind), then an account.
-    if(!this.me.signedIn&&!free){this.open(`You have used your ${TRY_NAME[pot]}. Sign in to carry on: each drive, lesson or mock test then uses one session.`);return false}
-    // Admins drive without sessions (the server checks it too); otherwise sessions, then the free try.
-    if(this.me.signedIn&&!this.me.admin&&this.me.balance<1&&this.me.allowances[pot]<1&&!free){this.open(`You have no ${POT_NAME[pot]}s or sessions left. Buy more to start.`);return false}
+    // Signed out with this kind's free try used: sign up (progress saved), then the drive carries on. Signed in with
+    // nothing to drive on: the paywall. Admins drive without sessions (the server checks it too).
+    const stop=()=>{this.pending=again?{pot,again}:null;this.open(undefined,this.me.signedIn?'paywall':'save');return false as const};
+    if(!this.canStart(pot))return stop();
     const r=await api<{driveId:string;balance:number;error?:string}>('drives',{kind,scenario});
     if(r.status===200&&r.data){void this.refresh();return {id:r.data.driveId}}
-    if(r.status===401){await this.refresh();this.open('Please sign in again.');return false}
-    if(r.status===402){await this.refresh();this.open(this.me.signedIn?'You have no sessions left. Buy more to start.':`You have used your ${TRY_NAME[pot]}. Sign in to carry on.`);return false}
-    if(r.status===429){this.open('Free tries from this connection are used up for today. Sign in to carry on.');return false}
+    if(r.status===401){await this.refresh();return stop()}
+    if(r.status===402){await this.refresh();return stop()}
+    if(r.status===429)return stop();
     this.open('Driving Practice could not be reached. Check your connection and try again.');
     return false;
   }
@@ -135,14 +170,21 @@ export class Access{
 
   // ---- The account screen ----
 
-  open(reason?:string):void{
-    byId('screen-account').hidden=false;
+  open(reason?:string,mode:Mode='account'):void{
+    this.mode=mode;
+    if(mode==='account')this.pending=null;
+    const screen=byId('screen-account');
+    screen.dataset['mode']=mode;
+    byId('account-title').textContent=mode==='save'?'Sign up to save your progress':'Sign in';
+    byId('code-send').textContent=mode==='save'?'Continue driving':'Sign in';
+    byId('account-main-title').textContent=mode==='paywall'?'Keep driving':'Your drives';
+    screen.hidden=false;
     byId('account-reason').textContent=reason??'';byId('account-reason').hidden=!reason;
     byId('account-note').textContent=this.me.signedIn&&reason?reason:'';
     this.render();
     if(!this.me.signedIn)void this.providers();
   }
-  close():void{byId('screen-account').hidden=true}
+  close():void{byId('screen-account').hidden=true;this.pending=null}
 
   private wire(){
     byId('account-chip').addEventListener('click',()=>this.open());
@@ -193,7 +235,7 @@ export class Access{
     byId('account-invited').hidden=signedIn||!this.ref;
     // The free try, while any of it is left on this device.
     const left=(['lesson','test','free'] as const).filter(k=>(me.trial?.[k]??0)>0);
-    byId('trial-note').hidden=signedIn||!left.length;
+    byId('trial-note').hidden=signedIn||!left.length||this.mode==='save';
     byId('trial-note').textContent=left.length===3?'No sign-up needed to try: one free lesson, one free mock test and one free drive on this device.'
       :`Still free to try on this device, no sign-up needed: ${left.map(k=>`your ${TRY_NAME[k]}`).join(' and ')}.`;
     // "or with your email" only under a Google or Apple button.
@@ -273,7 +315,8 @@ export class Access{
   /** Back from checkout: Stripe tells the server a moment later, so the balance is checked until it rises. */
   private async awaitPayment(){
     const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {total:number;balance?:number;starter?:boolean}|null}catch{return null}})();
-    this.open();
+    // (Paying from the paywall without leaving the page: the drive that was waiting starts once the sessions arrive.)
+    this.open(undefined,this.pending?this.mode:'account');
     const note=byId('account-note');
     note.textContent='Payment received: adding your sessions…';
     for(let i=0;i<30;i++){

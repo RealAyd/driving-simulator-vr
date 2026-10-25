@@ -31,7 +31,7 @@ async function signInByEmail(page:Page,email:string){
   await expect(page.locator('#account-main')).toBeVisible();
 }
 
-test('G26: a free try without signing up (one free drive here); then Start asks to sign in; with no sessions it asks to buy; a pack adds its sessions; each drive uses one',async({page})=>{
+test('G26: a free try without signing up (one free drive here); then Start asks to sign up to save progress; Continue driving opens the paywall from the Starter Pass; paying starts the drive',async({page})=>{
   test.setTimeout(300_000);
   await gated(page);
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
@@ -46,44 +46,41 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await expect(page.locator('#screen-results')).toBeVisible();
   await page.click('#menu-button');
   await page.click('[data-exercise=moving-off]');
-  // Used: now Start asks to sign in (the sign-in screen says a lesson and a mock test are still free to try).
+  // Used: Start asks to sign up, to save progress (a lesson finished on this device goes to the account).
+  await page.evaluate(()=>localStorage.setItem('dp-lessons-done',JSON.stringify(['moving-off-and-stopping'])));
   await expect(page.locator('#session-note')).toContainText('You have used your free drive');
   await page.click('#start-practice');
   await expect(page.locator('#screen-account')).toBeVisible();
-  await expect(page.locator('#account-reason')).toContainText('You have used your free drive');
-  await expect(page.locator('#trial-note')).toHaveText('Still free to try on this device, no sign-up needed: your free lesson and your free mock test.');
+  await expect(page.locator('#account-title')).toHaveText('Sign up to save your progress');
+  await expect(page.locator('#code-send')).toHaveText('Continue driving');
+  await expect(page.locator('#trial-note')).toBeHidden();
   expect(await read(page,'session()')).toBe('ready');
   await signInByEmail(page,'learner@example.com');
-  await expect(page.locator('#account-balance')).toHaveText('0');
-  // The packs on sale; the starter once per account.
+  expect((await (await page.request.get('/api/me')).json()).lessonsDone).toEqual(['moving-off-and-stopping']);
+  // Continue driving, with nothing to drive on: the paywall, from the Starter Pass up.
+  await expect(page.locator('#screen-account')).toHaveAttribute('data-mode','paywall');
+  await expect(page.locator('#account-main-title')).toHaveText('Keep driving');
+  await expect(page.locator('#account-balance')).toBeHidden();
   await expect(page.locator('#pack-list [data-pack]')).toHaveCount(4);
+  await expect(page.locator('#pack-list [data-pack]').first()).toHaveAttribute('data-pack','starter');
   await expect(page.locator('#pack-list [data-pack=starter]')).toContainText('1 lesson, 1 mock test and 1 free drive · once per account');
-  await page.click('#account-close');
-  await page.click('#start-practice');
-  await expect(page.locator('#account-note')).toContainText('You have no free drives or sessions left');
+  await page.screenshot({path:test.info().outputPath('g26-paywall.png')});
+  // Paid: the drive that was waiting starts, on the Starter's free drive (not the lesson or the mock test).
   await page.click('#pack-list [data-pack=starter]');
-  await expect(page.locator('#account-note')).toContainText('Payment received. Starter Pass added: 1 lesson, 1 mock test and 1 free drive.',{timeout:20_000});
-  // The headline counts every drive that can be started; the breakdown shows what they are.
-  await expect(page.locator('#account-balance')).toHaveText('3');
+  await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
+  await expect(page.locator('#screen-account')).toBeHidden();
+  const me=await (await page.request.get('/api/me')).json();
+  expect(me.allowances).toEqual({lesson:1,test:1,free:0});
+  expect(me.balance).toBe(0);
+  // (The account screen is behind the drive: its contents are checked as they are.)
+  await expect(page.locator('#account-chip')).toHaveText('2 drives');
   await expect(page.locator('#account-balance-unit')).toHaveText('drives');
   await expect(page.locator('#account-breakdown')).toContainText('Starter Pass');
   await expect(page.locator('#account-breakdown')).toContainText('Lesson: ready');
-  await expect(page.locator('#account-breakdown')).toContainText('Mock test: ready');
-  await expect(page.locator('#account-breakdown')).toContainText('Free drive: ready');
+  await expect(page.locator('#account-breakdown .used')).toHaveText('Free drive: used');
   await expect(page.locator('#account-breakdown')).toContainText('0 sessions');
   // Once per account: no longer offered.
   await expect(page.locator('#pack-list [data-pack=starter]')).toHaveCount(0);
-  await expect(page.locator('#account-chip')).toHaveText('3 drives');
-  await page.click('#account-close');
-  // This practice drive is a free drive: it uses the Starter's free drive (not the lesson or the mock test).
-  await expect(page.locator('#session-note')).toContainText('Uses your Starter Pass free drive');
-  await page.click('#start-practice');
-  await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
-  const me=await (await page.request.get('/api/me')).json();
-  expect(me.allowances).toEqual({lesson:1,test:1,free:0});
-  // (The account screen is behind the drive: its contents are checked as they are.)
-  await expect(page.locator('#account-chip')).toHaveText('2 drives');
-  await expect(page.locator('#account-breakdown .used')).toHaveText('Free drive: used');
   expect(me.history[0].type).toBe('consumed');
 });
 

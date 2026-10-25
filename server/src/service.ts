@@ -54,6 +54,8 @@ const REFUND_WINDOW_MS=15*60_000,REFUNDS_PER_DAY=3;
 export type DriveStart={ok:true;drive:Drive;balance:number}|{ok:false;reason:'no-sessions'|'trial-used'};
 /** New free tries from one address in a day (a device's try is in its cookie; this stops clearing it for more). */
 const TRIALS_PER_IP_PER_DAY=4;
+/** A lesson id as the app names them; at most this many kept. */
+const LESSON_ID=/^[a-z0-9-]{1,40}$/,MAX_LESSONS=100;
 
 export class Service{
   /** Support requests (tickets, the response timer, the notification outbox). */
@@ -118,8 +120,18 @@ export class Service{
       id:a.id,email:a.email,balance:a.balance,allowances:Object.fromEntries(POTS.map(p=>[p,a.allowances?.[p]??0])) as Record<Pot,number>,starterBought:!!a.starterBought,referralCode:a.referralCode,
       invited:await this.store.countReferred(a.id),rewarded:ledger.filter(e=>e.type==='referral_bonus').length,
       history:ledger.slice(-20).reverse().map(e=>({type:e.type,sessions:e.sessionsDelta,amountPence:e.amountPence,reason:e.reason,at:e.createdAt.toISOString()})),
-      admin:isAdminEmail(this.config,a.email)
+      admin:isAdminEmail(this.config,a.email),
+      lessonsDone:a.lessonsDone??[]
     };
+  }
+
+  /** Adds lessons finished (on any device) to the account's; returns them all. */
+  async saveProgress(accountId:string,lessons:string[]):Promise<string[]>{
+    const a=await this.store.findAccount({id:accountId});
+    if(!a)return [];
+    const all=[...new Set([...(a.lessonsDone??[]),...lessons.filter(l=>LESSON_ID.test(l))])].slice(0,MAX_LESSONS);
+    if(all.length!==(a.lessonsDone??[]).length)await this.store.updateAccount(accountId,{lessonsDone:all});
+    return all;
   }
 
   // ---- Email sign-in: a 6-digit code (typed into the app) and a link (opens in the browser) ----

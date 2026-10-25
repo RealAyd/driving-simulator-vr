@@ -855,7 +855,7 @@ export async function boot():Promise<void>{
       clock.pause();
       const result=runtime!.finish(outcome);
       // A lesson driven to its end counts as done (the home screen then offers the next one).
-      if(result.lesson&&outcome==='completed'){const l=LESSONS.find(x=>x.number===result.lesson!.number);if(l)markLessonDone(l.id)}
+      if(result.lesson&&outcome==='completed'){const l=LESSONS.find(x=>x.number===result.lesson!.number);if(l){markLessonDone(l.id);void paidAccess.syncProgress()}}
       lastResult=result;
       session.to('finished');
       paidAccess.report(paidDrive,'completed');paidDrive=null;
@@ -1882,7 +1882,7 @@ export async function boot():Promise<void>{
   };
   /** A drive that uses a session: started only once the session is taken; given back if it fails to load. */
   const startPaid=async(id:string)=>{
-    const drive=await paidAccess.begin(driveMode,id);
+    const drive=await paidAccess.begin(driveMode,id,()=>byId('start-practice').click());
     if(drive===false)return;
     try{await startShowing(id)}catch(e){paidAccess.report(drive,'failed');throw e}
     paidAccess.report(drive,session.state==='running'?'loaded':'failed');

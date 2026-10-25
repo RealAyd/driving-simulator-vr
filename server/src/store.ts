@@ -27,6 +27,8 @@ export interface Account{
   starterBought?:boolean;
   /** The checkout that bought the Starter Pass (a second one is refunded, not granted). */
   starterCheckout?:string;
+  /** The lessons finished (their ids), from any device: signing in brings them to a new one. */
+  lessonsDone?:string[];
 }
 
 /** What a drive is: the server decides from the scenario, never from what the browser says. */
