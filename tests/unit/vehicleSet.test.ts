@@ -1,5 +1,5 @@
 import {afterEach,describe,expect,it} from 'vitest';
-import {CAR_MODELS,ROAD_USER_CAR_MODELS,activeVehicleSet,kerbCarModels,parkedModelIds,roadUserCarModels,useVehicleSet,vehicleCredit} from '../../src/assets/carSpecs';
+import {CAR_MODELS,ROAD_USER_CAR_MODELS,activeVehicleSet,kerbCarModels,learnerCarModel,parkedModelIds,roadUserCarModels,useVehicleSet,vehicleCredit} from '../../src/assets/carSpecs';
 
 const shipped=import.meta.glob('/public/assets/models/vehicles/v2/*.glb');
 const isV2=(id:string)=>id.startsWith('v2-');
@@ -7,11 +7,12 @@ const isV2=(id:string)=>id.startsWith('v2-');
 describe('vehicle sets',()=>{
   afterEach(()=>useVehicleSet('current'));
 
-  it('by default: the earlier set, the good-looking cars (hatchback, saloon, large saloon); nothing from the new pack',()=>{
+  it('by default: traffic and parked cars from the earlier set (the good-looking ones); the learner drives the Peugeot 208, credited',()=>{
     expect(activeVehicleSet()).toBe('current');
     expect(roadUserCarModels()[0]!.id).toBe('batch-b-compact-hatchback');
     expect([...roadUserCarModels().map(m=>m.id),...kerbCarModels(),...parkedModelIds()].some(isV2)).toBe(false);
-    expect(vehicleCredit()).toBe('');
+    expect(learnerCarModel().id).toBe('v2-peugeot-208');
+    expect(vehicleCredit()).toBe('cars: muha692 (Sketchfab, CC BY 4.0)');
   });
 
   it('?cars=mixed: with the new Peugeot 208 and pickup (credited)',()=>{
@@ -24,7 +25,7 @@ describe('vehicle sets',()=>{
   it('the earlier set is the same as before',()=>{
     useVehicleSet('current');
     expect(roadUserCarModels()).toEqual([...ROAD_USER_CAR_MODELS]);
-    expect(vehicleCredit()).toBe('');
+    expect(vehicleCredit()).toBe('cars: muha692 (Sketchfab, CC BY 4.0)');
     expect(kerbCarModels().some(isV2)).toBe(false);
     expect(parkedModelIds().some(isV2)).toBe(false);
   });

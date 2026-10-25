@@ -1,8 +1,8 @@
 import {expect,test,type Page} from '@playwright/test';
 import {pick} from './home';
 
-// The car set by default: the earlier set, the good-looking cars (hatchback, saloon, large saloon), with no credit
-// needed; ?cars=mixed adds the new pack's Peugeot 208 and pickup (CC BY, credited on screen).
+// The car set by default: the earlier set, the good-looking cars (hatchback, saloon, large saloon), and the learner's
+// Peugeot 208 (CC BY, credited); ?cars=mixed adds the new pack's Peugeot 208 and pickup (CC BY, credited on screen).
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
@@ -23,6 +23,8 @@ test('G27: the default cars (the earlier set) load and drive, with no new-pack c
   await startGoodmayes(page,'./');
   await expect.poll(async()=>(await read(page,'scenery()')).carModels.length,{timeout:60_000}).toBeGreaterThan(2);
   expect((await read(page,'scenery()')).carModels.some((id:string)=>id.startsWith('v2-'))).toBe(false);
+  // The learner drives the Peugeot 208 (its author credited); the pack's other cars are not used.
+  await expect(page.locator('#hud-credit')).toContainText('cars: muha692 (Sketchfab, CC BY 4.0)');
   await expect(page.locator('#hud-credit')).not.toContainText('Comrade1280');
   await page.screenshot({path:testInfo.outputPath('g27-start.png')});
   await page.click('#hud-behind');

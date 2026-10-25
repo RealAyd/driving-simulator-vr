@@ -53,7 +53,7 @@ import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
 import {addLPlates} from '../cockpit/lPlates';
-import {roadUserCarModels,useVehicleSet,vehicleCredit} from '../assets/carSpecs';
+import {learnerCarModel,roadUserCarModels,useVehicleSet,vehicleCredit} from '../assets/carSpecs';
 import {BUS_MODELS,PANEL_VAN,type CarModelId} from '../assets/carSpecs';
 import {RouteSummary} from '../assessment/routeSummary';
 import {ViewPracticeSummary} from '../assessment/viewPractice';
@@ -354,12 +354,13 @@ export async function boot():Promise<void>{
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
   // Animated people load in the background: the light figures are drawn until they are ready.
   void AnimatedPeople.load(scene).then(a=>{animatedPeople=a;if(people)people.animated=a});
-  const [loadedParked,roadUserModels,loadedStreet,singleDecker,doubleDecker]=await Promise.all([loadCarModels(scene),Promise.all(roadUserCarModels().map(spec=>CarModel.load(scene,spec))),StreetModels.load(scene),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)]);
+  const [loadedParked,roadUserModels,learnerModel,loadedStreet,singleDecker,doubleDecker]=await Promise.all([loadCarModels(scene),Promise.all(roadUserCarModels().map(spec=>CarModel.load(scene,spec))),CarModel.load(scene,learnerCarModel()),StreetModels.load(scene),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)]);
   // Red buses (asset Batch A): each deck falls back to the other, then to the drawn bus.
   const busModels={single:singleDecker??doubleDecker,double:doubleDecker??singleDecker};
   // Other road users' cars alternate between the models that loaded (simple shapes if none did).
   const roadUserCars=roadUserModels.filter((m):m is CarModel=>m!==null);
-  const carModel=roadUserCars[0]??null;
+  // The learner's own car: its own model (the Peugeot 208), else the first road user's.
+  const carModel=learnerModel??roadUserCars[0]??null;
   const roadUserModel=(i:number)=>roadUserCars.length?roadUserCars[i%roadUserCars.length]!:null;
   carModels=loadedParked;
   streetModels=loadedStreet;

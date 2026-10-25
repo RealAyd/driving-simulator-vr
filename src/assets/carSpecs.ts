@@ -96,8 +96,11 @@ const SETS:Record<VehicleSet,{road:CarModelId[];kerb:CarModelId[]}>={
     kerb:['v2-peugeot-208','v2-peugeot-208','v2-hatchback','v2-hatchback','v2-sedan','v2-sedan','v2-compact','v2-wagon','v2-suv','v2-minivan','v2-coupe','v2-offroad','v2-pickup','v2-sprinter-van']}
 };
 
-/** The models used for other road users' cars (alternating); the first is also the learner's car seen from behind. */
+/** The models used for other road users' cars (alternating). */
 export function roadUserCarModels():CarModelSpec[]{return SETS[vehicleSet].road.map(id=>CAR_MODELS[id])}
+/** The learner's own car (seen from behind the car): the Peugeot 208, the owner's choice, in every set. */
+export const LEARNER_CAR:CarModelId='v2-peugeot-208';
+export function learnerCarModel():CarModelSpec{return CAR_MODELS[LEARNER_CAR]}
 /** Models for cars parked at the kerb (drawn in proportion: some appear more than once). */
 export function kerbCarModels():readonly CarModelId[]{return SETS[vehicleSet].kerb}
 /** Parked models to load: every one of the earlier set's (hand-made places use them), and the new pack's that the set uses. */
@@ -106,11 +109,10 @@ export function parkedModelIds():CarModelId[]{
   return (Object.keys(CAR_MODELS) as CarModelId[]).filter(id=>!id.startsWith('v2-')||used.has(id));
 }
 /**
- * The CC BY 4.0 credit for the new pack's models in the set in use (shown while they are on screen), or '' when the
- * set uses none: the Peugeot 208 by muha692, the passenger car pack by Comrade1280, the Sprinter by Max (Sketchfab).
+ * The CC BY 4.0 credit for the new pack's models in use, the learner's car included (shown while they are on screen): the Peugeot 208 by muha692, the passenger car pack by Comrade1280, the Sprinter by Max (Sketchfab).
  */
 export function vehicleCredit():string{
-  const used=new Set([...SETS[vehicleSet].road,...SETS[vehicleSet].kerb]);
+  const used=new Set([LEARNER_CAR,...SETS[vehicleSet].road,...SETS[vehicleSet].kerb]);
   const authors=[...new Set([...used].filter(id=>id.startsWith('v2-')).map(id=>id==='v2-peugeot-208'?'muha692':id==='v2-sprinter-van'?'Max':'Comrade1280'))]
     .sort((a,b)=>['muha692','Comrade1280','Max'].indexOf(a)-['muha692','Comrade1280','Max'].indexOf(b));
   return authors.length?`cars: ${authors.join(', ')} (Sketchfab, CC BY 4.0)`:'';
