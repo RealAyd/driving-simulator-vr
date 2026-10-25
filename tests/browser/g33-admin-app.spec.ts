@@ -1,22 +1,20 @@
-import {execSync,spawn,type ChildProcess} from 'node:child_process';
+import type {ChildProcess} from 'node:child_process';
 import {expect,test,type Page} from '@playwright/test';
+import {startServer,stopServer} from './server';
 import {pick} from './home';
 
 // An admin in the app: signed in under an alias of ADMIN_EMAILS (a Gmail address with a dot and a +tag), every kind
 // of drive starts with no sessions, the simulation's options are on the account screen, and the hub opens.
 test.describe.configure({mode:'serial'});
 let api:ChildProcess;
-test.beforeAll(async()=>{
-  execSync('npm run build:server',{stdio:'ignore'});
-  api=spawn('node',['server/dist/index.js'],{env:{...process.env,DP_DEV_FAKES:'1',PORT:'8787',APP_BASE_URL:'http://localhost:4173',ADMIN_EMAILS:'bossowner@gmail.com'},stdio:'ignore'});
-  await expect.poll(async()=>(await fetch('http://localhost:8787/healthz').catch(()=>null))?.status??0,{timeout:15_000}).toBe(200);
-});
-test.afterAll(()=>{api?.kill()});
+test.beforeAll(async()=>{api=await startServer({ADMIN_EMAILS:'bossowner@gmail.com'})});
+test.afterAll(()=>stopServer(api));
 
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 
 test('G33: an admin starts lessons, mock tests and free drives with no sessions, sets the simulation options and opens the hub',async({page})=>{
-  test.setTimeout(240_000);
+  // (Goodmayes is built three times: one drive of each kind.)
+  test.setTimeout(600_000);
   const email='boss.owner+dp@gmail.com';
   await page.route('**/access.json',r=>r.fulfill({json:{gate:true}}));
   await page.goto('./');
@@ -37,6 +35,7 @@ test('G33: an admin starts lessons, mock tests and free drives with no sessions,
     await pick(page,'goodmayes',mode);
     await expect(page.locator('#session-note')).toHaveText('Admin: drives do not use sessions',{timeout:90_000});
     if(mode==='lesson')await page.click('#lesson-list [data-lesson]');
+    await expect(page.locator('#busy')).toBeHidden({timeout:120_000});
     await page.click('#start-practice');
     await expect.poll(()=>read(page,'session()'),{timeout:90_000}).not.toBe('ready');
     await expect(page.locator('#screen-account')).toBeHidden();

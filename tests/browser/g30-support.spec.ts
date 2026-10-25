@@ -1,16 +1,13 @@
-import {execSync,spawn,type ChildProcess} from 'node:child_process';
+import type {ChildProcess} from 'node:child_process';
 import {expect,test,type Page} from '@playwright/test';
+import {startServer,stopServer} from './server';
 
 // Support: the customer's form and thread (/support.html) and the admin's Support tab, against the accounts service
 // with local fakes (emails kept in the dev outbox). ADMIN_EMAILS is boss@example.com.
 test.describe.configure({mode:'serial'});
 let api:ChildProcess;
-test.beforeAll(async()=>{
-  execSync('npm run build:server',{stdio:'ignore'});
-  api=spawn('node',['server/dist/index.js'],{env:{...process.env,DP_DEV_FAKES:'1',PORT:'8787',APP_BASE_URL:'http://localhost:4173',ADMIN_EMAILS:'boss@example.com',SUPPORT_INBOX:'inbox@example.com'},stdio:'ignore'});
-  await expect.poll(async()=>(await fetch('http://localhost:8787/healthz').catch(()=>null))?.status??0,{timeout:15_000}).toBe(200);
-});
-test.afterAll(()=>api?.kill());
+test.beforeAll(async()=>{api=await startServer({ADMIN_EMAILS:'boss@example.com',SUPPORT_INBOX:'inbox@example.com'})});
+test.afterAll(()=>stopServer(api));
 
 // A real 1×1 PNG (the browser must be able to show it).
 const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==','base64');

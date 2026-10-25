@@ -1,15 +1,12 @@
-import {execSync,spawn,type ChildProcess} from 'node:child_process';
+import type {ChildProcess} from 'node:child_process';
 import {expect,test,type Page} from '@playwright/test';
+import {startServer,stopServer} from './server';
 
 // The admin hub (/admin.html) against the accounts service with local fakes: ADMIN_EMAILS is boss@example.com.
 test.describe.configure({mode:'serial'});
 let api:ChildProcess;
-test.beforeAll(async()=>{
-  execSync('npm run build:server',{stdio:'ignore'});
-  api=spawn('node',['server/dist/index.js'],{env:{...process.env,DP_DEV_FAKES:'1',PORT:'8787',APP_BASE_URL:'http://localhost:4173',ADMIN_EMAILS:'boss@example.com'},stdio:'ignore'});
-  await expect.poll(async()=>(await fetch('http://localhost:8787/healthz').catch(()=>null))?.status??0,{timeout:15_000}).toBe(200);
-});
-test.afterAll(()=>api?.kill());
+test.beforeAll(async()=>{api=await startServer({ADMIN_EMAILS:'boss@example.com'})});
+test.afterAll(()=>stopServer(api));
 
 async function signIn(page:Page,email:string){
   await page.goto('./admin.html');

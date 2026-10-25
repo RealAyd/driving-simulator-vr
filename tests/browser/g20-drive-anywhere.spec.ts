@@ -49,6 +49,7 @@ test('G20: test centres show at once, even with no answer from the place search;
   await page.route('https://api.postcodes.io/**',()=>new Promise(()=>{}));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=free]');
   await page.fill('#area-query','Basildon');
   await expect(page.locator('#area-results button').first()).toContainText('Basildon test centre',{timeout:2000});
   await page.fill('#area-query','');
@@ -67,6 +68,7 @@ test('G20: a test centre built in advance opens from its pack, with no call to O
   await page.route('https://api.postcodes.io/**',()=>new Promise(()=>{}));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=free]');
   await page.fill('#area-query','Leeds');
   await page.locator('#area-results button',{hasText:/^Leeds test centre/}).first().click();
   await expect(page.locator('#exercise-detail')).toBeVisible({timeout:90_000});

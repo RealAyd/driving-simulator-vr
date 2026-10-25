@@ -444,7 +444,7 @@ html[data-theme="light"] .free-badge{color:#15803d}
 #place-back{margin-top:14px}
 .place-title{margin:8px 0 10px}
 /* Web, mobile and VR: the same drive on a laptop, a phone and a headset (drawn here: no product images). */
-.devices{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:center;margin:18px 0 4px;padding:18px;border-radius:18px;background:linear-gradient(110deg,#eef4ff,#f8fafc);color:#0f172a}
+.devices{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:center;margin:18px 0 4px;padding:18px;border-radius:18px;background:#eaecfb;color:#0f172a}
 .devices h3{margin:0;font-size:clamp(19px,5vw,24px);font-weight:800;letter-spacing:-.01em;color:#0f172a}
 .devices p{margin:4px 0 0;font-size:14.5px;color:#475569}
 .devices-art{display:flex;align-items:flex-end;justify-content:center;gap:10px;min-width:0}
@@ -452,10 +452,10 @@ html[data-theme="light"] .free-badge{color:#15803d}
 .dev-laptop{flex:0 1 220px;min-width:0}
 .dev-laptop .dev-screen{aspect-ratio:16/10;border:6px solid #1e293b;border-bottom-width:8px;border-radius:9px 9px 2px 2px}
 .dev-laptop::after{content:"";display:block;height:8px;margin:0 -8%;border-radius:0 0 10px 10px;background:linear-gradient(#cbd5e1,#94a3b8)}
-.dev-phone{flex:0 0 52px}
+.dev-phone{flex:0 0 48px}
 .dev-phone .dev-screen{aspect-ratio:9/19;border:4px solid #1e293b;border-radius:11px}
 .dev-phone img{object-position:42% 50%}
-.dev-headset{flex:0 0 auto;width:clamp(96px,30%,150px);height:auto}
+.dev-headset{flex:0 1 190px;min-width:0;width:clamp(120px,38%,200px);height:auto;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 55%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 55%,#000 62%,transparent 100%)}
 @media (min-width:640px){.devices{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);padding:20px 24px}}
 #text-size .a2{font-size:1.3em;margin-left:1px}
 dialog.glossary{max-width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;background:var(--surface,#0f172a);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
@@ -515,13 +515,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <div class="devices-art" aria-hidden="true">
             <div class="dev-laptop"><div class="dev-screen"><img src="assets/home/drive-640.webp" alt="" decoding="async" loading="lazy"></div></div>
             <div class="dev-phone"><div class="dev-screen"><img src="assets/home/drive-640.webp" alt="" decoding="async" loading="lazy"></div></div>
-            <svg class="dev-headset" viewBox="0 0 150 90" aria-hidden="true">
-            <path d="M30 34c0-11 9-18 20-18h50c11 0 20 7 20 18v18c0 12-9 20-20 20H86c-5 0-7-6-11-6s-6 6-11 6H50c-11 0-20-8-20-20z" fill="#f8fafc" stroke="#64748b" stroke-width="2.4"/>
-            <path d="M38 38c0-7 6-12 13-12h48c7 0 13 5 13 12v10c0 8-6 14-13 14H87c-4 0-7-5-12-5s-8 5-12 5H51c-7 0-13-6-13-14z" fill="#cbd5e1"/>
-            <path d="M30 40c-10 0-16 4-18 10M120 40c10 0 16 4 18 10" fill="none" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
-            <g fill="#f8fafc" stroke="#64748b" stroke-width="2.4"><path d="M10 62c0-7 5-11 10-11s10 4 10 11l-3 22h-14z"/><path d="M120 62c0-7 5-11 10-11s10 4 10 11l-3 22h-14z"/></g>
-            <g fill="#334155"><circle cx="20" cy="60" r="3.5"/><circle cx="130" cy="60" r="3.5"/></g>
-          </svg>
+            <img class="dev-headset" src="assets/home/vr-headset.webp" width="540" height="300" alt="" decoding="async" loading="lazy">
           </div>
         </section>
       </div>
@@ -694,6 +688,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
     </dl>
     <p class="unit">Practice feedback, not a DVSA assessment.</p>
     <p class="unit">Map data for Brentwood © OpenStreetMap contributors (ODbL).</p>
+    <p class="unit">Headset photo: <a href="https://www.flickr.com/photos/196388265@N05/52328573038" target="_blank" rel="noopener">“Meta Quest 2” by abx.justin</a>, cropped, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener">CC BY-SA 2.0</a>.</p>
     <p class="unit legal-links"><a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> · <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="legal/refunds.html" target="_blank" rel="noopener">Refunds</a> · <a href="legal/cookies.html" target="_blank" rel="noopener">Cookies</a> · <a href="support.html">Help and support</a> (or email <a href="mailto:support.drivingpractice@gmail.com">support.drivingpractice@gmail.com</a>)</p>
     <p class="unit">Business names and brand signs are shown where the map names them. Trademarks belong to their owners; no affiliation with or endorsement by any business is claimed.</p>
     <button id="about-close" class="primary" type="button">Close</button>

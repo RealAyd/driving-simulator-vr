@@ -1,17 +1,14 @@
-import {execSync,spawn,type ChildProcess} from 'node:child_process';
+import type {ChildProcess} from 'node:child_process';
 import {expect,test,type Page} from '@playwright/test';
+import {startServer,stopServer} from './server';
 import {pick} from './home';
 
 // Paid access with the accounts service (server/) running locally with fakes: no real email, sign-in or payment.
 // The preview build is ungated; access.json is served here as the hosted copy has it.
 test.describe.configure({mode:'serial'});
 let api:ChildProcess;
-test.beforeAll(async()=>{
-  execSync('npm run build:server',{stdio:'ignore'});
-  api=spawn('node',['server/dist/index.js'],{env:{...process.env,DP_DEV_FAKES:'1',PORT:'8787',APP_BASE_URL:'http://localhost:4173'},stdio:'ignore'});
-  await expect.poll(async()=>(await fetch('http://localhost:8787/healthz').catch(()=>null))?.status??0,{timeout:15_000}).toBe(200);
-});
-test.afterAll(()=>{api?.kill()});
+test.beforeAll(async()=>{api=await startServer({})});
+test.afterAll(()=>stopServer(api));
 
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 async function gated(page:Page,path='./'){
