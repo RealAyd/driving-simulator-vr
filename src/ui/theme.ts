@@ -1,26 +1,28 @@
 /**
  * Light or dark menus (the home screen and the other screens; the driving view keeps its own look over the road).
- * The phone's setting is followed until the driver chooses; the choice is remembered on this device.
+ * public/theme.js sets it as the page loads: the daylight in Great Britain until the driver chooses here; the choice
+ * is remembered on this device. This is the menu's button.
  */
 type Theme='light'|'dark';
-const KEY='dp.theme.v1';
+type DpTheme={KEY:string;saved():Theme|null;current():Theme;apply():void};
+const dpTheme=()=>(window as unknown as {dpTheme?:DpTheme}).dpTheme;
 
 export function setUpTheme(button:HTMLButtonElement):void{
-  const saved=():Theme|null=>{try{const v=localStorage.getItem(KEY);return v==='light'||v==='dark'?v:null}catch{return null}};
-  const system=window.matchMedia?.('(prefers-color-scheme: light)');
-  const current=():Theme=>saved()??(system?.matches?'light':'dark');
-  const apply=()=>{
-    const theme=current();
-    document.documentElement.dataset['theme']=theme;
+  const shown=():Theme=>document.documentElement.dataset['theme']==='light'?'light':'dark';
+  const render=()=>{
+    const theme=shown();
     button.setAttribute('aria-pressed',String(theme==='light'));
     button.setAttribute('aria-label',theme==='light'?'Light mode. Tap for dark mode':'Dark mode. Tap for light mode');
     button.querySelector('span')!.textContent=theme==='light'?'Light':'Dark';
   };
   button.addEventListener('click',()=>{
-    try{localStorage.setItem(KEY,current()==='light'?'dark':'light')}catch{/* this visit only */}
-    if(!saved())document.documentElement.dataset['theme']=current()==='light'?'dark':'light';
-    apply();
+    const next:Theme=shown()==='light'?'dark':'light';
+    try{localStorage.setItem(dpTheme()?.KEY??'dp.theme.v1',next)}catch{/* this visit only */}
+    document.documentElement.dataset['theme']=next;
+    render();
   });
-  system?.addEventListener?.('change',()=>{if(!saved())apply()});
-  apply();
+  // (Dusk and dawn change it while the page is open, until the driver has chosen.)
+  setInterval(()=>{if(dpTheme()&&!dpTheme()!.saved()){dpTheme()!.apply();render()}},60_000);
+  if(!document.documentElement.dataset['theme'])dpTheme()?.apply();
+  render();
 }

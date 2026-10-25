@@ -2,6 +2,8 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
+<!-- Light or dark before anything shows: the daylight in Great Britain, or the driver's choice. -->
+<script src="theme.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <!-- Added to the Home Screen, the app opens without Safari's bars: the whole screen for the phone viewer. -->
@@ -446,6 +448,18 @@ html[data-theme="light"] .free-badge{color:#15803d}
 .view-passes{justify-self:center;margin:10px 0 2px;padding:6px 4px!important;font-size:17px!important;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
 #place-back{margin-top:14px}
 .place-title{margin:8px 0 10px}
+/* What learners say: reviews of the first Driving Practice app, sideways on a phone. */
+.reviews{margin:18px 0 0;min-width:0;contain:inline-size}
+.reviews h3{margin:0;font-size:clamp(19px,5vw,24px);font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.reviews-source{margin:2px 0 10px;font-size:13px;color:var(--soft)}
+.review-list{display:grid;grid-auto-flow:column;grid-auto-columns:min(82%,300px);align-items:start;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;
+  scrollbar-width:thin;overscroll-behavior-x:contain}
+.review{scroll-snap-align:start;margin:0;display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:16px;
+  background:var(--surface-2);border:1px solid var(--line)}
+.review blockquote{margin:0}
+.review b{display:block;font-size:16px;color:var(--ink)}
+.review p{margin:6px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink);opacity:.88}
+.review figcaption{font-size:13px;font-weight:600;color:var(--soft)}
 /* Web, mobile and VR: the same drive on a laptop, a phone and a headset (drawn here: no product images). */
 .devices{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:center;margin:18px 0 4px;padding:18px;border-radius:18px;background:#eaecfb;color:#0f172a}
 .devices h3{margin:0;font-size:clamp(19px,5vw,24px);font-weight:800;letter-spacing:-.01em;color:#0f172a}
@@ -513,6 +527,17 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <button class="mode-card mc-test" type="button" data-drive-mode="test"><span class="mc-ico"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8h7M8.5 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m8.5 16 1.4 1.4 2.6-2.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 16.4h1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="mc-txt"><b>Mock Tests</b><small>Put your judgement to the test</small></span><svg class="mc-go" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <button id="view-passes" type="button" class="link view-passes" hidden>View passes</button>
+        <section class="reviews" aria-labelledby="reviews-title">
+          <h3 id="reviews-title">What learners say</h3>
+          <p class="reviews-source">Reviews of the Driving Practice app</p>
+          <div class="review-list" tabindex="0" aria-label="Reviews (scroll sideways)">
+            <figure class="review"><blockquote><b>“Absolute lifesaver for practical preparations”</b><p>The app features actual up to date scenarios. It is worth every penny if you want to pass on first try, download it.</p></blockquote><figcaption>OLUWATOYIN AB · 18 September</figcaption></figure>
+            <figure class="review"><blockquote><b>“Incredible App 👍🏻”</b><p>I particularly like the focus on practical, real-life situations rather than simply testing your knowledge of road signs and rules.</p></blockquote><figcaption>Grande205 · 17 September</figcaption></figure>
+            <figure class="review"><blockquote><b>“Does what it says it does”</b><p>It’s very practical and intuitive. Just like driving a real car but on my mobile app. I like the flow where I have to select each steps, just like I would do when I am driving and then it rates me.</p></blockquote><figcaption>Shezvar · 31 August</figcaption></figure>
+            <figure class="review"><blockquote><b>“The best”</b><p>Thank you, this really helps with awareness.</p></blockquote><figcaption>Beki94xxx · 31 August</figcaption></figure>
+            <figure class="review"><blockquote><b>“Awesome”</b><p>Very good app to use for learning driving</p></blockquote><figcaption>Emmanuel2027 · 15 October</figcaption></figure>
+          </div>
+        </section>
         <section class="devices" aria-labelledby="devices-title">
           <div class="devices-text"><h3 id="devices-title">Web, mobile and VR</h3><p>Practise anytime, anywhere, in the way that suits you.</p></div>
           <div class="devices-art" aria-hidden="true">
