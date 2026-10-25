@@ -17,6 +17,7 @@ test('G20: search a postcode, build the area on the device and drive there',asyn
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // Typed key by key, letters that are also driving keys (W A S D, mirrors…) included: they go into the box.
+  await page.click('[data-drive-mode=test]');
   await page.locator('#area-query').pressSequentially('Wasdqe');
   await expect(page.locator('#area-query')).toHaveValue('Wasdqe');
   await page.fill('#area-query','IG3 9QJ');

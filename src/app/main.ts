@@ -1678,8 +1678,8 @@ export async function boot():Promise<void>{
     'moving-off':{scenario:'moving-off-safely',intro:'moving-off-intro'}
   };
   let chosen:{scenario:string;intro?:string}|null=null;
-  // Home screen: a mock test (directions and marking) or a free drive, for the test centres and places.
-  let driveMode:'test'|'free'|'lesson'='test';
+  // Home screen: a free drive (first, and chosen to begin with), a lesson, or a mock test (directions and marking).
+  let driveMode:'test'|'free'|'lesson'='free';
   for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>{
     driveMode=b.dataset.driveMode as 'test'|'free'|'lesson';
     for(const o of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))o.setAttribute('aria-pressed',String(o===b));

@@ -29,6 +29,9 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   // A fixed route: the first direction (a left turn) comes about 170 m from the start.
   await page.goto('./?routeSeed=1');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  // Free drive comes first and is chosen to begin with; the mock test is chosen.
+  await expect(page.locator('[data-drive-mode=free]')).toHaveAttribute('aria-pressed','true');
+  await page.click('[data-drive-mode=test]');
   await expect(page.locator('[data-drive-mode=test]')).toHaveAttribute('aria-pressed','true');
   // Levels: Easy is a 10-minute mock test (Standard 20, Test day 40, as the real test).
   await expect(page.locator('[data-difficulty=standard]')).toHaveAttribute('aria-pressed','true');

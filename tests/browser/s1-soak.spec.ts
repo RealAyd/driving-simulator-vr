@@ -27,6 +27,7 @@ for(const centre of CENTRES)test(`soak: mock test at ${centre}`,async({page},tes
   await page.route('https://api.postcodes.io/**',()=>new Promise(()=>{}));
   await page.goto('./?routeSeed=5');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  await page.click('[data-drive-mode=test]');
   await page.click('[data-difficulty=easy]');
   if(centre==='Goodmayes')await page.click('[data-exercise=goodmayes]');
   else{
