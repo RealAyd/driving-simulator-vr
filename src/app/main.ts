@@ -48,7 +48,7 @@ import goodmayesLessonJson from '../../content/scenarios/goodmayes-lesson.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
-import {fullScreenNow,installed,setUpFullscreen} from '../ui/fullscreen';
+import {fullScreenNow,installed,portraitTouch,preferLandscape,setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
 import {CAR_MODELS,CarModel,PROP_ASSETS,PropLibrary,bakeParkedCars,loadCarModels,type ParkedCar} from '../assets/models';
@@ -1796,6 +1796,18 @@ export async function boot():Promise<void>{
   });
   showFirstSteps();
   session.onChange(state=>{if(state==='ready')showFirstSteps()});
+
+  // ---- Upright phone during a drive: ask for landscape, and hold the drive still until then ----
+  let heldForRotate=false;
+  const checkRotate=()=>{
+    const ask=portraitTouch()&&!viewer.active&&(session.state==='running'||session.state==='paused');
+    byId('rotate-hint').hidden=!ask;
+    if(ask&&session.state==='running'&&!heldForRotate&&!clock.isPaused){heldForRotate=true;clock.pause()}
+    else if(!ask&&heldForRotate){heldForRotate=false;if(session.state==='running')clock.resume()}
+  };
+  matchMedia('(orientation: portrait)').addEventListener('change',checkRotate);
+  addEventListener('resize',checkRotate);
+  session.onChange(()=>setTimeout(checkRotate,0));
   // What each mode is, in a line.
   const MODE_SUMMARY={lesson:'Lesson: an instructor teaches one topic at a time and coaches you as you drive.',
     test:'Mock test: practise the real test. An examiner gives directions and marks you as on the DVSA sheet.',
@@ -1888,6 +1900,8 @@ export async function boot():Promise<void>{
     if(session.state==='running')paidDrive=drive;
   };
   let startingPaid=false;
+  // Drives are in landscape: turned there where the phone allows it (from the tap that starts them).
+  for(const id of ['start-practice','start-intro','first-start'])byId(id).addEventListener('click',()=>void preferLandscape(),true);
   byId('start-practice').addEventListener('click',()=>{
     if(!chosen||startingPaid)return;
     startingPaid=true;
@@ -2331,6 +2345,7 @@ export async function boot():Promise<void>{
     selectView:(view:ViewTarget|'forward')=>selectView(view),
     hands:()=>cockpit.handsTurn,
     tip:()=>({text:tipText,shown:!byId('hud-tip').hidden}),
+    rotateHint:()=>!byId('rotate-hint').hidden,
     behind:()=>({on:behind,seconds:behindSeconds,orbitYaw:orbit.yaw,camera:{x:camera.position.x,z:camera.position.z},carModel:!!learnerBody?.isEnabled(),lPlates:!!lPlates?.isEnabled()}),
     viewLabel:()=>byId('hud-view-label').textContent,
     buses:()=>runtime?.buses.map(b=>({id:b.id,pose:b.pose,speed:b.speed,state:b.state,visible:b.visible,indicating:b.indicating}))??[],

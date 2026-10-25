@@ -31,3 +31,20 @@ export function setUpFullscreen(buttons:HTMLButtonElement[],showHowTo:()=>void):
   for(const type of ['fullscreenchange','webkitfullscreenchange'])document.addEventListener(type,refresh);
   refresh();
 }
+
+/** A phone or tablet held upright (a touch screen in portrait). */
+export const portraitTouch=()=>matchMedia('(orientation: portrait) and (pointer: coarse)').matches;
+
+/**
+ * Starting a drive on a phone held upright: where the browser allows it (Android), full screen turned to landscape.
+ * Call from the tap that starts the drive (browsers allow full screen only then). Elsewhere (iPhone) nothing happens:
+ * the drive asks for the phone to be turned instead.
+ */
+export async function preferLandscape():Promise<void>{
+  if(!portraitTouch())return;
+  const doc=document as FsDoc;
+  try{
+    if(!(doc.fullscreenElement||doc.webkitFullscreenElement)&&doc.fullscreenEnabled)await document.documentElement.requestFullscreen({navigationUI:'hide'});
+    await (screen.orientation as ScreenOrientation&{lock?:(o:string)=>Promise<void>}).lock?.('landscape');
+  }catch{/* not allowed here: the turn-your-phone screen asks instead */}
+}

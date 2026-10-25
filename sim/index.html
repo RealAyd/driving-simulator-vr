@@ -225,6 +225,11 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .about dt{color:var(--soft)}.about dd{margin:0;font-family:ui-monospace,SFMono-Regular,monospace;word-break:break-all}
 
 /* ---- Driving HUD: glass panels over the dashboard, clear of the mirrors and the road ---- */
+#rotate-hint{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:#070b16;color:#f1f5f9}
+#rotate-hint svg{color:#2dd4bf;animation:rotate-hint 2.4s ease-in-out infinite}
+#rotate-hint h2{margin:0;font-size:22px}#rotate-hint p{margin:0;max-width:320px;color:#94a3b8}
+@keyframes rotate-hint{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (prefers-reduced-motion:reduce){#rotate-hint svg{animation:none}}
 #hud{position:fixed;inset:0;pointer-events:none;z-index:10;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #hud button,#sim-canvas{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .hud-panel{position:absolute;background:var(--panel);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:5px;pointer-events:auto;
@@ -692,6 +697,11 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
     <button id="error-reload" class="primary" type="button">Reload</button></div>
 </section>
 
+<div id="rotate-hint" role="alertdialog" aria-labelledby="rotate-title" hidden>
+  <svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true"><rect x="20" y="6" width="24" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M10 48a22 22 0 0 0 30 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M36 54l5 4-2 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <h2 id="rotate-title">Turn your phone sideways</h2>
+  <p>Driving Practice drives in landscape. The drive waits for you: it carries on when the phone is turned.</p>
+</div>
 <div id="hud" hidden>
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
