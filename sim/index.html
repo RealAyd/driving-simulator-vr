@@ -460,6 +460,12 @@ html[data-theme="light"] .free-badge{color:#15803d}
 .review b{display:block;font-size:16px;color:var(--ink)}
 .review p{margin:6px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink);opacity:.88}
 .review figcaption{font-size:13px;font-weight:600;color:var(--soft)}
+/* The Driving Practice app (step-by-step scenarios), for those who prefer it. */
+.other-app{margin:16px 0 0;padding:18px;border-radius:18px;border:1px solid var(--accent);background:var(--accent-soft)}
+.other-app h3{margin:0;font-size:clamp(18px,4.8vw,22px);font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.other-app p{margin:6px 0 0;font-size:15px;line-height:1.5;color:var(--ink)}
+.other-app .other-app-where{font-size:13.5px;font-weight:600;color:var(--soft)}
+.other-app-link{display:inline-block;margin-top:12px;padding:10px 18px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
 /* Web, mobile and VR: the same drive on a laptop, a phone and a headset (drawn here: no product images). */
 .devices{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:center;margin:18px 0 4px;padding:18px;border-radius:18px;background:#eaecfb;color:#0f172a}
 .devices h3{margin:0;font-size:clamp(19px,5vw,24px);font-weight:800;letter-spacing:-.01em;color:#0f172a}
@@ -537,6 +543,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
             <figure class="review"><blockquote><b>“The best”</b><p>Thank you, this really helps with awareness.</p></blockquote><figcaption>Beki94xxx · 31 August</figcaption></figure>
             <figure class="review"><blockquote><b>“Awesome”</b><p>Very good app to use for learning driving</p></blockquote><figcaption>Emmanuel2027 · 15 October</figcaption></figure>
           </div>
+        </section>
+        <section class="other-app" aria-labelledby="other-app-title">
+          <h3 id="other-app-title">Prefer step-by-step road scenarios?</h3>
+          <p>Try the Driving Practice app. Practise mirror checks, junctions and driving-test decisions, with feedback on your choices.</p>
+          <p class="other-app-where">Available on iPhone and Android.</p>
+          <a id="other-app-link" class="other-app-link" href="https://drivingpractice.live/app" target="_blank" rel="noopener">Explore the app</a>
         </section>
         <section class="devices" aria-labelledby="devices-title">
           <div class="devices-text"><h3 id="devices-title">Web, mobile and VR</h3><p>Practise anytime, anywhere, in the way that suits you.</p></div>

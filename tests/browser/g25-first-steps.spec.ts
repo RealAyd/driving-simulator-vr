@@ -17,6 +17,9 @@ test('G25: home: three cards, the menu, guided practice with lessons and drills,
   // (A preview copy is not paid: no free-try badge and no passes.)
   await expect(page.locator('#free-badge')).toBeHidden();
   await expect(page.locator('#view-passes')).toBeHidden();
+  // Real reviews of the Driving Practice app, and the way to it.
+  await expect(page.locator('.review')).toHaveCount(5);
+  await expect(page.locator('#other-app-link')).toHaveAttribute('href','https://drivingpractice.live/app');
   await page.screenshot({path:testInfo.outputPath('g25-home.png'),fullPage:true});
 
   // Free Drive: the places, no drills.
