@@ -6,7 +6,7 @@ import {csvCell} from '../src/admin.js';
 import {loadConfig} from '../src/config.js';
 import {handler,sign} from '../src/http.js';
 import {OutboxMailer,fakeIdentities,fakeStripe} from '../src/providers.js';
-import {Service} from '../src/service.js';
+import {Service,isAdminEmail} from '../src/service.js';
 import {MemoryStore} from '../src/store.js';
 
 let server:Server,base='',service:Service;
@@ -53,14 +53,18 @@ describe('the admin hub API',()=>{
     expect(o.headers.get('x-robots-tag')).toBe('noindex');
   });
 
-  it('an admin sign-in older than 12 hours must sign in again',async()=>{
+  it('an admin stays in for the whole sign-in, not just the first hours',async()=>{
     const boss=await as('boss@example.com');
-    boss.setCookie(`dp_session=${encodeURIComponent(sign(config.sessionSecret,boss.id,Date.now()-13*3600_000))}`);
-    const r=await boss('/api/admin/overview');
-    expect(r.status).toBe(401);
-    expect(r.json.error).toBe('reauth');
-    // (The learner's own pages still work with it.)
-    expect((await boss('/api/me')).json.signedIn).toBe(true);
+    boss.setCookie(`dp_session=${encodeURIComponent(sign(config.sessionSecret,boss.id,Date.now()-30*86400_000))}`);
+    expect((await boss('/api/admin/overview')).status).toBe(200);
+  });
+
+  it('an admin address counts by alias: a Gmail address with dots or a +tag',async()=>{
+    expect(isAdminEmail({...config,adminEmails:['owner1@gmail.com']},'Own.er1+dp@googlemail.com')).toBe(true);
+    expect(isAdminEmail({...config,adminEmails:['owner1@gmail.com']},'owner2@gmail.com')).toBe(false);
+    expect(isAdminEmail({...config,adminEmails:['boss@example.com']},null)).toBe(false);
+    const dotted=await as('bo.ss@example.com');
+    expect((await dotted('/api/me')).json.admin).toBe(false);
   });
 
   it('overview: money, paying customers, drives and sessions held',async()=>{

@@ -185,6 +185,9 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .pack-list button{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:12px 14px;border-radius:14px}
 .pack-list button b{font-size:16px}
 .pack-list button .price{font-weight:700;color:var(--accent)}
+.admin-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;border:1px solid var(--accent);border-radius:14px;padding:12px;margin:12px 0}
+.admin-tools label{display:grid;gap:4px;font-size:12.5px;font-weight:650;color:var(--soft)}
+.admin-hub{grid-column:1/-1;display:block;text-align:center;padding:11px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
 .invite-box{border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
 .invite-row{display:flex;gap:8px;margin-top:6px}
 .account-history{margin:0;padding-left:18px;font-size:13px;color:var(--soft)}
@@ -570,6 +573,13 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p id="account-email" class="unit"></p>
       <p class="balance"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
       <ul id="account-breakdown" class="breakdown"></ul>
+      <div id="admin-tools" class="admin-tools" hidden>
+        <a id="admin-hub" class="admin-hub" href="admin.html" target="_blank" rel="noopener">Admin hub</a>
+        <label>Cars <select data-sim-option="cars"><option value="">Mixed</option><option value="old">Earlier</option><option value="new">New pack</option></select></label>
+        <label>Driver <select data-sim-option="driver"><option value="">Hidden</option><option value="1">Shown</option></select></label>
+        <label>Quality <select data-sim-option="quality"><option value="">Auto</option><option value="desktop">Desktop</option><option value="phone">Phone</option></select></label>
+        <label>Shadows <select data-sim-option="shadows"><option value="">Auto</option><option value="1">On</option><option value="0">Off</option></select></label>
+      </div>
       <p id="account-note" class="unit" role="status"></p>
       <div id="pack-list" class="pack-list"></div>
       <div class="invite-box">
@@ -579,7 +589,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       </div>
       <details class="more"><summary>History</summary><div class="more-body"><ul id="account-history" class="account-history"></ul></div></details>
       <button id="account-signout" type="button" class="link">Sign out</button>
-      <p class="unit legal-links"><a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> · <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="legal/refunds.html" target="_blank" rel="noopener">Refunds</a> · <a href="legal/cookies.html" target="_blank" rel="noopener">Cookies</a> · <a href="support.html">Help and support</a><span id="admin-link" hidden> · <a href="admin.html" target="_blank" rel="noopener">Admin hub</a></span></p>
+      <p class="unit legal-links"><a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> · <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="legal/refunds.html" target="_blank" rel="noopener">Refunds</a> · <a href="legal/cookies.html" target="_blank" rel="noopener">Cookies</a> · <a href="support.html">Help and support</a></p>
     </div>
   </div>
 </section>

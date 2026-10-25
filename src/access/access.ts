@@ -146,6 +146,16 @@ export class Access{
 
   private wire(){
     byId('account-chip').addEventListener('click',()=>this.open());
+    // Admin: the simulation's load-time options (read from the address when the page loads, so changing one reloads).
+    for(const select of document.querySelectorAll<HTMLSelectElement>('[data-sim-option]')){
+      const key=select.dataset['simOption']!;
+      select.value=new URLSearchParams(location.search).get(key)??'';
+      select.addEventListener('change',()=>{
+        const url=new URL(location.href);
+        if(select.value)url.searchParams.set(key,select.value);else url.searchParams.delete(key);
+        location.assign(url);
+      });
+    }
     byId('account-close').addEventListener('click',()=>this.close());
     let email='';
     byId('email-form').addEventListener('submit',e=>{
@@ -231,7 +241,7 @@ export class Access{
     }));
     if(!packs.length)byId('pack-list').textContent='Sessions are not on sale yet.';
     byId<HTMLInputElement>('invite-link').value=`${location.origin}${location.pathname}?ref=${me.referralCode}`;
-    byId('admin-link').hidden=!me.admin;
+    byId('admin-tools').hidden=!me.admin;
     byId('invite-stats').textContent=me.invited?`${me.invited} joined with your link · ${me.rewarded} free session${me.rewarded===1?'':'s'} earned`:'';
     const LABEL:Record<string,string>={purchase:'Bought',promo:'Promotion',referral_free_drive:'Free drive (invited)',referral_bonus:'Free session (you invited someone)',
       consumed:'Used',drive_refund:'Given back (did not load)',refund:'Refunded',adjustment:'Adjusted',allowance:'Starter Pass',

@@ -9,8 +9,6 @@ import type {OutboxMailer} from './providers.js';
 const COOKIE='dp_session',COOKIE_DAYS=60;
 /** The device's free try (signed the same way; its id, not an account): kept a year. */
 const TRIAL_COOKIE='dp_trial',TRIAL_DAYS=365;
-/** The admin hub needs a sign-in from the last this many hours (the learner's cookie lasts COOKIE_DAYS). */
-export const ADMIN_SIGNIN_HOURS=12;
 const b64=(s:string)=>Buffer.from(s).toString('base64url');
 export function sign(secret:string,accountId:string,now=Date.now(),days=COOKIE_DAYS):string{
   const body=b64(JSON.stringify({a:accountId,e:now+days*86400_000}));
@@ -51,9 +49,8 @@ export function handler(service:Service,outbox:OutboxMailer|null){
   const {config}=service;
   const admin=new Admin(config,service.store);
   const {support}=service;
-  /** An admin signed in recently enough for the hub (null otherwise). */
-  const hubAdmin=async(session:{accountId:string;signedInAt:number}|null)=>
-    session&&Date.now()-session.signedInAt<=ADMIN_SIGNIN_HOURS*3600_000?admin.adminEmail(session.accountId):null;
+  /** The signed-in admin's email (null otherwise). */
+  const hubAdmin=async(session:{accountId:string;signedInAt:number}|null)=>session?admin.adminEmail(session.accountId):null;
   const secure=config.appBaseUrl.startsWith('https://');
   const origin=new URL(config.appBaseUrl).origin;
   const setSession=(res:ServerResponse,accountId:string|null)=>res.setHeader('Set-Cookie',
@@ -199,11 +196,10 @@ export function handler(service:Service,outbox:OutboxMailer|null){
         return res.end(a.data);
       }
 
-      // ---- The admin hub (/admin.html): ADMIN_EMAILS only, signed in within the last ADMIN_SIGNIN_HOURS ----
+      // ---- The admin hub (/admin.html): ADMIN_EMAILS only ----
       if(path.startsWith('/api/admin/')){
         const by=await admin.adminEmail(signedIn());
         if(!by)throw new HttpError(403,'not-admin');
-        if(Date.now()-session!.signedInAt>ADMIN_SIGNIN_HOURS*3600_000)throw new HttpError(401,'reauth');
         // Changes come only from this site's own page (a missing Origin is refused too).
         if(method==='POST'&&req.headers.origin!==origin)throw new HttpError(403,'cross-site');
         res.setHeader('X-Robots-Tag','noindex');

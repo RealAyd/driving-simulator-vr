@@ -41,6 +41,8 @@ export function emailKey(email:string):string{
   return `${gmail?base.replace(/\./g,''):base}@${gmail?'gmail.com':domain}`;
 }
 export const EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Whether a verified email is one of ADMIN_EMAILS, by alias (a Gmail address with dots or a +tag still counts). */
+export const isAdminEmail=(config:Config,email:string|null|undefined)=>!!email&&config.adminEmails.some(a=>emailKey(a)===emailKey(email));
 
 /** A sign-in code lasts this long; this many wrong guesses end it. */
 const CODE_MINUTES=15,CODE_ATTEMPTS=5;
@@ -116,7 +118,7 @@ export class Service{
       id:a.id,email:a.email,balance:a.balance,allowances:Object.fromEntries(POTS.map(p=>[p,a.allowances?.[p]??0])) as Record<Pot,number>,starterBought:!!a.starterBought,referralCode:a.referralCode,
       invited:await this.store.countReferred(a.id),rewarded:ledger.filter(e=>e.type==='referral_bonus').length,
       history:ledger.slice(-20).reverse().map(e=>({type:e.type,sessions:e.sessionsDelta,amountPence:e.amountPence,reason:e.reason,at:e.createdAt.toISOString()})),
-      admin:!!a.email&&this.config.adminEmails.includes(a.email)
+      admin:isAdminEmail(this.config,a.email)
     };
   }
 
@@ -167,7 +169,7 @@ export class Service{
     const mode=modeOf(scenario);
     // The admins (ADMIN_EMAILS) drive without using sessions: recorded as a drive, nothing taken.
     const account=await this.store.findAccount({id:accountId});
-    if(account?.email&&this.config.adminEmails.includes(account.email)){
+    if(account&&isAdminEmail(this.config,account.email)){
       const drive=await this.store.createDrive({accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'admin',startedAt:new Date(),status:'started'});
       return {ok:true,drive,balance:account.balance};
     }
