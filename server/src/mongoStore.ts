@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {MongoClient,MongoServerError,type Collection,type Db} from 'mongodb';
 import {MongoSupportStore} from './mongoSupportStore.js';
-import type {Account,AccountQuery,Drive,Flag,LedgerEntry,LedgerQuery,LoginCode,Mode,ReferrerCount,Store} from './store.js';
+import type {Account,AccountQuery,Drive,Flag,LedgerEntry,LedgerQuery,LoginCode,Mode,ReferrerCount,Store,Trial} from './store.js';
 
 type Doc<T extends {id:string}>=Omit<T,'id'>&{_id:string};
 const out=<T extends {id:string}>(d:Doc<T>|null):T|null=>{
@@ -33,6 +33,7 @@ export class MongoStore implements Store{
   private get codes():Collection<Doc<LoginCode>>{return this.db.collection('login_codes')}
   private get rates():Collection<{_id:string;until:Date;n:number}>{return this.db.collection('rate_limits')}
   private get flagged():Collection<Doc<Flag>>{return this.db.collection('flags')}
+  private get trialDocs():Collection<Doc<Trial>>{return this.db.collection('trials')}
 
   private async indexes(){
     // Sparse: an Apple account without an email, or accounts without a provider, do not collide.
@@ -170,6 +171,17 @@ export class MongoStore implements Store{
     return this.accounts.aggregate<ReferrerCount>([{$match:{referredBy:{$exists:true}}},
       {$group:{_id:'$referredBy',joined:{$sum:1},paid:{$sum:{$cond:[{$ifNull:['$firstPaidAt',false]},1,0]}}}},
       {$sort:{joined:-1}},{$limit:500},{$project:{_id:0,referrerId:'$_id',joined:1,paid:1}}]).toArray();
+  }
+  async createTrial(){
+    const doc={_id:randomUUID(),remaining:{lesson:1,test:1,free:1},createdAt:new Date()} as Doc<Trial>;
+    await this.trialDocs.insertOne(doc);
+    return out<Trial>(doc)!;
+  }
+  async getTrial(id:string){return out<Trial>(await this.trialDocs.findOne({_id:id}))}
+  async moveTrial(id:string,mode:Mode,delta:-1|1){
+    // (Atomic: two drives started at once cannot both use the last one.)
+    const r=await this.trialDocs.updateOne({_id:id,...(delta<0?{[`remaining.${mode}`]:{$gte:1}}:{})},{$inc:{[`remaining.${mode}`]:delta}});
+    return r.modifiedCount===1;
   }
   async driveCounts(since:Date){
     const rows=await this.drives.aggregate<{_id:{mode:Mode;status:string};n:number}>([{$match:{startedAt:{$gte:since},status:{$ne:'unpaid'}}},

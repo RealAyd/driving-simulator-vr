@@ -23,19 +23,21 @@ afterAll(()=>server.close());
 type Reply={status:number;json:any;text:string;headers:Headers};
 /** A browser on the app's own site, signed in as `email` (the dev sign-in route). */
 async function as(email:string,ref?:string){
+  // (A cookie jar, as a browser keeps one: the session and the device's free try.)
   let cookie='';
+  const jar=new Map<string,string>();
+  const keep=(c:string)=>{const kv=c.split(';')[0]!,i=kv.indexOf('=');jar.set(kv.slice(0,i),kv.slice(i+1));cookie=[...jar].filter(([,v])=>v).map(([k,v])=>`${k}=${v}`).join('; ')};
   const call=async(path:string,body?:unknown,headers:Record<string,string>={}):Promise<Reply>=>{
     const res=await fetch(base+path,{method:body===undefined?'GET':'POST',redirect:'manual',
       headers:{...(body===undefined?{}:{'Content-Type':'application/json',Origin:'https://staging.example'}),...(cookie?{Cookie:cookie}:{}),...headers},
       ...(body===undefined?{}:{body:JSON.stringify(body)})});
-    const set=res.headers.get('set-cookie');
-    if(set)cookie=set.split(';')[0]!;
+    for(const c of res.headers.getSetCookie())keep(c);
     const text=await res.text();
     return {status:res.status,text,json:res.headers.get('content-type')?.includes('json')?JSON.parse(text):null,headers:res.headers};
   };
   await call('/api/dev/signin',{email,...(ref?{ref}:{})});
   const me=(await call('/api/me')).json;
-  return Object.assign(call,{id:me.id as string,code:me.referralCode as string,setCookie:(c:string)=>{cookie=c}});
+  return Object.assign(call,{id:me.id as string,code:me.referralCode as string,setCookie:(c:string)=>keep(c)});
 }
 
 describe('the admin hub API',()=>{
@@ -173,7 +175,10 @@ describe('the admin hub API',()=>{
     const me=(await boss('/api/me')).json;
     expect(me).toMatchObject({admin:true,balance:0});
     expect(me.history.filter((h:{type:string})=>h.type==='consumed'||h.type==='drive_refund')).toEqual([]);
-    expect((await (await as('learner-nodrive@example.com'))('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
+    // A learner with no sessions: the device's free try once, then a session is needed.
+    const learner=await as('learner-nodrive@example.com');
+    expect((await learner('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).json).toMatchObject({trial:true});
+    expect((await learner('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
   });
 });
 

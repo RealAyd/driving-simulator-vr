@@ -65,8 +65,11 @@ export interface Drive{
   /** 'unpaid': not started, for want of a session. */
   status:'started'|'loaded'|'failed'|'completed'|'unpaid';
   mode:Mode;
-  /** Where its session came from (a refund goes back there); 'admin': an ADMIN_EMAILS account's drive, uses none. */
-  paidFrom:Pot|'sessions'|'admin';
+  /**
+   * Where its session came from (a refund goes back there); 'admin': an ADMIN_EMAILS account's drive, uses none;
+   * 'trial': the device's free try (the drive's accountId is then `trial:<id>`).
+   */
+  paidFrom:Pot|'sessions'|'admin'|'trial';
   refunded?:boolean;
 }
 
@@ -80,6 +83,9 @@ export interface LoginCode{
   attempts:number;
   ref?:string;
 }
+
+/** A device's free try (no sign-up): one lesson, one mock test and one free drive. */
+export interface Trial{id:string;remaining:Record<Mode,number>;createdAt:Date}
 
 export interface Flag{id:string;kind:string;data:Record<string,unknown>;createdAt:Date;resolvedAt?:Date;resolvedBy?:string;note?:string}
 
@@ -136,6 +142,10 @@ export interface Store{
   /** Newest first. */
   listDrives(q:{accountId?:string;since?:Date;limit:number}):Promise<Drive[]>;
   referrers():Promise<ReferrerCount[]>;
+  createTrial():Promise<Trial>;
+  getTrial(id:string):Promise<Trial|null>;
+  /** Uses (−1) or gives back (+1) one of a free try's drives; using is atomic and fails (false) when none is left. */
+  moveTrial(id:string,mode:Mode,delta:-1|1):Promise<boolean>;
   /** Drives started since then, by kind, and how many failed to load. */
   driveCounts(since:Date):Promise<Record<Mode|'failed'|'total',number>>;
 }
@@ -148,6 +158,15 @@ export class MemoryStore implements Store{
   private codes=new Map<string,LoginCode>();
   private rates=new Map<string,{until:number;n:number}>();
   private flagged:Flag[]=[];
+  private trials=new Map<string,Trial>();
+  async createTrial(){const t:Trial={id:randomUUID(),remaining:{lesson:1,test:1,free:1},createdAt:new Date()};this.trials.set(t.id,t);return {...t,remaining:{...t.remaining}}}
+  async getTrial(id:string){const t=this.trials.get(id);return t?{...t,remaining:{...t.remaining}}:null}
+  async moveTrial(id:string,mode:Mode,delta:-1|1){
+    const t=this.trials.get(id);
+    if(!t||t.remaining[mode]+delta<0)return false;
+    t.remaining[mode]+=delta;
+    return true;
+  }
 
   async findAccount(q:AccountQuery){
     const [k,v]=Object.entries(q)[0] as [keyof Account,string];

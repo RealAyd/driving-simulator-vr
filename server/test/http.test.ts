@@ -19,25 +19,26 @@ afterAll(()=>server.close());
 
 /** A browser-like client: keeps the session cookie; posts JSON from the app's own origin. */
 function client(){
+  // (A cookie jar, as a browser keeps one: the session and the device's free try.)
   let cookie='';
+  const jar=new Map<string,string>();
+  const keep=(c:string)=>{const kv=c.split(';')[0]!,i=kv.indexOf('=');jar.set(kv.slice(0,i),kv.slice(i+1));cookie=[...jar].filter(([,v])=>v).map(([k,v])=>`${k}=${v}`).join('; ')};
   return async(path:string,body?:unknown,headers:Record<string,string>={})=>{
     const res=await fetch(base+path,{method:body===undefined?'GET':'POST',redirect:'manual',
       headers:{...(body===undefined?{}:{'Content-Type':'application/json',Origin:'https://staging.example'}),...(cookie?{Cookie:cookie}:{}),...headers},
       ...(body===undefined?{}:{body:typeof body==='string'?body:JSON.stringify(body)})});
-    const set=res.headers.get('set-cookie');
-    if(set)cookie=set.split(';')[0]!;
+    for(const c of res.headers.getSetCookie())keep(c);
     return {status:res.status,json:res.headers.get('content-type')?.includes('json')?await res.json() as Record<string,unknown>:null,headers:res.headers,cookie:()=>cookie};
   };
 }
 
 describe('the API over HTTP',()=>{
-  it('signed out: config lists the packs; me says signed out; starting a drive needs sign-in',async()=>{
+  it('signed out: config lists the packs; me says signed out, with the device\'s free try',async()=>{
     const c=client();
     const cfg=await c('/api/config');
     expect(cfg.json).toMatchObject({gate:true,devCheckout:true});
     expect((cfg.json!['packs'] as Array<{id:string}>).map(p=>p.id)).toEqual(['starter','vr-5','vr-15','vr-35']);
-    expect((await c('/api/me')).json).toEqual({signedIn:false});
-    expect((await c('/api/drives',{kind:'free',scenario:'x'})).status).toBe(401);
+    expect((await c('/api/me')).json).toEqual({signedIn:false,trial:{lesson:1,test:1,free:1}});
   });
 
   it('email code sign-in sets a signed, HttpOnly, Secure cookie; a drive needs a session; buying adds them',async()=>{
@@ -50,7 +51,9 @@ describe('the API over HTTP',()=>{
     expect(set).toContain('HttpOnly');expect(set).toContain('Secure');expect(set).toContain('SameSite=Lax');
     expect(readSession(config.sessionSecret,decodeURIComponent(c.length?r.cookie().split('=').slice(1).join('='):''))).not.toBeNull();
     expect((await c('/api/me')).json).toMatchObject({signedIn:true,email:'h@example.com',balance:0});
-    expect((await c('/api/drives',{kind:'free',scenario:'x'})).status).toBe(402);
+    // (The device's free try first: then a drive needs a session.)
+    expect((await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).json).toMatchObject({trial:true});
+    expect((await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
     // The checkout address comes from the server, for this account; the browser cannot name another price or account.
     const link=await c('/api/checkout',{pack:'vr-5'});
     expect(new URL(String(link.json!['url'])).searchParams.get('client_reference_id')).toBeTruthy();
@@ -60,12 +63,12 @@ describe('the API over HTTP',()=>{
     expect(d.json).toMatchObject({balance:4});
     expect((await c(`/api/drives/${d.json!['driveId']}/loaded`,{})).status).toBe(200);
     await c('/api/auth/logout',{});
-    expect((await c('/api/me')).json).toEqual({signedIn:false});
+    expect((await c('/api/me')).json).toMatchObject({signedIn:false});
   });
 
   it('a tampered cookie is not accepted',async()=>{
     const res=await fetch(`${base}/api/me`,{headers:{Cookie:'dp_session=eyJhIjoieCIsImUiOjk5OTk5OTk5OTk5OTl9.forged'}});
-    expect(await res.json()).toEqual({signedIn:false});
+    expect(await res.json()).toMatchObject({signedIn:false});
   });
 
   it('posts from another site are refused; non-JSON posts are refused',async()=>{

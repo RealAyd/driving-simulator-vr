@@ -25,14 +25,16 @@ afterAll(()=>server.close());
 type Reply={status:number;json:any;headers:Headers;body:Buffer};
 /** A browser on the app's site; signed in as `email` if given. */
 async function browser(email?:string){
+  // (A cookie jar, as a browser keeps one: the session and the device's free try.)
   let cookie='';
+  const jar=new Map<string,string>();
+  const keep=(c:string)=>{const kv=c.split(';')[0]!,i=kv.indexOf('=');jar.set(kv.slice(0,i),kv.slice(i+1));cookie=[...jar].filter(([,v])=>v).map(([k,v])=>`${k}=${v}`).join('; ')};
   const call=async(path:string,body?:unknown,headers:Record<string,string>={}):Promise<Reply>=>{
     const raw=Buffer.isBuffer(body);
     const res=await fetch(base+path,{method:body===undefined?'GET':'POST',
       headers:{...(body===undefined?{}:{'Content-Type':raw?'image/png':'application/json',Origin:'https://staging.example'}),...(cookie?{Cookie:cookie}:{}),...headers},
       ...(body===undefined?{}:{body:raw?body:JSON.stringify(body)})});
-    const set=res.headers.get('set-cookie');
-    if(set)cookie=set.split(';')[0]!;
+    for(const c of res.headers.getSetCookie())keep(c);
     const buf=Buffer.from(await res.arrayBuffer());
     return {status:res.status,headers:res.headers,body:buf,json:res.headers.get('content-type')?.includes('json')?JSON.parse(buf.toString()):null};
   };

@@ -17,7 +17,7 @@ async function gated(page:Page,path='./'){
   await page.route('**/access.json',r=>r.fulfill({json:{gate:true}}));
   await page.goto(path);
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await expect(page.locator('#account-chip')).toBeVisible();
+  await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
 }
 /** Signs in with a code from the (fake) email. */
 async function signInByEmail(page:Page,email:string){
@@ -31,15 +31,27 @@ async function signInByEmail(page:Page,email:string){
   await expect(page.locator('#account-main')).toBeVisible();
 }
 
-test('G26: nothing is free: Start asks to sign in; signed in with no sessions it asks to buy; a pack adds its sessions; each drive uses one',async({page})=>{
-  test.setTimeout(240_000);
+test('G26: a free try without signing up (one free drive here); then Start asks to sign in; with no sessions it asks to buy; a pack adds its sessions; each drive uses one',async({page})=>{
+  test.setTimeout(300_000);
   await gated(page);
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
   await page.click('[data-exercise=moving-off]');
-  await expect(page.locator('#session-note')).toContainText('Sign in to start');
+  // The device's free try: this practice drive is its free drive, with no sign-up.
+  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed');
+  await page.click('#start-practice');
+  await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
+  expect((await (await page.request.get('/api/me')).json()).trial).toEqual({lesson:1,test:1,free:0});
+  await page.click('#hud-pause');
+  await page.click('#end-button');
+  await expect(page.locator('#screen-results')).toBeVisible();
+  await page.click('#menu-button');
+  await page.click('[data-exercise=moving-off]');
+  // Used: now Start asks to sign in (the sign-in screen says a lesson and a mock test are still free to try).
+  await expect(page.locator('#session-note')).toContainText('You have used your free drive');
   await page.click('#start-practice');
   await expect(page.locator('#screen-account')).toBeVisible();
-  await expect(page.locator('#account-reason')).toContainText('Sign in to start');
+  await expect(page.locator('#account-reason')).toContainText('You have used your free drive');
+  await expect(page.locator('#trial-note')).toHaveText('Still free to try on this device, no sign-up needed: your free lesson and your free mock test.');
   expect(await read(page,'session()')).toBe('ready');
   await signInByEmail(page,'learner@example.com');
   await expect(page.locator('#account-balance')).toHaveText('0');
@@ -100,15 +112,13 @@ test('G26: an invite link: the friend signs in and has one free drive; the invit
   await expect(inviter.locator('#invite-stats')).toContainText('1 joined with your link · 1 free session earned');
 });
 
-test('G26: blocking access.json does not open the paid app: where the accounts service answers, Start still asks to sign in',async({page})=>{
+test('G26: blocking access.json does not open the paid app: where the accounts service answers, drives still go through it (the free try)',async({page})=>{
   await page.route('**/access.json',r=>r.abort());
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
   await page.click('[data-exercise=moving-off]');
-  await page.click('#start-practice');
-  await expect(page.locator('#screen-account')).toBeVisible();
-  expect(await read(page,'session()')).toBe('ready');
+  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed');
 });
 
 test('G26: the guided introduction needs no session because it is parked: the car cannot be driven, and nothing is saved',async({page})=>{

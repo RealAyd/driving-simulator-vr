@@ -123,3 +123,11 @@ API: `GET /api/admin/overview`, `GET /api/admin/customers?q=`, `GET /api/admin/c
   name>`, kept as a secret) and install the ntfy app; Highest and High arrive as urgent alerts.
 - **Privacy:** internal notes and logged changes are never shown to the customer; screenshots are served only to the
   request's customer and admins, as images (never as pages).
+
+## Free try (no sign-up)
+
+Each device can try **one lesson, one mock test and one free drive** without an account. The try is held by the
+server (`trials`), named in an HttpOnly signed cookie (`dp_trial`, a year); using one is atomic, so it cannot be
+used twice at once. New tries are limited to 4 a day per address (clearing cookies does not give unlimited drives).
+Signed in, an account's sessions and Starter Pass are used first; with none left, the device's free try. A free-try
+drive that fails to load is given back. Admins (`ADMIN_EMAILS`) drive without sessions or tries.

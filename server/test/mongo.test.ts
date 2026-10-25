@@ -117,4 +117,15 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('MongoDB store: concurrency an
     expect(back.data.equals(png)).toBe(true);
     expect(back.expiresAt).toBeUndefined();
   });
+
+  it('the free try: two drives of one kind started at once use it once; a failed one gives it back',async()=>{
+    const {store}=await setup();
+    const t=await store.createTrial();
+    const r=await Promise.all(Array.from({length:6},()=>store.moveTrial(t.id,'test',-1)));
+    expect(r.filter(Boolean)).toHaveLength(1);
+    expect((await store.getTrial(t.id))!.remaining).toEqual({lesson:1,test:0,free:1});
+    expect(await store.moveTrial(t.id,'test',1)).toBe(true);
+    expect((await store.getTrial(t.id))!.remaining.test).toBe(1);
+  });
 });
+

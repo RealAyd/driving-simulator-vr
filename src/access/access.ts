@@ -7,8 +7,10 @@
 type Pot='lesson'|'test'|'free';
 type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean};
-type Me={signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
-  history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>};
+/** The device's free try (no sign-up): what is left of one lesson, one mock test and one free drive. */
+type Trial=Record<Pot,number>;
+type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
+  history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>})&{trial?:Trial};
 /** A drive the server has started (its session used). */
 export type PaidDrive={id:string};
 
@@ -21,6 +23,8 @@ const REF_KEY='dp.referral.v1',BUY_KEY='dp.buying.v1';
 /** What a drive is, from its scenario (as the server decides it). */
 const modeOf=(scenario:string):Pot=>scenario.endsWith('-mock-test')?'test':scenario.endsWith('-lesson')?'lesson':'free';
 const POT_NAME:Record<Pot,string>={lesson:'lesson',test:'mock test',free:'free drive'};
+/** A free try's drive by kind, as said to the learner. */
+const TRY_NAME:Record<Pot,string>={lesson:'free lesson',test:'free mock test',free:'free drive'};
 /** Everything the account can start: general sessions plus Starter allowances. */
 const total=(me:Me)=>me.signedIn?me.balance+me.allowances.lesson+me.allowances.test+me.allowances.free:0;
 
@@ -84,12 +88,15 @@ export class Access{
   /** A line for the exercise screen under Start, for the drive about to start. */
   note(scenario:string|null):string{
     if(!this.gate)return '';
-    if(!this.me.signedIn)return 'Sign in to start: each drive uses one session.';
-    if(this.me.admin)return 'Admin: drives do not use sessions';
     const pot=scenario?modeOf(scenario):null;
+    const free=!!pot&&(this.me.trial?.[pot]??0)>0;
+    if(!this.me.signedIn)return free?`Your ${TRY_NAME[pot]}: no sign-up needed`
+      :pot?`You have used your ${TRY_NAME[pot]}: sign in to carry on.`:'Sign in to start: each drive uses one session.';
+    if(this.me.admin)return 'Admin: drives do not use sessions';
     if(pot&&this.me.allowances[pot]>0)return `Uses your Starter Pass ${POT_NAME[pot]}`;
     const n=this.me.balance;
-    return n>0?`Uses 1 session · you have ${n}`:`No ${pot?`${POT_NAME[pot]} or `:''}sessions left: buy more to start.`;
+    if(n>0)return `Uses 1 session · you have ${n}`;
+    return free?`Uses your ${TRY_NAME[pot]}`:`No ${pot?`${POT_NAME[pot]} or `:''}sessions left: buy more to start.`;
   }
 
   /**
@@ -98,14 +105,17 @@ export class Access{
    */
   async begin(kind:string,scenario:string):Promise<PaidDrive|null|false>{
     if(!this.gate)return null;
-    if(!this.me.signedIn){this.open('Sign in to start. Each drive, lesson or mock test uses one session.');return false}
     const pot=modeOf(scenario);
-    // Admins drive without sessions (the server checks it too).
-    if(!this.me.admin&&this.me.balance<1&&this.me.allowances[pot]<1){this.open(`You have no ${POT_NAME[pot]}s or sessions left. Buy more to start.`);return false}
-    const r=await api<{driveId:string;balance:number}>('drives',{kind,scenario});
+    const free=(this.me.trial?.[pot]??0)>0;
+    // Signed out: the device's free try (one of each kind), then an account.
+    if(!this.me.signedIn&&!free){this.open(`You have used your ${TRY_NAME[pot]}. Sign in to carry on: each drive, lesson or mock test then uses one session.`);return false}
+    // Admins drive without sessions (the server checks it too); otherwise sessions, then the free try.
+    if(this.me.signedIn&&!this.me.admin&&this.me.balance<1&&this.me.allowances[pot]<1&&!free){this.open(`You have no ${POT_NAME[pot]}s or sessions left. Buy more to start.`);return false}
+    const r=await api<{driveId:string;balance:number;error?:string}>('drives',{kind,scenario});
     if(r.status===200&&r.data){void this.refresh();return {id:r.data.driveId}}
     if(r.status===401){await this.refresh();this.open('Please sign in again.');return false}
-    if(r.status===402){await this.refresh();this.open('You have no sessions left. Buy more to start.');return false}
+    if(r.status===402){await this.refresh();this.open(this.me.signedIn?'You have no sessions left. Buy more to start.':`You have used your ${TRY_NAME[pot]}. Sign in to carry on.`);return false}
+    if(r.status===429){this.open('Free tries from this connection are used up for today. Sign in to carry on.');return false}
     this.open('Driving Practice could not be reached. Check your connection and try again.');
     return false;
   }
@@ -164,6 +174,11 @@ export class Access{
     byId('account-signin').hidden=signedIn;
     byId('account-main').hidden=!signedIn;
     byId('account-invited').hidden=signedIn||!this.ref;
+    // The free try, while any of it is left on this device.
+    const left=(['lesson','test','free'] as const).filter(k=>(me.trial?.[k]??0)>0);
+    byId('trial-note').hidden=signedIn||!left.length;
+    byId('trial-note').textContent=left.length===3?'No sign-up needed to try: one free lesson, one free mock test and one free drive on this device.'
+      :`Still free to try on this device, no sign-up needed: ${left.map(k=>`your ${TRY_NAME[k]}`).join(' and ')}.`;
     // "or with your email" only under a Google or Apple button.
     document.querySelector<HTMLElement>('#account-signin .divider')!.hidden=!this.config?.googleClientId&&!this.config?.appleServicesId;
     const chip=byId('account-chip');
