@@ -1776,7 +1776,19 @@ export async function boot():Promise<void>{
 
   // ---- First steps: a new learner starts lesson 1; after that, the next lesson not yet finished ----
   const nextLesson=()=>{const done=lessonsDone();return LESSONS.find(l=>!done.includes(l.id))??null};
+  // Someone new is pointed to a free drive first (the free try's, where drives are paid; on a preview copy, until
+  // they have driven one), then to the lessons.
+  const FIRST_DRIVE_KEY='dp.first-drive.v1';
+  const firstDriveDone=()=>{try{return !!localStorage.getItem(FIRST_DRIVE_KEY)}catch{return false}};
+  const suggestFreeDrive=()=>paidAccess.gate?paidAccess.freeDriveOpen():!firstDriveDone()&&lessonsDone().length===0;
+  session.onChange(state=>{if(state==='running'&&driveMode==='free')try{localStorage.setItem(FIRST_DRIVE_KEY,'1')}catch{/* this visit only */}});
   const showFirstSteps=()=>{
+    if(suggestFreeDrive()){
+      byId('first-title').textContent='New here? Start with a free drive';
+      byId('first-body').textContent=`Drive real streets round Goodmayes test centre, with traffic, crossings and traffic lights, at your own pace.${paidAccess.gate&&!paidAccess.me.signedIn?' Free to try: no sign-up needed.':''} Then take your first lesson.`;
+      byId('first-start').textContent='Start a free drive';
+      return;
+    }
     const done=lessonsDone(),next=nextLesson();
     byId('first-title').textContent=done.length===0?'New to driving? Start here':next?'Welcome back':'All the lessons done';
     byId('first-body').textContent=done.length===0
@@ -1786,6 +1798,7 @@ export async function boot():Promise<void>{
     byId('first-start').textContent=done.length===0?'Start lesson 1':next?`Continue: lesson ${next.number}`:'Try a mock test';
   };
   byId('first-start').addEventListener('click',()=>{
+    if(suggestFreeDrive()){document.querySelector<HTMLButtonElement>('[data-drive-mode=free]')!.click();showExercise('goodmayes');return}
     const next=nextLesson();
     if(!next){document.querySelector<HTMLButtonElement>('[data-drive-mode=test]')!.click();showExercise('goodmayes');return}
     // The first lesson: the easiest level and assisted steering (both can be changed on the next screen).
@@ -1796,6 +1809,7 @@ export async function boot():Promise<void>{
   });
   showFirstSteps();
   session.onChange(state=>{if(state==='ready')showFirstSteps()});
+  paidAccess.onChange=()=>showFirstSteps();
 
   // ---- Upright phone during a drive: ask for landscape, and hold the drive still until then ----
   let heldForRotate=false;

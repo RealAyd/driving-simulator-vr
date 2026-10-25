@@ -86,6 +86,12 @@ export class Access{
     this.onChange();
   }
 
+  /** Whether this device's free drive is still there to take (someone new: suggest it first). */
+  freeDriveOpen():boolean{
+    if((this.me.trial?.free??0)<1)return false;
+    return !this.me.signedIn||(!this.me.admin&&total(this.me)===0);
+  }
+
   /** A line for the exercise screen under Start, for the drive about to start. */
   note(scenario:string|null):string{
     if(!this.gate)return '';
