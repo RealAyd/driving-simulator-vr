@@ -49,10 +49,10 @@ test('G33: an admin starts lessons, mock tests and free drives with no sessions,
 
   // The simulation's options: a change reloads with it in the address.
   await page.click('#account-chip');
-  await page.selectOption('[data-sim-option=cars]','old');
-  await expect(page).toHaveURL(/[?&]cars=old/);
+  await page.selectOption('[data-sim-option=cars]','mixed');
+  await expect(page).toHaveURL(/[?&]cars=mixed/);
   await page.click('#account-chip',{timeout:60_000});
-  await expect(page.locator('[data-sim-option=cars]')).toHaveValue('old');
+  await expect(page.locator('[data-sim-option=cars]')).toHaveValue('mixed');
 
   // The hub, with the same sign-in.
   const [hub]=await Promise.all([page.waitForEvent('popup'),page.click('#admin-hub')]);

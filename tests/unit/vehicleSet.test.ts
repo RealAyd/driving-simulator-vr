@@ -5,18 +5,23 @@ const shipped=import.meta.glob('/public/assets/models/vehicles/v2/*.glb');
 const isV2=(id:string)=>id.startsWith('v2-');
 
 describe('vehicle sets',()=>{
-  afterEach(()=>useVehicleSet('mixed'));
+  afterEach(()=>useVehicleSet('current'));
 
-  it('by default: the earlier cars with the new Peugeot 208 (the learner\'s car) and pickup; none of the rest of the new pack',()=>{
-    expect(activeVehicleSet()).toBe('mixed');
-    expect(roadUserCarModels()[0]!.id).toBe('v2-peugeot-208');
+  it('by default: the earlier set, the good-looking cars (hatchback, saloon, large saloon); nothing from the new pack',()=>{
+    expect(activeVehicleSet()).toBe('current');
+    expect(roadUserCarModels()[0]!.id).toBe('batch-b-compact-hatchback');
+    expect([...roadUserCarModels().map(m=>m.id),...kerbCarModels(),...parkedModelIds()].some(isV2)).toBe(false);
+    expect(vehicleCredit()).toBe('');
+  });
+
+  it('?cars=mixed: with the new Peugeot 208 and pickup (credited)',()=>{
+    useVehicleSet('mixed');
     const v2=new Set([...roadUserCarModels().map(m=>m.id),...kerbCarModels(),...parkedModelIds()].filter(isV2));
     expect([...v2].sort()).toEqual(['v2-peugeot-208','v2-pickup']);
-    expect(roadUserCarModels().map(m=>m.id)).toEqual(expect.arrayContaining(['batch-b-compact-hatchback','batch-b-saloon']));
     expect(vehicleCredit()).toBe('cars: muha692, Comrade1280 (Sketchfab, CC BY 4.0)');
   });
 
-  it('?cars=old: the earlier cars only',()=>{
+  it('the earlier set is the same as before',()=>{
     useVehicleSet('current');
     expect(roadUserCarModels()).toEqual([...ROAD_USER_CAR_MODELS]);
     expect(vehicleCredit()).toBe('');

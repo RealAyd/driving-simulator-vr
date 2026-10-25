@@ -456,6 +456,7 @@ html[data-theme="light"] .free-badge{color:#15803d}
   scrollbar-width:thin;overscroll-behavior-x:contain}
 .review{scroll-snap-align:start;margin:0;display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:16px;
   background:var(--surface-2);border:1px solid var(--line)}
+.review .stars{color:#f59e0b;font-size:16px;letter-spacing:2px;line-height:1}
 .review blockquote{margin:0}
 .review b{display:block;font-size:16px;color:var(--ink)}
 .review p{margin:6px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink);opacity:.88}
@@ -537,11 +538,11 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <h3 id="reviews-title">What learners say</h3>
           <p class="reviews-source">Reviews of the Driving Practice app</p>
           <div class="review-list" tabindex="0" aria-label="Reviews (scroll sideways)">
-            <figure class="review"><blockquote><b>“Absolute lifesaver for practical preparations”</b><p>The app features actual up to date scenarios. It is worth every penny if you want to pass on first try, download it.</p></blockquote><figcaption>OLUWATOYIN AB · 18 September</figcaption></figure>
-            <figure class="review"><blockquote><b>“Incredible App 👍🏻”</b><p>I particularly like the focus on practical, real-life situations rather than simply testing your knowledge of road signs and rules.</p></blockquote><figcaption>Grande205 · 17 September</figcaption></figure>
-            <figure class="review"><blockquote><b>“Does what it says it does”</b><p>It’s very practical and intuitive. Just like driving a real car but on my mobile app. I like the flow where I have to select each steps, just like I would do when I am driving and then it rates me.</p></blockquote><figcaption>Shezvar · 31 August</figcaption></figure>
-            <figure class="review"><blockquote><b>“The best”</b><p>Thank you, this really helps with awareness.</p></blockquote><figcaption>Beki94xxx · 31 August</figcaption></figure>
-            <figure class="review"><blockquote><b>“Awesome”</b><p>Very good app to use for learning driving</p></blockquote><figcaption>Emmanuel2027 · 15 October</figcaption></figure>
+            <figure class="review"><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span><blockquote><b>“Absolute lifesaver for practical preparations”</b><p>The app features actual up to date scenarios. It is worth every penny if you want to pass on first try, download it.</p></blockquote><figcaption>OLUWATOYIN AB · 18 September</figcaption></figure>
+            <figure class="review"><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span><blockquote><b>“Incredible App 👍🏻”</b><p>I particularly like the focus on practical, real-life situations rather than simply testing your knowledge of road signs and rules.</p></blockquote><figcaption>Grande205 · 17 September</figcaption></figure>
+            <figure class="review"><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span><blockquote><b>“Does what it says it does”</b><p>It’s very practical and intuitive. Just like driving a real car but on my mobile app. I like the flow where I have to select each steps, just like I would do when I am driving and then it rates me.</p></blockquote><figcaption>Shezvar · 31 August</figcaption></figure>
+            <figure class="review"><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span><blockquote><b>“The best”</b><p>Thank you, this really helps with awareness.</p></blockquote><figcaption>Beki94xxx · 31 August</figcaption></figure>
+            <figure class="review"><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span><blockquote><b>“Awesome”</b><p>Very good app to use for learning driving</p></blockquote><figcaption>Emmanuel2027 · 15 October</figcaption></figure>
           </div>
         </section>
         <section class="other-app" aria-labelledby="other-app-title">
@@ -683,7 +684,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <ul id="account-breakdown" class="breakdown not-paywall"></ul>
       <div id="admin-tools" class="admin-tools" hidden>
         <a id="admin-hub" class="admin-hub" href="admin.html" target="_blank" rel="noopener">Admin hub</a>
-        <label>Cars <select data-sim-option="cars"><option value="">Mixed</option><option value="old">Earlier</option><option value="new">New pack</option></select></label>
+        <label>Cars <select data-sim-option="cars"><option value="">Standard</option><option value="mixed">With Peugeot and pickup</option><option value="new">New pack</option></select></label>
         <label>Driver <select data-sim-option="driver"><option value="">Hidden</option><option value="1">Shown</option></select></label>
         <label>Quality <select data-sim-option="quality"><option value="">Auto</option><option value="desktop">Desktop</option><option value="phone">Phone</option></select></label>
         <label>Shadows <select data-sim-option="shadows"><option value="">Auto</option><option value="1">On</option><option value="0">Off</option></select></label>

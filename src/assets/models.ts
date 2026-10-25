@@ -156,7 +156,8 @@ export class CarModel{
     const holder=new TransformNode('bake',scene);
     holder.position.set(x,y,z);
     holder.rotation.y=-heading+this.spec.yawOffset;
-    holder.scaling.setAll(parkedSize(this.spec).scale);
+    const size=parkedSize(this.spec),centreHeight=size.height*.45;
+    holder.scaling.setAll(size.scale);
     for(const root of entries.rootNodes)root.parent=holder;
     const paint=Color3.FromHexString(colour);
     const p=new Vector3(),n=new Vector3();
@@ -189,6 +190,10 @@ export class CarModel{
         const [a,b2,d]=[indices[t]!*3,indices[t+1]!*3,indices[t+2]!*3];
         const e1=new Vector3(w[b2]!-w[a]!,w[b2+1]!-w[a+1]!,w[b2+2]!-w[a+2]!),e2=new Vector3(w[d]!-w[a]!,w[d+1]!-w[a+1]!,w[d+2]!-w[a+2]!);
         Vector3.CrossToRef(e1,e2,n);n.normalize();
+        // Faces out of the car: the simplified models' triangles do not all wind the same way, and an inward roof or
+        // window is unlit (parked cars looked one colour with a black top).
+        const cx=(w[a]!+w[b2]!+w[d]!)/3-x,cy=(w[a+1]!+w[b2+1]!+w[d+1]!)/3-(y+centreHeight),cz=(w[a+2]!+w[b2+2]!+w[d+2]!)/3-z;
+        if(n.x*cx+n.y*cy+n.z*cz<0)n.scaleInPlace(-1);
         const v0=target.positions.length/3;
         for(const k of [a,b2,d]){target.positions.push(w[k]!,w[k+1]!,w[k+2]!);target.normals.push(n.x,n.y,n.z);target.colors.push(...colourAt(k/3),1)}
         target.indices.push(v0,v0+1,v0+2);

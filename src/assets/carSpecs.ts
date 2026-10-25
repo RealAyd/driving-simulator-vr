@@ -76,13 +76,13 @@ export const BUS_MODELS={
 } as const satisfies Record<string,CarModelSpec>;
 
 /**
- * Which set of vehicles is drawn. 'mixed' (the default, 2026-10-24): the earlier cars with the two new ones that
- * worked well on the owner's phone, the Peugeot 208 (also the learner's car) and the pickup (Hilux); the rest of the
- * new pack showed as white ghost-like shapes there. 'current' (?cars=old): the earlier set only. 'new'
- * (?cars=new): the whole new pack, kept for checking. Chosen once at start (main.ts), before any street is laid out.
+ * Which set of vehicles is drawn. 'current' (the default, 2026-10-26): the earlier set, the owner's pick of the
+ * good-looking cars (hatchback, saloon, large saloon). 'mixed' (?cars=mixed): those with the new pack's Peugeot 208
+ * and pickup, which read as one colour all over. 'new' (?cars=new): the whole new pack, kept for checking. Chosen
+ * once at start (main.ts), before any street is laid out.
  */
 export type VehicleSet='current'|'new'|'mixed';
-let vehicleSet:VehicleSet='mixed';
+let vehicleSet:VehicleSet='current';
 export function useVehicleSet(set:VehicleSet):void{vehicleSet=set}
 export function activeVehicleSet():VehicleSet{return vehicleSet}
 
