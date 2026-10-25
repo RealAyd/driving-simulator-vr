@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Phone-sized landscape viewport with touch, like an iPhone 14 Pro Max.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -25,7 +26,7 @@ test('G4: tilt on the exercise screen: enable, live status, calibrate, then the 
   await sensorApi(page,'granted');
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   // Assisted steering is the default for the judgement exercises on a phone.
   await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
   await expect(page.locator('input[name=steering][value=tilt]')).toBeEnabled();
@@ -89,7 +90,7 @@ test('G4: if motion access is refused, Tilt is disabled with a short reason and 
   await sensorApi(page,'denied');
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=zebra]');
+  await pick(page,'zebra');
   await page.locator('input[name=steering][value=tilt]').check();
   await page.click('#tilt-enable');
   await expect(page.locator('input[name=steering][value=tilt]')).toBeDisabled();
@@ -104,7 +105,7 @@ test.describe('desktop',()=>{
     await page.goto('./');
     await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
     expect(await read(page,'quality')).toBe('desktop');
-    await page.click('[data-exercise=brentwood]');
+    await pick(page,'brentwood');
     await expect(page.locator('input[name=steering][value=tilt]')).toBeDisabled();
     await expect(page.locator('#tilt-unavailable')).toContainText('phone or tablet');
     await expect(page.locator('input[name=steering][value=buttons]')).toBeChecked();
@@ -115,7 +116,7 @@ test('G4: with no sensor readings, tilt says so, cannot be calibrated, and the S
   await sensorApi(page,'granted');
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.locator('input[name=steering][value=tilt]').check();
   await page.click('#tilt-enable');
   await expect(page.locator('#tilt-permission')).toHaveText('granted');

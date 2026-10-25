@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The Kings Road zebra (Brentwood): drives with steering assistance (phone layout), speed and observations by the
 // test. Decisions use live simulation state, never fixed durations.
@@ -14,7 +15,7 @@ const GIVE_WAY=1.5+1.1;
 async function start(page:Page){
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=kings-road]');
+  await pick(page,'kings-road');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
 }

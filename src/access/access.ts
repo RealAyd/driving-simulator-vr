@@ -122,11 +122,14 @@ export class Access{
     if(this.mode==='save')this.open(undefined,this.pending||(!this.me.admin&&total(this.me)===0)?'paywall':'account');
   }
 
-  /** Whether this device's free drive is still there to take (someone new: suggest it first). */
-  freeDriveOpen():boolean{
-    if((this.me.trial?.free??0)<1)return false;
-    return !this.me.signedIn||(!this.me.admin&&total(this.me)===0);
+  /** The free try still on this device, for someone not signed in (0 where nothing is gated). */
+  freeLeft():number{
+    if(!this.gate||this.me.signedIn)return 0;
+    return (['lesson','test','free'] as const).reduce((n,k)=>n+Math.min(1,this.me.trial?.[k]??0),0);
   }
+
+  /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
+  viewPasses():void{this.open(undefined,this.me.signedIn?'paywall':'save')}
 
   /** A line for the exercise screen under Start, for the drive about to start. */
   note(scenario:string|null):string{

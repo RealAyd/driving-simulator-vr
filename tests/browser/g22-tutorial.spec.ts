@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {openMenu,pick} from './home';
 
 // The tutorial: Tutorial on the home screen and ? while driving show a tour that points at each part of the
 // screen; the drive is held still while it shows.
@@ -13,38 +14,38 @@ test('G22: tutorial tours on the home screen and while driving',async({page},tes
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // Not by itself in an automated browser (tests); from the button.
   await expect(page.locator('#tour')).toBeHidden();
+  // (Tutorial is in the menu.)
+  await openMenu(page);
   await page.click('#tutorial-home');
   await expect(page.locator('#tour')).toBeVisible();
-  await expect(page.locator('.tour-tip b')).toHaveText('Start here');
+  await expect(page.locator('.tour-tip b')).toHaveText('Free Drive');
   await page.screenshot({path:testInfo.outputPath('g22-home-1.png')});
   await page.click('.tour-next');
-  await expect(page.locator('.tour-tip b')).toHaveText('What would you like to do?');
+  await expect(page.locator('.tour-tip b')).toHaveText('Guided Practice');
   await page.click('.tour-next');
-  await expect(page.locator('.tour-tip b')).toHaveText('Level');
-  await page.click('.tour-next');
-  await expect(page.locator('.tour-tip b')).toHaveText('Drive anywhere');
+  await expect(page.locator('.tour-tip b')).toHaveText('Mock Tests');
   await page.click('.tour-skip');
   await expect(page.locator('#tour')).toBeHidden();
   // A tap outside the highlight ends the tour (and does nothing else).
+  await openMenu(page);
   await page.click('#tutorial-home');
   await expect(page.locator('#tour')).toBeVisible();
   await page.mouse.click(5,425);
   await expect(page.locator('#tour')).toBeHidden();
   await expect(page.locator('#screen-start')).toBeVisible();
-  // The highlighted part works: Start lesson 1 ends the tour and opens the lesson.
+  // The highlighted part works: the Free Drive card ends the tour and opens its places, where Tutorial shows theirs.
+  await openMenu(page);
   await page.click('#tutorial-home');
-  await expect(page.locator('.tour-tip b')).toHaveText('Start here');
-  await page.click('#first-start');
+  await expect(page.locator('.tour-tip b')).toHaveText('Free Drive');
+  await page.click('[data-drive-mode=free]');
   await expect(page.locator('#tour')).toBeHidden();
-  await expect(page.locator('#exercise-list')).toBeHidden();
-  await expect(page.locator('#start-practice')).toBeVisible();
+  await expect(page.locator('#place-title')).toHaveText('Free Drive');
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // Help is on the home screen.
   await expect(page.locator('#help-home')).toHaveAttribute('href','support.html');
 
-  await page.click('[data-drive-mode=free]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','free');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   await page.click('#hud-tutorial');

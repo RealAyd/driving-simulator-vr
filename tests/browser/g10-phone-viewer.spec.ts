@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Phone viewer (cardboard-style headset) at the iPhone 14 Pro Max landscape size, touch.
 // The motion sensor and the game controller are simulated: real-device behaviour is untested here.
@@ -55,7 +56,7 @@ const LAYOUT={accelerate:1,brake:0,'signal-left':2,'signal-right':3,pause:11,rec
 async function openExercise(page:Page){
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   // The headset options are folded under "Phone headset" on the exercise screen.
   await page.click('#viewer-details > summary');
 }
@@ -327,7 +328,7 @@ test('G10: calibration: eye spacing from 63 mm, adjustments saved per viewer, re
   await page.reload();
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(64);
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.click('#viewer-details > summary');
   await page.selectOption('#viewer-slot','Viewer 2');
   expect((await read(page,'viewer()')).settings.ipdMm).toBe(63);
@@ -353,8 +354,7 @@ test('G10: mock test in the headset: the tell me question and its answers are sh
   await wearPhone(page);
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=test]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','test');
   await expect(page.locator('#busy')).toBeHidden({timeout:300_000});
   await page.click('#viewer-details > summary');
   await checkController(page,true);
@@ -463,8 +463,7 @@ test('G10: a controller checked before: Done is ready straight away; on the scre
 
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=lesson]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','lesson');
   await unplug(page,true);
   await expect(page.locator('#pad-screen-status')).toContainText('it drives on the screen too');
   await page.click('#viewer-details > summary');

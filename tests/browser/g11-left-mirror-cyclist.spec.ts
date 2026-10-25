@@ -1,5 +1,6 @@
 import {writeFileSync} from 'node:fs';
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // What each mirror shows of the yellow cyclist as it approaches the parked learner and passes.
 // Pixels are read from each mirror's own image (all mirrors rendering every frame), so the
@@ -12,7 +13,7 @@ const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${ex
 test('G11: left mirror coverage of the cyclist: measured along its whole approach, recorded from the driver\'s seat',async({page},testInfo)=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   // The cyclist sets off at once from 80 m behind; the purple car comes much later.
   await read(page,"forceVariant('cyclist-then-late-car')");
   await page.click('#start-practice');

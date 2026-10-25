@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The dressed Brentwood mini-roundabouts (map buildings with facades and shopfronts, trees, lights,
 // the memorial), as the public preview builds it. Every view from the driver's seat, review views,
@@ -16,7 +17,7 @@ test('G14: Brentwood scenery is dressed from every view with cleared assets; the
   page.on('response',r=>{void r.body().then(b=>downloads.push({url:new URL(r.url()).pathname,bytes:b.length})).catch(()=>{})});
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=brentwood]');
+  await pick(page,'brentwood');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()')).toBe('running');
   await read(page,'freezeTime(true)');

@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The look (sun shadows) and real ground heights (terrain) at Brentwood. Shadows are off with software
 // rendering (as here) unless asked for; the terrain lays the road, the car and its camera on the ground.
@@ -8,7 +9,7 @@ const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${ex
 async function startBrentwood(page:Page,query=''){
   await page.goto(`./${query}`);
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=brentwood]');
+  await pick(page,'brentwood');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
 }

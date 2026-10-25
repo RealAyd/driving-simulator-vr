@@ -1,4 +1,5 @@
 import {expect,test} from '@playwright/test';
+import {openMenu} from './home';
 
 // Light or dark menus from the home screen: follows the phone's setting until chosen; the choice is remembered.
 test.use({viewport:{width:430,height:932},hasTouch:true,isMobile:true,colorScheme:'light'});
@@ -14,6 +15,7 @@ test('G28: light or dark mode: follows the phone, switches from the home screen,
   // The menus are light: dark text on a light card.
   const ink=await page.locator('#screen-start .brand h1').evaluate(e=>getComputedStyle(e).color);
   expect(ink).toBe('rgb(15, 23, 42)');
+  await openMenu(page);
   await page.click('#theme-toggle');
   expect(await theme()).toBe('dark');
   await expect(page.locator('#theme-toggle')).toHaveText('Dark');

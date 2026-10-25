@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Street life in every exercise: the location label, signs (Brentwood), background people, the buses
 // (Brentwood) and the new cyclist and crossing pedestrian figures, from the driver's seat.
@@ -8,7 +9,7 @@ const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${ex
 const start=async(page:Page,exercise:string)=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click(`[data-exercise=${exercise}]`);
+  await pick(page,exercise);
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
 };

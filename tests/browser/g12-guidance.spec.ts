@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Route guidance (the pull-out path painted on the road) is optional: off for an independent attempt.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -7,7 +8,7 @@ const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${ex
 test('G12: route guidance is off by default, can be switched on from the exercise screen, and is reported',async({page},testInfo)=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await expect(page.locator('#guide-option')).toBeVisible();
   await expect(page.locator('#guide-toggle')).not.toBeChecked();
   await page.click('#start-practice');
@@ -21,7 +22,7 @@ test('G12: route guidance is off by default, can be switched on from the exercis
   await page.click('#end-button');
   await expect(page.locator('#screen-results')).toBeVisible();
   await page.click('#menu-button');
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.check('#guide-toggle');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()')).toBe('running');
@@ -34,6 +35,6 @@ test('G12: route guidance is off by default, can be switched on from the exercis
 
   // Zebra crossing has no route guidance: no option shown.
   await page.click('#menu-button');
-  await page.click('[data-exercise=zebra]');
+  await pick(page,'zebra');
   await expect(page.locator('#guide-option')).toBeHidden();
 });

@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 type Sim={
   session():string;
@@ -25,13 +26,13 @@ test('G0: start, drive, brake, signal, pause, restart and recover focus',async({
 
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
-  await expect(page.locator('#exercise-list h1')).toHaveText('Driving Practice');
+  await expect(page.locator('.brand h1')).toHaveText('Driving Practice');
   // Clearly named places and exercises.
   await expect(page.locator('[data-exercise]')).toHaveText([/^Goodmayes/,/^Brentwood mini-roundabouts/,/^Kings Road zebra/,/^Zebra crossing/,/^Moving off safely/]);
   await page.screenshot({path:testInfo.outputPath('01-start.png')});
 
   // The exercise screen shows its own title, objective and briefing; nothing runs until Start practice.
-  await page.click('[data-exercise=zebra]');
+  await pick(page,'zebra');
   await expect(page.locator('#exercise-title')).toHaveText('Zebra crossing');
   await expect(page.locator('#exercise-briefing')).toContainText('van is parked');
   expect(await read(page,'session()')).toBe('ready');

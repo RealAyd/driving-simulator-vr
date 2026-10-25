@@ -337,6 +337,8 @@ body.stationary [data-hold="throttle"],body.stationary .gear{opacity:.4}
 .lesson-list .n{grid-row:span 2;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(20,184,166,.18);color:var(--accent);font-weight:800;font-size:12px}
 .lesson-list b{font-size:13.5px}.lesson-list small{color:var(--soft);font-size:12px}
 .lesson-list button:disabled{opacity:.45}
+.lesson-list button.next{border-color:var(--accent);background:var(--accent-soft)}
+.lesson-list button.done .n{background:var(--accent);color:var(--accent-ink);font-size:0}.lesson-list button.done .n::after{content:"✓";font-size:13px}
 .lesson-list button:disabled .n{background:rgba(255,255,255,.08);color:var(--soft)}
 /* Tutorial: the part of the screen being explained is cut out of a dark veil, with a note beside it. */
 #tour{position:fixed;inset:0;z-index:60;pointer-events:none}
@@ -405,9 +407,56 @@ a.wide-link svg{vertical-align:-3px;margin-right:6px}
 @keyframes flash-pop{from{transform:translate(-50%,-50%) scale(.6)}to{transform:translate(-50%,-50%) scale(1)}}
 @media (prefers-reduced-motion:reduce){#hud-flash.flash-on{animation:none}}
 /* First-time path, plain English, text size. */
-.first-steps{margin:10px 0 4px}
-.home-shot{display:block;width:100%;height:auto;aspect-ratio:1280/533;border-radius:14px;border:1px solid var(--line);margin:0 0 10px;background:var(--surface-2)}
-.first-steps .primary{width:100%;margin:0;padding:14px 18px;font-size:16px}
+/* ---- Home: the picture, the line, the free try, and three cards (one per way to drive) ---- */
+.home-head{position:relative;flex-wrap:nowrap}
+.menu-toggle{display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:12px;background:none;border:none;color:var(--ink)}
+.home-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:5;display:grid;gap:8px;width:min(300px,calc(100vw - 48px));padding:12px;border-radius:16px;
+  background:var(--surface);border:1px solid var(--line-strong);box-shadow:0 18px 40px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.home-menu{gap:2px;padding:8px}
+.home-menu>button,.home-menu>a,.home-menu>details>summary{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 12px!important;justify-content:flex-start;text-align:left;
+  background:none!important;border:none!important;border-radius:10px;color:var(--ink)!important;font-size:15px!important;font-weight:600;text-decoration:none;box-shadow:none!important}
+.home-menu>button:hover,.home-menu>a:hover,.home-menu>details>summary:hover{background:var(--surface-2)!important}
+.home-menu>details{border:none;background:none;margin:0}
+.home-menu>details>summary{justify-content:space-between}
+.home-main{display:grid;gap:0;margin-top:14px}
+.home-shot{display:block;width:100%;height:auto;aspect-ratio:1280/533;border-radius:16px;border:1px solid var(--line);margin:0 0 18px;background:var(--surface-2)}
+.home-tagline{text-wrap:balance;margin:0;font-size:clamp(28px,7.4vw,44px);line-height:1.12;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.home-sub{margin:8px 0 0;font-size:clamp(16px,4.2vw,20px);color:var(--soft)}
+.free-badge{display:flex;align-items:center;gap:10px;margin:14px 0 0;font-size:clamp(16px,4.2vw,19px);font-weight:600;color:#4ade80}
+html[data-theme="light"] .free-badge{color:#15803d}
+.free-badge svg{flex:none}
+.mode-cards{display:grid;gap:12px;margin:20px 0 6px}
+@media (min-width:760px){.mode-cards{grid-template-columns:repeat(3,1fr)}
+  .mode-cards .mode-card{flex-direction:column;align-items:stretch;gap:12px;padding:22px 20px;position:relative}.mode-cards .mode-card .mc-ico{width:auto;justify-self:start;place-items:start}
+  .mode-cards .mode-card .mc-txt{text-align:left;justify-items:start}
+  .mode-card .mc-go{position:absolute;top:22px;right:18px}}
+.mode-card{display:flex;align-items:center;gap:16px;width:100%;padding:20px 18px;border-radius:18px;border:none;text-align:left;color:#0f172a;background:var(--mc-bg);box-shadow:0 1px 0 rgba(255,255,255,.4) inset}
+.mode-card .mc-ico{flex:none;display:grid;place-items:center;width:56px;color:var(--mc-ico)}
+.mode-card .mc-txt{flex:1;display:grid;gap:2px;min-width:0}
+.mode-card b{font-size:clamp(19px,5vw,22px);font-weight:750;letter-spacing:-.01em}
+.mode-card small{font-size:clamp(14px,3.8vw,16px);color:#475569;text-wrap:pretty}
+.mode-card .mc-go{flex:none;color:#0f172a}
+.mode-card:active{transform:scale(.99)}
+.mc-free{--mc-bg:#dbeafe;--mc-ico:#1d4ed8}
+.mc-guided{--mc-bg:#dcfce7;--mc-ico:#166534}
+.mc-test{--mc-bg:#fef3c7;--mc-ico:#a16207}
+.view-passes{justify-self:center;margin:10px 0 2px;padding:6px 4px!important;font-size:17px!important;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+#place-back{margin-top:14px}
+.place-title{margin:8px 0 10px}
+/* Web, mobile and VR: the same drive on a laptop, a phone and a headset (drawn here: no product images). */
+.devices{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:center;margin:18px 0 4px;padding:18px;border-radius:18px;background:linear-gradient(110deg,#eef4ff,#f8fafc);color:#0f172a}
+.devices h3{margin:0;font-size:clamp(19px,5vw,24px);font-weight:800;letter-spacing:-.01em;color:#0f172a}
+.devices p{margin:4px 0 0;font-size:14.5px;color:#475569}
+.devices-art{display:flex;align-items:flex-end;justify-content:center;gap:10px;min-width:0}
+.dev-screen{overflow:hidden;background:#0f172a}.dev-screen img{display:block;width:100%;height:100%;object-fit:cover}
+.dev-laptop{flex:0 1 220px;min-width:0}
+.dev-laptop .dev-screen{aspect-ratio:16/10;border:6px solid #1e293b;border-bottom-width:8px;border-radius:9px 9px 2px 2px}
+.dev-laptop::after{content:"";display:block;height:8px;margin:0 -8%;border-radius:0 0 10px 10px;background:linear-gradient(#cbd5e1,#94a3b8)}
+.dev-phone{flex:0 0 52px}
+.dev-phone .dev-screen{aspect-ratio:9/19;border:4px solid #1e293b;border-radius:11px}
+.dev-phone img{object-position:42% 50%}
+.dev-headset{flex:0 0 auto;width:clamp(96px,30%,150px);height:auto}
+@media (min-width:640px){.devices{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);padding:20px 24px}}
 #text-size .a2{font-size:1.3em;margin-left:1px}
 dialog.glossary{max-width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;background:var(--surface,#0f172a);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
 dialog.glossary::backdrop{background:rgba(2,6,23,.7)}
@@ -433,19 +482,54 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <span class="brand-mark"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M3.8 11h5.9M14.3 11h5.9M12 14.2V20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
           <h1>Driving Practice</h1>
         </div>
-        <div class="head-actions"><button id="account-chip" type="button" class="account-chip" hidden>Sign in</button><button id="tutorial-home" type="button" class="tutorial-button">Tutorial</button><button id="words-home" type="button" class="tutorial-button">Words explained</button><a id="help-home" class="tutorial-button help-button" href="support.html" aria-label="Help and support"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M19 18c0 2-2 3-5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Help</span></a><button id="theme-toggle" type="button" class="tutorial-button theme-toggle" aria-pressed="false"><svg class="moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg><svg class="sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dark</span></button><button id="text-size" type="button" class="tutorial-button" aria-label="Text size: normal. Tap for larger text">A<span class="a2">A</span></button><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button></div>
+        <div class="head-actions"><button id="account-chip" type="button" class="account-chip" hidden>Sign in</button><button id="menu-toggle" type="button" class="menu-toggle" aria-expanded="false" aria-controls="home-menu" aria-label="Menu"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+        <div id="home-menu" class="home-menu" hidden><button id="tutorial-home" type="button" class="tutorial-button">Tutorial</button><button id="words-home" type="button" class="tutorial-button">Words explained</button><a id="help-home" class="tutorial-button help-button" href="support.html" aria-label="Help and support"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="12" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M19 18c0 2-2 3-5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Help</span></a><button id="theme-toggle" type="button" class="tutorial-button theme-toggle" aria-pressed="false"><svg class="moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg><svg class="sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dark</span></button><button id="text-size" type="button" class="tutorial-button" aria-label="Text size: normal. Tap for larger text">A<span class="a2">A</span></button><button id="home-fullscreen" type="button" class="fs-button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full screen</span></button>
+        <details class="more keys-box"><summary>Keyboard controls</summary><div class="more-body"><div class="keys">
+          <span><kbd>W</kbd> <kbd>↑</kbd></span><span>Go</span>
+          <span><kbd>S</kbd> <kbd>↓</kbd> <kbd>Space</kbd></span><span>Brake</span>
+          <span><kbd>X</kbd></span><span>Drive / reverse</span>
+          <span><kbd>A</kbd> <kbd>D</kbd> <kbd>←</kbd> <kbd>→</kbd></span><span>Steer</span>
+          <span><kbd>[</kbd> <kbd>]</kbd></span><span>Signal left / right</span>
+          <span>Drag</span><span>Look around (mouse or swipe)</span>
+          <span><kbd>Q</kbd> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>E</kbd></span><span>Hold to look: shoulders and mirrors</span>
+          <span><kbd>C</kbd></span><span>Forward view</span>
+          <span><kbd>P</kbd> <kbd>Esc</kbd></span><span>Pause</span>
+        </div></div></details>
+        <button id="xr-button" type="button" hidden>VR headset</button>
+        <button id="about-open" type="button">About</button>
+        </div>
       </div>
-      <div id="first-steps" class="first-steps">
+      <div id="home-main" class="home-main">
         <img class="home-shot" src="assets/home/drive-640.webp" srcset="assets/home/drive-640.webp 640w, assets/home/drive-1280.webp 1280w" sizes="(max-width:700px) 92vw, 920px" width="1280" height="533" alt="Driving Practice: the driver's view, with mirrors, view buttons, signals, Brake and Go" decoding="async">
-        <button id="first-start" class="primary" type="button">Start lesson 1</button>
+        <h2 class="home-tagline">Drive smarter. Test ready.</h2>
+        <p class="home-sub">Practise UK driving decisions on your phone.</p>
+        <p id="free-badge" class="free-badge" hidden><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M5 12v8.5h14V12M12 8v12.5M12 8S10.6 4 8.2 4.3C6.4 4.5 6.5 7.6 8.6 8M12 8s1.4-4 3.8-3.7c1.8.2 1.7 3.3-.4 3.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg><span id="free-badge-text">Your first 3 drives are free</span></p>
+        <div class="mode-cards">
+          <button class="mode-card mc-free" type="button" data-drive-mode="free"><span class="mc-ico"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M3.4 10.5c3 .9 5.6.9 6.2.9M20.6 10.5c-3 .9-5.6.9-6.2.9M12 14.6V21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><span class="mc-txt"><b>Free Drive</b><small>Explore at your own pace</small></span><svg class="mc-go" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="mode-card mc-guided" type="button" data-drive-mode="lesson"><span class="mc-ico"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><circle cx="5" cy="19" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.2 18.4c2.6-.6 2.4-3.4 4.6-4.2 1.6-.6 2.8-.1 3.9-1.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2.4 2.6"/><path d="M18 3.5a3.6 3.6 0 0 0-3.6 3.6c0 2.7 3.6 6.2 3.6 6.2s3.6-3.5 3.6-6.2A3.6 3.6 0 0 0 18 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="18" cy="7.1" r="1.2" fill="currentColor"/></svg></span><span class="mc-txt"><b>Guided Practice</b><small>Practise essential skills</small></span><svg class="mc-go" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="mode-card mc-test" type="button" data-drive-mode="test"><span class="mc-ico"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8h7M8.5 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m8.5 16 1.4 1.4 2.6-2.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 16.4h1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="mc-txt"><b>Mock Tests</b><small>Put your judgement to the test</small></span><svg class="mc-go" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <button id="view-passes" type="button" class="link view-passes" hidden>View passes</button>
+        <section class="devices" aria-labelledby="devices-title">
+          <div class="devices-text"><h3 id="devices-title">Web, mobile and VR</h3><p>Practise anytime, anywhere, in the way that suits you.</p></div>
+          <div class="devices-art" aria-hidden="true">
+            <div class="dev-laptop"><div class="dev-screen"><img src="assets/home/drive-640.webp" alt="" decoding="async" loading="lazy"></div></div>
+            <div class="dev-phone"><div class="dev-screen"><img src="assets/home/drive-640.webp" alt="" decoding="async" loading="lazy"></div></div>
+            <svg class="dev-headset" viewBox="0 0 150 90" aria-hidden="true">
+            <path d="M30 34c0-11 9-18 20-18h50c11 0 20 7 20 18v18c0 12-9 20-20 20H86c-5 0-7-6-11-6s-6 6-11 6H50c-11 0-20-8-20-20z" fill="#f8fafc" stroke="#64748b" stroke-width="2.4"/>
+            <path d="M38 38c0-7 6-12 13-12h48c7 0 13 5 13 12v10c0 8-6 14-13 14H87c-4 0-7-5-12-5s-8 5-12 5H51c-7 0-13-6-13-14z" fill="#cbd5e1"/>
+            <path d="M30 40c-10 0-16 4-18 10M120 40c10 0 16 4 18 10" fill="none" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+            <g fill="#f8fafc" stroke="#64748b" stroke-width="2.4"><path d="M10 62c0-7 5-11 10-11s10 4 10 11l-3 22h-14z"/><path d="M120 62c0-7 5-11 10-11s10 4 10 11l-3 22h-14z"/></g>
+            <g fill="#334155"><circle cx="20" cy="60" r="3.5"/><circle cx="130" cy="60" r="3.5"/></g>
+          </svg>
+          </div>
+        </section>
       </div>
+      <div id="place-list" hidden>
+        <button id="place-back" type="button" class="link">← Back</button>
+        <h1 id="place-title" class="place-title"></h1>
       <div class="area-search">
         <div class="mode-row">
-          <div class="mode-switch" role="group" aria-label="What to do">
-            <button type="button" data-drive-mode="free" aria-pressed="true">Free drive</button>
-            <button type="button" data-drive-mode="lesson" aria-pressed="false">Lesson</button>
-            <button type="button" data-drive-mode="test" aria-pressed="false">Mock test</button>
-          </div>
           <div class="mode-switch difficulty-row" role="group" aria-label="Level">
             <button type="button" data-difficulty="easy" aria-pressed="false">Easy</button>
             <button type="button" data-difficulty="standard" aria-pressed="true">Standard</button>
@@ -460,31 +544,19 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <p id="area-status" class="unit" role="status"></p>
         <div id="centre-browser" class="centre-browser" aria-label="All test centres, by letter"></div>
       </div>
-      <h2 class="group">Test centre drives</h2>
+      <h2 class="group">Test centres</h2>
       <div class="choices">
         <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b></span></button>
       </div>
+      <div id="drills" hidden>
       <h2 class="group">Drills</h2>
-      <div class="choices">
+      <div class="choices drill-choices">
         <button class="choice" type="button" data-exercise="brentwood" style="--c:#a78bfa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m14.8 7.2 1.6-1.9.4 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt"><b>Brentwood mini-roundabouts</b></span></button>
         <button class="choice" type="button" data-exercise="kings-road" style="--c:#22d3ee"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 10h14M8 21v-3M16 21v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor"/><circle cx="15.5" cy="14" r="1.1" fill="currentColor"/></svg></span><span class="txt"><b>Kings Road zebra</b></span></button>
         <button class="choice" type="button" data-exercise="zebra" style="--c:#34d399"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 2"/></svg></span><span class="txt"><b>Zebra crossing</b></span></button>
         <button class="choice" type="button" data-exercise="moving-off" style="--c:#60a5fa"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 15v-3l2-5h12l2 5v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 12h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="16.5" r="1.8" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1.8" fill="currentColor"/></svg></span><span class="txt"><b>Moving off safely</b></span></button>
       </div>
-      <div class="home-foot">
-        <details class="more keys-box"><summary>Keyboard controls</summary><div class="more-body"><div class="keys">
-          <span><kbd>W</kbd> <kbd>↑</kbd></span><span>Go</span>
-          <span><kbd>S</kbd> <kbd>↓</kbd> <kbd>Space</kbd></span><span>Brake</span>
-          <span><kbd>X</kbd></span><span>Drive / reverse</span>
-          <span><kbd>A</kbd> <kbd>D</kbd> <kbd>←</kbd> <kbd>→</kbd></span><span>Steer</span>
-          <span><kbd>[</kbd> <kbd>]</kbd></span><span>Signal left / right</span>
-          <span>Drag</span><span>Look around (mouse or swipe)</span>
-          <span><kbd>Q</kbd> <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>E</kbd></span><span>Hold to look: shoulders and mirrors</span>
-          <span><kbd>C</kbd></span><span>Forward view</span>
-          <span><kbd>P</kbd> <kbd>Esc</kbd></span><span>Pause</span>
-        </div></div></details>
-        <button id="xr-button" type="button" hidden>VR headset</button>
-        <button id="about-open" type="button">About</button>
+      </div>
       </div>
     </div>
     <div id="exercise-detail" hidden>

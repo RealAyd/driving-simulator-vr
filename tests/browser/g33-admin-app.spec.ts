@@ -1,5 +1,6 @@
 import {execSync,spawn,type ChildProcess} from 'node:child_process';
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // An admin in the app: signed in under an alias of ADMIN_EMAILS (a Gmail address with a dot and a +tag), every kind
 // of drive starts with no sessions, the simulation's options are on the account screen, and the hub opens.
@@ -33,8 +34,7 @@ test('G33: an admin starts lessons, mock tests and free drives with no sessions,
 
   // Every mode starts, none uses a session (the free tries stay too).
   for(const mode of ['free','lesson','test'] as const){
-    await page.click(`[data-drive-mode=${mode}]`);
-    await page.click('[data-exercise=goodmayes]');
+    await pick(page,'goodmayes',mode);
     await expect(page.locator('#session-note')).toHaveText('Admin: drives do not use sessions',{timeout:90_000});
     if(mode==='lesson')await page.click('#lesson-list [data-lesson]');
     await page.click('#start-practice');

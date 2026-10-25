@@ -34,7 +34,7 @@ import {FreeDriveAssist} from '../test/freeDriveAssist';
 import {SHOW_ME,TELL_ME,pick,tellMeChoices,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
 import {CAR_CONTROLS,CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
-import {DRIVE_TOUR,HOME_TOUR,Tutorial} from '../ui/tutorial';
+import {DRIVE_TOUR,HOME_TOUR,PLACE_TOUR,Tutorial} from '../ui/tutorial';
 import {nextTip,type ControllerNames,type TipInput} from '../ui/controlTips';
 import {LESSONS,planLesson,type Lesson} from '../lessons/syllabus';
 import {Instructor} from '../lessons/instructor';
@@ -197,11 +197,11 @@ export async function boot():Promise<void>{
     if(once?tutorial.startOnce('drive',DRIVE_TOUR,resume):(tutorial.start(DRIVE_TOUR,resume),true))clock.pause();
   };
   session.onChange(state=>{
-    if(state==='ready')setTimeout(()=>{if(session.state==='ready'&&!byId('exercise-list').hidden)tutorial.startOnce('home',HOME_TOUR)},400);
+    if(state==='ready')setTimeout(()=>{if(session.state==='ready'&&!byId('home-main').hidden&&!byId('exercise-list').hidden)tutorial.startOnce('home',HOME_TOUR)},400);
     else if(state==='running')setTimeout(()=>driveTour(true),700);
     else tutorial.close();
   });
-  byId('tutorial-home').addEventListener('click',()=>tutorial.start(HOME_TOUR));
+  byId('tutorial-home').addEventListener('click',()=>tutorial.start(byId('place-list').hidden?HOME_TOUR:PLACE_TOUR));
   byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
   // The earlier cars with the new Peugeot 208 and pickup (2026-10-24); ?cars=old: the earlier set; ?cars=new: the new pack. Before any street is laid out.
@@ -1678,12 +1678,27 @@ export async function boot():Promise<void>{
     'moving-off':{scenario:'moving-off-safely',intro:'moving-off-intro'}
   };
   let chosen:{scenario:string;intro?:string}|null=null;
-  // Home screen: a free drive (first, and chosen to begin with), a lesson, or a mock test (directions and marking).
+  // Home screen: three cards, Free Drive, Guided Practice (lessons and drills) and Mock Tests; each opens the places
+  // to drive it (any test centre or postcode), with the level.
   let driveMode:'test'|'free'|'lesson'='free';
-  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>{
-    driveMode=b.dataset.driveMode as 'test'|'free'|'lesson';
-    for(const o of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))o.setAttribute('aria-pressed',String(o===b));
-  });
+  const PLACE_TITLE={free:'Free Drive',lesson:'Guided Practice',test:'Mock Tests'} as const;
+  const showHome=(mode:typeof driveMode|null)=>{
+    if(mode)driveMode=mode;
+    byId('home-main').hidden=mode!==null;byId('place-list').hidden=mode===null;
+    byId('place-title').textContent=mode?PLACE_TITLE[mode]:'';
+    byId('drills').hidden=mode!=='lesson';
+    byId('exercise-list').scrollIntoView({block:'start'});
+    if(mode)setTimeout(()=>{if(!byId('place-list').hidden)tutorial.startOnce('place',PLACE_TOUR)},300);
+  };
+  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>showHome(b.dataset.driveMode as typeof driveMode));
+  byId('place-back').addEventListener('click',()=>showHome(null));
+  // The menu: everything else on the home screen (tutorial, words, help, theme, text size, full screen, about).
+  const menu=byId('home-menu'),menuToggle=byId('menu-toggle');
+  const openMenu=(open:boolean)=>{menu.hidden=!open;menuToggle.setAttribute('aria-expanded',String(open))};
+  menuToggle.addEventListener('click',e=>{e.stopPropagation();openMenu(!!menu.hidden)});
+  document.addEventListener('click',e=>{if(!menu.hidden&&!menu.contains(e.target as Node))openMenu(false)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){openMenu(false);menuToggle.focus()}});
+  for(const item of menu.querySelectorAll<HTMLElement>(':scope>button,:scope>a'))if(item.id!=='text-size'&&item.id!=='theme-toggle')item.addEventListener('click',()=>openMenu(false));
   /** Briefing text: paragraphs split on blank lines; a short first line is its heading. */
   const renderBriefing=(target:HTMLElement,text:string)=>{
     const parts=text.split(/\n\n+/);
@@ -1732,6 +1747,8 @@ export async function boot():Promise<void>{
     startButton.disabled=!lesson;
     startButton.textContent=lesson?'Start lesson':'Choose a lesson';
     if(!lesson)return;
+    // The very first lesson: the easiest level and assisted steering (both can be changed here).
+    if(lesson.number===1&&lessonsDone().length===0){difficulty='easy';saveDifficulty(difficulty);showDifficulty();setSteeringMode('assist')}
     renderBriefing(byId('exercise-briefing'),[`Lesson ${lesson.number}: ${lesson.title}`,...lesson.briefing,lesson.rules].join('\n\n'));
   };
   lessonBack.addEventListener('click',()=>showLesson(null));
@@ -1754,7 +1771,14 @@ export async function boot():Promise<void>{
     const scenario=scenarios.get(chosen.scenario)!;
     byId('exercise-title').textContent=scenario.title;
     renderBriefing(byId('exercise-briefing'),scenario.briefing);
-    if(lessons)showLesson(null);
+    if(lessons){
+      // Lessons done are ticked; the next one stands out.
+      const done=lessonsDone(),next=LESSONS.find(l=>!done.includes(l.id));
+      for(const b of lessonList.querySelectorAll<HTMLButtonElement>('[data-lesson]')){
+        b.classList.toggle('done',done.includes(b.dataset['lesson']!));b.classList.toggle('next',b.dataset['lesson']===next?.id);
+      }
+      showLesson(null);
+    }
     byId('guide-option').hidden=!scenario.guide;
     showGuide=guideToggle.checked=false;
     byId('intro-option').hidden=!chosen.intro;
@@ -1763,35 +1787,16 @@ export async function boot():Promise<void>{
   for(const button of document.querySelectorAll<HTMLButtonElement>('[data-exercise]'))
     button.addEventListener('click',()=>showExercise(button.dataset.exercise!));
 
-  // ---- First steps: a new learner starts lesson 1; after that, the next lesson not yet finished ----
-  const nextLesson=()=>{const done=lessonsDone();return LESSONS.find(l=>!done.includes(l.id))??null};
-  // Someone new is pointed to a free drive first (the free try's, where drives are paid; on a preview copy, until
-  // they have driven one), then to the lessons.
-  const FIRST_DRIVE_KEY='dp.first-drive.v1';
-  const firstDriveDone=()=>{try{return !!localStorage.getItem(FIRST_DRIVE_KEY)}catch{return false}};
-  const suggestFreeDrive=()=>paidAccess.gate?paidAccess.freeDriveOpen():!firstDriveDone()&&lessonsDone().length===0;
-  session.onChange(state=>{if(state==='running'&&driveMode==='free')try{localStorage.setItem(FIRST_DRIVE_KEY,'1')}catch{/* this visit only */}});
-  const showFirstSteps=()=>{
-    if(suggestFreeDrive()){
-      byId('first-start').textContent='Start a free drive';
-      return;
-    }
-    const done=lessonsDone(),next=nextLesson();
-    byId('first-start').textContent=done.length===0?'Start lesson 1':next?`Continue: lesson ${next.number}`:'Try a mock test';
+  // ---- Home: the free try (where drives are paid) and the passes ----
+  const showOffer=()=>{
+    const left=paidAccess.freeLeft();
+    byId('free-badge').hidden=!left;
+    byId('free-badge-text').textContent=left===3?'Your first 3 drives are free':`${left} free drive${left===1?'':'s'} left`;
+    byId('view-passes').hidden=!paidAccess.gate;
   };
-  byId('first-start').addEventListener('click',()=>{
-    if(suggestFreeDrive()){document.querySelector<HTMLButtonElement>('[data-drive-mode=free]')!.click();showExercise('goodmayes');return}
-    const next=nextLesson();
-    if(!next){document.querySelector<HTMLButtonElement>('[data-drive-mode=test]')!.click();showExercise('goodmayes');return}
-    // The first lesson: the easiest level and assisted steering (both can be changed on the next screen).
-    if(lessonsDone().length===0){difficulty='easy';saveDifficulty(difficulty);showDifficulty();setSteeringMode('assist')}
-    document.querySelector<HTMLButtonElement>('[data-drive-mode=lesson]')!.click();
-    showExercise('goodmayes');
-    showLesson(next);
-  });
-  showFirstSteps();
-  session.onChange(state=>{if(state==='ready')showFirstSteps()});
-  paidAccess.onChange=()=>showFirstSteps();
+  showOffer();
+  paidAccess.onChange=showOffer;
+  byId('view-passes').addEventListener('click',()=>paidAccess.viewPasses());
 
   // ---- Upright phone during a drive: ask for landscape, and hold the drive still until then ----
   let heldForRotate=false;
@@ -1890,7 +1895,7 @@ export async function boot():Promise<void>{
   };
   let startingPaid=false;
   // Drives are in landscape: turned there where the phone allows it (from the tap that starts them).
-  for(const id of ['start-practice','start-intro','first-start'])byId(id).addEventListener('click',()=>void preferLandscape(),true);
+  for(const id of ['start-practice','start-intro'])byId(id).addEventListener('click',()=>void preferLandscape(),true);
   byId('start-practice').addEventListener('click',()=>{
     if(!chosen||startingPaid)return;
     startingPaid=true;

@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // One control tip at the start of every drive: on screen for a few seconds (or until closed), not again on resuming
 // from pause, and the next one on the next drive.
@@ -11,8 +12,7 @@ test('G31: a control tip at the start of each drive',async({page},testInfo)=>{
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=free]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','free');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   await expect(page.locator('#hud-tip')).toBeVisible({timeout:10_000});

@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Phone-sized landscape viewport with touch, like an iPhone 14 Pro Max.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -11,7 +12,7 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=brentwood]');
+  await pick(page,'brentwood');
   await expect(page.locator('#exercise-briefing')).toContainText('not an official test route');
   await expect(page.locator('#exercise-briefing')).toContainText('turn LEFT');
   await page.click('#start-practice');
@@ -61,7 +62,7 @@ test('G5: Brentwood guided route: start at S0, left at mini-roundabout 1, ahead 
 
   // Back to the menu and into an exercise elsewhere: the world is rebuilt and the car starts there.
   await page.click('#menu-button');
-  await page.click('[data-exercise=zebra]');
+  await pick(page,'zebra');
   await page.click('#start-practice');
   expect(await read(page,'location()')).toBe('representative-residential-straight');
   expect(await read(page,'passers()')).toEqual([]);

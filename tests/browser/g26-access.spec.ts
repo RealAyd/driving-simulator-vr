@@ -1,5 +1,6 @@
 import {execSync,spawn,type ChildProcess} from 'node:child_process';
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Paid access with the accounts service (server/) running locally with fakes: no real email, sign-in or payment.
 // The preview build is ungated; access.json is served here as the hosted copy has it.
@@ -35,7 +36,9 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   test.setTimeout(300_000);
   await gated(page);
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
-  await page.click('[data-exercise=moving-off]');
+  await expect(page.locator('#free-badge')).toHaveText('Your first 3 drives are free');
+  await expect(page.locator('#view-passes')).toBeVisible();
+  await pick(page,'moving-off');
   // The device's free try: this practice drive is its free drive, with no sign-up.
   await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed');
   await page.click('#start-practice');
@@ -45,7 +48,7 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await page.click('#end-button');
   await expect(page.locator('#screen-results')).toBeVisible();
   await page.click('#menu-button');
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   // Used: Start asks to sign up, to save progress (a lesson finished on this device goes to the account).
   await page.evaluate(()=>localStorage.setItem('dp-lessons-done',JSON.stringify(['moving-off-and-stopping'])));
   await expect(page.locator('#session-note')).toContainText('You have used your free drive');
@@ -114,7 +117,7 @@ test('G26: blocking access.json does not open the paid app: where the accounts s
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   // (The note follows the account check, which waits for the server.)
   await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed',{timeout:20_000});
 });
@@ -122,7 +125,7 @@ test('G26: blocking access.json does not open the paid app: where the accounts s
 test('G26: the guided introduction needs no session because it is parked: the car cannot be driven, and nothing is saved',async({page})=>{
   test.setTimeout(180_000);
   await gated(page);
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.click('#start-intro');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
   // Accelerate with the keyboard (the on-screen Go is not shown here): the car stays put.
@@ -147,7 +150,7 @@ test('G26: without access.json or an accounts service (the preview copies) nothi
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.waitForTimeout(500);
   await expect(page.locator('#account-chip')).toBeHidden();
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
 });

@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Mock test at Goodmayes: the examiner briefs and gives directions (shown and spoken), assisted steering follows
 // the route, and the result is a pass/fail report in the marking sheet's terms.
@@ -29,15 +30,14 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   // A fixed route: the first direction (a left turn) comes about 170 m from the start.
   await page.goto('./?routeSeed=1');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  // Free drive comes first and is chosen to begin with; the mock test is chosen.
-  await expect(page.locator('[data-drive-mode=free]')).toHaveAttribute('aria-pressed','true');
+  // The Mock Tests card opens its places.
   await page.click('[data-drive-mode=test]');
-  await expect(page.locator('[data-drive-mode=test]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#place-title')).toHaveText('Mock Tests');
   // Levels: Easy is a 10-minute mock test (Standard 20, Test day 40, as the real test).
   await expect(page.locator('[data-difficulty=standard]')).toHaveAttribute('aria-pressed','true');
   await page.click('[data-difficulty=easy]');
   await expect(page.locator('[data-difficulty=easy]')).toHaveAttribute('aria-pressed','true');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','test');
   await expect(page.locator('#exercise-title')).toContainText('mock test');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');

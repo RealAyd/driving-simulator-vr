@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 // Diagnostic only (not in CI): steady-state frame times per exercise (PERF_EXERCISES, default all three),
 // stationary at the start, forward view with mirrors and one mirror view; plus scene counts.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -10,7 +11,7 @@ test('perf probe',async({page})=>{
   for(const exercise of (process.env.PERF_EXERCISES??'moving-off,zebra,brentwood,kings-road').split(',')){
     await page.goto('./');
     await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-    await page.click(`[data-exercise=${exercise}]`);
+    await pick(page,exercise);
     await page.click('#start-practice');
     await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
     await read(page,'freezeTime(true)');

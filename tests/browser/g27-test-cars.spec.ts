@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The car set by default: the earlier cars with the new Peugeot 208 (the learner's car) and pickup (CC BY, credited
 // on screen); none of the rest of the new pack (white ghost-like shapes on the owner's phone). ?cars=old: the earlier cars.
@@ -8,8 +9,7 @@ const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${ex
 const startGoodmayes=async(page:Page,url:string)=>{
   await page.goto(url);
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=free]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','free');
   await expect(page.locator('#busy')).toBeHidden({timeout:120_000});
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');

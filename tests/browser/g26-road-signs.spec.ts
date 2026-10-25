@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Road signs and markings: give way lines at side road mouths (and STOP lines where mapped), speed limit signs
 // where the limit changes. Goodmayes: drawn at each mouth, nothing breaks.
@@ -11,8 +12,7 @@ test('G26: give way lines at side road mouths and speed limit signs',async({page
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=free]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','free');
   await expect(page.locator('#busy')).toBeHidden({timeout:90_000});
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');

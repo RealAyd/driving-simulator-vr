@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Goodmayes (generated from map data, tools/centres/build_centre.mjs): a free drive on a street network with
 // terraced side roads, on real ground. Starts, drives off along Ashgrove Road without leaving the route.
@@ -11,8 +12,7 @@ test('G19: Goodmayes free drive starts on real ground and drives off along the r
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=free]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','free');
   // Building the place takes a few seconds: the loading screen says so meanwhile.
   await expect(page.locator('#busy')).toBeVisible();
   await expect(page.locator('#busy-text')).toContainText('Loading Goodmayes');

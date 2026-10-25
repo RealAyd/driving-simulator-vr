@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Full drives at software-rendering frame rates take minutes of real time.
 test.setTimeout(480_000);
@@ -51,7 +52,7 @@ class TestDriver{
 async function startExercise(page:Page){
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:30_000});
-  await page.click('[data-exercise=zebra]');
+  await pick(page,'zebra');
   await page.click('#start-practice');
   expect(await read(page,'session()')).toBe('running');
 }

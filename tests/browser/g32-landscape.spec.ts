@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Drives are in landscape: a phone held upright is asked to turn, and the drive holds still until it is.
 test.use({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
@@ -12,8 +13,7 @@ test('G32: upright, the drive asks for the phone to be turned and waits; turned,
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // The menus work upright.
   await expect(page.locator('#rotate-hint')).toBeHidden();
-  await page.click('[data-drive-mode=free]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','free');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:120_000}).toBe('running');
   await expect(page.locator('#rotate-hint')).toBeVisible();

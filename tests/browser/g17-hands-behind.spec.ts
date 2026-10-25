@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The driver's hands on the wheel (they follow the steering), and the behind-the-car view.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -10,7 +11,7 @@ test('G17: the hands follow the steering; the behind-the-car view is practice on
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   // The on-screen wheel is gone: assisted, tilt or the Steer buttons.
   await expect(page.locator('input[name=steering][value=wheel]')).toHaveCount(0);
   await page.click('input[name=steering][value=buttons]');

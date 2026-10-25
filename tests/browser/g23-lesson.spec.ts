@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // A driving lesson at Goodmayes: Lesson on the home screen, the syllabus, a lesson's briefing, then the drive with
 // the instructor (directions, reminders when something is not done, a word after each junction) and the report.
@@ -28,8 +29,7 @@ test('G23: a lesson: syllabus, briefing, the instructor coaching on the drive, a
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./?routeSeed=1');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=lesson]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','lesson');
   // The syllabus: eleven lessons (the last the manoeuvres), and what is coming.
   await expect(page.locator('#lesson-list [data-lesson]')).toHaveCount(11);
   await expect(page.locator('#start-practice')).toBeDisabled();
@@ -65,8 +65,7 @@ test('G23: lesson 11, manoeuvres: the emergency stop (pull in, briefing, STOP on
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./?routeSeed=2');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-drive-mode=lesson]');
-  await page.click('[data-exercise=goodmayes]');
+  await pick(page,'goodmayes','lesson');
   await page.click('[data-lesson=manoeuvres]');
   await expect(page.locator('#exercise-briefing')).toContainText('emergency stop');
   await page.click('#start-practice');

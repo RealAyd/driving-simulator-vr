@@ -14,18 +14,21 @@ export interface TourStep{
 }
 
 export const HOME_TOUR:readonly TourStep[]=[
-  {target:'#first-steps',title:'Start here',text:'Where to begin: a free drive first, then your first lesson with the steering done for you. Afterwards it offers the next lesson you have not done.'},
-  {target:'.mode-switch',title:'What would you like to do?',
-    text:'Free drive: just drive, at your own pace. Lesson: an instructor teaches one topic at a time (junctions, roundabouts, traffic lights…) and coaches you as you drive. Mock test: an examiner gives directions and marks you to DVSA’s standard, with a report at the end.'},
+  {target:'[data-drive-mode=free]',title:'Free Drive',text:'Drive anywhere at your own pace: any test centre or postcode. Nothing is marked.'},
+  {target:'[data-drive-mode=lesson]',title:'Guided Practice',text:'Lessons with an instructor, one topic at a time, and short scored drills.'},
+  {target:'[data-drive-mode=test]',title:'Mock Tests',text:'An examiner gives directions and marks you as on the real test.'},
+  {target:'#view-passes',title:'Passes',text:'After the free try, a pass keeps you driving.'},
+  {target:'#account-chip',title:'Your account',text:'Sign in to keep your progress and your drives on any device.'},
+  {target:'#menu-toggle',title:'Menu',text:'Tutorial, words explained, help, light or dark, text size, full screen and keyboard controls.'}
+];
+
+/** The places screen (after a card on the home screen): level, where to drive, and the drills. */
+export const PLACE_TOUR:readonly TourStep[]=[
   {target:'.difficulty-row',title:'Level',text:'Easy, Standard or Test day: how busy the roads are, how long a mock test lasts (10, 20 or 40 minutes), and whether the instructor reminds you before each junction on a lesson.'},
   {target:'#area-query',title:'Drive anywhere',text:'Type a test centre or a postcode. The streets round it are built from map data on your phone in a few seconds.'},
   {target:'#centre-browser',title:'Every test centre',text:'Or browse all the UK’s car test centres by letter.'},
   {target:'[data-exercise=goodmayes]',title:'Ready to go',text:'Goodmayes is ready now: the streets round the test centre, with traffic, parked cars, crossings and traffic lights.'},
-  {target:'.choices:last-of-type',title:'Drills',text:'Short scored drills: mini-roundabouts, zebra crossings, moving off safely.'},
-  {target:'#help-home',title:'Help',text:'Something not working, or a question? Send us a message (with screenshots if they help); we reply by email.'},
-  {target:'#words-home',title:'Words explained',text:'Driving test words in plain English: blind spot, give way, driving fault and more.'},
-  {target:'#text-size',title:'Text size',text:'Tap for larger text, again for larger still, and once more to go back.'},
-  {target:'#tutorial-home',title:'See this again',text:'Tap Tutorial at any time to replay this tour. There is one for the driving screen too.'}
+  {target:'#drills',title:'Drills',text:'Short scored drills: mini-roundabouts, zebra crossings, moving off safely. More are on the way.'}
 ];
 
 export const DRIVE_TOUR:readonly TourStep[]=[

@@ -1,5 +1,6 @@
 import {writeFileSync} from 'node:fs';
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // iPhone 14 Pro Max in landscape (CSS pixels), touch input.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -13,7 +14,7 @@ const z=(id:string)=>`(window.__drivingPractice.passersDetail().find(p=>p.id==='
 async function startMovingOff(page:Page,variant:string){
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await expect(page.locator('#exercise-briefing h2')).toHaveText('Move off when safe');
   await expect(page.locator('#exercise-briefing')).toContainText('A purple car may approach from behind on your right, and a yellow cyclist may approach from behind on your left.');
   await read(page,`forceVariant('${variant}')`);

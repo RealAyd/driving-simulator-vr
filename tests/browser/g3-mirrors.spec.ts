@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {openMenu,pick} from './home';
 
 // iPhone 14 Pro Max in landscape (CSS pixels), touch input.
 test.use({viewport:{width:932,height:430},hasTouch:true,isMobile:true});
@@ -45,7 +46,7 @@ test('G3: all three mirrors are findable, unobstructed and show the purple car a
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   expect(await read(page,'quality')).toBe('phone');
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await expect(page.locator('input[name=steering][value=assist]')).toBeChecked();
   await page.click('#start-intro');
   await expect(page.locator('[data-view]')).toHaveCount(6);
@@ -158,7 +159,7 @@ test('G3: all three mirrors are findable, unobstructed and show the purple car a
 test('G3: mirror rendering cost (headless software rendering, not representative of the iPhone)',async({page},testInfo)=>{
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.click('#start-intro');
   const measure=async(label:string)=>{
     await read(page,'resetPerf()');
@@ -180,12 +181,13 @@ test('G3: with the iPhone 14 Pro Max landscape safe areas (59 px each side, 21 p
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   // Chromium does not emulate env(safe-area-inset-*); apply the device's values directly.
   await page.addStyleTag({content:':root{--sl:59px!important;--sr:59px!important;--sb:21px!important;--st:8px!important}'});
+  await openMenu(page);
   await page.click('#about-open');
   await expect(page.locator('#about-branch')).not.toBeEmpty();
   await expect(page.locator('#about-commit')).toHaveText(/^[0-9a-f]{7}/);
   await page.screenshot({path:testInfo.outputPath('g3-10-about.png')});
   await page.click('#about-close');
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.click('#start-intro');
   for(const view of ['forward','interior','left-door','right-door'] as const){
     await read(page,`selectView('${view}')`);

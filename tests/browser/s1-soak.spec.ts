@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // Soak (SOAK=1 npx playwright test s1-soak): mock tests at several test centres, minutes each, driven by a bot with
 // assisted steering. Records what goes wrong rather than stopping at the first thing: page errors, console errors,
@@ -29,7 +30,7 @@ for(const centre of CENTRES)test(`soak: mock test at ${centre}`,async({page},tes
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await page.click('[data-drive-mode=test]');
   await page.click('[data-difficulty=easy]');
-  if(centre==='Goodmayes')await page.click('[data-exercise=goodmayes]');
+  if(centre==='Goodmayes')await pick(page,'goodmayes','test');
   else{
     await page.fill('#area-query',centre);
     await page.locator('#area-results button',{hasText:new RegExp(`^${centre}`)}).first().click();

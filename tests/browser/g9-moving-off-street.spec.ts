@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The dressed Moving off street, as the public preview builds it (no private assets).
 // Screenshots of every view from the driver's seat, and what the scene costs.
@@ -16,7 +17,7 @@ test('G9: the Moving off street is dressed from every view; parked cars and scen
   page.on('response',r=>{void r.body().then(b=>downloads.push({url:new URL(r.url()).pathname,bytes:b.length})).catch(()=>{})});
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await read(page,"forceVariant('car-then-cyclist')");
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()')).toBe('running');

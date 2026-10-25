@@ -1,4 +1,5 @@
 import {expect,test,type Page} from '@playwright/test';
+import {pick} from './home';
 
 // The phone taking over during a drive (an alarm, a call): the drive pauses, and stays paused until resumed.
 // On iPhone an alarm can leave the page showing but take its sound; Safari reports the audio as interrupted.
@@ -15,7 +16,7 @@ async function startDrive(page:Page){
   });
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await page.click('[data-exercise=moving-off]');
+  await pick(page,'moving-off');
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
   // Sound starts with a tap or a key (the browser allows audio only after one).

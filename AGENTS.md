@@ -7,6 +7,8 @@
 
 Explanations belong in the Tutorial tour (`src/ui/tutorial.ts`), not on the screen. Keep status lines (what just happened, what is blocking), legal notices and data attribution (OpenStreetMap, DVSA).
 
+Exception, the owner's decision: the home screen keeps its line ("Drive smarter. Test ready."), the sub-line, the free-try badge, the one line on each card and the "Web, mobile and VR" banner, as in the owner's design.
+
 ## Layout
 
 - `sim/index.html`: every screen and the HUD. `src/app/main.ts` wires them.
