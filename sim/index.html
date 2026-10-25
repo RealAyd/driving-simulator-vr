@@ -409,6 +409,9 @@ a.wide-link svg{vertical-align:-3px;margin-right:6px}
 /* First-time path, plain English, text size. */
 /* ---- Home: the picture, the line, the free try, and three cards (one per way to drive) ---- */
 .home-head{position:relative;flex-wrap:nowrap}
+.home-head .brand{min-width:0;flex:1;contain:inline-size}.home-head .brand-mark{flex:none}
+@media (max-width:420px){.home-head .brand{gap:9px}.home-head .brand-mark{width:36px;height:36px;border-radius:11px}.home-head .account-chip{padding:5px 11px}}.home-head .brand h1{min-width:0;font-size:clamp(17px,4.8vw,26px);line-height:1.12}
+.home-head .head-actions{flex:none;flex-wrap:nowrap;gap:4px}
 .menu-toggle{display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:12px;background:none;border:none;color:var(--ink)}
 .home-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:5;display:grid;gap:8px;width:min(300px,calc(100vw - 48px));padding:12px;border-radius:16px;
   background:var(--surface);border:1px solid var(--line-strong);box-shadow:0 18px 40px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
