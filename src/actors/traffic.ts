@@ -485,12 +485,14 @@ export class Traffic implements SimModule{
       if(d.why==='dead end'&&car.speed<.2&&(behindLearner||fromLearner>90)){car.visible=false;continue}
       // Nose to nose with the learner, stopped, and in the way (the learner out in the road past parked cars, this
       // car waiting by its own): neither can get by, so after a while it goes (as if into a drive) rather than leave
-      // both waiting for ever.
+      // both waiting for ever. The learner backing off or edging to and fro counts as waiting too (the owner's report,
+      // Folkestone: the clock restarted each time they moved, so the car never went); 20 s whatever the learner does.
       {
         const lx=learner.pose.position.x-car.pose.position.x,lz=learner.pose.position.z-car.pose.position.z;
         const along=lx*fwd.x+lz*fwd.z,side=Math.abs(lx*fwd.z-lz*fwd.x);
         const noseToNose=Math.cos(learner.pose.heading-car.pose.heading)<-.5&&along>0&&along<25&&side<car.halfWidth+1.3;
-        d.faceOff=noseToNose&&Math.abs(learner.speed)<.5&&car.speed<.2?(d.faceOff??0)+dt:0;
+        // (Creeping a metre while the learner edges back does not start the wait again: only the two getting clear.)
+        d.faceOff=noseToNose?(d.faceOff??0)+(car.speed<1?dt*(learner.speed<.5?1:.5):0):0;
         if(d.faceOff>10){d.faceOff=0;car.visible=false;continue}
       }
       // Too far from the learner: come back somewhere nearer, out of sight.

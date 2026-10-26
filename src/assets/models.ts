@@ -165,7 +165,9 @@ export class CarModel{
       if(!(mesh instanceof Mesh)||mesh.getTotalVertices()===0)continue;
       const world=mesh.computeWorldMatrix(true);
       const positions=mesh.getVerticesData(VertexBuffer.PositionKind)!,normals=mesh.getVerticesData(VertexBuffer.NormalKind),indices=mesh.getIndices()!;
-      const c=mesh.material?.name===this.spec.paintMaterial?paint:(mesh.material as StandardMaterial|null)?.diffuseColor??Color3.Gray();
+      // Glass tinted dark, as the moving cars' is (pale glass on a white or silver car read as one colour).
+      const own=(mesh.material as StandardMaterial|null)?.diffuseColor??Color3.Gray();
+      const c=mesh.material?.name===this.spec.paintMaterial?paint:GLASS.test(mesh.material?.name??'')?own.scale(.28):own;
       // Colours baked into the vertices (the new set's parked models, from their textures), where there are some.
       const vc=mesh.material?.name===this.spec.paintMaterial?null:mesh.getVerticesData(VertexBuffer.ColorKind);
       const stride=vc&&positions.length?vc.length/(positions.length/3):4;
@@ -180,29 +182,36 @@ export class CarModel{
         for(const i of indices)target.indices.push(base+i);
         continue;
       }
-      // No normals (simplified parked-car models): one flat normal per triangle, as the low-poly originals.
+      // No normals (simplified parked-car models): each face's normal points out of the car (their triangles do not
+      // all wind the same way, and an inward roof or window was unlit: one colour with a black top), and the faces
+      // meeting at a corner share their average (smooth, not crumpled facets).
       const w:number[]=[];
       for(let i=0;i<positions.length;i+=3){
         Vector3.TransformCoordinatesFromFloatsToRef(positions[i]!,positions[i+1]!,positions[i+2]!,world,p);
         w.push(p.x,p.y,p.z);
       }
+      const smooth=new Float32Array(positions.length);
       for(let t=0;t<indices.length;t+=3){
         const [a,b2,d]=[indices[t]!*3,indices[t+1]!*3,indices[t+2]!*3];
         const e1=new Vector3(w[b2]!-w[a]!,w[b2+1]!-w[a+1]!,w[b2+2]!-w[a+2]!),e2=new Vector3(w[d]!-w[a]!,w[d+1]!-w[a+1]!,w[d+2]!-w[a+2]!);
-        Vector3.CrossToRef(e1,e2,n);n.normalize();
-        // Faces out of the car: the simplified models' triangles do not all wind the same way, and an inward roof or
-        // window is unlit (parked cars looked one colour with a black top).
+        Vector3.CrossToRef(e1,e2,n);// (length: twice the area, so larger faces count for more)
         const cx=(w[a]!+w[b2]!+w[d]!)/3-x,cy=(w[a+1]!+w[b2+1]!+w[d+1]!)/3-(y+centreHeight),cz=(w[a+2]!+w[b2+2]!+w[d+2]!)/3-z;
         if(n.x*cx+n.y*cy+n.z*cz<0)n.scaleInPlace(-1);
-        const v0=target.positions.length/3;
-        for(const k of [a,b2,d]){target.positions.push(w[k]!,w[k+1]!,w[k+2]!);target.normals.push(n.x,n.y,n.z);target.colors.push(...colourAt(k/3),1)}
-        target.indices.push(v0,v0+1,v0+2);
+        for(const k of [a,b2,d]){smooth[k]!+=n.x;smooth[k+1]!+=n.y;smooth[k+2]!+=n.z}
       }
+      for(let k=0;k<w.length;k+=3){
+        const len=Math.hypot(smooth[k]!,smooth[k+1]!,smooth[k+2]!)||1;
+        target.positions.push(w[k]!,w[k+1]!,w[k+2]!);target.normals.push(smooth[k]!/len,smooth[k+1]!/len,smooth[k+2]!/len);target.colors.push(...colourAt(k/3),1);
+      }
+      for(const i of indices)target.indices.push(base+i);
     }
     entries.dispose();
     holder.dispose();
   }
 }
+
+/** Window glass, by its material's name in the parked models. */
+const GLASS=/screen|glass|window/i;
 
 export interface BakedGeometry{positions:number[];normals:number[];colors:number[];indices:number[]}
 
