@@ -1,6 +1,6 @@
 import {forwardFromHeading,rightFromHeading,type Vec2} from '../contracts';
 import {aroundMini,miniAt,type MiniRoundabout} from '../world/miniRoundabout';
-import {pointAtAlong} from '../world/roadGeometry';
+import {keepLeftOffset,pointAtAlong} from '../world/roadGeometry';
 import type {KerbFootprint} from '../world/townscape';
 import type {RouteLeg} from './route';
 
@@ -21,7 +21,7 @@ const ALONGSIDE=4;
 export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>,minis:readonly MiniRoundabout[]=[]):Vec2[]{
   const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number}>=[];
   for(const [legIndex,leg] of legs.entries()){
-    const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=leg.road.oneway?0:leg.road.lanes.width/2;
+    const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=keepLeftOffset(leg.road,HALF_WIDTH);
     for(let k=0;k<=n;k++){
       const p=pointAtAlong(leg.road,leg.from+(leg.to-leg.from)*k/n),dx=p.direction.x*leg.dir,dz=p.direction.z*leg.dir;
       let hi=lane,lo=-Infinity;

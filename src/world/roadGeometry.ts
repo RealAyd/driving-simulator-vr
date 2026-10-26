@@ -12,6 +12,16 @@ export interface RoadSample{
   distance:number;
 }
 
+/**
+ * Where a car keeps across a road (metres left of the centreline, along the direction of travel): the middle of the
+ * left lane, but never so far left that a car `halfWidth` wide is over the kerb (a single-track road: about its
+ * middle). One-way: the middle.
+ */
+export function keepLeftOffset(road:Road,halfWidth=.9):number{
+  if(road.oneway)return 0;
+  return Math.max(0,Math.min(road.lanes.width/2,roadHalfWidth(road)-halfWidth-.15));
+}
+
 export function roadHalfWidth(road:Road):number{
   return road.lanes.count*road.lanes.width/2;
 }

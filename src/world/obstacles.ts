@@ -26,6 +26,8 @@ export function boxesOverlap(a:Box,b:Box):boolean{
 
 export class StaticObstacles implements CollisionQuery{
   private readonly boxes:Box[];
+  /** Diagnostics: the boxes within `r` metres of (x, z). */
+  near(x:number,z:number,r:number):Box[]{return this.boxes.filter(b=>Math.hypot(b.cx-x,b.cz-z)<r)}
 
   constructor(blocks:Block[]){
     this.boxes=blocks.map(b=>({

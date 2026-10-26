@@ -259,6 +259,10 @@ export class RoadNetwork{
           exit=order.indexOf(o)+1;
           const way=turn==='ahead'?', that\'s straight ahead':turn==='left'?', that\'s to the left':', that\'s to the right';
           say=`At the roundabout, take the ${ORD[exit-1]??`${exit}th`} exit${way}.`;
+        }else if(d.kind==='side'&&turn==='ahead'){
+          // A side road leaving at a shallow angle (a fork): "bear left", as examiners say. (It said "the next road on
+          // the left" while the step was ahead: the owner heard left as the assisted car carried on along the fork.)
+          say=`Bear ${o.angle>0?'right':'left'}.`;
         }else if(d.kind==='side'){
           // "The next road" unless a road on the same side comes first.
           const sameSide=ds.filter(x=>x.kind==='side'&&x.along*pos.dir<d.along*pos.dir&&Math.sign(x.options[0]!.angle)===Math.sign(o.angle)).length;
@@ -281,6 +285,9 @@ export class RoadNetwork{
         if(key(o.road)!==key(pos.road)){driven.set(key(o.road),uses(o.road)+1);entered.push(key(o.road))}
         pos={road:o.road,dir:o.dir,along:o.from};
       }
+      // On along the road after the last direction (up to 80 m): the route stopped at that junction, so the assisted
+      // steering had no way on and carried straight on over the corner (the owner's report, Wakefield: into a sign).
+      if(ok){const room=pos.dir>0?len(pos.road)-pos.along:pos.along;if(room>5)legs.push({road:pos.road,dir:pos.dir,from:pos.along,to:pos.along+pos.dir*Math.min(80,room-1)})}
       if(ok&&distance>best.length){best={steps,legs,length:distance};if(distance>=target)break}
     }
     return best;

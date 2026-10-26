@@ -28,6 +28,9 @@ export class SteeringAssist{
     });
   }
 
+  /** Diagnostics: the path's points within `r` metres of (x, z). */
+  near(x:number,z:number,r:number):Vec2[]{return this.path.filter(p=>Math.hypot(p.x-x,p.z-z)<r)}
+
   /** The path's length (metres). */
   get length():number{return this.lengths.at(-1)??0}
 

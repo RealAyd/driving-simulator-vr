@@ -28,7 +28,7 @@ const TURNS=['left','right'] as const;
 const range=(a:number,b:number,step=1)=>Array.from({length:Math.round((b-a)/step)+1},(_,i)=>+(a+i*step).toFixed(1));
 
 function directions():string[]{
-  const out:string[]=['At the traffic lights, go straight ahead.','At the junction, go straight ahead.'];
+  const out:string[]=['At the traffic lights, go straight ahead.','At the junction, go straight ahead.','Bear left.','Bear right.'];
   for(const t of TURNS)out.push(`At the traffic lights, turn ${t}.`,`At the junction, turn ${t}.`,`At the end of the road, turn ${t}.`,
     ...ORD.map(o=>`Take the ${o} road on the ${t}.`),`Take the next road on the ${t}.`);
   for(const o of ORD)for(const way of ['straight ahead','to the left','to the right'])
