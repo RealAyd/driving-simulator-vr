@@ -59,7 +59,9 @@ export const CAR_MODELS={
   ...kenney('van',5.3,2.0,2.3),
   // Low Poly Car Pack, 20 vehicles (aq3d-models, CGTrader Royalty Free; bought 2026-10-26), tried with ?cars=pack20
   // (tools/assets/export-aq3d-cars.py, build-aq3d-cars.mjs): fictional everyday cars, real sizes, facing -Z; textured
-  // for traffic, textures baked into the vertex colours for parked copies; the body painted by the app.
+  // for traffic, textures baked into the vertex colours for parked copies; the body painted by the app. Licensed, not
+  // redistributable: built locally into public/assets/licensed/aq3d (git-ignored), never committed; a build without
+  // them draws plain boxes for parked cars.
   ...aq('hatchback',4.16,2.07,1.38),...aq('hatchback-low',4.15,1.84,1.29),...aq('hatchback-sport',4.18,1.85,1.35),
   ...aq('hatchback-tall',4.18,2.03,1.53),...aq('hatchback-old',3.98,2.06,1.33),...aq('saloon',4.62,2.01,1.35),
   ...aq('saloon-modern',4.56,1.97,1.37),...aq('saloon-classic',5.05,2.27,1.49),...aq('suv',4.45,2.01,1.48),
@@ -85,7 +87,7 @@ function kenney<N extends string>(name:N,length:number,width:number,height:numbe
 /** A car of the 20-vehicle pack: its traffic and parked models. */
 function aq<N extends string>(name:N,length:number,width:number,height:number):Record<`aq-${N}`,CarModelSpec>{
   const id=`aq-${name}` as const;
-  return {[id]:{id,url:`assets/models/vehicles/aq3d/${id}.glb`,parkedUrl:`assets/models/vehicles/aq3d/${id}-parked.glb`,paintMaterial:'Body',yawOffset:0,length,width,height}} as Record<`aq-${N}`,CarModelSpec>;
+  return {[id]:{id,url:`assets/licensed/aq3d/${id}.glb`,parkedUrl:`assets/licensed/aq3d/${id}-parked.glb`,paintMaterial:'Body',yawOffset:0,length,width,height}} as Record<`aq-${N}`,CarModelSpec>;
 }
 
 export type CarModelId=keyof typeof CAR_MODELS;

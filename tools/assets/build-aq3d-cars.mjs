@@ -1,7 +1,7 @@
 // Full (traffic) model: textures deduplicated, at most 256 px, WebP. Parked model: every texture baked into the
 // vertex colours (the paint left plain for the app), no textures. After tools/assets/export-aq3d-cars.py:
 //
-//   node build-aq3d-cars.mjs <export dir> public/assets/models/vehicles/aq3d
+//   node build-aq3d-cars.mjs <export dir> public/assets/licensed/aq3d  (git-ignored: licensed, never committed)
 //
 // Needs @gltf-transform/core, /extensions, /functions 4.5.1 and sharp 0.33 (a scratch install).
 import fs from 'node:fs';import path from 'node:path';
