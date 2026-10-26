@@ -85,7 +85,8 @@ describe('the admin hub API',()=>{
   it('customers: search by email or code; the detail has the ledger and drives',async()=>{
     const c=await as('find-me@example.com');
     await c('/api/dev/checkout',{pack:'vr-5'});
-    await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
+    const d=await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
+    await c(`/api/drives/${d.json.driveId}/completed`,{});
     const boss=await as('boss@example.com');
     const found=(await boss('/api/admin/customers?q=find-me')).json.customers;
     expect(found.map((x:{email:string})=>x.email)).toEqual(['find-me@example.com']);
@@ -176,12 +177,15 @@ describe('the admin hub API',()=>{
     expect(d.status).toBe(200);
     expect(d.json.balance).toBe(0);
     expect((await boss(`/api/drives/${d.json.driveId}/failed`,{})).status).toBe(200);
+    expect((await boss(`/api/drives/${d.json.driveId}/completed`,{})).status).toBe(200);
     const me=(await boss('/api/me')).json;
     expect(me).toMatchObject({admin:true,balance:0});
     expect(me.history.filter((h:{type:string})=>h.type==='consumed'||h.type==='drive_refund')).toEqual([]);
     // A learner with no sessions: the device's free try once, then a session is needed.
     const learner=await as('learner-nodrive@example.com');
-    expect((await learner('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).json).toMatchObject({trial:true});
+    const tried=await learner('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
+    expect(tried.json).toMatchObject({trial:true});
+    await learner(`/api/drives/${tried.json.driveId}/completed`,{});
     expect((await learner('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
   });
 });

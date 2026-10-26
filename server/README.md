@@ -9,7 +9,7 @@ Tests: `npx vitest run server/test`. Add `MONGO_TESTS=1` to also run the concurr
 
 | Pack | Price | Grants |
 |---|---:|---|
-| Starter Pass | £2.99 | 1 lesson + 1 mock test + 1 free drive, as three separate allowances; once per account |
+| Starter Pass | £2.99 | 3 sessions (any kind of drive); once per account |
 | VR 5 | £9.99 | 5 sessions (any kind of drive) |
 | VR 15 | £24.99 | 15 sessions |
 | VR 35 | £49.99 | 35 sessions |
@@ -34,10 +34,15 @@ reference to the pack).
 - **Idempotency:** every ledger entry has a unique idempotency key (`checkout:<session>`, `checkout:<session>:<pot>`,
   `drive:<id>`, `refund:<charge>`, ...), enforced by a unique index; the balance moves only when the entry is new.
   Replayed or simultaneous deliveries grant once; a delivery that stopped part-way completes on Stripe's retry.
-- **Drives:** the server decides the kind of drive from the scenario (`*-lesson`, `*-mock-test`, otherwise a free
-  drive), not from what the browser calls it. A Starter allowance of that kind is used first, then a general session.
-  Taking it is a single conditional update, so simultaneous starts cannot spend the same session twice. A drive that
-  reports it failed to load within 15 minutes gets its session back to the pot it came from (at most 3 a day).
+- **Drives:** a session is used when a drive is **completed** (`POST /api/drives/:id/completed`: a mock test or lesson
+  driven to its end, a free drive driven its full 1 minute 30 seconds), never when it starts; one that ends early, is left part-way
+  or fails to load uses nothing. Starting needs something to use (a session, or a Starter Pass drive left from the old
+  pass). On completion, an old Starter Pass drive of that kind is used first, then a general session, then any old
+  Starter Pass drive; the ledger entry (`drive:<id>`) is unique, so a drive is paid once. Two drives on one last
+  session, both completed, take the balance below zero (drives stop until topped up; flagged
+  `completed-without-session`). The server decides the kind of drive from the scenario (`*-lesson`, `*-mock-test`,
+  otherwise a free drive), not from what the browser calls it. Drives paid at the start under the old rule (no
+  `due`) still get their session back if they fail to load within 15 minutes (at most 3 a day).
 
 ## Starter Pass: once per account
 
@@ -55,8 +60,8 @@ reference to the pack).
 
 - **Full refund of a sessions pack:** its sessions are taken back even if spent; the balance can go below zero, and
   nothing more can be started until it is topped up.
-- **Full refund of a Starter Pass:** each unused allowance is taken back; one already used stays used and is flagged
-  (`refund-after-use`).
+- **Full refund of a Starter Pass:** the same (its three sessions are taken back). An old Starter Pass's unused
+  allowances are taken back; one already used stays used and is flagged (`refund-after-use`).
 - **Partial refunds** (a goodwill gesture, a missed promotion code): the money is recorded and the sessions stay.
   Under £5 in all on one payment, that is all. From £5, it is also flagged (`partial-refund`) for a person to decide
   whether to remove sessions (by hand, with an adjustment).
@@ -78,8 +83,8 @@ For the accounts in `ADMIN_EMAILS` (comma-separated, matched against the account
 in again). Changes are accepted only from this site's own page.
 
 - **Overview:** accounts (new in 7 and 30 days), paying customers, money paid and refunded (from the ledger), drives in
-  the last 30 days by kind, how many were completed (a route finished, a lesson done, a free drive of 5 minutes or
-  more) and how the rest ended (exited, crashed, left the route, out of time), how many failed to load, sessions held
+  the last 30 days by kind, how many were completed (a route finished, a lesson done, a free drive driven its
+  full 1 minute 30 seconds) and how the rest ended (exited, crashed, left the route, out of time), how many failed to load, sessions held
   by customers, open flags.
 - **Visitors:** the app's own visit records (`src/app/visits.ts` → `POST /api/visits`, summed up in `analytics.ts`):
   people a day (new, from the home screen, signed in), where visits come from (campaign `utm_source`/`src`, the
@@ -134,8 +139,7 @@ API: `GET /api/admin/overview`, `GET /api/admin/customers?q=`, `GET /api/admin/c
 
 ## Free try (no sign-up)
 
-Each device can try **one lesson, one mock test and one free drive** without an account. The try is held by the
-server (`trials`), named in an HttpOnly signed cookie (`dp_trial`, a year); using one is atomic, so it cannot be
-used twice at once. New tries are limited to 4 a day per address (clearing cookies does not give unlimited drives).
-Signed in, an account's sessions and Starter Pass are used first; with none left, the device's free try. A free-try
-drive that fails to load is given back. Admins (`ADMIN_EMAILS`) drive without sessions or tries.
+Each device can complete **one lesson, one mock test and one free drive** without an account (each is used when that
+drive is completed). The try is held by the server (`trials`), named in an HttpOnly signed cookie (`dp_trial`, a
+year). New tries are limited to 30 a day per address (clearing cookies does not give unlimited drives; many phones
+share one address). Signed in, an account's sessions are used first; with none left, the device's free try. Admins (`ADMIN_EMAILS`) drive without sessions or tries.

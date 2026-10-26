@@ -29,7 +29,7 @@ async function signInByEmail(page:Page,email:string){
   await expect(page.locator('#account-main')).toBeVisible();
 }
 
-test('G26: a free try without signing up (one free drive here); then Start asks to sign up to save progress; Continue driving opens the paywall from the Starter Pass; paying starts the drive',async({page})=>{
+test('G26: a free try without signing up (one free drive here), used only when completed; then Start asks to sign up to save progress; Continue driving opens the paywall from the Starter Pass; paying starts the drive',async({page})=>{
   test.setTimeout(300_000);
   await gated(page);
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
@@ -39,13 +39,25 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await expect(page.locator('[data-try]')).toHaveText(['Free','Free','Free']);
   await pick(page,'moving-off');
   // The device's free try: this practice drive is its free drive, with no sign-up.
-  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed');
+  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed, used if you complete it');
+  // Started and left part-way: nothing used.
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
-  expect((await (await page.request.get('/api/me')).json()).trial).toEqual({lesson:1,test:1,free:0});
   await page.click('#hud-pause');
   await page.click('#end-button');
   await expect(page.locator('#screen-results')).toBeVisible();
+  expect((await (await page.request.get('/api/me')).json()).trial).toEqual({lesson:1,test:1,free:1});
+  // Completed (moved off with assisted steering once the road users have passed): the free drive is used.
+  await page.evaluate(()=>{const r=document.querySelector<HTMLInputElement>('input[name="steering"][value="assist"]')!;r.checked=true;r.dispatchEvent(new Event('change'))});
+  await page.click('#retry-button');
+  await expect.poll(()=>read(page,'session()'),{timeout:20_000}).toBe('running');
+  await page.waitForFunction(()=>{const p=(window as any).__drivingPractice.passersDetail();return p.length>0&&p.every((x:any)=>x.pose.position.z<-10)},undefined,{timeout:200_000,polling:200});
+  await page.locator('canvas').first().focus();
+  await page.keyboard.down('KeyW');
+  await expect(page.locator('#screen-results')).toBeVisible({timeout:120_000});
+  await page.keyboard.up('KeyW');
+  expect((await read(page,'result()')).outcome).toBe('completed');
+  await expect.poll(async()=>(await (await page.request.get('/api/me')).json()).trial,{timeout:10_000}).toEqual({lesson:1,test:1,free:0});
   await page.click('#menu-button');
   // Used: the home screen says so on Free Drive (the drills use the free drive too), and the others are still free.
   await page.click('#place-back');
@@ -73,25 +85,22 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await expect(page.locator('#account-balance')).toBeHidden();
   await expect(page.locator('#pack-list [data-pack]')).toHaveCount(4);
   await expect(page.locator('#pack-list [data-pack]').first()).toHaveAttribute('data-pack','starter');
-  await expect(page.locator('#pack-list [data-pack=starter]')).toContainText('1 lesson, 1 mock test and 1 free drive · once per account');
+  await expect(page.locator('#pack-list [data-pack=starter]')).toContainText('3 sessions · once per account');
   await page.screenshot({path:test.info().outputPath('g26-paywall.png')});
-  // Paid: the drive that was waiting starts, on the Starter's free drive (not the lesson or the mock test).
+  // Paid: the drive that was waiting starts. The Starter Pass is three sessions for any drive; none is used yet.
   await page.click('#pack-list [data-pack=starter]');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
   await expect(page.locator('#screen-account')).toBeHidden();
   const me=await (await page.request.get('/api/me')).json();
-  expect(me.allowances).toEqual({lesson:1,test:1,free:0});
-  expect(me.balance).toBe(0);
+  expect(me.allowances).toEqual({lesson:0,test:0,free:0});
+  expect(me.balance).toBe(3);
   // (The account screen is behind the drive: its contents are checked as they are.)
-  await expect(page.locator('#account-chip')).toHaveText('2 drives');
+  await expect(page.locator('#account-chip')).toHaveText('3 drives');
   await expect(page.locator('#account-balance-unit')).toHaveText('drives');
-  await expect(page.locator('#account-breakdown')).toContainText('Starter Pass');
-  await expect(page.locator('#account-breakdown')).toContainText('Lesson: ready');
-  await expect(page.locator('#account-breakdown .used')).toHaveText('Free drive: used');
-  await expect(page.locator('#account-breakdown')).toContainText('0 sessions');
+  await expect(page.locator('#account-breakdown')).toContainText('3 sessions');
   // Once per account: no longer offered.
   await expect(page.locator('#pack-list [data-pack=starter]')).toHaveCount(0);
-  expect(me.history[0].type).toBe('consumed');
+  expect(me.history[0].type).toBe('purchase');
 });
 
 test('G26: an invite link: the friend signs in and has one free drive; the inviter is rewarded with one session after the friend first pays',async({browser})=>{
@@ -126,7 +135,7 @@ test('G26: blocking access.json does not open the paid app: where the accounts s
   await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
   await pick(page,'moving-off');
   // (The note follows the account check, which waits for the server.)
-  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed',{timeout:20_000});
+  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed, used if you complete it',{timeout:20_000});
 });
 
 test('G26: the guided introduction needs no session because it is parked: the car cannot be driven, and nothing is saved',async({page})=>{

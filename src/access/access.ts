@@ -1,6 +1,6 @@
 /**
- * Paid access: where the app is hosted with its accounts service (access.json says `gate: true`), each drive,
- * lesson or mock test started uses one session. This signs the driver in (Google, Apple, or a code by email),
+ * Paid access: where the app is hosted with its accounts service (access.json says `gate: true`), each lesson, mock
+ * test or free drive completed uses one session. This signs the driver in (Google, Apple, or a code by email),
  * sells sessions through Stripe Payment Links and shows the balance and invite link. Without access.json (the
  * preview copies) nothing is gated.
  */
@@ -118,7 +118,7 @@ export class Access{
   /** Whether a drive of this kind can start now. */
   private canStart(pot:Pot):boolean{
     if((this.me.trial?.[pot]??0)>0)return true;
-    return this.me.signedIn&&(!!this.me.admin||this.me.balance>0||this.me.allowances[pot]>0);
+    return this.me.signedIn&&(!!this.me.admin||total(this.me)>0);
   }
 
   /** After signing up or paying: the drive that was waiting starts; signed up with nothing to drive on, the paywall. */
@@ -159,15 +159,14 @@ export class Access{
     if(!this.gate)return '';
     const pot=scenario?modeOf(scenario):null;
     const free=!!pot&&(this.me.trial?.[pot]??0)>0;
-    if(!this.me.signedIn)return free?`Your ${TRY_NAME[pot]}: no sign-up needed`
-      :pot?`You have used your ${TRY_NAME[pot]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: each drive uses one session.';
+    if(!this.me.signedIn)return free?`Your ${TRY_NAME[pot]}: no sign-up needed, used if you complete it`
+      :pot?`You have used your ${TRY_NAME[pot]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
-    if(pot&&this.me.allowances[pot]>0)return `Uses your Starter Pass ${POT_NAME[pot]}`;
-    const n=this.me.balance;
-    if(n>0)return `Uses 1 session · you have ${n}`;
+    const n=total(this.me);
+    if(n>0)return `Uses 1 session if you complete it · you have ${n}`;
     if(free)return `Uses your ${TRY_NAME[pot]}`;
     const rest=pot?this.stillFree(pot):'';
-    return pot&&rest?`You have used your ${TRY_NAME[pot]}. ${rest}`:`No ${pot?`${POT_NAME[pot]} or `:''}sessions left: buy more to start.`;
+    return pot&&rest?`You have used your ${TRY_NAME[pot]}. ${rest}`:'No sessions left: buy more to start.';
   }
 
   /**
@@ -197,7 +196,8 @@ export class Access{
    */
   report(drive:PaidDrive|null,status:'loaded'|'failed'|'completed'|'ended',outcome?:string):void{
     if(!drive)return;
-    void api(`drives/${drive.id}/${status}`,outcome?{outcome}:{}).then(()=>{if(status==='failed')void this.refresh()});
+    // (A completed drive has just used its session: the balance is shown again.)
+    void api(`drives/${drive.id}/${status}`,outcome?{outcome}:{}).then(()=>{if(status==='completed'||status==='failed')void this.refresh()});
   }
 
   // ---- The account screen ----
@@ -273,7 +273,7 @@ export class Access{
     // "or with your email" only under a Google or Apple button.
     document.querySelector<HTMLElement>('#account-signin .divider')!.hidden=!this.config?.googleClientId&&!this.config?.appleServicesId;
     const chip=byId('account-chip');
-    const starterLeft=signedIn?(['lesson','test','free'] as const).filter(p=>me.allowances[p]>0):[];
+    const starterLeft=signedIn?me.allowances.lesson+me.allowances.test+me.allowances.free:0;
     const drives=total(me);
     chip.textContent=signedIn?(me.admin?'Admin':`${drives} drive${drives===1?'':'s'}`):'Sign in';
     if(!signedIn)return;
@@ -282,17 +282,12 @@ export class Access{
     byId('account-balance').textContent=String(drives);
     byId('account-balance-unit').textContent=drives===1?'drive':'drives';
     const rows:HTMLElement[]=[];
-    if(me.starterBought||starterLeft.length){
+    // Starter Pass drives still held from before it became sessions (for any kind of drive).
+    if(starterLeft>0){
       const li=document.createElement('li');
-      const b=document.createElement('b');b.textContent='Starter Pass';
-      const kinds=document.createElement('div');kinds.className='kinds';
-      for(const p of ['lesson','test','free'] as const){
-        const i=document.createElement('i');const left=me.allowances[p]>0;
-        i.className=left?'':'used';
-        i.textContent=`${POT_NAME[p][0]!.toUpperCase()}${POT_NAME[p].slice(1)}: ${left?'ready':'used'}`;
-        kinds.append(i);
-      }
-      li.append(b,kinds);rows.push(li);
+      const b=document.createElement('b');b.textContent=`${starterLeft} Starter Pass drive${starterLeft===1?'':'s'}`;
+      const span=document.createElement('span');span.textContent='for any lesson, mock test or free drive';
+      li.append(b,span);rows.push(li);
     }
     {
       const li=document.createElement('li');
@@ -358,7 +353,7 @@ export class Access{
       if(this.me.signedIn&&total(this.me)>(before?.total??-1)){
         // What this payment added, said plainly.
         const added=this.me.balance-(before?.balance??0),starterNow=this.me.starterBought&&before?.starter===false;
-        const parts=[...(starterNow?['Starter Pass added: 1 lesson, 1 mock test and 1 free drive']:[]),...(added>0?[`${added} session${added===1?'':'s'} added`]:[])];
+        const parts=added>0?[`${starterNow?'Starter Pass: ':''}${added} session${added===1?'':'s'} added`]:[];
         note.textContent=`Payment received. ${parts.length?`${parts.join('; ')}.`:'Your drives are updated.'} Choose a drive and press Start.`;
         store.set(BUY_KEY,null);
         return;

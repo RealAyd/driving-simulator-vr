@@ -99,15 +99,15 @@ export async function buildArea(request:AreaRequest,progress:(step:string,percen
     schemaVersion:1,id:`${id}-free-drive`,locationId:id,
     title:`${request.label} (free drive)`,
     learningObjective:`Practise driving the streets ${request.testCentre?'round the test centre':'here'}: junctions, crossings, bus stops and parked cars, at your own pace.`,
-    briefing:`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after ten minutes, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
+    briefing:`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after a minute and a half, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
     rubricId:'none',
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
-    end:{completeAfterSeconds:600,timeLimitSeconds:660}
+    end:{completeAfterSeconds:90,timeLimitSeconds:150}
   });
   const mockTest=parseScenario({
     schemaVersion:1,id:`${id}-mock-test`,locationId:id,
     title:`${request.label} (mock test)`,
-    learningObjective:'A mock driving test: follow the examiner\'s directions for 10, 20 or 40 minutes (the level chosen on the home screen), driving as you would on test. Every fault is marked, as on the DVSA marking sheet; the result comes at the end.',
+    learningObjective:'A mock driving test: follow the examiner\'s directions for 5, 10 or 15 minutes (the level chosen on the home screen), driving as you would on test. Every fault is marked, as on the DVSA marking sheet; the result comes at the end.',
     briefing:`${request.label}: mock test\n\nThe examiner will ask you to follow the road ahead unless traffic signs direct you otherwise, and give you directions in good time: listen for them (they are shown on screen too; Task repeats the last one).\n\nCheck your mirrors and signal for every turn, keep to the speed limit and keep left. If you go a different way, that is fine: the examiner gives new directions. At the end you will be asked to pull up on the left.\n\nMarking: driving, serious and dangerous faults under the marking sheet's headings; up to 15 driving faults and no serious or dangerous fault is a pass. Nothing stops the test early: a collision is marked as a dangerous fault and you carry on (select reverse to back away if you need to). The report comes at the end.\n\nBuilt from OpenStreetMap data; not an official test route. Draft marking, not reviewed by an examiner.`,
     rubricId:'mock-test',
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},

@@ -24,7 +24,7 @@ export const HOME_TOUR:readonly TourStep[]=[
 
 /** The places screen (after a card on the home screen): level, where to drive, and the drills. */
 export const PLACE_TOUR:readonly TourStep[]=[
-  {target:'.difficulty-row',title:'Level',text:'Easy, Standard or Test day: how busy the roads are, how long a mock test lasts (10, 20 or 40 minutes), and whether the instructor reminds you before each junction on a lesson.'},
+  {target:'.difficulty-row',title:'Level',text:'Easy, Standard or Test day: how busy the roads are, how long a mock test lasts (5, 10 or 15 minutes), and whether the instructor reminds you before each junction on a lesson.'},
   {target:'#area-query',title:'Drive anywhere',text:'Type a test centre or a postcode. The streets round it are built from map data on your phone in a few seconds.'},
   {target:'#centre-browser',title:'Every test centre',text:'Or browse all the UK’s car test centres by letter.'},
   {target:'[data-exercise=goodmayes]',title:'Ready to go',text:'Goodmayes is ready now: the streets round the test centre, with traffic, parked cars, crossings and traffic lights.'},

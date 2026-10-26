@@ -18,6 +18,13 @@ function setup(){
   return {config,store,mail,service,checkout};
 }
 const signUp=(s:Service,email:string,ref?:string)=>s.signIn('email',{sub:email,email,emailVerified:true},ref);
+/** A drive started and driven to its end (when its session is used); false if it could not start. */
+async function complete(s:Service,accountId:string,scenario:string):Promise<boolean>{
+  const d=await s.startDrive(accountId,'drive',scenario);
+  if(!d.ok)return false;
+  await s.driveStatus(accountId,d.drive.id,'completed');
+  return true;
+}
 
 describe('accounts and sign-in',()=>{
   it('email: a 6-digit code (and a link) sent; the code signs in once; wrong guesses run out',async()=>{
@@ -71,7 +78,7 @@ describe('accounts and sign-in',()=>{
   });
 });
 
-describe('sessions: nothing is free; a drive uses one session',()=>{
+describe('sessions: nothing is free; a completed drive uses one session',()=>{
   it('a new account has nothing and cannot start a drive',async()=>{
     const {service}=setup();
     const a=await signUp(service,'new@example.com');
@@ -79,15 +86,36 @@ describe('sessions: nothing is free; a drive uses one session',()=>{
     expect(await service.startDrive(a.id,'lesson','goodmayes-lesson')).toEqual({ok:false,reason:'no-sessions'});
   });
 
-  it('VR 5 adds five general sessions once (a replayed webhook adds nothing); each drive of any kind uses one',async()=>{
+  it('VR 5 adds five general sessions once (a replayed webhook adds nothing); each completed drive of any kind uses one',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'buyer@example.com');
     const ev=checkout(a.id,'vr-5',999);
     await service.handleStripeEvent(ev);
     await service.handleStripeEvent(ev);
     expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
-    for(const scenario of ['goodmayes-mock-test','goodmayes-lesson','goodmayes-free-drive'])expect((await service.startDrive(a.id,'x',scenario)).ok).toBe(true);
+    for(const scenario of ['goodmayes-mock-test','goodmayes-lesson','goodmayes-free-drive'])expect(await complete(service,a.id,scenario)).toBe(true);
     expect((await store.findAccount({id:a.id}))!.balance).toBe(2);
+  });
+
+  it('starting a drive uses nothing; exiting, crashing or running out of time uses nothing; completing uses one, once',async()=>{
+    const {service,checkout,store}=setup();
+    const a=await signUp(service,'ends@example.com');
+    await service.handleStripeEvent(checkout(a.id,'vr-5',999));
+    const balance=async()=>(await store.findAccount({id:a.id}))!.balance;
+    for(const outcome of ['abandoned','collision','left-route','time-limit'] as const){
+      const d=await service.startDrive(a.id,'drive','goodmayes-mock-test');
+      if(!d.ok)throw new Error();
+      expect(await balance()).toBe(5);
+      await service.driveStatus(a.id,d.drive.id,'loaded');
+      await service.driveStatus(a.id,d.drive.id,'ended',outcome);
+    }
+    expect(await balance()).toBe(5);
+    const d=await service.startDrive(a.id,'drive','goodmayes-lesson');
+    if(!d.ok)throw new Error();
+    await service.driveStatus(a.id,d.drive.id,'completed');
+    await service.driveStatus(a.id,d.drive.id,'completed');
+    expect(await balance()).toBe(4);
+    expect((await store.getDrive(d.drive.id))).toMatchObject({status:'completed',paidFrom:'sessions',due:false});
   });
 
   it('the same webhook delivered many times at once grants once',async()=>{
@@ -99,31 +127,42 @@ describe('sessions: nothing is free; a drive uses one session',()=>{
     expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='purchase')).toHaveLength(1);
   });
 
-  it('two drives started at once with one session left: only one starts',async()=>{
+  it('two drives on one last session, both completed: the second takes the balance below zero (drives stop) and is flagged',async()=>{
     const {service,store}=setup();
     const a=await signUp(service,'race@example.com',undefined);
     await store.appendLedger({product:'simulator',accountId:a.id,type:'adjustment',sessionsDelta:1,amountPence:0,currency:'gbp',actor:'admin',reason:'test',idempotencyKey:'t1'});
     const r=await Promise.all([service.startDrive(a.id,'free','goodmayes-free-drive'),service.startDrive(a.id,'free','goodmayes-free-drive')]);
-    expect(r.filter(x=>x.ok)).toHaveLength(1);
-    expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
+    expect(r.filter(x=>x.ok)).toHaveLength(2);
+    for(const d of r)if(d.ok)await service.driveStatus(a.id,d.drive.id,'completed');
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(-1);
+    expect((await store.flags()).map(f=>f.kind)).toContain('completed-without-session');
+    expect((await service.startDrive(a.id,'free','goodmayes-free-drive')).ok).toBe(false);
   });
 
-  it('a drive that fails to load gives its session back (once); one that loaded does not; another account cannot report on it',async()=>{
+  it('a drive that fails to load uses nothing; another account cannot report on (or complete) a drive',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'c@example.com');
     await service.handleStripeEvent(checkout(a.id,'vr-5',999));
     const d1=await service.startDrive(a.id,'free','goodmayes-free-drive');
     if(!d1.ok)throw new Error();
     await service.driveStatus(a.id,d1.drive.id,'failed');
-    await service.driveStatus(a.id,d1.drive.id,'failed');
     expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
-    const d2=await service.startDrive(a.id,'free','goodmayes-free-drive');
-    if(!d2.ok)throw new Error();
-    await service.driveStatus(a.id,d2.drive.id,'loaded');
-    await service.driveStatus(a.id,d2.drive.id,'failed');
-    expect((await store.findAccount({id:a.id}))!.balance).toBe(4);
+    expect((await store.ledger({accountId:a.id})).map(e=>e.type)).toEqual(['purchase']);
     const b=await signUp(service,'d@example.com');
-    expect(await service.driveStatus(b.id,d2.drive.id,'failed')).toBe(false);
+    expect(await service.driveStatus(b.id,d1.drive.id,'completed')).toBe(false);
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
+  });
+
+  it('a drive paid at its start (before sessions were used on completion) still gets its session back if it failed to load',async()=>{
+    const {service,store}=setup();
+    const a=await signUp(service,'legacy@example.com');
+    const d=await store.createDrive({accountId:a.id,kind:'free',scenario:'goodmayes-free-drive',mode:'free',paidFrom:'sessions',startedAt:new Date(),status:'started'});
+    await store.appendLedger({product:'simulator',accountId:a.id,type:'consumed',sessionsDelta:-1,amountPence:0,currency:'gbp',actor:'customer',reason:'x',idempotencyKey:`drive:${d.id}`});
+    await service.driveStatus(a.id,d.id,'failed');
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
+    // Completing it later takes nothing more.
+    await service.driveStatus(a.id,d.id,'completed');
+    expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='consumed')).toHaveLength(1);
   });
 
   it('a 100% promotion code still gives the pack (recorded as a promo, no money)',async()=>{
@@ -192,7 +231,7 @@ describe('sessions: nothing is free; a drive uses one session',()=>{
     const a=await signUp(service,'g@example.com');
     const ev=checkout(a.id,'vr-5',999);
     await service.handleStripeEvent(ev);
-    for(let i=0;i<6&&(await service.startDrive(a.id,'free','goodmayes-free-drive')).ok;i++);
+    for(let i=0;i<6&&await complete(service,a.id,'goodmayes-free-drive');i++);
     const pi=ev.data.object['payment_intent'];
     const refund:StripeEvent={id:'evt_r',type:'charge.refunded',data:{object:{id:'ch_1',payment_intent:pi,amount:999,amount_refunded:999,refunded:true,currency:'gbp'}}};
     await service.handleStripeEvent(refund);
@@ -208,43 +247,26 @@ describe('sessions: nothing is free; a drive uses one session',()=>{
   });
 });
 
-describe('Starter Pass: one lesson, one mock test and one free drive, once per account',()=>{
-  it('grants three separate allowances; each is used only by its own kind of drive, before any general session',async()=>{
+describe('Starter Pass: three sessions for any drive, once per account',()=>{
+  it('grants three general sessions: the learner chooses what to use them on (three mock tests, say)',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'starter@example.com');
     await service.handleStripeEvent(checkout(a.id,'starter',299));
-    let acc=(await store.findAccount({id:a.id}))!;
-    expect(acc.balance).toBe(0);
-    expect(acc.allowances).toEqual({lesson:1,test:1,free:1});
+    const acc=(await store.findAccount({id:a.id}))!;
+    expect(acc.balance).toBe(3);
     expect(acc.starterBought).toBe(true);
-    // Two lessons: the first uses the lesson allowance, the second has nothing (not the test or free-drive one).
-    expect((await service.startDrive(a.id,'lesson','goodmayes-lesson')).ok).toBe(true);
-    expect((await service.startDrive(a.id,'lesson','goodmayes-lesson')).ok).toBe(false);
-    // What the browser calls the drive does not matter: a mock test scenario uses the mock test allowance.
-    const t=await service.startDrive(a.id,'free','goodmayes-mock-test');
-    expect(t.ok&&t.drive.mode).toBe('test');
-    expect((await service.startDrive(a.id,'test','goodmayes-mock-test')).ok).toBe(false);
-    expect((await service.startDrive(a.id,'free','area-ilford-free-drive')).ok).toBe(true);
-    acc=(await store.findAccount({id:a.id}))!;
-    expect(acc.allowances).toEqual({lesson:0,test:0,free:0});
-    // With general sessions too: the allowance for that kind first, then general sessions.
-    const b=await signUp(service,'both@example.com');
-    await service.handleStripeEvent(checkout(b.id,'starter',299));
-    await service.handleStripeEvent(checkout(b.id,'vr-5',999));
-    await service.startDrive(b.id,'lesson','goodmayes-lesson');
-    await service.startDrive(b.id,'lesson','goodmayes-lesson');
-    const bb=(await store.findAccount({id:b.id}))!;
-    expect([bb.allowances?.lesson,bb.balance]).toEqual([0,4]);
+    for(let i=0;i<3;i++)expect(await complete(service,a.id,'goodmayes-mock-test')).toBe(true);
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
+    expect((await service.startDrive(a.id,'drive','goodmayes-lesson')).ok).toBe(false);
   });
 
-  it('a failed load gives the allowance back to its own pot',async()=>{
-    const {service,checkout,store}=setup();
-    const a=await signUp(service,'pot@example.com');
-    await service.handleStripeEvent(checkout(a.id,'starter',299));
-    const d=await service.startDrive(a.id,'test','goodmayes-mock-test');
-    if(!d.ok)throw new Error();
-    await service.driveStatus(a.id,d.drive.id,'failed');
-    expect((await store.findAccount({id:a.id}))!.allowances).toEqual({lesson:1,test:1,free:1});
+  it('Starter Pass drives still held from the old pass are used for any kind of drive, before general sessions',async()=>{
+    const {service,store}=setup();
+    const a=await signUp(service,'oldpass@example.com');
+    await store.appendLedger({product:'simulator',accountId:a.id,type:'allowance',sessionsDelta:1,pot:'lesson',amountPence:0,currency:'gbp',actor:'stripe',reason:'Starter Pass: lesson',idempotencyKey:'old:lesson'});
+    expect(await complete(service,a.id,'goodmayes-mock-test')).toBe(true);
+    const acc=(await store.findAccount({id:a.id}))!;
+    expect([acc.allowances?.lesson,acc.balance]).toEqual([0,0]);
   });
 
   it('the checkout address is made by the server for the signed-in account; the Starter is not offered once bought',async()=>{
@@ -259,32 +281,6 @@ describe('Starter Pass: one lesson, one mock test and one free drive, once per a
     expect(await service.checkoutUrl(a.id,'free-stuff')).toEqual({error:'unknown-pack'});
   });
 
-  it('a second Starter payment (the link is public) grants nothing and is refunded automatically; its refund webhook changes nothing',async()=>{
-    const {service,checkout,store}=setup();
-    const a=await signUp(service,'twice@example.com');
-    await service.handleStripeEvent(checkout(a.id,'starter',299));
-    const second=checkout(a.id,'starter',299);
-    await service.handleStripeEvent(second);
-    await service.handleStripeEvent(second);
-    const acc=(await store.findAccount({id:a.id}))!;
-    expect(acc.allowances).toEqual({lesson:1,test:1,free:1});
-    const pi=String(second.data.object['payment_intent']);
-    expect(refunds.filter(r=>r===pi)).toHaveLength(1);
-    const ledger=await store.ledger({accountId:a.id});
-    expect(ledger.filter(e=>e.type==='starter_duplicate')).toHaveLength(1);
-    await service.handleStripeEvent({id:'evt_dr',type:'charge.refunded',data:{object:{id:'ch_dup',payment_intent:pi,amount:299,amount_refunded:299,refunded:true,currency:'gbp'}}});
-    expect((await store.findAccount({id:a.id}))!.allowances).toEqual({lesson:1,test:1,free:1});
-  });
-
-  it('two Starter payments arriving at the same moment: exactly one is granted, the other refunded',async()=>{
-    const {service,checkout,store}=setup();
-    const a=await signUp(service,'sametime@example.com');
-    const one=checkout(a.id,'starter',299),two=checkout(a.id,'starter',299);
-    await Promise.all([service.handleStripeEvent(one),service.handleStripeEvent(two),service.handleStripeEvent(one),service.handleStripeEvent(two)]);
-    expect((await store.findAccount({id:a.id}))!.allowances).toEqual({lesson:1,test:1,free:1});
-    expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='starter_duplicate')).toHaveLength(1);
-  });
-
   it('if Stripe refuses the automatic refund, it is flagged for a person to refund',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'refuse@example.com');
@@ -293,17 +289,40 @@ describe('Starter Pass: one lesson, one mock test and one free drive, once per a
     expect((await store.flags()).find(f=>f.kind==='starter-duplicate-refund-needed')?.data).toMatchObject({account:a.id,paymentIntent:'pi_refuse_1',amountPence:299});
   });
 
-  it('a full Starter refund takes back the unused allowances; one already used stays used and is flagged',async()=>{
+  it('a second Starter payment (the link is public) grants nothing and is refunded automatically; its refund webhook changes nothing',async()=>{
+    const {service,checkout,store}=setup();
+    const a=await signUp(service,'twice@example.com');
+    await service.handleStripeEvent(checkout(a.id,'starter',299));
+    const second=checkout(a.id,'starter',299);
+    await service.handleStripeEvent(second);
+    await service.handleStripeEvent(second);
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(3);
+    const pi=String(second.data.object['payment_intent']);
+    expect(refunds.filter(r=>r===pi)).toHaveLength(1);
+    expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='starter_duplicate')).toHaveLength(1);
+    await service.handleStripeEvent({id:'evt_dr',type:'charge.refunded',data:{object:{id:'ch_dup',payment_intent:pi,amount:299,amount_refunded:299,refunded:true,currency:'gbp'}}});
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(3);
+  });
+
+  it('two Starter payments arriving at the same moment: exactly one is granted, the other refunded',async()=>{
+    const {service,checkout,store}=setup();
+    const a=await signUp(service,'sametime@example.com');
+    const one=checkout(a.id,'starter',299),two=checkout(a.id,'starter',299);
+    await Promise.all([service.handleStripeEvent(one),service.handleStripeEvent(two),service.handleStripeEvent(one),service.handleStripeEvent(two)]);
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(3);
+    expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='starter_duplicate')).toHaveLength(1);
+  });
+
+  it('a full Starter refund takes its three sessions back, even if used (like any pack)',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'srefund@example.com');
     const ev=checkout(a.id,'starter',299);
     await service.handleStripeEvent(ev);
-    await service.startDrive(a.id,'lesson','goodmayes-lesson');
+    await complete(service,a.id,'goodmayes-lesson');
     const refund:StripeEvent={id:'evt_sr',type:'charge.refunded',data:{object:{id:'ch_s',payment_intent:ev.data.object['payment_intent'],amount:299,amount_refunded:299,refunded:true,currency:'gbp'}}};
     await service.handleStripeEvent(refund);
     await service.handleStripeEvent({...refund,id:'evt_sr2'});
-    expect((await store.findAccount({id:a.id}))!.allowances).toEqual({lesson:0,test:0,free:0});
-    expect((await store.flags()).find(f=>f.kind==='refund-after-use')?.data).toMatchObject({pot:'lesson'});
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(-1);
   });
 
   it('existing balances and history stay as they were when the packs change',async()=>{
@@ -312,7 +331,7 @@ describe('Starter Pass: one lesson, one mock test and one free drive, once per a
     // An account credited under the earlier packs (a 10-session pack, before allowances existed).
     await store.appendLedger({product:'simulator',accountId:a.id,type:'purchase',sessionsDelta:10,amountPence:799,currency:'gbp',actor:'stripe',reason:'10 sessions',idempotencyKey:'checkout:cs_old'});
     expect((await service.me(a.id))).toMatchObject({balance:10,allowances:{lesson:0,test:0,free:0}});
-    expect((await service.startDrive(a.id,'test','goodmayes-mock-test')).ok).toBe(true);
+    expect(await complete(service,a.id,'goodmayes-mock-test')).toBe(true);
     expect((await service.me(a.id))?.history.map(h=>h.type)).toEqual(['consumed','purchase']);
   });
 });

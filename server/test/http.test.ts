@@ -52,7 +52,9 @@ describe('the API over HTTP',()=>{
     expect(readSession(config.sessionSecret,decodeURIComponent(c.length?r.cookie().split('=').slice(1).join('='):''))).not.toBeNull();
     expect((await c('/api/me')).json).toMatchObject({signedIn:true,email:'h@example.com',balance:0});
     // (The device's free try first: then a drive needs a session.)
-    expect((await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).json).toMatchObject({trial:true});
+    const tried=await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
+    expect(tried.json).toMatchObject({trial:true});
+    await c(`/api/drives/${tried.json!['driveId']}/completed`,{});
     expect((await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
     // The checkout address comes from the server, for this account; the browser cannot name another price or account.
     const link=await c('/api/checkout',{pack:'vr-5'});
@@ -60,8 +62,10 @@ describe('the API over HTTP',()=>{
     expect((await c('/api/checkout',{pack:'vr-5',sessions:99,price:1})).json!['url']).toBe(link.json!['url']);
     await c('/api/dev/checkout',{pack:'vr-5'});
     const d=await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
-    expect(d.json).toMatchObject({balance:4});
+    expect(d.json).toMatchObject({balance:5});
     expect((await c(`/api/drives/${d.json!['driveId']}/loaded`,{})).status).toBe(200);
+    expect((await c(`/api/drives/${d.json!['driveId']}/completed`,{})).status).toBe(200);
+    expect((await c('/api/me')).json).toMatchObject({balance:4});
     await c('/api/auth/logout',{});
     expect((await c('/api/me')).json).toMatchObject({signedIn:false});
   });

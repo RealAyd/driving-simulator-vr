@@ -67,7 +67,7 @@ export interface Drive{
   startedAt:Date;
   /**
    * 'unpaid': not started, for want of a session. 'completed': driven to its end (a route finished, a lesson done, a
-   * free drive of five minutes or more); 'ended': stopped before that (`outcome` says how).
+   * free drive driven its full minute and a half); 'ended': stopped before that (`outcome` says how).
    */
   status:DriveStatus;
   outcome?:DriveOutcome;
@@ -78,6 +78,11 @@ export interface Drive{
    * 'trial': the device's free try (the drive's accountId is then `trial:<id>`).
    */
   paidFrom:Pot|'sessions'|'admin'|'trial';
+  /**
+   * Its session is taken when it is completed, not when it starts (true until then; drives started before that rule
+   * have no `due` and were paid at the start).
+   */
+  due?:boolean;
   refunded?:boolean;
 }
 

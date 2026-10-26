@@ -117,8 +117,6 @@ const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
 /** 'stick': a game controller's stick (in the headset; 'buttons' there are the controller's steer buttons). */
 type SteeringMode='assist'|'tilt'|'buttons'|'stick';
-/** A free drive ended by the driver counts as completed after this long (the shorter of it and its own length). */
-const FREE_DRIVE_DONE_SECONDS=300;
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
@@ -2041,9 +2039,9 @@ export async function boot():Promise<void>{
   const endAttempt=()=>{
     if(session.state!=='paused'||!runtime)return;
     session.to('running');
-    // Done only when driven: a free drive ended after five minutes or more (or the exercise's own length, if shorter).
+    // Done only when driven for its whole length (a free drive's minute and a half): ended sooner, it was left part-way.
     const enough=runtime.scenario.end.completeAfterSeconds;
-    runtime.runner.finish(enough!==undefined&&runtime.runner.elapsed>=Math.min(enough,FREE_DRIVE_DONE_SECONDS)?'completed':'abandoned');
+    runtime.runner.finish(enough!==undefined&&runtime.runner.elapsed>=enough?'completed':'abandoned');
   };
   const backToMenu=()=>{
     if(session.state!=='finished'&&session.state!=='paused')return;

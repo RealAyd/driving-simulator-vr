@@ -18,12 +18,13 @@ export interface DifficultyLevel{
 }
 
 export const DIFFICULTIES:Record<Difficulty,DifficultyLevel>={
-  easy:{id:'easy',label:'Easy',summary:'Quiet roads. Mock test about 10 minutes. Lessons with reminders.',
-    traffic:{cars:6,buses:1},mockMetres:3000,mockSeconds:900,reminders:true},
-  standard:{id:'standard',label:'Standard',summary:'Normal traffic. Mock test about 20 minutes. Lessons with reminders.',
-    traffic:{cars:12,buses:2},mockMetres:6000,mockSeconds:1800,reminders:true},
-  test:{id:'test',label:'Test day',summary:'Busy roads. Mock test about 40 minutes, like the real test. Lessons without reminders.',
-    traffic:{cars:20,buses:3},mockMetres:11000,mockSeconds:3000,reminders:false}
+  // (Short enough to finish in one go: a mock test's session is used only when it is completed.)
+  easy:{id:'easy',label:'Easy',summary:'Quiet roads. Mock test about 5 minutes. Lessons with reminders.',
+    traffic:{cars:6,buses:1},mockMetres:1500,mockSeconds:600,reminders:true},
+  standard:{id:'standard',label:'Standard',summary:'Normal traffic. Mock test about 10 minutes. Lessons with reminders.',
+    traffic:{cars:12,buses:2},mockMetres:3000,mockSeconds:1050,reminders:true},
+  test:{id:'test',label:'Test day',summary:'Busy roads. Mock test about 15 minutes. Lessons without reminders.',
+    traffic:{cars:20,buses:3},mockMetres:4500,mockSeconds:1500,reminders:false}
 };
 
 const KEY='dp-difficulty';
