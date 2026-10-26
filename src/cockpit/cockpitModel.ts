@@ -342,7 +342,6 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
   // sweep up across it about their spindles (in the screen's plane: local X along the blade, Y up the glass).
   const screenUp=new Vector3(0,C.screenTop.y-C.screenBase.y,C.screenTop.z-C.screenBase.z).normalize();
   const screenFrame=Quaternion.RotationQuaternionFromAxis(new Vector3(1,0,0),screenUp,Vector3.Cross(new Vector3(1,0,0),screenUp).normalize());
-  const blades:Mesh[]=[];
   const wiperArms=[-.66,-.02].map((x,i)=>{
     const spindle=new TransformNode(`wiper-spindle-${i}`,scene);
     spindle.parent=root;
@@ -353,16 +352,9 @@ export function buildCockpit(scene:Scene,vehicleNode:TransformNode,seat:SeatConf
     arm.parent=spindle;
     const blade=CreateBox(`wiper-blade-${i}`,{width:.56,height:.014,depth:.014},scene);
     blade.position.x=.29;blade.material=glossBlack;blade.parent=arm;blade.isPickable=false;
-    blades.push(blade);
     return arm;
   });
-  // Parked, they are out of sight below the bonnet's back edge, as on most cars (drawn there, two black bars across
-  // the bottom of the screen read as barriers across the road ahead: the owner's report); shown while they sweep.
-  const setWipers=(angle:number)=>{
-    for(const arm of wiperArms)arm.rotation.z=angle;
-    for(const b of blades)b.isVisible=angle>.04;
-  };
-  setWipers(0);
+  const setWipers=(angle:number)=>{for(const arm of wiperArms)arm.rotation.z=angle};
 
   setWheel(0);
   return {root,wheel,setWheel,get handsTurn(){return handsTurn},setInstruments,grips,hideSimpleArms,setWipers,dispose:()=>root.dispose(false,true)};
