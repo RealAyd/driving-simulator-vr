@@ -147,6 +147,8 @@ interface ExerciseRuntime{
   assist:SteeringAssist|null;
   /** The free-driving assistance (no route): its way ahead is kept up to date each frame. */
   freeAssist:FreeDriveAssist|null;
+  /** After the end of a route (a test's or a lesson's): the free drive's assistance takes over. */
+  afterRoute:FreeDriveAssist|null;
   pedestrian:Pedestrian|null;
   follower:FollowingVehicle|null;
   passers:PassingVehicle[];
@@ -425,14 +427,21 @@ export async function boot():Promise<void>{
     // The driver's own button/key steering always overrides tilt and the assistance.
     // Assisted steering follows the lane forwards only; reversing is steered by the driver (straight back otherwise).
     if(mode==='assist'&&runtime?.freeAssist&&c.steer===0)runtime.freeAssist.update(vehicle.pose,vehicle.indicators.state);
+    // Past the end of the route (driving on after "pull up when it's safe"): along the road, as in a free drive, not
+    // straight on over the next corner (the route's last point carried on in a straight line: into a building).
+    let assistNow=runtime?.assist??null;
+    if(mode==='assist'&&runtime?.afterRoute&&assistNow&&assistNow.length-assistNow.progress(vehicle.state.position.x,vehicle.state.position.z)<4){
+      if(c.steer===0)runtime.afterRoute.update(vehicle.pose,vehicle.indicators.state);
+      assistNow=runtime.afterRoute.assist;
+    }
     // (Reversing in a manoeuvre: the assistance follows its reverse path where it has one.)
-    const steer=c.steer!==0?c.steer:mode==='tilt'?tiltSteer:mode==='assist'&&runtime?.assist&&vehicle.state.speed>=0&&!keys.reverse?runtime.assist.steer(vehicle.pose,vehicle.state.speed)
+    const steer=c.steer!==0?c.steer:mode==='tilt'?tiltSteer:mode==='assist'&&assistNow&&vehicle.state.speed>=0&&!keys.reverse?assistNow.steer(vehicle.pose,vehicle.state.speed)
       :mode==='assist'&&runtime?.assist?.canReverse&&keys.reverse?runtime.assist.steerReverse(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
     // Assisted steering also eases off for a bend too tight for the speed (only what keeps the car on the road: the
     // speed a test expects is slower, and still the learner's to judge).
-    const bendBrake=mode==='assist'&&c.steer===0&&runtime?.assist&&vehicle.state.speed>0&&!keys.reverse?runtime.assist.brakeFor(vehicle.pose,vehicle.state.speed):0;
+    const bendBrake=mode==='assist'&&c.steer===0&&assistNow&&vehicle.state.speed>0&&!keys.reverse?assistNow.brakeFor(vehicle.pose,vehicle.state.speed):0;
     lastControls=viewerDrive??{throttle:bendBrake>0?0:c.throttle,brake:Math.max(c.brake,bendBrake),steer,reverse:!!keys.reverse,...(bendBrake>0?{driverBrake:c.brake}:{})};
     // The tell me question comes before the drive: the car stays where it is until it is answered. A parked
     // practice (an introduction, or sitting in the car in the headset) holds the car whatever key or button is pressed.
@@ -608,7 +617,7 @@ export async function boot():Promise<void>{
     // Traffic lights from the map (generated areas): they run, traffic obeys them, a mock test marks the learner.
     // Exercises that set their own signals (scenario `signals`) keep those instead.
     const trafficSignals=place.signals.length>0&&Object.keys(scenario.signals).length===0?new TrafficSignals(place):null;
-    const signalLights=trafficSignals?buildSignalLights(scene,trafficSignals.stops):null;
+    const signalLights=trafficSignals?buildSignalLights(scene,trafficSignals.stops,(x:number,z:number)=>surfaceAt(place,x,z)?.kind==='carriageway'):null;
     for(const pole of signalLights?.poles??[])dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
     // Background traffic on generated areas' roads: solid, never assessed.
     const level=DIFFICULTIES[difficulty];
@@ -728,6 +737,7 @@ export async function boot():Promise<void>{
     const assist=scenario.assistPath?new SteeringAssist(scenario.assistPath,vehicle.params):routeAssist;
     // Free driving (no route): the assistance keeps to the lane, past parked cars, and takes the turning signalled.
     const freeAssist=assist?null:new FreeDriveAssist(net,kerbCars,vehicle.params);
+    const afterRoute=routeAssist&&assist===routeAssist?new FreeDriveAssist(net,kerbCars,vehicle.params):null;
     const road=place.roads[0]!;
     let lastCollision:string|null=null;
     // A mock test lasts as long as the level says (the examiner ends it when the route is done).
@@ -774,7 +784,7 @@ export async function boot():Promise<void>{
     const names=Object.fromEntries(passers.map(p=>[p.id,p.name]));
     let variant:Scenario['variants'][number]|null=null;
     return {
-      scenario,familiarisation,modules,runner,zones,assist:assist??freeAssist?.assist??null,freeAssist,pedestrian,follower,passers,buses,traffic,examiner,trafficSignals,
+      scenario,familiarisation,modules,runner,zones,assist:assist??freeAssist?.assist??null,freeAssist,afterRoute,pedestrian,follower,passers,buses,traffic,examiner,trafficSignals,
       get variant(){return variant},
       chooseVariant(forced){
         // A different timing each attempt (or a forced one for tests), applied before the modules reset.
@@ -855,6 +865,8 @@ export async function boot():Promise<void>{
     vehicle.reset();
     setGear(false);
     for(const m of runtime?.modules??[])m.reset();
+    // After dark the drive starts with dipped headlights on (switched off and on with Controls).
+    if(conditions.time!=='day')carControls.switchOn('dipped');
     head.recentre();
     heldBy=null;
     heldView=null;
@@ -2156,6 +2168,7 @@ export async function boot():Promise<void>{
     const dt=engine.getDeltaTime()/1000;
     pollController();
     if(conditions.rain)weather.update(camera.position,performance.now()/1000);
+    weather.setHeadlights(carControls.isOn('main-beam')?'main':carControls.isOn('dipped')?'dipped':'off');
     if(!byId('exercise-detail').hidden)refreshDriveButton();
     if(session.state==='running'&&runtime){
       perf.record(engine.getDeltaTime());
@@ -2402,6 +2415,8 @@ export async function boot():Promise<void>{
     conditions:()=>conditionsName(weather.current),
     setConditions:(name:string)=>{conditions=conditionsFromName(name);showConditions();applyConditions();return conditionsName(conditions)},
     /** Diagnostics: the light and haze now. */
+    /** Diagnostics: the assisted steering's path near the car, and the collider boxes near it. */
+    assistNear:(r=30)=>{const v=vehicle.state.position;return {path:runtime?.assist?.near(v.x,v.z,r)??[],colliders:staticObstacles.near(v.x,v.z,r).map(b=>({id:b.id,x:+b.cx.toFixed(2),z:+b.cz.toFixed(2)})),surfaces:(runtime?.assist?.near(v.x,v.z,r)??[]).map(p=>surfaceAt(place,p.x,p.z)?.kind??'none')}},
     lightNow:()=>({clear:scene.clearColor.asArray().map(v=>+v.toFixed(2)),fog:[scene.fogStart,scene.fogEnd],sun:scene.getLightByName('sun')?.intensity,sky:scene.getLightByName('sky-light')?.intensity,exposure:scene.imageProcessingConfiguration.exposure,rain:!!scene.getMeshByName('weather-rain')}),
     perf:()=>perf.stats(),
     resetPerf:()=>perf.reset(),

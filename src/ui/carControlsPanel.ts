@@ -8,7 +8,7 @@ const $=(id:string)=>{
 };
 
 /** Warning lights shown under the speed while on (as on the instrument panel). */
-const TELL_TALES:Array<{id:CarControlId|'wipers';text:string;tone:'green'|'blue'|'amber'|'grey'}>=[
+const TELL_TALES:Array<{id:CarControlId;text:string;tone:'green'|'blue'|'amber'|'grey'}>=[
   {id:'dipped',text:'Dipped',tone:'green'},
   {id:'main-beam',text:'Main beam',tone:'blue'},
   {id:'rear-fog',text:'Rear fog',tone:'amber'},

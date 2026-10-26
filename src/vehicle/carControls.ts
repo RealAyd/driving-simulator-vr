@@ -6,7 +6,7 @@ import type {EventSink,Seconds} from '../contracts';
  * (`vehicle.control`), the evidence the marking reads; the state drives the tell-tales, the wipers and the horn.
  */
 
-export type CarControlId='dipped'|'main-beam'|'rear-fog'|'front-wash'|'rear-wash'|'front-demist'|'rear-demister'|'horn'|'window';
+export type CarControlId='dipped'|'main-beam'|'rear-fog'|'wipers'|'front-wash'|'rear-wash'|'front-demist'|'rear-demister'|'horn'|'window';
 
 export interface CarControlDef{
   id:CarControlId;
@@ -19,6 +19,7 @@ export const CAR_CONTROLS:readonly CarControlDef[]=[
   {id:'dipped',label:'Dipped headlights',kind:'toggle'},
   {id:'main-beam',label:'Main beam',kind:'toggle'},
   {id:'rear-fog',label:'Rear fog light',kind:'toggle'},
+  {id:'wipers',label:'Wipers',kind:'toggle'},
   {id:'front-wash',label:'Front wash / wipe',kind:'momentary'},
   {id:'rear-wash',label:'Rear wash / wipe',kind:'momentary'},
   {id:'front-demist',label:'Demist windscreen',kind:'toggle'},
@@ -48,7 +49,7 @@ export class CarControls{
   }
 
   /** Front and rear wipers sweeping (after a wash). */
-  get wiping(){return {front:this.frontWipe>0,rear:this.rearWipe>0}}
+  get wiping(){return {front:this.frontWipe>0||this.on.has('wipers'),rear:this.rearWipe>0}}
 
   press(id:CarControlId):void{
     const def=CAR_CONTROLS.find(c=>c.id===id)!;
@@ -74,6 +75,9 @@ export class CarControls{
     this.rearWipe=Math.max(0,this.rearWipe-dt);
     this.horn=Math.max(0,this.horn-dt);
   }
+
+  /** Switched on without a press (no event): the headlights at the start of a drive after dark. */
+  switchOn(id:CarControlId):void{if(CAR_CONTROLS.find(c=>c.id===id)?.kind==='toggle')this.on.add(id)}
 
   /** Everything off (a new attempt). */
   reset():void{this.on.clear();this.frontWipe=this.rearWipe=this.horn=0}

@@ -58,7 +58,7 @@ test('G21: mock test: briefing, directions along the route, then a pass/fail rep
   await expect(page.locator('#hud-task')).toContainText('mock driving test',{timeout:20_000});
   // The car's controls (show me): dipped headlights on shows the tell-tale.
   await page.click('#hud-controls-toggle');
-  await expect(page.locator('#hud-controls button')).toHaveCount(9);
+  await expect(page.locator('#hud-controls button')).toHaveCount(10);
   await page.screenshot({path:testInfo.outputPath('g21-controls.png')});
   await page.click('[data-car-control=dipped]');
   await expect(page.locator('#hud-telltales')).toContainText('Dipped');

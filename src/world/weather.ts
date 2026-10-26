@@ -1,5 +1,5 @@
 import {
-  Color3,Color4,CreateBox,DynamicTexture,Mesh,StandardMaterial,VertexData,
+  Color3,Color4,CreateBox,Mesh,StandardMaterial,VertexData,
   type DirectionalLight,type HemisphericLight,type Scene,type TransformNode
 } from '../engine/babylon';
 import type {QualityProfile} from '../engine/quality';
@@ -40,29 +40,42 @@ const LOOKS:Record<TimeOfDay,Look>={
   night:{sky:new Color3(.04,.05,.09),fog:new Color3(.05,.06,.09),fogStart:40,fogEnd:260,hemi:.3,hemiColour:new Color3(.55,.62,.85),ground:new Color3(.18,.18,.2),sun:.1,sunColour:new Color3(.6,.7,1),exposure:1.6,skyGlow:new Color3(.08,.09,.15)}
 };
 
-/** A soft round glow (white in the middle, clear at the edge): the lamps' pools and the headlight beam. */
-function glowTexture(scene:Scene,name:string):DynamicTexture{
-  const t=new DynamicTexture(name,{width:128,height:128},scene,true);
-  const g=t.getContext() as CanvasRenderingContext2D;
-  const r=g.createRadialGradient(64,64,2,64,64,64);
-  r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.45,'rgba(255,255,255,.45)');r.addColorStop(1,'rgba(255,255,255,0)');
-  g.fillStyle=r;g.fillRect(0,0,128,128);
-  t.update();t.hasAlpha=true;
-  return t;
-}
-
-/** Quads (four corners each, lying flat or upright) as one mesh with a shared texture. */
-function quads(name:string,scene:Scene,corners:number[][],colour:Color3,texture:DynamicTexture):Mesh{
-  const positions:number[]=[],uvs:number[]=[],indices:number[]=[];
-  corners.forEach((c,i)=>{positions.push(...c);uvs.push(0,0,1,0,1,1,0,1);indices.push(i*4,i*4+1,i*4+2,i*4,i*4+2,i*4+3)});
+/**
+ * Soft round glows as one mesh: discs whose light fades from the middle to nothing at the rim, in the vertex colours
+ * (no texture: a glow texture sampled on an iPhone came out as coloured speckles). Each disc is centre (x, z), radii
+ * across and along, turned by `heading`, its height at each point given by `height` (on the ground: following it, so
+ * no part sinks into a sloping road and flickers). Added to what is under it (additive), unlit.
+ */
+interface Glow{x:number;z:number;rx:number;rz:number;heading:number;height:(x:number,z:number)=>number}
+function glows(name:string,scene:Scene,list:readonly Glow[],colour:Color3):Mesh{
+  const positions:number[]=[],colours:number[]=[],indices:number[]=[];
+  const SEG=20,RINGS:Array<[number,number]>=[[0,1],[.45,.55],[.75,.22],[1,0]];
+  for(const g of list){
+    const base=positions.length/3,c=Math.cos(g.heading),sn=Math.sin(g.heading);
+    for(const [k,[r,a]] of RINGS.entries())for(let i=0;i<(k===0?1:SEG);i++){
+      const t=i/SEG*Math.PI*2,lx=Math.cos(t)*g.rx*r,lz=Math.sin(t)*g.rz*r;
+      const x=g.x+lx*c-lz*sn,z=g.z+lx*sn+lz*c;
+      positions.push(x,g.height(x,z),z);colours.push(1,1,1,a);
+    }
+    // Centre fan, then quads between rings.
+    for(let i=0;i<SEG;i++)indices.push(base,base+1+(i+1)%SEG,base+1+i);
+    for(let k=1;k<RINGS.length-1;k++){
+      const r0=base+1+(k-1)*SEG,r1=base+1+k*SEG;
+      for(let i=0;i<SEG;i++){const j=(i+1)%SEG;indices.push(r0+i,r0+j,r1+j,r0+i,r1+j,r1+i)}
+    }
+  }
   const mesh=new Mesh(name,scene),data=new VertexData();
-  data.positions=positions;data.uvs=uvs;data.indices=indices;
+  data.positions=positions;data.colors=colours;data.indices=indices;
   const normals:number[]=[];VertexData.ComputeNormals(positions,indices,normals);data.normals=normals;
   data.applyToMesh(mesh);
+  mesh.hasVertexAlpha=true;
   const m=new StandardMaterial(name,scene);
-  m.disableLighting=true;m.emissiveColor=colour;m.diffuseTexture=texture;m.opacityTexture=texture;
+  // Unlit: the glow colour, faded to nothing at the edge by the vertex alpha.
+  m.disableLighting=true;m.diffuseColor=Color3.Black();m.emissiveColor=colour;
   m.alphaMode=1; // additive: light added to what is under it
-  m.backFaceCulling=false;m.fogEnabled=true;m.zOffset=-4;
+  // (Blended: the material on its own looks opaque, and the vertex alpha would not fade the edge.)
+  m.transparencyMode=2;
+  m.backFaceCulling=false;m.fogEnabled=true;m.zOffset=-6;m.disableDepthWrite=true;
   mesh.material=m;mesh.isPickable=false;mesh.freezeWorldMatrix();
   return mesh;
 }
@@ -74,12 +87,10 @@ export class Weather{
   private rain:Mesh|null=null;
   private drops:Float32Array|null=null;
   private seeds:Float32Array|null=null;
-  private readonly glow:DynamicTexture;
   /** Each material's own look (the day's), kept to go back to. */
   private readonly saved=new Map<StandardMaterial,{diffuse:Color3;specular:Color3;power:number;emissive:Color3}>();
 
   constructor(private readonly scene:Scene,private readonly quality:QualityProfile){
-    this.glow=glowTexture(scene,'weather-glow');
   }
 
   get current():Conditions{return this.conditions}
@@ -134,8 +145,10 @@ export class Weather{
     const n=this.seeds.length/3,d=this.drops;
     for(let i=0;i<n;i++){
       const sx=this.seeds[i*3]!,sz=this.seeds[i*3+1]!,sy=this.seeds[i*3+2]!;
-      // In a box 36 m across round the camera, falling 9 m/s through 12 m and round again.
-      const x=camera.x+(sx-.5)*36,z=camera.z+(sz-.5)*36,y=camera.y-3+((sy*12-time*9)%12+12)%12;
+      // Fixed in the world (driving through the rain, not carrying it along: tied to the camera it looked like water
+      // washing forward), in a box 36 m across that wraps round the camera; falling 9 m/s through 12 m and round again.
+      const wrap=(v:number)=>((v%36)+36)%36-18;
+      const x=camera.x+wrap(sx*36-camera.x),z=camera.z+wrap(sz*36-camera.z),y=camera.y-3+((sy*12-time*9)%12+12)%12;
       const o=i*16;d[o+12]=x;d[o+13]=y;d[o+14]=z;
     }
     this.rain.thinInstanceBufferUpdated('matrix');
@@ -150,26 +163,39 @@ export class Weather{
   private setPools(lamps:readonly Lamp[]):void{
     this.pools?.dispose();this.pools=null;
     if(lamps.length===0)return;
-    const corners:number[][]=[];
+    const list:Glow[]=[];
     for(const l of lamps){
       const f={x:Math.sin(l.heading),z:-Math.cos(l.heading)};
       // The pool on the ground under the lantern (out over the road), and the lantern's own glow.
-      const cx=l.x+f.x*1.6,cz=l.z+f.z*1.6,r=7,y=groundAt(cx,cz)+l.y+.03;
-      corners.push([cx-r,y,cz-r,cx+r,y,cz-r,cx+r,y,cz+r,cx-r,y,cz+r]);
-      const hx=l.x+f.x*.8,hz=l.z+f.z*.8,hy=groundAt(hx,hz)+l.y+5.7,g=.55;
-      corners.push([hx-g,hy,hz-g,hx+g,hy,hz-g,hx+g,hy,hz+g,hx-g,hy,hz+g]);
+      list.push({x:l.x+f.x*1.6,z:l.z+f.z*1.6,rx:7,rz:7,heading:0,height:(x,z)=>groundAt(x,z)+l.y+.05});
+      list.push({x:l.x+f.x*.8,z:l.z+f.z*.8,rx:.55,rz:.55,heading:0,height:(x,z)=>groundAt(x,z)+l.y+5.7});
     }
-    this.pools=quads('weather-lamp-pools',this.scene,corners,new Color3(1,.78,.5).scale(.55),this.glow);
+    this.pools=glows('weather-lamp-pools',this.scene,list,new Color3(1,.78,.5).scale(.55));
   }
 
   private setBeam(car:TransformNode|null):void{
     this.beam?.dispose();this.beam=null;
     if(!car)return;
     // The headlights on the road ahead: a long soft oval from just in front of the bumper (car-local, −Z forward).
-    const y=.04,w=4.2,near=-2.2,far=-26;
-    const mesh=quads('weather-headlights',this.scene,[[-w,y,far,w,y,far,w,y,near,-w,y,near]],new Color3(1,.95,.82).scale(.5),this.glow);
+    const mesh=glows('weather-headlights',this.scene,[{x:0,z:-14,rx:4.2,rz:12,heading:0,height:()=>.06}],new Color3(1,.95,.82).scale(.5));
     mesh.unfreezeWorldMatrix();mesh.parent=car;
     this.beam=mesh;
+    this.showLights();
+  }
+
+  private lights:'off'|'dipped'|'main'='dipped';
+  /** The car's headlights (the Controls panel): no beam with them off; main beam reaches further and brighter. */
+  setHeadlights(lights:'off'|'dipped'|'main'):void{
+    if(lights===this.lights)return;
+    this.lights=lights;this.showLights();
+  }
+  private showLights(){
+    const b=this.beam;
+    if(!b)return;
+    b.isVisible=this.lights!=='off';
+    // (From the bumper, 2.2 m ahead, the oval stretches: main beam about half as far again.)
+    b.scaling.set(this.lights==='main'?1.15:1,1,this.lights==='main'?1.6:1);
+    (b.material as StandardMaterial).emissiveColor=new Color3(1,.95,.82).scale(this.lights==='main'?.7:.5);
   }
 
   private setRain(on:boolean):void{
@@ -189,5 +215,5 @@ export class Weather{
     this.rain=streak;
   }
 
-  dispose():void{this.pools?.dispose();this.beam?.dispose();this.rain?.dispose();this.glow.dispose()}
+  dispose():void{this.pools?.dispose();this.beam?.dispose();this.rain?.dispose()}
 }
