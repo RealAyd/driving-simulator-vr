@@ -146,8 +146,9 @@ export class Soundscape{
   /** Silences everything (paused, menus) or brings it back. */
   setActive(active:boolean):void{
     if(!this.ctx)return;
-    if(active&&this.ctx.state==='suspended')void this.ctx.resume();
-    if(!active&&this.ctx.state==='running')void this.ctx.suspend();
+    // (A refusal is not an error: the sound stays off until the next tap. Unhandled, it would end the drive.)
+    if(active&&this.ctx.state==='suspended')void this.ctx.resume().catch(()=>{});
+    if(!active&&this.ctx.state==='running')void this.ctx.suspend().catch(()=>{});
   }
 
   /** Once a frame while driving. */
