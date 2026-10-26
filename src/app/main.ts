@@ -204,8 +204,8 @@ export async function boot():Promise<void>{
   byId('tutorial-home').addEventListener('click',()=>tutorial.start(byId('place-list').hidden?HOME_TOUR:PLACE_TOUR));
   byId('hud-tutorial').addEventListener('click',()=>driveTour(false));
   hud.showOnly('loading');
-  // The earlier set (the good-looking cars); ?cars=mixed: with the new Peugeot 208 and pickup; ?cars=new: the new pack; ?cars=kenney: the Kenney Car Kit. Before any street is laid out.
-  {const cars=new URLSearchParams(location.search).get('cars');useVehicleSet(cars==='mixed'?'mixed':cars==='new'?'new':cars==='kenney'?'kenney':'current')}
+  // The earlier set (the good-looking cars); ?cars=mixed: with the new Peugeot 208 and pickup; ?cars=new: the new pack; ?cars=kenney: the Kenney Car Kit; ?cars=pack20: the 20-vehicle pack. Before any street is laid out.
+  {const cars=new URLSearchParams(location.search).get('cars');useVehicleSet(cars==='mixed'?'mixed':cars==='new'?'new':cars==='kenney'?'kenney':cars==='pack20'?'pack20':'current')}
   // A page from before an update: reload for the current version (not during a drive).
   reloadWhenStale(()=>session.state==='running');
   // Every failure is shown on screen rather than leaving a blank canvas.

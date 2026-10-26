@@ -293,6 +293,34 @@
       ],
       "storage": "public",
       "notes": "Test set only: used when the app is opened with ?cars=kenney (or the admin Cars option); the default set is unchanged."
+    },
+    {
+      "id": "aq3d-low-poly-car-pack-20",
+      "title": "Low Poly Car Pack - 20 VEHICLES",
+      "author": "aq3d-models (CGTrader)",
+      "source": "https://www.cgtrader.com/3d-models/car/car/low-poly-car-pack-20-vehicles (model #6182344), bought by the owner 2026-10-26; archive in asset-sources/low-poly-car-pack-20-vehicles on branch assets/car-pack-20-vehicles-20261026 (SHA-256 16b6eba2c4ddc95f9d67f429478157b7b57aa9f427b8436669b5e406371c265d)",
+      "licence": "CGTrader Royalty Free License (no AI)",
+      "licenceUrl": "https://www.cgtrader.com/pages/terms-and-conditions",
+      "redistributionAllowed": false,
+      "attributionRequired": false,
+      "contents": [
+        "CAR#1(SUV) as suv",
+        "CAR#2(HATCH) as hatchback-low",
+        "CAR#3(SEDAN) as saloon",
+        "CAR#4(SUV) as estate-suv",
+        "CAR#5(HATCH) as hatchback-sport",
+        "CAR#6(SEDAN) as saloon-classic",
+        "CAR#7(SEDAN) as saloon-modern",
+        "CAR#9(HATCH) as hatchback",
+        "CAR#11(HATCH) as hatchback-old",
+        "CAR#14(CROSSOVER) as crossover",
+        "CAR#16(VAN) as people-carrier",
+        "CAR#17(HATCH) as hatchback-tall",
+        "CAR#19(VAN) as van",
+        "CAR#20(TRUCK) as box-van"
+      ],
+      "storage": "public",
+      "notes": "Fictional designs. Test set only: used when the app is opened with ?cars=pack20 (or the admin Cars option); the default set is unchanged. The source archive is not shipped; only the converted models are."
     }
   ],
   "models": [
@@ -1234,6 +1262,454 @@
         "bytes": 200504
       },
       "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "aq-suv",
+      "file": "public/assets/models/vehicles/aq3d/aq-suv.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#1(SUV)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 156384
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-suv-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-suv-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#1(SUV)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 119440
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-low",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-low.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#2(HATCH)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 146184
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-low-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-low-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#2(HATCH)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 96072
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-saloon",
+      "file": "public/assets/models/vehicles/aq3d/aq-saloon.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#3(SEDAN)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 167116
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-saloon-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-saloon-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#3(SEDAN)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 110712
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-estate-suv",
+      "file": "public/assets/models/vehicles/aq3d/aq-estate-suv.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#4(SUV)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 154756
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-estate-suv-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-estate-suv-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#4(SUV)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 113256
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-sport",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-sport.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#5(HATCH)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 163580
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-sport-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-sport-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#5(HATCH)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 107060
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-saloon-classic",
+      "file": "public/assets/models/vehicles/aq3d/aq-saloon-classic.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#6(SEDAN)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 167440
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-saloon-classic-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-saloon-classic-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#6(SEDAN)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 121836
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-saloon-modern",
+      "file": "public/assets/models/vehicles/aq3d/aq-saloon-modern.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#7(SEDAN)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 161800
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-saloon-modern-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-saloon-modern-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#7(SEDAN)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 111036
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#9(HATCH)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 146368
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#9(HATCH)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 90940
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-old",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-old.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#11(HATCH)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 143348
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-old-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-old-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#11(HATCH)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 83768
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-crossover",
+      "file": "public/assets/models/vehicles/aq3d/aq-crossover.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#14(CROSSOVER)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 149684
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-crossover-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-crossover-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#14(CROSSOVER)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 91476
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-people-carrier",
+      "file": "public/assets/models/vehicles/aq3d/aq-people-carrier.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#16(VAN)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 146756
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-people-carrier-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-people-carrier-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#16(VAN)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 90736
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-tall",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-tall.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#17(HATCH)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 146328
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-hatchback-tall-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-hatchback-tall-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#17(HATCH)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 85944
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-van",
+      "file": "public/assets/models/vehicles/aq3d/aq-van.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#19(VAN)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 151764
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-van-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-van-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#19(VAN)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 95768
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-box-van",
+      "file": "public/assets/models/vehicles/aq3d/aq-box-van.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#20(TRUCK)",
+      "use": "Traffic in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures deduplicated, at most 256 px, WebP"
+      ],
+      "stats": {
+        "bytes": 194488
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
+    },
+    {
+      "id": "aq-box-van-parked",
+      "file": "public/assets/models/vehicles/aq3d/aq-box-van-parked.glb",
+      "storage": "public",
+      "pack": "aq3d-low-poly-car-pack-20",
+      "sourceFile": "LowPolyFictionalVehiclePack.blend, collection CAR#20(TRUCK)",
+      "use": "Parked cars in the ?cars=pack20 test set only",
+      "modifications": [
+        "tools/assets/export-aq3d-cars.py (Blender 5.2): modifiers applied, centred, stood on the ground, turned to face -Z; paint on a plain white Body material (painted by the app); windows on Glass materials",
+        "tools/assets/build-aq3d-cars.mjs (glTF-Transform 4.5.1): textures baked into vertex colours, textures removed"
+      ],
+      "stats": {
+        "bytes": 143336
+      },
+      "build": "python tools/assets/export-aq3d-cars.py -- <blend> <dir> '<picks>' && node tools/assets/build-aq3d-cars.mjs <dir> public/assets/models/vehicles/aq3d"
     }
   ]
 }

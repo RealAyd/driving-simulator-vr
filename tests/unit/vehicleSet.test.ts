@@ -3,6 +3,7 @@ import {CAR_MODELS,ROAD_USER_CAR_MODELS,activeVehicleSet,kerbCarModels,learnerCa
 
 const shipped=import.meta.glob('/public/assets/models/vehicles/v2/*.glb');
 const isV2=(id:string)=>id.startsWith('v2-');
+const pack20=import.meta.glob('/public/assets/models/vehicles/aq3d/*.glb');
 
 describe('vehicle sets',()=>{
   afterEach(()=>useVehicleSet('current'));
@@ -44,6 +45,20 @@ describe('vehicle sets',()=>{
     for(const id of parkedModelIds().filter(isV2)){
       const spec:{url?:string;parkedUrl?:string}=CAR_MODELS[id];
       for(const url of [spec.url,spec.parkedUrl].filter(Boolean))expect(shipped[`/public/${url}`],url).toBeTruthy();
+    }
+  });
+
+  it('?cars=pack20: the 20-vehicle pack (royalty free, no credit), every model shipped, painted by the app',()=>{
+    useVehicleSet('pack20');
+    const ids=[...roadUserCarModels().map(m=>m.id),...kerbCarModels()];
+    expect(ids.every(id=>id.startsWith('aq-'))).toBe(true);
+    for(const id of kerbCarModels())expect(parkedModelIds()).toContain(id);
+    expect(parkedModelIds().some(isV2)).toBe(false);
+    expect(vehicleCredit()).toBe('cars: muha692 (Sketchfab, CC BY 4.0)');
+    for(const id of new Set(ids)){
+      const spec:{url?:string;parkedUrl:string;paintMaterial:string}=CAR_MODELS[id as keyof typeof CAR_MODELS];
+      expect(spec.paintMaterial).toBe('Body');
+      for(const url of [spec.url,spec.parkedUrl].filter(Boolean))expect(pack20[`/public/${url}`],url).toBeTruthy();
     }
   });
 });

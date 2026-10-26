@@ -31,7 +31,9 @@ export async function loadModel(scene:Scene,url:string):Promise<AssetContainer|n
       import('@babylonjs/core/Loading/sceneLoader'),
       import('@babylonjs/loaders/glTF/2.0/glTFLoader'),
       // Our GLBs store quantised vertex data (see tools/assets).
-      import('@babylonjs/loaders/glTF/2.0/Extensions/KHR_mesh_quantization')
+      import('@babylonjs/loaders/glTF/2.0/Extensions/KHR_mesh_quantization'),
+      // (The 20-vehicle pack's textures are WebP.)
+      import('@babylonjs/loaders/glTF/2.0/Extensions/EXT_texture_webp')
     ]);
     const container=await LoadAssetContainerAsync(url,scene,{pluginExtension:'.glb'});
     // Vertex colours (textures baked into them) are linear in glTF; StandardMaterial expects gamma space, as for the
