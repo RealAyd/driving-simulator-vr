@@ -1,6 +1,6 @@
 import {degToRad,localDirectionToWorld,localToWorld,type Pose,type Radians,type Vec3} from '../contracts';
 import {
-  Color3,CreateBox,CreateCylinder,Mesh as MeshClass,VertexData,FreeCamera,Matrix,RenderTargetTexture,StandardMaterial,Vector3,
+  Color3,CreateBox,CreateCylinder,Frustum,Mesh as MeshClass,VertexData,FreeCamera,Matrix,RenderTargetTexture,StandardMaterial,Vector3,
   type AbstractMesh,type Mesh,type Scene,type TransformNode
 } from '../engine/babylon';
 import type {QualityProfile} from '../engine/quality';
@@ -119,8 +119,19 @@ export class Mirror{
     // mirrors see the car's own side (its body hides what is directly behind
     // it); the interior mirror looks out through the rear window.
     const seesOwnBody=spec.id!=='interior';
-    this.texture.renderListPredicate=(mesh:AbstractMesh)=>!mesh.name.startsWith('mirror-')
+    const seen=(mesh:AbstractMesh)=>!mesh.name.startsWith('mirror-')
       &&(!mesh.isDescendantOf(this.ownCar)||(seesOwnBody&&mesh.name==='car-body'));
+    // Only what is inside this mirror's view and range, as the main camera culls. (Given a list of its own, a render
+    // target draws all of it: every mirror drew the whole town, about three times the main view's draw calls.)
+    const planes=Frustum.GetPlanes(Matrix.Identity());
+    this.texture.getCustomRenderList=()=>{
+      this.camera.getViewMatrix(true);
+      Frustum.GetPlanesToRef(this.camera.getTransformationMatrix(),planes);
+      const list:AbstractMesh[]=[];
+      for(const mesh of scene.meshes)
+        if(mesh.isEnabled()&&mesh.isVisible&&seen(mesh)&&(mesh.alwaysSelectAsActiveMesh||mesh.isInFrustum(planes)))list.push(mesh);
+      return list;
+    };
     // A mirror reverses left and right relative to a camera looking backwards.
     this.texture.uScale=-1;
     this.texture.uOffset=1;

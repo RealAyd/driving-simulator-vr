@@ -40,3 +40,4 @@ export {DirectionalLight} from '@babylonjs/core/Lights/directionalLight';
 export {WebXRState} from '@babylonjs/core/XR/webXRTypes';
 export type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 export type {WebXRDefaultExperience} from '@babylonjs/core/XR/webXRDefaultExperience';
+export {Frustum} from '@babylonjs/core/Maths/math.frustum';
