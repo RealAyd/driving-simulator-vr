@@ -128,7 +128,7 @@ export class Mirror{
     this.camera=new FreeCamera(`mirror-camera-${spec.id}`,Vector3.Zero(),scene);
     this.camera.inputs.clear();
     this.camera.minZ=.2;
-    this.camera.maxZ=600;
+    this.camera.maxZ=quality.mirrorRange;
     // Fix the projection to the mirror's own shape. Otherwise Babylon may
     // size it from the canvas, narrowing and stretching the reflection.
     const aspect=spec.width/spec.height;

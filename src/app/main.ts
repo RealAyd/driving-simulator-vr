@@ -227,7 +227,8 @@ export async function boot():Promise<void>{
   const devicePixels=Math.min(window.devicePixelRatio||1,quality.id==='phone'?3:2);
   const setSharpness=(level:number)=>engine.setHardwareScalingLevel(level/devicePixels);
   setSharpness(quality.hardwareScaling);
-  const sharpness=quality.id==='phone'?new AdaptiveScale(quality.hardwareScaling,3):null;
+  // (Sharper while the phone keeps up; never coarser than where it starts: one device pixel in three was too blurry.)
+  const sharpness=quality.id==='phone'?new AdaptiveScale(quality.hardwareScaling):null;
 
   const scene=new Scene(engine);
   configureScene(scene);

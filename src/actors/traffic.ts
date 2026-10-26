@@ -55,7 +55,7 @@ function laneAt(leg:Leg,s:number):number{
   if(leg.splitEnd!==undefined&&end<SPLIT_EASE)return leg.splitEnd+(leg.lane-leg.splitEnd)*Math.max(0,end)/SPLIT_EASE;
   return leg.lane;
 }
-const COLOURS=['#1f2a44','#c9ccd1','#7a1e1e','#2e3a2f','#f1f1ee','#3f444b','#24476b','#5b6168','#8a8f96','#14161a'];
+const COLOURS=['#1f2a44','#c9ccd1','#7a1e1e','#2e3a2f','#4d5f73','#3f444b','#24476b','#5b6168','#8a8f96','#14161a'];
 const mph=(v:number)=>v/2.237;
 
 export interface TrafficOptions{

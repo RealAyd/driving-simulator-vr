@@ -119,7 +119,7 @@ export class CarModel{
     for(const root of entries.rootNodes){
       root.parent=holder;
       for(const mesh of root.getChildMeshes(false) as AbstractMesh[])
-        if(mesh.material?.name===this.spec.paintMaterial){
+        if(this.painted(mesh.material?.name)){
           // A body with its detail in a grey texture (the new set's): painted over it.
           const texture=(mesh.material as StandardMaterial).diffuseTexture;
           if(texture&&!paint.diffuseTexture)paint.diffuseTexture=texture;
@@ -129,6 +129,9 @@ export class CarModel{
     if(this.spec.glassShell)this.addGlassShell(holder);
     return holder;
   }
+
+  /** The body paint (and the roof, where a model has one of its own). */
+  private painted(material:string|undefined):boolean{return material===this.spec.paintMaterial||(!!material&&material===this.spec.roofMaterial)}
 
   /** A dark tinted box just inside the body (in the copy's own frame): open window frames show it as glass. */
   private addGlassShell(holder:TransformNode):void{
@@ -181,9 +184,9 @@ export class CarModel{
       const positions=mesh.getVerticesData(VertexBuffer.PositionKind)!,normals=mesh.getVerticesData(VertexBuffer.NormalKind),indices=mesh.getIndices()!;
       // Glass tinted dark, as the moving cars' is (pale glass on a white or silver car read as one colour).
       const own=(mesh.material as StandardMaterial|null)?.diffuseColor??Color3.Gray();
-      const c=mesh.material?.name===this.spec.paintMaterial?paint:GLASS.test(mesh.material?.name??'')?own.scale(.28):own;
+      const c=this.painted(mesh.material?.name)?paint:GLASS.test(mesh.material?.name??'')?own.scale(.28):own;
       // Colours baked into the vertices (the new set's parked models, from their textures), where there are some.
-      const vc=mesh.material?.name===this.spec.paintMaterial?null:mesh.getVerticesData(VertexBuffer.ColorKind);
+      const vc=this.painted(mesh.material?.name)?null:mesh.getVerticesData(VertexBuffer.ColorKind);
       const stride=vc&&positions.length?vc.length/(positions.length/3):4;
       // (Already in gamma space: converted at load.)
       const colourAt=(v:number):[number,number,number]=>vc?[vc[v*stride]!,vc[v*stride+1]!,vc[v*stride+2]!]:[c.r,c.g,c.b];

@@ -7,6 +7,8 @@ export interface CarModelSpec{
   parkedUrl:string;
   /** Material that is the body paint, recoloured per car. */
   paintMaterial:string;
+  /** A second body material painted the same (the compact hatchback's roof: left white, cars read as white). */
+  roofMaterial?:string;
   /** Turn needed to face the simulator's forward (-Z); the model faces +Z. */
   yawOffset:number;
   /** Distance (model metres) the car travels in one loop of its wheel animation, if it has one. */
@@ -33,7 +35,7 @@ export function parkedSize(spec:CarModelSpec):{length:number;width:number;height
 export const CAR_MODELS={
   // Asset Batch B (owner's models): WheelSpin_2s turns the 0.32 m wheels four times, 8.04 m of travel. The models are
   // drawn larger than the cars they show; road users are scaled to their collision length, parked copies to parkedLength.
-  'batch-b-compact-hatchback':{id:'batch-b-compact-hatchback',url:'assets/models/vehicles/batch-b-compact-hatchback.glb',parkedUrl:'assets/models/vehicles/batch-b-compact-hatchback-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,wheelLoopMetres:8.04,length:4.55,width:2.16,height:1.5,parkedLength:4},
+  'batch-b-compact-hatchback':{id:'batch-b-compact-hatchback',url:'assets/models/vehicles/batch-b-compact-hatchback.glb',parkedUrl:'assets/models/vehicles/batch-b-compact-hatchback-parked.glb',paintMaterial:'Body',roofMaterial:'Body.01',yawOffset:Math.PI,wheelLoopMetres:8.04,length:4.55,width:2.16,height:1.5,parkedLength:4},
   'batch-b-saloon':{id:'batch-b-saloon',url:'assets/models/vehicles/batch-b-saloon.glb',parkedUrl:'assets/models/vehicles/batch-b-saloon-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,wheelLoopMetres:8.04,length:5.04,width:1.98,height:1.5,parkedLength:4.6},
   // Parked only (2026-10-20): the large saloon (uk_car_01) and the pickup (uk_car_07), for variety on drives.
   'batch-b-large-saloon':{id:'batch-b-large-saloon',parkedUrl:'assets/models/vehicles/batch-b-large-saloon-parked.glb',paintMaterial:'Body',yawOffset:Math.PI,length:5.24,width:1.98,height:1.47,parkedLength:4.9},
@@ -156,7 +158,7 @@ export const ROAD_USER_CAR_MODELS:readonly CarModelSpec[]=SETS.current.road.map(
 export const CAR_MODEL:CarModelSpec=ROAD_USER_CAR_MODELS[0]!;
 
 /** Paint colours for parked cars: everyday colours, none purple or yellow (those identify the exercise's road users). */
-export const PARKED_CAR_COLOURS=['#c9ccd1','#3f444b','#f1f1ee','#1f2f4f','#8e1f1f','#17191c','#2f4a3a','#6d737b'] as const;
+export const PARKED_CAR_COLOURS=['#c9ccd1','#3f444b','#4d5f73','#1f2f4f','#8e1f1f','#17191c','#2f4a3a','#6d737b'] as const;
 
 /**
  * A plain white panel van drawn from project-owned geometry (src/world/streetscapeMesh.ts):

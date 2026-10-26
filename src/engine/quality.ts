@@ -13,12 +13,14 @@ export interface QualityProfile{
   mirrorResolution:number;
   /** Render mirrors every N frames (1 = every frame). */
   mirrorUpdateInterval:number;
+  /** How far back the mirrors show (metres): each mirror draws the street again, so phones draw less of it. */
+  mirrorRange:number;
   decorativeDetail:'full'|'reduced';
 }
 
 export const QUALITY_PROFILES:Record<QualityProfileId,QualityProfile>={
-  desktop:{id:'desktop',hardwareScaling:1,antialias:true,mirrorResolution:512,mirrorUpdateInterval:1,decorativeDetail:'full'},
-  phone:{id:'phone',hardwareScaling:2,antialias:false,mirrorResolution:256,mirrorUpdateInterval:2,decorativeDetail:'reduced'}
+  desktop:{id:'desktop',hardwareScaling:1,antialias:true,mirrorResolution:512,mirrorUpdateInterval:1,mirrorRange:600,decorativeDetail:'full'},
+  phone:{id:'phone',hardwareScaling:2,antialias:false,mirrorResolution:256,mirrorUpdateInterval:3,mirrorRange:150,decorativeDetail:'reduced'}
 };
 
 /**
