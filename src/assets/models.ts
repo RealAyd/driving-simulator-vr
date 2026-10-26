@@ -6,6 +6,9 @@ import type {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
 import type {BaseTexture} from '@babylonjs/core/Materials/Textures/baseTexture';
 
 import {CAR_MODELS,parkedModelIds,parkedSize,type CarModelId,type CarModelSpec} from './carSpecs';
+import {versioned} from './versioned';
+// The meshopt decoder for compressed models (EXT_meshopt_compression), shipped with the app: no outside fetch.
+import meshoptDecoderUrl from 'meshoptimizer/meshopt_decoder.js?url';
 export {CAR_MODEL,CAR_MODELS,type CarModelSpec} from './carSpecs';
 
 /** The glTF PBR material properties we carry over (Babylon's PBRMaterial). */
@@ -33,9 +36,12 @@ export async function loadModel(scene:Scene,url:string):Promise<AssetContainer|n
       // Our GLBs store quantised vertex data (see tools/assets).
       import('@babylonjs/loaders/glTF/2.0/Extensions/KHR_mesh_quantization'),
       // (The 20-vehicle pack's textures are WebP.)
-      import('@babylonjs/loaders/glTF/2.0/Extensions/EXT_texture_webp')
+      import('@babylonjs/loaders/glTF/2.0/Extensions/EXT_texture_webp'),
+      // The larger models are meshopt-compressed (tools/assets/compress-models.mjs): a third to a quarter the download.
+      import('@babylonjs/loaders/glTF/2.0/Extensions/EXT_meshopt_compression'),
+      import('@babylonjs/core/Meshes/Compression/meshoptCompression').then(({MeshoptCompression})=>{MeshoptCompression.Configuration={decoder:{url:meshoptDecoderUrl}}})
     ]);
-    const container=await LoadAssetContainerAsync(url,scene,{pluginExtension:'.glb'});
+    const container=await LoadAssetContainerAsync(versioned(url),scene,{pluginExtension:'.glb'});
     // Vertex colours (textures baked into them) are linear in glTF; StandardMaterial expects gamma space, as for the
     // material colours below. Converted once here, so moving and parked copies match (moving ones were too dark).
     const done=new Set<unknown>();
@@ -328,7 +334,7 @@ export class PropLibrary{
     if(!this.loaded.has(assetId))this.loaded.set(assetId,(async()=>{
       // A private asset is often simply not deployed: check first so a missing file is quiet.
       if(asset.storage==='private'){
-        const head=await fetch(asset.url,{method:'HEAD'}).catch(()=>null);
+        const head=await fetch(versioned(asset.url),{method:'HEAD'}).catch(()=>null);
         if(!head?.ok||/text\/html/.test(head.headers.get('content-type')??''))return null;
       }
       const c=await loadModel(this.scene,asset.url);

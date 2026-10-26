@@ -469,12 +469,13 @@
       "use": "Other road users' cars (the zebra following car; alternate passing cars)",
       "modifications": [
         "glTF-Transform 4.5.1: weld, dedup, prune; simplify (meshoptimizer) ratio 0.5, error 0.001; quantize (KHR_mesh_quantization)",
-        "At load: materials replaced with StandardMaterial; body material 'Body' recoloured per road user; turned 180\u00b0 and scaled to the collision length; WheelSpin_2s held paused and turned by distance travelled"
+        "At load: materials replaced with StandardMaterial; body material 'Body' recoloured per road user; turned 180\u00b0 and scaled to the collision length; WheelSpin_2s held paused and turned by distance travelled",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 9870,
         "materials": 10,
-        "bytes": 194116
+        "bytes": 107928
       },
       "build": "TOOLS=<scratch folder> tools/assets/build-batch-b-cars.sh <extracted Batch B folder>",
       "storage": "public"
@@ -506,12 +507,13 @@
       "use": "Other road users' cars (alternate passing cars)",
       "modifications": [
         "glTF-Transform 4.5.1: weld, dedup, prune; simplify (meshoptimizer) ratio 0.5, error 0.001; quantize (KHR_mesh_quantization)",
-        "At load: materials replaced with StandardMaterial; body material 'Body' recoloured per road user; turned 180\u00b0 and scaled to the collision length; WheelSpin_2s held paused and turned by distance travelled"
+        "At load: materials replaced with StandardMaterial; body material 'Body' recoloured per road user; turned 180\u00b0 and scaled to the collision length; WheelSpin_2s held paused and turned by distance travelled",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7038,
         "materials": 8,
-        "bytes": 158864
+        "bytes": 91256
       },
       "build": "TOOLS=<scratch folder> tools/assets/build-batch-b-cars.sh <extracted Batch B folder>",
       "storage": "public"
@@ -563,12 +565,13 @@
         "Clips kept: Walk, Idle, LookLeft, LookRight",
         "Texture coordinates flipped vertically",
         "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
-        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 9336,
         "materials": 1,
-        "bytes": 969708
+        "bytes": 538864
       },
       "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
       "storage": "public"
@@ -583,12 +586,13 @@
         "Clips kept: Walk, Idle, LookLeft, LookRight",
         "Texture coordinates flipped vertically",
         "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
-        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7549,
         "materials": 1,
-        "bytes": 799804
+        "bytes": 446688
       },
       "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
       "storage": "public"
@@ -603,12 +607,13 @@
         "Clips kept: Walk, Idle, LookLeft, LookRight",
         "Texture coordinates flipped vertically",
         "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
-        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7323,
         "materials": 1,
-        "bytes": 843396
+        "bytes": 453664
       },
       "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
       "storage": "public"
@@ -623,12 +628,13 @@
         "Clips kept: Walk, Idle, LookLeft, LookRight",
         "Texture coordinates flipped vertically",
         "glTF-Transform 4.5.1 with meshoptimizer 0.22.0: normals dropped, weld, simplify to 20% (error 0.01), smooth normals rebuilt, resample, prune, dedup, quantize; only the colour texture kept, 512 px JPEG (sharp 0.33.5)",
-        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time"
+        "At load: StandardMaterial; scaled to each person's height; turned 180 degrees; Walk follows distance walked, Idle and looks follow simulated time",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 6082,
         "materials": 1,
-        "bytes": 728080
+        "bytes": 409712
       },
       "build": "tools/assets/build-people.sh <extracted Animated Tripo People folder>",
       "storage": "public"
@@ -642,12 +648,13 @@
       "modifications": [
         "Boarding figure (entry-* nodes) removed; only the wheels-rolling clip kept",
         "glTF-Transform 4.5.1: prune, dedup, quantize (tools/assets/optimise-bus.mjs)",
-        "At load: StandardMaterial; scaled uniformly to the bus's 11.5 m collision length; wheels turned by distance driven; the simulator's indicator lamps added"
+        "At load: StandardMaterial; scaled uniformly to the bus's 11.5 m collision length; wheels turned by distance driven; the simulator's indicator lamps added",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7410,
         "materials": 8,
-        "bytes": 202128
+        "bytes": 53440
       },
       "build": "tools/assets/build-batch-a-buses.sh <extracted Batch A folder>",
       "storage": "public"
@@ -661,12 +668,13 @@
       "modifications": [
         "Boarding figure (entry-* nodes) removed; only the wheels-rolling clip kept",
         "glTF-Transform 4.5.1: prune, dedup, quantize (tools/assets/optimise-bus.mjs)",
-        "At load: StandardMaterial; scaled uniformly to the bus's 11.5 m collision length; wheels turned by distance driven; the simulator's indicator lamps added"
+        "At load: StandardMaterial; scaled uniformly to the bus's 11.5 m collision length; wheels turned by distance driven; the simulator's indicator lamps added",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 9282,
         "materials": 8,
-        "bytes": 221100
+        "bytes": 61240
       },
       "build": "tools/assets/build-batch-a-buses.sh <extracted Batch A folder>",
       "storage": "public"
@@ -720,13 +728,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1606,
         "materials": 3,
         "textures": 0,
-        "bytes": 24784
+        "bytes": 13472
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -741,13 +750,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7257,
         "materials": 4,
         "textures": 3,
-        "bytes": 206392
+        "bytes": 94068
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -762,13 +772,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1583,
         "materials": 3,
         "textures": 0,
-        "bytes": 24756
+        "bytes": 13424
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -783,13 +794,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 6022,
         "materials": 4,
         "textures": 3,
-        "bytes": 202300
+        "bytes": 82148
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -804,13 +816,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1580,
         "materials": 3,
         "textures": 0,
-        "bytes": 24572
+        "bytes": 13472
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -825,13 +838,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 6808,
         "materials": 4,
         "textures": 3,
-        "bytes": 195876
+        "bytes": 87764
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -846,13 +860,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1591,
         "materials": 4,
         "textures": 0,
-        "bytes": 24472
+        "bytes": 13352
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -867,13 +882,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7450,
         "materials": 4,
         "textures": 3,
-        "bytes": 211736
+        "bytes": 95076
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -888,13 +904,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1595,
         "materials": 3,
         "textures": 0,
-        "bytes": 23784
+        "bytes": 12852
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -909,13 +926,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 6502,
         "materials": 4,
         "textures": 3,
-        "bytes": 192612
+        "bytes": 84864
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -930,13 +948,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 3996,
         "materials": 1,
         "textures": 0,
-        "bytes": 51508
+        "bytes": 19488
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -952,13 +971,14 @@
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Windows (painted pale blue in its texture) tinted dark",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 15495,
         "materials": 4,
         "textures": 2,
-        "bytes": 677616
+        "bytes": 218644
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -973,13 +993,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1596,
         "materials": 3,
         "textures": 0,
-        "bytes": 24388
+        "bytes": 13080
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -994,13 +1015,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 6918,
         "materials": 4,
         "textures": 3,
-        "bytes": 204100
+        "bytes": 90668
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1015,13 +1037,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1584,
         "materials": 3,
         "textures": 0,
-        "bytes": 24664
+        "bytes": 13512
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1036,13 +1059,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7122,
         "materials": 4,
         "textures": 3,
-        "bytes": 238452
+        "bytes": 98724
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1057,13 +1081,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 3729,
         "materials": 5,
         "textures": 0,
-        "bytes": 80556
+        "bytes": 41448
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1078,13 +1103,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1592,
         "materials": 3,
         "textures": 0,
-        "bytes": 24908
+        "bytes": 13572
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1099,13 +1125,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 7951,
         "materials": 4,
         "textures": 3,
-        "bytes": 230196
+        "bytes": 104648
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1120,13 +1147,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Single static mesh",
-        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)"
+        "Parked version: texture baked to vertex colours, glass dark and opaque, simplified (meshoptimizer)",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 1579,
         "materials": 3,
         "textures": 0,
-        "bytes": 24320
+        "bytes": 13212
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },
@@ -1141,13 +1169,14 @@
         "tools/assets/build-v2-vehicles.mjs (glTF-Transform 4.5.1): world transforms baked, turned to face -Z, scaled to real length, stood on the ground",
         "Number plates and maker badges removed or blanked; body texture greyscaled so the app can paint it",
         "Wheels split out and given a WheelSpin animation",
-        "Simplified (meshoptimizer), textures 256 px JPEG, quantized"
+        "Simplified (meshoptimizer), textures 256 px JPEG, quantized",
+        "tools/assets/compress-models.mjs (2026-10-26): welded and meshopt-compressed (EXT_meshopt_compression); the app ships the decoder"
       ],
       "stats": {
         "triangles": 6982,
         "materials": 4,
         "textures": 3,
-        "bytes": 225508
+        "bytes": 95156
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
     },

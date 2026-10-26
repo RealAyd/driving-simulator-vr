@@ -1,5 +1,6 @@
 import {parseLocation,parseScenario,type Location,type Scenario} from '../contracts';
 import {buildCentre,centreBbox} from './buildCentre.js';
+import {versioned} from '../assets/versioned';
 
 /**
  * Areas built on the phone: the OpenStreetMap data round a point (a test centre from the list, a postcode, a
@@ -40,7 +41,7 @@ async function loadPack(centre:string,fetcher:typeof fetch):Promise<CentrePack|n
   const Stream=(globalThis as {DecompressionStream?:typeof DecompressionStream}).DecompressionStream;
   if(!Stream)return null;
   try{
-    const r=await fetcher(`centres/${centreFile(centre)}`);
+    const r=await fetcher(versioned(`centres/${centreFile(centre)}`));
     if(!r.ok)return null;
     // Gzipped as stored; some servers unzip it on the way (Content-Encoding), then it is the JSON already.
     const bytes=new Uint8Array(await r.arrayBuffer());
