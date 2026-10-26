@@ -272,6 +272,27 @@
       ],
       "storage": "public",
       "notes": "Test set only: used when the app is opened with ?cars=new; the default set is unchanged. Credited in the on-screen credit line while the set is in use. Number plates and badges stripped."
+    },
+    {
+      "id": "kenney-car-kit",
+      "title": "Car Kit 3.1",
+      "author": "Kenney (https://www.kenney.nl)",
+      "source": "https://kenney.nl/assets/car-kit, downloaded 2026-10-26",
+      "licence": "CC0 1.0 (Creative Commons Zero), per License.txt in the kit",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "redistributionAllowed": true,
+      "attributionRequired": false,
+      "contents": [
+        "sedan",
+        "hatchback-sports",
+        "suv",
+        "suv-luxury",
+        "van",
+        "taxi",
+        "delivery"
+      ],
+      "storage": "public",
+      "notes": "Test set only: used when the app is opened with ?cars=kenney (or the admin Cars option); the default set is unchanged."
     }
   ],
   "models": [
@@ -1101,6 +1122,118 @@
         "bytes": 225508
       },
       "build": "node tools/assets/build-v2-vehicles.mjs <peugeot glb> <pack glb> <sprinter glb> <outdir>"
+    },
+    {
+      "id": "kenney-saloon",
+      "file": "public/assets/models/vehicles/kenney/kenney-saloon.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "sedan.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 143420
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "kenney-hatchback",
+      "file": "public/assets/models/vehicles/kenney/kenney-hatchback.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "hatchback-sports.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 164796
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "kenney-suv",
+      "file": "public/assets/models/vehicles/kenney/kenney-suv.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "suv.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 172892
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "kenney-estate",
+      "file": "public/assets/models/vehicles/kenney/kenney-estate.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "suv-luxury.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 146548
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "kenney-people-carrier",
+      "file": "public/assets/models/vehicles/kenney/kenney-people-carrier.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "van.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 146352
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "kenney-taxi",
+      "file": "public/assets/models/vehicles/kenney/kenney-taxi.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "taxi.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 146316
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
+    },
+    {
+      "id": "kenney-van",
+      "file": "public/assets/models/vehicles/kenney/kenney-van.glb",
+      "storage": "public",
+      "pack": "kenney-car-kit",
+      "sourceFile": "delivery.glb",
+      "use": "Traffic and parked cars in the ?cars=kenney test set only",
+      "modifications": [
+        "tools/assets/build-kenney-cars.mjs (glTF-Transform 4.5.1): node transforms baked, turned to face -Z, stretched to a real car's size, stood on the ground",
+        "Palette texture baked into vertex colours (one flat colour per face); texture and texture coordinates removed"
+      ],
+      "stats": {
+        "bytes": 200504
+      },
+      "build": "node tools/assets/build-kenney-cars.mjs \"<Car Kit>/Models/GLB format\" <outdir>"
     }
   ]
 }

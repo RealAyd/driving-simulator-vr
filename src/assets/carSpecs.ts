@@ -52,6 +52,11 @@ export const CAR_MODELS={
   ...v2('sedan',4.7,2.09,1.43,2.062),
   ...v2('suv',4.69,2.11,1.74,2.407),
   ...v2('wagon',4.69,2.09,1.46,2.051),
+  // Kenney Car Kit (CC0, www.kenney.nl), tried with ?cars=kenney (2026-10-26; tools/assets/build-kenney-cars.mjs):
+  // stylised, one flat colour per face, stretched to real sizes; one static model for traffic and parked cars.
+  ...kenney('saloon',4.5,1.82,1.45),...kenney('hatchback',4.05,1.78,1.42),...kenney('suv',4.55,1.86,1.68),
+  ...kenney('estate',4.75,1.85,1.55),...kenney('people-carrier',4.75,1.88,1.75),...kenney('taxi',4.6,1.85,1.6),
+  ...kenney('van',5.3,2.0,2.3),
   // (Parked only: traffic is drawn at one car's length.)
   'v2-sprinter-van':{id:'v2-sprinter-van',parkedUrl:'assets/models/vehicles/v2/v2-sprinter-van-parked.glb',paintMaterial:'(none)',yawOffset:0,length:5.92,width:2.24,height:2.48}
 } as const satisfies Record<string,CarModelSpec>;
@@ -61,6 +66,12 @@ function v2<N extends string>(name:N,length:number,width:number,height:number,wh
   const id=`v2-${name}` as const;
   return {[id]:{id,url:`assets/models/vehicles/v2/${id}.glb`,parkedUrl:`assets/models/vehicles/v2/${id}-parked.glb`,paintMaterial:'Body',yawOffset:0,
     ...(wheelLoopMetres?{wheelLoopMetres}:{}),length,width,height}} as Record<`v2-${N}`,CarModelSpec>;
+}
+
+/** A Kenney Car Kit car: the same model for traffic and parked copies, in its own colours. */
+function kenney<N extends string>(name:N,length:number,width:number,height:number):Record<`kenney-${N}`,CarModelSpec>{
+  const id=`kenney-${name}` as const,url=`assets/models/vehicles/kenney/${id}.glb`;
+  return {[id]:{id,url,parkedUrl:url,paintMaterial:'(none)',yawOffset:0,length,width,height}} as Record<`kenney-${N}`,CarModelSpec>;
 }
 
 export type CarModelId=keyof typeof CAR_MODELS;
@@ -81,7 +92,7 @@ export const BUS_MODELS={
  * and pickup, which read as one colour all over. 'new' (?cars=new): the whole new pack, kept for checking. Chosen
  * once at start (main.ts), before any street is laid out.
  */
-export type VehicleSet='current'|'new'|'mixed';
+export type VehicleSet='current'|'new'|'mixed'|'kenney';
 let vehicleSet:VehicleSet='current';
 export function useVehicleSet(set:VehicleSet):void{vehicleSet=set}
 export function activeVehicleSet():VehicleSet{return vehicleSet}
@@ -91,6 +102,9 @@ const SETS:Record<VehicleSet,{road:CarModelId[];kerb:CarModelId[]}>={
     kerb:['v2-peugeot-208','batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon','v2-pickup']},
   current:{road:['batch-b-compact-hatchback','batch-b-saloon'],
     kerb:['batch-b-compact-hatchback','batch-b-compact-hatchback','batch-b-saloon','batch-b-saloon','batch-b-large-saloon']},
+  // The Kenney Car Kit (?cars=kenney): the owner's look at a stylised set; the van parked only.
+  kenney:{road:['kenney-hatchback','kenney-saloon','kenney-suv','kenney-estate','kenney-people-carrier','kenney-taxi'],
+    kerb:['kenney-hatchback','kenney-hatchback','kenney-saloon','kenney-saloon','kenney-suv','kenney-estate','kenney-people-carrier','kenney-van']},
   // Everyday cars most, the pickup and the van now and then.
   new:{road:['v2-peugeot-208','v2-hatchback','v2-sedan','v2-compact','v2-wagon','v2-suv','v2-minivan','v2-coupe','v2-offroad','v2-pickup'],
     kerb:['v2-peugeot-208','v2-peugeot-208','v2-hatchback','v2-hatchback','v2-sedan','v2-sedan','v2-compact','v2-wagon','v2-suv','v2-minivan','v2-coupe','v2-offroad','v2-pickup','v2-sprinter-van']}
@@ -106,7 +120,7 @@ export function kerbCarModels():readonly CarModelId[]{return SETS[vehicleSet].ke
 /** Parked models to load: every one of the earlier set's (hand-made places use them), and the new pack's that the set uses. */
 export function parkedModelIds():CarModelId[]{
   const used=new Set<CarModelId>([...SETS[vehicleSet].road,...SETS[vehicleSet].kerb]);
-  return (Object.keys(CAR_MODELS) as CarModelId[]).filter(id=>!id.startsWith('v2-')||used.has(id));
+  return (Object.keys(CAR_MODELS) as CarModelId[]).filter(id=>!(id.startsWith('v2-')||id.startsWith('kenney-'))||used.has(id));
 }
 /**
  * The CC BY 4.0 credit for the new pack's models in use, the learner's car included (shown while they are on screen): the Peugeot 208 by muha692, the passenger car pack by Comrade1280, the Sprinter by Max (Sketchfab).

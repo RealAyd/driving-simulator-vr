@@ -34,6 +34,18 @@ export async function loadModel(scene:Scene,url:string):Promise<AssetContainer|n
       import('@babylonjs/loaders/glTF/2.0/Extensions/KHR_mesh_quantization')
     ]);
     const container=await LoadAssetContainerAsync(url,scene,{pluginExtension:'.glb'});
+    // Vertex colours (textures baked into them) are linear in glTF; StandardMaterial expects gamma space, as for the
+    // material colours below. Converted once here, so moving and parked copies match (moving ones were too dark).
+    const done=new Set<unknown>();
+    for(const mesh of container.meshes){
+      const geometry=(mesh as Mesh).geometry;
+      if(!geometry||done.has(geometry))continue;
+      done.add(geometry);
+      const colours=mesh.getVerticesData(VertexBuffer.ColorKind);
+      if(!colours)continue;
+      for(let i=0;i<colours.length;i++)if(i%4!==3)colours[i]=Math.pow(colours[i]!,1/2.2);
+      (mesh as Mesh).setVerticesData(VertexBuffer.ColorKind,colours,false,4);
+    }
     const converted=new Map<unknown,StandardMaterial>();
     for(const mesh of container.meshes){
       const pbr=mesh.material as unknown as GltfMaterial|null;
@@ -171,7 +183,8 @@ export class CarModel{
       // Colours baked into the vertices (the new set's parked models, from their textures), where there are some.
       const vc=mesh.material?.name===this.spec.paintMaterial?null:mesh.getVerticesData(VertexBuffer.ColorKind);
       const stride=vc&&positions.length?vc.length/(positions.length/3):4;
-      const colourAt=(v:number):[number,number,number]=>vc?[Math.pow(vc[v*stride]!,1/2.2),Math.pow(vc[v*stride+1]!,1/2.2),Math.pow(vc[v*stride+2]!,1/2.2)]:[c.r,c.g,c.b];
+      // (Already in gamma space: converted at load.)
+      const colourAt=(v:number):[number,number,number]=>vc?[vc[v*stride]!,vc[v*stride+1]!,vc[v*stride+2]!]:[c.r,c.g,c.b];
       const base=target.positions.length/3;
       if(normals){
         for(let i=0;i<positions.length;i+=3){
