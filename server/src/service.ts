@@ -1,6 +1,6 @@
 import {createHash,randomBytes,randomInt,timingSafeEqual} from 'node:crypto';
 import type {Config,Pack} from './config.js';
-import type {Account,Drive,Mode,Pot,Store} from './store.js';
+import type {Account,Drive,DriveOutcome,Mode,Pot,Store} from './store.js';
 import {Support,type Pusher} from './support.js';
 
 export interface Mailer{send(m:{to:string;subject:string;text:string;html:string}):Promise<void>}
@@ -223,7 +223,7 @@ export class Service{
   }
 
   /** The app reports how the drive went; one that failed to load gives its session back. */
-  async driveStatus(accountId:string,driveId:string,status:'loaded'|'failed'|'completed'):Promise<boolean>{
+  async driveStatus(accountId:string,driveId:string,status:'loaded'|'failed'|'completed'|'ended',outcome?:DriveOutcome):Promise<boolean>{
     const d=await this.store.getDrive(driveId);
     if(!d||d.accountId!==accountId||d.status==='unpaid')return false;
     if(status==='failed'&&d.status==='started'&&d.paidFrom!=='admin'&&!d.refunded&&Date.now()-d.startedAt.getTime()<=REFUND_WINDOW_MS){
@@ -240,7 +240,11 @@ export class Service{
       await this.store.updateDrive(driveId,{status,refunded:r==='ok'||r==='duplicate'});
       return true;
     }
-    if(d.status!=='completed')await this.store.updateDrive(driveId,{status});
+    // Finished drives stay finished (a late 'loaded' does not undo one; a completed one is never made 'ended').
+    if(d.status==='completed'||(d.status==='ended'&&status!=='completed'))return true;
+    if(status==='completed'||status==='ended')await this.store.updateDrive(driveId,{status,endedAt:new Date(),
+      outcome:status==='completed'?'completed':outcome&&outcome!=='completed'?outcome:'abandoned'});
+    else await this.store.updateDrive(driveId,{status});
     return true;
   }
 

@@ -78,7 +78,15 @@ For the accounts in `ADMIN_EMAILS` (comma-separated, matched against the account
 in again). Changes are accepted only from this site's own page.
 
 - **Overview:** accounts (new in 7 and 30 days), paying customers, money paid and refunded (from the ledger), drives in
-  the last 30 days by kind and how many failed to load, sessions held by customers, open flags.
+  the last 30 days by kind, how many were completed (a route finished, a lesson done, a free drive of 5 minutes or
+  more) and how the rest ended (exited, crashed, left the route, out of time), how many failed to load, sessions held
+  by customers, open flags.
+- **Visitors:** the app's own visit records (`src/app/visits.ts` → `POST /api/visits`, summed up in `analytics.ts`):
+  people a day (new, from the home screen, signed in), where visits come from (campaign `utm_source`/`src`, the
+  linking site, invite links, the home screen, direct) and how those visits went, how long people stay, the screens
+  they see and leave from, screen-to-screen paths, buttons pressed, the way to a completed drive and where people drop
+  off, coming back, devices, campaigns and countries. A random device id, no IP address, nothing typed; none for
+  browsers sending Global Privacy Control or Do Not Track, or turned off on the Cookies page. Kept 400 days.
 - **Customers:** search by part of the email, a referral code or an account id; each customer's full ledger and
   recent drives.
 - **Adjust sessions:** add or remove general sessions or one Starter Pass pot, with a reason. It is a new `adjustment`
@@ -93,7 +101,7 @@ in again). Changes are accepted only from this site's own page.
 API: `GET /api/admin/overview`, `GET /api/admin/customers?q=`, `GET /api/admin/customers/:id`,
 `POST /api/admin/customers/:id/adjust {sessions, pot|null, reason, requestId}`,
 `GET /api/admin/payments?from=YYYY-MM-DD&to=YYYY-MM-DD[&format=csv]`, `GET /api/admin/flags?state=open|resolved|all`,
-`POST /api/admin/flags/:id/resolve {note}`, `GET /api/admin/referrals`.
+`POST /api/admin/flags/:id/resolve {note}`, `GET /api/admin/referrals`, `GET /api/admin/visits?days=1..90`.
 
 ## Support (`/support.html`, and the hub's Support tab)
 

@@ -1,5 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {MemorySupportStore,type SupportStore} from './supportStore.js';
+import type {VisitEvent} from './analytics.js';
 
 /**
  * What the service keeps: accounts, the append-only sessions ledger, drives (one consumed session each), sign-in
@@ -64,8 +65,13 @@ export interface Drive{
   kind:string;
   scenario:string;
   startedAt:Date;
-  /** 'unpaid': not started, for want of a session. */
-  status:'started'|'loaded'|'failed'|'completed'|'unpaid';
+  /**
+   * 'unpaid': not started, for want of a session. 'completed': driven to its end (a route finished, a lesson done, a
+   * free drive of five minutes or more); 'ended': stopped before that (`outcome` says how).
+   */
+  status:DriveStatus;
+  outcome?:DriveOutcome;
+  endedAt?:Date;
   mode:Mode;
   /**
    * Where its session came from (a refund goes back there); 'admin': an ADMIN_EMAILS account's drive, uses none;
@@ -74,6 +80,14 @@ export interface Drive{
   paidFrom:Pot|'sessions'|'admin'|'trial';
   refunded?:boolean;
 }
+
+export type DriveStatus='started'|'loaded'|'failed'|'completed'|'ended'|'unpaid';
+export const DRIVE_OUTCOMES=['completed','collision','left-route','time-limit','abandoned'] as const;
+export type DriveOutcome=typeof DRIVE_OUTCOMES[number];
+/** Drives started in a period, by kind; how many failed to load, and how many of each kind were completed. */
+export interface DriveCounts{lesson:number;test:number;free:number;failed:number;total:number;completed:Record<Mode,number>;
+  /** Stopped before the end, by how. */
+  ended:Partial<Record<DriveOutcome,number>>}
 
 export interface LoginCode{
   id:string;
@@ -148,8 +162,11 @@ export interface Store{
   getTrial(id:string):Promise<Trial|null>;
   /** Uses (−1) or gives back (+1) one of a free try's drives; using is atomic and fails (false) when none is left. */
   moveTrial(id:string,mode:Mode,delta:-1|1):Promise<boolean>;
-  /** Drives started since then, by kind, and how many failed to load. */
-  driveCounts(since:Date):Promise<Record<Mode|'failed'|'total',number>>;
+  driveCounts(since:Date):Promise<DriveCounts>;
+  /** Visits (analytics.ts): kept 400 days. */
+  saveVisitEvents(events:VisitEvent[]):Promise<void>;
+  /** Since then, oldest first, at most `limit`. */
+  visitEvents(since:Date,limit:number):Promise<VisitEvent[]>;
 }
 
 export class MemoryStore implements Store{
@@ -161,6 +178,7 @@ export class MemoryStore implements Store{
   private rates=new Map<string,{until:number;n:number}>();
   private flagged:Flag[]=[];
   private trials=new Map<string,Trial>();
+  private visits:VisitEvent[]=[];
   async createTrial(){const t:Trial={id:randomUUID(),remaining:{lesson:1,test:1,free:1},createdAt:new Date()};this.trials.set(t.id,t);return {...t,remaining:{...t.remaining}}}
   async getTrial(id:string){const t=this.trials.get(id);return t?{...t,remaining:{...t.remaining}}:null}
   async moveTrial(id:string,mode:Mode,delta:-1|1){
@@ -274,9 +292,19 @@ export class MemoryStore implements Store{
     }
     return [...by.values()].sort((a,b)=>b.joined-a.joined);
   }
+  async saveVisitEvents(events:VisitEvent[]){this.visits.push(...events.map(e=>({...e})))}
+  async visitEvents(since:Date,limit:number){return this.visits.filter(e=>e.at>=since).sort((a,b)=>a.at.getTime()-b.at.getTime()).slice(0,limit)}
   async driveCounts(since:Date){
-    const n={lesson:0,test:0,free:0,failed:0,total:0};
-    for(const d of this.drives.values())if(d.startedAt>=since&&d.status!=='unpaid'){n.total++;n[d.mode]++;if(d.status==='failed')n.failed++}
+    const n=countDrives();
+    for(const d of this.drives.values())if(d.startedAt>=since&&d.status!=='unpaid')addDrive(n,d,1);
     return n;
   }
+}
+
+export const countDrives=():DriveCounts=>({lesson:0,test:0,free:0,failed:0,total:0,completed:{lesson:0,test:0,free:0},ended:{}});
+export function addDrive(n:DriveCounts,d:Pick<Drive,'mode'|'status'|'outcome'>,count:number):void{
+  n.total+=count;n[d.mode]+=count;
+  if(d.status==='failed')n.failed+=count;
+  if(d.status==='completed')n.completed[d.mode]+=count;
+  if(d.status==='ended')n.ended[d.outcome??'abandoned']=(n.ended[d.outcome??'abandoned']??0)+count;
 }

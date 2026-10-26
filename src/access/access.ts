@@ -58,6 +58,9 @@ export class Access{
   me:Me={signedIn:false};
   /** Called whenever the balance or sign-in changes (the home screen shows it). */
   onChange:()=>void=()=>{};
+  /** Signed in (or up) during this visit. */
+  onSignIn:()=>void=()=>{};
+  private checked=false;
   private mode:Mode='account';
   /** The drive that sent the learner here to sign up or buy, and its kind: started again once it can be. */
   private pending:{pot:Pot;again:()=>void}|null=null;
@@ -90,8 +93,11 @@ export class Access{
   private get ref(){return store.get(REF_KEY)}
 
   async refresh():Promise<void>{
-    const r=await api<Me>('me');
+    const r=await api<Me>('me'),was=this.me.signedIn;
     if(r.data)this.me=r.data;
+    // Signed in on this visit (not already signed in when the app opened).
+    if(this.checked&&!was&&this.me.signedIn)this.onSignIn();
+    if(r.data)this.checked=true;
     if(this.me.signedIn){store.set(REF_KEY,null);await this.syncProgress()}
     this.render();
     this.onChange();
@@ -185,10 +191,13 @@ export class Access{
     return false;
   }
 
-  /** How the drive went: one that failed to load gives its session back. */
-  report(drive:PaidDrive|null,status:'loaded'|'failed'|'completed'):void{
+  /**
+   * How the drive went: one that failed to load gives its session back; 'completed' only when driven to its end
+   * ('ended' otherwise, with how: exited, a crash, out of time).
+   */
+  report(drive:PaidDrive|null,status:'loaded'|'failed'|'completed'|'ended',outcome?:string):void{
     if(!drive)return;
-    void api(`drives/${drive.id}/${status}`,{}).then(()=>{if(status==='failed')void this.refresh()});
+    void api(`drives/${drive.id}/${status}`,outcome?{outcome}:{}).then(()=>{if(status==='failed')void this.refresh()});
   }
 
   // ---- The account screen ----

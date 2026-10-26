@@ -18,6 +18,7 @@ import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
 import {Bus,BUS_SIZE} from '../actors/bus';
 import {layoutCrowd,personPose,type Person} from '../world/crowd';
 import {drivingView,widenRoundabouts} from '../world/roundabouts';
+import {Visits} from './visits';
 import {PeopleRenderer} from '../world/peopleMesh';
 import {AnimatedPeople} from '../world/animatedPeople';
 import {Weather,conditionsFrom,conditionsFromName,conditionsName,type Conditions} from '../world/weather';
@@ -116,6 +117,8 @@ const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
 /** 'stick': a game controller's stick (in the headset; 'buttons' there are the controller's steer buttons). */
 type SteeringMode='assist'|'tilt'|'buttons'|'stick';
+/** A free drive ended by the driver counts as completed after this long (the shorter of it and its own length). */
+const FREE_DRIVE_DONE_SECONDS=300;
 const EARLY_STOP_HINT_SECONDS=8;
 const HORIZONTAL_FOV=degToRad(95);
 /** Looking ahead, the camera glances slightly down (as a seated driver does), so the wheel and hands are in view.
@@ -174,6 +177,23 @@ export async function boot():Promise<void>{
   const hud=new Hud();
   const session=new Session();
   session.onChange(state=>hud.showOnly(state,session.error));
+  // ---- Visits: how the app is used (visits.ts), named by the screen showing ----
+  let visitDrive='';
+  const shown=(id:string)=>{const el=document.getElementById(id);return !!el&&!el.hidden};
+  const visits=new Visits(()=>{
+    if(shown('busy'))return 'loading';
+    if(shown('screen-account'))return `account:${byId('screen-account').dataset['mode']??'account'}`;
+    if(shown('screen-about'))return 'about';
+    if(session.state==='running')return `drive:${visitDrive}`;
+    if(session.state==='paused')return `paused:${visitDrive}`;
+    if(session.state==='finished')return `results:${visitDrive}`;
+    if(session.state!=='ready')return session.state;
+    const place=(document.getElementById('place-title')?.textContent??'').toLowerCase()||'places';
+    if(shown('exercise-detail'))return `exercise:${(document.getElementById('exercise-title')?.textContent??'').slice(0,40)}`;
+    if(shown('place-list'))return place;
+    return 'home';
+  });
+  const driveKind=(id:string)=>id.endsWith('-mock-test')?'mock test':id.endsWith('-lesson')?'lesson':id.endsWith('-free-drive')?'free drive':'drill';
   // ---- Loading: building a place or starting a drive blocks the page for a few seconds; say so first ----
   const busyBox=byId('busy'),busyText=byId('busy-text'),busyStep=byId('busy-step'),busyPct=byId('busy-pct'),busyBar=byId('busy-bar');
   /** Lets the browser draw (two frames; a moment at most, should frames not come, as in a hidden tab). */
@@ -903,7 +923,9 @@ export async function boot():Promise<void>{
       if(result.lesson&&outcome==='completed'){const l=LESSONS.find(x=>x.number===result.lesson!.number);if(l){markLessonDone(l.id);void paidAccess.syncProgress()}}
       lastResult=result;
       session.to('finished');
-      paidAccess.report(paidDrive,'completed');paidDrive=null;
+      // Counted as completed only when it was (an exit part-way, a crash or running out of time is not).
+      paidAccess.report(paidDrive,outcome==='completed'?'completed':'ended',outcome);paidDrive=null;
+      visits.drive('end',result.scenarioId,{kind:visitDrive,outcome,seconds:Math.round(result.durationSeconds)});
       let saved=0,saveFailed=false;
       // Parked practice is kept apart from results: not saved.
       if(parkedOnly())saved=-1;
@@ -971,6 +993,7 @@ export async function boot():Promise<void>{
   // Paid access (where hosted with the accounts service): each drive started uses one session.
   setUpTheme(byId<HTMLButtonElement>('theme-toggle'));
   const paidAccess=new Access();
+  paidAccess.onSignIn=()=>visits.signedIn();
   /** The drive whose session is in use (its result is reported when it ends). */
   let paidDrive:PaidDrive|null=null;
   void paidAccess.init();
@@ -1926,7 +1949,9 @@ export async function boot():Promise<void>{
     useLocation(scenario.locationId);
     runtime=buildExercise(scenario,!!options.familiarisation);
     attachRunner();
+    visitDrive=driveKind(scenarioId);
     if(!session.to('running'))return;
+    visits.drive('start',scenarioId,{kind:visitDrive});
     resetAttempt();
     byId('paused-title').textContent=scenario.title;
     clock.resume();
@@ -2016,7 +2041,9 @@ export async function boot():Promise<void>{
   const endAttempt=()=>{
     if(session.state!=='paused'||!runtime)return;
     session.to('running');
-    runtime.runner.finish(runtime.scenario.end.completeAfterSeconds!==undefined?'completed':'abandoned');
+    // Done only when driven: a free drive ended after five minutes or more (or the exercise's own length, if shorter).
+    const enough=runtime.scenario.end.completeAfterSeconds;
+    runtime.runner.finish(enough!==undefined&&runtime.runner.elapsed>=Math.min(enough,FREE_DRIVE_DONE_SECONDS)?'completed':'abandoned');
   };
   const backToMenu=()=>{
     if(session.state!=='finished'&&session.state!=='paused')return;
