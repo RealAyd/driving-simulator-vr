@@ -569,7 +569,10 @@ export class Traffic implements SimModule{
         const along=lx*fwd.x+lz*fwd.z,side=Math.abs(lx*fwd.z-lz*fwd.x);
         const noseToNose=Math.cos(learner.pose.heading-car.pose.heading)<-.5&&along>0&&along<25&&side<car.halfWidth+1.3;
         // (Creeping a metre while the learner edges back does not start the wait again: only the two getting clear.)
-        d.faceOff=noseToNose?(d.faceOff??0)+(car.speed<1?dt*(learner.speed<.5?1:.5):0):0;
+        // Or held up by the learner close by at any angle (round a tight turn, the two cars side on, or touching: the
+        // owner's report, a small roundabout where neither could get by).
+        const heldUp=d.why?.startsWith('learner')&&Math.hypot(lx,lz)<car.halfLength+2.15+2;
+        d.faceOff=noseToNose||heldUp?(d.faceOff??0)+(car.speed<1?dt*(learner.speed<.5?1:.5):0):0;
         if(d.faceOff>10){d.faceOff=0;car.visible=false;continue}
       }
       // Too far from the learner: come back somewhere nearer, out of sight.

@@ -72,7 +72,15 @@ export class VehicleController implements SimModule{
     let next=stepVehicle(this.state,controls,this.params,dt);
     next={...next,position:{...next.position,y:this.heightAt(next.position.x,next.position.z)}};
 
-    const hit=this.collisions.firstCollision(next,this.halfWidth,this.halfLength);
+    let hit=this.collisions.firstCollision(next,this.halfWidth,this.halfLength);
+    // Already in contact (a road user drove into the car while it stood): every move overlapped too, so the car could
+    // neither drive on nor back away (the owner's report: stuck for good). A move that goes no deeper is allowed: the
+    // overlap now is measured by how far the outline must shrink to clear it, and the move must clear at that.
+    if(hit&&this.collisions.firstCollision(this.state,this.halfWidth,this.halfLength)){
+      let shrink=0;
+      while(shrink<1.2&&this.collisions.firstCollision(this.state,this.halfWidth-shrink,this.halfLength-shrink))shrink+=.1;
+      if(!this.collisions.firstCollision(next,this.halfWidth-shrink,this.halfLength-shrink))hit=null;
+    }
     if(hit){
       // Stop at the last free position; report each contact once.
       next={...this.state,speed:0};

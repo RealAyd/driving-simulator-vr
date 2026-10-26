@@ -111,6 +111,17 @@ describe('vehicle controller',()=>{
     expect(v.state.position.z-v.halfLength).toBeGreaterThanOrEqual(-5);
     expect(log.filter(e=>e.type==='vehicle.collision')).toHaveLength(1);
   });
+  it('struck while standing (already overlapping): can back away, not drive in further',()=>{
+    // A wall whose face is 1 m inside the car's front (a road user drove into it while it stood).
+    const wall={firstCollision:(pose:{position:{z:number}},_w:number,halfLength:number)=>pose.position.z-halfLength< -1.15?'traffic-3':null};
+    let controls:Controls={throttle:1,brake:0,steer:0};
+    const v=new VehicleController({position:{x:0,y:0,z:0},heading:0},{read:()=>controls},flat,wall,sink().s);
+    for(let i=0;i<60;i++)v.fixedUpdate(DT);
+    expect(v.state.position.z).toBeGreaterThanOrEqual(-.01);
+    controls={throttle:1,brake:0,steer:0,reverse:true};
+    for(let i=0;i<120;i++)v.fixedUpdate(DT);
+    expect(v.state.position.z).toBeGreaterThan(1);
+  });
   it('counts a fresh approach after moving away as a new contact',()=>{
     const {log,s}=sink();
     const v=new VehicleController({position:{x:0,y:0,z:0},heading:0},{read:()=>({throttle:1,brake:0,steer:0})},flat,
