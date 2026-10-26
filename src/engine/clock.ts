@@ -2,14 +2,15 @@ import type {Seconds} from '../contracts';
 
 /**
  * Fixed-step simulation clock. Movement and assessment advance in identical
- * steps regardless of frame rate; rendering interpolates with `alpha`.
+ * steps regardless of frame rate; rendering interpolates with `alpha`. Up to a quarter of a second is caught up
+ * per frame, so a struggling phone (down to 4 frames a second) still drives in real time, not slow motion.
  */
 export class FixedStepClock{
   time:Seconds=0;
   private accumulator=0;
   private paused=false;
 
-  constructor(readonly step:Seconds=1/60,readonly maxStepsPerFrame=5){
+  constructor(readonly step:Seconds=1/60,readonly maxStepsPerFrame=15){
     if(!(step>0))throw new Error('Clock step must be positive');
   }
 

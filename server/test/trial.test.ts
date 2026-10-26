@@ -4,7 +4,7 @@ import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {loadConfig} from '../src/config.js';
 import {handler} from '../src/http.js';
 import {OutboxMailer,fakeIdentities,fakeStripe} from '../src/providers.js';
-import {Service} from '../src/service.js';
+import {Service,TRIALS_PER_IP_PER_DAY} from '../src/service.js';
 import {MemoryStore} from '../src/store.js';
 
 let server:Server,base='';
@@ -59,10 +59,10 @@ describe('the free try: one lesson, one mock test and one free drive, without si
     expect((await device('203.0.113.2')(`/api/drives/${r.driveId}/failed`,{})).status).toBe(404);
   });
 
-  it('clearing cookies for more: four new tries a day from one address, then no more',async()=>{
-    for(let i=0;i<4;i++)expect((await device('198.51.100.9')('/api/drives',drive('goodmayes-free-drive'))).status).toBe(200);
-    const fifth=await device('198.51.100.9')('/api/drives',drive('goodmayes-free-drive'));
-    expect(fifth.status).toBe(429);
+  it('clearing cookies for more: a day\'s new tries from one address (enough for a shared network), then no more',async()=>{
+    for(let i=0;i<TRIALS_PER_IP_PER_DAY;i++)expect((await device('198.51.100.9')('/api/drives',drive('goodmayes-free-drive'))).status).toBe(200);
+    const next=await device('198.51.100.9')('/api/drives',drive('goodmayes-free-drive'));
+    expect(next.status).toBe(429);
     expect((await device('198.51.100.10')('/api/drives',drive('goodmayes-free-drive'))).status).toBe(200);
   });
 

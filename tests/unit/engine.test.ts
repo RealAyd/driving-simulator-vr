@@ -60,6 +60,11 @@ describe('fixed step clock',()=>{
     expect(clock.advance(10,()=>{})).toBe(5);
     expect(clock.time).toBeCloseTo(5/60,9);
   });
+  it('keeps real time on a phone drawing 4 frames a second',()=>{
+    const clock=new FixedStepClock(1/60);
+    for(let i=0;i<4;i++)clock.advance(.25,()=>{});
+    expect(clock.time).toBeCloseTo(1,6);
+  });
   it('does nothing while paused and resets cleanly',()=>{
     const clock=new FixedStepClock(.01);
     clock.pause();

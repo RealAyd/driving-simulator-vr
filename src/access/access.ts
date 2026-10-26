@@ -173,13 +173,14 @@ export class Access{
     const pot=modeOf(scenario);
     // Signed out with this kind's free try used: sign up (progress saved), then the drive carries on. Signed in with
     // nothing to drive on: the paywall. Admins drive without sessions (the server checks it too).
-    const stop=()=>{this.pending=again?{pot,again}:null;this.open(undefined,this.me.signedIn?'paywall':'save');return false as const};
+    const stop=(reason?:string)=>{this.pending=again?{pot,again}:null;this.open(reason,this.me.signedIn?'paywall':'save');return false as const};
     if(!this.canStart(pot))return stop();
     const r=await api<{driveId:string;balance:number;error?:string}>('drives',{kind,scenario});
     if(r.status===200&&r.data){void this.refresh();return {id:r.data.driveId}}
     if(r.status===401){await this.refresh();return stop()}
     if(r.status===402){await this.refresh();return stop()}
-    if(r.status===429)return stop();
+    // (Too many new free tries from this connection today: the try itself was not used.)
+    if(r.status===429)return stop('Too many free tries from this connection today. Sign up to keep driving.');
     this.open('Driving Practice could not be reached. Check your connection and try again.');
     return false;
   }

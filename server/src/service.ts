@@ -52,8 +52,9 @@ const SMALL_PARTIAL_REFUND_PENCE=500;
 const REFUND_WINDOW_MS=15*60_000,REFUNDS_PER_DAY=3;
 
 export type DriveStart={ok:true;drive:Drive;balance:number}|{ok:false;reason:'no-sessions'|'trial-used'};
-/** New free tries from one address in a day (a device's try is in its cookie; this stops clearing it for more). */
-const TRIALS_PER_IP_PER_DAY=4;
+/** New free tries from one address in a day (a device's try is in its cookie; this stops clearing it for more). Many
+ * phones share one address (mobile networks, a school or office Wi-Fi), so it is well above one household's. */
+export const TRIALS_PER_IP_PER_DAY=30;
 /** A lesson id as the app names them; at most this many kept. */
 const LESSON_ID=/^[a-z0-9-]{1,40}$/,MAX_LESSONS=100;
 
