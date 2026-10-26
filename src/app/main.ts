@@ -19,6 +19,8 @@ import {Bus,BUS_SIZE} from '../actors/bus';
 import {layoutCrowd,personPose,type Person} from '../world/crowd';
 import {PeopleRenderer} from '../world/peopleMesh';
 import {AnimatedPeople} from '../world/animatedPeople';
+import {Weather,conditionsFrom,conditionsFromName,conditionsName,type Conditions} from '../world/weather';
+import type {Lamp} from '../world/streetscape';
 import {junctionMouths,mouthPoint} from '../world/junctionControls';
 import {layoutSignage,type SignPlan} from '../world/signage';
 import {placeLabel,type PlaceLabel} from '../world/placeLabel';
@@ -232,6 +234,14 @@ export async function boot():Promise<void>{
 
   const scene=new Scene(engine);
   configureScene(scene);
+  // Day or night, dry or rain: from the address (?time=night, ?weather=rain), else the driver's last choice.
+  const weather=new Weather(scene,quality);
+  const CONDITIONS_KEY='dp-conditions';
+  let conditions:Conditions=new URLSearchParams(location.search).has('time')||new URLSearchParams(location.search).has('weather')
+    ?conditionsFrom(location.search):conditionsFromName((()=>{try{return localStorage.getItem(CONDITIONS_KEY)}catch{return null}})());
+  let streetLamps:readonly Lamp[]=[];
+  let conditionsCar:TransformNode|null=null;
+  const applyConditions=()=>{if(conditionsCar)weather.apply(conditions,streetLamps,conditionsCar)};
   const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
   const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson,goodmayesMockTestJson,goodmayesLessonJson].map(raw=>{
     const s=parseScenario(raw);
@@ -310,6 +320,7 @@ export async function boot():Promise<void>{
     const at=(k:number)=>from+(to-from)*k;
     yield [at(0),'Planning houses, shops and parked cars'];
     const layout=layoutStreetscape(place)??layoutTownscape(place);
+    streetLamps=layout?.lamps??[];
     yield [at(.25),'Building houses and gardens'];
     kerbCars=kerbFootprints(layout);
     const parked:ParkedCar[]=[
@@ -340,6 +351,7 @@ export async function boot():Promise<void>{
     sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
     yield [at(.88),'Laying it on the ground'];
     if(terrain)drape(world.root,terrain);
+    applyConditions();
   }
   const dressLocation=()=>{for(const _ of dressStages(0,100)){/* all at once */}};
   // ODbL requires the OpenStreetMap credit wherever its map data is shown.
@@ -461,6 +473,7 @@ export async function boot():Promise<void>{
 
   // ---- Cockpit, mirrors, camera ----
   const vehicleNode=new TransformNode('learner-car',scene);
+  conditionsCar=vehicleNode;applyConditions();
   const head=new DriverHead();
   const cockpit=buildCockpit(scene,vehicleNode,head.seat);
   shadows?.castOnlyUnder(cockpit.root);
@@ -1600,6 +1613,15 @@ export async function boot():Promise<void>{
   if(quality.id!=='phone')disableTilt('Tilt needs a phone or tablet with a motion sensor.');
   else if(typeof DeviceOrientationEvent==='undefined')disableTilt('This browser has no motion sensor support.');
   else if(embedded)disableTilt('Not available here: this copy runs inside another page (such as the claude.ai viewer), which blocks motion sensors. Open the standalone preview link instead.');
+  // ---- Conditions: day or night, dry or rain (remembered on this device) ----
+  const conditionRadios=[...document.querySelectorAll<HTMLInputElement>('input[name="conditions"]')];
+  const showConditions=()=>{for(const r of conditionRadios)r.checked=r.value===conditionsName(conditions)};
+  for(const r of conditionRadios)r.addEventListener('change',()=>{
+    conditions=conditionsFromName(r.value);
+    try{localStorage.setItem(CONDITIONS_KEY,r.value)}catch{/* this visit only */}
+    applyConditions();
+  });
+  showConditions();
   // Choosing tilt only shows the panel; access is asked by the Enable tilt button.
   for(const radio of steeringRadios)radio.addEventListener('change',()=>setSteeringMode(radio.value as SteeringMode));
   const PERMISSION_TEXT:Record<TiltPermission,string>={
@@ -1876,7 +1898,7 @@ export async function boot():Promise<void>{
     resetAttempt();
     byId('paused-title').textContent=scenario.title;
     clock.resume();
-    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,variant:runtime.variant?.id??null,guidance:!!scenario.guide&&showGuide,
+    events.emit('session.started',{locationId:place.id,scenarioId,quality:quality.id,conditions:conditionsName(conditions),variant:runtime.variant?.id??null,guidance:!!scenario.guide&&showGuide,
       controlMode:options.familiarisation?'phone-viewer-familiarisation':controlMode(),scored:!options.familiarisation});
     events.emit('assist.changed',{enabled:steeringNow()==='assist'&&!!runtime.assist,steering:steeringNow()});
     canvas.focus();
@@ -2113,6 +2135,7 @@ export async function boot():Promise<void>{
   engine.runRenderLoop(()=>{
     const dt=engine.getDeltaTime()/1000;
     pollController();
+    if(conditions.rain)weather.update(camera.position,performance.now()/1000);
     if(!byId('exercise-detail').hidden)refreshDriveButton();
     if(session.state==='running'&&runtime){
       perf.record(engine.getDeltaTime());
@@ -2355,6 +2378,11 @@ export async function boot():Promise<void>{
     storage:store.kind,
     quality:quality.id,
     fps:()=>engine.getFps(),
+    /** Day or night, dry or rain: what is shown, and a change (day, night, rain, night-rain, dusk). */
+    conditions:()=>conditionsName(weather.current),
+    setConditions:(name:string)=>{conditions=conditionsFromName(name);showConditions();applyConditions();return conditionsName(conditions)},
+    /** Diagnostics: the light and haze now. */
+    lightNow:()=>({clear:scene.clearColor.asArray().map(v=>+v.toFixed(2)),fog:[scene.fogStart,scene.fogEnd],sun:scene.getLightByName('sun')?.intensity,sky:scene.getLightByName('sky-light')?.intensity,exposure:scene.imageProcessingConfiguration.exposure,rain:!!scene.getMeshByName('weather-rain')}),
     perf:()=>perf.stats(),
     resetPerf:()=>perf.reset(),
     renderer:()=>{

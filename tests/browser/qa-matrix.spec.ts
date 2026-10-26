@@ -11,13 +11,14 @@ import {pick} from './home';
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 type Net={download:number;upload:number;latency:number}|null;
 const NET:Record<string,Net>={fast:null,'4g':{download:9e6/8,upload:3e6/8,latency:170},'slow-3g':{download:4e5/8,upload:4e5/8,latency:400}};
-const PROFILES:{id:string;width:number;height:number;dpr:number;touch:boolean;cpu:number;net:keyof typeof NET}[]=[
-  {id:'iphone-se',width:667,height:375,dpr:2,touch:true,cpu:2,net:'4g'},
-  {id:'iphone-14',width:844,height:390,dpr:3,touch:true,cpu:1,net:'4g'},
-  {id:'pixel-7',width:915,height:412,dpr:2.625,touch:true,cpu:2,net:'4g'},
-  {id:'low-android',width:640,height:360,dpr:2,touch:true,cpu:6,net:'slow-3g'},
-  {id:'ipad',width:1180,height:820,dpr:2,touch:true,cpu:1,net:'fast'},
-  {id:'desktop',width:1366,height:768,dpr:1,touch:false,cpu:1,net:'fast'}
+// (Each drives in its conditions: the cheaper phones at night in the rain, the hardest case.)
+const PROFILES:{id:string;width:number;height:number;dpr:number;touch:boolean;cpu:number;net:keyof typeof NET;drive:'day'|'night-rain'}[]=[
+  {id:'iphone-se',width:667,height:375,dpr:2,touch:true,cpu:2,net:'4g',drive:'night-rain'},
+  {id:'iphone-14',width:844,height:390,dpr:3,touch:true,cpu:1,net:'4g',drive:'day'},
+  {id:'pixel-7',width:915,height:412,dpr:2.625,touch:true,cpu:2,net:'4g',drive:'night-rain'},
+  {id:'low-android',width:640,height:360,dpr:2,touch:true,cpu:6,net:'slow-3g',drive:'night-rain'},
+  {id:'ipad',width:1180,height:820,dpr:2,touch:true,cpu:1,net:'fast',drive:'day'},
+  {id:'desktop',width:1366,height:768,dpr:1,touch:false,cpu:1,net:'fast',drive:'day'}
 ];
 const only=process.env.QA_PROFILES?.split(',');
 const DRIVE_SECONDS=Number(process.env.QA_SECONDS??90);
@@ -70,6 +71,10 @@ for(const p of PROFILES.filter(p=>!only||only.includes(p.id)))test(`QA: ${p.id}`
   };
   await view('driverView');
   await page.click('#hud-behind');await view('behindView');await page.click('#hud-behind');
+  // The same at night in the rain (more to draw: rain streaks, lamp pools, the headlight beam).
+  await read(page,"setConditions('night-rain')");await view('driverViewNightRain');
+  await page.screenshot({path:testInfo.outputPath(`qa-${p.id}-night-rain.png`)});
+  report.driveConditions=await read(page,`setConditions('${p.drive}')`);
   stage('views measured');report.heapStartMb=await page.evaluate(()=>Math.round(((performance as any).memory?.usedJSHeapSize??0)/1e6));
 
   // Drive: the bot on the pedals, assisted steering, sampled every half second (simulation time).
