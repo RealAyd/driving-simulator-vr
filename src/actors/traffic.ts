@@ -44,6 +44,8 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   squeezing?:boolean;
   /** Driving on out of a tangle with this car (ignoring it until clear of it). */
   through?:Driver|undefined;
+  /** Waved on through a junction where everyone stood waiting for someone else (seconds left). */
+  waved?:number;
   /** The current leg ends with no way on (worked out near its end; cleared with each new leg). */
   deadEnd?:boolean|undefined;
   /** At the end of a side road (give way or STOP lines) or turning right: stopped at the line (STOP), or going. */
@@ -304,8 +306,32 @@ export class Traffic implements SimModule{
     d.car.pose={position:{x:p.x+p.dir.z*d.lat,y:0,z:p.z-p.dir.x*d.lat},heading:headingFromDirection(p.dir)};
   }
 
+  /**
+   * A knot at a junction: every car at it has stood a while, each giving way to another (as at a busy mini-roundabout
+   * where a bus going round cannot get by the car waiting to come on). As drivers do, the one waiting longest (one
+   * already on it first) is waved on: it no longer gives way to those standing, only to moving traffic and what is
+   * right in front of it.
+   */
+  private unknot(dt:Seconds):void{
+    for(const d of this.drivers)if(d.waved)d.waved=Math.max(0,d.waved-dt);
+    for(const n of this.nodes){
+      if(!n.junction)continue;
+      // (The queues behind them, following, are not part of the knot.)
+      const here=this.drivers.filter(d=>d.car.visible&&!d.why?.startsWith('behind')&&Math.hypot(d.car.pose.position.x-n.x,d.car.pose.position.z-n.z)<n.radius+14);
+      if(here.length<2||here.some(d=>d.waved||d.car.speed>.3)||Math.max(...here.map(d=>d.waited))<6)continue;
+      let pick:Driver|undefined=[...here].sort((a,b)=>Number(!!b.leg.road===false)-Number(!!a.leg.road===false)||b.waited-a.waited)[0]!;
+      // And the one it is held up by (and so on): that one may be able to drive away from it.
+      for(let k=0;k<4&&pick&&!pick.waved;k++){
+        pick.waved=6;
+        const by:string|undefined=/(?:blocked by|crossing|waiting for|behind) (\S+)/.exec(pick.why??'')?.[1];
+        pick=by?this.drivers.find(x=>x.car.id===by):undefined;
+      }
+    }
+  }
+
   fixedUpdate(dt:Seconds):void{
     const learner=this.options.learner();
+    this.unknot(dt);
     for(const [i,d] of this.drivers.entries()){
       const car=d.car;
       if(!car.visible){if(this.rand()<.02)this.drivers[i]=this.spawn(d,i);continue}
@@ -323,6 +349,12 @@ export class Traffic implements SimModule{
       // Meeting a car out past parked cars on a narrow street: the one in its lane tucks in to its kerb and waits
       // (tuck); the one out passing squeezes by, closer to the parked cars (tight).
       let tuck=false,tight=false,blocked=false;
+      // On or at a junction (going round a roundabout, or waiting at its edge): passing parked cars is not what is going on.
+      const atJunction=(x:Driver)=>{
+        if(!x.leg.road)return true;
+        const n=x.leg.endNode>=0?this.nodes[x.leg.endNode]!:null;
+        return !!n?.junction&&Math.hypot(x.car.pose.position.x-n.x,x.car.pose.position.z-n.z)<n.radius+10;
+      };
       for(const o of this.drivers){
         if(o===d||!o.car.visible)continue;
         const op=o.car.pose.position,ofx=Math.sin(o.car.pose.heading),ofz=-Math.cos(o.car.pose.heading);
@@ -347,12 +379,13 @@ export class Traffic implements SimModule{
         else if(facing>=-.5){
           const dx=op.x-pos.x,dz=op.z-pos.z,close=Math.hypot(dx,dz)<car.halfLength+o.car.halfLength+1;
           const first=this.drivers.indexOf(o)<i;
-          if(o.car.speed>.3||close||d.waited<2||(first&&d.waited<8))ahead(op.x,op.z,o.car.halfLength*.6+1,`crossing ${o.car.id}`);
+          if(o.car.speed>.3||(!d.waved&&(close||d.waited<2||(first&&d.waited<8))))ahead(op.x,op.z,o.car.halfLength*.6+1,`crossing ${o.car.id}`);
         }
         else if(facing<-.5){
           const dx=op.x-pos.x,dz=op.z-pos.z,along=dx*fwd.x+dz*fwd.z,side=Math.abs(dx*fwd.z-dz*fwd.x);
           if(along>0&&along<40&&side<4)oncoming.push({along});
-          const oOut=!!o.leg.road&&o.lat<o.leg.lane-.4,meOut=!!d.leg.road&&d.lat<d.leg.lane-.4,near=along>0&&along<40&&side<car.halfWidth+o.car.halfWidth+.8;
+          const narrow=!atJunction(d)&&!atJunction(o);
+          const oOut=narrow&&o.lat<o.leg.lane-.4,meOut=narrow&&d.lat<d.leg.lane-.4,near=along>0&&along<40&&side<car.halfWidth+o.car.halfWidth+.8;
           // Out past parked cars with it coming: carry on by it (it tucks in), stopping only while there is no room.
           if(meOut&&!oOut&&near){tight=true;if(side<car.halfWidth+o.car.halfWidth+.05){blocked=true;ahead(op.x,op.z,o.car.halfLength+1.5,`facing ${o.car.id}`)}}
           // In this lane with it coming out past parked cars: tuck in and wait well back for it.
@@ -361,7 +394,7 @@ export class Traffic implements SimModule{
           else if(side<1.5)ahead(op.x,op.z,o.car.halfLength+3,`facing ${o.car.id}`);
           // Coming out past parked cars on its side towards this one (this one still in its lane): wait well back,
           // so it can pass them and pull back in before the two meet.
-          else if(o.leg.road&&o.lat<o.leg.lane-.4&&d.lat>d.leg.lane-.4&&side<car.halfWidth+o.car.halfWidth+.6)ahead(op.x,op.z,o.car.halfLength+9,`waiting for ${o.car.id}`);
+          else if(narrow&&o.lat<o.leg.lane-.4&&d.lat>d.leg.lane-.4&&side<car.halfWidth+o.car.halfWidth+.6)ahead(op.x,op.z,o.car.halfLength+9,`waiting for ${o.car.id}`);
         }
       }
       // The learner: followed when moving; when stopped in this lane, passed like a parked car (below) once there is room.
@@ -428,6 +461,11 @@ export class Traffic implements SimModule{
           // Nearer the junction and moving, or nearer and waiting with the turn first.
           // (A bus standing at a stop just past the junction keeps it busy: there is no room to turn in beside it.)
           if(o.dwell>0&&r<reach+o.car.halfLength)return true;
+          // At a roundabout, give way to traffic from the right: one coming up to it on the right, moving, about as near.
+          if(node?.junction&&o.leg.road&&o.leg.endNode===d.leg.endNode&&o.car.speed>.3&&r<reach+6&&r<mine+4){
+            const ox=o.car.pose.position.x-pos.x,oz=o.car.pose.position.z-pos.z;
+            if(ox*-fwd.z+oz*fwd.x>1)return true;
+          }
           return r<reach&&r<mine-.5&&(o.car.speed>.3||d.waited<2||this.drivers.indexOf(o)<i||d.waited<8);
         })||(()=>{
           // The learner holds the junction while moving through it or standing in it, not when parked near it.
@@ -450,7 +488,14 @@ export class Traffic implements SimModule{
           if(clear&&remaining<8)d.atLine='going';
           else if(!clear){target=Math.min(target,Math.max(0,(remaining-1.5)*.6));if(remaining<5)why='turning right'}
         }
-        else if(busy&&remaining<7&&!mouth){target=0;why='junction busy'}
+        else if(busy&&!mouth&&node?.junction&&!d.waved){
+          // Waiting to go on to a roundabout: the nose at its edge, never in the way round (the map's roads often end
+          // at its middle, so the road's end is not where to stop: a car stopped there blocks those going round).
+          // (A metre and a half back from it: a bus going round swings its back end out over the edge.)
+          const toEdge=mine-node.radius-1.5-car.halfLength;
+          if(toEdge<8){target=Math.min(target,Math.max(0,(toEdge-.5)*.6));if(toEdge<2)why='junction busy'}
+        }
+        else if(busy&&remaining<7&&!mouth&&!d.waved){target=0;why='junction busy'}
         // A dead end (the edge of the area): stop short of it, and go only once the learner cannot see (below).
         d.deadEnd??=this.waysOn(d.leg,car.kind==='bus').length===0;
         if(d.deadEnd){target=Math.min(target,Math.max(0,(remaining-car.halfLength-1)*.5));if(remaining<car.halfLength+2)why='dead end'}
@@ -518,6 +563,8 @@ export class Traffic implements SimModule{
         for(const o of this.drivers){
           // (Not one coming the other way: squeezing past each other on a narrow street is handled above, by centimetres.)
           if(o===d||!o.car.visible||d.through===o||Math.cos(o.car.pose.heading-car.pose.heading)<-.7)continue;
+          // (Waved on out of a knot: it edges by those standing still, as drivers squeeze past each other.)
+          if(d.waved&&o.car.speed<.3)continue;
           const ob=boxOf(o.car);
           if(boxesOverlap(next,ob)&&!boxesOverlap(now,ob)){target=0;car.speed=Math.min(car.speed,1);why=`blocked by ${o.car.id}`;break}
         }
