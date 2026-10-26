@@ -1794,6 +1794,12 @@ export async function boot():Promise<void>{
     byId('free-badge').hidden=!left;
     byId('free-badge-text').textContent=left===3?'Your first 3 drives are free':`${left} free drive${left===1?'':'s'} left`;
     byId('view-passes').hidden=!paidAccess.gate;
+    for(const tag of document.querySelectorAll<HTMLElement>('[data-try]')){
+      const state=paidAccess.tryState(tag.dataset['try'] as 'free'|'lesson'|'test');
+      tag.hidden=!state;
+      tag.textContent=state==='used'?'Free try used':'Free';
+      tag.classList.toggle('used',state==='used');
+    }
   };
   showOffer();
   paidAccess.onChange=showOffer;

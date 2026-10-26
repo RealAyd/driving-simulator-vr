@@ -35,6 +35,8 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
   await expect(page.locator('#free-badge')).toHaveText('Your first 3 drives are free');
   await expect(page.locator('#view-passes')).toBeVisible();
+  // Each card says its free try is there.
+  await expect(page.locator('[data-try]')).toHaveText(['Free','Free','Free']);
   await pick(page,'moving-off');
   // The device's free try: this practice drive is its free drive, with no sign-up.
   await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed');
@@ -45,7 +47,15 @@ test('G26: a free try without signing up (one free drive here); then Start asks 
   await page.click('#end-button');
   await expect(page.locator('#screen-results')).toBeVisible();
   await page.click('#menu-button');
+  // Used: the home screen says so on Free Drive (the drills use the free drive too), and the others are still free.
+  await page.click('#place-back');
+  await expect(page.locator('[data-try=free]')).toHaveText('Free try used');
+  await expect(page.locator('[data-try=lesson]')).toHaveText('Free');
+  await expect(page.locator('[data-try=test]')).toHaveText('Free');
+  await expect(page.locator('#free-badge')).toHaveText('2 free drives left');
+  await page.screenshot({path:test.info().outputPath('g26-free-try-used.png')});
   await pick(page,'moving-off');
+  await expect(page.locator('#session-note')).toHaveText('You have used your free drive. Your free lesson and free mock test are still there.');
   // Used: Start asks to sign up, to save progress (a lesson finished on this device goes to the account).
   await page.evaluate(()=>localStorage.setItem('dp-lessons-done',JSON.stringify(['moving-off-and-stopping'])));
   await expect(page.locator('#session-note')).toContainText('You have used your free drive');

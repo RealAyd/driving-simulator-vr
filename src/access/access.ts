@@ -128,6 +128,23 @@ export class Access{
     return (['lesson','test','free'] as const).reduce((n,k)=>n+Math.min(1,this.me.trial?.[k]??0),0);
   }
 
+  /** Whether a drive here would use the device's free try (paid drives, nothing bought or signed out, not an admin). */
+  private onFreeTry():boolean{return this.gate&&(!this.me.signedIn||(!this.me.admin&&total(this.me)===0))}
+  /**
+   * The free try of one kind on this device: 'free' (still there), 'used', or null where it is not what a drive would
+   * use. The home screen's cards show it, so nobody tries for a second free one and thinks the app is not working.
+   */
+  tryState(pot:Pot):'free'|'used'|null{
+    if(!this.onFreeTry())return null;
+    return (this.me.trial?.[pot]??0)>0?'free':'used';
+  }
+  /** The other kinds still free on this device, said plainly ('' if none). */
+  private stillFree(except:Pot):string{
+    const left=(['free','lesson','test'] as const).filter(k=>k!==except&&(this.me.trial?.[k]??0)>0).map(k=>`free ${POT_NAME[k]}`);
+    if(!left.length)return '';
+    return `Your ${left.join(' and ')} ${left.length>1?'are':'is'} still there.`;
+  }
+
   /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
   viewPasses():void{this.open(undefined,this.me.signedIn?'paywall':'save')}
 
@@ -137,12 +154,14 @@ export class Access{
     const pot=scenario?modeOf(scenario):null;
     const free=!!pot&&(this.me.trial?.[pot]??0)>0;
     if(!this.me.signedIn)return free?`Your ${TRY_NAME[pot]}: no sign-up needed`
-      :pot?`You have used your ${TRY_NAME[pot]}: sign in to carry on.`:'Sign in to start: each drive uses one session.';
+      :pot?`You have used your ${TRY_NAME[pot]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: each drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
     if(pot&&this.me.allowances[pot]>0)return `Uses your Starter Pass ${POT_NAME[pot]}`;
     const n=this.me.balance;
     if(n>0)return `Uses 1 session · you have ${n}`;
-    return free?`Uses your ${TRY_NAME[pot]}`:`No ${pot?`${POT_NAME[pot]} or `:''}sessions left: buy more to start.`;
+    if(free)return `Uses your ${TRY_NAME[pot]}`;
+    const rest=pot?this.stillFree(pot):'';
+    return pot&&rest?`You have used your ${TRY_NAME[pot]}. ${rest}`:`No ${pot?`${POT_NAME[pot]} or `:''}sessions left: buy more to start.`;
   }
 
   /**
