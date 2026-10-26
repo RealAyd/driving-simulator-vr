@@ -129,8 +129,10 @@ export class PeopleRenderer{
     const key=list.map(x=>x.f.id).join();
     if(key!==this.drawnKey){this.drawnKey=key;this.dirtyColours=true}
     const n=list.length;
-    const resized=this.body.matrices.length!==n*7*16;
-    this.body.resize(n*7);this.ball.resize(n);this.hair.resize(n);
+    const resized=this.body.matrices.length!==Math.max(1,n)*7*16;
+    // (Room for one at least: with no people near, empty buffers left the colour attribute without its instances and
+    // the shader failed to compile; none are drawn then, and the meshes are hidden.)
+    this.body.resize(Math.max(1,n)*7);this.ball.resize(Math.max(1,n));this.hair.resize(Math.max(1,n));
     if(resized)this.dirtyColours=true;
     list.forEach(({f,pose},i)=>this.place(f,pose,i));
     if(this.dirtyColours){
@@ -138,7 +140,7 @@ export class PeopleRenderer{
       for(const p of [this.body,this.ball,this.hair])p.mesh.thinInstanceBufferUpdated('color');
       this.dirtyColours=false;
     }
-    for(const p of [this.body,this.ball,this.hair]){p.mesh.thinInstanceBufferUpdated('matrix');p.mesh.thinInstanceCount=p.matrices.length/16}
+    for(const [p,per] of [[this.body,7],[this.ball,1],[this.hair,1]] as const){p.mesh.thinInstanceBufferUpdated('matrix');p.mesh.thinInstanceCount=n*per;p.mesh.isVisible=n>0}
   }
 
   private colour(look:Appearance,i:number){

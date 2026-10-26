@@ -365,16 +365,28 @@ export async function boot():Promise<void>{
   };
   const store=await openAttemptStore();
   // Car models (content/assets/register.json): other road users and parked cars; simple shapes for any that cannot load.
-  // Animated people load in the background: the light figures are drawn until they are ready.
-  void AnimatedPeople.load(scene).then(a=>{animatedPeople=a;if(people)people.animated=a});
-  const [loadedParked,roadUserModels,learnerModel,loadedStreet,singleDecker,doubleDecker]=await Promise.all([loadCarModels(scene),Promise.all(roadUserCarModels().map(spec=>CarModel.load(scene,spec))),CarModel.load(scene,learnerCarModel()),StreetModels.load(scene),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)]);
+  // Only the parked cars and street furniture are needed to lay out the first place; the home screen does not wait for
+  // the rest (on a slow connection that was most of a minute): moving cars, buses and the learner's own car load
+  // meanwhile and a drive waits for them (drivingModels). Animated people start once the home screen is up.
+  const [loadedParked,loadedStreet]=await Promise.all([loadCarModels(scene),StreetModels.load(scene)]);
+  let singleDecker:CarModel|null=null,doubleDecker:CarModel|null=null;
   // Red buses (asset Batch A): each deck falls back to the other, then to the drawn bus.
-  const busModels={single:singleDecker??doubleDecker,double:doubleDecker??singleDecker};
+  const busModels:{single:CarModel|null;double:CarModel|null}={single:null,double:null};
   // Other road users' cars alternate between the models that loaded (simple shapes if none did).
-  const roadUserCars=roadUserModels.filter((m):m is CarModel=>m!==null);
+  let roadUserCars:CarModel[]=[];
   // The learner's own car: its own model (the Peugeot 208), else the first road user's.
-  const carModel=learnerModel??roadUserCars[0]??null;
+  let carModel:CarModel|null=null;
   const roadUserModel=(i:number)=>roadUserCars.length?roadUserCars[i%roadUserCars.length]!:null;
+  const drivingModels=Promise.all([Promise.all(roadUserCarModels().map(spec=>CarModel.load(scene,spec))),CarModel.load(scene,learnerCarModel()),CarModel.load(scene,BUS_MODELS.single),CarModel.load(scene,BUS_MODELS.double)])
+    .then(([roadUserModels,learnerModel,single,double])=>{
+      singleDecker=single;doubleDecker=double;
+      busModels.single=single??double;busModels.double=double??single;
+      roadUserCars=roadUserModels.filter((m):m is CarModel=>m!==null);
+      carModel=learnerModel??roadUserCars[0]??null;
+      makeLearnerBody();
+      drivingModelsReady=true;
+    });
+  let drivingModelsReady=false;
   carModels=loadedParked;
   streetModels=loadedStreet;
   dressLocation();
@@ -487,11 +499,16 @@ export async function boot():Promise<void>{
   seatNode.parent=vehicleNode;
   seatNode.position.set(head.seat.eye.x,head.seat.eye.y,head.seat.eye.z);
   const mirrors=ALL_MIRRORS.map(spec=>new Mirror(scene,vehicleNode,cockpit.root,spec,quality,head.seat.eye));
-  // The learner's own car as seen from behind (hidden from the driver's seat).
-  const learnerBody=carModel?.instantiate(vehicleNode,'learner-car','#c81e1e',4.3)??null;
+  // The learner's own car as seen from behind (hidden from the driver's seat), made once its model has loaded.
+  let learnerBody:TransformNode|null=null;
   // L plates, front and back: this is the learner's car.
-  const lPlates=learnerBody?addLPlates(learnerBody):null;
-  learnerBody?.setEnabled(false);lPlates?.setEnabled(false);
+  let lPlates:ReturnType<typeof addLPlates>|null=null;
+  function makeLearnerBody(){
+    if(learnerBody||!carModel)return;
+    learnerBody=carModel.instantiate(vehicleNode,'learner-car','#c81e1e',4.3);
+    lPlates=addLPlates(learnerBody);
+    learnerBody.setEnabled(false);lPlates.setEnabled(false);
+  }
   const learnerBox=scene.getMeshByName('car-body');
   let learnerTravelled=0;
 
@@ -1301,6 +1318,7 @@ export async function boot():Promise<void>{
       if(mode!=='calibration'){
         // Tilt steering needs the phone in the hands: use the assistance (or the controller's stick) instead.
         if(steeringMode==='tilt')setSteeringMode('assist');
+        await drivingModels;
         start(mode==='familiarisation'?(introId??scenarioId):scenarioId,{familiarisation:mode==='familiarisation'});
         if(drive){paidDrive=drive;paidAccess.report(drive,session.state==='running'?'loaded':'failed')}
         if(session.state!=='running'){viewerMode=null;return}
@@ -1906,6 +1924,8 @@ export async function boot():Promise<void>{
   // Real streets (traffic, people, lights to set up) take a moment: the loading screen first. The small practice
   // streets start at once.
   const startShowing=async(id:string):Promise<void>=>{
+    // (The moving cars, buses and the learner's car: usually loaded long before, while the home screen was up.)
+    if(!drivingModelsReady)await withLoading('Starting…',async()=>{await drivingModels});
     const sc=scenarios.get(id);
     if(placeLoading){const waiting=placeLoading;await waiting;return startShowing(id)}
     if(sc&&(locations.get(sc.locationId)?.streetParking??0)>0)await withLoading('Starting…',async rep=>{
@@ -2409,4 +2429,6 @@ export async function boot():Promise<void>{
   });
 
   session.to('ready');
+  // Animated people: after the home screen is up (on a slow connection they would hold everything else up).
+  void AnimatedPeople.load(scene).then(a=>{animatedPeople=a;if(people)people.animated=a});
 }

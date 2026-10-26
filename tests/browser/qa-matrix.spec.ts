@@ -55,6 +55,8 @@ for(const p of PROFILES.filter(p=>!only||only.includes(p.id)))test(`QA: ${p.id}`
   await pick(page,'goodmayes','test');
   await expect(page.locator('#busy')).toBeHidden({timeout:600_000});
   stage('place built');report.placeSeconds=(Date.now()-t1)/1000;report.totalBytes=bytes;
+  // (The bot steers with the assistance on every device: a desktop starts with the keys.)
+  await page.locator('label.opt',{has:page.locator('input[name=steering][value=assist]')}).click();
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:300_000}).toBe('running');
   stage('running');report.renderer=await read(page,'renderer()');
