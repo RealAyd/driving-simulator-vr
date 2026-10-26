@@ -698,7 +698,9 @@ export async function boot():Promise<void>{
       learner:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:Math.abs(vehicle.state.speed),indicator:vehicle.indicators.state}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),
       signals:()=>trafficSignals?.stops??[],parked:kerbCars,
-      say:text=>{examinerVoice.say(text,true);hud.setTask(text)},reminders:level.reminders}):null;
+      say:text=>{examinerVoice.say(text,true);hud.setTask(text)},
+      unsay:text=>{examinerVoice.unsay(text);if(byId('hud-task').textContent===text)hud.setTask(runtime?.examiner?.lastSaid??examiner?.lastSaid??'',false)},
+      reminders:level.reminders}):null;
     // The examiner tells the marking and the instructor about each direction.
     const listeners:ExaminerListener[]=[mockAssessor,instructor].filter((x):x is NonNullable<typeof x>=>!!x);
     const listener:ExaminerListener={

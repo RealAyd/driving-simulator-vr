@@ -148,6 +148,12 @@ export class ExaminerVoice{
     if(!this.busy)void this.run();
   }
 
+  /** Drops `text`'s sentences if they are still waiting (no longer true: not to be said late). */
+  unsay(text:string):void{
+    const parts=new Set(sentences(text));
+    this.waiting=this.waiting.filter(w=>{if(!parts.has(w))return true;this.queued.delete(w);this.queuedAt.delete(w);this.stats.dropped++;return false});
+  }
+
   /** Stops the sentence being spoken (not what is waiting). */
   private halt():void{
     this.generation++;

@@ -6,6 +6,7 @@ import {Instructor} from '../../src/lessons/instructor';
 import {LESSONS,planLesson} from '../../src/lessons/syllabus';
 import {EventLog} from '../../src/app/eventLog';
 import {pointAtAlong} from '../../src/world/roadGeometry';
+import type {Aspect,LiveStop} from '../../src/world/trafficSignals';
 import goodmayesJson from '../../content/locations/goodmayes.json';
 import brentwoodJson from '../../content/locations/brentwood-paired-mini-roundabouts.json';
 
@@ -106,5 +107,35 @@ describe('the instructor',()=>{
     expect(r.said.some(t=>/mounted the pavement/.test(t))).toBe(true);
     expect(r.said.some(t=>/^(Well done|Good\.)/.test(t))).toBe(false);
     expect(r.notes.some(n=>/pavement/.test(n))).toBe(true);
+  });
+});
+
+describe('the instructor at traffic lights',()=>{
+  // The owner's report: "stop at the red light" said again (or still showing) once the light had changed. Red and
+  // amber (about to go green) was taken for red; now nothing new is said then, and a warning is taken back on green.
+  it('warns once at red; red and amber says nothing; green takes the warning back; a new red is warned again',()=>{
+    let time=0;
+    const events=new EventLog(()=>time);
+    const learner={x:0,z:0,heading:0,speed:6,indicator:'off' as const};
+    const stop:LiveStop={id:'s1',group:'g1',road:goodmayes.roads[0]!,along:0,dir:1,line:true,x:0,z:-30,heading:0,lane:{x:0,z:-30},state:'red'};
+    const said:string[]=[],unsaid:string[]=[];
+    const instructor=new Instructor({location:goodmayes,lesson:lesson('traffic-lights'),events,now:()=>time,learner:()=>learner,traffic:()=>[],
+      signals:()=>[stop],parked:[],say:t=>said.push(t),unsay:t=>unsaid.push(t)});
+    instructor.reset();
+    const run=(state:Aspect)=>{stop.state=state;for(let k=0;k<10;k++){time+=.1;instructor.fixedUpdate(.1)}};
+    const red=(s:string)=>s==='The lights are red: stop at the line.';
+    run('red');run('red');
+    expect(said.filter(red)).toHaveLength(1);
+    run('red-amber');
+    expect(said.filter(red)).toHaveLength(1);
+    expect(unsaid.filter(red)).toHaveLength(1);
+    run('green');
+    expect(said.filter(red)).toHaveLength(1);
+    run('amber');
+    expect(said.at(-1)).toBe('Amber: stop at the line if you safely can.');
+    run('red');
+    expect(said.filter(red)).toHaveLength(2);
+    // (The amber warning, no longer true once red, was taken back.)
+    expect(unsaid).toContain('Amber: stop at the line if you safely can.');
   });
 });

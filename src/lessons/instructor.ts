@@ -33,6 +33,8 @@ export interface InstructorInput{
   parked:Vec2[];
   /** Speaks (queued after anything being said) and shows a reminder. */
   say:(text:string)=>void;
+  /** Takes back a reminder that no longer holds (not said yet: dropped; on screen: cleared). */
+  unsay?:(text:string)=>void;
   /** Reminders before junctions (mirrors, signal, lights, crossings…); off at the hardest level: feedback only. */
   reminders?:boolean;
 }
@@ -85,7 +87,8 @@ export class Instructor implements SimModule,ExaminerListener{
   private corrections=new Map<string,{index:number;count:number;said:number}>();
   private manoeuvres=0;
   private crossingsWarned=new Set<string>();
-  private lightsWarned=new Set<string>();
+  /** Traffic lights warned about, by signal: the aspect then and what was said (taken back once they change). */
+  private lightsWarned=new Map<string,{state:string;say:string}>();
   /** Safety mistakes (from the marking) since the last direction: none, or no praise for that junction. */
   private mistakes:string[]=[];
   /** Moving off and stopping: driving since the last stop, the pull-up being asked for, moving off again. */
@@ -300,13 +303,22 @@ export class Instructor implements SimModule,ExaminerListener{
       if(s.kind==='roundabout'&&this.has('roundabout')&&d<15&&d>6)this.prompt('give-way-right','Give way to traffic from the right.');
     }
 
-    // Traffic lights ahead at red or amber.
+    // Traffic lights ahead at red or amber. Red and amber together (about to go green) says nothing new, and once a
+    // light warned about goes green (or red and amber) the warning is taken back: "the lights are red" said or shown
+    // when they are not would be wrong. Warned again only on a new red.
     if(this.has('lights')&&this.input.reminders!==false)for(const st of this.input.signals()){
-      if(st.state==='green'||Math.cos(st.heading-l.heading)<.8)continue;
+      const warned=this.lightsWarned.get(st.id);
+      if(st.state==='green'||st.state==='red-amber'){
+        if(warned){this.input.unsay?.(warned.say);this.lightsWarned.delete(st.id)}
+        continue;
+      }
+      if(warned?.state===st.state||Math.cos(st.heading-l.heading)<.8)continue;
       const dx=st.lane.x-l.x,dz=st.lane.z-l.z,a=dx*fwd.x+dz*fwd.z;
-      if(a>8&&a<45&&Math.abs(dx*fwd.z-dz*fwd.x)<4&&!this.lightsWarned.has(`${st.id}-${st.state}`)&&l.speed>2){
-        this.lightsWarned.add(`${st.id}-${st.state}`);
-        this.input.say(st.state==='amber'?'Amber: stop at the line if you safely can.':'The lights are red: stop at the line.');
+      if(a>8&&a<45&&Math.abs(dx*fwd.z-dz*fwd.x)<4&&l.speed>2){
+        const say=st.state==='amber'?'Amber: stop at the line if you safely can.':'The lights are red: stop at the line.';
+        if(warned)this.input.unsay?.(warned.say);
+        this.lightsWarned.set(st.id,{state:st.state,say});
+        this.input.say(say);
       }
     }
     // Pedestrian crossings ahead.
