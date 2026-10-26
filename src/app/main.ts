@@ -17,6 +17,7 @@ import {
 import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
 import {Bus,BUS_SIZE} from '../actors/bus';
 import {layoutCrowd,personPose,type Person} from '../world/crowd';
+import {drivingView,widenRoundabouts} from '../world/roundabouts';
 import {PeopleRenderer} from '../world/peopleMesh';
 import {AnimatedPeople} from '../world/animatedPeople';
 import {Weather,conditionsFrom,conditionsFromName,conditionsName,type Conditions} from '../world/weather';
@@ -244,7 +245,7 @@ export async function boot():Promise<void>{
   let streetLamps:readonly Lamp[]=[];
   let conditionsCar:TransformNode|null=null;
   const applyConditions=()=>{if(conditionsCar)weather.apply(conditions,streetLamps,conditionsCar)};
-  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);return [l.id,l] as const}));
+  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);widenRoundabouts(l);return [l.id,l] as const}));
   const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson,goodmayesMockTestJson,goodmayesLessonJson].map(raw=>{
     const s=parseScenario(raw);
     if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
@@ -711,7 +712,7 @@ export async function boot():Promise<void>{
         askTellMe(q,testSeed,answer);
       },
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
-      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars,place.junctions);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
+      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
       // The manoeuvres (DVSA: one of them on every test, the emergency stop on about one in three); a lesson's own.
       manoeuvres:lesson?lesson.manoeuvres??[]:[...(testSeed%3===0?['emergency-stop' as const]:[]),testSeed%2===0?'parallel-park' as const:'pull-up-right' as const],
       manoeuvreInput:{location:place,parked:kerbCars,now:()=>clock.time,
@@ -721,12 +722,12 @@ export async function boot():Promise<void>{
         flash:text=>hud.flash(text),
         setPath:(forward,reverse)=>{
           if(forward)routeAssist?.setPath(forward);
-          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars,place.junctions);if(path.length>1)routeAssist?.setPath(path)}
+          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions);if(path.length>1)routeAssist?.setPath(path)}
           routeAssist?.setReversePath(reverse);
         }}}):null;
     if(examiner){
       examiner.reset();
-      const path=routeLanePath(examiner.legs,kerbCars,place.junctions);
+      const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions);
       if(path.length>1)routeAssist=new SteeringAssist(path,vehicle.params);
     }
     // A lesson about something these streets do not have (no mini-roundabout, no lights): said once at the start.
@@ -1897,6 +1898,7 @@ export async function boot():Promise<void>{
       const built=await withLoading(`Building the streets round ${request.label}…`,async rep=>{
         const b=await buildArea(request,(step,percent)=>{areaStatus.textContent=step;void rep(percent*.5,step)});
         const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=b;
+        widenRoundabouts(l);
         locations.set(l.id,l);
         scenarios.set(sc.id,sc);
         scenarios.set(mockTest.id,mockTest);

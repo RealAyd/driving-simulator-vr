@@ -4,6 +4,7 @@ import type {KerbFootprint} from '../world/townscape';
 import {boxesOverlap} from '../world/obstacles';
 import {aroundMini,miniAt,type MiniRoundabout} from '../world/miniRoundabout';
 import {junctionMouths} from '../world/junctionControls';
+import {drivingView} from '../world/roundabouts';
 import {roadHalfWidth} from '../world/roadGeometry';
 import {headingFromDirection,type Location,type Pose,type Road,type Seconds,type SimModule,type Vec2} from '../contracts';
 const roadLength=(road:Road)=>road.centreline.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
@@ -97,7 +98,10 @@ export class Traffic implements SimModule{
   private readonly ends:Array<Array<{road:Road;dir:1|-1}>>=[];
   private seed:number;
 
-  constructor(private readonly location:Location,private readonly options:TrafficOptions){
+  private readonly location:Location;
+  constructor(place:Location,private readonly options:TrafficOptions){
+    // The place as driven: a roundabout's ring is one junction, gone round clockwise.
+    const location=this.location=drivingView(place);
     this.seed=options.seed??20261021;
     // Nodes: junctions, then road ends (merged where they meet, within 3 m).
     for(const j of location.junctions){this.nodes.push({x:j.position.x,z:j.position.z,junction:true,radius:j.radius});this.ends.push([]);this.minis.push(j)}

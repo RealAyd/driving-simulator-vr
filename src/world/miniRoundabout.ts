@@ -1,7 +1,23 @@
 import type {Vec2} from '../contracts';
 
 /** A mini-roundabout as the paths through it need it. */
-export interface MiniRoundabout{position:Vec2;radius:number;discDiameter:number}
+export interface MiniRoundabout{position:Vec2;radius:number;discDiameter:number;
+  /** A bigger roundabout's ring as mapped (its centreline, a closed loop): the way round follows its shape. */
+  outline?:readonly Vec2[]}
+
+/** How far out from the middle the closed loop `outline` is at `angle` (the farthest crossing of that ray). */
+function outlineReach(c:Vec2,outline:readonly Vec2[],angle:number):number{
+  const dx=Math.cos(angle),dz=Math.sin(angle);
+  let best=0;
+  for(let i=0;i<outline.length;i++){
+    const p=outline[i]!,q=outline[(i+1)%outline.length]!;
+    const ex=q.x-p.x,ez=q.z-p.z,den=dx*ez-dz*ex;
+    if(Math.abs(den)<1e-9)continue;
+    const px=p.x-c.x,pz=p.z-c.z,t=(px*ez-pz*ex)/den,u=(px*dz-pz*dx)/den;
+    if(t>0&&u>=0&&u<=1)best=Math.max(best,t);
+  }
+  return best;
+}
 
 /** How far a car's middle keeps from the painted disc's edge (half a car's width and a margin). */
 const DISC_CLEARANCE=2.4;
@@ -19,7 +35,7 @@ export function aroundMini(m:MiniRoundabout,a:Vec2,b:Vec2):Vec2[]{
   // Back the way it came (a U-turn): all the way round.
   if(sweep<.35)sweep+=2*Math.PI;
   const ra=Math.hypot(a.x-c.x,a.z-c.z),rb=Math.hypot(b.x-c.x,b.z-c.z);
-  const inner=m.discDiameter/2+DISC_CLEARANCE;
+  const inner=m.discDiameter/2+DISC_CLEARANCE,mean=inner;
   // Going round (more than a left turn): drawn in towards the disc, never closer than the clearance.
   const round=Math.max(0,Math.min(1,(sweep-Math.PI*.6)/(Math.PI*.4)));
   const n=Math.max(4,Math.ceil(sweep/.12));
@@ -28,7 +44,10 @@ export function aroundMini(m:MiniRoundabout,a:Vec2,b:Vec2):Vec2[]{
     const t=k/n,base=ra+(rb-ra)*t;
     const r=base+(Math.max(inner,Math.min(base,inner+1))-base)*round*Math.sin(Math.PI*t);
     const angle=ta+sweep*t;
-    out.push({x:c.x+Math.cos(angle)*r,z:c.z+Math.sin(angle)*r});
+    // Round a mapped ring: the circle stretched to its shape (the entry and exit stay where they are).
+    const shape=m.outline?(outlineReach(c,m.outline,angle)||mean)/mean:1,ends=Math.min(1,4*Math.min(t,1-t));
+    const rr=r*(1+(shape-1)*ends);
+    out.push({x:c.x+Math.cos(angle)*rr,z:c.z+Math.sin(angle)*rr});
   }
   return out;
 }

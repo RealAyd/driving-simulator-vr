@@ -3,6 +3,7 @@ import {parseLocation} from '../../src/contracts';
 import {RoadNetwork} from '../../src/test/route';
 import {routeLanePath} from '../../src/test/routePath';
 import {surfaceAt} from '../../src/world/roadGeometry';
+import {drivingView,widenRoundabouts} from '../../src/world/roundabouts';
 
 const node=(m:string)=>import(/* @vite-ignore */ m);
 
@@ -16,12 +17,13 @@ describe('the assisted steering path',()=>{
     let points=0,off=0;const worst:Array<{file:string;x:number;z:number}>=[];
     for(const file of pick){
       const loc=parseLocation(JSON.parse(gunzipSync(readFileSync(`public/centres/${file}`)).toString()).location);
+      widenRoundabouts(loc);
       const net=new RoadNetwork(loc),sp=loc.spawn;
       const start=net.locate(sp.position.x,sp.position.z,sp.headingDeg*Math.PI/180);
       if(!start)continue;
       const on=(x:number,z:number)=>surfaceAt(loc,x,z)?.kind==='carriageway';
       for(const seed of [1,2,3,4,5,6]){
-        const path=routeLanePath(net.plan(start,2500,seed).legs,[],loc.junctions);
+        const path=routeLanePath(net.plan(start,2500,seed).legs,[],drivingView(loc).junctions);
         for(let i=1;i<path.length;i++){
           const a=path[i-1]!,b=path[i]!,dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1;
           // The car's sides (0.9 m either side of the path).

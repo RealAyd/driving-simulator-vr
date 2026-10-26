@@ -1,5 +1,6 @@
 import type {Location,Road,Vec2} from '../contracts';
 import {pointAtAlong,roadHalfWidth,sampleRoad} from '../world/roadGeometry';
+import {drivingView} from '../world/roundabouts';
 
 /**
  * Mock test routes on a location's road network, and the examiner's directions for them. A route is a series of
@@ -78,7 +79,10 @@ export class RoadNetwork{
   private readonly roadNodes=new Map<Road,[number,number]>();
   private readonly sideRoads=new Map<Road,Array<{along:number;road:Road;dir:1|-1}>>();
 
-  constructor(readonly location:Location){
+  /** The place as driven: a roundabout's ring is one junction (drivingView). */
+  readonly location:Location;
+  constructor(place:Location){
+    const location=this.location=drivingView(place);
     for(const j of location.junctions){this.nodes.push({x:j.position.x,z:j.position.z,junction:true,radius:j.radius});this.ends.push([])}
     const nodeAt=(p:Vec2)=>{
       for(let i=0;i<this.nodes.length;i++){const n=this.nodes[i]!;if(Math.hypot(n.x-p.x,n.z-p.z)<(n.junction?n.radius+1.5:3))return i}
