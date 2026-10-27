@@ -61,6 +61,8 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   /** Whether the current leg ends with no way on: false, or how far short of its end to stop (metres; worked out near
    * its end, cleared with each new leg). */
   deadEnd?:false|number|undefined;
+  /** Along the current leg, where it reaches a mapped ring's outer edge (worked out at the ring; cleared with each leg). */
+  ringEdge?:number|undefined;
   /** At the end of a side road (give way or STOP lines) or turning right: stopped at the line (STOP), or going. */
   atLine?:'stopped'|'going'|undefined;
   /** Backing up to make room for the learner (or another car) it met face to face where neither could pass: who it
@@ -655,7 +657,22 @@ export class Traffic implements SimModule{
         const reach=node?.junction?node.radius+4:10;
         target=Math.min(target,Math.max(3.5,remaining*.45));
         const mine=Math.hypot(pos.x-point.x,pos.z-point.z);
-        const busy=this.drivers.some(o=>{
+        // A roundabout bigger than a mini (a mapped ring: roundabouts.ts): give way only to traffic already going round
+        // it that comes from the right and would reach this car's way in within a few seconds, or is across it now
+        // (Highway Code rule 185); not to cars waiting at the other ways in, nor to those going away round the far side.
+        const ring=node?.junction&&node.radius>=12?node:null;
+        // (Round to a point, clockwise (seen from above: the angle atan2(z, x) growing), as traffic goes round.)
+        const round=(p:Vec2,q:Vec2,r:number)=>{const c=ring!;return (((Math.atan2(q.z-c.z,q.x-c.x)-Math.atan2(p.z-c.z,p.x-c.x))%(2*Math.PI))+2*Math.PI)%(2*Math.PI)*r};
+        // (Its way off: a car leaving before it gets to this car's way in (signalling left, turning off) is no matter.)
+        const fromRight=(p:Vec2,speed:number,halfLength:number,off?:Vec2)=>{
+          const c=ring!,entry=d.leg.points.at(-1)!,r=Math.hypot(p.x-c.x,p.z-c.z);
+          if(r>c.radius+1.5)return false;
+          const arc=round(p,entry,r),across=halfLength+car.halfLength+1;
+          if(off&&arc>across+8&&round(p,off,r)<arc-across)return false;
+          return arc<across||arc>2*Math.PI*r-across||arc-across<Math.max(6,speed*3);
+        };
+        const busy=ring?this.drivers.some(o=>o!==d&&o.car.visible&&!o.leg.road&&fromRight(o.car.pose.position,o.car.speed,o.car.halfLength,o.leg.points.at(-1)))
+          ||fromRight(learner.pose.position,Math.abs(learner.speed),2.15):this.drivers.some(o=>{
           if(o===d||!o.car.visible||d.through===o)return false;
           // (Not one waiting at its give way or STOP line out of a side road: it is waiting for this one. Nor one standing
           // for the learner: until the learner moves it goes nowhere, and this car may be what the learner waits for.)
@@ -702,8 +719,17 @@ export class Traffic implements SimModule{
           // Waiting to go on to a roundabout: the nose at its edge, never in the way round (the map's roads often end
           // at its middle, so the road's end is not where to stop: a car stopped there blocks those going round).
           // (A metre and a half back from it: a bus going round swings its back end out over the edge.)
-          const toEdge=mine-node.radius-1.5-car.halfLength;
-          if(toEdge<8){target=Math.min(target,Math.max(0,(toEdge-.5)*.6));if(toEdge<2)why='junction busy'}
+          // (A mapped ring: where its way in crosses the ring's outer edge, a car's length back (ways in can meet it at a
+          // shallow angle, so the distance from its middle does not say), so those leaving it clear the noses of those
+          // waiting.)
+          if(ring&&d.ringEdge===undefined){
+            const pts=d.leg.points;let k=pts.length-1;
+            while(k>0&&Math.hypot(pts[k]!.x-ring.x,pts[k]!.z-ring.z)<ring.radius+2.5)k--;
+            d.ringEdge=d.leg.lengths[k]!;
+          }
+          const toEdge=ring?d.ringEdge!-d.s-car.halfLength-1:mine-node.radius-1.5-car.halfLength;
+          // (Already past where it would wait, on its way on: it carries on.)
+          if(toEdge<8&&!(ring&&toEdge<-.5)){target=Math.min(target,Math.max(0,(toEdge-.5)*.6));if(toEdge<2)why='junction busy'}
         }
         else if(busy&&remaining<7&&!mouth&&!d.waved){target=0;why='junction busy'}
       }
@@ -877,12 +903,12 @@ export class Traffic implements SimModule{
         const over=d.s-d.leg.lengths.at(-1)!;
         if(d.leg.road===null){
           if(!d.next){if(this.seen(car.pose.position,learner)){d.s=d.leg.lengths.at(-1)!;car.speed=0;break}car.visible=false;break}
-          d.leg=d.next;d.next=null;d.s=over;d.deadEnd=undefined;d.atLine=undefined;continue;
+          d.leg=d.next;d.next=null;d.s=over;d.deadEnd=undefined;d.atLine=undefined;d.ringEdge=undefined;continue;
         }
         const next=this.choose(d.leg,car.kind,learner);
         // No way on (the edge of the area): it waits there while the learner can see it, and goes once it cannot.
         if(!next){if(this.seen(car.pose.position,learner)){d.s=d.leg.lengths.at(-1)!;car.speed=0;break}car.visible=false;break}
-        d.next=next;d.leg=this.connector(d.leg,next);d.s=over;d.deadEnd=undefined;d.atLine=undefined;
+        d.next=next;d.leg=this.connector(d.leg,next);d.s=over;d.deadEnd=undefined;d.atLine=undefined;d.ringEdge=undefined;
       }
       if(!car.visible)continue;
       this.place(d);

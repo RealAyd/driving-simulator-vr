@@ -6,6 +6,7 @@ import type {ExaminerListener} from '../test/examiner';
 import type {RouteStep} from '../test/route';
 import {judgePullUp,junctionPoints,stopPlace} from '../test/pullUp';
 import {sampleRoad} from '../world/roadGeometry';
+import {drivingView} from '../world/roundabouts';
 import type {LiveStop} from '../world/trafficSignals';
 import type {Coaching,Lesson} from './syllabus';
 
@@ -20,6 +21,8 @@ import type {Coaching,Lesson} from './syllabus';
 const mph=(v:number)=>v*2.237;
 /** Draft speed for turning into or out of a junction (metres per second; about 15 mph). */
 const TURN_SPEED=6.7;
+/** On to a roundabout bigger than a mini, going any way (20 mph: the mock test's draft limit there). */
+const RING_SPEED=8.9;
 const LOOK_TARGETS={left:['interior','left-door','left-shoulder'],right:['interior','right-door','right-shoulder'],ahead:['interior','left-door','right-door']};
 
 export interface InstructorInput{
@@ -55,6 +58,10 @@ interface Watch{
   /** Roundabouts: the signal on the approach (the last 30 m before the give way). */
   approachSignal:'off'|'left'|'right'|null;
   prompted:Set<string>;
+  /** A roundabout bigger than a mini: its ring's radius (distances are from its edge, where cars come on), else 0. */
+  edge:number;
+  /** Round a big roundabout: signalled left to leave it. */
+  leftToLeave:boolean;
 }
 
 /** What the instructor says at once when the marking records a safety fault, and the note for the report. */
@@ -129,12 +136,13 @@ export class Instructor implements SimModule,ExaminerListener{
     const now=this.lastTurn&&step.distance-this.lastTurn.distance<20?Math.min(this.input.now(),this.lastTurn.at):this.input.now();
     this.lastTurn={distance:step.distance,at:now};
     this.mistakes=[];
-    this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set(),
+    const ring=step.kind==='roundabout'?drivingView(this.input.location).junctions.find(j=>j.id.startsWith('ring-')&&Math.hypot(j.position.x-step.at.x,j.position.z-step.at.z)<2):undefined;
+    this.watch={step,mirror:this.lookedSince(now-4,LOOK_TARGETS[step.turn]),signal:'off',maxSpeed:0,position:[],conflict:null,approachSignal:null,prompted:new Set(),edge:ring?.radius??0,leftToLeave:false,
       directionAt:now,signalAt:null,turnAt:null,
       // Still signalling this way from the turn just before: fine kept on (judged only if it goes off and on again).
       carried:step.turn!=='ahead'&&this.input.learner().indicator===step.turn,
       leftover:this.input.learner().indicator!=='off'&&this.input.learner().indicator!==step.turn?this.input.learner().indicator:undefined};
-    // How to signal at a mini-roundabout, said with the direction while the lesson is about them.
+    // How to signal at a roundabout, said with the direction while the lesson is about them.
     if(step.kind==='roundabout'&&this.has('roundabout')&&this.input.reminders!==false){
       this.input.say(step.turn==='left'?'Signal left on the approach.'
         :step.turn==='ahead'?'No signal on the approach. Signal left after you pass the exit before ours.'
@@ -147,7 +155,7 @@ export class Instructor implements SimModule,ExaminerListener{
     this.watch=null;
     if(!w||w.step!==step||!followed)return;
     this.manoeuvres++;
-    const road=step.to.road.name??'the new road',what=step.kind==='roundabout'?`the mini-roundabout (${step.turn==='ahead'?'ahead':step.turn})`
+    const road=step.to.road.name??'the new road',what=step.kind==='roundabout'?`the ${w.edge?'':'mini-'}roundabout (${step.turn==='ahead'?'ahead':step.turn})`
       :step.turn==='ahead'?`straight ahead at the ${step.kind==='lights'?'lights':'junction'}`:`turning ${step.turn} into ${road}`;
     const ok:string[]=[],bad:string[]=[];
     const turning=step.turn!=='ahead';
@@ -166,12 +174,19 @@ export class Instructor implements SimModule,ExaminerListener{
       const want=step.turn==='left'?'left':step.turn==='right'?'right':'off';
       if(w.approachSignal===want)ok.push(want==='off'?'no signal on the approach':`${want} signal on the approach`);
       else bad.push(want==='off'?'going ahead, do not signal on the approach (signal left after passing the exit before yours)':`signal ${want} on the approach`);
+      if(w.edge&&step.turn!=='left'){
+        if(w.leftToLeave)ok.push('left signal to leave');
+        else bad.push('signal left to leave, once past the exit before ours');
+      }
     }else if(turning){
       if(w.signal==='right')ok.push(`${step.turn} signal`);
       else bad.push(w.signal==='wrong'?`you signalled the wrong way: signal ${step.turn}`:`signal ${step.turn} after your mirror check`);
     }else if(w.signal!=='off')bad.push('no signal is needed to go straight ahead (it suggests you are turning)');
     else if(this.has('signals'))ok.push('no signal straight ahead');
-    if(turning){
+    if(w.edge){
+      if(w.maxSpeed<=RING_SPEED+.4)ok.push('speed');
+      else bad.push(`slow down more on to the roundabout (${mph(w.maxSpeed).toFixed(0)} mph; about 15–20 mph)`);
+    }else if(turning){
       if(w.maxSpeed<=TURN_SPEED+.4)ok.push('speed');
       else bad.push(`slow down more for the turn (${mph(w.maxSpeed).toFixed(0)} mph; about 10–15 mph)`);
     }
@@ -252,11 +267,13 @@ export class Instructor implements SimModule,ExaminerListener{
 
     const w=this.watch;
     if(w){
-      const s=w.step,d=Math.hypot(l.x-s.at.x,l.z-s.at.z),turning=s.turn!=='ahead';
+      const s=w.step,out=Math.hypot(l.x-s.at.x,l.z-s.at.z),d=Math.max(0,out-w.edge),turning=s.turn!=='ahead';
+      // (The approach to a big roundabout ends at its edge: the way off it, as far out again, is not the approach.)
+      const approach=!w.edge||w.turnAt===null;
       if(d<10)w.turnAt??=now;
       if(l.indicator==='off'){w.carried=false;w.leftover=undefined}
       if(l.indicator!=='off'&&d<60){
-        if(s.kind==='roundabout'){if(d>8&&d<35)w.approachSignal=l.indicator}
+        if(s.kind==='roundabout'){if(d>8&&d<35&&approach)w.approachSignal=l.indicator}
         else if(turning&&l.indicator===s.turn){
           if(w.signalAt===null&&!w.carried){
             w.signalAt=now;
@@ -266,18 +283,20 @@ export class Instructor implements SimModule,ExaminerListener{
           w.signal='right';
         }
         else if(l.indicator!==w.leftover)w.signal='wrong';
-      }else if(s.kind==='roundabout'&&d>8&&d<35&&w.approachSignal===null)w.approachSignal='off';
-      if(d<12)w.maxSpeed=Math.max(w.maxSpeed,l.speed);
+      }else if(s.kind==='roundabout'&&d>8&&d<35&&approach&&w.approachSignal===null)w.approachSignal='off';
+      // (On to a big roundabout, not round it: going round is faster than a turn.)
+      if(d<12&&(!w.edge||out>w.edge))w.maxSpeed=Math.max(w.maxSpeed,l.speed);
       // Reminders, only when something is not yet done.
       const sideMirror=`${s.turn}-door`;
       if(turning&&s.kind!=='roundabout'&&w.signalAt===null&&d<55&&d>30&&!this.lookedSince(w.directionAt-4,['interior']))
         this.prompt('mirrors',`Interior mirror first, then your ${s.turn} mirror.`);
       else if(turning&&s.kind!=='roundabout'&&w.signalAt===null&&d<50&&d>25&&!this.lookedSince(w.directionAt-4,[sideMirror]))
         this.prompt('side-mirror',`Now your ${s.turn} mirror, then signal.`);
-      else if((!turning||s.kind==='roundabout')&&d<55&&d>30&&!w.mirror)this.prompt('mirrors','Check your mirrors.');
+      else if((!turning||s.kind==='roundabout')&&d<55&&d>30&&approach&&!w.mirror)this.prompt('mirrors','Check your mirrors.');
       else if(turning&&s.kind!=='roundabout'&&d<42&&d>18&&w.signal==='off'&&w.mirror)this.prompt('signal',`Signal ${s.turn} now.`);
       else if(!turning&&s.kind!=='roundabout'&&w.signal!=='off'&&d<40)this.prompt('no-signal','No need to signal: we are going straight ahead.');
-      else if(turning&&d<30&&d>10&&l.speed>TURN_SPEED+1.5)this.prompt('speed','Slow down for the turn.');
+      else if(w.edge&&d<30&&d>10&&l.speed>RING_SPEED+1.5)this.prompt('speed','Slow down for the roundabout.');
+      else if(turning&&!w.edge&&d<30&&d>10&&l.speed>TURN_SPEED+1.5)this.prompt('speed','Slow down for the turn.');
       // Turning right into a side road: position, and oncoming traffic.
       if(s.turn==='right'&&s.kind==='side'){
         if(d<25&&d>8){
@@ -301,6 +320,14 @@ export class Instructor implements SimModule,ExaminerListener{
         }
       }
       if(s.kind==='roundabout'&&this.has('roundabout')&&d<15&&d>6)this.prompt('give-way-right','Give way to traffic from the right.');
+      // Round a big roundabout, the exit next: signal left to leave (rule 186).
+      if(w.edge&&out<w.edge&&s.turn!=='left'){
+        if(l.indicator==='left')w.leftToLeave=true;
+        else if(this.has('roundabout')){
+          const e=s.to.road.centreline[s.to.dir>0?0:s.to.road.centreline.length-1]!;
+          if(Math.hypot(l.x-e.x,l.z-e.z)<w.edge)this.prompt('leave-left','Signal left now: ours is the next exit.');
+        }
+      }
     }
 
     // Traffic lights ahead at red or amber. Red and amber together (about to go green) says nothing new, and once a

@@ -1,6 +1,6 @@
 import {
   Color3,CreateBox,CreateCylinder,CreateDisc,CreateGround,CreateRibbon,CreateSphere,DynamicTexture,Mesh,DirectionalLight,HemisphericLight,StandardMaterial,TransformNode,Vector3,
-  Scene
+  VertexData,Scene
 } from '../engine/babylon';
 import {degToRad,type Location,type Road} from '../contracts';
 import {rotationYFromHeading} from '../engine/babylonAdapter';
@@ -8,6 +8,8 @@ import type {QualityProfile} from '../engine/quality';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
 import {buildSky,configureTone,mapWorldUVs,texture,type SurfaceKind} from './surfaces';
 import {junctionMouths,mouthLane,mouthPoint,schoolFrontages} from './junctionControls';
+import {layoutRoundabouts,splitterOutline} from './roundaboutLayout';
+import {roundaboutRings} from './roundabouts';
 import type {Terrain} from './terrain';
 
 export interface BuiltWorld{
@@ -165,6 +167,14 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     byMaterial.set(mat,[...(byMaterial.get(mat)??[]),...meshes]);
   };
   const inJunction=(x:number,z:number,extra=0)=>location.junctions.some(j=>Math.hypot(x-j.position.x,z-j.position.z)<=j.radius+extra);
+  // A roundabout's ring: no footway round the inside (its island is drawn instead, below).
+  const rings=roundaboutRings(location);
+  const islandSide=(road:Road):number=>{
+    const ring=rings.find(g=>g.roads.has(road));
+    if(!ring)return 0;
+    const a=road.centreline[0]!,b=road.centreline[1]!,rx=-(b.z-a.z),rz=b.x-a.x;
+    return (ring.position.x-a.x)*rx+(ring.position.z-a.z)*rz>0?1:-1;
+  };
 
   for(const road of location.roads){
     const half=roadHalfWidth(road);
@@ -187,7 +197,9 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
       };
       const inner=side*half,outer=(s:Sample)=>side*(half+width(s));
       // No pavement across another road, a junction, or the gap between paired one-way roads.
+      const inside=islandSide(road)===side;
       const keep=(s:Sample)=>{
+        if(inside)return false;
         const base=Math.min(width(s),road.pavementWidth);
         const p=at(s,side*(half+base/2),0),q=at(s,side*(half+base),0),k=at(s,inner+side*.2,0);
         return width(s)>0&&!inJunction(s.x,s.z,road.pavementWidth)&&![p,q,k].some(v=>onOtherCarriageway(location,v.x,v.z,road.id,.2));
@@ -242,6 +254,53 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
         add(white,dash);
       }
     }
+  }
+
+  // Roundabouts bigger than a mini (roundaboutLayout.ts): the central island, a kerb round grass raised a kerb's height
+  // above the road; splitters painted between the way in and the way out (white edges, diagonal hatching), with a
+  // white bollard at the nose of each splitter island (its keep-left sign is in the sign plan).
+  const roundabouts=layoutRoundabouts(location);
+  for(const island of roundabouts.islands){
+    const o=island.outline,c=island.centre,y=island.y,top=y+.12;
+    const positions:number[]=[c.x,top,c.z],indices:number[]=[];
+    for(const p of o)positions.push(p.x,top,p.z);
+    for(let k=0;k<o.length;k++)indices.push(0,1+(k+1)%o.length,1+k);
+    const disc=new Mesh(`${island.id}-grass`,scene);
+    const data=new VertexData();data.positions=positions;data.indices=indices;
+    const normals:number[]=[];VertexData.ComputeNormals(positions,indices,normals);
+    // (Facing up whichever way round the outline runs.)
+    if(normals[1]!<0)for(let k=0;k<indices.length;k+=3){const t=indices[k+1]!;indices[k+1]=indices[k+2]!;indices[k+2]=t}
+    data.normals=[];VertexData.ComputeNormals(positions,indices,data.normals);
+    data.applyToMesh(disc);
+    disc.parent=root;
+    mapWorldUVs(disc,surfaceOf.get(grass)!);
+    add(grass,disc);
+    const loop=[...o,o[0]!];
+    const wall=CreateRibbon(`${island.id}-kerb`,{pathArray:[loop.map(p=>new Vector3(p.x,y,p.z)),loop.map(p=>new Vector3(p.x,top,p.z))],sideOrientation:2},scene);
+    wall.parent=root;
+    add(kerb,wall);
+  }
+  const paintLine=(name:string,a:{x:number;z:number},b:{x:number;z:number},width:number,y:number)=>{
+    const l=Math.hypot(b.x-a.x,b.z-a.z);
+    if(l<.05)return;
+    const line=CreateGround(name,{width,height:l},scene);
+    line.position.set((a.x+b.x)/2,y,(a.z+b.z)/2);
+    line.rotation.y=rotationYFromHeading(Math.atan2(b.x-a.x,-(b.z-a.z)));
+    line.parent=root;
+    add(white,line);
+  };
+  for(const sp of roundabouts.splitters){
+    const y=sp.y+.007,edge=splitterOutline(sp),n=edge.length/2;
+    for(let k=0;k<edge.length-1;k++)paintLine(`${sp.id}-edge-${k}`,edge[k]!,edge[k+1]!,.1,y);
+    paintLine(`${sp.id}-nose`,edge.at(-1)!,edge[0]!,.1,y);
+    // Hatching: diagonal stripes from one edge to the other, a little nearer the tail on the far side.
+    for(let k=1;k<n-1;k++)paintLine(`${sp.id}-hatch-${k}`,edge[k]!,edge[2*n-1-Math.min(n-1,k+1)]!,.15,y);
+  }
+  for(const b of roundabouts.bollards){
+    const bollard=CreateCylinder(b.id,{diameter:.4,height:.75,tessellation:12},scene);
+    bollard.position.set(b.at.x,b.y+.375,b.at.z);
+    bollard.parent=root;
+    add(white,bollard);
   }
 
   // Zebra crossings: stripes parallel to traffic, broken give-way lines on

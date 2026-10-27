@@ -14,7 +14,7 @@ import {hex} from './streetscapeMesh';
 const FONT='"Helvetica Neue",Helvetica,Arial,sans-serif';
 const SHEET_WIDTH=1024;
 /** Pixels per metre for each kind of face. */
-const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110,'name-board':90,cross:200,hanging:220,stop:200,'give-way':200,'speed-limit':213,school:200} as const;
+const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110,'name-board':90,cross:200,hanging:220,stop:200,'give-way':200,'speed-limit':213,school:200,'roundabout-ahead':200,'keep-left':213,chevrons:160} as const;
 
 interface Entry{key:string;w:number;h:number;draw:(ctx:CanvasRenderingContext2D,w:number,h:number)=>void;x?:number;y?:number}
 
@@ -207,6 +207,50 @@ function drawSchool(ctx:CanvasRenderingContext2D,w:number,h:number){
   child(w*.43,h*.4,h*.32);child(w*.58,h*.44,h*.27);
 }
 
+/** Roundabout ahead (diagram 510): three black arrows circulating clockwise, in a red-bordered warning triangle. */
+function drawRoundaboutAhead(ctx:CanvasRenderingContext2D,w:number,h:number){
+  ctx.fillStyle='#c8102e';shapePath(ctx,w,h,'triangle-up',1);ctx.fill();
+  ctx.fillStyle='#fff';shapePath(ctx,w,h,'triangle-up',.72);ctx.fill();
+  circulatingArrows(ctx,w/2,h*.6,w*.13,w*.045,'#111');
+}
+/** Keep left (diagram 610): a white arrow pointing down to the left on a blue disc. */
+function drawKeepLeft(ctx:CanvasRenderingContext2D,w:number,h:number){
+  const c=w/2,R=w/2;
+  ctx.fillStyle='#e8e8e8';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#0b4ea2';ctx.beginPath();ctx.arc(c,c,R-1,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.translate(c,c);ctx.rotate(Math.PI/4);
+  ctx.fillStyle='#fff';
+  const L=R*.62,t=R*.13,head=R*.3;
+  ctx.fillRect(-t,-L,2*t,2*L-head*.9);
+  ctx.beginPath();ctx.moveTo(-head,L-head);ctx.lineTo(head,L-head);ctx.lineTo(0,L+head*.15);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+/** Chevrons on a roundabout's island (diagram 515): black chevrons pointing left (the way round) on white. */
+function drawChevrons(ctx:CanvasRenderingContext2D,w:number,h:number){
+  ctx.fillStyle='#fbfbf7';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#111';
+  const n=Math.max(3,Math.round(w/h*1.2)),step=w/n,t=step*.32;
+  for(let k=0;k<n;k++){
+    const x=k*step+step*.3;
+    ctx.beginPath();
+    ctx.moveTo(x+step*.45,h*.12);ctx.lineTo(x+step*.45+t,h*.12);ctx.lineTo(x+t,h/2);ctx.lineTo(x+step*.45+t,h*.88);
+    ctx.lineTo(x+step*.45,h*.88);ctx.lineTo(x,h/2);ctx.closePath();ctx.fill();
+  }
+  ctx.strokeStyle='#111';ctx.lineWidth=Math.max(2,h*.04);ctx.strokeRect(1,1,w-2,h-2);
+}
+/** Three arrows circulating clockwise round (cx, cy) (canvas angles grow clockwise on screen). */
+function circulatingArrows(ctx:CanvasRenderingContext2D,cx:number,cy:number,r:number,line:number,colour:string){
+  ctx.strokeStyle=colour;ctx.fillStyle=colour;ctx.lineWidth=line;ctx.lineCap='butt';
+  const head=line*1.5;
+  for(let k=0;k<3;k++){
+    const a0=-Math.PI/2+k*2*Math.PI/3+.5,a1=a0+1.05;
+    ctx.beginPath();ctx.arc(cx,cy,r,a0,a1);ctx.stroke();
+    const tip={x:cx+Math.cos(a1+.5)*r,y:cy+Math.sin(a1+.5)*r},radial={x:Math.cos(a1),y:Math.sin(a1)};
+    ctx.beginPath();ctx.moveTo(tip.x,tip.y);ctx.lineTo(cx+radial.x*(r+head),cy+radial.y*(r+head));ctx.lineTo(cx+radial.x*(r-head),cy+radial.y*(r-head));
+    ctx.closePath();ctx.fill();
+  }
+}
+
 /** A chemist's green cross (lit), on a dark square. */
 function drawCross(ctx:CanvasRenderingContext2D,w:number,h:number){
   ctx.fillStyle='#1d2421';ctx.fillRect(0,0,w,h);
@@ -247,6 +291,9 @@ function faceEntry(face:SignFace,panel:SignPanel):Entry{
     case 'give-way':return {key:'give-way',w:172,h:172,draw:drawGiveWay};
     case 'speed-limit':return {key:`speed-limit:${face.mph}`,w:128,h:128,draw:drawSpeedLimit(face.mph)};
     case 'school':return {key:'school',w:172,h:172,draw:drawSchool};
+    case 'roundabout-ahead':return {key:'roundabout-ahead',w:172,h:172,draw:drawRoundaboutAhead};
+    case 'keep-left':return {key:'keep-left',w:96,h:96,draw:drawKeepLeft};
+    case 'chevrons':return {key:`chevrons:${panel.width}`,w:Math.round(panel.width*d),h:Math.round(panel.height*d),draw:drawChevrons};
   }
 }
 

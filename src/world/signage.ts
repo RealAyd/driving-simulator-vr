@@ -4,6 +4,8 @@ import {distanceToOutline,insidePolygon,type BusStop} from './townscape';
 import {brandSign,TRADE_SIGNS,tradeFromName} from './brandSigns';
 import {pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 import {junctionMouths,mouthPoint,schoolFrontages} from './junctionControls';
+import {layoutRoundabouts} from './roundaboutLayout';
+import {roundaboutRings} from './roundabouts';
 
 /**
  * Where signs stand: street-name plates at junctions, the mini-roundabout sign
@@ -32,7 +34,9 @@ export type SignFace=
   /** A pub's hanging sign: its name on a dark board. */
   |{kind:'hanging';text:string}
   /** Regulatory and warning signs (TSRGD diagrams 601.1, 602, 670/671, 545). */
-  |{kind:'stop'}|{kind:'give-way'}|{kind:'speed-limit';mph:number}|{kind:'school'};
+  |{kind:'stop'}|{kind:'give-way'}|{kind:'speed-limit';mph:number}|{kind:'school'}
+  /** At roundabouts: the warning ahead (diagram 510), keep left at a splitter's nose (610), chevrons on the island (515). */
+  |{kind:'roundabout-ahead'}|{kind:'keep-left'}|{kind:'chevrons'};
 
 export interface Post{x:number;z:number;y:number;height:number;radius:number}
 
@@ -91,6 +95,10 @@ const PLATE_BOTTOM=1.8;
 const DISC=.6,DISC_BOTTOM=2.1;
 /** STOP (750 mm octagon), GIVE WAY and warning triangles (about 750 mm a side): their circle, and lower edge. */
 const OCTAGON=.75,TRIANGLE=.86,SIGN_BOTTOM=2.1;
+/** A keep-left sign (diagram 610) on a splitter's bollard: its disc, lower edge, and the bollard's radius. */
+const KEEP_LEFT=.45,KEEP_LEFT_BOTTOM=.75,BOLLARD=.2;
+/** Chevrons on a roundabout's island (diagram 515): the board's height and its lower edge above the island. */
+const CHEVRON_HEIGHT=.6,CHEVRON_BOTTOM=.5;
 /** Petrol station canopy: the depth of its edge fascia, and where the pump islands stand (share of its length out
  * from the middle; metres either side of the centre line). */
 export const CANOPY_FASCIA=.9,PUMP_ALONG=.32,PUMP_APART=1;
@@ -239,6 +247,54 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
         [0,3,6,9],TRIANGLE,'triangle-up',`school ahead on ${f.road.name??f.road.id}`);
     }
   }
+
+  // ---- Roundabouts bigger than a mini (roundaboutLayout.ts): a keep-left sign on each splitter's nose, chevrons on
+  // the island facing each way in, and the warning sign on the approach. ----
+  const {islands,bollards}=layoutRoundabouts(location);
+  for(const b of bollards){
+    plan.panels.push({id:`${b.id}-keep-left`,face:{kind:'keep-left'},x:b.at.x,y:b.y+KEEP_LEFT_BOTTOM+KEEP_LEFT/2,z:b.at.z,
+      normal:{x:-b.travel.x,z:-b.travel.z},width:KEEP_LEFT,height:KEEP_LEFT,twoSided:false,round:true,
+      posts:[{x:b.at.x,z:b.at.z,y:b.y,height:KEEP_LEFT_BOTTOM,radius:BOLLARD}],
+      placement:`estimated: the splitter island's nose on ${b.road.name??b.road.id} at the roundabout`});
+    collider(b.id,b.at,2*BOLLARD,KEEP_LEFT_BOTTOM+KEEP_LEFT);
+  }
+  roundaboutRings(location).forEach((ring,i)=>{
+    const island=islands.find(x=>x.ring===ring);
+    for(const road of location.roads){
+      if(ring.roads.has(road))continue;
+      const length=roadLength(road);
+      for(const atEnd of [true,false]){
+        // Ways in: the end that meets the ring, driven towards it.
+        if(road.oneway&&!atEnd)continue;
+        const end=atEnd?road.centreline.at(-1)!:road.centreline[0]!;
+        if(Math.hypot(end.x-ring.position.x,end.z-ring.position.z)>ring.reach+4)continue;
+        const toward=(back:number)=>{const p=pointAtAlong(road,atEnd?length-back:back);return {x:p.x,z:p.z,dir:atEnd?p.direction:{x:-p.direction.x,z:-p.direction.z}}};
+        // The warning, far enough back to slow for it (further on faster roads).
+        const edge=Math.max(0,ring.reach+roadHalfWidth(road)-Math.hypot(end.x-ring.position.x,end.z-ring.position.z));
+        const far=(road.speedLimitMph??30)>40?[110,100,120,90]:[60,70,50,80,45];
+        const backs=far.map(b=>b+edge).filter(b=>b<length-5);
+        if(backs.length)standing(`roundabout-${i}-${road.id}-${atEnd?'end':'start'}-ahead`,{kind:'roundabout-ahead'},road,toward,backs,TRIANGLE,'triangle-up',
+          `roundabout ahead on ${road.name??road.id}`);
+        // Chevrons on the island, where the way in points at it.
+        if(!island||island.ring.radius-island.half<3)continue;
+        const m=toward(Math.min(length,edge+8));
+        let best:Vec2|null=null,bd=Infinity;
+        for(const q of island.outline){
+          const dx=q.x-m.x,dz=q.z-m.z,along=dx*m.dir.x+dz*m.dir.z,side=Math.abs(dx*m.dir.z-dz*m.dir.x);
+          if(along>0&&side+along*.1<bd){bd=side+along*.1;best=q}
+        }
+        if(!best)continue;
+        const c=island.centre,d=Math.hypot(best.x-c.x,best.z-c.z)||1,inset=Math.min(1.2,d*.3);
+        const at={x:best.x+(c.x-best.x)/d*inset,z:best.z+(c.z-best.z)/d*inset};
+        const width=island.ring.radius>14?2.4:1.6,r={x:-m.dir.z,z:m.dir.x};
+        const posts=[-1,1].map(k=>({x:at.x+r.x*k*(width/2-.15),z:at.z+r.z*k*(width/2-.15),y:island.y+.12,height:CHEVRON_BOTTOM+CHEVRON_HEIGHT,radius:.04}));
+        plan.panels.push({id:`roundabout-${i}-${road.id}-${atEnd?'end':'start'}-chevrons`,face:{kind:'chevrons'},x:at.x,y:island.y+.12+CHEVRON_BOTTOM+CHEVRON_HEIGHT/2,z:at.z,
+          normal:{x:-m.dir.x,z:-m.dir.z},width,height:CHEVRON_HEIGHT,twoSided:false,round:false,posts,
+          placement:`estimated: on the island, facing the way in from ${road.name??road.id}`});
+        posts.forEach((p,k)=>collider(`roundabout-${i}-${road.id}-${atEnd?'end':'start'}-chevrons-${k}`,p,.1,CHEVRON_BOTTOM+CHEVRON_HEIGHT));
+      }
+    }
+  });
 
   // ---- Bus stops: a flag across the traffic on a tall pole, and a shelter where one is mapped. ----
   for(const s of stops)busStopSigns(plan,s,p=>onPavement(p)&&clearOfBuildings(p,.3));

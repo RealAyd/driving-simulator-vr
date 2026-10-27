@@ -11,6 +11,7 @@ import type {ManoeuvreFault,ManoeuvreKind} from '../test/manoeuvres';
 import {DVSA_SOURCE,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
 import type {Aspect,LiveStop} from '../world/trafficSignals';
 import type {Vec2} from '../contracts';
+import {drivingView} from '../world/roundabouts';
 
 /**
  * Mock driving test marking, in the shape of the DVSA marking sheet (DL25): driving faults (recorded as "minor"),
@@ -45,7 +46,10 @@ interface Watch{step:RouteStep;signalled:boolean;wrongSignal:boolean;maxSpeed:nu
   /** The signal for this turn was already on from the turn before (see `direction`). */
   carried?:boolean;
   /** The other way's signal still on from the turn just made (see `direction`). */
-  leftover?:'left'|'right'|undefined}
+  leftover?:'left'|'right'|undefined;
+  /** At a roundabout bigger than a mini (its ring, `radius` from its middle): the signal on the way to it (the way
+   * of the exit, or none going ahead), on it, and whether the left signal was given to leave it (rule 186). */
+  ring?:{radius:number;entered:boolean;left:boolean;exited:boolean;wrongApproach:'left'|'right'|null;entrySpeed:number;leaving:'left'|'right'|'off'}}
 
 export class MockTestAssessor implements SimModule,ExaminerListener{
   readonly id='mock-test';
@@ -84,8 +88,12 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
   /** When the show me question was asked (driving while answering it is watched). */
   private showMeFrom:number|null=null;
 
+  /** Roundabouts bigger than a mini (their rings, as one junction each: roundabouts.ts). */
+  private readonly rings:Location['junctions'];
+
   constructor(private readonly input:MockTestInput){
     this.junctions=junctionPoints(input.location);
+    this.rings=drivingView(input.location).junctions.filter(j=>j.id.startsWith('ring-')&&j.radius>=12);
     this.stopLines=junctionMouths(input.location).filter(m=>m.kind==='stop');
     this.reset();
   }
@@ -117,6 +125,9 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const directionAt=this.lastTurn&&step.distance-this.lastTurn.distance<SAME_JUNCTION?Math.min(this.input.now(),this.lastTurn.at):this.input.now();
     this.lastTurn={distance:step.distance,at:directionAt};
     this.watch={step,signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null,directionAt,signalAt:null,turnAt:null};
+    // A roundabout bigger than a mini: judged by its ring, not by its middle (it is tens of metres across).
+    const ring=step.kind==='roundabout'?this.rings.find(j=>Math.hypot(j.position.x-step.at.x,j.position.z-step.at.z)<2):undefined;
+    if(ring)this.watch.ring={radius:ring.radius,entered:false,left:false,exited:false,wrongApproach:null,entrySpeed:0,leaving:'off'};
     // Still signalling this way from the turn just before (two turns the same way close together): the signal is
     // fine kept on, and its timing is judged only if it goes off and on again.
     const l=this.input.learner();
@@ -135,6 +146,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     const ev=w.directionEvent?[w.directionEvent]:[];
     const turning=step.turn!=='ahead';
     const id=`turn-${this.directions}`;
+    if(w.ring){this.doneRoundabout(w,step,id,ev);return}
     // The routine, in order: interior mirror, the mirror on the side of the turn, signal, turn (routine.ts).
     if(turning){
       const turn=step.turn as 'left'|'right';
@@ -164,6 +176,37 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
       // The signal should be cancelled once round the corner.
       this.cancelBy={time:this.input.now()+8,turn:step.turn as 'left'|'right',incident:`${id}-cancel`};
     }
+  }
+
+  /**
+   * A roundabout bigger than a mini (Highway Code rules 185 and 186): on the way to it, signal the way of the exit
+   * (left for the first, right for one past twelve o'clock, none going ahead); leave it signalling left, after passing
+   * the exit before the one wanted; the mirrors before each; not too fast on to it. Giving way to traffic going round
+   * from the right is judged as the car comes on (fixedUpdate).
+   */
+  private doneRoundabout(w:Watch,step:RouteStep,id:string,ev:string[]):void{
+    const r=w.ring!,exit=step.exit?`the ${['first','second','third','fourth','fifth','sixth'][step.exit-1]??`${step.exit}th`} exit`:'its exit';
+    const where=`at the roundabout (${exit})`;
+    if(step.turn!=='ahead'){
+      const turn=step.turn as 'left'|'right';
+      const j=judgeTurn(turn,this.looks,w.directionAt-4,w.signalAt,w.turnAt??this.input.now());
+      if(!j.interior&&!j.side)this.fault('mirrors-change-direction',`${id}-mirrors`,'minor',
+        `Use of mirrors – change direction: no mirror check before ${w.signalled?'signalling and ':''}going ${turn} ${where}.`,ev);
+      if(!w.signalled)this.fault('signals-necessary',`${id}-signal`,'minor',
+        `Signals – necessary: no ${turn} signal on the way to the roundabout, taking ${exit} (signal ${turn} as you approach).`,ev);
+      else if(j.signalLate)this.fault('signals-timed',`${id}-late-signal`,'minor',
+        `Signals – timed: the ${turn} signal came only as you went on to the roundabout; signal in good time on the approach.`,ev);
+    }else if(r.wrongApproach)this.fault('signals-correctly',`${id}-wrong-signal`,'minor',
+      `Signals – correctly: a ${r.wrongApproach} signal on the way to the roundabout going straight ahead (${exit}): no signal on the approach, then signal left after passing the exit before yours.`,ev);
+    if(step.turn!=='left'&&r.entered&&!r.left)this.fault('signals-necessary',`${id}-leave-signal`,'minor',
+      `Signals – necessary: no left signal leaving the roundabout by ${exit} (signal left after passing the exit before yours).`,ev);
+    if(step.turn==='right'&&r.leaving==='right')this.fault('signals-correctly',`${id}-leave-right`,'minor',
+      `Signals – correctly: still signalling right leaving the roundabout by ${exit}: misleading to those waiting to come on.`,ev);
+    const v=mph(r.entrySpeed);
+    if(v>28)this.fault('junctions-approach-speed',`${id}-speed`,'serious',`Junctions – approach speed: ${v.toFixed(0)} mph on to the roundabout (draft limit: 20 mph, serious above 28 mph).`,ev);
+    else if(v>20)this.fault('junctions-approach-speed',`${id}-speed`,'minor',`Junctions – approach speed: ${v.toFixed(0)} mph on to the roundabout (draft limit: 20 mph).`,ev);
+    // Leaving signalling left: cancelled once off it.
+    if(r.left)this.cancelBy={time:this.input.now()+8,turn:'left',incident:`${id}-cancel`};
   }
 
   // ---- Manoeuvres and the emergency stop (manoeuvres.ts judges them; their faults are recorded here) ----
@@ -270,7 +313,32 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
 
     // The manoeuvre being watched: mirror checks, the signal, the speed into the junction.
     const w=this.watch;
-    if(w){
+    if(w?.ring){
+      const r=w.ring,turn=w.step.turn,d=Math.hypot(x-w.step.at.x,z-w.step.at.z);
+      if(l.indicator==='off'){w.carried=false;w.leftover=undefined}
+      if(!r.entered){
+        // On the way to it: the way of the exit, or none going ahead.
+        if(turn!=='ahead'&&l.indicator===turn){w.signalled=true;if(!w.carried)w.signalAt??=now}
+        else if(turn==='ahead'&&l.indicator!=='off'&&l.indicator!==w.leftover&&d<r.radius+40)r.wrongApproach=l.indicator;
+        if(d<r.radius+12)r.entrySpeed=Math.max(r.entrySpeed,speed);
+        if(d<r.radius){
+          r.entered=true;w.turnAt=now;
+          // Coming on in front of traffic going round from the right (it would be there within 2 s).
+          const c=w.step.at,a=Math.atan2(z-c.z,x-c.x);
+          const cut=this.input.traffic().some(t=>{
+            const rt=Math.hypot(t.x-c.x,t.z-c.z);
+            if(rt>r.radius+1||t.speed<1)return false;
+            const arc=(((a-Math.atan2(t.z-c.z,t.x-c.x))%(2*Math.PI))+2*Math.PI)%(2*Math.PI)*rt;
+            return arc>2&&(arc-4.5)/t.speed<2;
+          });
+          if(cut)this.fault('junctions-observation',`roundabout-${Math.round(now)}`,'serious',
+            'Junctions – observation: came on to the roundabout in front of traffic already going round from the right (give way to traffic from the right, rule 185).');
+        }
+      }else if(!r.exited){
+        if(l.indicator==='left')r.left=true;
+        if(d>r.radius+3){r.exited=true;r.leaving=l.indicator}
+      }
+    }else if(w){
       const turn=w.step.turn;
       if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<10)w.turnAt??=now;
       if(l.indicator==='off'){w.carried=false;w.leftover=undefined}

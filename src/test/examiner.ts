@@ -187,7 +187,9 @@ export class Examiner implements SimModule{
         this.options.listener?.showMe?.(q);
       }
       if(!step){this.phase='pull-up';this.sincePullUp=0;return}
-      const d=Math.hypot(l.x-step.at.x,l.z-step.at.z);
+      // (From the ring's edge at a roundabout bigger than a mini: its middle is tens of metres from where cars go.)
+      const ring=step.kind==='roundabout'?this.net.location.junctions.find(j=>j.id.startsWith('ring-')&&Math.hypot(j.position.x-step.at.x,j.position.z-step.at.z)<2):undefined;
+      const d=Math.max(0,Math.hypot(l.x-step.at.x,l.z-step.at.z)-(ring?ring.radius:0));
       // In good time: before the junction (or straight after the last manoeuvre when the next one is close).
       if(!this.spoken&&d<ANNOUNCE+Math.max(0,l.speed-9)*4){
         this.spoken=true;
