@@ -63,8 +63,9 @@ for(const set of ['current','new'] as const)describe(`assisted steering past par
     for(const c of kerb.slice(0,100)){
       const fx=Math.sin(c.heading),fz=-Math.cos(c.heading),back=c.halfLength+2.15+5;
       const start={x:c.x-fx*back,z:c.z-fz*back};
-      // In a gap at least that long (clear where the car stands, with a little room behind it).
-      if(obstacles.firstCollision({position:{x:start.x-fx*.75,y:0,z:start.z-fz*.75},heading:c.heading},.95,2.15+.75))continue;
+      // In a gap at least that long (clear where the car stands, with a little room behind it and up to 2 m short of
+      // the parked car: no other parked car just in front).
+      if(obstacles.firstCollision({position:{x:start.x+fx*.6,y:0,z:start.z+fz*.6},heading:c.heading},.95,2.15+2.1))continue;
       runs++;
       const hit=drive(new FreeDriveAssist(net,kerb,LEARNER_CAR),{position:{x:start.x,y:0,z:start.z},heading:c.heading,speed:0,steerAngle:0},obstacles,8);
       if(hit)hits.push(hit);

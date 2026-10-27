@@ -8,8 +8,9 @@ const node=(m:string)=>import(/* @vite-ignore */ m);
 // The owner's report (Folkestone, 2026-10-26): a car out past a parked car met the learner nose to nose and stayed
 // there; the learner backed away and it still did not move. Here: each time a car is out past a parked car, the
 // learner is put nose to nose with it (in its own lane, half out, in the middle or over on the car's side), waits, backs away 12 m, then
-// stops or edges to and fro. Within 20 s of the learner backing off, the car must get going, be gone, or be out of
-// the learner's way (back in its own lane, with room to pass).
+// stops or edges to and fro. Within 30 s of the learner backing off, the car must get going, be gone, or be out of
+// the learner's way (back in its own lane, with room to pass). (30 s: it may first reverse to a space at walking pace,
+// the owner's ask, then give the learner 5 s to come through before it goes.)
 describe('Traffic meeting the learner nose to nose on a narrow street (Folkestone, as served)',()=>{
   it('a car out past parked cars does not stay stuck in front of the learner once the learner backs away',async()=>{
     const {gunzipSync}=await node('node:zlib'),{readFileSync}=await node('node:fs');
@@ -41,7 +42,7 @@ describe('Traffic meeting the learner nose to nose on a narrow street (Folkeston
         for(;tt<10;tt+=1/30){learner.speed=-2;learner.pose.position.x+=back.x*2/30;learner.pose.position.z+=back.z*2/30;traffic.fixedUpdate(1/30)}
         learner.speed=0;
         let moved=false,driven=0;
-        for(let k=0;k<20*30;k++){
+        for(let k=0;k<30*30;k++){
           // Edging to and fro (2 s forward at 1 m/s, 2 s back), never still for long.
           if(dither){const v=Math.floor(k/60)%2?-1:1;learner.speed=v;learner.pose.position.x-=back.x*v/30;learner.pose.position.z-=back.z*v/30}
           traffic.fixedUpdate(1/30);driven+=d.car.speed/30;if(!d.car.visible||driven>6){moved=true;break}

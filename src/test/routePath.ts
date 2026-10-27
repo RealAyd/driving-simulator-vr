@@ -40,10 +40,15 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
       raw.push({x:p.x,z:p.z,dx,dz,lane,hi,lo,leg:legIndex});
     }
   }
-  // Each point takes the tightest room needed within 24 m either side (pulled out in good time, back after).
+  // Each point takes the tightest room needed within 24 m ahead (pulled out in good time) and 12 m behind (back in
+  // soon after, out of the way of traffic coming the other way: a car out in the road for 24 m after passing met cars
+  // turning out of junctions head on).
   const lanePoints=raw.map((p,i)=>{
     let hi=p.lane,lo=-Infinity;
-    for(let j=Math.max(0,i-8);j<=Math.min(raw.length-1,i+8);j++){hi=Math.min(hi,raw[j]!.hi+Math.abs(j-i)*.3);lo=Math.max(lo,raw[j]!.lo-Math.abs(j-i)*.3)}
+    for(let j=Math.max(0,i-8);j<=Math.min(raw.length-1,i+8);j++){
+      const ease=Math.abs(j-i)*(j<i?.6:.3);
+      hi=Math.min(hi,raw[j]!.hi+ease);lo=Math.max(lo,raw[j]!.lo-ease);
+    }
     const off=hi>=lo?hi:(hi+lo)/2;
     return {x:p.x+p.dz*off,z:p.z-p.dx*off,leg:p.leg};
   });

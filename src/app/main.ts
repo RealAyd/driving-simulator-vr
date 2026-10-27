@@ -22,6 +22,7 @@ import {centralReservations} from '../world/dualCarriageway';
 import {Visits} from './visits';
 import {PeopleRenderer} from '../world/peopleMesh';
 import {AnimatedPeople} from '../world/animatedPeople';
+import {BusStopBoarding} from '../world/boarding';
 import {Weather,conditionsFrom,conditionsFromName,conditionsName,type Conditions} from '../world/weather';
 import type {Lamp} from '../world/streetscape';
 import {junctionMouths,mouthPoint} from '../world/junctionControls';
@@ -331,6 +332,8 @@ export async function boot():Promise<void>{
   let signPlan:SignPlan={panels:[],shelters:[],canopies:[],colliders:[]};
   let signage:BuiltSignage|null=null;
   let crowd:Person[]=[];
+  /** People at bus stops getting on the background buses (this drive's). */
+  let boarding:BusStopBoarding|null=null;
   /** Cars parked at the kerb (generated areas): background traffic passes them. */
   let kerbCars:KerbFootprint[]=[];
   let people!:PeopleRenderer;
@@ -367,7 +370,8 @@ export async function boot():Promise<void>{
     crowd=layoutCrowd(place,layout,signPlan);
     people=new PeopleRenderer(scene,world.root);
     people.animated=animatedPeople;
-    for(const p of crowd)people.add({id:p.id,look:p.look,pose:t=>personPose(p,t)});
+    for(const p of crowd)people.add({id:p.id,look:p.look,pose:t=>boarding?boarding.pose(p.id,personPose(p,t),t):personPose(p,t),
+      ...(p.kind==='stander'?{visible:()=>boarding?.visible(p.id)??true}:{})});
     const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
     staticObstacles=new StaticObstacles(colliders);
     sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
@@ -641,8 +645,10 @@ export async function boot():Promise<void>{
     for(const pole of signalLights?.poles??[])dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
     // Background traffic on generated areas' roads: solid, never assessed.
     const level=DIFFICULTIES[difficulty];
-    const traffic=place.streetParking>0?new Traffic(place,{count:level.traffic.cars+level.traffic.buses,buses:level.traffic.buses,busStops:place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position),
+    const busStops=place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position);
+    const traffic=place.streetParking>0?new Traffic(place,{count:level.traffic.cars+level.traffic.buses+level.traffic.cycles,buses:level.traffic.buses,cycles:level.traffic.cycles,busStops,
       parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed}),signals:()=>trafficSignals?.stops??[]}):null;
+    boarding=traffic&&level.traffic.buses>0?new BusStopBoarding(busStops,crowd.filter(p=>p.kind==='stander')):null;
     for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
     // Background buses: solid road users that slow for the learner; never assessed.
     const buses=scenario.buses.map(d=>new Bus(d,place,learnerFootprint));
@@ -652,6 +658,7 @@ export async function boot():Promise<void>{
     const visuals=[
       ...(traffic?.cars.map((c,i)=>c.kind==='bus'
         ?busVisual(scene,{id:c.id,get pose(){return c.pose},get visible(){return c.visible},indicating:false,def:{colour:c.colour}},BUS_SIZE,()=>clock.time,busModels[i%2?'double':'single'])
+        :c.kind==='cycle'?vehicleVisual(scene,c.id,c.colour,()=>c.pose,'cyclist',()=>c.visible)
         :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3))??[]),
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
@@ -846,8 +853,12 @@ export async function boot():Promise<void>{
         return base;
       },
       current:()=>mockAssessor?mockAssessor.current:assessor?assessor.current:movingOff?movingOff.current:[],
-      renderVisuals(){for(const v of visuals)v.update();signalLights?.update()},
+      renderVisuals(){
+        for(const v of visuals)v.update();signalLights?.update();
+        if(traffic)boarding?.update(clock.time,traffic.atStops(),p=>traffic.canSee(p));
+      },
       dispose(){
+        boarding=null;
         for(const v of visuals)v.dispose();
         signalLights?.dispose();
         for(const f of figures)people.remove(f.id);
@@ -2282,7 +2293,7 @@ export async function boot():Promise<void>{
       if(r.follower)users.push({id:r.follower.id,kind:'car',x:r.follower.pose.position.x,z:r.follower.pose.position.z,speed:r.follower.speed});
       for(const p of r.passers)if(p.started)users.push({id:p.id,kind:'car',x:p.pose.position.x,z:p.pose.position.z,speed:p.speed});
       for(const b of r.buses)if(b.visible)users.push({id:b.id,kind:'bus',x:b.pose.position.x,z:b.pose.position.z,speed:b.speed});
-      for(const c of r.traffic?.cars??[])if(c.visible)users.push({id:c.id,kind:c.kind,x:c.pose.position.x,z:c.pose.position.z,speed:c.speed});
+      for(const c of r.traffic?.cars??[])if(c.visible&&c.kind!=='cycle')users.push({id:c.id,kind:c.kind,x:c.pose.position.x,z:c.pose.position.z,speed:c.speed});
       sound.update({speed:vehicle.state.speed,throttle:lastControls.throttle,brake:lastControls.brake},users,
         {x:pose.position.x,z:pose.position.z,heading:pose.heading},vehicle.indicators.isLit(clock.time));
     }

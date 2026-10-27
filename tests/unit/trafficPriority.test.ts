@@ -33,6 +33,8 @@ function drive(loc:Location,seed:number,seconds:number){
     traffic.fixedUpdate(1/30);
     const cars=traffic.cars.filter(c=>c.visible);
     for(const c of cars){
+      // (Parked at the end of a cul-de-sac is not standing about in traffic.)
+      if(c.parked){still.set(c.id,0);continue}
       seen++;if(c.speed<.2)standing++;
       const v=c.speed<.2?(still.get(c.id)??0)+1/30:0;still.set(c.id,v);worst=Math.max(worst,v);
       const p=c.pose.position,prev=last.get(c.id);

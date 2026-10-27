@@ -172,9 +172,11 @@ export class PeopleRenderer{
     // Hands: short prisms below the sleeves.
     partMatrix(B,i*7+5,.08*k,.11*k,.08*k,[0,-.58*k,0],-arm,[-.235*k*w,shoulder,0],h,P);
     partMatrix(B,i*7+6,.08*k,.11*k,.08*k,[0,-.58*k,0],arm,[.235*k*w,shoulder,0],h,P);
-    partMatrix(H,i,.21*k,.25*k,.23*k,[0,0,0],0,[0,1.6*k+bob,0],h,P);
+    // (Looking along the road: the head turns.)
+    const head=h+(pose.look==='left'?-.7:pose.look==='right'?.7:0);
+    partMatrix(H,i,.21*k,.25*k,.23*k,[0,0,0],0,[0,1.6*k+bob,0],head,P);
     const hs=[[.225,.27,.24],[.23,.3,.26],[.235,.34,.28]][L.hair_style]!;
-    partMatrix(this.hair.matrices,i,hs[0]!*k,hs[1]!*k,hs[2]!*k,[0,0,0],0,[0,1.62*k+bob,.012*k],h,P);
+    partMatrix(this.hair.matrices,i,hs[0]!*k,hs[1]!*k,hs[2]!*k,[0,0,0],0,[0,1.62*k+bob,.012*k],head,P);
   }
 
   dispose():void{

@@ -260,12 +260,11 @@ export function kerbFootprints(layout:StreetLayout|null):KerbFootprint[]{
 /** The everyday cars parked on residential streets (most often the smaller ones). */
 
 /**
- * Cars parked along residential streets (two-way, no centre line): nose to tail at the kerb with gaps, clear of
- * junctions, side-road mouths, crossings and their zig-zags, bus stops, lamp columns and the learner's start, and
- * never opposite another parked car (a car can always get through). Deterministic for a location.
+ * Cars parked along residential streets (two-way, no centre line): nose to tail at the kerb with gaps, on one side of
+ * each street only (the owner's call: the other side stays clear, so two cars can always meet and pass with one
+ * giving way at a gap), clear of junctions, side-road mouths, crossings and their zig-zags, bus stops, lamp columns
+ * and the learner's start. Deterministic for a location.
  */
-/** Gap along the road between a parked car and the next one parked across the road from it (metres). */
-const OPPOSITE_GAP=10;
 /** No parking this close to another road's carriageway (metres): Highway Code rule 243, 10 m from a junction. */
 const JUNCTION_CLEAR=10;
 
@@ -283,7 +282,9 @@ function parkAtKerbs(location:Location,out:StreetLayout):void{
     if(road.oneway||road.lanes.count<2||road.markings.centre!=='none'||road.pavementWidth<=0)continue;
     const half=roadHalfWidth(road);
     const length=road.centreline.slice(1).reduce((s,p,i)=>s+Math.hypot(p.x-road.centreline[i]!.x,p.z-road.centreline[i]!.z),0);
-    for(const side of [-1,1]){
+    // The side parked on: one per street, from its id (deterministic, varied from street to street).
+    const parkedSide=[...road.id].reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,2166136261)%2?1:-1;
+    for(const side of [parkedSide]){
       for(let s=14+rand()*6;s<length-14;){
         const kerb=kerbCarModels(),model=kerb[Math.floor(rand()*kerb.length)]!;
         const size=parkedSize(CAR_MODELS[model]);
@@ -299,6 +300,15 @@ function parkAtKerbs(location:Location,out:StreetLayout):void{
         // Not on a bend (rule 243): the road turns little over the car's length and a few metres either side.
         const [d0,d1]=[-1,1].map(k=>pointAtAlong(road,along+k*(size.length/2+5)).direction);
         if(d0!.x*d1!.x+d0!.z*d1!.z<Math.cos(.3))continue;
+        // Nor just round a sharp corner, where a car coming round has not straightened up yet.
+        const [e0,e1]=[-1,1].map(k=>pointAtAlong(road,along+k*(size.length/2+14)).direction);
+        if(e0!.x*e1!.x+e0!.z*e1!.z<Math.cos(.6))continue;
+        // Nor across a kink in the kerb (a straight car there sticks out into the road at one end).
+        {
+          const h=headingFromDirection(p.direction),fx=Math.sin(h),fz=-Math.cos(h),rx=Math.cos(h),rz=Math.sin(h);
+          const inner=Math.min(...[-1,1].flatMap(a=>[-1,1].map(b=>Math.abs(sampleRoad(road,c.x+fx*a*size.length/2+rx*b*size.width/2,c.z+fz*a*size.length/2+rz*b*size.width/2).lateral))));
+          if(half-inner>size.width+.25)continue;
+        }
         // Not within 10 m of a junction (Highway Code rule 243), whether or not the junction is listed: no other
         // road's carriageway within 10 m of either end of the car. (A car turning in has straightened up by then.)
         if(boxes.some(({road:o,box})=>o.id!==road.id&&ends.some(q=>q.x>box.x0&&q.x<box.x1&&q.z>box.z0&&q.z<box.z1&&sampleRoad(o,q.x,q.z).distance-roadHalfWidth(o)<JUNCTION_CLEAR-1)))continue;
@@ -309,10 +319,8 @@ function parkAtKerbs(location:Location,out:StreetLayout):void{
         if(out.lamps.some(l=>Math.hypot(l.x-c.x,l.z-c.z)<size.length/2+.3))continue;
         if(Math.hypot(c.x-sp.x,c.z-sp.z)<30)continue;
         if(location.blocks.some(b=>Math.hypot(b.position.x-c.x,b.position.z-c.z)<12))continue;
-        // Never opposite (or overlapping) another parked car: across the road from one, the next is far enough along
-        // for a car to pass the first, pull back in and pass the second (and for traffic to wait in the gap).
+        // Not overlapping another parked car (one on a crossing street's kerb, at a corner).
         if(parked.some(q=>Math.hypot(q.x-c.x,q.z-c.z)<size.length+.6))continue;
-        if(parked.some(q=>q.road===road.id&&q.side!==side&&Math.abs(q.along-along)<(q.length+size.length)/2+OPPOSITE_GAP))continue;
         const heading=headingFromDirection(side<0?p.direction:{x:-p.direction.x,z:-p.direction.z});
         parked.push({...c,road:road.id,side,along,length:size.length});
         const id=`kerb-car-${out.cars.length}`;
