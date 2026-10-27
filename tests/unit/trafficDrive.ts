@@ -36,6 +36,9 @@ export async function loadCentre(id:string):Promise<Location>{
   const {gunzipSync}=await node('node:zlib'),{readFileSync}=await node('node:fs');
   const loc=parseLocation(JSON.parse(gunzipSync(readFileSync(`public/centres/${id}.json.gz`)).toString()).location);
   widenRoundabouts(loc);
+  // The start the app uses (main.ts settleStart): facing somewhere to go, not into the dead end of a centre's yard.
+  const b=new RoadNetwork(loc).startNear(loc.spawn.position.x,loc.spawn.position.z,loc.spawn.headingDeg*Math.PI/180);
+  loc.spawn={...loc.spawn,position:{x:b.x,z:b.z},headingDeg:(b.heading*180/Math.PI+360)%360};
   return loc;
 }
 

@@ -15,7 +15,8 @@ async function gated(page:Page,path='./'){
   await page.route('**/access.json',r=>r.fulfill({json:{gate:true}}));
   await page.goto(path);
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
+  // (Shown once the account is read, which waits on the main thread: slow while a second page builds its scene.)
+  await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
 }
 /** Signs in with a code from the (fake) email. */
 async function signInByEmail(page:Page,email:string){
@@ -132,7 +133,7 @@ test('G26: blocking access.json does not open the paid app: where the accounts s
   await page.route('**/access.json',r=>r.abort());
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await expect(page.locator('#account-chip')).toBeVisible({timeout:20_000});
+  await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
   await pick(page,'moving-off');
   // (The note follows the account check, which waits for the server.)
   await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed, used if you complete it',{timeout:20_000});

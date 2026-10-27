@@ -7,7 +7,7 @@ import {driveRoute,loadCentre} from './trafficDrive';
  * its road (oncoming traffic is kept for junctions and roundabouts).
  */
 describe('traffic on real drives',()=>{
-  for(const [id,seed] of [['goodmayes-london',1],['basildon',3],['farnborough',2],['folkestone',1],['folkestone',2],['folkestone',3],['leeds',3],['chelmsford-hanbury-road',1]] as const)
+  for(const [id,seed] of [['goodmayes-london',1],['basildon',3],['farnborough',2],['folkestone',1],['folkestone',2],['folkestone',3],['leeds',3],['chelmsford-hanbury-road',1],['inverness-longman-drive',1]] as const)
     it(`${id}, route ${seed}`,async()=>{
       const r=driveRoute(await loadCentre(id),seed);
       expect(r.completed).toBe(true);
