@@ -27,7 +27,9 @@ function deviceOf():Data{
 export class Visits{
   private readonly on:boolean;
   private readonly visitor:string;
-  private readonly session=randomId();
+  /** The page's own first record (index.html: "landed", sent before the app loaded): this visit carries on from it. */
+  private readonly landing=(window as {__dpLanding?:{visitor:string;session:string;fresh:boolean;from:Data}}).__dpLanding;
+  private readonly session=this.landing?.session??randomId();
   private queue:Pending[]=[];
   private screen='loading';
   private visible=document.visibilityState==='visible';
@@ -40,8 +42,8 @@ export class Visits{
     try{optedOut=localStorage.getItem('dp-visits-off')==='1'}catch{/* storage blocked */}
     this.on=!optedOut&&!nav.globalPrivacyControl&&nav.doNotTrack!=='1'&&!nav.webdriver&&typeof fetch==='function';
     let stored:string|null=null;
-    try{stored=localStorage.getItem(VISITOR_KEY)}catch{/* storage blocked: a new id each time */}
-    this.visitor=stored&&/^[a-z0-9]{8,40}$/.test(stored)?stored:randomId();
+    try{stored=this.landing?.fresh?null:localStorage.getItem(VISITOR_KEY)}catch{/* storage blocked: a new id each time */}
+    this.visitor=this.landing?.visitor??(stored&&/^[a-z0-9]{8,40}$/.test(stored)?stored:randomId());
     if(!stored&&this.on)try{localStorage.setItem(VISITOR_KEY,this.visitor)}catch{/* as above */}
     if(!this.on)return;
     // Where this opening came from (read before the app tidies the address).
@@ -51,7 +53,7 @@ export class Visits{
     for(const [k,name] of [['utm_source','src'],['utm_medium','medium'],['utm_campaign','campaign'],['src','src']] as const){const v=clean(q.get(k),60);if(v&&!from[name])from[name]=v}
     if(q.get('ref'))from['ref']=true;
     try{const r=document.referrer&&new URL(document.referrer);if(r&&r.host!==location.host)from['referrer']=clean(r.host,80)}catch{/* no referrer */}
-    this.add('open',{...from,...deviceOf(),newVisitor:!stored});
+    this.add('open',{...this.landing?.from,...from,...deviceOf(),newVisitor:this.landing?.fresh??!stored});
     // Screens, heartbeats and leaving.
     setInterval(()=>this.checkScreen(),1000);
     setInterval(()=>{if(this.visible)this.add('ping')},PING_MS);

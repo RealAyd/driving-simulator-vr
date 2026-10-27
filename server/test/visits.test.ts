@@ -56,6 +56,21 @@ describe('visits',()=>{
     expect(parseVisitEvents({visitor:'short',session:'sess12345678',events:[{type:'open',screen:'home'}]},now,null,null)).toEqual([]);
   });
 
+  it('counts people who leave while the app loads (only the page\'s "landed" record), with where they came from',()=>{
+    const events=[
+      ev('visitorL1','sL1',0,'land','loading',{data:{inApp:'instagram',newVisitor:true}}),
+      ev('visitorL2','sL2',1,'land','loading',{data:{inApp:'tiktok',newVisitor:true}}),
+      ev('visitorL2','sL2',1.2,'open','home',{data:{inApp:'tiktok',newVisitor:true,device:'phone'}}),
+      ev('visitorL2','sL2',3,'screen','mock tests')
+    ];
+    const v=summariseVisits(events,at(60),1);
+    expect(v.totals).toMatchObject({visitors:2,sessions:2,leftWhileLoading:1});
+    expect(v.sources.map(x=>x.source).sort()).toEqual(['instagram','tiktok']);
+    expect(v.funnel.slice(0,2).map(f=>f.people)).toEqual([2,1]);
+    expect(v.screens.find(x=>x.screen==='loading')).toMatchObject({views:2,exits:1});
+    expect(v.daily.at(-1)).toMatchObject({visitors:2,newVisitors:2});
+  });
+
   it('names where a visit came from',()=>{
     const open=(data:VisitEvent['data'])=>ev('v','s',0,'open','home',{data});
     expect(sourceOf(open({src:'TikTok'}))).toBe('tiktok');
@@ -63,6 +78,7 @@ describe('visits',()=>{
     expect(sourceOf(open({referrer:'l.instagram.com'}))).toBe('instagram');
     expect(sourceOf(open({referrer:'drivingpractice.live'}))).toBe('drivingpractice.live');
     expect(sourceOf(open({ref:true}))).toBe('invite link');
+    expect(sourceOf(open({inApp:'tiktok'}))).toBe('tiktok');
     expect(sourceOf(open({standalone:true}))).toBe('home screen');
     expect(sourceOf(open({}))).toBe('direct');
   });
@@ -94,7 +110,7 @@ describe('visits',()=>{
     expect(v.daily.find(d=>d.day==='2026-10-22')).toMatchObject({visitors:1,newVisitors:0,homeScreen:1});
     expect(v.sources.find(s=>s.source==='tiktok')).toMatchObject({sessions:1,startedDrive:1,completedDrive:1,signedIn:1,meanSeconds:21*60});
     expect(v.sources.find(s=>s.source==='google')).toMatchObject({sessions:1,startedDrive:0});
-    expect(v.funnel.map(f=>f.people)).toEqual([3,2,1,1,1]);
+    expect(v.funnel.map(f=>f.people)).toEqual([3,3,2,1,1,1]);
     // Where they leave: B on the free drive's page, C and A's second visit on home.
     expect(v.screens.find(s=>s.screen==='exercise:Free drive')).toMatchObject({views:1,exits:1,meanSeconds:120});
     expect(v.screens.find(s=>s.screen==='home')!.exits).toBe(2);

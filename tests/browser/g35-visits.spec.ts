@@ -35,3 +35,23 @@ test('G35: a visit from a campaign link is recorded (screens, presses) and shown
   await expect(admin.locator('#visit-sources')).toContainText('flyer');
   await expect(admin.locator('#visit-screens')).toContainText('mock tests');
 });
+
+test('G35: someone who leaves while the app is still loading is counted (the page\'s own first record), with the social app it was opened in',async({browser})=>{
+  const context=await browser.newContext({userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 350.0.0'});
+  const page=await context.newPage();
+  await page.addInitScript(()=>Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false}));
+  // The app never arrives (a slow connection): only the page's own record goes.
+  await page.route(/\/assets\/index-.*\.js$/,()=>new Promise(()=>{}));
+  let landed=0;
+  page.on('request',r=>{if(r.url().endsWith('/api/visits'))landed++});
+  // (The page never finishes loading: waiting only until it starts.)
+  await page.goto('./',{waitUntil:'commit'});
+  await expect.poll(()=>landed,{timeout:10_000}).toBeGreaterThan(0);
+  await page.close();
+  const admin=await context.newPage();
+  await admin.request.post('/api/dev/signin',{data:{email:'boss@example.com'},headers:{Origin:'http://localhost:4173'}});
+  const v=await (await admin.request.get('/api/admin/visits?days=1')).json();
+  expect(v.totals.leftWhileLoading).toBeGreaterThanOrEqual(1);
+  expect(v.sources.map((s:{source:string})=>s.source)).toContain('instagram');
+  await context.close();
+});

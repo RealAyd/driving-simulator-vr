@@ -4,6 +4,31 @@
 <meta charset="utf-8">
 <!-- Light or dark before anything shows: the daylight in Great Britain, or the driver's choice. -->
 <script src="theme.js"></script>
+<script>
+/* Visits (src/app/visits.ts): "landed" the moment the page opens, before the app (a few MB) has loaded, so people who
+   leave while it loads (often, from an Instagram or TikTok link) are counted too. Same rules: nothing typed, no IP. */
+(function(){try{
+var n=navigator,ls=localStorage;
+if(ls.getItem('dp-visits-off')==='1'||n.globalPrivacyControl||n.doNotTrack==='1'||n.webdriver||!window.fetch)return;
+var rid=function(){var a=new Uint8Array(12);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(x){return ('0'+x.toString(36)).slice(-2)}).join('').slice(0,20)};
+var clean=function(s,m){return String(s||'').replace(/[^\w .:\/#+&'()-]/g,'').trim().slice(0,m||60)};
+var v=ls.getItem('dp-visitor'),fresh=!v||!/^[a-z0-9]{8,40}$/.test(v);
+if(fresh){v=rid();ls.setItem('dp-visitor',v)}
+var q=new URLSearchParams(location.search),d={},ua=n.userAgent;
+[['utm_source','src'],['utm_medium','medium'],['utm_campaign','campaign'],['src','src']].forEach(function(k){var x=clean(q.get(k[0]));if(x&&!d[k[1]])d[k[1]]=x});
+if(q.get('ref'))d.ref=true;
+try{var r=document.referrer&&new URL(document.referrer);if(r&&r.host!==location.host)d.referrer=clean(r.host,80)}catch(e){}
+if(matchMedia('(display-mode: standalone)').matches||n.standalone===true)d.standalone=true;
+/* Opened inside a social app's own browser (these often say nothing about where the visit came from). */
+var apps=[[/Instagram/,'instagram'],[/FBAN|FBAV|FB_IAB|FBIOS/,'facebook'],[/musical_ly|TikTok|BytedanceWebview|trill/i,'tiktok'],[/Snapchat/,'snapchat'],[/Twitter/,'x'],[/LinkedInApp/,'linkedin'],[/Pinterest/,'pinterest'],[/WhatsApp/,'whatsapp']];
+for(var i=0;i<apps.length;i++)if(apps[i][0].test(ua)){d.inApp=apps[i][1];break}
+d.newVisitor=fresh;
+var s=rid();
+window.__dpLanding={visitor:v,session:s,fresh:fresh,from:d};
+fetch('/api/visits',{method:'POST',credentials:'same-origin',keepalive:true,headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({visitor:v,session:s,events:[{type:'land',screen:'loading',data:d,ago:0}]})}).catch(function(){});
+}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <!-- Added to the Home Screen, the app opens without Safari's bars: the whole screen for the phone viewer. -->
