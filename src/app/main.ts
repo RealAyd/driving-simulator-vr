@@ -17,7 +17,7 @@ import {
 import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
 import {Bus,BUS_SIZE} from '../actors/bus';
 import {layoutCrowd,personPose,type Person} from '../world/crowd';
-import {drivingView,widenRoundabouts} from '../world/roundabouts';
+import {drivingView,prepareRoundabouts} from '../world/roundabouts';
 import {centralReservations} from '../world/dualCarriageway';
 import {Visits} from './visits';
 import {PeopleRenderer} from '../world/peopleMesh';
@@ -265,7 +265,7 @@ export async function boot():Promise<void>{
   let streetLamps:readonly Lamp[]=[];
   let conditionsCar:TransformNode|null=null;
   const applyConditions=()=>{if(conditionsCar)weather.apply(conditions,streetLamps,conditionsCar)};
-  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);widenRoundabouts(l);centralReservations(l);return [l.id,l] as const}));
+  const locations=new Map([locationJson,brentwoodJson,kingsRoadJson,goodmayesJson,movingOffLocationJson].map(raw=>{const l=parseLocation(raw);prepareRoundabouts(l);centralReservations(l);return [l.id,l] as const}));
   const scenarios=new Map([crossingJson,movingOffJson,movingOffIntroJson,brentwoodGuidedJson,kingsRoadZebraJson,goodmayesFreeDriveJson,goodmayesMockTestJson,goodmayesLessonJson].map(raw=>{
     const s=parseScenario(raw);
     if(!locations.has(s.locationId))throw new Error(`Scenario ${s.id} is for unknown location ${s.locationId}`);
@@ -1933,7 +1933,7 @@ export async function boot():Promise<void>{
       const built=await withLoading(`Building the streets round ${request.label}…`,async rep=>{
         const b=await buildArea(request,(step,percent)=>{areaStatus.textContent=step;void rep(percent*.5,step)});
         const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=b;
-        widenRoundabouts(l);centralReservations(l);
+        prepareRoundabouts(l);centralReservations(l);
         locations.set(l.id,l);
         scenarios.set(sc.id,sc);
         scenarios.set(mockTest.id,mockTest);

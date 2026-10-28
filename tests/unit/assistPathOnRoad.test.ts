@@ -3,7 +3,7 @@ import {parseLocation} from '../../src/contracts';
 import {RoadNetwork} from '../../src/test/route';
 import {routeLanePath} from '../../src/test/routePath';
 import {surfaceAt} from '../../src/world/roadGeometry';
-import {drivingView,widenRoundabouts} from '../../src/world/roundabouts';
+import {drivingView,prepareRoundabouts} from '../../src/world/roundabouts';
 
 const node=(m:string)=>import(/* @vite-ignore */ m);
 
@@ -17,7 +17,7 @@ describe('the assisted steering path',()=>{
     let points=0,off=0;const worst:Array<{file:string;x:number;z:number}>=[];
     for(const file of pick){
       const loc=parseLocation(JSON.parse(gunzipSync(readFileSync(`public/centres/${file}`)).toString()).location);
-      widenRoundabouts(loc);
+      prepareRoundabouts(loc);
       const net=new RoadNetwork(loc),sp=loc.spawn;
       const start=net.locate(sp.position.x,sp.position.z,sp.headingDeg*Math.PI/180);
       if(!start)continue;

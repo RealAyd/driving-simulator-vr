@@ -3,7 +3,7 @@ import {parseLocation,type Location} from '../../src/contracts';
 import {RoadNetwork} from '../../src/test/route';
 import {routeLanePath} from '../../src/test/routePath';
 import {surfaceAt,roadHalfWidth} from '../../src/world/roadGeometry';
-import {drivingView,roundaboutRings,widenRoundabouts} from '../../src/world/roundabouts';
+import {drivingView,roundaboutRings,prepareRoundabouts} from '../../src/world/roundabouts';
 
 const node=(m:string)=>import(/* @vite-ignore */ m);
 
@@ -20,7 +20,7 @@ describe('roundabouts',()=>{
     for(const file of files){
       const loc:Location=parseLocation(JSON.parse(gunzipSync(readFileSync(`public/centres/${file}`)).toString()).location);
       if(!roundaboutRings(loc).length)continue;
-      widenRoundabouts(loc);
+      prepareRoundabouts(loc);
       const found=roundaboutRings(loc),view=drivingView(loc),net=new RoadNetwork(loc);
       const on=(x:number,z:number)=>surfaceAt(loc,x,z)?.kind==='carriageway';
       for(const g of found){

@@ -2,6 +2,8 @@ import {describe,expect,it} from 'vitest';
 import {loadCentre} from './trafficDrive';
 import {driveRing} from './ringTraffic';
 import {layoutRoundabouts} from '../../src/world/roundaboutLayout';
+import {roundaboutRings} from '../../src/world/roundabouts';
+import {insidePolygon} from '../../src/world/townscape';
 
 /**
  * Traffic at the big roundabouts of four centres (each with three seeds): cars keep coming on and going round, give
@@ -34,6 +36,16 @@ describe('how big roundabouts are built',()=>{
         const d=Math.hypot(b.at.x-i.centre.x,b.at.z-i.centre.z);
         expect(d>i.ring.reach,`${id} ${b.id}`).toBe(true);
       }
+    }
+  },300_000);
+
+  it('no house in the middle of a roundabout, unless the map has one there',async()=>{
+    // (The owner's report from Currie: the area builder had lined Riccarton Mains Road's island with terraced houses.)
+    for(const [id,mapped] of [['edinburgh-currie',0],['coleraine',0],['chadderton',0],['inveraray',1]] as const){
+      const loc=await loadCentre(id);
+      const inside=roundaboutRings(loc).flatMap(g=>{const line=[...g.roads].flatMap(r=>r.centreline);return loc.buildings.filter(b=>b.footprint.some(p=>insidePolygon(p,line)))});
+      expect(inside.filter(b=>b.source==='approximate').map(b=>b.id),id).toEqual([]);
+      expect(inside.length,id).toBe(mapped);
     }
   },300_000);
 });

@@ -2,7 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {parseLocation} from '../../src/contracts';
 import {Traffic} from '../../src/actors/traffic';
 import {kerbFootprints,layoutTownscape} from '../../src/world/townscape';
-import {widenRoundabouts} from '../../src/world/roundabouts';
+import {prepareRoundabouts} from '../../src/world/roundabouts';
 
 const node=(m:string)=>import(/* @vite-ignore */ m);
 
@@ -16,7 +16,7 @@ describe('a busy mini-roundabout',()=>{
   it('never jams: no car stands for minutes',async()=>{
     const {gunzipSync}=await node('node:zlib'),{readFileSync}=await node('node:fs');
     const loc=parseLocation(JSON.parse(gunzipSync(readFileSync('public/centres/basildon.json.gz')).toString()).location);
-    widenRoundabouts(loc);
+    prepareRoundabouts(loc);
     const layout=layoutTownscape(loc)!;
     const longest:number[]=[];
     for(const [x,z] of [[188,27],[175,27]] as const)for(const seed of [3,7,11,19,23,31]){

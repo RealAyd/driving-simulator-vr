@@ -1,7 +1,7 @@
 import {parseLocation,type Location} from '../../src/contracts';
 import {Traffic,type TrafficOptions} from '../../src/actors/traffic';
 import {kerbFootprints,layoutTownscape} from '../../src/world/townscape';
-import {widenRoundabouts,drivingView} from '../../src/world/roundabouts';
+import {prepareRoundabouts,drivingView} from '../../src/world/roundabouts';
 import {RoadNetwork} from '../../src/test/route';
 import {routeLanePath} from '../../src/test/routePath';
 
@@ -35,7 +35,7 @@ const node=(m:string)=>import(/* @vite-ignore */ m);
 export async function loadCentre(id:string):Promise<Location>{
   const {gunzipSync}=await node('node:zlib'),{readFileSync}=await node('node:fs');
   const loc=parseLocation(JSON.parse(gunzipSync(readFileSync(`public/centres/${id}.json.gz`)).toString()).location);
-  widenRoundabouts(loc);
+  prepareRoundabouts(loc);
   // The start the app uses (main.ts settleStart): facing somewhere to go, not into the dead end of a centre's yard.
   const b=new RoadNetwork(loc).startNear(loc.spawn.position.x,loc.spawn.position.z,loc.spawn.headingDeg*Math.PI/180);
   loc.spawn={...loc.spawn,position:{x:b.x,z:b.z},headingDeg:(b.heading*180/Math.PI+360)%360};

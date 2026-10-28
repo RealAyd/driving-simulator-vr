@@ -1,4 +1,5 @@
 import type {Location,Road,Vec2} from '../contracts';
+import {insidePolygon} from './townscape';
 
 /**
  * Roundabouts bigger than a mini: the map draws them as a ring of one-way roads round an island (OpenStreetMap's
@@ -55,12 +56,18 @@ export function roundaboutRings(location:Location):Ring[]{
 }
 
 /**
- * The rings widened to a circulating width (about 6 m: two lanes' worth, as a single-lane roundabout's carriageway is
- * built wide enough for a lorry), where the map gave one narrow lane. Call once per location, before it is built.
+ * Rings made ready to build and drive (call once per location, before it is built):
+ * - widened to a circulating width (about 6 m: two lanes' worth, as a single-lane roundabout's carriageway is built
+ *   wide enough for a lorry), where the map gave one narrow lane;
+ * - their islands cleared of the terraced houses the area builder estimated along streets with no mapped buildings
+ *   (it took the ring for a street, so it lined the island with houses). A building the map has there stays.
  */
-export function widenRoundabouts(location:Location):void{
-  for(const ring of roundaboutRings(location))for(const r of ring.roads)
+export function prepareRoundabouts(location:Location):void{
+  const rings=roundaboutRings(location);
+  for(const ring of rings)for(const r of ring.roads)
     if(r.lanes.count*r.lanes.width<6)r.lanes={count:2,width:Math.max(3,Math.min(4.5,r.lanes.width))};
+  const islands=rings.map(g=>[...g.roads].flatMap(r=>r.centreline));
+  location.buildings=location.buildings.filter(b=>b.source!=='approximate'||!islands.some(line=>b.footprint.some(p=>insidePolygon(p,line))));
 }
 
 const views=new WeakMap<Location,Location>();
