@@ -60,12 +60,21 @@ export function roundaboutRings(location:Location):Ring[]{
  * - widened to a circulating width (about 6 m: two lanes' worth, as a single-lane roundabout's carriageway is built
  *   wide enough for a lorry), where the map gave one narrow lane;
  * - their islands cleared of the terraced houses the area builder estimated along streets with no mapped buildings
- *   (it took the ring for a street, so it lined the island with houses). A building the map has there stays.
+ *   (it took the ring for a street, so it lined the island with houses). A building the map has there stays;
+ * - no pavement round the island (the map gives every road one each side): nobody walks there, and nothing that
+ *   stands on pavements (people, bins, lamp columns) is put there.
  */
 export function prepareRoundabouts(location:Location):void{
   const rings=roundaboutRings(location);
   for(const ring of rings)for(const r of ring.roads)
     if(r.lanes.count*r.lanes.width<6)r.lanes={count:2,width:Math.max(3,Math.min(4.5,r.lanes.width))};
+  for(const ring of rings)for(const r of ring.roads){
+    // (The island's side of the road: the right, going round clockwise.)
+    const k=Math.floor((r.centreline.length-1)/2),a=r.centreline[k]!,b=r.centreline[k+1]!;
+    const side=(ring.position.x-a.x)*-(b.z-a.z)+(ring.position.z-a.z)*(b.x-a.x)>0?'right':'left';
+    const profile=r.pavementProfile?.length?r.pavementProfile:[0,length(r)].map(along=>({along,left:r.pavementWidth,right:r.pavementWidth}));
+    r.pavementProfile=profile.map(p=>({...p,[side]:0}));
+  }
   const islands=rings.map(g=>[...g.roads].flatMap(r=>r.centreline));
   location.buildings=location.buildings.filter(b=>b.source!=='approximate'||!islands.some(line=>b.footprint.some(p=>insidePolygon(p,line))));
 }

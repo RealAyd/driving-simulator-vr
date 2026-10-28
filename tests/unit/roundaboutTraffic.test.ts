@@ -3,7 +3,10 @@ import {loadCentre} from './trafficDrive';
 import {driveRing} from './ringTraffic';
 import {layoutRoundabouts} from '../../src/world/roundaboutLayout';
 import {roundaboutRings} from '../../src/world/roundabouts';
-import {insidePolygon} from '../../src/world/townscape';
+import {insidePolygon,layoutTownscape} from '../../src/world/townscape';
+import {layoutSignage} from '../../src/world/signage';
+import {layoutCrowd,personPose} from '../../src/world/crowd';
+import {roadHalfWidth,surfaceAt} from '../../src/world/roadGeometry';
 
 /**
  * Traffic at the big roundabouts of four centres (each with three seeds): cars keep coming on and going round, give
@@ -46,6 +49,23 @@ describe('how big roundabouts are built',()=>{
       const inside=roundaboutRings(loc).flatMap(g=>{const line=[...g.roads].flatMap(r=>r.centreline);return loc.buildings.filter(b=>b.footprint.some(p=>insidePolygon(p,line)))});
       expect(inside.filter(b=>b.source==='approximate').map(b=>b.id),id).toEqual([]);
       expect(inside.length,id).toBe(mapped);
+    }
+  },300_000);
+
+  it('no pavement round the island, and nobody walking on it',async()=>{
+    // (Llantrisant had a walker going round its island on a pavement that was not drawn.)
+    for(const id of ['llantrisant','edinburgh-currie']){
+      const loc=await loadCentre(id),lay=layoutTownscape(loc)!;
+      for(const g of roundaboutRings(loc))for(const r of g.roads){
+        // A metre in from the inner kerb, halfway along each piece of the ring: the island, not the ring's pavement.
+        const k=Math.floor((r.centreline.length-1)/2),a=r.centreline[k]!,b=r.centreline[k+1]!,m={x:(a.x+b.x)/2,z:(a.z+b.z)/2};
+        const d=Math.hypot(m.x-g.position.x,m.z-g.position.z),inward=(roadHalfWidth(r)+1)/d;
+        const at=surfaceAt(loc,m.x+(g.position.x-m.x)*inward,m.z+(g.position.z-m.z)*inward);
+        expect(at?.kind==='pavement'&&[...g.roads].some(q=>q.id===at.roadId),`${id} ${r.id}`).toBe(false);
+      }
+      const lines=roundaboutRings(loc).map(g=>[...g.roads].flatMap(r=>r.centreline));
+      const onIsland=layoutCrowd(loc,lay,layoutSignage(loc,lay)).filter(q=>{const at=personPose(q,0);return lines.some(l=>insidePolygon(at,l))});
+      expect(onIsland.map(q=>q.id),id).toEqual([]);
     }
   },300_000);
 });

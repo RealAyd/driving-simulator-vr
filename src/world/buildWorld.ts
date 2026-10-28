@@ -9,7 +9,6 @@ import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad
 import {buildSky,configureTone,mapWorldUVs,texture,type SurfaceKind} from './surfaces';
 import {junctionMouths,mouthLane,mouthPoint,schoolFrontages} from './junctionControls';
 import {layoutRoundabouts,splitterOutline} from './roundaboutLayout';
-import {roundaboutRings} from './roundabouts';
 import type {Terrain} from './terrain';
 
 export interface BuiltWorld{
@@ -167,14 +166,6 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     byMaterial.set(mat,[...(byMaterial.get(mat)??[]),...meshes]);
   };
   const inJunction=(x:number,z:number,extra=0)=>location.junctions.some(j=>Math.hypot(x-j.position.x,z-j.position.z)<=j.radius+extra);
-  // A roundabout's ring: no footway round the inside (its island is drawn instead, below).
-  const rings=roundaboutRings(location);
-  const islandSide=(road:Road):number=>{
-    const ring=rings.find(g=>g.roads.has(road));
-    if(!ring)return 0;
-    const a=road.centreline[0]!,b=road.centreline[1]!,rx=-(b.z-a.z),rz=b.x-a.x;
-    return (ring.position.x-a.x)*rx+(ring.position.z-a.z)*rz>0?1:-1;
-  };
 
   for(const road of location.roads){
     const half=roadHalfWidth(road);
@@ -197,9 +188,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
       };
       const inner=side*half,outer=(s:Sample)=>side*(half+width(s));
       // No pavement across another road, a junction, or the gap between paired one-way roads.
-      const inside=islandSide(road)===side;
       const keep=(s:Sample)=>{
-        if(inside)return false;
         const base=Math.min(width(s),road.pavementWidth);
         const p=at(s,side*(half+base/2),0),q=at(s,side*(half+base),0),k=at(s,inner+side*.2,0);
         return width(s)>0&&!inJunction(s.x,s.z,road.pavementWidth)&&![p,q,k].some(v=>onOtherCarriageway(location,v.x,v.z,road.id,.2));
