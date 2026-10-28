@@ -7,7 +7,7 @@ import {rotationYFromHeading} from '../engine/babylonAdapter';
 import type {QualityProfile} from '../engine/quality';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad} from './roadGeometry';
 import {buildSky,configureTone,mapWorldUVs,texture,type SurfaceKind} from './surfaces';
-import {junctionMouths,mouthLane,mouthPoint,schoolFrontages} from './junctionControls';
+import {junctionMouths,mouthLane,mouthLinePoint,mouthPoint,schoolFrontages} from './junctionControls';
 import {layoutRoundabouts,splitterOutline} from './roundaboutLayout';
 import type {Terrain} from './terrain';
 
@@ -400,10 +400,13 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
       legend('STOP','#f4f4f0',mouthPoint(m,4.5,(from+to)/2),heading,y+.001,Math.min(2.2,to-from-.4),2.8);
       continue;
     }
-    // Two rows of broken lines across the lane, then the triangle a few metres back, its point towards the driver
-    // approaching (diagrams 1003 and 1023).
-    for(const row of [.1,.55])for(let l=from+.15;l<to-.4;l+=.9)paint(`${m.id}-gw-${row}-${l.toFixed(1)}`,.6,.2,mouthPoint(m,row,l+.3),heading,y,white);
-    const centre=(from+to)/2,apex=mouthPoint(m,9.75,centre),baseL=mouthPoint(m,6,centre-.7),baseR=mouthPoint(m,6,centre+.7);
+    // Two rows of broken lines across the lane (along a roundabout's edge, slanting with it), then the triangle a few
+    // metres back, its point towards the driver approaching (diagrams 1003 and 1023).
+    for(const row of [.1,.55])for(let l=from+.15;l<to-.4;l+=.9){
+      const a=mouthLinePoint(m,row,l),b=mouthLinePoint(m,row,l+.6);
+      paint(`${m.id}-gw-${row}-${l.toFixed(1)}`,.2,Math.hypot(b.x-a.x,b.z-a.z),{x:(a.x+b.x)/2,z:(a.z+b.z)/2},Math.atan2(b.x-a.x,-(b.z-a.z)),y,white);
+    }
+    const centre=(from+to)/2,apex=mouthLinePoint(m,9.75,centre),baseL=mouthPoint(m,6+m.skew*centre,centre-.7),baseR=mouthPoint(m,6+m.skew*centre,centre+.7);
     for(const [a,b] of [[apex,baseL],[apex,baseR],[baseL,baseR]] as const){
       const len=Math.hypot(b.x-a.x,b.z-a.z);
       paint(`${m.id}-tri-${a.x.toFixed(1)}-${b.x.toFixed(1)}`,.12,len,{x:(a.x+b.x)/2,z:(a.z+b.z)/2},Math.atan2(b.x-a.x,-(b.z-a.z)),y,white);

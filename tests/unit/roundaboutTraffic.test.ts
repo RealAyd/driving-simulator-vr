@@ -6,7 +6,8 @@ import {roundaboutRings} from '../../src/world/roundabouts';
 import {insidePolygon,layoutTownscape} from '../../src/world/townscape';
 import {layoutSignage} from '../../src/world/signage';
 import {layoutCrowd,personPose} from '../../src/world/crowd';
-import {roadHalfWidth,surfaceAt} from '../../src/world/roadGeometry';
+import {roadHalfWidth,sampleRoad,surfaceAt} from '../../src/world/roadGeometry';
+import {junctionMouths,mouthLane,mouthLinePoint} from '../../src/world/junctionControls';
 
 /**
  * Traffic at the big roundabouts of four centres (each with three seeds): cars keep coming on and going round, give
@@ -49,6 +50,24 @@ describe('how big roundabouts are built',()=>{
       const inside=roundaboutRings(loc).flatMap(g=>{const line=[...g.roads].flatMap(r=>r.centreline);return loc.buildings.filter(b=>b.footprint.some(p=>insidePolygon(p,line)))});
       expect(inside.filter(b=>b.source==='approximate').map(b=>b.id),id).toEqual([]);
       expect(inside.length,id).toBe(mapped);
+    }
+  },300_000);
+
+  it('give way lines along the roundabout\'s edge, right across each way in',async()=>{
+    // (The owner's report from Chichester: the line stopped short of the car and slanted across part of Arundel Road,
+    // placed as at a side road, a set distance back from where the map's roads meet.)
+    for(const id of ['chichester','northampton','edinburgh-currie']){
+      const loc=await loadCentre(id),mouths=junctionMouths(loc);
+      for(const g of roundaboutRings(loc)){
+        const half=roadHalfWidth([...g.roads][0]!),edge=(p:{x:number;z:number})=>Math.min(...[...g.roads].map(r=>sampleRoad(r,p.x,p.z).distance))-half;
+        const ways=loc.roads.filter(r=>!g.roads.has(r)&&Math.hypot(r.centreline.at(-1)!.x-g.position.x,r.centreline.at(-1)!.z-g.position.z)<g.reach+4);
+        const lined=mouths.filter(m=>m.atEnd&&ways.includes(m.road));
+        expect(lined.length,id).toBeGreaterThanOrEqual(ways.length-1);
+        for(const m of lined){
+          const [from,to]=mouthLane(m);
+          for(const l of [from+.3,(from+to)/2,to-.3]){const d=edge(mouthLinePoint(m,0,l));expect(d,`${id} ${m.id}`).toBeGreaterThan(-.5);expect(d,`${id} ${m.id}`).toBeLessThan(1)}
+        }
+      }
     }
   },300_000);
 
