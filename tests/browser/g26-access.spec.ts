@@ -30,24 +30,24 @@ async function signInByEmail(page:Page,email:string){
   await expect(page.locator('#account-main')).toBeVisible();
 }
 
-test('G26: a free try without signing up (one free drive here), used only when completed; then Start asks to sign up to save progress; Continue driving opens the paywall from the Starter Pass; paying starts the drive',async({page})=>{
+test('G26: a free try without signing up (three free drives here), used only when completed; then Start asks to sign up to save progress; Continue driving opens the paywall from the Starter Pass; paying starts the drive',async({page})=>{
   test.setTimeout(300_000);
   await gated(page);
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
-  await expect(page.locator('#free-badge')).toHaveText('Your first 3 drives are free');
+  await expect(page.locator('#free-badge')).toHaveText('Your first 9 drives are free');
   await expect(page.locator('#view-passes')).toBeVisible();
   // Each card says its free try is there.
-  await expect(page.locator('[data-try]')).toHaveText(['Free','Free','Free']);
+  await expect(page.locator('[data-try]')).toHaveText(['3 free','3 free','3 free']);
   await pick(page,'moving-off');
-  // The device's free try: this practice drive is its free drive, with no sign-up.
-  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed, used if you complete it');
+  // The device's free try: this practice drive is its first free drive, with no sign-up.
+  await expect(page.locator('#session-note')).toHaveText('Free drive 1 of 3: no sign-up needed, used if you complete it');
   // Started and left part-way: nothing used.
   await page.click('#start-practice');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
   await page.click('#hud-pause');
   await page.click('#end-button');
   await expect(page.locator('#screen-results')).toBeVisible();
-  expect((await (await page.request.get('/api/me')).json()).trial).toEqual({lesson:1,test:1,free:1});
+  expect((await (await page.request.get('/api/me')).json()).trial).toEqual({lesson:3,test:3,free:3});
   // Completed (moved off with assisted steering once the road users have passed): the free drive is used.
   await page.evaluate(()=>{const r=document.querySelector<HTMLInputElement>('input[name="steering"][value="assist"]')!;r.checked=true;r.dispatchEvent(new Event('change'))});
   await page.click('#retry-button');
@@ -58,20 +58,29 @@ test('G26: a free try without signing up (one free drive here), used only when c
   await expect(page.locator('#screen-results')).toBeVisible({timeout:120_000});
   await page.keyboard.up('KeyW');
   expect((await read(page,'result()')).outcome).toBe('completed');
-  await expect.poll(async()=>(await (await page.request.get('/api/me')).json()).trial,{timeout:10_000}).toEqual({lesson:1,test:1,free:0});
+  await expect.poll(async()=>(await (await page.request.get('/api/me')).json()).trial,{timeout:10_000}).toEqual({lesson:3,test:3,free:2});
   await page.click('#menu-button');
-  // Used: the home screen says so on Free Drive (the drills use the free drive too), and the others are still free.
   await page.click('#place-back');
+  await expect(page.locator('[data-try=free]')).toHaveText('2 free');
+  await expect(page.locator('#free-badge')).toHaveText('8 free drives left');
+  // The other two free drives, started and completed the same way (through the accounts service, as the app does).
+  for(let k=0;k<2;k++){
+    const r=await (await page.request.post('/api/drives',{data:{kind:'practice',scenario:'moving-off-safely'}})).json();
+    expect((await page.request.post(`/api/drives/${r.driveId}/completed`,{data:{}})).ok()).toBe(true);
+  }
+  await page.reload();
+  await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
+  // Used: the home screen says so on Free Drive (the drills use the free drive too), and the others are still free.
   await expect(page.locator('[data-try=free]')).toHaveText('Free try used');
-  await expect(page.locator('[data-try=lesson]')).toHaveText('Free');
-  await expect(page.locator('[data-try=test]')).toHaveText('Free');
-  await expect(page.locator('#free-badge')).toHaveText('2 free drives left');
+  await expect(page.locator('[data-try=lesson]')).toHaveText('3 free');
+  await expect(page.locator('[data-try=test]')).toHaveText('3 free');
+  await expect(page.locator('#free-badge')).toHaveText('6 free drives left');
   await page.screenshot({path:test.info().outputPath('g26-free-try-used.png')});
   await pick(page,'moving-off');
-  await expect(page.locator('#session-note')).toHaveText('You have used your free drive. Your free lesson and free mock test are still there.');
+  await expect(page.locator('#session-note')).toHaveText('You have used your free drives. Your 3 free lessons and 3 free mock tests are still there.');
   // Used: Start asks to sign up, to save progress (a lesson finished on this device goes to the account).
   await page.evaluate(()=>localStorage.setItem('dp-lessons-done',JSON.stringify(['moving-off-and-stopping'])));
-  await expect(page.locator('#session-note')).toContainText('You have used your free drive');
+  await expect(page.locator('#session-note')).toContainText('You have used your free drives');
   await page.click('#start-practice');
   await expect(page.locator('#screen-account')).toBeVisible();
   await expect(page.locator('#account-title')).toHaveText('Sign up to save your progress');
@@ -136,7 +145,7 @@ test('G26: blocking access.json does not open the paid app: where the accounts s
   await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
   await pick(page,'moving-off');
   // (The note follows the account check, which waits for the server.)
-  await expect(page.locator('#session-note')).toHaveText('Your free drive: no sign-up needed, used if you complete it',{timeout:20_000});
+  await expect(page.locator('#session-note')).toHaveText('Free drive 1 of 3: no sign-up needed, used if you complete it',{timeout:20_000});
 });
 
 test('G26: the guided introduction needs no session because it is parked: the car cannot be driven, and nothing is saved',async({page})=>{

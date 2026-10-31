@@ -7,7 +7,7 @@
 type Pot='lesson'|'test'|'free';
 type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean};
-/** The device's free try (no sign-up): what is left of one lesson, one mock test and one free drive. */
+/** The device's free try (no sign-up): what is left of its lessons, mock tests and free drives (FREE_EACH of each). */
 type Trial=Record<Pot,number>;
 type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
   lessonsDone?:string[];
@@ -29,8 +29,13 @@ const REF_KEY='dp.referral.v1',BUY_KEY='dp.buying.v1';
 /** What a drive is, from its scenario (as the server decides it). */
 const modeOf=(scenario:string):Pot=>scenario.endsWith('-mock-test')?'test':scenario.endsWith('-lesson')?'lesson':'free';
 const POT_NAME:Record<Pot,string>={lesson:'lesson',test:'mock test',free:'free drive'};
-/** A free try's drive by kind, as said to the learner. */
-const TRY_NAME:Record<Pot,string>={lesson:'free lesson',test:'free mock test',free:'free drive'};
+/** Free drives of each kind on a device's free try (the server's TRIAL_EACH decides; this is for the wording). */
+const FREE_EACH=3;
+/** A free try's drives by kind, as said to the learner: one, and more than one. */
+const TRY_NAME:Record<Pot,[string,string]>={lesson:['free lesson','free lessons'],test:['free mock test','free mock tests'],free:['free drive','free drives']};
+/** "3 free lessons", "1 free drive". */
+const cap=(t:string)=>t[0]!.toUpperCase()+t.slice(1);
+const freeCount=(k:Pot,n:number)=>`${n} ${TRY_NAME[k][n===1?0:1]}`;
 /** Everything the account can start: general sessions plus Starter allowances. */
 const total=(me:Me)=>me.signedIn?me.balance+me.allowances.lesson+me.allowances.test+me.allowances.free:0;
 
@@ -131,8 +136,13 @@ export class Access{
   /** The free try still on this device, for someone not signed in (0 where nothing is gated). */
   freeLeft():number{
     if(!this.gate||this.me.signedIn)return 0;
-    return (['lesson','test','free'] as const).reduce((n,k)=>n+Math.min(1,this.me.trial?.[k]??0),0);
+    return (['lesson','test','free'] as const).reduce((n,k)=>n+Math.max(0,this.me.trial?.[k]??0),0);
   }
+
+  /** The whole free try when none of it is used (for the home screen's "Your first 9 drives are free"). */
+  readonly freeTotal=3*FREE_EACH;
+  /** The free drives of one kind left on this device. */
+  freeOf(pot:Pot):number{return Math.max(0,this.me.trial?.[pot]??0)}
 
   /** Whether a drive here would use the device's free try (paid drives, nothing bought or signed out, not an admin). */
   private onFreeTry():boolean{return this.gate&&(!this.me.signedIn||(!this.me.admin&&total(this.me)===0))}
@@ -146,9 +156,9 @@ export class Access{
   }
   /** The other kinds still free on this device, said plainly ('' if none). */
   private stillFree(except:Pot):string{
-    const left=(['free','lesson','test'] as const).filter(k=>k!==except&&(this.me.trial?.[k]??0)>0).map(k=>`free ${POT_NAME[k]}`);
+    const left=(['free','lesson','test'] as const).filter(k=>k!==except&&(this.me.trial?.[k]??0)>0).map(k=>freeCount(k,this.me.trial![k]));
     if(!left.length)return '';
-    return `Your ${left.join(' and ')} ${left.length>1?'are':'is'} still there.`;
+    return `Your ${left.join(' and ')} ${left.length>1||!left[0]!.startsWith('1 ')?'are':'is'} still there.`;
   }
 
   /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
@@ -158,15 +168,15 @@ export class Access{
   note(scenario:string|null):string{
     if(!this.gate)return '';
     const pot=scenario?modeOf(scenario):null;
-    const free=!!pot&&(this.me.trial?.[pot]??0)>0;
-    if(!this.me.signedIn)return free?`Your ${TRY_NAME[pot]}: no sign-up needed, used if you complete it`
-      :pot?`You have used your ${TRY_NAME[pot]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: a completed drive uses one session.';
+    const left=pot?this.me.trial?.[pot]??0:0;
+    if(!this.me.signedIn)return pot&&left>0?`${cap(TRY_NAME[pot][0])} ${Math.max(1,FREE_EACH-left+1)} of ${Math.max(FREE_EACH,left)}: no sign-up needed, used if you complete it`
+      :pot?`You have used your ${TRY_NAME[pot][1]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
     const n=total(this.me);
     if(n>0)return `Uses 1 session if you complete it · you have ${n}`;
-    if(free)return `Uses your ${TRY_NAME[pot]}`;
+    if(pot&&left>0)return `Uses one of your ${freeCount(pot,left)}`;
     const rest=pot?this.stillFree(pot):'';
-    return pot&&rest?`You have used your ${TRY_NAME[pot]}. ${rest}`:'No sessions left: buy more to start.';
+    return pot&&rest?`You have used your ${TRY_NAME[pot][1]}. ${rest}`:'No sessions left: buy more to start.';
   }
 
   /**
@@ -268,8 +278,9 @@ export class Access{
     // The free try, while any of it is left on this device.
     const left=(['lesson','test','free'] as const).filter(k=>(me.trial?.[k]??0)>0);
     byId('trial-note').hidden=signedIn||!left.length||this.mode==='save';
-    byId('trial-note').textContent=left.length===3?'No sign-up needed to try: one free lesson, one free mock test and one free drive on this device.'
-      :`Still free to try on this device, no sign-up needed: ${left.map(k=>`your ${TRY_NAME[k]}`).join(' and ')}.`;
+    const counts=left.map(k=>freeCount(k,me.trial![k]));
+    byId('trial-note').textContent=left.length===3&&left.every(k=>me.trial![k]>=FREE_EACH)?`No sign-up needed to try: ${counts[0]}, ${counts[1]} and ${counts[2]} on this device.`
+      :`Still free to try on this device, no sign-up needed: ${counts.slice(0,-1).join(', ')}${counts.length>1?' and ':''}${counts.at(-1)}.`;
     // "or with your email" only under a Google or Apple button.
     document.querySelector<HTMLElement>('#account-signin .divider')!.hidden=!this.config?.googleClientId&&!this.config?.appleServicesId;
     const chip=byId('account-chip');

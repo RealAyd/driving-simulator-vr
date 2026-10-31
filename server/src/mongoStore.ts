@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {MongoClient,MongoServerError,type Collection,type Db} from 'mongodb';
 import {MongoSupportStore} from './mongoSupportStore.js';
 import type {VisitEvent} from './analytics.js';
-import {addDrive,countDrives,type Account,type AccountQuery,type Drive,type DriveOutcome,type DriveStatus,type Flag,type LedgerEntry,type LedgerQuery,type LoginCode,type Mode,type ReferrerCount,type Store,type Trial} from './store.js';
+import {addDrive,countDrives,freshTrial,type Account,type AccountQuery,type Drive,type DriveOutcome,type DriveStatus,type Flag,type LedgerEntry,type LedgerQuery,type LoginCode,type Mode,type ReferrerCount,type Store,type Trial} from './store.js';
 
 type Doc<T extends {id:string}>=Omit<T,'id'>&{_id:string};
 const out=<T extends {id:string}>(d:Doc<T>|null):T|null=>{
@@ -177,7 +177,7 @@ export class MongoStore implements Store{
       {$sort:{joined:-1}},{$limit:500},{$project:{_id:0,referrerId:'$_id',joined:1,paid:1}}]).toArray();
   }
   async createTrial(){
-    const doc={_id:randomUUID(),remaining:{lesson:1,test:1,free:1},createdAt:new Date()} as Doc<Trial>;
+    const doc={_id:randomUUID(),remaining:freshTrial(),createdAt:new Date()} as Doc<Trial>;
     await this.trialDocs.insertOne(doc);
     return out<Trial>(doc)!;
   }

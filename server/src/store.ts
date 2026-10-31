@@ -7,6 +7,11 @@ import type {VisitEvent} from './analytics.js';
  * codes, rate-limit counters and flags for an admin to review. The Mongo store is used when hosted; the memory store
  * in tests and local development.
  */
+/** Free drives of each kind (lesson, mock test, free drive) on a device's free try, without signing up. */
+export const TRIAL_EACH=3;
+/** A new free try: all of it left. */
+export const freshTrial=():Record<Mode,number>=>({lesson:TRIAL_EACH,test:TRIAL_EACH,free:TRIAL_EACH});
+
 export interface Account{
   id:string;
   /** Verified, lower case; null only for an Apple account that withheld it (not expected on first sign-in). */
@@ -105,7 +110,7 @@ export interface LoginCode{
   ref?:string;
 }
 
-/** A device's free try (no sign-up): one lesson, one mock test and one free drive. */
+/** A device's free try (no sign-up): TRIAL_EACH lessons, mock tests and free drives. */
 export interface Trial{id:string;remaining:Record<Mode,number>;createdAt:Date}
 
 export interface Flag{id:string;kind:string;data:Record<string,unknown>;createdAt:Date;resolvedAt?:Date;resolvedBy?:string;note?:string}
@@ -163,6 +168,7 @@ export interface Store{
   /** Newest first. */
   listDrives(q:{accountId?:string;since?:Date;limit:number}):Promise<Drive[]>;
   referrers():Promise<ReferrerCount[]>;
+  /** A device's free try: TRIAL_EACH drives of each kind. */
   createTrial():Promise<Trial>;
   getTrial(id:string):Promise<Trial|null>;
   /** Uses (−1) or gives back (+1) one of a free try's drives; using is atomic and fails (false) when none is left. */
@@ -184,7 +190,7 @@ export class MemoryStore implements Store{
   private flagged:Flag[]=[];
   private trials=new Map<string,Trial>();
   private visits:VisitEvent[]=[];
-  async createTrial(){const t:Trial={id:randomUUID(),remaining:{lesson:1,test:1,free:1},createdAt:new Date()};this.trials.set(t.id,t);return {...t,remaining:{...t.remaining}}}
+  async createTrial(){const t:Trial={id:randomUUID(),remaining:freshTrial(),createdAt:new Date()};this.trials.set(t.id,t);return {...t,remaining:{...t.remaining}}}
   async getTrial(id:string){const t=this.trials.get(id);return t?{...t,remaining:{...t.remaining}}:null}
   async moveTrial(id:string,mode:Mode,delta:-1|1){
     const t=this.trials.get(id);

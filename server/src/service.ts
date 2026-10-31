@@ -1,6 +1,6 @@
 import {createHash,randomBytes,randomInt,timingSafeEqual} from 'node:crypto';
 import type {Config,Pack} from './config.js';
-import type {Account,Drive,DriveOutcome,Mode,Pot,Store} from './store.js';
+import {freshTrial,type Account,type Drive,type DriveOutcome,type Mode,type Pot,type Store} from './store.js';
 import {Support,type Pusher} from './support.js';
 
 export interface Mailer{send(m:{to:string;subject:string;text:string;html:string}):Promise<void>}
@@ -213,18 +213,18 @@ export class Service{
     await this.store.updateDrive(d.id,{paidFrom,due:false});
   }
 
-  // ---- The free try (no sign-up): one lesson, one mock test and one free drive per device ----
+  // ---- The free try (no sign-up): TRIAL_EACH lessons, mock tests and free drives per device ----
 
   /** What is left of a device's free try (all of it before the first drive). */
   async trialLeft(trialId:string|null):Promise<Record<Mode,number>>{
     const t=trialId?await this.store.getTrial(trialId):null;
-    return t?{...t.remaining}:{lesson:1,test:1,free:1};
+    return t?{...t.remaining}:freshTrial();
   }
 
   /**
    * A drive on the device's free try: the try is made on the first drive (rate-limited by address), then each kind
-   * can be completed once (it is used when the drive is completed). Returns the try's id (for the device's cookie)
-   * with the outcome.
+   * can be completed TRIAL_EACH times (one is used when a drive is completed). Returns the try's id (for the device's
+   * cookie) with the outcome.
    */
   async startTrialDrive(trialId:string|null,ip:string,kind:string,scenario:string):Promise<{trialId:string|null;start:DriveStart|{ok:false;reason:'slow-down'}}>{
     if(!SCENARIO.test(scenario))return {trialId,start:{ok:false,reason:'trial-used'}};
