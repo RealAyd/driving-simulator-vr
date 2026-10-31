@@ -13,6 +13,9 @@ import {boxesOverlap} from '../../src/world/obstacles';
  */
 export interface RingReport{entries:number;cutIn:number;needlessWait:number;longestStand:number;overlaps:number;circulating:number}
 
+/** (Debug) seconds stood, by reason. */
+export const whys=new Map<string,number>();
+
 export function driveRing(loc:Location,ringIndex:number,seed:number,seconds=240,count=16,debug=false):RingReport{
   const ring=roundaboutRings(loc).filter(g=>g.radius>=12)[ringIndex]!,c=ring.position;
   // Off the road, a little way out from the ring.
@@ -48,6 +51,10 @@ export function driveRing(loc:Location,ringIndex:number,seed:number,seconds=240,
         if(!vis.some(o=>o!==d&&onRing(o.car.pose.position)&&o.leg.road===null&&(((a-ang(o.car.pose.position))%(2*Math.PI))+2*Math.PI)%(2*Math.PI)*R<40))r.needlessWait+=dt;
       }
       const v=d.car.speed<.2&&!d.car.parked?(still.get(d.car.id)??0)+dt:0;still.set(d.car.id,v);r.longestStand=Math.max(r.longestStand,v);
+      if(debug&&d.car.speed<.2&&!d.car.parked){
+        // (The head of a queue: followed back to the one not behind another.)
+        let h=d;for(let k=0;k<20&&h.why?.startsWith('behind ');k++){const n=ds.find(o=>o.car.id===h.why!.slice(7));if(!n)break;h=n}
+        const k=`${(d.why??'').replace(/traffic-\d+/,'X')} @${d.leg.road?'road':'ring'} <- head: ${(h.why??'').replace(/traffic-\d+/,'X')} @${h.leg.road?(h.leg.road as {id:string}).id:'ring'}`;whys.set(k,(whys.get(k)??0)+dt)}
       if(debug&&v>45&&v<45+dt*1.5)console.log(`LONG t=${t.toFixed(0)} ${d.car.id} why '${d.why}' at ${Math.hypot(p.x-c.x,p.z-c.z).toFixed(0)} m from the middle, road ${(d.leg.road as {id?:string}|null)?.id??'ring'}`);
     }
     const box=(o:typeof ds[number])=>({id:o.car.id,cx:o.car.pose.position.x,cz:o.car.pose.position.z,heading:o.car.pose.heading,halfW:o.car.halfWidth,halfD:o.car.halfLength});

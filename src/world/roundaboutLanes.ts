@@ -164,7 +164,8 @@ export function aroundRing(r:RingLanes,a:Vec2,b:Vec2,inDir:Vec2,outDir:Vec2,pick
     points.push({x,z});
   }
   points[0]={x:a.x,z:a.z};points[n]={x:b.x,z:b.z};
-  const shifts=between.filter((d,i)=>laneAfter(lane,exit,i+1)<laneAfter(lane,exit,i)).map(d=>d+3);
+  // (Where the move out starts: the easing begins half its length before the lane changes.)
+  const shifts=between.filter((d,i)=>laneAfter(lane,exit,i+1)<laneAfter(lane,exit,i)).map(d=>Math.max(0,d+3-7.5));
   return {points,exit,exits:Math.max(exit,exits),turn,lane,shifts};
 }
 

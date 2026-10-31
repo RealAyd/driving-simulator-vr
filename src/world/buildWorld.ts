@@ -208,7 +208,10 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
           ||(offset===0&&zigzagged(line.position.x,line.position.z)))line.dispose();
         else{line.parent=root;add(white,line)}
     };
-    if(road.markings.centre==='dashed')lines(0,3,6,.1);        // UK centre/lane line: short dash, long gap
+    // A one-way road of two lanes or more (a roundabout's ring, a slip road): lane lines between its lanes (diagram
+    // 1005: short dashes, long gaps); no centre line.
+    if(road.oneway&&road.lanes.count>=2)for(let k=1;k<road.lanes.count;k++)lines(-half+k*road.lanes.width,2,4,.1);
+    else if(road.markings.centre==='dashed')lines(0,3,6,.1);   // UK centre/lane line: short dash, long gap
     else if(road.markings.centre==='hazard')lines(0,6,3,.15);  // hazard warning line
     else if(road.markings.centre==='solid')lines(0,0,0,.1);
     if(road.markings.edges)for(const side of [-1,1])lines(side*(half-.2),0,0,.1);

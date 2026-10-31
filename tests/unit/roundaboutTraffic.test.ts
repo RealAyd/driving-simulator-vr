@@ -19,7 +19,9 @@ describe('traffic at big roundabouts',()=>{
     const loc=await loadCentre(id);
     for(const seed of [1,2,3]){
       const r=driveRing(loc,0,seed),at=`${id}/${seed}: ${JSON.stringify(r)}`;
-      expect(r.entries,at).toBeGreaterThanOrEqual(15);
+      // (At least one on every 25 s; a small roundabout with few roads to it, as Dorchester's, has fewer once traffic no
+      // longer turns back round at a split carriageway nearby to come on again.)
+      expect(r.entries,at).toBeGreaterThanOrEqual(10);
       expect(r.cutIn,at).toBeLessThanOrEqual(Math.max(2,r.entries*.15));
       expect(r.needlessWait,at).toBeLessThan(30);
       expect(r.longestStand,at).toBeLessThan(60);
