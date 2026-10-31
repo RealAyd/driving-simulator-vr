@@ -8,3 +8,4 @@ assets-incoming/
 *.zip
 public/assets/licensed/
 server/dist/
+assist-report.json
