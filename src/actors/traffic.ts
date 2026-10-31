@@ -180,6 +180,8 @@ export class Traffic implements SimModule{
   }
   private readonly roadNodes=new Map<Road,[number,number]>();
   /** Side-road ends with give way or STOP lines (as the road markings have them), by road and end. */
+  /** The learner held up at lights or behind traffic (fixedUpdate): queued behind, not gone round. */
+  private learnerQueued=false;
   private readonly mouths=new Map<string,{kind:'give-way'|'stop';main:Road;point:Vec2;lineAlong:number}>();
   private readonly sideRoads=new Map<Road,Array<{along:number;road:Road;dir:1|-1}>>();
   private readonly junctionPoints:Vec2[]=[];
@@ -528,6 +530,12 @@ export class Traffic implements SimModule{
       if(!a||Math.hypot(lp.x-a.x,lp.z-a.z)>3){this.learnerAnchor={x:lp.x,z:lp.z};this.learnerIdle=0}else this.learnerIdle+=dt;
     }
     this.unknot(dt);
+    // The learner held up where it should be: at lights not at green (up to 40 m before the line, facing it), or behind a
+    // vehicle close ahead going its way. Never gone round, as a car standing in the road would be: queued behind.
+    const lp0=learner.pose.position,lf={x:Math.sin(learner.pose.heading),z:-Math.cos(learner.pose.heading)};
+    const ahead0=(x:number,z:number,reach:number,width:number)=>{const dx=x-lp0.x,dz=z-lp0.z,a=dx*lf.x+dz*lf.z;return a>0&&a<reach&&Math.abs(dx*lf.z-dz*lf.x)<width};
+    this.learnerQueued=(this.options.signals?.()??[]).some(st=>st.state!=='green'&&Math.cos(st.heading-learner.pose.heading)>.8&&ahead0(st.lane.x,st.lane.z,40,2.5))
+      ||this.drivers.some(o=>o.car.visible&&Math.cos(o.car.pose.heading-learner.pose.heading)>.7&&ahead0(o.car.pose.position.x,o.car.pose.position.z,15,1.8));
     for(const [i,d] of this.drivers.entries()){
       const car=d.car;
       if(!car.visible){if(this.rand()<.02)this.drivers[i]=this.spawn(d,i);continue}
@@ -630,7 +638,7 @@ export class Traffic implements SimModule{
         }
         return {room:learnerAcross-.9-edge,edge};
       })();
-      const canGoRound=(spare:number)=>d.leg.road!==null&&learnerAcross>.05&&roundRight().room>=2*car.halfWidth+spare;
+      const canGoRound=(spare:number)=>!this.learnerQueued&&d.leg.road!==null&&learnerAcross>.05&&roundRight().room>=2*car.halfWidth+spare;
       const learnerStopped=(Math.abs(learner.speed)<.5||this.learnerIdle>5)&&(aligned||facingIdle)&&canGoRound(.1);
       // Coming the other way (moving, or waiting out in the road): parked cars on this side are passed after it.
       // Counted 15 m nearer than it is: a learner can be slow through a narrow gap, so traffic waits in good time.
