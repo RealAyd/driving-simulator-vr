@@ -1,0 +1,47 @@
+scenario_id: BRENTWOOD_01
+centre: "Brentwood (London), 89 Warley Hill, CM14 5JN"
+location_and_approach: "Kavanaghs Road at its north-west end, where it meets London Road (A1023); approaching along Kavanaghs Road from the south-east, in its left half, to the end of the road"
+coordinates: {lat: 51.61562, lon: 0.28599} # the junction node, OpenStreetMap (ways 372684822 and 50706545)
+intended_movement: "Turn left on to London Road, south-west, towards Brook Street"
+journey_role: outbound
+selection_reason: "On the owner's reported test (October 2026): centre, towards the station, left before it, local streets, out of Kavanaghs Road, on to Brook Street. A real emerging decision on to a 30 mph main road on the way out of town."
+evidence_basis:
+  - "Owner's account of a test taken the previous month (supplied 30 and 31 October 2026): reported, not independently verified turn by turn"
+  - "OpenStreetMap, downloaded 31 October 2026: Kavanaghs Road (residential, 30 mph) ends at London Road (primary, 30 mph, two lanes, one each way, pavements both sides, lit); no traffic lights, crossing, give way or stop sign mapped at the junction (checked)"
+  - "Give way at the end of Kavanaghs Road: inferred from the layout (a residential road meeting a primary road at a T junction); the give way lines are drawn in the scene by that rule (inferred, not checked)"
+unresolved_material_details:
+  - "Give way lines and any sign at the end of Kavanaghs Road (expected, not mapped): confirm"
+  - "Sightlines: parked cars, walls or hedges on London Road either side of the mouth that restrict the view (the scene has none mapped): confirm"
+  - "Bus stop near the mouth on London Road (two are mapped in the scene's square, not at the mouth): confirm none affects the decision"
+learning_objective: "Emerge from a side road on to a main road: observe both ways (right first, then left, then right again), judge a safe gap in traffic from both directions, and go without making anyone slow down or swerve; wait at the line if it is not safe."
+prior_actions: "You left the test centre on Warley Hill, went towards the station and turned left before it, and have followed the local streets. The examiner said: \"At the end of the road, turn left.\" You checked your mirrors, signalled left and slowed on the approach."
+scene_setup: "Scene brentwood-kavanaghs-road (public/scenes, built by tools/scenes/build_scene.mjs from the OSM data above). Learner car at the end of Kavanaghs Road, front at the give way line, signalling left: at [1.65, 4.5], heading 330 degrees (scene metres). Traffic: the app's busiest setting ('Test day'), left to gather for 30 simulated seconds (capture spec: capture/spec.json)."
+capture_views: # rendered from the driver's seat, landscape phone (844 x 390 at 3x); see capture/capture.json
+  - forward
+  - right # looking right along London Road (traffic coming towards you in the near lane)
+  - left # looking left along London Road (traffic coming in the far lane, towards Brook Street)
+  - right-sequence-1..3 # three frames 1 s apart looking right: how fast the nearest car is coming
+learner_prompt: "You are at the end of Kavanaghs Road, signalling left, to turn left on to London Road towards Brook Street. What do you do now, and in what order?"
+available_actions:
+  - "Look right along London Road"
+  - "Look left along London Road"
+  - "Look right again"
+  - "Check the left mirror (for a cyclist or a pedestrian coming up on the left)"
+  - "Go now"
+  - "Wait at the line"
+  - "Creep forward to see more"
+  - "Cancel the signal"
+acceptable_responses:
+  - "Look right, look left, look right again; then go only if nothing coming from the right is close enough to have to slow, and nothing from the left is overtaking or turning into Kavanaghs Road across your path"
+  - "If parked cars or a hedge block the view: creep forward slowly to see, then look right, left and right again before going"
+  - "If a vehicle from the right is near (it would have to slow if you came out): wait at the line, keep looking, go when there is a safe gap"
+  - "Order: the final look before moving is to the right (traffic in the lane you are joining comes from the right)"
+  - "Valid either way: checking the left mirror before the turn; keeping the left signal on (it tells traffic on London Road and pedestrians what you are doing)"
+feedback: "Turning left out of a side road you join the near lane, where traffic comes from your right: it is the danger that matters most, so look right last before you move. Look left too, for anything overtaking towards you or turning in. Go when nobody on London Road would have to slow down or swerve for you. If a car from the right is close, waiting is correct, not hesitant; if the road is clear and you still wait, that is undue hesitation. What changes with other traffic: a bus at the stop or a parked van near the mouth hides traffic, so creep and look again; a car signalling left from the right may not turn, so wait until it does."
+fault_conditions: # contextual, from the depicted traffic; the app's mock test marks the same in a drive (src/assessment/mockTest.ts)
+  - "Going when a vehicle from the right (or one overtaking from the left) would have to slow or swerve: serious, Junctions – observation"
+  - "Going without looking right (or with no look right in the last seconds before moving): serious if traffic is about, driving fault if the road is empty, Junctions – observation"
+  - "No left signal when someone would benefit (traffic on London Road, a pedestrian at the mouth): driving fault, Signals – necessary"
+  - "Waiting with a clear road both ways for some seconds: driving fault, Progress – undue hesitation (only where the captures show the road clear)"
+scene_version: "brentwood-kavanaghs-road built 2026-10-31 from OSM; app assets/batch-a"
+review_status: draft

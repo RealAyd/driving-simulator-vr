@@ -1,0 +1,3 @@
+{"scene":"brentwood-kavanaghs-road","label":"Kavanaghs Road, Brentwood","at":[1.65,4.5,330],"wait":30,
+ "shots":[{"name":"forward"},{"name":"right","look":[70,0]},{"name":"left","look":[-70,0]}],
+ "sequence":{"name":"right-sequence","look":[70,0],"frames":3,"every":1}}

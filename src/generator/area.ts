@@ -17,6 +17,9 @@ export interface AreaRequest{
   testCentre?:boolean;
   /** The test centre's name in the list (its streets may have been built in advance). */
   centre?:string;
+  /** A scene built in advance for a scenario (tools/scenes/build_scene.mjs), served under scenes/: its pack, named
+   * `label`. */
+  scene?:string;
 }
 export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
 
@@ -37,11 +40,11 @@ export function packCentre(centre:string,half:number,date:string,summary:string,
 }
 
 /** A test centre's pack, if it was built in advance and this browser can unpack it (null: build it here). */
-async function loadPack(centre:string,fetcher:typeof fetch):Promise<CentrePack|null>{
+async function loadPack(centre:string,fetcher:typeof fetch,file=`centres/${centreFile(centre)}`):Promise<CentrePack|null>{
   const Stream=(globalThis as {DecompressionStream?:typeof DecompressionStream}).DecompressionStream;
   if(!Stream)return null;
   try{
-    const r=await fetcher(versioned(`centres/${centreFile(centre)}`));
+    const r=await fetcher(versioned(file));
     if(!r.ok)return null;
     // Gzipped as stored; some servers unzip it on the way (Content-Encoding), then it is the JSON already.
     const bytes=new Uint8Array(await r.arrayBuffer());
@@ -82,7 +85,8 @@ export function locationFromMap(request:AreaRequest,xml:string,half:number){
 export async function buildArea(request:AreaRequest,progress:(step:string,percent:number)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
   const id=`area-${slug(request.label)}`;
   progress('Getting the streets…',5);
-  const pack=request.centre?await loadPack(request.centre,fetcher):null;
+  const pack=request.scene?await loadPack(request.label,fetcher,`scenes/${request.scene}.json.gz`):request.centre?await loadPack(request.centre,fetcher):null;
+  if(request.scene&&!pack)throw new Error(`Scene ${request.scene} not found`);
   let raw:unknown,summary:string,half:number,built:string;
   if(pack){({location:raw,summary,half}=pack);built=`Built from OpenStreetMap data (${pack.date})`}
   else{
