@@ -1,4 +1,5 @@
 import {Color3,CreateBox,Matrix,Mesh,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
+import {CellStream,type StreamRange} from '../world/cellStream';
 import {isStaleImport,reportStaleBuild} from '../app/staleBuild';
 import {VertexBuffer} from '@babylonjs/core/Buffers/buffer';
 import type {AssetContainer} from '@babylonjs/core/assetContainer';
@@ -253,28 +254,30 @@ export interface ParkedCar{model:CarModelId;colour:string;x:number;y:number;z:nu
  * baked into the vertices): a single draw call however many cars there are.
  * A car whose model is missing is drawn as a plain box of the same size.
  */
-export function bakeParkedCars(scene:Scene,parent:TransformNode,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>):Mesh[]{
-  if(cars.length===0)return [];
+export function bakeParkedCars(scene:Scene,parent:TransformNode,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>,stream:StreamRange|null=null):CellStream{
   const material=new StandardMaterial('parked-cars',scene);
   material.specularColor=new Color3(.22,.22,.22);
   material.backFaceCulling=false;
   // One mesh per 100 m section, so each view draws only the cars in front of it, and none further than 160 m away
-  // (a generated area has hundreds of parked cars).
+  // (a generated area has hundreds of parked cars). With `stream` (a large area), a section is built only while the
+  // car is near it.
   const sections=new Map<string,ParkedCar[]>();
   for(const car of cars){
     const key=`${Math.floor(car.x/100)},${Math.floor(car.z/100)}`;
-    sections.set(key,[...(sections.get(key)??[]),car]);
+    (sections.get(key)??sections.set(key,[]).get(key)!).push(car);
   }
-  return [...sections].map(([key,list])=>{
-    const mesh=bakeSection(scene,parent,`parked-cars-${key}`,list,models,material);
+  return new CellStream(100,sections.keys(),function*(key){
+    const mesh=yield* bakeSection(scene,parent,`parked-cars-${key}`,sections.get(key)!,models,material);
     mesh.addLODLevel(160,null);
-    return mesh;
-  });
+    return [mesh];
+  },stream);
 }
 
-function bakeSection(scene:Scene,parent:TransformNode,name:string,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>,material:StandardMaterial):Mesh{
+/** A section's cars as one mesh (a step for each car, and one for the mesh). */
+function* bakeSection(scene:Scene,parent:TransformNode,name:string,cars:ParkedCar[],models:Map<CarModelId,CarModel|null>,material:StandardMaterial):Generator<void,Mesh,void>{
   const g:BakedGeometry={positions:[],normals:[],colors:[],indices:[]};
   for(const car of cars){
+    yield;
     const model=models.get(car.model);
     if(model){model.bakeInto(g,scene,car.colour,car.x,car.y,car.z,car.heading);continue}
     const spec=parkedSize(CAR_MODELS[car.model]);

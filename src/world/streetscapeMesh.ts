@@ -4,6 +4,7 @@ import {BAY,EAVES,framePoint,type Frame,type House,type HouseUnit,type StreetLay
 import type {Obelisk,TownArea,TownBuilding} from './townscape';
 import {brickTexture,detailTexture,REGIONS,roofTexture,type Region} from './sceneryTextures';
 import {shopDisplay,shopfrontVariant} from '../assets/ukShopfronts';
+import {CellStream,type StreamRange} from './cellStream';
 
 /**
  * Geometry for a streetscape layout. Everything static is drawn with three
@@ -551,68 +552,72 @@ function panelVan(g:Geometry,v:VanFootprint):void{
   }
 }
 
-export interface BuiltStreetscape{meshes:Mesh[];dispose():void}
+export interface BuiltStreetscape{
+  /** The meshes built now. */
+  readonly meshes:Mesh[];
+  /** A large area (built near the car only): builds and frees sections as the car moves (CellStream.update). */
+  update(x:number,z:number,until?:number):number;
+  /** Diagnostics (CellStream.timing). */
+  readonly timing:{cells:number;ms:number;slowestStep:number};
+  dispose():void;
+}
 
 /** Section size for the street's meshes: each view (and each mirror) draws only the sections in front of it. */
 const CHUNK=200;
 
-/** Builds the street's meshes under `parent`. `parked` adds a soft ground shadow under each parked car. */
-export function buildStreetscape(scene:Scene,layout:StreetLayout|null,parent:TransformNode,parked:ParkedFootprint[],vans:VanFootprint[]=[]):BuiltStreetscape{
-  const chunks=new Map<string,Builders>();
-  const at=(x:number,z:number):Builders=>{
+/**
+ * Builds the street's meshes under `parent`. `parked` adds a soft ground shadow under each parked car. With `stream`
+ * (a large area), each section is built only while the car is near it.
+ */
+export function buildStreetscape(scene:Scene,layout:StreetLayout|null,parent:TransformNode,parked:ParkedFootprint[],vans:VanFootprint[]=[],stream:StreamRange|null=null):BuiltStreetscape{
+  // What goes in each section, drawn when the section is built.
+  const work=new Map<string,Array<(b:Builders)=>void>>();
+  const at=(x:number,z:number,draw:(b:Builders)=>void)=>{
     const key=`${Math.floor(x/CHUNK)},${Math.floor(z/CHUNK)}`;
-    let b=chunks.get(key);
-    if(!b){b={brick:new Geometry(),roof:new Geometry(),detail:new Geometry()};chunks.set(key,b)}
-    return b;
+    (work.get(key)??work.set(key,[]).get(key)!).push(draw);
   };
   const street=layout??{houses:[],strips:[],pads:[],lamps:[],trees:[],bins:[],drains:[]};
-  for(const h of street.houses)house(at(h.frame.ox,h.frame.oz),h);
-  for(const s of street.strips)boundary(at((s.a.x+s.b.x)/2,(s.a.z+s.b.z)/2),s);
-  for(const p of street.pads){
-    const b=at(p.corners[0].x,p.corners[0].z);
+  for(const h of street.houses)at(h.frame.ox,h.frame.oz,b=>house(b,h));
+  for(const s of street.strips)at((s.a.x+s.b.x)/2,(s.a.z+s.b.z)/2,b=>boundary(b,s));
+  for(const p of street.pads)at(p.corners[0].x,p.corners[0].z,b=>{
     const y=p.y;
     const pts=p.corners.map(c=>[c.x,y,c.z] as V3);
     b.detail.regionQuad(pts as [V3,V3,V3,V3],REGIONS.paving,p.kind==='path'?COLOURS.path:COLOURS.drive,[0,1,0]);
-  }
-  for(const l of street.lamps){
-    const b=at(l.x,l.z);
+  });
+  for(const l of street.lamps)at(l.x,l.z,b=>{
     prism(b.detail,l.x,l.z,l.y,6,.09,.06,COLOURS.lamp);
     const f={x:Math.sin(l.heading),z:-Math.cos(l.heading)};
     box(b.detail,{x:l.x+f.x*.35,z:l.z+f.z*.35},l.y+5.9,f,.08,.75,.08,flatFace(COLOURS.lamp));
     box(b.detail,{x:l.x+f.x*.8,z:l.z+f.z*.8},l.y+5.78,f,.26,.6,.14,flatFace(COLOURS.lantern));
-  }
-  for(const t of street.trees){
-    const b=at(t.x,t.z);
+  });
+  for(const t of street.trees)at(t.x,t.z,b=>{
     prism(b.detail,t.x,t.z,t.y,t.height*.55,.16*t.radius/2,.1*t.radius/2,COLOURS.bark,4);
     crown(b.detail,t.x,t.y+t.height-t.radius*.95,t.z,t.radius,t.radius*1.05,COLOURS.leaves);
-  }
-  for(const bin of street.bins){
-    const b=at(bin.x,bin.z);
+  });
+  for(const bin of street.bins)at(bin.x,bin.z,b=>{
     const f={x:Math.sin(bin.heading),z:-Math.cos(bin.heading)};
     box(b.detail,bin,bin.y,f,.58,.72,1,flatFace(hex(bin.colour)));
     box(b.detail,bin,bin.y+1,f,.62,.78,.05,flatFace(hex(bin.colour).map(c=>c*.8) as RGB));
-  }
-  for(const d of street.drains){
-    const b=at(d.x,d.z);
+  });
+  for(const d of street.drains)at(d.x,d.z,b=>{
     const f={x:Math.sin(d.heading),z:-Math.cos(d.heading)},a={x:-f.z,z:f.x};
     const P=(u:number,v:number):V3=>[d.x+a.x*u+f.x*v,d.y,d.z+a.z*u+f.z*v];
     b.detail.regionQuad([P(-.2,-.25),P(.2,-.25),P(.2,.25),P(-.2,.25)],REGIONS.grate,COLOURS.grate,[0,1,0]);
-  }
-  for(const v of vans)panelVan(at(v.x,v.z).detail,v);
+  });
+  for(const v of vans)at(v.x,v.z,b=>panelVan(b.detail,v));
   if(layout?.town){
-    for(const t of layout.town.buildings)townBuilding(at(t.ring[0]!.x,t.ring[0]!.z),t);
+    for(const t of layout.town.buildings)at(t.ring[0]!.x,t.ring[0]!.z,b=>townBuilding(b,t));
     // Ground areas just above the paving: grass and gardens, car parks, then access routes on top.
     const AREA={grass:{c:COLOURS.lawn,y:-.045},garden:{c:COLOURS.lawn,y:-.045},green:{c:COLOURS.lawn,y:-.045},parking:{c:COLOURS.carPark,y:-.035},access:{c:COLOURS.accessPath,y:-.025},street:{c:COLOURS.street,y:-.015}} as const;
-    for(const a of layout.town.areas)flatArea(at(a.polygon[0]!.x,a.polygon[0]!.z).detail,a.polygon,AREA[a.kind].y,AREA[a.kind].c);
-    for(const m of layout.town.obelisks)obelisk(at(m.x,m.z).detail,m);
+    for(const a of layout.town.areas)at(a.polygon[0]!.x,a.polygon[0]!.z,b=>flatArea(b.detail,a.polygon,AREA[a.kind].y,AREA[a.kind].c));
+    for(const m of layout.town.obelisks)at(m.x,m.z,b=>obelisk(b.detail,m));
   }
-  for(const c of [...parked,...vans]){
-    const b=at(c.x,c.z);
+  for(const c of [...parked,...vans])at(c.x,c.z,b=>{
     const f={x:Math.sin(c.heading),z:-Math.cos(c.heading)},a={x:-f.z,z:f.x};
     const P=(u:number,v:number):V3=>[c.x+a.x*u+f.x*v,c.y+.004,c.z+a.z*u+f.z*v];
     const w=c.width/2+.05,l=c.length/2+.05;
     b.detail.flat([P(-w,-l),P(w,-l),P(w,l),P(-w,l)],COLOURS.shadow,[0,1,0]);
-  }
+  });
 
   const material=(name:string,texture:import('../engine/babylon').DynamicTexture)=>{
     const m=new StandardMaterial(name,scene);
@@ -623,15 +628,24 @@ export function buildStreetscape(scene:Scene,layout:StreetLayout|null,parent:Tra
     return m;
   };
   const materials=[material('scenery-brick',brickTexture(scene)),material('scenery-roof',roofTexture(scene)),material('scenery-detail',detailTexture(scene))];
-  const meshes=[...chunks].flatMap(([key,b])=>[
-    b.brick.mesh(`streetscape-brick-${key}`,scene,materials[0]!,parent),
-    b.roof.mesh(`streetscape-roof-${key}`,scene,materials[1]!,parent),
-    b.detail.mesh(`streetscape-detail-${key}`,scene,materials[2]!,parent)
-  ]).filter((m):m is Mesh=>m!==null);
+  const cells=new CellStream(CHUNK,work.keys(),function*(key){
+    // (A step for each house or item, and one for each of the section's three meshes.)
+    const b:Builders={brick:new Geometry(),roof:new Geometry(),detail:new Geometry()};
+    for(const draw of work.get(key)!){draw(b);yield}
+    const meshes:Mesh[]=[];
+    for(const [g,kind,mat] of [[b.brick,'brick',materials[0]!],[b.roof,'roof',materials[1]!],[b.detail,'detail',materials[2]!]] as const){
+      const m=g.mesh(`streetscape-${kind}-${key}`,scene,mat,parent);
+      if(m)meshes.push(m);
+      yield;
+    }
+    return meshes;
+  },stream);
   return {
-    meshes,
+    get meshes(){return cells.meshes()},
+    update:(x,z,until)=>cells.update(x,z,until),
+    timing:cells.timing,
     dispose(){
-      for(const m of meshes)m.dispose();
+      cells.dispose();
       for(const m of materials){m.diffuseTexture?.dispose();m.dispose()}
     }
   };

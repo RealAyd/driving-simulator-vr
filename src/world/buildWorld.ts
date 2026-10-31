@@ -10,6 +10,7 @@ import {buildSky,configureTone,mapWorldUVs,texture,type SurfaceKind} from './sur
 import {junctionMouths,mouthLane,mouthLinePoint,mouthPoint,schoolFrontages} from './junctionControls';
 import {layoutRoundabouts,splitterOutline} from './roundaboutLayout';
 import type {Terrain} from './terrain';
+import {CellStream,type StreamRange} from './cellStream';
 
 export interface BuiltWorld{
   root:TransformNode;
@@ -17,8 +18,13 @@ export interface BuiltWorld{
   occluders:Mesh[];
   /** The sun (casts the shadows near the car, shadows.ts). */
   sun:DirectionalLight;
+  /** A large area's roads, built near the car only (null: all built). */
+  roads:CellStream|null;
   dispose():void;
 }
+
+/** Cell size for a large area's roads (metres). */
+const ROAD_CELL=200;
 
 /** Haze at the horizon (also the fog colour) and the sky overhead. */
 const SKY=new Color3(.76,.83,.88),ZENITH=new Color3(.34,.55,.82);
@@ -99,7 +105,8 @@ function strips(scene:Scene,name:string,samples:Sample[],fromOffset:number|((s:S
   return meshes;
 }
 
-export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,terrain:Terrain|null=null):BuiltWorld{
+/** With `stream` (a large area), the roads are built only near the car, in cells (BuiltWorld.roads). */
+export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,terrain:Terrain|null=null,stream:StreamRange|null=null):BuiltWorld{
   scene.clearColor.set(SKY.r,SKY.g,SKY.b,1);
   // Light haze: distant houses fade into the sky rather than ending against it (mirrors included).
   scene.fogMode=Scene.FOGMODE_LINEAR;
@@ -167,11 +174,26 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
   };
   const inJunction=(x:number,z:number,extra=0)=>location.junctions.some(j=>Math.hypot(x-j.position.x,z-j.position.z)<=j.radius+extra);
 
-  for(const road of location.roads){
+  // Each road's carriageway, pavements, kerbs and lines (into `add`); in a large area, only what is in one cell.
+  const sampled=new Map<Road,Sample[]>();
+  const samplesOf=(road:Road)=>{
+    let samples=sampled.get(road);
+    if(!samples){samples=resample(road,(x,z)=>inJunction(x,z,road.pavementWidth+8)||onOtherCarriageway(location,x,z,road.id,road.pavementWidth+8),1,road.pavementProfile?4:8);sampled.set(road,samples)}
+    return samples;
+  };
+  const drawRoad=(road:Road,add:(mat:StandardMaterial,...meshes:Mesh[])=>void,inCell:((x:number,z:number)=>boolean)|null=null)=>{
     const half=roadHalfWidth(road);
     const y=road.surfaceHeight;
-    const samples=resample(road,(x,z)=>inJunction(x,z,road.pavementWidth+8)||onOtherCarriageway(location,x,z,road.id,road.pavementWidth+8),1,road.pavementProfile?4:8);
-    add(tarmac,...strips(scene,`carriageway-${road.id}`,samples,-half,half,y,y,s=>!inJunction(s.x,s.z,-.5),root));
+    const samples=samplesOf(road);
+    // In a cell: its samples and the one either side of each (no gap where a road crosses into the next cell).
+    let here=(_:Sample)=>true;
+    if(inCell){
+      const set=new Set<Sample>();
+      samples.forEach((p,i)=>{if(inCell(p.x,p.z))for(const q of [samples[i-1],p,samples[i+1]])if(q)set.add(q)});
+      if(set.size===0)return;
+      here=p=>set.has(p);
+    }
+    add(tarmac,...strips(scene,`carriageway-${road.id}`,samples,-half,half,y,y,s=>here(s)&&!inJunction(s.x,s.z,-.5),root));
     for(const side of [-1,1]){
       // A wide pavement (profile) stops short of any other carriageway or junction it would reach.
       const widths=new Map<Sample,number>();
@@ -193,8 +215,8 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
         const p=at(s,side*(half+base/2),0),q=at(s,side*(half+base),0),k=at(s,inner+side*.2,0);
         return width(s)>0&&!inJunction(s.x,s.z,road.pavementWidth)&&![p,q,k].some(v=>onOtherCarriageway(location,v.x,v.z,road.id,.2));
       };
-      add(pavement,...strips(scene,`pavement-${road.id}-${side}`,samples,inner,outer,y+road.kerbHeight,y+road.kerbHeight,keep,root));
-      add(kerb,...strips(scene,`kerb-${road.id}-${side}`,samples,inner,inner,y,y+road.kerbHeight,keep,root));
+      add(pavement,...strips(scene,`pavement-${road.id}-${side}`,samples,inner,outer,y+road.kerbHeight,y+road.kerbHeight,s=>here(s)&&keep(s),root));
+      add(kerb,...strips(scene,`kerb-${road.id}-${side}`,samples,inner,inner,y,y+road.kerbHeight,s=>here(s)&&keep(s),root));
     }
     const lineY=y+.006;
     // The centre zig-zags of a zebra crossing replace the centre line there.
@@ -205,7 +227,7 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     const lines=(offset:number,dash:number,gap:number,width:number)=>{
       for(const line of markings(scene,road,offset,dash,gap,width,lineY))
         if(inJunction(line.position.x,line.position.z,.5)||onOtherCarriageway(location,line.position.x,line.position.z,road.id)
-          ||(offset===0&&zigzagged(line.position.x,line.position.z)))line.dispose();
+          ||(offset===0&&zigzagged(line.position.x,line.position.z))||(inCell&&!inCell(line.position.x,line.position.z)))line.dispose();
         else{line.parent=root;add(white,line)}
     };
     // A one-way road of two lanes or more (a roundabout's ring, a slip road): lane lines between its lanes (diagram
@@ -215,6 +237,38 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     else if(road.markings.centre==='hazard')lines(0,6,3,.15);  // hazard warning line
     else if(road.markings.centre==='solid')lines(0,0,0,.1);
     if(road.markings.edges)for(const side of [-1,1])lines(side*(half-.2),0,0,.1);
+  };
+  let roads:CellStream|null=null;
+  if(!stream)for(const road of location.roads)drawRoad(road,add);
+  else{
+    // A large area: the roads in 200 m cells, each cell's merged per material, built only near the car.
+    const box=(road:Road)=>{
+      const m=roadHalfWidth(road)+Math.max(road.pavementWidth,...(road.pavementProfile??[]).flatMap(p=>[p.left,p.right]))+1;
+      const xs=road.centreline.map(p=>p.x),zs=road.centreline.map(p=>p.z);
+      return {road,i0:Math.floor((Math.min(...xs)-m)/ROAD_CELL),i1:Math.floor((Math.max(...xs)+m)/ROAD_CELL),j0:Math.floor((Math.min(...zs)-m)/ROAD_CELL),j1:Math.floor((Math.max(...zs)+m)/ROAD_CELL)};
+    };
+    const boxes=location.roads.map(box),keys=new Set<string>();
+    for(const b of boxes)for(let i=b.i0;i<=b.i1;i++)for(let j=b.j0;j<=b.j1;j++)keys.add(`${i},${j}`);
+    roads=new CellStream(ROAD_CELL,keys,function*(key){
+      // (A step for each road in the cell, and one for each material's merged mesh.)
+      const [i,j]=key.split(',').map(Number) as [number,number];
+      const inCell=(x:number,z:number)=>Math.floor(x/ROAD_CELL)===i&&Math.floor(z/ROAD_CELL)===j;
+      const cell=new Map<StandardMaterial,Mesh[]>();
+      const into=(mat:StandardMaterial,...meshes:Mesh[])=>{for(const m of meshes)m.material=mat;cell.set(mat,[...(cell.get(mat)??[]),...meshes])};
+      for(const b of boxes)if(i>=b.i0&&i<=b.i1&&j>=b.j0&&j<=b.j1){drawRoad(b.road,into,inCell);yield}
+      const out:Mesh[]=[];
+      for(const [mat,meshes] of cell){
+        const merged=meshes.length>1?Mesh.MergeMeshes(meshes,true,true):meshes[0]??null;
+        if(merged){
+          merged.name=`road-${mat.name}-${key}`;merged.material=mat;merged.parent=root;merged.isPickable=false;
+          const kind=surfaceOf.get(mat);if(kind)mapWorldUVs(merged,kind);
+          merged.freezeWorldMatrix();
+          out.push(merged);
+        }
+        yield;
+      }
+      return out;
+    },stream);
   }
 
   // Mini-roundabouts: junction surface, painted disc, give-way lines on each entry.
@@ -471,7 +525,9 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     root,
     occluders,
     sun,
+    roads,
     dispose(){
+      roads?.dispose();
       root.dispose(false,true);
       hemi.dispose();
       sun.dispose();

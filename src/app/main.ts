@@ -90,6 +90,7 @@ import {buildWorld} from '../world/buildWorld';
 import {layoutStreetscape} from '../world/streetscape';
 import {kerbFootprints,layoutTownscape,type KerbFootprint} from '../world/townscape';
 import {buildStreetscape} from '../world/streetscapeMesh';
+import type {StreamRange} from '../world/cellStream';
 import {CompositeCollisions,pointToBox,type DynamicFootprint} from '../world/collisions';
 import {StaticObstacles} from '../world/obstacles';
 import {pointAtAlong,sampleRoad,surfaceAt} from '../world/roadGeometry';
@@ -117,6 +118,15 @@ import {AdaptiveScale} from '../engine/renderScale';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
+/** A place with roads further than this from its middle (metres; over 2 km across) builds its scenery near the car only. */
+const LARGE_AREA=1000;
+/** How far round the car a large area's houses and street (fog closes in by 650 m), and parked cars (drawn to 160 m), are kept built. */
+const STREET_RANGE:StreamRange={near:450,far:600},PARKED_RANGE:StreamRange={near:220,far:320};
+/** Milliseconds a frame spent building a large area's scenery as the car moves. */
+const STREAM_MS=4;
+/** Whether a place is large enough to build its scenery near the car only (and has no terrain to drape it on). */
+const largeArea=(l:{roads:ReadonlyArray<{centreline:ReadonlyArray<{x:number;z:number}>}>},terrain:unknown)=>
+  !terrain&&l.roads.some(r=>r.centreline.some(p=>Math.max(Math.abs(p.x),Math.abs(p.z))>LARGE_AREA));
 /** 'stick': a game controller's stick (in the headset; 'buttons' there are the controller's steer buttons). */
 type SteeringMode='assist'|'tilt'|'buttons'|'stick';
 const EARLY_STOP_HINT_SECONDS=8;
@@ -276,7 +286,7 @@ export async function boot():Promise<void>{
   // Real ground heights where a location has them (content/terrain); the world is laid on them once dressed.
   let terrain=terrainFor(place.id);
   setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
-  let world=buildWorld(scene,place,quality,terrain);
+  let world=buildWorld(scene,place,quality,terrain,largeArea(place,terrain)?STREET_RANGE:null);
   // Sun shadows near the car (the sun belongs to the world, so they are remade with it).
   const shadowsOn=shadowsWanted(location.search,rendererName(engine._gl as WebGLRenderingContext|null));
   let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
@@ -299,6 +309,7 @@ export async function boot():Promise<void>{
   function* locationStages(id:string):Generator<[number,string]>{
     if(place.id===id)return;
     yield [3,'Clearing away the last place'];
+    scenery=[];
     shadows?.dispose();
     world.dispose();
     place=locations.get(id)!;
@@ -306,7 +317,7 @@ export async function boot():Promise<void>{
     terrain=terrainFor(place.id);
     setGround(terrain?(x,z)=>terrain!.heightAt(x,z):null);
     yield [8,'Laying the roads and buildings'];
-    world=buildWorld(scene,place,quality,terrain);
+    world=buildWorld(scene,place,quality,terrain,largeArea(place,terrain)?STREET_RANGE:null);
     if(shadowsOn){shadows=new SunShadows(scene,world.sun,quality);shadows.castOnlyUnder(cockpit.root)}
     placeModels();
     yield* dressStages(40,97);
@@ -340,6 +351,11 @@ export async function boot():Promise<void>{
   let animatedPeople:AnimatedPeople|null=null;
   /** Street furniture models (asset Batch A); null until loaded. */
   let streetModels:StreetModels|null=null;
+  /**
+   * A large area's houses and parked cars, built near the car only and freed far from it (all of a 3 km area at once
+   * ran a phone's browser out of memory): updated as the car moves. Empty for a small area (all built at once).
+   */
+  let scenery:Array<{update(x:number,z:number,until?:number):number;readonly timing:{cells:number;ms:number;slowestStep:number}}>=[];
   /** Dressing the place in stages, reporting percent from `from` to `to`. */
   function* dressStages(from:number,to:number):Generator<[number,string]>{
     const at=(k:number)=>from+(to-from)*k;
@@ -355,10 +371,14 @@ export async function boot():Promise<void>{
     const vans=place.blocks.filter(b=>b.vehicleModel===PANEL_VAN.id).map(b=>({x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg),width:b.size.width,length:b.size.depth,height:b.size.height,colour:b.colour??'#e9e9e4'}));
     // Modelled trees replace the drawn ones (positions and trunk colliders unchanged).
     const modelTrees=!!layout&&!!streetModels?.has('tree');
-    if(layout||vans.length>0)buildStreetscape(scene,modelTrees?{...layout!,trees:[]}:layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans);
+    const large=!!world.roads,start=spawnOf(place).position;
+    scenery=world.roads?[world.roads]:[];
+    if(layout||vans.length>0)scenery.push(buildStreetscape(scene,modelTrees?{...layout!,trees:[]}:layout,world.root,parked.map(c=>({...c,width:CAR_MODELS[c.model].width,length:CAR_MODELS[c.model].length})),vans,large?STREET_RANGE:null));
     if(modelTrees)streetModels!.placeTrees(world.root,layout!.trees);
     yield [at(.55),'Parking cars'];
-    bakeParkedCars(scene,world.root,parked,carModels);
+    scenery.push(bakeParkedCars(scene,world.root,parked,carModels,large?PARKED_RANGE:null));
+    for(const s of scenery)s.update(start.x,start.z,Infinity);
+    if(!large)scenery=[];
     yield [at(.7),'Signs, bus stops and people'];
     signPlan=layoutSignage(place,layout);
     // Modelled shelters replace the drawn ones (the plan, and so the colliders, are unchanged).
@@ -2324,6 +2344,14 @@ export async function boot():Promise<void>{
       hud.setLimit(label.speedLimitMph??(label.road?30:null),vehicle.state.speed);
       lastPlace=label;
     }
+    // A large area: the roads, houses and parked cars near the car built (a few milliseconds' work a frame), those
+    // far off freed.
+    // (Round the car during a drive; before it, round where the drive will start: the car is still where the last
+    // place's drive ended.)
+    if(scenery.length){
+      const at=session.state==='running'?vehicle.state.position:spawnOf(place).position,until=performance.now()+STREAM_MS;
+      for(const s of scenery)s.update(at.x,at.z,until);
+    }
     shadows?.follow(pose.position.x,pose.position.z,dt);
     scene.render();
   });
@@ -2340,6 +2368,22 @@ export async function boot():Promise<void>{
     placeCar:(x:number,z:number,headingDeg:number)=>{vehicle.setSpawn({position:{x,y:0,z},heading:degToRad(headingDeg)});vehicle.reset()},
     /** Diagnostics (scenario captures): open a scene built in advance (public/scenes/<id>.json.gz, named `label`). */
     openScene:(id:string,label:string)=>/^[a-z0-9-]+$/.test(id)?openArea({label,lat:0,lon:0,scene:id}):Promise.resolve(),
+    /** Diagnostics (memory): meshes by name (up to the first digit or dash-digit), with vertices and indices, biggest
+     * first; and the instances and textures. */
+    meshStats:()=>{
+      const by=new Map<string,{meshes:number;vertices:number;indices:number;instances:number}>();
+      for(const m of scene.meshes){
+        const k=m.name.replace(/[-_ ]?\d.*$/,'')||m.name,e=by.get(k)??{meshes:0,vertices:0,indices:0,instances:0};
+        const own='getTotalIndices' in m&&!('sourceMesh' in m&&(m as {sourceMesh?:unknown}).sourceMesh);
+        e.meshes++;if(own){e.vertices+=m.getTotalVertices();e.indices+=(m as {getTotalIndices():number}).getTotalIndices()}else e.instances++;
+        by.set(k,e);
+      }
+      // (A large area's cells built now, by what they hold: "i,j" keys.)
+      const cells=(prefix:string)=>scene.meshes.filter(m=>m.name.startsWith(prefix)).map(m=>m.name.slice(prefix.length));
+      return {groups:[...by].map(([name,e])=>({name,...e})).sort((a,b)=>b.vertices-a.vertices),textures:scene.textures.length,meshes:scene.meshes.length,
+        cells:{roads:cells('road-tarmac-'),houses:cells('streetscape-brick-'),parkedCars:cells('parked-cars-')},
+        builds:scenery.map(s=>({...s.timing}))};
+    },
     /** Diagnostics: background people (where each is at the current simulated time) and the figures drawn. */
     people:()=>({drawn:people.ids(),animated:[...people.animatedIds],animatedModelsLoaded:!!animatedPeople,modelHeights:animatedPeople?[...animatedPeople.modelHeights]:[],animatedHeights:animatedPeople?.drawnHeights()??[],crowd:crowd.map(p=>({id:p.id,kind:p.kind,...personPose(p,clock.time)}))}),
     /** The location label as shown. */
