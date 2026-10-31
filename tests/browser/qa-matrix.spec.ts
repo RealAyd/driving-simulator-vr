@@ -7,7 +7,9 @@ import {pick} from './home';
 // mock test with assisted steering and a bot on the pedals. Recorded: load times and bytes, draw calls and triangles
 // in the driver's and the behind view, frame times (software rendering here: compare profiles, not absolute
 // numbers), memory, errors, and the bugs owners have seen: road users stalled, the car drifting off its lane with
-// assisted steering, cars drawn in one colour. The report is attached as qa-<profile>.json.
+// assisted steering, cars drawn in one colour. The report is attached as qa-<profile>.json. QA_SCENE=<id> drives a
+// scene built in advance instead (public/scenes/<id>.json.gz, as ?scene=<id> opens it), such as the 3.4 km
+// brentwood-wide, whose scenery is built near the car only: then the cells built and the peak memory are recorded too.
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 type Net={download:number;upload:number;latency:number}|null;
 const NET:Record<string,Net>={fast:null,'4g':{download:9e6/8,upload:3e6/8,latency:170},'slow-3g':{download:4e5/8,upload:4e5/8,latency:400}};
@@ -22,6 +24,7 @@ const PROFILES:{id:string;width:number;height:number;dpr:number;touch:boolean;cp
 ];
 const only=process.env.QA_PROFILES?.split(',');
 const DRIVE_SECONDS=Number(process.env.QA_SECONDS??90);
+const SCENE=process.env.QA_SCENE;
 
 /** The bot's pedals: about 15 mph, 8 near a junction, waits behind traffic, stops when the examiner says so. */
 const pedal=(page:Page)=>page.evaluate(`(()=>{const d=window.__drivingPractice,v=d.vehicle(),fx=Math.sin(v.heading),fz=-Math.cos(v.heading);
@@ -47,12 +50,13 @@ for(const p of PROFILES.filter(p=>!only||only.includes(p.id)))test(`QA: ${p.id}`
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text().slice(0,200))});
   const report:any={profile:p,errors,consoleErrors};
   const stage=(what:string)=>console.log(`QA-STAGE ${p.id} ${((Date.now()-t0)/1000).toFixed(0)}s ${what}`);
-  await page.goto('./');
+  await page.goto(SCENE?`./?scene=${SCENE}`:'./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:300_000});
   stage('home');report.homeSeconds=(Date.now()-t0)/1000;report.homeBytes=bytes;
   await page.evaluate(()=>addEventListener('webglcontextlost',()=>{(window as any).__lost=true},true));
   const t1=Date.now();
-  await pick(page,'goodmayes','test');
+  if(SCENE)await page.click('[data-drive-mode=test]');else await pick(page,'goodmayes','test');
+  await expect(page.locator('#exercise-detail')).toBeVisible({timeout:600_000});
   await expect(page.locator('#busy')).toBeHidden({timeout:600_000});
   stage('place built');report.placeSeconds=(Date.now()-t1)/1000;report.totalBytes=bytes;
   // (The bot steers with the assistance on every device: a desktop starts with the keys.)
@@ -98,7 +102,7 @@ for(const p of PROFILES.filter(p=>!only||only.includes(p.id)))test(`QA: ${p.id}`
     for(const c of s.traffic)stalls.set(c.id,{why:c.why,waited:Math.round(c.waited),x:Math.round(c.x),z:Math.round(c.z)});
     if(!report.surfaces)report.surfaces={};report.surfaces[s.surface]=(report.surfaces[s.surface]??0)+1;
     await page.waitForTimeout(250);
-    if(samples.length%40===0)stage(`driving ${Math.round(s.t-start)} s`);
+    if(samples.length%40===0){stage(`driving ${Math.round(s.t-start)} s`);report.heapPeakMb=Math.max(report.heapPeakMb??0,await page.evaluate(()=>Math.round(((performance as any).memory?.usedJSHeapSize??0)/1e6)))}
   }
   await hold(null);stage('driven');
   report.drivenSimSeconds=Math.round(await read(page,'simTime()')-start);
@@ -112,6 +116,8 @@ for(const p of PROFILES.filter(p=>!only||only.includes(p.id)))test(`QA: ${p.id}`
   report.trafficMaterials=(await read(page,"meshMaterials('^traffic-')")).slice(0,12).map((m:any)=>`${m.material}:${(m.diffuse??[]).map((v:number)=>v.toFixed(2)).join('/')}`);
   report.scenery=await read(page,'scenery()');
   report.heapEndMb=await page.evaluate(()=>Math.round(((performance as any).memory?.usedJSHeapSize??0)/1e6));
+  const mesh=await read(page,'meshStats()');
+  report.meshes={count:mesh.meshes,vertices:mesh.groups.reduce((n:number,g:any)=>n+g.vertices,0),cells:Object.fromEntries(Object.entries(mesh.cells).map(([k,v])=>[k,(v as string[]).length])),builds:mesh.builds};
   report.contextLost=await page.evaluate(()=>!!(window as any).__lost);
   report.sessionAfterDrive=await read(page,'session()');
   report.failure=await page.locator('#error-message').textContent({timeout:1000}).catch(()=>null);
