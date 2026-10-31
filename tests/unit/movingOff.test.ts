@@ -177,7 +177,7 @@ describe('moving off safely: the assisted path',()=>{
     let s:import('../../src/vehicle/kinematics').VehicleState={position:{x:scenario.start!.position.x,y:0,z:0},heading:0,speed:0,steerAngle:0};
     let clearance=Infinity,off=0;
     for(let t=0;t<12;t+=DT){
-      s=stepVehicle(s,{throttle:s.speed<6?1:0,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+      s=stepVehicle(s,{throttle:s.speed<6?1:0,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,DT);
       // Closest corner of the learner's car to the parked car.
       for(const [dx,dz] of [[-1,-1],[1,-1],[-1,1],[1,1]] as const){
         const c={x:s.position.x+Math.cos(s.heading)*dx*HALF.width-Math.sin(s.heading)*dz*HALF.length,z:s.position.z+Math.sin(s.heading)*dx*HALF.width+Math.cos(s.heading)*dz*HALF.length};

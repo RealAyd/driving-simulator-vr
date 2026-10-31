@@ -23,7 +23,7 @@ describe('the assisted steering path',()=>{
       if(!start)continue;
       const on=(x:number,z:number)=>surfaceAt(loc,x,z)?.kind==='carriageway';
       for(const seed of [1,2,3,4,5,6]){
-        const path=routeLanePath(net.plan(start,2500,seed).legs,[],drivingView(loc).junctions);
+        const path=routeLanePath(net.plan(start,2500,seed).legs,[],drivingView(loc).junctions,on);
         for(let i=1;i<path.length;i++){
           const a=path[i-1]!,b=path[i]!,dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1;
           // The car's sides (0.9 m either side of the path).

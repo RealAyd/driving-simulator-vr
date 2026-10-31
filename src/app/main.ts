@@ -291,6 +291,8 @@ export async function boot():Promise<void>{
   const shadowsOn=shadowsWanted(location.search,rendererName(engine._gl as WebGLRenderingContext|null));
   let shadows=shadowsOn?new SunShadows(scene,world.sun,quality):null;
   let staticObstacles=new StaticObstacles(place.blocks);
+  /** Whether (x, z) is on a carriageway of the place being driven (the assisted steering's path keeps the car on it). */
+  const onCarriageway=(x:number,z:number)=>surfaceAt(place,x,z)?.kind==='carriageway';
   // Streets from map data: a start facing somewhere to go (RoadNetwork.startNear), worked out once per place.
   // Set as the place's own start before its streets are laid out, so parked cars keep clear of where the car is.
   const settled=new WeakSet<typeof place>();
@@ -479,7 +481,7 @@ export async function boot():Promise<void>{
       assistNow=runtime.afterRoute.assist;
     }
     // (Reversing in a manoeuvre: the assistance follows its reverse path where it has one.)
-    const steer=c.steer!==0?c.steer:mode==='tilt'?tiltSteer:mode==='assist'&&assistNow&&vehicle.state.speed>=0&&!keys.reverse?assistNow.steer(vehicle.pose,vehicle.state.speed)
+    const steer=c.steer!==0?c.steer:mode==='tilt'?tiltSteer:mode==='assist'&&assistNow&&vehicle.state.speed>=0&&!keys.reverse?assistNow.steer({...vehicle.pose,steerAngle:vehicle.state.steerAngle},vehicle.state.speed)
       :mode==='assist'&&runtime?.assist?.canReverse&&keys.reverse?runtime.assist.steerReverse(vehicle.pose,vehicle.state.speed):0;
     // In the phone viewer only the checked physical controller drives the car.
     const viewerDrive=viewerControls(steer);
@@ -760,7 +762,7 @@ export async function boot():Promise<void>{
         askTellMe(q,testSeed,answer);
       },
       say:text=>{examinerVoice.say(text);hud.setTask(text)},onComplete:()=>finishTest(),
-      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
+      onPlan:()=>{const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions,onCarriageway);if(path.length>1)routeAssist?.setPath(path);routeAssist?.setReversePath(null)},
       // The manoeuvres (DVSA: one of them on every test, the emergency stop on about one in three); a lesson's own.
       manoeuvres:lesson?lesson.manoeuvres??[]:[...(testSeed%3===0?['emergency-stop' as const]:[]),testSeed%2===0?'parallel-park' as const:'pull-up-right' as const],
       manoeuvreInput:{location:place,parked:kerbCars,now:()=>clock.time,
@@ -770,12 +772,12 @@ export async function boot():Promise<void>{
         flash:text=>hud.flash(text),
         setPath:(forward,reverse)=>{
           if(forward)routeAssist?.setPath(forward);
-          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions);if(path.length>1)routeAssist?.setPath(path)}
+          else if(!reverse){const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions,onCarriageway);if(path.length>1)routeAssist?.setPath(path)}
           routeAssist?.setReversePath(reverse);
         }}}):null;
     if(examiner){
       examiner.reset();
-      const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions);
+      const path=routeLanePath(examiner!.legs,kerbCars,drivingView(place).junctions,onCarriageway);
       if(path.length>1)routeAssist=new SteeringAssist(path,vehicle.params);
     }
     // A lesson about something these streets do not have (no mini-roundabout, no lights): said once at the start.

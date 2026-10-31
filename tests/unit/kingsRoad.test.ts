@@ -110,7 +110,7 @@ describe('Kings Road zebra: the exercise',()=>{
     let s:VehicleState={position:{x:start.position.x,y:0,z:start.position.z},heading:degToRad(start.headingDeg),speed:0,steerAngle:0};
     let minLateral=Infinity;
     for(let t=0;t<45;t+=1/60){
-      s=stepVehicle(s,{throttle:s.speed<8.9?1:0,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,1/60);
+      s=stepVehicle(s,{throttle:s.speed<8.9?1:0,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,1/60);
       const pose={position:s.position,heading:s.heading};
       expect(obstacles.firstCollision(pose,.9,2.2),`at ${sampleRoad(road,s.position.x,s.position.z).along.toFixed(1)}`).toBeNull();
       expect(surfaceAt(place,s.position.x,s.position.z)?.kind).toBe('carriageway');

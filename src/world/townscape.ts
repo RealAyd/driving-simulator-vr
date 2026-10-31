@@ -156,8 +156,15 @@ export function layoutTownscape(location:Location):StreetLayout|null{
     const m=roadHalfWidth(road)+pave+FACING_GAP+1;
     return {road,length:roadLength(road),x0:Math.min(...xs)-m,x1:Math.max(...xs)+m,z0:Math.min(...zs)-m,z1:Math.max(...zs)+m};
   });
+  // Nor one whose walls stand on a carriageway (an outline mapped over the road's edge, or a road mapped too wide):
+  // a wall in the lane would stop the car, and traffic, where nothing should.
+  const intoRoad=(ring:readonly Vec2[])=>ring.some((a,i)=>{
+    const c=ring[(i+1)%ring.length]!,L=Math.hypot(c.x-a.x,c.z-a.z);
+    for(let t=.5;t<L;t+=1)if(surfaceAt(location,a.x+(c.x-a.x)*t/L,a.z+(c.z-a.z)*t/L)?.kind==='carriageway')return true;
+    return false;
+  });
   for(const b of location.buildings){
-    if(acrossRoad(b.footprint))continue;
+    if(acrossRoad(b.footprint)||intoRoad(b.footprint))continue;
     const ring=[...b.footprint];
     const first=ring[0]!,last=ring.at(-1)!;
     if(first.x===last.x&&first.z===last.z)ring.pop();
@@ -224,9 +231,15 @@ export function layoutTownscape(location:Location):StreetLayout|null{
     // Lateral is positive to the right of the centreline direction; on that side traffic runs against it (driving on the left).
     const traffic=location.drivingSide==='left'&&side>0&&!road.r.oneway?{x:-dir.x,z:-dir.z}:dir;
     const outN={x:-dir.z*side,z:dir.x*side};
-    town.busStops.push({id:`bus-stop-${i}`,x:f.position.x,z:f.position.z,heading:f.facingDeg*Math.PI/180,y:surface?surface.height:0,
+    // A stop mapped on the road itself (often on the road's line): the pole just behind the kerb on its side.
+    let at={x:f.position.x,z:f.position.z},on=surface;
+    if(surface?.kind==='carriageway'){
+      const back=roadHalfWidth(road.r)+.45-Math.abs(road.s.lateral);
+      at={x:at.x+outN.x*back,z:at.z+outN.z*back};on=surfaceAt(location,at.x,at.z);
+    }
+    town.busStops.push({id:`bus-stop-${i}`,x:at.x,z:at.z,heading:f.facingDeg*Math.PI/180,y:on?on.height:0,
       traffic,out:outN,pavement:pavementWidthAt(road.r,road.s.along,side),...(f.name?{name:f.name}:{}),...(f.indicator?{indicator:f.indicator}:{}),shelter:f.shelter});
-    out.colliders.push({id:`bus-stop-${i}`,kind:'wall',position:f.position,headingDeg:0,size:{width:.2,depth:.2,height:3.1},occludes:false,shape:'box'});
+    out.colliders.push({id:`bus-stop-${i}`,kind:'wall',position:at,headingDeg:0,size:{width:.2,depth:.2,height:3.1},occludes:false,shape:'box'});
   }
   for(const block of location.blocks)if(block.shape==='obelisk')
     town.obelisks.push({id:block.id,x:block.position.x,z:block.position.z,width:block.size.width,height:block.size.height,colour:block.colour??'#b9b4a8',y:0});

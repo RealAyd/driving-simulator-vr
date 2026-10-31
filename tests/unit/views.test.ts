@@ -24,7 +24,7 @@ describe('steering assistance (pure pursuit)',()=>{
     let s:VehicleState={position:{x:-0.1,y:0,z:0},heading:0,speed:8,steerAngle:0};
     let worst=0;
     for(let t=0;t<12;t+=DT){
-      s=stepVehicle(s,{throttle:.2,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+      s=stepVehicle(s,{throttle:.2,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,DT);
       if(t>4)worst=Math.max(worst,Math.abs(s.position.x+1.6));
     }
     expect(worst).toBeLessThan(.15);
@@ -35,7 +35,7 @@ describe('steering assistance (pure pursuit)',()=>{
     let s:VehicleState={position:{x:-1.6,y:0,z:0},heading:0,speed:6,steerAngle:0};
     let atVan=Infinity;
     for(let t=0;t<40&&s.position.z>-150;t+=DT){
-      s=stepVehicle(s,{throttle:.15,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+      s=stepVehicle(s,{throttle:.15,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,DT);
       if(Math.abs(s.position.z+95)<.2)atVan=s.position.x;
     }
     expect(atVan).toBeGreaterThan(.5); // passing the van (x -3.4…-1.4) in the other lane
@@ -51,7 +51,7 @@ describe('steering assistance (pure pursuit)',()=>{
     let worst=0;
     let along=0;
     for(let t=0;t<60&&along<330;t+=DT){
-      s=stepVehicle(s,{throttle:.3,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+      s=stepVehicle(s,{throttle:.3,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,DT);
       const sample=sampleRoad(road,s.position.x,s.position.z);
       along=sample.along;
       worst=Math.max(worst,Math.abs(sample.lateral));
@@ -68,7 +68,7 @@ describe('steering assistance (pure pursuit)',()=>{
   it('carries straight on past the end of its path instead of turning back',()=>{
     const assist=new SteeringAssist([{x:-1.6,z:40},{x:-1.6,z:-20}],LEARNER_CAR);
     let s:VehicleState={position:{x:-1.3,y:0,z:-10},heading:.02,speed:8,steerAngle:0};
-    for(let t=0;t<6;t+=DT)s=stepVehicle(s,{throttle:.2,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+    for(let t=0;t<6;t+=DT)s=stepVehicle(s,{throttle:.2,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,DT);
     expect(s.position.z).toBeLessThan(-50);
     expect(Math.abs(headingDelta(s.heading,0))).toBeLessThan(.05);
     expect(Math.abs(s.position.x+1.6)).toBeLessThan(.2);
@@ -76,7 +76,7 @@ describe('steering assistance (pure pursuit)',()=>{
   it('steers a car that has drifted 3 m off at an angle back into its lane',()=>{
     const assist=new SteeringAssist(STRAIGHT_LANE,LEARNER_CAR);
     let s:VehicleState={position:{x:1.6,y:0,z:-20},heading:degToRad(25),speed:6,steerAngle:0};
-    for(let t=0;t<8;t+=DT)s=stepVehicle(s,{throttle:.15,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+    for(let t=0;t<8;t+=DT)s=stepVehicle(s,{throttle:.15,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,DT);
     expect(Math.abs(s.position.x+1.6)).toBeLessThan(.3);
     expect(Math.abs(headingDelta(s.heading,0))).toBeLessThan(.05);
   });
@@ -177,7 +177,7 @@ describe('button and key steering',()=>{
     let worst=0,off=0;
     for(let t=0;t<6;t+=DT){
       const manual=ramp.update(t<.3?1:0,DT);
-      s=stepVehicle(s,{throttle:.35,brake:0,steer:manual||assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,DT);
+      s=stepVehicle(s,{throttle:.35,brake:0,steer:manual||assist.steer(s,s.speed)},LEARNER_CAR,DT);
       off=sampleRoad(road,s.position.x,s.position.z).lateral+1.6;
       worst=Math.max(worst,Math.abs(off));
     }

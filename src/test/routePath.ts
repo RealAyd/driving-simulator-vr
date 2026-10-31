@@ -19,7 +19,8 @@ const ALONGSIDE=4;
  * out over several metres. Offsets are metres left of the centreline. Each parked car is passed by its own size
  * (a van is wider than a small hatchback) with a clear gap; one given only as a point is taken as a typical car.
  */
-export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>,minis:readonly MiniRoundabout[]=[]):Vec2[]{
+export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>,minis:readonly MiniRoundabout[]=[],
+  onRoad?:(x:number,z:number)=>boolean):Vec2[]{
   const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number}>=[];
   for(const [legIndex,leg] of legs.entries()){
     const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=keepLeftOffset(leg.road,HALF_WIDTH);
@@ -61,13 +62,40 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
   // Corners: the lane lines of two roads meet at an angle (and the lane offsets put the last point of one a little
   // past the first of the next), so the last and first few metres either side of each join are replaced with a
   // smooth curve through the corner, the way a car turns.
-  const CUT=5;
+  // The curve starts and ends CUT metres either side of the join: 5 m (about a 5 m radius for a right angle, a turn
+  // into a side road). A sharper turn (a road meeting at an acute angle) would ask for a tighter curve than the car can
+  // turn (about 4.3 m at the least): there the curve is as wide as it can be (up to 12 m) with the whole car still on
+  // the carriageway along it (`onRoad`, where given).
+  const byLeg=legs.map((_,leg)=>lanePoints.filter(p=>p.leg===leg));
+  const curve=(prev:Vec2,start:Vec2,from:Vec2,to:Vec2)=>{
+    const c={x:(prev.x+start.x)/2,z:(prev.z+start.z)/2},out:Vec2[]=[];
+    for(let k=1;k<6;k++){const t=k/6,u=1-t;out.push({x:u*u*from.x+2*u*t*c.x+t*t*to.x,z:u*u*from.z+2*u*t*c.z+t*t*to.z})}
+    return out;
+  };
+  const beyond=(pts:readonly Vec2[],from:Vec2,cut:number)=>pts.find(p=>Math.hypot(p.x-from.x,p.z-from.z)>cut);
+  const cutAt=legs.map((_,leg)=>{
+    const a=byLeg[leg-1],b=byLeg[leg];
+    if(!onRoad||!a||a.length<2||!b||b.length<2)return 5;
+    const p=a.at(-2)!,q=a.at(-1)!,r=b[0]!,t=b[1]!;
+    if(miniAt(minis,{x:(q.x+r.x)/2,z:(q.z+r.z)/2}))return 5;
+    const turn=Math.abs(Math.atan2((q.x-p.x)*(t.z-r.z)-(q.z-p.z)*(t.x-r.x),(q.x-p.x)*(t.x-r.x)+(q.z-p.z)*(t.z-r.z)));
+    const want=Math.min(12,5*Math.tan(Math.min(turn,2.6)/2));
+    for(let cut=Math.floor(want);cut>5;cut--){
+      const from=beyond([...a].reverse(),q,cut),to=beyond(b,r,cut);
+      if(!from||!to)continue;
+      const pts=[from,...curve(q,r,from,to),to];
+      // The car's sides along the curve on the carriageway.
+      if(pts.every((m,i)=>{const n=pts[Math.min(i+1,pts.length-1)]!,o=pts[Math.max(i-1,0)]!,dx=n.x-o.x,dz=n.z-o.z,l=Math.hypot(dx,dz)||1;
+        return onRoad(m.x,m.z)&&onRoad(m.x-dz/l*HALF_WIDTH,m.z+dx/l*HALF_WIDTH)&&onRoad(m.x+dz/l*HALF_WIDTH,m.z-dx/l*HALF_WIDTH)}))return cut;
+    }
+    return 5;
+  });
   const out:Vec2[]=[];
   for(let leg=0;leg<legs.length;leg++){
-    const pts=lanePoints.filter(p=>p.leg===leg);
+    const pts=byLeg[leg]!;
     if(pts.length===0)continue;
-    const start=pts[0]!,end=pts.at(-1)!;
-    const kept=pts.filter(p=>(leg===0||Math.hypot(p.x-start.x,p.z-start.z)>CUT)&&(leg===legs.length-1||Math.hypot(p.x-end.x,p.z-end.z)>CUT));
+    const start=pts[0]!,end=pts.at(-1)!,cutStart=cutAt[leg]!,cutEnd=cutAt[leg+1]??5;
+    const kept=pts.filter(p=>(leg===0||Math.hypot(p.x-start.x,p.z-start.z)>cutStart)&&(leg===legs.length-1||Math.hypot(p.x-end.x,p.z-end.z)>cutEnd));
     const prev=leg>0?lanePoints.filter(p=>p.leg===leg-1).at(-1):undefined;
     const from=out.at(-1),to=kept[0];
     if(prev&&from&&to){
@@ -87,7 +115,7 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
         continue;
       }
       if(mini)out.push(...aroundMini(mini,prev,start));
-      else for(let k=1;k<6;k++){const t=k/6,u=1-t;out.push({x:u*u*from.x+2*u*t*c.x+t*t*to.x,z:u*u*from.z+2*u*t*c.z+t*t*to.z})}
+      else out.push(...curve(prev,start,from,to));
     }
     for(const p of kept)out.push({x:p.x,z:p.z});
   }

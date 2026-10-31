@@ -126,7 +126,7 @@ describe('zebra street: the hazard and the lesson are unchanged',()=>{
     const assist=new SteeringAssist(scenario.assistPath!,LEARNER_CAR);
     let s:VehicleState={position:{x:place.spawn.position.x,y:0,z:place.spawn.position.z},heading:0,speed:0,steerAngle:0};
     for(let t=0;t<40;t+=1/60){
-      s=stepVehicle(s,{throttle:s.speed<8.9?1:0,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,1/60);
+      s=stepVehicle(s,{throttle:s.speed<8.9?1:0,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,1/60);
       expect(obstacles.firstCollision({position:s.position,heading:s.heading},.9,2.2),`z=${s.position.z.toFixed(1)}`).toBeNull();
     }
     expect(sampleRoad(road,s.position.x,s.position.z).along).toBeGreaterThan(scenario.zones.find(z=>z.id==='end')!.from);

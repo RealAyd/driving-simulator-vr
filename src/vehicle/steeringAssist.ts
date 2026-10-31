@@ -9,6 +9,10 @@ import {steerLimit,type VehicleParams} from './kinematics';
  */
 /** Sideways acceleration the assisted car slows to round a bend (m/s²): gentle, so it follows the curve. */
 const BEND_LATERAL=2;
+/** Predictive steering looks this far ahead (seconds, and at least metres at a crawl), weighs the car's heading at the
+ * end against the path's this much, and is used while the car is within this many metres of the path (tuned on the
+ * mock test routes of many centres: tests/stress/assist.test.ts). */
+const PREDICT_SECONDS=.7,PREDICT_METRES=3,PREDICT_HEADING=2,PREDICT_WITHIN=.6;
 
 export class SteeringAssist{
   private lengths:number[]=[];
@@ -21,6 +25,7 @@ export class SteeringAssist{
   setPath(path:Vec2[]):void{
     this.path=path;
     this.last=null;
+    this.cutUntil=-Infinity;
     let s=0;
     this.lengths=path.map((p,i)=>{
       if(i>0)s+=Math.hypot(p.x-path[i-1]!.x,p.z-path[i-1]!.z);
@@ -53,8 +58,12 @@ export class SteeringAssist{
    * within that many metres of the nearest (where a route comes back the same way, the part driven first). */
   private nearest(x:number,z:number,from:number,to:number,earliest=0){
     let best=Infinity,at=0;
-    for(let i=0;i<this.path.length-1;i++){
-      if(this.lengths[i+1]!<from||this.lengths[i]!>to)continue;
+    // (The first piece that reaches `from`, by halving: a route is a thousand points, and this is asked many times a step.)
+    let lo=0,hi=this.path.length-1;
+    while(lo<hi){const mid=(lo+hi)>>1;if(this.lengths[mid+1]!<from)lo=mid+1;else hi=mid}
+    for(let i=lo;i<this.path.length-1;i++){
+      if(this.lengths[i]!>to)break;
+      if(this.lengths[i+1]!<from)continue;
       const a=this.path[i]!,b=this.path[i+1]!;
       const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz)||1;
       // The last segment runs on past its end, so progress keeps growing there.
@@ -104,8 +113,12 @@ export class SteeringAssist{
   brakeFor(pose:Pose,speed:number):number{
     if(speed<2)return 0;
     const at=this.progress(pose.position.x,pose.position.z);
+    // The wheel already at full lock and the car still running off the path: slower, whatever the bends ahead say (a
+    // learner speeding up before the turn is finished).
+    const on=this.pointAt(at),off=Math.hypot(on.x-pose.position.x,on.z-pose.position.z);
+    if(this.atLock&&off>.3&&speed>2.5)return Math.min(1,.25+off*.25);
     let need=0;
-    for(let d=2;d<speed*speed/3+15;d+=2){
+    for(let d=0;d<speed*speed/3+15;d+=2){
       const turn=Math.abs(this.turnBetween(at+d,at+d+6));
       if(turn<.05)continue;
       const radius=6/turn,allowed=Math.max(3,Math.sqrt(BEND_LATERAL*radius));
@@ -136,8 +149,71 @@ export class SteeringAssist{
     return Math.max(-1,Math.min(1,wheel/steerLimit(this.params,v)));
   }
 
+
+  /**
+   * Predictive steering: each steering input from full left to full right is tried, the car's next PREDICT_SECONDS
+   * (at least PREDICT_METRES) simulated with the wheel turning towards it at the rate it can, and the one that keeps
+   * the car closest to the path chosen (then refined either side). The wheel's lag and the bends ahead are in the
+   * simulation, so the car neither turns in early (cutting a corner) nor runs wide coming out.
+   */
+  private predictive(pose:Pose,speed:number,at:number):number{
+    const p=this.params,v=Math.max(speed,1),T=Math.min(3,Math.max(PREDICT_SECONDS,PREDICT_METRES/v)),steps=8,dt=T/steps,limit=steerLimit(p,speed);
+    const cost=(input:number)=>{
+      let x=pose.position.x,z=pose.position.z,h=pose.heading,w=this.wheelAngle,c=0,last=at;
+      const target=input*limit;
+      for(let k=1;k<=steps;k++){
+        w+=Math.max(-p.steerRate*dt,Math.min(p.steerRate*dt,target-w));
+        const travel=v*dt,turn=travel/p.wheelbase*Math.tan(w);
+        x+=Math.sin(h+turn/2)*travel;z+=-Math.cos(h+turn/2)*travel;h+=turn;
+        const n=this.nearest(x,z,last-1,last+travel+2);last=n.at;
+        c+=n.d*n.d*(1+k/steps);
+      }
+      // Heading at the end along the path's (so it does not arrive crossing it).
+      const a=this.pointAt(last-1),b=this.pointAt(last+1),e=headingDelta(Math.atan2(b.x-a.x,-(b.z-a.z)),h);
+      return c+PREDICT_HEADING*e*e;
+    };
+    // Coarse (every quarter turn of the input), then halving either side of the best: 13 tries.
+    let best=0,bestCost=Infinity;
+    for(let i=-4;i<=4;i++){const u=i/4,c=cost(u);if(c<bestCost){bestCost=c;best=u}}
+    for(const step of [.125,.0625]){
+      const around=best;
+      for(const u of [around-step,around+step]){if(u<-1||u>1)continue;const c=cost(u);if(c<bestCost){bestCost=c;best=u}}
+    }
+    return best;
+  }
+
+  private wheelAngle=0;
+
+  /** Where along the path (metres) the car is cutting a corner too tight to follow until (the end of the bend). */
+  private cutUntil=-Infinity;
+
+  /**
+   * Where (metres ahead) a bend within the next few metres that is sharper than the car's wheels allow at `speed`
+   * ends (0: none).
+   */
+  private tightEnd(at:number,speed:number):number{
+    const reach=Math.max(8,4+.6*speed),most=steerLimit(this.params,speed)*.97;
+    let end=0;
+    for(let d=0;d<reach+6;d+=1.5){
+      const tight=Math.atan(this.params.wheelbase*Math.abs(this.turnBetween(at+d,at+d+3))/3)>most;
+      if(tight&&(d<reach||end))end=d+3;else if(end)break;
+    }
+    return end;
+  }
+
+  /** The last steering asked for was full lock (the bend is tighter than the car can take at this speed). */
+  private atLock=false;
+
   /** Normalised steering input (-1 left … +1 right) for the current pose and speed. */
-  steer(pose:Pose,speed:number):number{
+  steer(pose:Pose&{steerAngle?:number},speed:number):number{
+    // (The front wheels' angle now, radians + right, where the caller knows it: the predictive steering starts from it.)
+    this.wheelAngle=pose.steerAngle??0;
+    const input=this.steerInput(pose,speed);
+    this.atLock=Math.abs(input)>.95;
+    return input;
+  }
+
+  private steerInput(pose:Pose,speed:number):number{
     if(speed<0)return 0;
     const at=this.progress(pose.position.x,pose.position.z);
     // Well off the path at walking pace (pulling out from behind a parked car): a nearer point, so the wheel is turned
@@ -146,6 +222,14 @@ export class SteeringAssist{
     // Stopped: the wheels stay straight (waiting to turn, a shunt from behind would push the car into the way of
     // oncoming traffic), except at the kerb about to pull out, when they are set to go round whatever is in front.
     if(speed<.3&&off<=.8)return 0;
+    // Near the path: predictive steering (the wheel's lag and the bends ahead in it). Well off it, or pulling out from
+    // behind a parked car: pure pursuit, which brings the car back without overshooting.
+    // (Except before a bend tighter than the car can take at this speed: there it has to turn in early, cutting the
+    // corner, which pure pursuit does.)
+    // (Once it has started one, it keeps on until the tight bend is behind it, not switching back and forth.)
+    const tight=this.tightEnd(at,speed);
+    if(tight>0)this.cutUntil=Math.max(this.cutUntil,at+tight);
+    if(off<PREDICT_WITHIN&&at>this.cutUntil)return this.predictive(pose,speed,at);
     const lookahead=speed<5&&off>.8?2.5+.6*speed:Math.min(15,Math.max(4,4+.6*speed));
     const target=this.pointAt(at+lookahead);
     const dx=target.x-pose.position.x,dz=target.z-pose.position.z;

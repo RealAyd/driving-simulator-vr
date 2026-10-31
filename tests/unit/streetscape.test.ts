@@ -92,7 +92,7 @@ describe('moving-off street: the lesson is unchanged',()=>{
     const assist=new SteeringAssist(scenario.assistPath!,LEARNER_CAR);
     let s:VehicleState={position:{x:scenario.start!.position.x,y:0,z:scenario.start!.position.z},heading:0,speed:0,steerAngle:0};
     for(let t=0;t<20;t+=1/60){
-      s=stepVehicle(s,{throttle:s.speed<8?1:0,brake:0,steer:assist.steer({position:s.position,heading:s.heading},s.speed)},LEARNER_CAR,1/60);
+      s=stepVehicle(s,{throttle:s.speed<8?1:0,brake:0,steer:assist.steer(s,s.speed)},LEARNER_CAR,1/60);
       expect(obstacles.firstCollision({position:s.position,heading:s.heading},.9,2.2)).toBeNull();
     }
   });
