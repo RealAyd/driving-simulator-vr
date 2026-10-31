@@ -1780,7 +1780,13 @@ export async function boot():Promise<void>{
     byId('exercise-list').scrollIntoView({block:'start'});
     if(mode)setTimeout(()=>{if(!byId('place-list').hidden)tutorial.startOnce('place',PLACE_TOUR)},300);
   };
-  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>showHome(b.dataset.driveMode as typeof driveMode));
+  // ?scene=<id>: a scene built in advance (public/scenes/) opens once a mode is chosen, in that mode (the wide
+  // Brentwood area, before it replaces the centre's own).
+  const sceneAsked=new URLSearchParams(location.search).get('scene');
+  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-drive-mode]'))b.addEventListener('click',()=>{
+    showHome(b.dataset.driveMode as typeof driveMode);
+    if(sceneAsked&&/^[a-z0-9-]+$/.test(sceneAsked))void openArea({label:'',lat:0,lon:0,scene:sceneAsked,testCentre:true});
+  });
   byId('place-back').addEventListener('click',()=>showHome(null));
   // The menu: everything else on the home screen (tutorial, words, help, theme, text size, full screen, about).
   const menu=byId('home-menu'),menuToggle=byId('menu-toggle');
@@ -1930,7 +1936,7 @@ export async function boot():Promise<void>{
     building=true;
     try{
       // One loading screen: the map data and the streets (the first half), then the place itself.
-      const built=await withLoading(`Building the streets round ${request.label}…`,async rep=>{
+      const built=await withLoading(request.label?`Building the streets round ${request.label}…`:'Building the streets…',async rep=>{
         const b=await buildArea(request,(step,percent)=>{areaStatus.textContent=step;void rep(percent*.5,step)});
         const {location:l,scenario:sc,mockTest,lesson:lessonScenario}=b;
         prepareRoundabouts(l);centralReservations(l);
@@ -1943,7 +1949,7 @@ export async function boot():Promise<void>{
         return b;
       });
       const {location:l}=built;
-      events.emit('area.built',{locationId:l.id,label:request.label,lat:request.lat,lon:request.lon,summary:built.summary});
+      events.emit('area.built',{locationId:l.id,label:request.label||l.name,lat:request.lat,lon:request.lon,summary:built.summary});
       areaStatus.textContent='';
       showExercise(l.id);
     }catch(error){

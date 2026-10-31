@@ -17,8 +17,8 @@ export interface AreaRequest{
   testCentre?:boolean;
   /** The test centre's name in the list (its streets may have been built in advance). */
   centre?:string;
-  /** A scene built in advance for a scenario (tools/scenes/build_scene.mjs), served under scenes/: its pack, named
-   * `label`. */
+  /** A scene built in advance (tools/scenes/build_scene.mjs), served under scenes/: its pack, named `label` (or any
+   * name when `label` is empty: the pack's own is used). */
   scene?:string;
 }
 export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
@@ -40,7 +40,7 @@ export function packCentre(centre:string,half:number,date:string,summary:string,
 }
 
 /** A test centre's pack, if it was built in advance and this browser can unpack it (null: build it here). */
-async function loadPack(centre:string,fetcher:typeof fetch,file=`centres/${centreFile(centre)}`):Promise<CentrePack|null>{
+async function loadPack(centre:string|null,fetcher:typeof fetch,file=`centres/${centreFile(centre??'')}`):Promise<CentrePack|null>{
   const Stream=(globalThis as {DecompressionStream?:typeof DecompressionStream}).DecompressionStream;
   if(!Stream)return null;
   try{
@@ -51,7 +51,7 @@ async function loadPack(centre:string,fetcher:typeof fetch,file=`centres/${centr
     const zipped=bytes[0]===0x1f&&bytes[1]===0x8b;
     const text=zipped?await new Response(new Blob([bytes]).stream().pipeThrough(new Stream('gzip'))).text():new TextDecoder().decode(bytes);
     const pack=JSON.parse(text) as CentrePack;
-    return pack.version===1&&pack.centre===centre?pack:null;
+    return pack.version===1&&(centre===null||pack.centre===centre)?pack:null;
   }catch{return null}
 }
 
@@ -76,17 +76,19 @@ export async function downloadArea(lat:number,lon:number,fetcher:typeof fetch=fe
 }
 
 /** The location built from map data (what a pack holds, and what the phone builds where there is none). */
-export function locationFromMap(request:AreaRequest,xml:string,half:number){
-  return buildCentre({xml,id:`area-${slug(request.label)}`,name:request.label,lat:request.lat,lon:request.lon,half});
+/** `start`: where the drive starts (the nearest road to it), when not at the middle of the area. */
+export function locationFromMap(request:AreaRequest,xml:string,half:number,start?:{lat:number;lon:number}){
+  return buildCentre({xml,id:`area-${slug(request.label)}`,name:request.label,lat:request.lat,lon:request.lon,half,...(start?{start}:{})});
 }
 
 /** Builds the area: a test centre's pack where there is one, otherwise from the OSM API on the phone. */
 /** `progress` gets each step with the percent done (0–100). */
-export async function buildArea(request:AreaRequest,progress:(step:string,percent:number)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
-  const id=`area-${slug(request.label)}`;
+export async function buildArea(asked:AreaRequest,progress:(step:string,percent:number)=>void=()=>{},fetcher:typeof fetch=fetch.bind(globalThis)):Promise<BuiltArea>{
   progress('Getting the streets…',5);
-  const pack=request.scene?await loadPack(request.label,fetcher,`scenes/${request.scene}.json.gz`):request.centre?await loadPack(request.centre,fetcher):null;
-  if(request.scene&&!pack)throw new Error(`Scene ${request.scene} not found`);
+  const pack=asked.scene?await loadPack(asked.label||null,fetcher,`scenes/${asked.scene}.json.gz`):asked.centre?await loadPack(asked.centre,fetcher):null;
+  if(asked.scene&&!pack)throw new Error(`Scene ${asked.scene} not found`);
+  const request=asked.scene&&!asked.label?{...asked,label:pack!.centre}:asked;
+  const id=`area-${slug(request.label)}`;
   let raw:unknown,summary:string,half:number,built:string;
   if(pack){({location:raw,summary,half}=pack);built=`Built from OpenStreetMap data (${pack.date})`}
   else{

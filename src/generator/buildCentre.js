@@ -17,7 +17,7 @@ export function centreBbox(lat,lon,half=450){
  * Builds the location. `xml`: the OSM API 0.6 map response for centreBbox(lat, lon, half). Returns the location
  * object and a one-line summary; throws if there is no road near the point.
  */
-export function buildCentre({xml,id,name,lat:LAT,lon:LON,half:HALF=450,sourceNote='downloaded',date=new Date().toISOString().slice(0,10)}){
+export function buildCentre({xml,id,name,lat:LAT,lon:LON,half:HALF=450,sourceNote='downloaded',date=new Date().toISOString().slice(0,10),start:START=null}){
 const KX=111320*Math.cos(LAT*Math.PI/180),KY=111320;
 const xy=(lat,lon)=>({x:+((lon-LON)*KX).toFixed(2),z:+(-(lat-LAT)*KY).toFixed(2)});
 const r2=v=>+v.toFixed(2);
@@ -373,13 +373,14 @@ for(const r of roads){
     blocks.push({id:`edge-barrier-hedge-${i}`,kind:'hedge',position:{x,z},headingDeg:0,size:{width:across?long:.8,depth:across?.8:long,height:1.4},occludes:false,colour:'#4b6b3c'});
 }
 
-// ---- Start: the left lane of the road nearest the centre, facing along it ----
+// ---- Start: the left lane of the road nearest the centre (or `start`, {lat, lon}, where given), facing along it ----
+const from=START?xy(START.lat,START.lon):{x:0,z:0};
 let start=null;
-for(const r of roads){const a=alongOf(r.centreline,{x:0,z:0});if(a.length>40&&(!start||a.d<start.a.d))start={r,a}}
+for(const r of roads){const a=alongOf(r.centreline,from);if(a.length>40&&(!start||a.d<start.a.d))start={r,a}}
 if(!start)throw new Error('No road near the centre');
 const {r:sr,a:sa}=start;
 const along=Math.min(Math.max(sa.along,15),sa.length-25);
-const at=alongOf(sr.centreline,{x:0,z:0});
+const at=alongOf(sr.centreline,from);
 const pt=(()=>{let acc=0;for(let i=1;i<sr.centreline.length;i++){const a=sr.centreline[i-1],b=sr.centreline[i],l=Math.hypot(b.x-a.x,b.z-a.z);
   if(acc+l>=along){const t=(along-acc)/l;return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,dx:(b.x-a.x)/l,dz:(b.z-a.z)/l}}acc+=l}})();
 // Left of travel (UK): the left lane's middle.
