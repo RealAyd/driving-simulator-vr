@@ -1,5 +1,6 @@
 import {forwardFromHeading,rightFromHeading,type Vec2} from '../contracts';
 import {aroundMini,miniAt,type MiniRoundabout} from '../world/miniRoundabout';
+import {aroundRing,onRing,ringLanes} from '../world/roundaboutLanes';
 import {keepLeftOffset,pointAtAlong} from '../world/roadGeometry';
 import type {KerbFootprint} from '../world/townscape';
 import type {RouteLeg} from './route';
@@ -67,7 +68,19 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
     if(prev&&from&&to){
       const c={x:(prev.x+start.x)/2,z:(prev.z+start.z)/2};
       // A mini-roundabout: clockwise round its disc (from where the road in meets it to where the road out leaves).
-      const mini=miniAt(minis,c);
+      const mini=miniAt(minis,c),ring=mini?ringLanes(mini):undefined;
+      if(ring){
+        // A bigger roundabout: from where the way in reaches the ring's edge, round in the lane for the exit (out a
+        // lane at a time past the exits before), to where the way out leaves it (roundaboutLanes.ts).
+        while(out.length>2&&onRing(ring,out.at(-1)!,.5))out.pop();
+        const next=pts.slice(1).find(p=>!onRing(ring,p,.5))??kept[0]??start,from2=out.at(-2)??prev,a2=out.at(-1)??prev;
+        // (The way out's direction where the car joins it, not further on where it may bend.)
+        const i=pts.indexOf(next as typeof pts[number]),before=pts[i-1]&&i>0?pts[i-1]!:next,after=pts[i+1]??next;
+        const dir=(p:Vec2,q:Vec2)=>{const l=Math.hypot(q.x-p.x,q.z-p.z)||1;return {x:(q.x-p.x)/l,z:(q.z-p.z)/l}};
+        out.push(...aroundRing(ring,a2,next,dir(from2,a2),before!==next?dir(before,next):dir(next,after)).points.slice(1));
+        for(const p of kept)if(!onRing(ring,p,.5)&&p!==next)out.push({x:p.x,z:p.z});
+        continue;
+      }
       if(mini)out.push(...aroundMini(mini,prev,start));
       else for(let k=1;k<6;k++){const t=k/6,u=1-t;out.push({x:u*u*from.x+2*u*t*c.x+t*t*to.x,z:u*u*from.z+2*u*t*c.z+t*t*to.z})}
     }

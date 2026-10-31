@@ -53,7 +53,7 @@ for(const w of ways){
     if(miniNodes.has(ref)&&run.length>1){runs.push(run);run=[n]}
   }
   if(run.length>1)runs.push(run);
-  const oneway=w.tags.oneway==='yes'||w.tags.oneway==='1'||w.tags.junction==='roundabout';
+  const oneway=w.tags.oneway==='yes'||w.tags.oneway==='1'||w.tags.junction==='roundabout'||w.tags.junction==='circular';
   const lanesTag=parseInt(w.tags.lanes??'',10);
   const count=Math.min(4,Math.max(1,Number.isFinite(lanesTag)?lanesTag:oneway?1:2));
   // The first number given ("20 mph", or "20 mph;30 mph" where the map gives two), and only a UK limit (5–70).

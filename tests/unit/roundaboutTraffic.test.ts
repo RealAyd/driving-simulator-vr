@@ -43,13 +43,17 @@ describe('how big roundabouts are built',()=>{
     }
   },300_000);
 
-  it('no house in the middle of a roundabout, unless the map has one there',async()=>{
+  it('no house in the middle of a roundabout; a loop round a building the map has is no roundabout',async()=>{
     // (The owner's report from Currie: the area builder had lined Riccarton Mains Road's island with terraced houses.)
-    for(const [id,mapped] of [['edinburgh-currie',0],['coleraine',0],['chadderton',0],['inveraray',1]] as const){
+    for(const id of ['edinburgh-currie','coleraine','chadderton']){
       const loc=await loadCentre(id);
       const inside=roundaboutRings(loc).flatMap(g=>{const line=[...g.roads].flatMap(r=>r.centreline);return loc.buildings.filter(b=>b.footprint.some(p=>insidePolygon(p,line)))});
-      expect(inside.filter(b=>b.source==='approximate').map(b=>b.id),id).toEqual([]);
-      expect(inside.length,id).toBe(mapped);
+      expect(inside.map(b=>b.id),id).toEqual([]);
+    }
+    // Inveraray's Church Square goes one way round the church; Tunbridge Wells's one-way system round a block.
+    for(const [id,name] of [['inveraray','Church Square'],['tunbridge-wells','Upper Grosvenor Road']] as const){
+      const loc=await loadCentre(id);
+      expect(roundaboutRings(loc).some(g=>[...g.roads].some(r=>r.name===name)),id).toBe(false);
     }
   },300_000);
 

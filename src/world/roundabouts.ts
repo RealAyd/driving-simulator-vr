@@ -1,11 +1,12 @@
 import type {Location,Road,Vec2} from '../contracts';
 import {insidePolygon} from './townscape';
+import {makeRingLanes,setRingLanes} from './roundaboutLanes';
 
 /**
  * Roundabouts bigger than a mini: the map draws them as a ring of one-way roads round an island (OpenStreetMap's
  * junction=roundabout ways), with no lanes given, so they came out one narrow lane wide and were driven as ordinary
  * roads ("At the junction, turn left" at each piece of the ring). Here they are found (a loop of one-way roads, round,
- * under 400 m), widened to a circulating width, and given to the route planner, the traffic and the assisted steering
+ * under 800 m: a big interchange's ring is 600 m round), widened to a circulating width, and given to the route planner, the traffic and the assisted steering
  * as a junction, like a mini-roundabout: one decision with numbered exits ("At the roundabout, take the second
  * exit"), driven clockwise round the island.
  */
@@ -23,23 +24,33 @@ const found=new WeakMap<Location,Ring[]>();
 export function roundaboutRings(location:Location):Ring[]{
   const known=found.get(location);
   if(known)return known;
-  const oneway=location.roads.filter(r=>r.oneway&&r.centreline.length>=2);
+  // (Those named as a roundabout first: started from a road on to it, a way in and out of a one-way pair can close a
+  // loop round with the ring.)
+  const oneway=location.roads.filter(r=>r.oneway&&r.centreline.length>=2).sort((p,q)=>Number(/roundabout|circus|gyratory/i.test(q.name??''))-Number(/roundabout|circus|gyratory/i.test(p.name??'')));
   const near=(a:Vec2,b:Vec2)=>Math.hypot(a.x-b.x,a.z-b.z)<2;
   const rings:Ring[]=[],used=new Set<Road>();
   for(const first of oneway){
     if(used.has(first))continue;
-    // Follow the one-way roads end to start; a ring comes back to the first (or is one closed way).
-    const chain=[first];let at=first,closed=near(first.centreline[0]!,first.centreline.at(-1)!);
-    for(let k=0;k<16&&!closed;k++){
-      const end=at.centreline.at(-1)!;
-      const next=oneway.find(r=>r!==at&&near(r.centreline[0]!,end)&&(r===first||!chain.includes(r)&&!used.has(r)));
-      if(!next)break;
-      if(next===first){closed=true;break}
-      chain.push(next);at=next;
-    }
-    if(!closed)continue;
+    // Follow the one-way roads end to start, each way on in turn (at an interchange a slip road leaves where a piece of
+    // the ring ends); a ring comes back to the first (or is one closed way).
+    const loop=(chain:Road[],total:number):Road[]|null=>{
+      const at=chain.at(-1)!,end=at.centreline.at(-1)!;
+      if(chain.length===1&&near(at.centreline[0]!,end))return chain;
+      if(chain.length>16||total>800)return null;
+      // (The ring's own pieces first: those named as it is.)
+      const ways=oneway.filter(r=>r!==at&&near(r.centreline[0]!,end)).sort((p,q)=>Number(q.name===at.name)-Number(p.name===at.name));
+      for(const r of ways){
+        if(r===first)return chain;
+        if(chain.includes(r)||used.has(r))continue;
+        const found=loop([...chain,r],total+length(r));
+        if(found)return found;
+      }
+      return null;
+    };
+    const chain=loop([first],length(first));
+    if(!chain)continue;
     const total=chain.reduce((n,r)=>n+length(r),0);
-    if(total<20||total>400)continue;
+    if(total<20||total>800)continue;
     // The middle and radius weighted by length (the map's points bunch on the bends).
     const points=chain.flatMap(r=>r.centreline),segments=chain.flatMap(r=>r.centreline.slice(1).map((p,i)=>{
       const q=r.centreline[i]!;return {x:(p.x+q.x)/2,z:(p.z+q.z)/2,w:Math.hypot(p.x-q.x,p.z-q.z)}}));
@@ -48,6 +59,8 @@ export function roundaboutRings(location:Location):Ring[]{
     const radius=segments.reduce((n,s)=>n+Math.hypot(s.x-c.x,s.z-c.z)*s.w,0)/total;
     // Round (a one-way loop round a block is not a roundabout): every point near the mean distance.
     if(radius<4||Math.max(...d.map(x=>Math.abs(x-radius)))>radius*.35)continue;
+    // Nor one round a building the map has (a one-way system round a block, a church in the middle of the street).
+    if(location.buildings.some(b=>b.source!=='approximate'&&b.footprint.some(p=>insidePolygon(p,points))))continue;
     for(const r of chain)used.add(r);
     rings.push({position:c,radius,reach:Math.max(...d),roads:new Set(chain)});
   }
@@ -92,10 +105,15 @@ export function drivingView(location:Location):Location{
   if(!rings.length)return location;
   const known=views.get(location);
   if(known)return known;
-  const view:Location={...location,roads:location.roads.filter(r=>!rings.some(g=>g.roads.has(r))),
+  const roads=location.roads.filter(r=>!rings.some(g=>g.roads.has(r)));
+  const view:Location={...location,roads,
     junctions:[...location.junctions,...rings.map((g,i)=>{
       const ring={id:`ring-${i}`,kind:'mini-roundabout' as const,position:g.position,radius:g.reach+1,
         discDiameter:Math.max(1,2*(g.radius-2.4)),entries:[],outline:[...g.roads].flatMap(r=>r.centreline)};
+      // Its lanes, and where each way out leaves it (a road starting at it, or a two-way road ending there).
+      const near=(p:Vec2)=>Math.hypot(p.x-g.position.x,p.z-g.position.z)<g.reach+4;
+      const outs=roads.flatMap(r=>[...(near(r.centreline[0]!)?[r.centreline[0]!]:[]),...(!r.oneway&&near(r.centreline.at(-1)!)?[r.centreline.at(-1)!]:[])]);
+      setRingLanes(ring,makeRingLanes([...g.roads],outs));
       return ring;
     })]};
   views.set(location,view);
