@@ -15,7 +15,8 @@ const fs=require('fs');
   const spec=JSON.parse(fs.readFileSync(specFile,'utf8'));
   fs.mkdirSync(out,{recursive:true});
   const t0=Date.now();
-  const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+  // (PW_CHROMIUM: a browser installed apart from Playwright's own, as the browser tests take it.)
+  const b=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{}),args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
   // A phone in landscape (the captures must read on one).
   const p=await b.newPage({viewport:{width:844,height:390},deviceScaleFactor:3});
   await p.addInitScript(()=>{try{localStorage.setItem('dp-difficulty','test');localStorage.setItem('dp-tips-seen','1')}catch{}});
