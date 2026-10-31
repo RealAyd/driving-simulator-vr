@@ -49,6 +49,23 @@ describe('Examiner',()=>{
     expect(done).toBe(true);
   });
 
+  it('gives new directions when the learner drives on past the pull-up request',()=>{
+    const net=new RoadNetwork(goodmayes);
+    const sp=goodmayes.spawn;
+    const learner={x:sp.position.x,z:sp.position.z,heading:sp.headingDeg*Math.PI/180,speed:8};
+    const said:string[]=[];
+    const ex=new Examiner(net,()=>learner,{target:1500,seed:3,say:t=>said.push(t),events:sink([]),onComplete:()=>{}});
+    ex.reset();
+    const route=net.plan(net.locate(learner.x,learner.z,learner.heading)!,1500,3);
+    for(const p of path(route.legs)){Object.assign(learner,p);for(let k=0;k<4;k++)ex.fixedUpdate(1/32)}
+    for(let i=0;i<30*20&&!said.includes(PULL_UP);i++)ex.fixedUpdate(1/30);
+    expect(said).toContain(PULL_UP);
+    // On at 8 m/s for a minute (480 m) without stopping: directions again, from where the car is.
+    for(let i=0;i<30*60&&ex.phase!=='driving';i++)ex.fixedUpdate(1/30);
+    expect(ex.phase).toBe('driving');
+    expect(ex.steps.length).toBeGreaterThan(0);
+  });
+
   it('gives new directions when the learner goes another way',()=>{
     const net=new RoadNetwork(goodmayes);
     const sp=goodmayes.spawn;

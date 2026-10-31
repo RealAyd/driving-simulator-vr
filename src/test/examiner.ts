@@ -262,6 +262,13 @@ export class Examiner implements SimModule{
         this.options.events.emit('examiner.direction',{text:this.pullUpWords,turn:'pull-up'});
         this.options.listener?.pullUp?.();
       }
+      // Driven on well past the request (or towards the end of the road): new directions, then the request again
+      // later, never left to drive on into a dead end or the edge of the area.
+      const runningOut=()=>{const p=this.net.locate(l.x,l.z,l.heading);return !!p&&this.net.roomAhead(p)<60};
+      if(this.pullUpAsked&&(this.sincePullUp>400||this.sincePullUp>120&&l.speed>3&&runningOut())){
+        if(this.plan(600,this.options.seed+this.steps.length+Math.round(this.time))&&this.steps.length>0){this.pullUpAsked=false;this.phase='driving';this.sinceDirection=0;return}
+        this.sincePullUp=0;
+      }
       if(this.pullUpAsked){
         this.stoppedFor=l.speed<.3?this.stoppedFor+dt:0;
         // Stopped at the side of the road; or stopped a while out in the road with nothing in front (a poor

@@ -44,11 +44,16 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
   // Each point takes the tightest room needed within 24 m ahead (pulled out in good time) and 12 m behind (back in
   // soon after, out of the way of traffic coming the other way: a car out in the road for 24 m after passing met cars
   // turning out of junctions head on).
+  // Turning into a road with a car parked a little way in, the car turns in already easing out towards the crown (it
+  // has no straight run to ease out on): from the corner, the first 24 m of the road turned into ease out three times
+  // as early.
+  const legStart=raw.map(p=>raw.findIndex(q=>q.leg===p.leg)); // (index of the first point of each point's leg)
   const lanePoints=raw.map((p,i)=>{
     let hi=p.lane,lo=-Infinity;
     for(let j=Math.max(0,i-8);j<=Math.min(raw.length-1,i+8);j++){
+      const turnedIn=p.leg>0&&raw[j]!.leg===p.leg&&j>i&&j-legStart[i]!<=8;
       const ease=Math.abs(j-i)*(j<i?.6:.3);
-      hi=Math.min(hi,raw[j]!.hi+ease);lo=Math.max(lo,raw[j]!.lo-ease);
+      hi=Math.min(hi,raw[j]!.hi+(turnedIn?.1*Math.abs(j-i):ease));lo=Math.max(lo,raw[j]!.lo-ease);
     }
     const off=hi>=lo?hi:(hi+lo)/2;
     return {x:p.x+p.dz*off,z:p.z-p.dx*off,leg:p.leg};

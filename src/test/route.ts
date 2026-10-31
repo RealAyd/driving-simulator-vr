@@ -378,11 +378,16 @@ export class RoadNetwork{
     while((driven<metres||want&&driven<700)&&legs.length<16){
       const ds=this.decisions(at);
       let taken:{d:Decision;o:Option}|null=null;
+      // The road ahead running into a dead end or the edge of the area (nothing leads on from its end): the last side
+      // road off it that leads on is the way, as the route planner takes it (never on to the edge's barrier).
+      const last=ds.at(-1),deadEnd=!last||last.kind==='end'&&!last.options.some(o=>this.leadsOn(o));
+      const lastSide=deadEnd&&!want?[...ds].reverse().find(d=>d.kind==='side'&&Math.abs(d.along-at.along)+driven>=from&&this.leadsOn(d.options[0]!)):undefined;
       for(const d of ds){
         const to=Math.abs(d.along-at.along);
         if(d.kind==='side'){
           const o=d.options[0]!;
           if(want&&side(o)===want&&driven+to>=from&&this.reach(o)>0){taken={d,o};break}
+          if(d===lastSide){taken={d,o};break}
           continue;
         }
         const os=d.options.filter(o=>this.reach(o)>0);
@@ -407,8 +412,9 @@ export class RoadNetwork{
 
   /** Metres to a dead end or the edge of the area ahead (Infinity when the road ends at a junction). */
   roomAhead(pos:RoadPos):number{
+    // (An end whose ways on all run to a dead end or the edge of the area is a dead end too.)
     const end=this.decisions(pos).at(-1);
-    return !end||end.options.length>0?Infinity:Math.abs(end.along-pos.along);
+    return !end||end.options.some(o=>this.leadsOn(o))?Infinity:Math.abs(end.along-pos.along);
   }
 
   /**
