@@ -435,7 +435,11 @@ export function buildWorld(scene:Scene,location:Location,quality:QualityProfile,
     'parked-vehicle':new Color3(.85,.86,.88)
   };
   const blockMaterials=new Map<string,StandardMaterial>();
-  for(const block of location.blocks){
+  for(const mapped of location.blocks){
+    // The edge of the area across a road (baked as a red barrier): drawn as a hedge, the road running out into the
+    // country, not a road closure (the owner's report: it read as a closed road with traffic queueing into it).
+    const block=mapped.id.startsWith('edge-barrier-')&&!mapped.id.startsWith('edge-barrier-hedge')
+      ?{...mapped,kind:'hedge' as const,colour:undefined,size:{...mapped.size,height:1.6}}:mapped;
     if(quality.decorativeDetail==='reduced'&&!block.occludes)continue;
     // Parked vehicles with a model and shaped blocks (memorials) are drawn with the scenery.
     if(block.vehicleModel||block.shape!=='box')continue;

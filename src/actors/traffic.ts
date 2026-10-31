@@ -325,6 +325,10 @@ export class Traffic implements SimModule{
     const keeps=options.filter(o=>this.keepsGoing(o.road,o.dir)),best=keeps.filter(leads);
     const onward=best.length?best:keeps.length?keeps:options.filter(leads);
     let pick=onward.length?onward:options;
+    // Out by a road that runs off the edge of the area only where the learner cannot see its end (it would stand there,
+    // or queue into what looks like a road closure).
+    const outOfSight=pick.filter(o=>leads(o)||!this.seen(o.dir>0?o.road.centreline.at(-1)!:o.road.centreline[0]!,learner));
+    if(outOfSight.length)pick=outOfSight;
     // Seldom down the learner's road towards it (oncoming traffic is kept for junctions): another way where there is one.
     const end=leg.points.at(-1)!;
     const away=pick.filter(o=>!this.towardsLearner(o.road,o.dir,end,learner));

@@ -2306,7 +2306,7 @@ export async function boot():Promise<void>{
       edgeTimer=.5;
       const {x,z}=vehicle.state.position;
       const near=session.state==='running'&&place.blocks.some(b=>b.id.startsWith('edge-barrier')&&!b.id.startsWith('edge-barrier-hedge')&&Math.hypot(b.position.x-x,b.position.z-z)<35);
-      if(near&&!edgeWarned)hud.setTask('End of the mapped area ahead: the road is closed at the red barrier. Turn round, or tap R to reverse.');
+      if(near&&!edgeWarned)hud.setTask('End of the mapped area ahead. Turn round, or tap R to reverse.');
       edgeWarned=near;
     }
     // Location label: the street the car is on (a few times a second; the DOM only changes with the street).
