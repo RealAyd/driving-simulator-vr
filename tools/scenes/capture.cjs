@@ -6,7 +6,7 @@
 //
 // spec: {scene, label, at:[x,z,headingDeg], wait (simulated seconds), shots:[{name, look?:[yawDeg,pitchDeg]}],
 //        sequence?:{name, look?, frames, every (simulated seconds)}}
-// Writes <out>/<name>.png and <out>/capture.json (where, when, how long it took). Needs the app built and served.
+// Writes <out>/<name>.jpg and <out>/capture.json (where, when, how long it took). Needs the app built and served.
 const {chromium}=require('playwright');
 const fs=require('fs');
 
@@ -37,10 +37,10 @@ const fs=require('fs');
   await p.addStyleTag({content:'[id^=hud-]:not(#hud-credit),#view-buttons,.hud-panel,.hud-round,#busy,.hud-tip{visibility:hidden!important}'});
   const look=v=>p.evaluate(([y,pt])=>window.__drivingPractice.look(y*Math.PI/180,pt*Math.PI/180),v??[0,0]);
   const shots=[];
-  for(const s of spec.shots){await look(s.look);await until(await sim()+.4);await p.screenshot({path:`${out}/${s.name}.png`});shots.push({name:s.name,look:s.look??[0,0],simTime:await sim()})}
+  for(const s of spec.shots){await look(s.look);await until(await sim()+.4);await p.screenshot({path:`${out}/${s.name}.jpg`,type:'jpeg',quality:82});shots.push({name:s.name,look:s.look??[0,0],simTime:await sim()})}
   if(spec.sequence){
     const q=spec.sequence;await look(q.look);
-    for(let k=0;k<q.frames;k++){await until(await sim()+q.every);const name=`${q.name}-${k+1}`;await p.screenshot({path:`${out}/${name}.png`});shots.push({name,look:q.look??[0,0],simTime:await sim()})}
+    for(let k=0;k<q.frames;k++){await until(await sim()+q.every);const name=`${q.name}-${k+1}`;await p.screenshot({path:`${out}/${name}.jpg`,type:'jpeg',quality:82});shots.push({name,look:q.look??[0,0],simTime:await sim()})}
   }
   const traffic=await p.evaluate(()=>(window.__drivingPractice.traffic()??[]).filter(t=>t.visible).map(t=>({id:t.id,x:+t.pose.position.x.toFixed(1),z:+t.pose.position.z.toFixed(1),speed:+t.speed.toFixed(1)})));
   fs.writeFileSync(`${out}/capture.json`,JSON.stringify({spec,shots,traffic,seconds:Math.round((Date.now()-t0)/1000),capturedAt:new Date().toISOString()},null,1));

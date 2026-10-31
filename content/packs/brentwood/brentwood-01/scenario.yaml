@@ -16,7 +16,7 @@ unresolved_material_details:
 learning_objective: "Emerge from a side road on to a main road: observe both ways (right first, then left, then right again), judge a safe gap in traffic from both directions, and go without making anyone slow down or swerve; wait at the line if it is not safe."
 prior_actions: "You left the test centre on Warley Hill, went towards the station and turned left before it, and have followed the local streets. The examiner said: \"At the end of the road, turn left.\" You checked your mirrors, signalled left and slowed on the approach."
 scene_setup: "Scene brentwood-kavanaghs-road (public/scenes, built by tools/scenes/build_scene.mjs from the OSM data above). Learner car at the end of Kavanaghs Road, front at the give way line, signalling left: at [1.65, 4.5], heading 330 degrees (scene metres). Traffic: the app's busiest setting ('Test day'), left to gather for 30 simulated seconds (capture spec: capture/spec.json)."
-capture_views: # rendered from the driver's seat, landscape phone (844 x 390 at 3x); see capture/capture.json
+capture_views: # rendered from the driver's seat, landscape phone (844 x 390 at 3x), JPEG; capture/capture.json has where and when
   - forward
   - right # looking right along London Road (traffic coming towards you in the near lane)
   - left # looking left along London Road (traffic coming in the far lane, towards Brook Street)
@@ -45,3 +45,6 @@ fault_conditions: # contextual, from the depicted traffic; the app's mock test m
   - "Waiting with a clear road both ways for some seconds: driving fault, Progress – undue hesitation (only where the captures show the road clear)"
 scene_version: "brentwood-kavanaghs-road built 2026-10-31 from OSM; app assets/batch-a"
 review_status: draft
+production: # the pilot's measure (template: capture time and human correction time recorded apart)
+  capture_seconds: 134 # tools/scenes/capture.cjs, software rendering in the cloud container, 6 views
+  correction_minutes: null # the owner's review, not yet done

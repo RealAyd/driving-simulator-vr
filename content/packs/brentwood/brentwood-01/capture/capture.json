@@ -1,0 +1,202 @@
+{
+ "spec": {
+  "scene": "brentwood-kavanaghs-road",
+  "label": "Kavanaghs Road, Brentwood",
+  "at": [
+   1.65,
+   4.5,
+   330
+  ],
+  "wait": 30,
+  "shots": [
+   {
+    "name": "forward"
+   },
+   {
+    "name": "right",
+    "look": [
+     70,
+     0
+    ]
+   },
+   {
+    "name": "left",
+    "look": [
+     -70,
+     0
+    ]
+   }
+  ],
+  "sequence": {
+   "name": "right-sequence",
+   "look": [
+    70,
+    0
+   ],
+   "frames": 3,
+   "every": 1
+  }
+ },
+ "shots": [
+  {
+   "name": "forward",
+   "look": [
+    0,
+    0
+   ],
+   "simTime": 32.44999999999944
+  },
+  {
+   "name": "right",
+   "look": [
+    70,
+    0
+   ],
+   "simTime": 34.24999999999934
+  },
+  {
+   "name": "left",
+   "look": [
+    -70,
+    0
+   ],
+   "simTime": 36.29999999999922
+  },
+  {
+   "name": "right-sequence-1",
+   "look": [
+    70,
+    0
+   ],
+   "simTime": 38.583333333332426
+  },
+  {
+   "name": "right-sequence-2",
+   "look": [
+    70,
+    0
+   ],
+   "simTime": 40.89999999999896
+  },
+  {
+   "name": "right-sequence-3",
+   "look": [
+    70,
+    0
+   ],
+   "simTime": 43.43333333333215
+  }
+ ],
+ "traffic": [
+  {
+   "id": "traffic-0",
+   "x": 92.7,
+   "z": -46.6,
+   "speed": 11.9
+  },
+  {
+   "id": "traffic-1",
+   "x": -137.5,
+   "z": 159.3,
+   "speed": 8.9
+  },
+  {
+   "id": "traffic-2",
+   "x": -9.8,
+   "z": -153.4,
+   "speed": 5.8
+  },
+  {
+   "id": "traffic-3",
+   "x": 24.3,
+   "z": 175.6,
+   "speed": 3.5
+  },
+  {
+   "id": "traffic-4",
+   "x": 36.9,
+   "z": -30.6,
+   "speed": 0.7
+  },
+  {
+   "id": "traffic-5",
+   "x": -150.9,
+   "z": -85.6,
+   "speed": 7.7
+  },
+  {
+   "id": "traffic-6",
+   "x": 24.9,
+   "z": -60.3,
+   "speed": 6.1
+  },
+  {
+   "id": "traffic-7",
+   "x": 122.6,
+   "z": 253,
+   "speed": 4.2
+  },
+  {
+   "id": "traffic-8",
+   "x": -98,
+   "z": 229.6,
+   "speed": 6.6
+  },
+  {
+   "id": "traffic-9",
+   "x": -108.9,
+   "z": 216.4,
+   "speed": 2.9
+  },
+  {
+   "id": "traffic-10",
+   "x": 31.9,
+   "z": -38.6,
+   "speed": 1.7
+  },
+  {
+   "id": "traffic-11",
+   "x": 39.7,
+   "z": -19.9,
+   "speed": 1.8
+  },
+  {
+   "id": "traffic-12",
+   "x": -163,
+   "z": 113.7,
+   "speed": 9.1
+  },
+  {
+   "id": "traffic-13",
+   "x": 53.3,
+   "z": 66.7,
+   "speed": 8.4
+  },
+  {
+   "id": "traffic-14",
+   "x": 36.8,
+   "z": -22.1,
+   "speed": 0
+  },
+  {
+   "id": "traffic-15",
+   "x": -120.2,
+   "z": 65.2,
+   "speed": 12.1
+  },
+  {
+   "id": "traffic-16",
+   "x": 142.5,
+   "z": 101.6,
+   "speed": 12.4
+  },
+  {
+   "id": "traffic-17",
+   "x": -77.7,
+   "z": 238,
+   "speed": 2.4
+  }
+ ],
+ "seconds": 134,
+ "capturedAt": "2026-10-31T06:10:12.072Z"
+}
