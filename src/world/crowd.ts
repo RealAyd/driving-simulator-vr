@@ -1,7 +1,7 @@
 import type {Location,Vec2} from '../contracts';
 import type {StreetLayout} from './streetscape';
 import type {SignPlan} from './signage';
-import {distanceToOutline,insidePolygon} from './townscape';
+import {nearBuildings} from './townscape';
 import {onOtherCarriageway,pavementWidthAt,pointAtAlong,roadHalfWidth,surfaceAt} from './roadGeometry';
 
 /**
@@ -111,13 +111,7 @@ export function layoutCrowd(location:Location,layout:StreetLayout|null,signs:Sig
     const dx=p.x-s.x,dz=p.z-s.z;
     return Math.abs(dx*s.axis.x+dz*s.axis.z)<s.length/2+margin&&Math.abs(dx*s.back.x+dz*s.back.z)<s.depth/2+margin;
   });
-  // Each building's bounding box first (a city centre has hundreds of footprints and this is asked every metre).
-  const boxes=location.buildings.map(b=>{
-    const xs=b.footprint.map(q=>q.x),zs=b.footprint.map(q=>q.z);
-    return {b,x0:Math.min(...xs),x1:Math.max(...xs),z0:Math.min(...zs),z1:Math.max(...zs)};
-  });
-  const nearBuilding=(p:Vec2,margin:number)=>boxes.some(({b,x0,x1,z0,z1})=>p.x>x0-margin&&p.x<x1+margin&&p.z>z0-margin&&p.z<z1+margin
-    &&(insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin));
+  const nearBuilding=nearBuildings(location.buildings);
   // Kept clear of assessed hazards: crossings (zebra crossings widely), parked vans that hide a pedestrian,
   // and the learner's start (the nearside behind it is where a cyclist is checked for in the mirrors).
   const crossingsAt=location.crossings.map(c=>{

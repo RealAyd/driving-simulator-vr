@@ -1,6 +1,6 @@
 import {headingFromDirection,type Block,type Location,type Vec2} from '../contracts';
 import type {StreetLayout} from './streetscape';
-import {distanceToOutline,insidePolygon,type BusStop} from './townscape';
+import {insidePolygon,nearBuildings,type BusStop} from './townscape';
 import {brandSign,TRADE_SIGNS,tradeFromName} from './brandSigns';
 import {pavementWidthAt,pointAtAlong,roadHalfWidth,sampleRoad,surfaceAt} from './roadGeometry';
 import {junctionMouths,mouthPoint,schoolFrontages} from './junctionControls';
@@ -112,7 +112,7 @@ export function layoutSignage(location:Location,layout:StreetLayout|null):SignPl
     !stops.some(s=>Math.hypot(s.x-p.x,s.z-p.z)<margin+.5)&&
     !plan.panels.some(s=>s.posts.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<margin+.3));
   const onPavement=(p:Vec2)=>surfaceAt(location,p.x,p.z)?.kind==='pavement';
-  const clearOfBuildings=(p:Vec2,margin:number)=>!buildings.some(b=>insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin);
+  const nearBuilding=nearBuildings(buildings),clearOfBuildings=(p:Vec2,margin:number)=>!nearBuilding(p,margin);
   const height=(p:Vec2)=>surfaceAt(location,p.x,p.z)?.height??0;
   const post=(p:Vec2,h:number,radius:number):Post=>({x:p.x,z:p.z,y:height(p),height:h,radius});
   const collider=(id:string,p:Vec2,size:number,h:number)=>plan.colliders.push({id,kind:'wall',position:{x:p.x,z:p.z},headingDeg:0,size:{width:size,depth:size,height:h},occludes:false,shape:'box'});

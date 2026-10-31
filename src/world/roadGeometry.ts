@@ -102,6 +102,28 @@ const near=(road:Road,x:number,z:number,reach:number)=>{
 };
 
 /**
+ * The roads that could be within reach of a point: those whose widened box covers its 25 m cell, in the area's order
+ * (so answers are the same as trying every road; a town has hundreds and this is asked many times a frame). Each road
+ * is in every cell its box comes within its reach plus 2 m of. Worked out once per list of roads.
+ */
+const grids=new WeakMap<readonly Road[],{count:number;cells:Map<string,Road[]>}>();
+const GRID=25;
+function roadsNear(roads:readonly Road[],x:number,z:number):readonly Road[]{
+  let g=grids.get(roads);
+  if(!g||g.count!==roads.length){
+    g={count:roads.length,cells:new Map()};
+    for(const road of roads){
+      const b=boundsOf(road),m=b.reach+2;
+      for(let cx=Math.floor((b.x0-m)/GRID);cx<=Math.floor((b.x1+m)/GRID);cx++)for(let cz=Math.floor((b.z0-m)/GRID);cz<=Math.floor((b.z1+m)/GRID);cz++){
+        const k=`${cx},${cz}`;(g.cells.get(k)??g.cells.set(k,[]).get(k)!).push(road);
+      }
+    }
+    grids.set(roads,g);
+  }
+  return g.cells.get(`${Math.floor(x/GRID)},${Math.floor(z/GRID)}`)??[];
+}
+
+/**
  * Surface height comes only from authored road data, never from scene
  * meshes, so the vehicle cannot snap onto roofs or decorative objects.
  */
@@ -110,7 +132,7 @@ export function surfaceAt(location:Location,x:number,z:number):{height:number;ki
   for(const junction of location.junctions)
     if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius)
       return {height:0,kind:'carriageway',roadId:junction.id};
-  for(const road of location.roads){
+  for(const road of roadsNear(location.roads,x,z)){
     if(!near(road,x,z,boundsOf(road).reach))continue;
     const s=sampleRoad(road,x,z),offset=s.distance;
     const half=roadHalfWidth(road);
@@ -127,5 +149,5 @@ export function surfaceAt(location:Location,x:number,z:number):{height:number;ki
 export function onOtherCarriageway(location:Location,x:number,z:number,exceptRoadId:string,margin=0):boolean{
   for(const junction of location.junctions)
     if(Math.hypot(x-junction.position.x,z-junction.position.z)<=junction.radius+margin)return true;
-  return location.roads.some(road=>road.id!==exceptRoadId&&near(road,x,z,roadHalfWidth(road)+margin)&&sampleRoad(road,x,z).distance<=roadHalfWidth(road)+margin);
+  return (margin<=2?roadsNear(location.roads,x,z):location.roads).some(road=>road.id!==exceptRoadId&&near(road,x,z,roadHalfWidth(road)+margin)&&sampleRoad(road,x,z).distance<=roadHalfWidth(road)+margin);
 }

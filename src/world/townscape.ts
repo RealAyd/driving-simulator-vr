@@ -91,6 +91,24 @@ export function distanceToOutline(p:Vec2,ring:readonly Vec2[]):number{
   return best;
 }
 
+/**
+ * Whether a point is inside one of these buildings or within `margin` of its outline: the same answer as trying every
+ * building, but only those whose box comes near the point are tried (thousands of footprints in a town, asked at
+ * every metre of pavement). Buildings by 20 m cell, each in every cell its box comes within 2 m of.
+ */
+export function nearBuildings(buildings:ReadonlyArray<{footprint:readonly Vec2[]}>):(p:Vec2,margin:number)=>boolean{
+  const boxes=buildings.map(b=>{
+    const xs=b.footprint.map(q=>q.x),zs=b.footprint.map(q=>q.z);
+    return {b,x0:Math.min(...xs),x1:Math.max(...xs),z0:Math.min(...zs),z1:Math.max(...zs)};
+  });
+  const cells=new Map<string,typeof boxes>(),cell=(x:number,z:number)=>`${Math.floor(x/20)},${Math.floor(z/20)}`;
+  for(const box of boxes)for(let cx=Math.floor((box.x0-2)/20);cx<=Math.floor((box.x1+2)/20);cx++)for(let cz=Math.floor((box.z0-2)/20);cz<=Math.floor((box.z1+2)/20);cz++){
+    const k=`${cx},${cz}`;(cells.get(k)??cells.set(k,[]).get(k)!).push(box);
+  }
+  return (p,margin)=>(margin<=2?cells.get(cell(p.x,p.z))??[]:boxes).some(({b,x0,x1,z0,z1})=>p.x>x0-margin&&p.x<x1+margin&&p.z>z0-margin&&p.z<z1+margin
+    &&(insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin));
+}
+
 function hash(s:string):number{
   let h=2166136261;
   for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);
@@ -131,6 +149,13 @@ export function layoutTownscape(location:Location):StreetLayout|null{
         for(const pt of roadPoints.get(`${cx},${cz}`)??[])if(insidePolygon(pt,ring))return true;
     return false;
   };
+  // (Each road's box, out as far as a wall it faces can be: a wall outside it does not face that road.)
+  const roadBoxes=location.roads.map(road=>{
+    const xs=road.centreline.map(p=>p.x),zs=road.centreline.map(p=>p.z);
+    const pave=Math.max(road.pavementWidth,...(road.pavementProfile??[]).flatMap(q=>[q.left,q.right]));
+    const m=roadHalfWidth(road)+pave+FACING_GAP+1;
+    return {road,length:roadLength(road),x0:Math.min(...xs)-m,x1:Math.max(...xs)+m,z0:Math.min(...zs)-m,z1:Math.max(...zs)+m};
+  });
   for(const b of location.buildings){
     if(acrossRoad(b.footprint))continue;
     const ring=[...b.footprint];
@@ -147,10 +172,11 @@ export function layoutTownscape(location:Location):StreetLayout|null{
       // Faces a road: a carriageway is in front of this wall, with at most a small forecourt between the wall and
       // the back of the pavement (pavements are widened to the shop fronts where map data shows them).
       let roadGap=Infinity;
-      for(const road of location.roads){
+      for(const {road,length,x0,x1,z0,z1} of roadBoxes){
+        if(mid.x<x0||mid.x>x1||mid.z<z0||mid.z>z1)continue;
         const s=sampleRoad(road,mid.x,mid.z);
         // Only a road that runs past the wall (not one that ends before it).
-        if(s.along<=.01||s.along>=roadLength(road)-.01)continue;
+        if(s.along<=.01||s.along>=length-.01)continue;
         const gap=s.distance-roadHalfWidth(road)-pavementWidthAt(road,s.along,Math.sign(s.lateral)||1);
         if(gap>FACING_GAP)continue;
         const p=pointAtAlong(road,s.along);
@@ -171,7 +197,7 @@ export function layoutTownscape(location:Location):StreetLayout|null{
     town.buildings.push({id:b.id,doorColour:DOOR_COLOURS[hash(`${b.id}-door`)%DOOR_COLOURS.length]!,use:b.use,...(b.name?{name:b.name}:{}),ring,walls,height:b.height,levels:b.levels??Math.max(1,Math.round((b.height-.6)/STOREY)),
       palette:paletteFor(b),fascia:FASCIAS[hash(b.id)%FASCIAS.length]!,roof:b.roof,detail:b.detail,roofColour:hash(b.id)%3===0?'clay':'slate',y:-.02});
   }
-  const inBuilding=(p:Vec2,margin:number)=>location.buildings.some(b=>insidePolygon(p,b.footprint)||distanceToOutline(p,b.footprint)<margin);
+  const inBuilding=nearBuildings(location.buildings);
 
   // Map trees (OSM), with a trunk collider; none on a carriageway.
   location.trees.forEach((t,i)=>{
