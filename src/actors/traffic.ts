@@ -589,7 +589,8 @@ export class Traffic implements SimModule{
         }
         else if(facing<-.5){
           const dx=op.x-pos.x,dz=op.z-pos.z,along=dx*fwd.x+dz*fwd.z,side=Math.abs(dx*fwd.z-dz*fwd.x);
-          if(along>0&&along<40&&side<4)oncoming.push({along});
+          // (Not one standing tucked in, waiting for another to come through: it is not coming.)
+          if(along>0&&along<40&&side<4&&!(o.car.speed<.3&&/^(waiting for|letting|backing)/.test(o.why??'')))oncoming.push({along});
           const narrow=!atJunction(d)&&!atJunction(o);
           const oOut=narrow&&o.lat<o.leg.lane-.4,meOut=narrow&&d.lat<d.leg.lane-.4,near=along>0&&along<40&&side<car.halfWidth+o.car.halfWidth+.8;
           // Out past parked cars with it coming: carry on by it (it tucks in), stopping only while there is no room.
@@ -670,7 +671,9 @@ export class Traffic implements SimModule{
       else if(byOnLeft){/* passed below, at a walking pace */}
       else if(turning){if(learnerOnWay<Infinity&&learnerOnWay-car.halfLength-2.15<gap){gap=learnerOnWay-car.halfLength-2.15+GAP*.6;why='learner';leadSpeed=0;following=false}}
       else if(squeeze){if(Math.abs(d.lat-learnerAcross)<car.halfWidth+.9+(this.learnerIdle>12?0:.05))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner')}
-      else if(!(learnerStopped&&learnerLeft>2.15))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
+      // (Standing with room to go round it: not stopped for from afar, but come up to it and gone round, as a parked car
+      // is, from PASS_AHEAD.)
+      else if(!(learnerStopped&&(learnerLeft>2.15||learnerAlong>PASS_AHEAD-2)))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
       // Traffic lights ahead in this lane: stop about 1.5 m short of the line at red (and red and amber), and at
       // amber unless too close to stop comfortably (3 m/s²). Seen from far enough off to stop for them, braking
       // steadily (lightStop: metres to where it stops).
