@@ -31,6 +31,7 @@ export const DL25_SECTIONS:ReadonlyArray<{label:string;rules:readonly string[]}>
   {label:'Junctions – observation',rules:['junctions-observation']},
   {label:'Control – steering',rules:['positioning-pavement','control-off-road']},
   {label:'Positioning – normal driving',rules:['positioning-normal']},
+  {label:'Positioning – lane discipline',rules:['positioning-lane-discipline']},
   {label:'Position / normal stops',rules:['normal-stops']},
   {label:'Awareness and planning',rules:['control-collision']}
 ];

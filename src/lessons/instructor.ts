@@ -7,6 +7,7 @@ import type {RouteStep} from '../test/route';
 import {judgePullUp,junctionPoints,stopPlace} from '../test/pullUp';
 import {sampleRoad} from '../world/roadGeometry';
 import {drivingView} from '../world/roundabouts';
+import {laneAt,lanesFor,onRing,ringLanes,type RingLanes} from '../world/roundaboutLanes';
 import type {LiveStop} from '../world/trafficSignals';
 import type {Coaching,Lesson} from './syllabus';
 
@@ -62,6 +63,8 @@ interface Watch{
   edge:number;
   /** Round a big roundabout: signalled left to leave it. */
   leftToLeave:boolean;
+  /** Two lanes or more round it: its lanes, the lanes for this exit, and whether the learner came on in one of them. */
+  lanes?:RingLanes;allowed?:number[];laneOk?:boolean;
 }
 
 /** What the instructor says at once when the marking records a safety fault, and the note for the report. */
@@ -76,6 +79,7 @@ export const CORRECTIONS:Record<string,(severity:string,limit:number)=>{say:stri
   'traffic-signs':()=>({say:'That was a STOP sign. You must stop at the line, even if the road is clear.',lesson:'stop at the line at a STOP sign, every time'}),
   'traffic-lights-hesitation':()=>({say:'The light is green: go when the way is clear.',lesson:'move off promptly on green when the way is clear'}),
   'positioning-normal':()=>({say:'Keep to the left.',lesson:'keep to the left'}),
+  'positioning-lane-discipline':()=>({say:'Keep to your lane. If you are in the wrong one, go round again.',lesson:'the right lane for your exit at roundabouts'}),
   'following-distance':()=>({say:'Leave more room to the car in front: at least two seconds.',lesson:'keep a two-second gap'}),
   'junctions-observation':()=>({say:'Give way to traffic from the right at the roundabout.',lesson:'give way to the right at roundabouts'})
 };
@@ -142,11 +146,15 @@ export class Instructor implements SimModule,ExaminerListener{
       // Still signalling this way from the turn just before: fine kept on (judged only if it goes off and on again).
       carried:step.turn!=='ahead'&&this.input.learner().indicator===step.turn,
       leftover:this.input.learner().indicator!=='off'&&this.input.learner().indicator!==step.turn?this.input.learner().indicator:undefined};
+    // A roundabout of two lanes or more: which lanes are for this exit (the owner's rules, roundaboutLanes.ts).
+    {const rl=ring?ringLanes(ring):undefined;if(rl&&rl.lanes>=2){this.watch.lanes=rl;this.watch.allowed=lanesFor(rl.lanes,step.exit??1,step.exits??rl.exits.length,step.turn)}}
     // How to signal at a roundabout, said with the direction while the lesson is about them.
     if(step.kind==='roundabout'&&this.has('roundabout')&&this.input.reminders!==false){
-      this.input.say(step.turn==='left'?'Signal left on the approach.'
+      const rl=this.watch.lanes,lanes=this.watch.allowed;
+      const lane=lanes?`${lanes.map(n=>n===1?'Left':n===rl!.lanes?'Right':'Middle').join(' or ')}-hand lane. `:'';
+      this.input.say(lane+(step.turn==='left'?'Signal left on the approach.'
         :step.turn==='ahead'?'No signal on the approach. Signal left after you pass the exit before ours.'
-        :'Signal right on the approach, then left after you pass the exit before ours.');
+        :'Signal right on the approach, then left after you pass the exit before ours.'));
     }
   }
 
@@ -178,6 +186,8 @@ export class Instructor implements SimModule,ExaminerListener{
         if(w.leftToLeave)ok.push('left signal to leave');
         else bad.push('signal left to leave, once past the exit before ours');
       }
+      if(w.laneOk===true)ok.push('the right lane');
+      else if(w.laneOk===false&&w.lanes&&w.allowed)bad.push(`take the ${w.allowed.map(n=>n===1?'left':n===w.lanes!.lanes?'right':'middle').join(' or ')}-hand lane for this exit`);
     }else if(turning){
       if(w.signal==='right')ok.push(`${step.turn} signal`);
       else bad.push(w.signal==='wrong'?`you signalled the wrong way: signal ${step.turn}`:`signal ${step.turn} after your mirror check`);
@@ -320,12 +330,19 @@ export class Instructor implements SimModule,ExaminerListener{
         }
       }
       if(s.kind==='roundabout'&&this.has('roundabout')&&d<15&&d>6)this.prompt('give-way-right','Give way to traffic from the right.');
+      // On to a roundabout of two lanes or more: in the lane for the exit (judged once, on the ring); in the wrong one, keep
+      // to it and go round again rather than cut across.
+      if(w.lanes&&w.allowed&&w.laneOk===undefined&&onRing(w.lanes,{x:l.x,z:l.z},0)&&out<w.edge-3){
+        const lane=laneAt(w.lanes,{x:l.x,z:l.z});
+        if(lane){w.laneOk=w.allowed.includes(lane);if(!w.laneOk&&this.has('roundabout'))this.prompt('wrong-lane','That lane is not for our exit: stay in it, and go round again if you need to.')}
+      }
       // Round a big roundabout, the exit next: signal left to leave (rule 186).
       if(w.edge&&out<w.edge&&s.turn!=='left'){
         if(l.indicator==='left')w.leftToLeave=true;
         else if(this.has('roundabout')){
           const e=s.to.road.centreline[s.to.dir>0?0:s.to.road.centreline.length-1]!;
-          if(Math.hypot(l.x-e.x,l.z-e.z)<w.edge)this.prompt('leave-left','Signal left now: ours is the next exit.');
+          if(Math.hypot(l.x-e.x,l.z-e.z)<w.edge)this.prompt('leave-left',w.lanes&&w.allowed?.some(n=>n>1)
+            ?'Left mirror, signal left, and into the left lane: ours is the next exit.':'Signal left now: ours is the next exit.');
         }
       }
     }

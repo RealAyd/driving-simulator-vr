@@ -19,8 +19,8 @@ export interface RouteStep{
   /** What the examiner says. */
   say:string;
   turn:Turn;
-  /** Mini-roundabout exit (1 = first), when at one. */
-  exit?:number;
+  /** Mini-roundabout exit (1 = first), when at one, and how many there are (from the way in). */
+  exit?:number;exits?:number;
   /** Where the manoeuvre happens. */
   at:Vec2;
   /** The road the learner should be on afterwards, and which way. */
@@ -251,7 +251,7 @@ export class RoadNetwork{
         distance+=Math.abs(d.along-pos.along);
         const turn:Turn=Math.abs(o.angle)<.6?'ahead':o.angle>0?'right':'left';
         let say:string;
-        let exit:number|undefined;
+        let exit:number|undefined,exits:number|undefined;
         // Traffic lights at the junction: the examiner names them ("At the traffic lights, turn left").
         const lights=!d.roundabout&&this.location.signals.some(g=>g.kind==='junction'&&Math.hypot(g.position.x-d.at.x,g.position.z-d.at.z)<35);
         if(lights){
@@ -260,7 +260,7 @@ export class RoadNetwork{
         }else if(d.roundabout){
           // Exits counted clockwise from the left (UK), the way the learner would count them.
           const order=[...d.options].sort((a,b)=>a.angle-b.angle);
-          exit=order.indexOf(o)+1;
+          exit=order.indexOf(o)+1;exits=order.length;
           const way=turn==='ahead'?', that\'s straight ahead':turn==='left'?', that\'s to the left':', that\'s to the right';
           say=`At the roundabout, take the ${ORD[exit-1]??`${exit}th`} exit${way}.`;
         }else if(d.kind==='side'&&turn==='ahead'){
@@ -282,7 +282,7 @@ export class RoadNetwork{
         }
         if(say&&say===lastSay&&steps.length>0&&distance-steps.at(-1)!.distance<40)say=`Then ${say[0]!.toLowerCase()}${say.slice(1)}`;
         lastSay=say;
-        if(say)steps.push({say,turn,...(exit?{exit}:{}),at:d.at,to:{road:o.road,dir:o.dir},from:{road:pos.road,dir:pos.dir},distance,
+        if(say)steps.push({say,turn,...(exit&&exits?{exit,exits}:{}),at:d.at,to:{road:o.road,dir:o.dir},from:{road:pos.road,dir:pos.dir},distance,
           kind:this.choice(d,o).kind,crossroads:d.crossroads});
         legs.push({road:pos.road,dir:pos.dir,from:pos.along,to:d.along});
         // (Counted when turned into: carrying on along the same street is not driving it again.)

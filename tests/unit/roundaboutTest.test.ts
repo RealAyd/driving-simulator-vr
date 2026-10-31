@@ -8,6 +8,7 @@ import {EventLog} from '../../src/app/eventLog';
 import {Instructor} from '../../src/lessons/instructor';
 import {LESSONS} from '../../src/lessons/syllabus';
 import {drivingView} from '../../src/world/roundabouts';
+import {ahead,laneAt,pointAt,project,ringLanes} from '../../src/world/roundaboutLanes';
 import {loadCentre} from './trafficDrive';
 
 /**
@@ -29,9 +30,10 @@ function routeThroughRing(loc:Location,net:RoadNetwork):Route{
  * Drives the route at a learner's pace with `signal` deciding the indicator (the mirrors checked before each new
  * signal); the examiner's and assessor's record, and an instructor's (the roundabouts lesson's coaching) alongside.
  */
-function drive(loc:Location,route:Route,signal:(at:{x:number;z:number},step:Route['steps'][number]|undefined,ex:Examiner)=>'off'|'left'|'right'){
+function drive(loc:Location,route:Route,signal:(at:{x:number;z:number},step:Route['steps'][number]|undefined,ex:Examiner)=>'off'|'left'|'right',mirrorsAgain=true,
+  reshape:(path:Array<{x:number;z:number}>)=>Array<{x:number;z:number}>=p=>p){
   const net=new RoadNetwork(loc);
-  const path=routeLanePath(route.legs,[],drivingView(loc).junctions);
+  const path=reshape(routeLanePath(route.legs,[],drivingView(loc).junctions));
   const cum=[0];for(let i=1;i<path.length;i++)cum.push(cum[i-1]!+Math.hypot(path[i]!.x-path[i-1]!.x,path[i]!.z-path[i-1]!.z));
   let time=0;
   const events=new EventLog(()=>time);
@@ -54,6 +56,8 @@ function drive(loc:Location,route:Route,signal:(at:{x:number;z:number},step:Rout
     learner.x=a.x+(b.x-a.x)*t;learner.z=a.z+(b.z-a.z)*t;learner.heading=Math.atan2(b.x-a.x,-(b.z-a.z));
     const indicator=signal(learner,ex.steps[ex.index],ex);
     if(indicator!=='off'&&indicator!==learner.indicator)for(const target of ['interior',`${indicator}-door`])events.emit('observation.dwell',{target});
+    // (And again every few seconds while signalling: the mirror on that side before moving across a lane.)
+    else if(mirrorsAgain&&indicator!=='off'&&Math.floor(time/3)!==Math.floor((time-1/30)/3))events.emit('observation.dwell',{target:`${indicator}-door`});
     learner.indicator=indicator;
     time+=1/30;
     ex.fixedUpdate(1/30);assessor.fixedUpdate(1/30);instructor.fixedUpdate(1/30);
@@ -74,7 +78,7 @@ describe('a mock test through a big roundabout',()=>{
     // Signalling as the Highway Code has it: the exit's way on the approach (none ahead), left once nearly at the exit
     // and on until off the roundabout.
     const careful=()=>{
-      const on=new Set<Route['steps'][number]>();
+      const on=new Set<Route['steps'][number]>(),leaving=new Set<Route['steps'][number]>();
       return (at:{x:number;z:number},step:Route['steps'][number]|undefined,ex:Examiner):'off'|'left'|'right'=>{
         if(!step||step.kind!=='roundabout'||!ex.steps.length)return 'off';
         const j=ringOf(step);
@@ -82,9 +86,12 @@ describe('a mock test through a big roundabout',()=>{
         const d=Math.hypot(at.x-j.position.x,at.z-j.position.z);
         if(d<j.radius)on.add(step);
         if(!on.has(step))return d>j.radius+60||step.turn==='ahead'?'off':step.turn;
-        // On the ring: left once within a quarter of the way round of the exit road's start.
-        const exit=step.to.road.centreline[step.to.dir>0?0:step.to.road.centreline.length-1]!;
-        return d>j.radius||Math.hypot(at.x-exit.x,at.z-exit.z)<j.radius*1.2?'left':step.turn==='right'?'right':'off';
+        // On the ring: left (the mirrors first) once past the exit before its own (rule 186), and on off it.
+        const exit=step.to.road.centreline[step.to.dir>0?0:step.to.road.centreline.length-1]!,rl=ringLanes(j)!;
+        const mine=project(rl,exit).along,before=rl.exits.filter(e=>ahead(rl,e,mine)>4).sort((a,b)=>ahead(rl,a,mine)-ahead(rl,b,mine))[0]??mine;
+        const passed=ahead(rl,before,project(rl,at).along)<ahead(rl,before,mine)&&ahead(rl,before,project(rl,at).along)>3;
+        if(passed)leaving.add(step);
+        return d>j.radius||leaving.has(step)?'left':step.turn==='right'?'right':'off';
       };
     };
     const good=drive(loc,route,careful());
@@ -107,9 +114,28 @@ describe('a mock test through a big roundabout',()=>{
     if(ringSteps.some(s=>s.turn!=='left')){
       expect(good.notes.some(n=>/left signal to leave/.test(n))).toBe(true);
       expect(good.notes.filter(n=>/roundabout/.test(n)&&n.startsWith(IMPROVE))).toEqual([]);
-      expect(good.coached).not.toContain('Signal left now: ours is the next exit.');
-      expect(noLeft.coached).toContain('Signal left now: ours is the next exit.');
+      expect(good.coached.filter(t=>/ours is the next exit/.test(t))).toEqual([]);
+      expect(noLeft.coached.some(t=>/ours is the next exit/.test(t))).toBe(true);
       expect(noLeft.notes.some(n=>/signal left to leave/.test(n))).toBe(true);
     }
+  },300_000);
+
+  it('lanes: on in the wrong lane, or across a lane without the mirror, is marked (positioning, mirrors)',async()=>{
+    const loc=await loadCentre('northampton');
+    const net=new RoadNetwork(loc),route=routeThroughRing(loc,net),rings=bigRings(loc);
+    const right=route.steps.filter(s=>s.kind==='roundabout'&&s.turn==='right'&&rings.some(j=>Math.hypot(j.position.x-s.at.x,j.position.z-s.at.z)<2));
+    expect(right.length).toBeGreaterThan(0);
+    const leftOn=(step:Route['steps'][number]|undefined)=>step?.kind==='roundabout'&&step.turn!=='ahead'?step.turn:'off';
+    // Round in the left lane all the way, taking an exit to the right (the right-hand lane is for it).
+    const outside=(path:Array<{x:number;z:number}>)=>path.map(p=>{
+      for(const j of rings){const r=ringLanes(j)!,q=project(r,p),w=r.stretch[0]!.width;
+        if(laneAt(r,p)===2)return pointAt(r,q.along,q.left+w)}
+      return p;
+    });
+    const wrong=drive(loc,route,(_,step)=>leftOn(step),true,outside);
+    expect(wrong.findings.filter(f=>/on to the roundabout in the left-hand lane/.test(f.explanation)).length).toBe(right.length);
+    // In the right lane, then out to the left lane with no look in the left mirror (none at all).
+    const noMirrors=drive(loc,route,()=>'off',false);
+    expect(noMirrors.findings.some(f=>/no check of the left mirror before moving into the left-hand lane/.test(f.explanation))).toBe(true);
   },300_000);
 });

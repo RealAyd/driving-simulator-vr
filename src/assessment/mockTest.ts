@@ -12,6 +12,7 @@ import {DVSA_SOURCE,type ShowMeQuestion,type TellMeQuestion} from '../test/vehic
 import type {Aspect,LiveStop} from '../world/trafficSignals';
 import type {Vec2} from '../contracts';
 import {drivingView} from '../world/roundabouts';
+import {approachLanesFor,laneAt,laneOnRoad,lanesFor,onRing,project,ringLanes,type RingLanes} from '../world/roundaboutLanes';
 
 /**
  * Mock driving test marking, in the shape of the DVSA marking sheet (DL25): driving faults (recorded as "minor"),
@@ -49,7 +50,12 @@ interface Watch{step:RouteStep;signalled:boolean;wrongSignal:boolean;maxSpeed:nu
   leftover?:'left'|'right'|undefined;
   /** At a roundabout bigger than a mini (its ring, `radius` from its middle): the signal on the way to it (the way
    * of the exit, or none going ahead), on it, and whether the left signal was given to leave it (rule 186). */
-  ring?:{radius:number;entered:boolean;left:boolean;exited:boolean;wrongApproach:'left'|'right'|null;entrySpeed:number;leaving:'left'|'right'|'off'}}
+  ring?:{radius:number;entered:boolean;left:boolean;exited:boolean;wrongApproach:'left'|'right'|null;entrySpeed:number;leaving:'left'|'right'|'off';
+    /** Lanes (two or more on the ring; laneJudging): the ring's, those for this exit, and what was seen. */
+    lanes?:RingLanes;allowed?:number[];
+    /** The lane on the way in (where it has two or more), judged once; the lane on the ring now, since when, and before
+     * leaving it; seconds on the ring. */
+    approachJudged?:boolean;exitJudged?:boolean;lane?:number;laneFrom?:number|undefined;laneSince?:number;lastRingLane?:number;onFor?:number}}
 
 export class MockTestAssessor implements SimModule,ExaminerListener{
   readonly id='mock-test';
@@ -127,7 +133,15 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     this.watch={step,signalled:false,wrongSignal:false,maxSpeed:0,directionEvent:ev?.id??null,directionAt,signalAt:null,turnAt:null};
     // A roundabout bigger than a mini: judged by its ring, not by its middle (it is tens of metres across).
     const ring=step.kind==='roundabout'?this.rings.find(j=>Math.hypot(j.position.x-step.at.x,j.position.z-step.at.z)<2):undefined;
-    if(ring)this.watch.ring={radius:ring.radius,entered:false,left:false,exited:false,wrongApproach:null,entrySpeed:0,leaving:'off'};
+    if(ring){
+      this.watch.ring={radius:ring.radius,entered:false,left:false,exited:false,wrongApproach:null,entrySpeed:0,leaving:'off'};
+      // Two or more lanes round it: the lanes for this exit (roundaboutLanes.ts: the owner's rules, Highway Code 186).
+      const rl=ringLanes(ring);
+      if(rl&&rl.lanes>=2){
+        const turn=step.turn==='ahead'?'ahead':step.turn,exit=step.exit??1;
+        this.watch.ring.lanes=rl;this.watch.ring.allowed=lanesFor(rl.lanes,exit,step.exits??Math.max(exit,rl.exits.length),turn);
+      }
+    }
     // Still signalling this way from the turn just before (two turns the same way close together): the signal is
     // fine kept on, and its timing is judged only if it goes off and on again.
     const l=this.input.learner();
@@ -207,6 +221,78 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
     else if(v>20)this.fault('junctions-approach-speed',`${id}-speed`,'minor',`Junctions – approach speed: ${v.toFixed(0)} mph on to the roundabout (draft limit: 20 mph).`,ev);
     // Leaving signalling left: cancelled once off it.
     if(r.left)this.cancelBy={time:this.input.now()+8,turn:'left',incident:`${id}-cancel`};
+  }
+
+  /**
+   * Lanes at a roundabout of two lanes or more (positioning – lane discipline; the owner's rules): the lane on the way
+   * in (where it has two or more) or, coming on from one lane, the lane taken on to the ring, for the exit; each move
+   * across a lane on the ring, with the mirror on that side first and never across a vehicle already in it (serious);
+   * and leaving from the left lane, unless the way out has two lanes. Wrong lane: a driving fault (go round again rather
+   * than cut across: going round again is no fault).
+   */
+  private judgeLanes(w:Watch,p:Vec2,heading:number,speed:number,now:number,dt:number):void{
+    const r=w.ring!,rl=r.lanes!,allowed=r.allowed!,step=w.step,id=`turn-${this.directions}`;
+    const name=(n:number,of:number)=>n===1?'left':n===of?'right':'middle';
+    const exit=step.exit?`the ${['first','second','third','fourth','fifth','sixth'][step.exit-1]??`${step.exit}th`} exit`:'its exit';
+    const want=(of:number,ls:readonly number[])=>ls.map(n=>`the ${name(n,of)}-hand lane`).join(' or ');
+    const onIt=onRing(rl,p,.3);
+    // On the way in, the last few metres before the ring: its lane (only where the way in has two lanes or more).
+    if(!r.entered&&!r.approachJudged&&!onIt){
+      const edge=Math.abs(project(rl,p).left)-rl.lanes*1.8;
+      if(edge<12&&edge>2){
+        const at=laneOnRoad(step.from.road,p,heading,(x,z)=>sampleRoad(step.from.road,x,z));
+        if(at&&at.lanes>=2){
+          r.approachJudged=true;
+          const ok=approachLanesFor(allowed,rl.lanes,at.lanes);
+          if(!ok.includes(at.lane))this.fault('positioning-lane-discipline',`${id}-approach-lane`,'minor',
+            `Positioning – lane discipline: in the ${name(at.lane,at.lanes)}-hand lane on the way to the roundabout, taking ${exit} (${step.turn==='ahead'?'straight on':`to the ${step.turn}`}): ${want(at.lanes,ok)} is for that. In the wrong lane, go round again rather than cut across.`);
+        }
+      }
+    }
+    if(r.exited&&!r.exitJudged&&r.lastRingLane!==undefined){
+      // Off it: from the left lane (or the right, into a way out of two lanes), not across the left lane into one.
+      r.exitJudged=true;
+      const out=laneOnRoad(step.to.road,p,heading,(x,z)=>sampleRoad(step.to.road,x,z));
+      if(r.lastRingLane>1&&(out?.lanes??1)<2){
+        const fx=Math.sin(heading),fz=-Math.cos(heading);
+        const across=this.input.traffic().some(t=>laneAt(rl,t)===1&&Math.cos(t.heading-heading)>0&&Math.hypot(t.x-p.x,t.z-p.z)<10&&(t.x-p.x)*fx+(t.z-p.z)*fz<4);
+        this.fault('positioning-lane-discipline',`${id}-exit-lane`,across?'serious':'minor',
+          `Positioning – lane discipline: left the roundabout by ${exit} from the ${name(r.lastRingLane,rl.lanes)}-hand lane, across the left lane${across?' and a vehicle in it':''}. Move to the left lane after passing the exit before yours (left mirror first), or go round again.`);
+      }
+    }
+    if(!onIt||r.exited)return;
+    r.onFor=(r.onFor??0)+dt;
+    const lane=laneAt(rl,p);
+    if(!lane)return;
+    // Coming on from one lane: the lane taken on to the ring, a second on.
+    if(!r.approachJudged&&r.onFor>=1&&r.onFor-dt<1){
+      r.approachJudged=true;
+      if(!allowed.includes(lane))this.fault('positioning-lane-discipline',`${id}-ring-lane`,'minor',
+        `Positioning – lane discipline: on to the roundabout in the ${name(lane,rl.lanes)}-hand lane, taking ${exit}: ${want(rl.lanes,allowed)} is for that. In the wrong lane, go round again rather than cut across.`);
+    }
+    // Across a lane: held for half a second (not a wobble on the line); from a second on (coming on into the lane for the
+    // exit is not moving across).
+    if(r.onFor<1)return;
+    if(r.lane===undefined){r.lane=lane;r.lastRingLane=lane}
+    if(lane!==r.lane){
+      if(r.laneFrom!==lane){r.laneFrom=lane;r.laneSince=now}
+      else if(now-(r.laneSince??now)>=.5){
+        const from=r.lane,to=lane,side=to<from?'left':'right';
+        r.lane=lane;r.laneFrom=undefined;
+        if(!this.recentLook(4+.5,[`${side}-door`,`${side}-shoulder`]))this.fault('mirrors-change-direction',`${id}-lane-${Math.round(now)}`,'minor',
+          `Use of mirrors – change direction: no check of the ${side} mirror before moving into the ${name(to,rl.lanes)}-hand lane on the roundabout.`);
+        // Across a vehicle already in that lane, beside or close behind.
+        const fx=Math.sin(heading),fz=-Math.cos(heading);
+        const across=this.input.traffic().some(t=>{
+          if(Math.cos(t.heading-heading)<.5||laneAt(rl,t)!==to)return false;
+          const along=(t.x-p.x)*fx+(t.z-p.z)*fz;
+          return along<4.5&&along>-(5+t.speed*1.5);
+        });
+        if(across)this.fault('positioning-lane-discipline',`${id}-cut-across-${Math.round(now)}`,'serious',
+          `Positioning – lane discipline: moved into the ${name(to,rl.lanes)}-hand lane on the roundabout across a vehicle already in it. Check the ${side} mirror and wait for it to pass, or go round again.`);
+      }
+    }else r.laneFrom=undefined;
+    r.lastRingLane=r.lane;
   }
 
   // ---- Manoeuvres and the emergency stop (manoeuvres.ts judges them; their faults are recorded here) ----
@@ -338,6 +424,7 @@ export class MockTestAssessor implements SimModule,ExaminerListener{
         if(l.indicator==='left')r.left=true;
         if(d>r.radius+3){r.exited=true;r.leaving=l.indicator}
       }
+      if(r.lanes)this.judgeLanes(w,{x,z},l.pose.heading,speed,now,dt);
     }else if(w){
       const turn=w.step.turn;
       if(Math.hypot(x-w.step.at.x,z-w.step.at.z)<10)w.turnAt??=now;

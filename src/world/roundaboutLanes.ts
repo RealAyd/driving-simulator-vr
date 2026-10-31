@@ -174,3 +174,26 @@ export function onRing(r:RingLanes,p:Vec2,margin=0):boolean{
   const {along,left}=project(r,p),{count,width}=stretchAt(r,along);
   return Math.abs(left)<=count*width/2+margin;
 }
+
+/**
+ * The lane a car is in on a road, counted from the left kerb, going the way it faces: its lane, and how many lanes its
+ * way has (a one-way road all of them, a two-way road half). Null where it is not along the road.
+ */
+export function laneOnRoad(road:{centreline:readonly Vec2[];oneway:boolean;lanes:{count:number;width:number}},p:Vec2,heading:number,
+  sample:(x:number,z:number)=>{lateral:number;direction:Vec2;distance:number}):{lane:number;lanes:number}|null{
+  const s=sample(p.x,p.z),fx=Math.sin(heading),fz=-Math.cos(heading),along=s.direction.x*fx+s.direction.z*fz;
+  if(Math.abs(along)<.7)return null;
+  const {count,width}=road.lanes,lanes=road.oneway?count:Math.floor(count/2);
+  if(lanes<1)return null;
+  // Metres left of the centreline, going this way; the left kerb is half the road's width out.
+  const left=-s.lateral*Math.sign(along);
+  return {lane:Math.max(1,Math.min(lanes,Math.floor((count*width/2-left)/width)+1)),lanes};
+}
+
+/** The approach lanes that lead to the ring lanes `ring` (of `ringLanes`), from a way in of `lanes` lanes: the same
+ * lane counted from the left, and the right-hand lane for the ring's right-hand lane. */
+export function approachLanesFor(ring:readonly number[],ringLanes:number,lanes:number):number[]{
+  const out=new Set<number>();
+  for(const l of ring){out.add(Math.min(l,lanes));if(l===ringLanes)out.add(lanes)}
+  return [...out].sort((a,b)=>a-b);
+}
