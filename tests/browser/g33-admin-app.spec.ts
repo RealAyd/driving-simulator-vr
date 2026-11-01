@@ -45,7 +45,7 @@ test('G33: an admin starts lessons, mock tests and free drives with no sessions,
   const me=await (await page.request.get('/api/me')).json();
   expect(me.admin).toBe(true);
   expect(me.balance).toBe(0);
-  expect(me.trial).toEqual({lesson:1,test:1,free:1});
+  expect(me.trial).toEqual({lesson:3,test:3,free:3});
 
   // The simulation's options: a change reloads with it in the address.
   await page.click('#account-chip');

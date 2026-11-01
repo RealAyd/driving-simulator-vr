@@ -113,17 +113,19 @@ export class SteeringAssist{
   brakeFor(pose:Pose,speed:number):number{
     if(speed<2)return 0;
     const at=this.progress(pose.position.x,pose.position.z);
-    // The wheel already at full lock and the car still running off the path: slower, whatever the bends ahead say (a
-    // learner speeding up before the turn is finished).
+    // The wheel already at full lock in a bend and the car still running off the path: slower, whatever the bends ahead
+    // say (a learner speeding up before the turn is finished).
     const on=this.pointAt(at),off=Math.hypot(on.x-pose.position.x,on.z-pose.position.z);
-    if(this.atLock&&off>.3&&speed>2.5)return Math.min(1,.25+off*.25);
+    // (At a bend only: moving out past a bus at speed reaches full lock too, and the speed there is the learner's.)
+    if(this.atLock&&off>.5&&speed>2.5&&Math.abs(this.turnBetween(at-3,at+9))>.35)return Math.min(1,.25+off*.25);
     let need=0;
+    // (From here: a bend the car is already in counts, but only a real one, not moving out past a parked car or a bus.)
     for(let d=0;d<speed*speed/3+15;d+=2){
       const turn=Math.abs(this.turnBetween(at+d,at+d+6));
-      if(turn<.05)continue;
+      if(turn<(d<2?.6:.05))continue;
       const radius=6/turn,allowed=Math.max(3,Math.sqrt(BEND_LATERAL*radius));
       // Deceleration needed to be at the allowed speed by then.
-      need=Math.max(need,(speed*speed-allowed*allowed)/(2*Math.max(1,d)));
+      need=Math.max(need,(speed*speed-allowed*allowed)/(2*Math.max(2,d)));
     }
     return need<.4?0:Math.min(1,need/this.params.brakeDeceleration*1.3);
   }
