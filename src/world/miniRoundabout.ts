@@ -28,14 +28,16 @@ const DISC_CLEARANCE=2.4;
  * or all the way round, the car circles the disc, coming in towards it and keeping clear of it.
  * World axes: x east, z south, so clockwise seen from above is the angle atan2(z, x) increasing.
  */
-export function aroundMini(m:MiniRoundabout,a:Vec2,b:Vec2):Vec2[]{
+/** `tightest`: the tightest circle (metres) the path may go round, where the junction has room (the learner's car). */
+export function aroundMini(m:MiniRoundabout,a:Vec2,b:Vec2,tightest=0):Vec2[]{
   const c=m.position;
   const ta=Math.atan2(a.z-c.z,a.x-c.x),tb=Math.atan2(b.z-c.z,b.x-c.x);
   let sweep=((tb-ta)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
   // Back the way it came (a U-turn): all the way round.
   if(sweep<.35)sweep+=2*Math.PI;
   const ra=Math.hypot(a.x-c.x,a.z-c.z),rb=Math.hypot(b.x-c.x,b.z-c.z);
-  const inner=m.discDiameter/2+DISC_CLEARANCE,mean=inner;
+  // (Never tighter than `tightest`, where the junction has room for that with a car's width inside it.)
+  const clear=m.discDiameter/2+DISC_CLEARANCE,inner=Math.max(clear,Math.min(tightest,m.radius-1.2)),mean=clear;
   // Going round (more than a left turn): drawn in towards the disc, never closer than the clearance.
   const round=Math.max(0,Math.min(1,(sweep-Math.PI*.6)/(Math.PI*.4)));
   const n=Math.max(4,Math.ceil(sweep/.12));

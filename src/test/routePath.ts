@@ -12,6 +12,9 @@ const CLEARANCE=.6;
 /** How far before and after a parked car the path is fully out (metres, beyond the two cars' half-lengths): the car
  * follows the path a few metres ahead, so it would otherwise turn back in while still alongside. */
 const ALONGSIDE=4;
+/** The tightest circle (metres, the car's middle) the learner's car drives round a mini-roundabout: it can turn no
+ * tighter than about 4.3 m. */
+const TIGHTEST_TURN=4.7;
 
 /**
  * The lane path along a mock test route, for assisted steering: points every 3 m in the left lane; past parked
@@ -114,7 +117,7 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
         for(const p of kept)if(!onRing(ring,p,.5)&&p!==next)out.push({x:p.x,z:p.z});
         continue;
       }
-      if(mini)out.push(...aroundMini(mini,prev,start));
+      if(mini)out.push(...aroundMini(mini,prev,start,TIGHTEST_TURN));
       else out.push(...curve(prev,start,from,to));
     }
     for(const p of kept)out.push({x:p.x,z:p.z});

@@ -85,7 +85,11 @@ export function auditRoute(location:Location,seed:number,turnSpeed:number,metres
     }
     if(trace){const fx=Math.sin(car.heading),fz=-Math.cos(car.heading);trace({time,at,lateral:(car.position.x-p.x)*-fz+(car.position.z-p.z)*fx,steer,wheel:car.steerAngle,speed:car.speed,bend:assist.turnBetween(at,at+6),kerb:off.length>0})}
     const hit=obstacles.firstCollision(pose(),HW,HL);
-    if(hit)add('hit',hit);
+    if(hit){
+      // Whose fault: a car exactly on the path here (along it) touches it too, or not.
+      const q1=assist.pointAt(at+1),onPath=obstacles.firstCollision({position:{x:p.x,y:0,z:p.z},heading:Math.atan2(q1.x-p.x,-(q1.z-p.z))},HW,HL);
+      add('hit',`${hit}${onPath===hit?', the path too':', following'} [${stray.toFixed(1)} m off the path]`);
+    }
     for(const k of kerb){const ox=k.x-car.position.x,oz=k.z-car.position.z;if(Math.hypot(ox,oz)<k.halfLength+HL+.1){
       const f={x:Math.sin(k.heading),z:-Math.cos(k.heading)},a=Math.abs(ox*Math.sin(car.heading)-oz*Math.cos(car.heading)),b=Math.abs(ox*Math.cos(car.heading)+oz*Math.sin(car.heading));
       void f;if(a<HL+k.halfLength-.3&&b<HW+k.halfWidth-.05){add('hit',`parked car at ${k.x.toFixed(0)},${k.z.toFixed(0)}`);break}}}
