@@ -23,6 +23,17 @@ const CROSSING_PEDESTRIAN:Appearance={top:[.12,.2,.38],legs:[.15,.15,.17],skin:[
  */
 const waitingLook=(t:number):{look?:'left'|'right'}=>{const c=t%7;return c<1.6?{look:'right'}:c>3.5&&c<5?{look:'left'}:{}};
 
+/** A road user on foot that walks a fixed path (a decision test's pedestrian): standing until it sets off, walking
+ * along its path, gone at its end where the road user is. */
+export function walkerFigure(p:{id:string;pose:import('../contracts').Pose;speed:number;started:boolean;present:boolean;travelled:number},look:Appearance,
+  groundAt:(x:number,z:number)=>number):Figure{
+  return {
+    id:`actor-${p.id}`,look,visible:()=>p.present,
+    pose:()=>({x:p.pose.position.x,y:groundAt(p.pose.position.x,p.pose.position.z),z:p.pose.position.z,heading:p.pose.heading,stride:p.travelled,
+      walking:p.started&&p.speed>.05})
+  };
+}
+
 export function pedestrianFigure(ped:Pedestrian,groundAt:(x:number,z:number)=>number):Figure{
   let last={...ped.position},walked=0;
   const c0={x:ped.def.crossTo.x-ped.def.waitAt.x,z:ped.def.crossTo.z-ped.def.waitAt.z};

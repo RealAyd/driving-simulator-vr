@@ -57,6 +57,9 @@ interface Driver{car:TrafficCar;leg:Leg;s:number;lat:number;next:Leg|null;
   squeezing?:boolean;
   /** Driving on out of a tangle with this car (ignoring it until clear of it). */
   through?:Driver|undefined;
+  /** Waved on by the learner standing waiting for it (seconds left): it no longer waits for the learner, only keeps
+   * from touching it. */
+  wavedByLearner?:number;
   /** Waved on through a junction where everyone stood waiting for someone else (seconds left). */
   waved?:number;
   /** Edging past the learner standing beside its way, where there is room (seconds left). */
@@ -109,6 +112,12 @@ function laneAt(leg:Leg,s:number):number{
 const JERSEYS=['#f97316','#0ea5e9','#facc15','#22c55e','#e11d48','#a855f7'];
 const COLOURS=['#1f2a44','#c9ccd1','#7a1e1e','#2e3a2f','#4d5f73','#3f444b','#24476b','#5b6168','#8a8f96','#14161a'];
 const mph=(v:number)=>v/2.237;
+/** How long a road user waved on by the learner goes on without waiting for it (seconds). */
+const WAVED_SECONDS=6;
+/** How far ahead (metres) a car sees a junction kept clear, to wait short of it. */
+const QUIET_LOOKAHEAD=50;
+/** A road ending this close to a junction kept clear (metres beyond its circle) leads into it. */
+const QUIET_NEAR=40;
 /** A road narrower than this (half its width, metres) is single track: two cars cannot pass on it. */
 const SINGLE_TRACK=2.2;
 /** How hard traffic slows for a give way or STOP line ahead (m/s²). */
@@ -150,6 +159,8 @@ export interface TrafficOptions{
 export class Traffic implements SimModule{
   readonly id='traffic';
   readonly cars:TrafficCar[]=[];
+  /** The learner, standing waiting for this road user (one waiting for the learner in turn), waves it on. */
+  waveOn(id:string):void{const d=this.drivers.find(x=>x.car.id===id);if(d)d.wavedByLearner=WAVED_SECONDS}
   /** Diagnostics: why each car is slowing or waiting, and for how long it has stood. */
   reasons():Array<{id:string;why:string;waited:number}>{return this.drivers.map(d=>({id:d.car.id,why:d.why??'',waited:d.waited}))}
   private drivers:Driver[]=[];
@@ -247,8 +258,30 @@ export class Traffic implements SimModule{
    * stands waiting (a car waiting to come out of a car park: there would be no getting by). */
   private closedTo(road:Road,dir:1|-1):boolean{
     if(this.intoQuiet(road,dir))return true;
+    // (Nor one ending just short of one: the way on from it would lead in.)
+    const end=dir>0?road.centreline.at(-1)!:road.centreline[0]!;
+    if((this.options.keepClear?.()??[]).some(c=>Math.hypot(end.x-c.x,end.z-c.z)<c.radius+QUIET_NEAR))return true;
     if(roadHalfWidth(road)>=SINGLE_TRACK)return false;
     return (this.options.others?.()??[]).some(x=>x.speed<.3&&sampleRoad(road,x.pose.position.x,x.pose.position.z).distance<roadHalfWidth(road)+.5);
+  }
+  /** How far along its way (this leg, then the next) a car comes to a circle kept clear, up to `reach` metres
+   * (Infinity: not that soon). */
+  private toQuiet(d:Driver,reach:number):number{
+    const zones=this.options.keepClear?.()??[];
+    if(zones.length===0)return Infinity;
+    const inside=(p:Vec2)=>zones.some(c=>Math.hypot(p.x-c.x,p.z-c.z)<c.radius);
+    let base=-d.s;
+    for(const leg of [d.leg,d.next]){
+      if(!leg)break;
+      for(let i=0;i<leg.points.length;i++){
+        const along=base+leg.lengths[i]!;
+        if(along<0)continue;
+        if(along>reach)return Infinity;
+        if(inside(leg.points[i]!))return along;
+      }
+      base+=leg.lengths.at(-1)!;
+    }
+    return Infinity;
   }
   /** Whether a road driven one way runs into a circle kept clear (it ends in one, or passes through one): not one
    * coming out of one. */
@@ -597,8 +630,9 @@ export class Traffic implements SimModule{
     const ahead0=(x:number,z:number,reach:number,width:number)=>{const dx=x-lp0.x,dz=z-lp0.z,a=dx*lf.x+dz*lf.z;return a>0&&a<reach&&Math.abs(dx*lf.z-dz*lf.x)<width};
     this.learnerQueued=(this.options.signals?.()??[]).some(st=>st.state!=='green'&&Math.cos(st.heading-learner.pose.heading)>.8&&ahead0(st.lane.x,st.lane.z,40,2.5))
       ||this.drivers.some(o=>o.car.visible&&Math.cos(o.car.pose.heading-learner.pose.heading)>.7&&ahead0(o.car.pose.position.x,o.car.pose.position.z,15,1.8))
-      // (Or waiting its turn at a junction kept clear.)
-      ||this.inQuiet(lp0);
+      // (Or waiting its turn at a junction kept clear; or, careful, at any junction just ahead of it.)
+      ||this.inQuiet(lp0)
+      ||!!this.options.careful&&this.nodes.some(n=>n.junction&&ahead0(n.x,n.z,n.radius+15,6));
     for(const [i,d] of this.drivers.entries()){
       const car=d.car;
       if(!car.visible){if(this.rand()<.02)this.drivers[i]=this.spawn(d,i);continue}
@@ -676,12 +710,37 @@ export class Traffic implements SimModule{
           else if(narrow&&o.lat<o.leg.lane-.4&&d.lat>d.leg.lane-.4&&side<car.halfWidth+o.car.halfWidth+.6)ahead(op.x,op.z,o.car.halfLength+9,`waiting for ${o.car.id}`);
         }
       }
+      // A junction kept clear just ahead (one this car is not already in): it waits short of it until it is released,
+      // unless it is going the learner's way ahead of it (it leads the learner through, so is no part of the picture).
+      if(this.options.keepClear&&!this.inQuiet(pos)){
+        const lp=learner.pose.position,ldx=pos.x-lp.x,ldz=pos.z-lp.z;
+        const leads=Math.cos(car.pose.heading-learner.pose.heading)>.7&&ldx*Math.sin(learner.pose.heading)-ldz*Math.cos(learner.pose.heading)>0&&Math.hypot(ldx,ldz)<150;
+        const toQuiet=leads?Infinity:this.toQuiet(d,QUIET_LOOKAHEAD);
+        if(toQuiet<QUIET_LOOKAHEAD){
+          const room=toQuiet-car.halfLength-1;
+          if(room<gap){gap=Math.max(0,room);why='junction kept clear';leadSpeed=0;following=false}
+        }
+      }
       // A scenario's own road users: followed when going this way; otherwise waited for while across the way.
       for(const o of this.options.others?.()??[]){
         const op=o.pose.position,facing=Math.cos(o.pose.heading-car.pose.heading);
         if(Math.hypot(op.x-pos.x,op.z-pos.z)>45)continue;
         if(facing>.3)ahead(op.x,op.z,o.halfLength,`behind ${o.id}`,o.speed*facing);
         else ahead(op.x,op.z,o.halfLength+1,`crossing ${o.id}`);
+      }
+      // Careful: never closing in on the learner at an angle (merging alongside it at a junction): stopped short where
+      // this car, a little further on, would come within a hand's width of it.
+      const wavedOn=(d.wavedByLearner??0)>0;
+      if(wavedOn)d.wavedByLearner=d.wavedByLearner!-dt;
+      if(this.options.careful&&Math.hypot(learner.pose.position.x-pos.x,learner.pose.position.z-pos.z)<12){
+        const pad=wavedOn?.15:.3;
+        // (Along its own way, round a bend or a roundabout as it will go, not straight on from where it points now.)
+        const me=(k:number)=>{
+          const q=this.at(d.leg,Math.min(d.leg.lengths.at(-1)!,d.s+k));
+          return {id:car.id,cx:q.x+q.dir.z*d.lat,cz:q.z-q.dir.x*d.lat,heading:headingFromDirection(q.dir),halfW:car.halfWidth+pad,halfD:car.halfLength+pad};
+        };
+        const them={id:'learner',cx:learner.pose.position.x,cz:learner.pose.position.z,heading:learner.pose.heading,halfW:.9,halfD:2.15};
+        for(const k of [.5,1.5,3])if(boxesOverlap(me(k),them)){if(k-.5<gap){gap=Math.max(0,k-.5);why='learner';leadSpeed=0;following=false}break}
       }
       // The learner: followed when moving; when stopped in this lane, passed like a parked car (below) once there is room.
       const lx=learner.pose.position.x-pos.x,lz=learner.pose.position.z-pos.z;
@@ -746,6 +805,7 @@ export class Traffic implements SimModule{
       const byOnLeft=d.leg.road!==null&&(Math.abs(learner.speed)<.5||this.learnerIdle>5)&&Math.cos(learner.pose.heading-car.pose.heading)<-.8&&
         learnerAlong>0&&learnerAlong<30&&learnerLeft<0&&d.lat-learnerAcross>=car.halfWidth+.9+spareBy;
       if(d.creep){/* edging by: the learner is not in its way */}
+      else if(wavedOn){/* waved on by the learner standing for it: only kept from touching it (above) */}
       else if(byOnLeft){/* passed below, at a walking pace */}
       else if(turning){if(learnerOnWay<Infinity&&learnerOnWay-car.halfLength-2.15<gap){gap=learnerOnWay-car.halfLength-2.15+GAP*.6;why='learner';leadSpeed=0;following=false}}
       else if(squeeze){if(Math.abs(d.lat-learnerAcross)<car.halfWidth+.9+(this.learnerIdle>12?0:.05))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner')}
@@ -1254,7 +1314,9 @@ export class Traffic implements SimModule{
     // coming.)
     if((Math.abs(learner.speed)<.3||this.learnerIdle>5)&&d.waited>5)return false;
     const lp=learner.pose.position;
-    return sampleRoad(main,lp.x,lp.z).distance<roadHalfWidth(main)+1&&coming(lp,learner.pose.heading,Math.abs(learner.speed),2.15);
+    // (Careful: wherever the learner comes from towards the mouth, not only along the main road as mapped: a split
+    // carriageway's other half joins it there.)
+    return (!!this.options.careful||sampleRoad(main,lp.x,lp.z).distance<roadHalfWidth(main)+1)&&coming(lp,learner.pose.heading,Math.abs(learner.speed),2.15);
   }
 
   /** Oncoming traffic (or the learner) that makes turning right off the main road unsafe now. */

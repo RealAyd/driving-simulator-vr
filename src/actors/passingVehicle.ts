@@ -1,7 +1,7 @@
 import {headingFromDirection,type EventSink,type PassingVehicleActorDef,type Pose,type Seconds,type SimModule} from '../contracts';
 import {pointToBox} from '../world/collisions';
 
-export const BODY_SIZE={car:{halfWidth:.9,halfLength:2.15},cyclist:{halfWidth:.3,halfLength:.9}} as const;
+export const BODY_SIZE={car:{halfWidth:.9,halfLength:2.15},cyclist:{halfWidth:.3,halfLength:.9},pedestrian:{halfWidth:.3,halfLength:.3}} as const;
 
 /** The learner's car as other road users see it. */
 export interface LearnerFootprint{pose:Pose;halfWidth:number;halfLength:number;
@@ -12,8 +12,8 @@ export interface LearnerFootprint{pose:Pose;halfWidth:number;halfLength:number;
 const STOP_GAP=3;
 /** Braking firmer than this counts as an avoiding response the learner caused (m/s²). */
 export const AVOIDING_DECEL=1.5;
-const ACCELERATION={car:2.5,cyclist:1.2};
-const MAX_DECEL={car:7.5,cyclist:4.5};
+const ACCELERATION={car:2.5,cyclist:1.2,pedestrian:1.5};
+const MAX_DECEL={car:7.5,cyclist:4.5,pedestrian:3};
 
 /**
  * Drives a fixed lane path (an overtaking car, a cyclist). If it yields to the

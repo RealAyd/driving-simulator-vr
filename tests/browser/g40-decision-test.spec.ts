@@ -1,10 +1,10 @@
 import {expect,test} from '@playwright/test';
 
 // The decision mock test (src/decision): the car drives itself; at each decision the scene stops, the learner picks
-// observations and actions in order, confirms, and Continue plays on. Brentwood route 1's two pilot challenges, with
-// the blue car pulled out in front of (the examiner holds the car), then practising a challenge from the results.
+// observations and actions in order, confirms, and Continue plays on. Brentwood route 1's eight challenges, with the
+// blue car pulled out in front of (the examiner holds the car), then practising a challenge from the results.
 test('G40: a decision test: pause, choose in order, confirm, the examiner holds an unsafe go, results and practice',async({page})=>{
-  test.setTimeout(600_000);
+  test.setTimeout(1_800_000);
   await page.setViewportSize({width:844,height:390});
   await page.addInitScript(()=>{try{for(const k of ['dp-tips-seen','dp-tour-home','dp-tour-place','dp-tour-drive'])localStorage.setItem(k,'1')}catch{}});
   await page.goto('./');
@@ -17,7 +17,17 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     'queens-road-roundabout/approach':['signal-left','mirror-interior','mirror-left'],
     'queens-road-roundabout/line':['look-right','go'],
     'queens-road-roundabout/clear':['look-right','go'],
-    'chatham-way-mini/line':['look-right','go']
+    'chatham-way-mini/line':['look-right','go'],
+    'high-street-lights/approach':['give-way'],
+    'high-street-lights/clear':['look-left','go'],
+    'western-road-mini/line':['look-right','give-way'],
+    'western-road-mini/clear':['look-right','go'],
+    'william-hunter-way-zebra/approach':['mirror-interior','give-way'],
+    'william-hunter-way-zebra/clear':['look-left','look-right','go'],
+    'william-hunter-way-mini/line':['look-right','go'],
+    'wilsons-corner/line':['look-right','give-way'],
+    'wilsons-corner/clear':['look-right','go'],
+    'queens-road-mini/line':['look-right','signal-right','go']
   };
   const seen:string[]=[];
   for(;;){
@@ -26,6 +36,7 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     if(at==='finished')break;
     seen.push(at as string);
     await expect(page.locator('#decision-panel')).toBeVisible();
+    await expect(page.locator('#decision-step')).toHaveText(/^Challenge \d of 8$/);
     // The scene is still while deciding.
     const t=await page.evaluate(()=>(window as any).__drivingPractice.simTime());
     await page.waitForTimeout(600);
@@ -42,7 +53,7 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     await page.click('#decision-continue');
   }
   // Going in front of the blue car was held, and the decision came again once it had passed.
-  expect(seen).toEqual(['queens-road-roundabout/approach','queens-road-roundabout/line','queens-road-roundabout/clear','chatham-way-mini/line']);
+  expect(seen).toEqual(Object.keys(answers));
   await expect(page.locator('#screen-results')).toBeVisible({timeout:60_000});
   await expect(page.locator('#results-title')).toHaveText('Decision mock test: FAIL');
   await expect(page.locator('#results-summary')).toHaveText('1 minor · 0 serious · 1 dangerous');

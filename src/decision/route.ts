@@ -21,8 +21,12 @@ export interface DecisionRoute{
 
 export interface RouteActor{
   id:string;name:string;colour:string;speed:number;path:readonly Vec2[];
+  /** A car (the default), or a person on foot walking the path. */
+  kind?:'car'|'pedestrian';
   /** Brakes for the learner's car when it is in the way (a car following it). */
   yields?:boolean;
+  /** Stays parked at the end of its path (turned into a car park) rather than turning off out of sight. */
+  parks?:boolean;
   /** Seen waiting at the start of its path before it moves (a car waiting to come out of a junction), while the
    * challenge that starts it is in hand. */
   waits?:boolean;
@@ -40,6 +44,9 @@ export interface ChallengeDef extends ChallengeLogic{
   place:Record<string,StagePlace>;
   /** The challenge is over (signal cancelled) once the car passes here. */
   endAt:Vec2;
+  /** Traffic lights the car comes to here, held green for it while the challenge is in hand (the stop line's middle,
+   * near enough): the decision is about who is still in the way, not the lights' timing. */
+  lights?:Vec2;
   /** Kept to the challenge's own road users while it is in hand: background traffic keeps out of these circles (the
    * junction, and the approaches its road users come along), so the decision is the one depicted. */
   quiet:readonly {x:number;z:number;radius:number}[];

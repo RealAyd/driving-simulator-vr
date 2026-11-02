@@ -1,13 +1,14 @@
 # Decision mock tests
 
 Under Mock Tests, **Decisions only**. The car drives itself, using assisted steering and its own speed control. The
-learner judges observations, position, priority and decisions. Pilot: Brentwood route 1, challenges 1 and 2
-(`ROUTES.md`).
+learner judges observations, position, priority and decisions. Brentwood route 1 has all eight challenges
+(`ROUTES.md`); routes 2 to 5 are planned.
 
 ## How a test runs
 
 1. The car drives the route with the camera behind and above it. It keeps to the right lane for each turn, slows
-   for bends, stops at give way lines and red lights, and keeps back from road users ahead.
+   for bends, stops at give way lines and red lights, keeps back from road users ahead, and gives way at the
+   mini-roundabouts and roundabouts it drives through between challenges.
    The streets are lived in: parked cars, people on the pavements and background traffic, busier than on a drive
    (30 road users, two of them buses and two cyclists, kept within about 180 m of the car, oncoming as well as
    following). Traffic coming out of side roads slows in good time and waits short of the main road.
@@ -56,16 +57,20 @@ A route is data (`src/decision/routes/`), played on a scene built from the map (
 
 - `through`: the points the drive passes. The way is planned on the scene's roads, keeping to one-way streets
   (`RoadNetwork.planThrough`).
-- `actors`: the road users, each on a path in scene metres. Each waits at the start of its path until a challenge
+- `actors`: the road users (cars, or `kind: 'pedestrian'` on foot), each on a path in scene metres. Each waits at the start of its path until a challenge
   starts it, and turns off once at its end. `waits: true` draws a car waiting at a junction (while its challenge is in hand); `yields: true` follows
-  or stops for the learner's car. They keep back from background traffic ahead, and it waits for them.
+  or stops for the learner's car; `parks: true` stays at the end of its path (turned into a car park). They keep back
+  from background traffic ahead, and it waits for them. A road user set going waits until its starting spot is clear
+  of background traffic.
 - For each challenge:
   - the instruction and where it is given;
   - the road users started, and where;
   - for each stage, where the scene stops (on the move, or stopped at a line) and the road user to wait for first;
   - the camera framing, and what the learner is told is already done;
   - `quiet`: circles round the junction and the approaches its road users come along, kept clear of background
-    traffic while the challenge is in hand;
+    traffic while the challenge is in hand (traffic heading in waits short of them);
+  - `lights`: a stop line whose lights are held green while the challenge is in hand (the learner's, or a road
+    user's), so the moment depicted never depends on the lights' timing;
   - the stages' buttons, rules, accepted orders and explanations.
 
 Check a route with `tests/unit/decisionDrive.test.ts`. It drives the route headless, with and without background
@@ -77,9 +82,15 @@ traffic in several patterns, and checks:
 - that no parked car stands on the car's way or a road user's path. Then use
 `tests/browser/g40-decision-test.spec.ts`.
 
-## To confirm (pilot)
+Road users' paths are planned on the scene's roads, as the car's own way is (`RoadNetwork.planThrough` and
+`routeLanePath`, from a start pose to the points given), so they keep to their lanes and go round mini-roundabouts
+properly.
 
-- Give way markings at both junctions.
-- The view across the Queen's Road roundabout island.
+## To confirm (route 1)
+
+- Give way markings at each junction, and the view across the Queen's Road roundabout island.
 - The Chatham Way car park exit is mapped as a plain service road and drawn as a fourth arm of the mini-roundabout.
+- The High Street lights: the challenge holds Kings Road green; the real phases (and whether people cross Weald
+  Road on that phase) are not mapped.
+- Wilson's Corner lane markings between the two mini-roundabouts.
 - Scripted road users cannot signal yet.

@@ -76,9 +76,29 @@ export class TrafficSignals implements SimModule{
     this.update();
   }
 
+  /** A set held showing green for one approach (a decision test's lights: the moment depicted), by set. */
+  private readonly held=new Map<number,number>();
+
+  /**
+   * Holds the lights whose stop line is nearest `at` (within 15 m) on green for that approach, and red for the rest of
+   * its set, until released (null releases every hold).
+   */
+  hold(at:{x:number;z:number}|null):void{
+    if(!at){this.held.clear();this.update();return}
+    let best:{set:number;stage:number;d:number}|null=null;
+    this.sets.forEach((set,k)=>set.stops.forEach((st,i)=>{
+      const d=Math.hypot(st.lane.x-at.x,st.lane.z-at.z);
+      if(d<15&&(!best||d<best.d))best={set:k,stage:set.stages[i]!,d};
+    }));
+    if(best){const b=best as {set:number;stage:number};this.held.set(b.set,b.stage)}
+    this.update();
+  }
+
   /** The state of every stop now. */
   private update(){
-    for(const set of this.sets){
+    for(const [k,stage] of this.held){const set=this.sets[k]!;set.stops.forEach((stop,i)=>{stop.state=set.stages[i]===stage?'green':'red'})}
+    for(const [k,set] of this.sets.entries()){
+      if(this.held.has(k))continue;
       const t=(this.time+set.offset)%set.cycle;
       const seg=set.segments.find(s=>t<s.until)??set.segments.at(-1)!;
       set.stops.forEach((stop,i)=>{stop.state=seg.stage===set.stages[i]?seg.aspect:'red'});

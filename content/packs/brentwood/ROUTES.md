@@ -20,14 +20,14 @@ Western Road, William Hunter Way, Wilson's Corner, Ingrave Road, back by Queen's
 
 | # | Where and movement | Traffic that makes the decision | Answer | Status |
 |---|---|---|---|---|
-| 1 | Queen's Road roundabout from Kings Road south, first exit | Car close behind; blue car already on the ring from Queen's Road | both | ready (**pilot**) |
-| 2 | Kings Road / Chatham Way mini-roundabout, ahead | Van waiting at the left entrance (car park road); Chatham Way (right) clear; exit clear | go | ready (**pilot**) |
-| 3 | Kings Road at the High Street lights, ahead into Weald Road | Green; a pedestrian still finishing crossing Weald Road | wait | check: signal phases |
-| 4 | Weald Road / Western Road mini-roundabout, right into Western Road | Car arriving from the right on Western Road | wait | ready |
-| 5 | William Hunter Way zebra crossings | Pedestrian at the kerb about to step out; car close behind | wait | ready |
-| 6 | William Hunter Way mini-roundabout (by the car park), ahead | Car waiting opposite, right arm clear | go | ready |
-| 7 | Wilson's Corner: two mini-roundabouts close together, on to Ingrave Road | Car at the second mini on the right | both | check: lane markings between the two minis |
-| 8 | Ingrave Road / Queen's Road mini-roundabout, right on to Queen's Road | Bus waiting at the left entrance; right clear | go | ready |
+| 1 | Queen's Road roundabout from Kings Road south, first exit | Car close behind; blue car already on the ring from Queen's Road | both | **built** |
+| 2 | Kings Road / Chatham Way mini-roundabout, ahead | Car waiting at the left entrance (car park road); Chatham Way (right) clear; exit clear | go | **built** |
+| 3 | Kings Road at the High Street lights, ahead into Weald Road | Green (held); a pedestrian still finishing crossing Weald Road | both | **built**; check: signal phases |
+| 4 | Weald Road / Western Road mini-roundabout, right into Western Road | Car arriving from the right on Western Road | both | **built** |
+| 5 | William Hunter Way zebra crossing | Pedestrian at the kerb about to step out; car close behind | both | **built** |
+| 6 | William Hunter Way mini-roundabout (by the car park), ahead | Car coming from the right, about 50 m away: a safe gap (the junction has no arm opposite) | go | **built** |
+| 7 | Wilson's Corner: two mini-roundabouts close together, on to Ingrave Road | Car coming out of the High Street, on the right at the second mini | both | **built**; check: lane markings between the two minis |
+| 8 | Ingrave Road / Queen's Road mini-roundabout, right on to Queen's Road | Van waiting opposite (no left arm); right clear | go | **built** |
 
 Then auto-driven: Queen's Road (Crown Street mini, zebra), Queen's Road roundabout to Kings Road south, Warley Hill.
 

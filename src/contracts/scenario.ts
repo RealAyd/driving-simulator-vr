@@ -46,8 +46,8 @@ export const FollowingVehicleActorSchema=z.object({
 export const PassingVehicleActorSchema=z.object({
   id:z.string().regex(/^[a-z0-9-]+$/),
   kind:z.literal('passing-vehicle'),
-  /** Shape: car or cyclist. */
-  body:z.enum(['car','cyclist']).default('car'),
+  /** Shape: car, cyclist, or a person on foot (a decision test's pedestrian, walking its path). */
+  body:z.enum(['car','cyclist','pedestrian']).default('car'),
   path:z.array(point).min(2),
   speed:z.number().min(.5).max(31),
   delaySeconds:z.number().min(0).max(120).default(0),

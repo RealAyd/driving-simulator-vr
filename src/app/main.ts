@@ -14,9 +14,9 @@ import {
   INFO,degToRad,headingDelta,localDirectionToWorld,localToWorld,parseLocation,parseScenario,
   type AttemptConditions,type AttemptResult,type FollowingVehicleActorDef,type PassingVehicleActorDef,type PedestrianActorDef,type Pose,type Scenario
 } from '../contracts';
-import {busVisual,pedestrianFigure,vehicleVisual} from '../actors/actorVisuals';
+import {busVisual,pedestrianFigure,vehicleVisual,walkerFigure} from '../actors/actorVisuals';
 import {Bus,BUS_SIZE} from '../actors/bus';
-import {layoutCrowd,personPose,type Person} from '../world/crowd';
+import {appearance,layoutCrowd,personPose,type Person} from '../world/crowd';
 import {drivingView,prepareRoundabouts} from '../world/roundabouts';
 import {centralReservations} from '../world/dualCarriageway';
 import {Visits} from './visits';
@@ -118,7 +118,7 @@ import {AdaptiveScale} from '../engine/renderScale';
 import {DecisionRunner,type DecisionRunResult,type RunnerScene} from '../decision/runner';
 import type {DecisionRoute} from '../decision/route';
 import {DECISION_ROUTES} from '../decision/routes';
-import {decisionPath} from '../decision/plan';
+import {decisionPath,junctionDiscs} from '../decision/plan';
 import {actorDefs} from '../decision/actors';
 import {decisionReport} from '../decision/report';
 import {ACTION_LOOK} from '../decision/actions';
@@ -466,6 +466,8 @@ export async function boot():Promise<void>{
   let decisionAsked:DecisionRoute|null=null,decisionLocation:string|null=null;
   /** The decision test being driven: its runner, a challenge being practised (null: the whole test), whether the
    * scene is held still for a decision, and how it went once finished. */
+  /** The junctions of the place a decision test drives (the car gives way at each it drives through). */
+  let decisionJunctions:Array<{x:number;z:number;radius:number}>=[];
   let decision:{route:DecisionRoute;scenarioId:string;runner:DecisionRunner;practice:number|null;frozen:boolean;result:DecisionRunResult|null}|null=null;
   let steeringMode:SteeringMode=quality.id==='phone'?'assist':'buttons';
   const tilt=new TiltSteering();
@@ -703,7 +705,10 @@ export async function boot():Promise<void>{
     // Background buses: solid road users that slow for the learner; never assessed.
     const buses=scenario.buses.map(d=>new Bus(d,place,learnerFootprint));
     for(const b of buses)dynamicFootprints.push({id:b.id,shape:()=>({kind:'box',pose:b.pose,halfWidth:BUS_SIZE.halfWidth,halfLength:BUS_SIZE.halfLength}),active:()=>b.visible});
-    const figures=pedestrian?[pedestrianFigure(pedestrian,(x,z)=>surfaceAt(place,x,z)?.height??0)]:[];
+    const groundAt=(x:number,z:number)=>surfaceAt(place,x,z)?.height??0;
+    const figures=[...(pedestrian?[pedestrianFigure(pedestrian,groundAt)]:[]),
+      // (Road users on foot that walk a path: a decision test's pedestrians.)
+      ...passers.filter(p=>p.def.body==='pedestrian').map((p,i)=>walkerFigure(p,appearance(i*17+11),groundAt))];
     for(const f of figures)people.add(f);
     const visuals=[
       ...(traffic?.cars.map((c,i)=>c.kind==='bus'
@@ -712,7 +717,7 @@ export async function boot():Promise<void>{
         :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3))??[]),
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
-      ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.present,roadUserModel(i+1),2*p.size.halfLength)),
+      ...passers.flatMap((p,i)=>p.def.body==='pedestrian'?[]:[vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.present,roadUserModel(i+1),2*p.size.halfLength)]),
       ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time,busModels[b.def.deck]))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
@@ -2035,13 +2040,14 @@ export async function boot():Promise<void>{
     // check follow it).
     const asked=decisionAsked&&scenario.locationId===decisionLocation?decisionAsked:null;
     const path=asked?decisionPath(place,asked,kerbCars):null;
+    if(asked)decisionJunctions=junctionDiscs(place);
     runtime=buildExercise(path?{...scenario,assistPath:path}:scenario,!!options.familiarisation);
     decision=asked&&path?{route:asked,scenarioId:scenario.id,runner:new DecisionRunner(asked,path,vehicle.params,decisionScene),practice:null,frozen:false,result:null}:null;
     // (Following the learner's car, a road user keeps a gap behind it rather than only braking for it. The runner
     // shows a car waiting at a junction while its challenge is in hand.)
     // (Background traffic ahead is followed too; and a road user at the end of its way turns off, out of the way.)
     if(decision)for(const p of runtime.passers){
-      p.followsLearner=p.def.yieldsToLearner;p.goneAtEnd=true;
+      p.followsLearner=p.def.yieldsToLearner;p.goneAtEnd=!decision.route.actors.find(a=>a.id===p.id)?.parks;
       const traffic=runtime.traffic;
       p.traffic=traffic&&(()=>traffic.cars.filter(c=>c.visible).map(c=>({pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength,speed:c.speed})));
     }
@@ -2326,8 +2332,11 @@ export async function boot():Promise<void>{
   const decisionScene:RunnerScene={
     car:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:vehicle.state.speed,steerAngle:vehicle.state.steerAngle}),
     actor:id=>runtime?.passers.find(p=>p.id===id),
-    traffic:()=>runtime?.traffic?.cars.filter(c=>c.visible).map(c=>c.pose.position)??[],
+    traffic:()=>runtime?.traffic?.cars.filter(c=>c.visible).map(c=>({id:c.id,x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed,halfWidth:c.halfWidth,halfLength:c.halfLength}))??[],
+    junctions:()=>decisionJunctions,
+    waveOn:id=>runtime?.traffic?.waveOn(id),
     signals:()=>runtime?.trafficSignals?.stops??[],
+    holdLights:at=>runtime?.trafficSignals?.hold(at),
     setSignal:side=>{
       const now=vehicle.indicators.state;
       if(side==='off'){if(now!=='off')vehicle.toggleIndicator(now,clock.time)}
@@ -2542,7 +2551,7 @@ export async function boot():Promise<void>{
     /** Diagnostics (scenario captures): open a scene built in advance (public/scenes/<id>.json.gz, named `label`). */
     /** A decision test route (src/decision/routes), opened ready to start; and how it is going. */
     openDecision:(id:string)=>{const r=DECISION_ROUTES.find(x=>x.id===id);return r?openDecision(r):Promise.resolve()},
-    decision:()=>decision?{state:decision.runner.state,at:decision.runner.current?{challenge:decision.runner.current.challenge.id,stage:decision.runner.current.stage.id}:null,
+    decision:()=>decision?{state:decision.runner.state,heldBy:decision.runner.heldBy,at:decision.runner.current?{challenge:decision.runner.current.challenge.id,stage:decision.runner.current.stage.id}:null,
       frozen:decision.frozen,practice:decision.practice,records:decision.runner.records.map(r=>({challenge:r.challengeId,stage:r.stageId,sequence:r.sequence,faults:r.verdict.faults.map(f=>f.ruleId)}))}:null,
     openScene:(id:string,label:string,stage?:{actors:unknown[]})=>/^[a-z0-9-]+$/.test(id)?openArea({label,lat:0,lon:0,scene:id,...(stage?{stage}:{})}):Promise.resolve(),
     /** Diagnostics (scenario captures): an action as the driver's controls give it, e.g. 'indicator-left'. */
