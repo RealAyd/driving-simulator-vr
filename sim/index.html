@@ -306,6 +306,46 @@ body:not(.steer-buttons) #steer-buttons{display:none}
 .signal.armed .ind{color:#d97706}
 .signal.lit .ind{color:#fbbf24;text-shadow:0 0 8px #fbbf24}
 #touch-controls{right:var(--sr);bottom:var(--sb);display:flex;gap:6px;align-items:stretch}
+/* Decision mock test: the car drives itself (no pedals, steering, views or signal buttons); a panel at each decision. */
+body.decision #touch-controls,body.decision #steer-buttons,body.decision #hud-centre,body.decision #hud-behind,body.decision #hud-view-label,body.decision #hud-controls,body.decision #hud-controls-toggle,body.decision #hud-left{display:none!important}
+/* On the left: traffic to give way to comes from the right, which stays in view. */
+#decision-panel{left:var(--sl);top:var(--st);bottom:var(--sb);width:min(36vw,330px);overflow:auto;display:flex;flex-direction:column;gap:8px;padding:10px;font-size:13px}
+#decision-panel p{margin:0}
+.dp-head{display:grid;gap:3px}
+.dp-step{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.dp-instruction{font-size:15px;font-weight:700}
+.dp-state{color:var(--soft)}
+.dp-seq{margin:0;padding:6px 8px 6px 26px;display:flex;flex-wrap:wrap;gap:4px 18px;background:rgba(255,255,255,.05);border-radius:10px;font-weight:600}
+.dp-buttons{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#hud .dp-buttons button,#hud .dp-row button{min-height:36px}
+#hud .dp-buttons button.decide{background:rgba(245,158,11,.16);border-color:rgba(252,211,77,.4)}
+#hud #decision-panel button:disabled{opacity:.4}
+.dp-row{display:flex;gap:6px;margin-top:6px}.dp-row button{flex:1}
+#hud #decision-panel button.primary{background:#0d9488;border-color:#2dd4bf;color:#fff}
+.dp-confirm,.dp-after{display:grid;gap:8px}.dp-confirm p{font-size:15px;font-weight:700}
+.dp-feedback{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.dp-feedback li{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.05);line-height:1.35}
+.dp-feedback li.sev-serious,.dp-feedback li.sev-dangerous{background:rgba(239,68,68,.16)}
+.dp-feedback li.sev-minor{background:rgba(245,158,11,.14)}
+.dp-feedback li.right{background:rgba(45,212,191,.12)}
+@media (orientation:portrait){#decision-panel{right:var(--sr);top:auto;width:auto;max-height:58vh}}
+.decision-disclaimer{font-size:13px}
+.decision-result{border-top:1px solid #e7e5e4;padding:12px 0;display:grid;gap:8px}
+.decision-result-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.decision-result h3{margin:0;font-size:16px}
+.decision-status{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#166534;white-space:nowrap}
+.worst-minor .decision-status{background:#fef3c7;color:#92400e}
+.worst-serious .decision-status,.worst-dangerous .decision-status{background:#fee2e2;color:#991b1b}
+.decision-step{display:grid;gap:4px;padding:8px 10px;background:#f5f2ea;border-radius:10px}
+.decision-chosen{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:2px 18px;font-weight:600;color:#1c1917}
+.decision-faults{list-style:none;margin:0;padding:0;display:grid;gap:4px;color:#1c1917}
+.decision-faults li{padding:4px 8px;border-radius:8px;background:#fef3c7}
+.decision-faults li.sev-serious,.decision-faults li.sev-dangerous{background:#fee2e2}
+.decision-faults li.sev-feedback{background:#e7e5e4}
+.decision-heading{color:#57534e}
+.decision-right{color:#115e59!important}
+.decision-intervened{color:#991b1b!important;font-weight:700}
+.decision-practise{justify-self:start}
 #touch-controls button{width:68px;min-height:66px!important;font-size:15px!important;font-weight:800}
 #touch-controls [data-hold="throttle"]{background:linear-gradient(180deg,rgba(34,197,94,.35),rgba(22,163,74,.25));border-color:rgba(134,239,172,.4)}
 #touch-controls [data-hold="brake"]{background:linear-gradient(180deg,rgba(239,68,68,.32),rgba(185,28,28,.22));border-color:rgba(252,165,165,.35)}
@@ -611,6 +651,12 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <div class="choices">
         <button class="choice" type="button" data-exercise="goodmayes" style="--c:#a3e635"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="currentColor"/></svg></span><span class="txt"><b>Goodmayes</b></span></button>
       </div>
+      <div id="decision-tests" hidden>
+      <h2 class="group">Decisions only</h2>
+      <div class="choices">
+        <button class="choice" type="button" data-decision-route="brentwood-1" style="--c:#f59e0b"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="txt"><b>Brentwood route 1</b></span></button>
+      </div>
+      </div>
       <div id="drills" hidden>
       <h2 class="group">Drills</h2>
       <div class="choices drill-choices">
@@ -859,6 +905,17 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <button id="hud-ind-left" type="button" class="signal"><span id="ind-left" class="ind">◀</span> Signal left</button>
       <button id="hud-ind-right" type="button" class="signal">Signal right <span id="ind-right" class="ind">▶</span></button>
     </div>
+  </div>
+  <!-- A decision mock test, paused at a decision: the buttons for it, the order chosen, then confirm and Continue. -->
+  <div id="decision-panel" class="hud-panel" role="dialog" aria-labelledby="decision-instruction" hidden>
+    <div class="dp-head"><span id="decision-step" class="dp-step"></span><p id="decision-instruction" class="dp-instruction"></p><p id="decision-state" class="dp-state"></p></div>
+    <ol id="decision-sequence" class="dp-seq" aria-label="Your order" hidden></ol>
+    <div id="decision-choose" class="dp-choose">
+      <div id="decision-buttons" class="dp-buttons"></div>
+      <div class="dp-row"><button id="decision-undo" type="button">Undo</button><button id="decision-done" type="button" class="primary">Done</button></div>
+    </div>
+    <div id="decision-confirm" class="dp-confirm" hidden><p>Finished your observations?</p><div class="dp-row"><button id="decision-no" type="button">No</button><button id="decision-yes" type="button" class="primary">Yes</button></div></div>
+    <div id="decision-after" class="dp-after" hidden><p id="decision-note" class="dp-note" role="status"></p><ul id="decision-feedback" class="dp-feedback"></ul><button id="decision-continue" type="button" class="primary">Continue</button></div>
   </div>
   <div id="touch-controls" class="hud-panel">
     <button id="gear-toggle" type="button" class="gear" aria-pressed="false" aria-label="Gear: drive. Tap for reverse"><span class="gear-d">D</span><span class="gear-r">R</span></button>

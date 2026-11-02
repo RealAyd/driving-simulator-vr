@@ -115,6 +115,15 @@ import {Access,type PaidDrive} from '../access/access';
 import {setUpTheme} from '../ui/theme';
 import {reloadWhenStale} from './staleBuild';
 import {AdaptiveScale} from '../engine/renderScale';
+import {DecisionRunner,type DecisionRunResult,type RunnerScene} from '../decision/runner';
+import type {DecisionRoute} from '../decision/route';
+import {DECISION_ROUTES} from '../decision/routes';
+import {decisionPath} from '../decision/plan';
+import {actorDefs} from '../decision/actors';
+import {decisionReport} from '../decision/report';
+import {ACTION_LOOK} from '../decision/actions';
+import {DecisionPanel} from '../ui/decisionPanel';
+import {renderDecisionResults} from '../ui/decisionResults';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
@@ -448,6 +457,12 @@ export async function boot():Promise<void>{
 
   // ---- Learner car (single movement owner) with optional steering assistance ----
   let runtime:ExerciseRuntime|null=null;
+  // ---- Decision mock test: the car drives itself and the learner decides at each challenge (src/decision) ----
+  /** The route chosen (its scene being built or built), and the place that scene became. */
+  let decisionAsked:DecisionRoute|null=null,decisionLocation:string|null=null;
+  /** The decision test being driven: its runner, a challenge being practised (null: the whole test), whether the
+   * scene is held still for a decision, and how it went once finished. */
+  let decision:{route:DecisionRoute;scenarioId:string;runner:DecisionRunner;practice:number|null;frozen:boolean;result:DecisionRunResult|null}|null=null;
   let steeringMode:SteeringMode=quality.id==='phone'?'assist':'buttons';
   const tilt=new TiltSteering();
   let tiltSteer=0;
@@ -456,6 +471,8 @@ export async function boot():Promise<void>{
   let vehicle!:VehicleController;
   const controls:ControlSource={read:()=>{
     const keys=input.read();
+    // A decision test: the runner drives (pedals and steering); the learner's controls are not used.
+    if(decision&&runtime?.scenario.id===decision.scenarioId)return lastControls=decision.runner.controls();
     const mode=steeringNow();
     // In the headset only the checked controller steers (its stick or steer buttons); screen and keys are not used.
     const headset=viewer.active&&viewerMode==='driving';
@@ -659,7 +676,7 @@ export async function boot():Promise<void>{
     if(follower){
       dynamicFootprints.push({id:follower.id,shape:()=>({kind:'box',pose:follower.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})});
     }
-    for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started});
+    for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started||p.shownWaiting});
     // Traffic lights from the map (generated areas): they run, traffic obeys them, a mock test marks the learner.
     // Exercises that set their own signals (scenario `signals`) keep those instead.
     const trafficSignals=place.signals.length>0&&Object.keys(scenario.signals).length===0?new TrafficSignals(place):null;
@@ -684,7 +701,7 @@ export async function boot():Promise<void>{
         :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3))??[]),
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
-      ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started,roadUserModel(i+1),2*p.size.halfLength)),
+      ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started||p.shownWaiting,roadUserModel(i+1),2*p.size.halfLength)),
       ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time,busModels[b.def.deck]))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
@@ -898,6 +915,7 @@ export async function boot():Promise<void>{
     vehicle.fixedUpdate(dt);
     runtime.afterVehicleStep(before);
     for(const m of runtime.modules)m.fixedUpdate?.(dt,time);
+    if(decision&&runtime.scenario.id===decision.scenarioId)decision.runner.update();
   };
 
   // ---- Lifecycle ----
@@ -938,6 +956,7 @@ export async function boot():Promise<void>{
     }
     // Calibrated on the exercise screen, or else where the phone is held as the drive begins.
     if(steeringMode==='tilt'&&tilt.receiving&&!tilt.calibrated)tilt.calibrate();
+    if(decision&&runtime?.scenario.id===decision.scenarioId)beginDecision();
   };
   /** The mock test report's route line and map: the way driven, and the kinds of junction directed through. */
   const sheetExtras=(result:AttemptResult):SheetExtras=>{
@@ -953,6 +972,11 @@ export async function boot():Promise<void>{
       head.hold(null);
       clock.pause();
       const result=runtime!.finish(outcome);
+      const decided=decision?.result?decisionReport(decision.result):null;
+      if(decided){
+        result.decision=decided;result.findings=[];result.notes=[];
+        result.mockTest={passed:decided.passed,driving:decided.minor,serious:decided.serious,dangerous:decided.dangerous,finished:true};
+      }
       // A lesson driven to its end counts as done (the home screen then offers the next one).
       if(result.lesson&&outcome==='completed'){const l=LESSONS.find(x=>x.number===result.lesson!.number);if(l){markLessonDone(l.id);void paidAccess.syncProgress()}}
       lastResult=result;
@@ -970,7 +994,12 @@ export async function boot():Promise<void>{
         saveFailed=true;
         console.warn('[Driving Practice] could not save attempt',error);
       }
-      renderResults(result,id=>events.events.find(e=>e.id===id)?.time,saved,store.kind,saveFailed,result.mockTest?sheetExtras(result):null);
+      renderResults(result,id=>events.events.find(e=>e.id===id)?.time,saved,store.kind,saveFailed,result.mockTest&&!decided?sheetExtras(result):null);
+      if(decided){
+        byId('results-title').textContent=decided.practice?`Practice: ${decided.challenges[0]?.title??''}`:`Decision mock test: ${decided.passed?'PASS':'FAIL'}`;
+        byId('results-summary').textContent=`${decided.minor} minor · ${decided.serious} serious · ${decided.dangerous} dangerous`;
+        renderDecisionResults(byId('results-sheet'),decided,practiseDecision);
+      }
       const next=runtime!.scenario.next;
       const nextButton=byId<HTMLButtonElement>('next-button');
       nextButton.hidden=!next;
@@ -1799,6 +1828,7 @@ export async function boot():Promise<void>{
     byId('home-main').hidden=mode!==null;byId('place-list').hidden=mode===null;
     byId('place-title').textContent=mode?PLACE_TITLE[mode]:'';
     byId('drills').hidden=mode!=='lesson';
+    byId('decision-tests').hidden=mode!=='test';
     byId('exercise-list').scrollIntoView({block:'start'});
     if(mode)setTimeout(()=>{if(!byId('place-list').hidden)tutorial.startOnce('place',PLACE_TOUR)},300);
   };
@@ -1966,7 +1996,8 @@ export async function boot():Promise<void>{
         scenarios.set(sc.id,sc);
         scenarios.set(mockTest.id,mockTest);
         scenarios.set(lessonScenario.id,lessonScenario);
-        EXERCISES[l.id]={scenario:sc.id,test:mockTest.id,lesson:lessonScenario.id};
+        // (A staged scene, a decision test's: its own exercise whichever card it was opened from.)
+        EXERCISES[l.id]=request.stage?{scenario:sc.id}:{scenario:sc.id,test:mockTest.id,lesson:lessonScenario.id};
         await loadLocation(l.id,rep,50,100);
         return b;
       });
@@ -1974,6 +2005,7 @@ export async function boot():Promise<void>{
       events.emit('area.built',{locationId:l.id,label:request.label||l.name,lat:request.lat,lon:request.lon,summary:built.summary});
       areaStatus.textContent='';
       showExercise(l.id);
+      return l.id;
     }catch(error){
       areaStatus.textContent=error instanceof Error&&/OpenStreetMap|dense|road/.test(error.message)?error.message:'Could not build this area (no connection, or no roads there). Try again or pick another place.';
       console.warn('[Driving Practice] area not built',error);
@@ -1987,7 +2019,16 @@ export async function boot():Promise<void>{
     runtime?.dispose();
     const scenario=scenarios.get(scenarioId)!;
     useLocation(scenario.locationId);
-    runtime=buildExercise(scenario,!!options.familiarisation);
+    // A decision test on this place: the way it drives is planned first (the steering assistance and the off-route
+    // check follow it).
+    const asked=decisionAsked&&scenario.locationId===decisionLocation?decisionAsked:null;
+    const path=asked?decisionPath(place,asked):null;
+    runtime=buildExercise(path?{...scenario,assistPath:path}:scenario,!!options.familiarisation);
+    decision=asked&&path?{route:asked,scenarioId:scenario.id,runner:new DecisionRunner(asked,path,vehicle.params,decisionScene),practice:null,frozen:false,result:null}:null;
+    // (Following the learner's car, a road user keeps a gap behind it rather than only braking for it.)
+    // (A car waiting at a junction is there to be seen before it moves.)
+    if(decision)for(const p of runtime.passers){p.followsLearner=p.def.yieldsToLearner;p.shownWaiting=!!decision.route.actors.find(a=>a.id===p.id)?.waits}
+    document.body.classList.toggle('decision',!!decision);
     attachRunner();
     visitDrive=driveKind(scenarioId);
     if(!session.to('running'))return;
@@ -2053,12 +2094,17 @@ export async function boot():Promise<void>{
     if(!session.to('running'))return;
     input.clear();
     clock.resume();
+    // (Paused for a decision: still until it is made.)
+    if(decision?.frozen)clock.pause();
     events.emit('session.resumed');
     canvas.focus();
   };
   const restart=()=>{
     if(session.state!=='running'&&session.state!=='paused'&&session.state!=='finished')return;
     const wasPaused=session.state==='paused',wasFinished=session.state==='finished';
+    // Practising a decision challenge again (from its results) is part of the test it came from.
+    if(wasFinished&&decision&&decision.practice!==null)return practiseDecision(decision.practice);
+    if(decision)decision.practice=null;
     // Trying again once a drive has ended is a new drive (starting over part-way is not).
     if(wasFinished&&paidAccess.gate&&runtime&&!parkedOnly()){
       const scenario=runtime.scenario.id;
@@ -2228,6 +2274,103 @@ export async function boot():Promise<void>{
     else{label.classList.remove('behind');showView(heldView??'forward')}
   };
   behindButton.addEventListener('click',()=>{if(session.state==='running'&&!viewer.active)setBehind(!behind)});
+  // ---- Decision mock test: camera, the paused decision, practice ----
+  /** The behind-the-car camera turning to a framing (radians), over a moment. */
+  let cameraAim:{yaw:number;pitch:number;until:number}|null=null;
+  const DEFAULT_PITCH=Math.atan2(BEHIND_EYE.y,BEHIND_EYE.z);
+  const aimCamera=(yawDeg:number,pitchDeg:number|null,shift=0)=>{cameraAim={yaw:degToRad(yawDeg),pitch:pitchDeg===null?DEFAULT_PITCH:degToRad(pitchDeg),until:performance.now()+900};cameraShift=shift};
+  /** Where the behind camera looks, beside the car (metres right; negative: left), to bring a junction's far side
+   * into view clear of the decision panel. */
+  let cameraShift=0,shiftNow=0;
+  /** The framing of the decision paused at (the camera goes back to it after a look). */
+  let decisionFrame:{yaw:number;pitch:number;shift?:number}|null=null;
+  let lookTimer=0;
+  /** An observation pressed while paused: the camera turns to what it sees (or the mirror view), then back. */
+  const decisionLook=(action:string)=>{
+    const look=ACTION_LOOK[action];
+    if(!look||!decision)return;
+    clearTimeout(lookTimer);
+    // Looking either way: from the driver's seat, the head turned that way (as at a junction); mirrors and
+    // shoulders as their view buttons show them.
+    setBehind(false);
+    if(look==='right'||look==='left')head.hold(head.aimAt({x:look==='right'?6:-6,y:1.1,z:-2.5}));
+    else holdView(look,'touch');
+    lookTimer=window.setTimeout(()=>{
+      if(!decision||session.state!=='running')return;
+      forwardView();if(!behind)setBehind(true);
+      if(decisionFrame)aimCamera(decisionFrame.yaw,decisionFrame.pitch,decisionFrame.shift);
+    },1700);
+  };
+  const decisionPanel=new DecisionPanel({
+    look:decisionLook,
+    submit:sequence=>decision!.runner.submit(sequence),
+    continue:()=>decision?.runner.continue()
+  });
+  const decisionScene:RunnerScene={
+    car:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:vehicle.state.speed,steerAngle:vehicle.state.steerAngle}),
+    actor:id=>runtime?.passers.find(p=>p.id===id),
+    setSignal:side=>{
+      const now=vehicle.indicators.state;
+      if(side==='off'){if(now!=='off')vehicle.toggleIndicator(now,clock.time)}
+      else if(now!==side)vehicle.toggleIndicator(side,clock.time);
+    },
+    say:text=>{examinerVoice.say(text,true);hud.setTask(text)},
+    freeze:on=>{
+      if(!decision)return;
+      decision.frozen=on;
+      if(on)clock.pause();else if(session.state==='running')clock.resume();
+    },
+    paused:at=>{
+      clearTimeout(lookTimer);
+      if(at){
+        decisionFrame=at.place.frame;
+        forwardView();if(!behind)setBehind(true);
+        aimCamera(at.place.frame.yaw,at.place.frame.pitch,at.place.frame.shift);
+        decisionPanel.show(at,decision?.practice!==null);
+      }else{
+        decisionFrame=null;
+        decisionPanel.hide();
+        forwardView();if(!behind)setBehind(true);
+        aimCamera(0,null);
+      }
+    },
+    finished:result=>{
+      if(!decision)return;
+      decision.result=result;
+      runtime?.runner.finish('completed');
+    }
+  };
+  /** The car where the test (or the challenge practised) starts, and the runner going. */
+  const beginDecision=()=>{
+    if(!decision)return;
+    const p=decision.runner.startPose(decision.practice);
+    vehicle.setSpawn({position:{x:p.x,y:0,z:p.z},heading:p.heading});
+    vehicle.reset();
+    decision.result=null;decision.frozen=false;
+    decisionPanel.hide();
+    decision.runner.begin(decision.practice);
+    setBehind(true);
+    aimCamera(0,null);
+  };
+  /** From the results: one challenge again, on its own, with the marking shown after each decision. */
+  const practiseDecision=(index:number)=>{
+    if(!decision||session.state!=='finished')return;
+    decision.practice=index;
+    resetAttempt();
+    session.to('running');clock.resume();canvas.focus();
+  };
+  /** A decision route chosen: its scene is built and shown, ready to start. */
+  const openDecision=async(route:DecisionRoute)=>{
+    decisionAsked=null;
+    // (No label: the scene's own name, which the pack is checked against.)
+    const id=await openArea({label:'',lat:0,lon:0,scene:route.scene,testCentre:true,
+      stage:{actors:actorDefs(route),title:route.title,briefing:route.briefing,start:{position:{x:route.start.x,z:route.start.z},headingDeg:route.start.headingDeg}}});
+    if(id){decisionAsked=route;decisionLocation=id}
+  };
+  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-decision-route]'))b.addEventListener('click',()=>{
+    const route=DECISION_ROUTES.find(r=>r.id===b.dataset['decisionRoute']);
+    if(route)void openDecision(route);
+  });
   /** Diagnostics: a top-down camera (or one looking at `target`) for layout review screenshots. */
   let overhead:{x:number;z:number;height:number;target?:{x:number;y:number;z:number}}|null=null;
   const perf=new PerfProbe();
@@ -2265,10 +2408,17 @@ export async function boot():Promise<void>{
       const t=overhead.target;
       camera.setTarget(t?new Vector3(t.x,t.y,t.z):new Vector3(overhead.x,0,overhead.z));
     }else if(behind){
+      // Turning to a decision's framing (or a look while paused), over a moment.
+      if(cameraAim){
+        const k=Math.min(1,dt*6);
+        orbit.yaw+=headingDelta(cameraAim.yaw,orbit.yaw)*k;orbit.pitch+=(cameraAim.pitch-orbit.pitch)*k;
+        if(performance.now()>cameraAim.until)cameraAim=null;
+      }
       // On a circle round the car (straight behind at first): looking at the car, and on past it when behind it.
       const r=Math.hypot(BEHIND_EYE.y,BEHIND_EYE.z),flat=r*Math.cos(orbit.pitch),ahead=Math.max(0,Math.cos(orbit.yaw));
       const from=localToWorld(pose,{x:flat*Math.sin(orbit.yaw),y:r*Math.sin(orbit.pitch),z:flat*Math.cos(orbit.yaw)});
-      const to=localToWorld(pose,{x:0,y:.6*(1-ahead),z:-7*ahead*ahead});
+      shiftNow+=((decision?cameraShift:0)-shiftNow)*Math.min(1,dt*4);
+      const to=localToWorld(pose,{x:shiftNow,y:.6*(1-ahead),z:-7*ahead*ahead});
       camera.position.set(from.x,from.y,from.z);
       camera.setTarget(new Vector3(to.x,to.y,to.z));
     }else{
@@ -2369,6 +2519,10 @@ export async function boot():Promise<void>{
     /** Diagnostics (review screenshots): put the car at a point on the road, stationary. Not a driving feature. */
     placeCar:(x:number,z:number,headingDeg:number)=>{vehicle.setSpawn({position:{x,y:0,z},heading:degToRad(headingDeg)});vehicle.reset()},
     /** Diagnostics (scenario captures): open a scene built in advance (public/scenes/<id>.json.gz, named `label`). */
+    /** A decision test route (src/decision/routes), opened ready to start; and how it is going. */
+    openDecision:(id:string)=>{const r=DECISION_ROUTES.find(x=>x.id===id);return r?openDecision(r):Promise.resolve()},
+    decision:()=>decision?{state:decision.runner.state,at:decision.runner.current?{challenge:decision.runner.current.challenge.id,stage:decision.runner.current.stage.id}:null,
+      frozen:decision.frozen,practice:decision.practice,records:decision.runner.records.map(r=>({challenge:r.challengeId,stage:r.stageId,sequence:r.sequence,faults:r.verdict.faults.map(f=>f.ruleId)}))}:null,
     openScene:(id:string,label:string,stage?:{actors:unknown[]})=>/^[a-z0-9-]+$/.test(id)?openArea({label,lat:0,lon:0,scene:id,...(stage?{stage}:{})}):Promise.resolve(),
     /** Diagnostics (scenario captures): an action as the driver's controls give it, e.g. 'indicator-left'. */
     act:(action:InputAction)=>onAction(action),

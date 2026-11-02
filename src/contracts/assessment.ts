@@ -38,6 +38,8 @@ export interface AttemptResult{
   /** Mock driving test: the verdict and the fault counts (driving faults are the 'minor' findings). */
   /** A driving lesson: which one, and how it went (no pass or fail). */
   lesson?:{number:number;title:string;junctions:number;good:number;improve:number};
+  /** A decision mock test (decision/report.ts): each challenge, what was chosen and how it was marked. */
+  decision?:import('../decision/report').DecisionReport;
   mockTest?:{passed:boolean;driving:number;serious:number;dangerous:number;
     /** False when the test was ended before the examiner finished it (and nothing so far had already failed it). */
     finished:boolean};

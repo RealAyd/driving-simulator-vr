@@ -24,7 +24,9 @@ export interface AreaRequest{
    * A staged scene (scenario captures, tools/scenes/capture.cjs): road users scripted for it (scenario actors) and the
    * streets quiet otherwise (no background traffic or kerbside parking: what is there is what the decision needs).
    */
-  stage?:{actors:unknown[]};
+  stage?:{actors:unknown[];
+    /** A decision mock test on the scene: its name, briefing and where the drive starts. */
+    title?:string;briefing?:string;start?:{position:{x:number;z:number};headingDeg:number}};
 }
 export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
 
@@ -109,12 +111,12 @@ export async function buildArea(asked:AreaRequest,progress:(step:string,percent:
   if(request.stage)location.streetParking=0;
   const scenario=parseScenario({
     schemaVersion:1,id:`${id}-free-drive`,locationId:id,
-    title:`${request.label} (free drive)`,
+    title:request.stage?.title??`${request.label} (free drive)`,
     learningObjective:`Practise driving the streets ${request.testCentre?'round the test centre':'here'}: junctions, crossings, bus stops and parked cars, at your own pace.`,
-    briefing:`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after a minute and a half, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
+    briefing:request.stage?.briefing??`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after a minute and a half, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
     rubricId:'none',
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
-    ...(request.stage?{actors:request.stage.actors,end:{timeLimitSeconds:900}}:{end:{completeAfterSeconds:90,timeLimitSeconds:150}})
+    ...(request.stage?{actors:request.stage.actors,end:{timeLimitSeconds:900},...(request.stage.start?{start:request.stage.start}:{})}:{end:{completeAfterSeconds:90,timeLimitSeconds:150}})
   });
   const mockTest=parseScenario({
     schemaVersion:1,id:`${id}-mock-test`,locationId:id,

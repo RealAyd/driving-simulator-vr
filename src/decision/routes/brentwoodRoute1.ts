@@ -24,7 +24,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
   actors:[
     {id:'grey-car',name:'grey car',colour:'#8a9099',speed:12,yields:true,path:pts([...BEHIND,...UP_KINGS_ROAD.slice(3)])},
     {id:'blue-car',name:'blue car',colour:'#2563eb',speed:7,path:pts([...BLUE_RING,...UP_KINGS_ROAD])},
-    {id:'carpark-car',name:'white car',colour:'#e8e8e4',speed:6,yields:true,path:pts([[-47.6,-244.1],[-44.5,-244.5],[-41.8,-243.3],[-39.6,-241.4],[-37.2,-239.3],
+    {id:'carpark-car',name:'white car',colour:'#e8e8e4',speed:6,yields:true,waits:true,path:pts([[-47.6,-244.1],[-44.5,-244.5],[-41.8,-243.3],[-39.6,-241.4],[-37.2,-239.3],
       [-35.7,-237.4],[-35,-232.3],[-30.8,-217.8],[-27.8,-209.4],[-24.1,-200],[-2,-143.1],[12.2,-109.2],[16.7,-98.1]])}
   ],
   challenges:[
@@ -38,8 +38,8 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       endAt:{x:55.6,z:25.9},
       place:{
         approach:{pause:{kind:'moving',at:{x:56.3,z:105.4}},frame:{yaw:0,pitch:18},state:'Approaching the roundabout at about 20 mph.'},
-        line:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:78.1,z:63}},frame:{yaw:-38,pitch:30},state:'At the give way line.'},
-        clear:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:53.8,z:17.9}},frame:{yaw:-38,pitch:30},state:'Still at the give way line.'}
+        line:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:78.1,z:63}},frame:{yaw:-30,pitch:34},state:'At the give way line.'},
+        clear:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:53.8,z:17.9}},frame:{yaw:-30,pitch:34},state:'Still at the give way line.'}
       },
       stages:[
         {
@@ -107,7 +107,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       starts:[{actor:'carpark-car',at:{x:-46.7,z:-256.2},delay:.8}],
       endAt:{x:-51.5,z:-267},
       place:{
-        line:{pause:{kind:'stop',at:{x:-38.4,z:-234.6}},frame:{yaw:-12,pitch:34},state:'At the give way line. The app has checked the mirrors and slowed down.'}
+        line:{pause:{kind:'stop',at:{x:-38.4,z:-234.6}},frame:{yaw:-8,pitch:38,shift:-7},state:'At the give way line. The app has checked the mirrors and slowed down.'}
       },
       stages:[
         {

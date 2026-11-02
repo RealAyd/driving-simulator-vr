@@ -35,6 +35,8 @@ export class PassingVehicle implements SimModule{
   /** Follows the learner's car when it is ahead on the path (keeping a gap of about a second), rather than only
    * braking for it: a car behind it on a decision route. Set by the app; not part of the scenario file. */
   followsLearner=false;
+  /** Drawn (and solid) while waiting to start, not only once moving: a car waiting at a junction. Set by the app. */
+  shownWaiting=false;
 
   constructor(
     readonly def:PassingVehicleActorDef,

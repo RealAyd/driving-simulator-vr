@@ -23,6 +23,8 @@ export interface RouteActor{
   id:string;name:string;colour:string;speed:number;path:readonly Vec2[];
   /** Brakes for the learner's car when it is in the way (a car following it). */
   yields?:boolean;
+  /** Seen waiting at the start of its path before it moves (a car waiting to come out of a junction). */
+  waits?:boolean;
 }
 
 export interface ChallengeDef extends ChallengeLogic{
@@ -45,7 +47,9 @@ export interface StagePlace{
   /** The traffic that matters, seen moving first: the pause comes once this road user reaches this point. */
   when?:{actor:string;at:Vec2};
   /** The camera behind the car: turned round it (degrees; negative shows the right) and raised (degrees). */
-  frame:{yaw:number;pitch:number};
+  frame:{yaw:number;pitch:number;
+    /** Looking this far beside the car (metres right; negative: left): the junction's far side clear of the panel. */
+    shift?:number};
   /** Where the car is and what is already done (shown with the buttons). */
   state:string;
 }
