@@ -33,15 +33,15 @@ describe('decision challenges as authored',()=>{
 
 describe('judging a decision',()=>{
   it('records a fault when it is committed: a later mirror check does not undo it',()=>{
-    const v=assessStage(C1,'approach',['signal-left','mirror-interior','mirror-left','slow-down']);
+    const v=assessStage(C1,'approach',['signal-left','mirror-interior','mirror-left']);
     expect(v.faults.map(f=>[f.ruleId,f.at])).toEqual([['mirrors-before-signal',0]]);
   });
-  it('accepts another safe order (signal after starting to slow)',()=>{
-    expect(assessStage(C1,'approach',['mirror-left','mirror-interior','slow-down','signal-left']).faults).toEqual([]);
+  it('accepts another safe order (the door mirror before the interior one)',()=>{
+    expect(assessStage(C1,'approach',['mirror-left','mirror-interior','signal-left']).faults).toEqual([]);
   });
   it('marks omissions when submitted',()=>{
     const v=assessStage(C1,'approach',['mirror-interior','mirror-left']);
-    expect(v.faults.map(f=>f.ruleId).sort()).toEqual(['no-signal','no-slowing']);
+    expect(v.faults.map(f=>f.ruleId)).toEqual(['no-signal']);
   });
   it('waiting with traffic coming is right, never hesitation',()=>{
     const v=assessStage(C1,'line',['look-right','give-way']);

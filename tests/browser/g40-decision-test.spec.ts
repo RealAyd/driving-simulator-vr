@@ -14,7 +14,7 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
   await expect(page.locator('#exercise-detail')).toBeVisible({timeout:300_000});
   await page.click('#start-practice');
   const answers:Record<string,string[]>={
-    'queens-road-roundabout/approach':['signal-left','mirror-interior','mirror-left','slow-down'],
+    'queens-road-roundabout/approach':['signal-left','mirror-interior','mirror-left'],
     'queens-road-roundabout/line':['look-right','go'],
     'queens-road-roundabout/clear':['look-right','go'],
     'chatham-way-mini/line':['look-right','go']
@@ -51,7 +51,7 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
   // Practise the roundabout again: the marking shows after the decision.
   await page.click('.decision-practise >> nth=0');
   await page.waitForFunction(()=>(window as any).__drivingPractice.decision()?.state==='paused',undefined,{timeout:300_000,polling:250});
-  for(const a of ['mirror-interior','mirror-left','signal-left','slow-down'])await page.click(`#decision-buttons [data-action="${a}"]`);
+  for(const a of ['mirror-interior','mirror-left','signal-left'])await page.click(`#decision-buttons [data-action="${a}"]`);
   await page.click('#decision-done');await page.click('#decision-yes');
   await expect(page.locator('#decision-note')).toHaveText('Well judged.');
 });

@@ -39,32 +39,28 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       // The roundabout and the ring to its right, where the blue car comes from.
       quiet:[{x:70,z:59,radius:34},{x:110,z:0,radius:30}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:56.3,z:105.4}},frame:{yaw:0,pitch:18},state:'Approaching the roundabout at about 20 mph.'},
+        approach:{pause:{kind:'moving',at:{x:56.3,z:105.4}},frame:{yaw:0,pitch:18},state:'Approaching the roundabout at about 20 mph. The app slows the car for you.'},
         line:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:78.1,z:63}},frame:{yaw:-30,pitch:34},state:'At the give way line.'},
         clear:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:53.8,z:17.9}},frame:{yaw:-30,pitch:34},state:'Still at the give way line.'}
       },
       stages:[
         {
           id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right','slow-down','lane-right'],
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right','lane-right'],
           neutral:['mirror-right'],
           rules:[
-            {kind:'before',id:'mirror-before-slowing',action:'slow-down',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed without checking behind',
-              message:'The grey car was close behind. Check the interior mirror before you slow down. (Recorded when you slowed: a mirror check afterwards does not undo it.)'}},
             {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
               message:'Mirrors first, then signal: you need to know who your signal is for.'}},
             {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the first exit',
               message:'Signal left on the approach for the first exit and keep it on as you leave.'}},
-            {kind:'required',id:'no-slowing',anyOf:['slow-down'],fault:{level:'minor',heading:'Junctions - approach speed',title:'No plan to slow down',
-              message:'Slow down in good time for the roundabout. (The app slowed the car to the line for you.)'}},
             {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
               message:'A right signal says you are going past twelve o\'clock. The grey car behind could come up on your left, expecting you to go right, as you turn off at the first exit.'}},
             {kind:'distractor',id:'lane-right',action:'lane-right',fault:{level:'serious',heading:'Positioning - lane discipline',title:'Wrong lane for the first exit',
               message:'For the first exit keep to the left lane. Moving right, then cutting back across to the first exit, puts the grey car behind at risk.'}}
           ],
-          accepted:[['mirror-interior','mirror-left','signal-left','slow-down'],['mirror-left','mirror-interior','signal-left','slow-down'],['mirror-interior','mirror-left','slow-down','signal-left']],
+          accepted:[['mirror-interior','mirror-left','signal-left'],['mirror-left','mirror-interior','signal-left']],
           next:{then:'line'},
-          explain:'Mirrors first (the grey car was close behind), then signal left for the first exit, and slow down in good time.'
+          explain:'Mirrors first (the grey car was close behind), then signal left for the first exit.'
         },
         {
           id:'line',safe:'wait',go:'go',wait:'give-way',

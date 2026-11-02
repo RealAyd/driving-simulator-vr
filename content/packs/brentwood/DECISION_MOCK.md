@@ -40,6 +40,8 @@ preparation (mirrors and slowing on the way to a mini-roundabout), the paused sc
   is serious; a left one is minor.
 - `hesitation`: only in a stage showing a clear, safe opportunity, and only from the decision chosen. Time spent
   reading or thinking while paused never counts.
+- Speed is the app's, not the learner's: no button changes it and nothing marks it. The paused screen says where the
+  app slows the car.
 - Anything no rule names is an unnecessary action (feedback only).
 - Tests check that pressing every button never passes a challenge.
 

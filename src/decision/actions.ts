@@ -11,7 +11,6 @@ export const ACTION_LABEL:Record<string,string>={
   'blind-spot-right':'Right blind spot',
   'signal-left':'Signal left',
   'signal-right':'Signal right',
-  'slow-down':'Slow down',
   'lane-right':'Move to the right lane',
   'creep':'Creep forward',
   'horn':'Sound horn',
