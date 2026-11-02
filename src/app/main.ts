@@ -650,7 +650,7 @@ export async function boot():Promise<void>{
     const followerDef=scenario.actors.find((a):a is FollowingVehicleActorDef=>a.kind==='following-vehicle');
     const pedestrian=pedDef?new Pedestrian(pedDef,events,(p,r)=>pointToBox(p.x,p.z,vehicle.pose,vehicle.halfWidth,vehicle.halfLength)<r):null;
     const follower=followerDef?new FollowingVehicle(followerDef,()=>vehicle.pose,()=>Math.max(0,vehicle.state.speed)):null;
-    const learnerFootprint=()=>({pose:vehicle.pose,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength});
+    const learnerFootprint=()=>({pose:vehicle.pose,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength,speed:vehicle.state.speed});
     const passers=scenario.actors.filter((a):a is PassingVehicleActorDef=>a.kind==='passing-vehicle').map(d=>new PassingVehicle(d,learnerFootprint,events));
     if(pedestrian){
       pedestrian.onward=onwardPath(place,pedestrian.def);

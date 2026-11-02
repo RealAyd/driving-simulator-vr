@@ -42,7 +42,10 @@ const miniNodes=new Set([...nodes.values()].filter(n=>n.tags.highway==='mini_rou
 const slug=s=>(s??'road').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'road';
 const roads=[],roadNodes=new Map(); // road id -> node ids along it (for crossings)
 for(const w of ways){
-  const width=DRIVEN[w.tags.highway];
+  // A plain service road (a car park's way in, say) that is an arm of a mini-roundabout is built too: traffic comes
+  // out of it on to the roundabout, and a learner has to see it.
+  const armOfMini=w.tags.highway==='service'&&!w.tags.service&&w.nds.some(ref=>miniNodes.has(ref));
+  const width=DRIVEN[w.tags.highway]??(armOfMini?2.8:undefined);
   if(!width||w.tags.area==='yes'||w.tags.access==='private')continue;
   // Split at mini-roundabouts and where the way leaves the square.
   const runs=[];let run=[];

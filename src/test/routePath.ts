@@ -70,6 +70,15 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
   // turn (about 4.3 m at the least): there the curve is as wide as it can be (up to 12 m) with the whole car still on
   // the carriageway along it (`onRoad`, where given).
   const byLeg=legs.map((_,leg)=>lanePoints.filter(p=>p.leg===leg));
+  // The mini-roundabout at a join between two legs, to be driven round its disc. Where the roads meet at its middle
+  // (mapped as one point) the lanes' ends are beside each other there, not either side of the disc: a curve round the
+  // disc between them went all the way round. There the join is a corner like any other, which keeps the disc on
+  // the right (the lane lines cross to the left of it, UK).
+  const roundMini=(q:Vec2,r:Vec2)=>{
+    const m=miniAt(minis,{x:(q.x+r.x)/2,z:(q.z+r.z)/2});
+    if(!m||ringLanes(m))return m;
+    return Math.hypot(q.x-m.position.x,q.z-m.position.z)<m.radius/2&&Math.hypot(r.x-m.position.x,r.z-m.position.z)<m.radius/2?null:m;
+  };
   const curve=(prev:Vec2,start:Vec2,from:Vec2,to:Vec2)=>{
     const c={x:(prev.x+start.x)/2,z:(prev.z+start.z)/2},out:Vec2[]=[];
     for(let k=1;k<6;k++){const t=k/6,u=1-t;out.push({x:u*u*from.x+2*u*t*c.x+t*t*to.x,z:u*u*from.z+2*u*t*c.z+t*t*to.z})}
@@ -80,7 +89,7 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
     const a=byLeg[leg-1],b=byLeg[leg];
     if(!onRoad||!a||a.length<2||!b||b.length<2)return 5;
     const p=a.at(-2)!,q=a.at(-1)!,r=b[0]!,t=b[1]!;
-    if(miniAt(minis,{x:(q.x+r.x)/2,z:(q.z+r.z)/2}))return 5;
+    if(roundMini(q,r))return 5;
     const turn=Math.abs(Math.atan2((q.x-p.x)*(t.z-r.z)-(q.z-p.z)*(t.x-r.x),(q.x-p.x)*(t.x-r.x)+(q.z-p.z)*(t.z-r.z)));
     const want=Math.min(12,5*Math.tan(Math.min(turn,2.6)/2));
     for(let cut=Math.floor(want);cut>5;cut--){
@@ -104,7 +113,7 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
     if(prev&&from&&to){
       const c={x:(prev.x+start.x)/2,z:(prev.z+start.z)/2};
       // A mini-roundabout: clockwise round its disc (from where the road in meets it to where the road out leaves).
-      const mini=miniAt(minis,c),ring=mini?ringLanes(mini):undefined;
+      const mini=roundMini(prev,start),ring=mini?ringLanes(mini):undefined;
       if(ring){
         // A bigger roundabout: from where the way in reaches the ring's edge, round in the lane for the exit (out a
         // lane at a time past the exits before), to where the way out leaves it (roundaboutLanes.ts).

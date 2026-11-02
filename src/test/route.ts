@@ -259,7 +259,15 @@ export class RoadNetwork{
           say=turn==='ahead'?(sameRoad?'':'At the traffic lights, go straight ahead.'):`At the traffic lights, turn ${turn}.`;
         }else if(d.roundabout){
           // Exits counted clockwise from the left (UK), the way the learner would count them.
-          const order=[...d.options].sort((a,b)=>a.angle-b.angle);
+          // (The way back, on a road split into one-way halves at the roundabout, can measure as a sharp left: it is
+          // the last exit going round, not the first.)
+          const back=(x:Option)=>{
+            if(x.angle>-1.9)return false;
+            const p=pointAtAlong(x.road,x.dir>0?Math.min(x.from+20,len(x.road)):Math.max(x.from-20,0));
+            return sampleRoad(pos.road,p.x,p.z).distance<15;
+          };
+          const round=(x:Option)=>back(x)?x.angle+2*Math.PI:x.angle;
+          const order=[...d.options].sort((a,b)=>round(a)-round(b));
           exit=order.indexOf(o)+1;exits=order.length;
           const way=turn==='ahead'?', that\'s straight ahead':turn==='left'?', that\'s to the left':', that\'s to the right';
           say=`At the roundabout, take the ${ORD[exit-1]??`${exit}th`} exit${way}.`;
@@ -348,6 +356,47 @@ export class RoadNetwork{
     for(let k=best.from;prev.has(k);k=prev.get(k)!.from)way.unshift({road:prev.get(k)!.road,dir:prev.get(k)!.dir});
     way.push({road:best.through.road,dir:best.through.dir});
     return {way,at:best.at,end:{road:best.through.road,dir:best.through.dir,along:best.through.from}};
+  }
+
+  /**
+   * A set route through points, in order (each passed within `near` metres): the way at each junction found by the
+   * shortest search, then planned as a test route (the examiner's words, the legs to steer), carrying on up to 80 m
+   * past the last point. Null when the points cannot be reached in that order (one-way streets kept to).
+   */
+  planThrough(start:RoadPos,through:readonly Vec2[],near=20,reach=4000):Route|null{
+    // Points of `through` from index `wp` passed driving `road` one way from `a` to `b` (how many).
+    const passes=(road:Road,dir:1|-1,a:number,b:number,wp:number)=>{
+      let k=wp;
+      for(let s=a;k<through.length&&(dir>0?s<=b:s>=b);s+=dir*2){
+        const p=pointAtAlong(road,s);
+        while(k<through.length&&Math.hypot(p.x-through[k]!.x,p.z-through[k]!.z)<near)k++;
+      }
+      return k;
+    };
+    type State={pos:RoadPos;cost:number;wp:number;way:Array<{road:Road;dir:1|-1}>};
+    const open:State[]=[{pos:start,cost:0,wp:0,way:[]}];
+    const seen=new Map<string,number>();
+    while(open.length){
+      open.sort((a,b)=>a.cost-b.cost);
+      const s=open.shift()!;
+      if(s.cost>reach)break;
+      const L=len(s.pos.road),toEnd=s.pos.dir>0?L:0;
+      if(passes(s.pos.road,s.pos.dir,s.pos.along,toEnd,s.wp)===through.length){
+        // (Planned to the last junction taken: the plan then runs on along the last road.)
+        const route=this.plan(start,Math.max(1e-3,s.cost),1,{forced:s.way});
+        return route.legs.length?route:null;
+      }
+      for(const d of this.decisions(s.pos)){
+        const wp=passes(s.pos.road,s.pos.dir,s.pos.along,d.along,s.wp),cost=s.cost+Math.abs(d.along-s.pos.along);
+        for(const o of d.options){
+          const k=`${o.road.id}|${o.dir}|${Math.round(o.from)}|${wp}`;
+          if((seen.get(k)??Infinity)<=cost)continue;
+          seen.set(k,cost);
+          open.push({pos:{road:o.road,dir:o.dir,along:o.from},cost,wp,way:[...s.way,{road:o.road,dir:o.dir}]});
+        }
+      }
+    }
+    return null;
   }
 
   /**

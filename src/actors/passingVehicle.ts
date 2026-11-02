@@ -4,7 +4,9 @@ import {pointToBox} from '../world/collisions';
 export const BODY_SIZE={car:{halfWidth:.9,halfLength:2.15},cyclist:{halfWidth:.3,halfLength:.9}} as const;
 
 /** The learner's car as other road users see it. */
-export interface LearnerFootprint{pose:Pose;halfWidth:number;halfLength:number}
+export interface LearnerFootprint{pose:Pose;halfWidth:number;halfLength:number;
+  /** Its speed (m/s), for a road user following it. */
+  speed?:number}
 
 /** Gap kept behind the learner's car when this road user has to stop for it. */
 const STOP_GAP=3;
@@ -30,6 +32,9 @@ export class PassingVehicle implements SimModule{
   private braking=false;
   private harsh=false;
   private readonly lengths:number[];
+  /** Follows the learner's car when it is ahead on the path (keeping a gap of about a second), rather than only
+   * braking for it: a car behind it on a decision route. Set by the app; not part of the scenario file. */
+  followsLearner=false;
 
   constructor(
     readonly def:PassingVehicleActorDef,
@@ -54,6 +59,12 @@ export class PassingVehicle implements SimModule{
 
   /** Name used in feedback. */
   get name():string{return this.def.name??this.def.id.replace(/-/g,' ')}
+
+  /** Metres driven along its path. */
+  get travelled():number{return this.s}
+
+  /** The path it drives. */
+  get path(){return this.def.path}
 
   /** True once it has started moving (after its delay). */
   get started():boolean{return this.waited>=this.delay}
@@ -88,7 +99,14 @@ export class PassingVehicle implements SimModule{
   fixedUpdate(dt:Seconds):void{
     if(this.waited<this.delay){this.waited+=dt;return}
     let target=this.cruise;
-    if(this.def.yieldsToLearner&&this.learner){
+    if(this.def.yieldsToLearner&&this.learner&&this.followsLearner){
+      const gap=this.gapToLearner();
+      if(gap<Infinity){
+        const ahead=Math.max(0,this.learner().speed??0);
+        target=Math.max(0,Math.min(this.cruise,ahead+.6*(gap-STOP_GAP-1.2*ahead)));
+        if(this.speed>target)this.speed=Math.max(target,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(1.5,(this.speed-target)*2))*dt);
+      }
+    }else if(this.def.yieldsToLearner&&this.learner){
       const gap=this.gapToLearner();
       // Deceleration needed to stop STOP_GAP short of the learner's car.
       const need=gap<Infinity?this.speed*this.speed/(2*Math.max(gap-STOP_GAP,.1)):0;
@@ -109,7 +127,7 @@ export class PassingVehicle implements SimModule{
         this.harsh=false;
       }
     }
-    if(target>0)this.speed=Math.min(target,this.speed+ACCELERATION[this.def.body]*dt);
+    if(target>0&&this.speed<target)this.speed=Math.min(target,this.speed+ACCELERATION[this.def.body]*dt);
     this.s+=this.speed*dt;
     if(this.s>this.length)this.s=this.def.repeat?0:this.length;
     this.pose=this.sample(this.s);
