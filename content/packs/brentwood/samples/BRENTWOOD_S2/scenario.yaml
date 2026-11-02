@@ -1,0 +1,193 @@
+scenario_id: BRENTWOOD_S2
+set: A # Leaving the centre: Warley Hill, the station, Kings Road and Queen's Road
+skill: Roundabout (approach, give way to traffic on the roundabout, first exit)
+status: sample for review # not rendered into the app until the owner has reviewed it
+centre: "Brentwood (London), 89 Warley Hill, CM14 5JN"
+
+location_and_approach: >-
+  The Queen's Road roundabout (Kings Road B185/B186 with Queen's Road B186), next to the station area. Approaching on
+  Kings Road from the south (from the station), northbound, to the roundabout's south-west entry.
+coordinates: {lat: 51.61594, lon: 0.29982} # the ring's middle; OpenStreetMap ring ways 156867402, 157332436-8, 671087290; entry way 225718673
+intended_movement: "First exit: Kings Road north, towards the High Street"
+journey_role: outbound
+selection_reason: >-
+  The test centre is on Warley Hill, south of the station; journeys towards the town centre and the High Street (the
+  reported test 1 drove the High Street) leave the station area through this roundabout. A small roundabout where
+  circulating traffic arrives quickly from the right.
+
+evidence_basis:
+  - "OpenStreetMap (downloaded 31 October 2026): three arms (Kings Road south, split into one-way in and out roads; Queen's Road, two-way; Kings Road north, split into one-way in and out roads); ring about 9 m radius, one-way clockwise; all 30 mph"
+  - "Map: the Kings Road entry from the south is tagged two lanes; no lane arrows mapped anywhere in Brentwood"
+  - "Map: bus stop 'Queens Road Rbt' (shelter) on Kings Road just south of the roundabout; a signal-controlled pedestrian crossing on Kings Road about 50 m south; Gresham Road joins Kings Road from the east just before the roundabout"
+
+layout_checks:
+  - item: "Junction shape, arms and the order of exits from this entry: Kings Road north (first), Queen's Road (second), Kings Road south (third, back)"
+    status: from map data
+  - item: "Give way lines across the entry at the ring"
+    status: "Expected at every entry (rule 185); the scene draws them; real markings to confirm"
+  - item: "Number of entry lanes and any lane arrows on Kings Road northbound"
+    status: "UNCERTAIN: the map says two lanes, with no arrows. For the first exit the answer is the same either way (left lane, signal left); it would matter for the second exit, so that variant waits for confirmation"
+  - item: "Whether the first exit is to the left or nearly straight ahead"
+    status: "From the map it leaves only a few metres after the entry, close to straight ahead; the Highway Code treatment of a first exit applies (signal left, left lane)"
+  - item: "The bus stop just before the roundabout (not occupied in this scenario)"
+    status: from map data
+  - item: "Sightlines to the right on the ring"
+    status: "The scene shows the ring open to the right (a grass island, no mapped walls); real island planting to confirm"
+
+learning_objective: >-
+  Approach a roundabout for the first exit: mirrors, then signal left, slow down in good time with a car close behind,
+  look right at the give way line, give way to traffic already on the roundabout, then go when it is clear.
+
+starting_state:
+  position: "On Kings Road northbound, about 35 m before the give way line, in the left lane, at about 20 mph (the frozen picture's speedometer reads 0)"
+  already_done:
+    - "Examiner: \"At the roundabout, take the first exit.\""
+  not_yet_done: "Mirrors, signal, slowing, looks at the roundabout"
+
+examiner_instruction: "At the roundabout, take the first exit."
+learner_prompt: "You're approaching the roundabout and the examiner has asked for the first exit. What do you do, in order?"
+
+traffic:
+  - who: "Grey car"
+    where: "Behind, in your lane"
+    movement: "Following at about 14 m (13 mph), then stops 8 m behind you when you wait at the line"
+    why_it_matters: "Check the interior mirror before slowing and signalling; brake early and gently"
+  - who: "Blue car"
+    where: "On the roundabout: came in from Queen's Road and is going round to Kings Road north"
+    movement: "7 m/s (16 mph), clockwise round the ring, passing across your entry, then out at your exit (Kings Road north), not signalling"
+    stage_2: "On the ring to your right, about 17 m round from your entry (2.4 s); a second later, 11 m (1.6 s)"
+    stage_3: "Gone out at Kings Road north, 16 m ahead, going away"
+  - who: "Nobody else on the ring or at Queen's Road"
+    why_it_matters: "Stage 3 is a clear, sustained opportunity to go"
+
+stages:
+  - id: 1
+    moment: "t = 4 s, about 35 m from the line"
+    shows: "The roundabout ahead; the grey car close behind in the interior mirror"
+    images:
+      main: capture/a1-behind.jpg
+      driver: capture/a2-driver.jpg # the interior mirror shows the grey car
+      plan: capture/a3-plan.jpg
+    correct_decision: "Interior mirror, left mirror, signal left, slow down in good time"
+  - id: 2
+    entered_by: "Slowing to the line (brake): the car arrives at the give way line, signalling left"
+    moment: "t = 14 s, at the line"
+    shows: "The blue car coming round from the right, about 2.4 s from your entry; one second later 1.6 s"
+    images:
+      main: capture/b1-behind.jpg
+      main_1s: capture/b4-behind-1s.jpg
+      look_right: capture/b2-right.jpg
+      plan: capture/b3-plan.jpg
+      plan_1s: capture/b5-plan-1s.jpg
+    correct_decision: "Give way: the blue car is already on the roundabout and would reach your path as you came out"
+  - id: 3
+    entered_by: "Give way (wait): time moves on about 4 s, the blue car passes and leaves"
+    moment: "t = 18 s"
+    shows: "The ring clear to the right; the blue car going away along your exit"
+    images:
+      main: capture/c1-behind.jpg
+      look_right: capture/c2-right.jpg
+      plan: capture/c3-plan.jpg
+    correct_decision: "Look right again, then go (first exit), keeping the left signal on"
+
+action_buttons:
+  - {id: check_interior_mirror, label: "Interior mirror", existing: true}
+  - {id: check_left_mirror, label: "Left mirror", existing: true}
+  - {id: check_right_mirror, label: "Right mirror", existing: true}
+  - {id: signal_left, label: "Signal left", existing: true}
+  - {id: signal_right, label: "Signal right", existing: true}
+  - {id: brake, label: "Slow down", existing: true} # in stage 1 it brings the car to the line (stage 2)
+  - {id: right_lane, label: "Move to the right lane", new: true}
+  - {id: look_right, label: "Look right", new: true}
+  - {id: give_way, label: "Give way", existing: true}
+  - {id: enter_roundabout, label: "Go", new: true} # commits: ends the scenario
+
+required_actions:
+  - "Stage 1: check_interior_mirror and check_left_mirror, then signal_left, then brake"
+  - "Stage 2: look_right, then give_way"
+  - "Stage 3: look_right (after the wait), then enter_roundabout"
+
+ordering:
+  - "Mirrors before the signal (both: interior for the grey car, left for anything on the nearside), in either order"
+  - "Interior mirror before slowing (brake) with a car close behind"
+  - "Signal before slowing is the usual order (mirror, signal, manoeuvre); signalling after starting to slow is accepted if the mirrors came first"
+  - "Look right before deciding at the line, and again after waiting, before going"
+
+accepted_sequences:
+  - [check_interior_mirror, check_left_mirror, signal_left, brake, look_right, give_way, look_right, enter_roundabout]
+  - [check_left_mirror, check_interior_mirror, signal_left, brake, look_right, give_way, look_right, enter_roundabout]
+  - [check_interior_mirror, check_left_mirror, brake, signal_left, look_right, give_way, look_right, enter_roundabout]
+  - [check_interior_mirror, check_left_mirror, signal_left, brake, look_right, give_way, look_right, check_left_mirror, enter_roundabout]
+
+conditional_actions:
+  - "check_right_mirror in stage 1: harmless, not required for a first exit (no fault, no credit)"
+  - "check_left_mirror again before going: good practice for the exit (cyclists on the left), not required"
+
+distractors:
+  - {action: signal_right, why: "Wrong for the first exit: right is for exits past twelve o'clock"}
+  - {action: right_lane, why: "First exit: keep to the left lane (rule 186); moving right then cutting back across to exit is a lane fault"}
+  - {action: enter_roundabout in stage 2, why: "The blue car is already on the roundabout and has priority"}
+
+faults:
+  - when: "brake in stage 1 before check_interior_mirror"
+    level: minor
+    heading: "Use of mirrors - change speed"
+    title: "Slowed without checking behind"
+    message: "The grey car was close behind. Check the interior mirror before you slow down. (Recorded when you slowed: a mirror check afterwards does not undo it.)"
+  - when: "signal_left before both mirrors"
+    level: minor
+    heading: "Use of mirrors - signalling"
+    title: "Signalled before the mirrors"
+    message: "Mirrors first, then signal: you need to know who your signal is for."
+  - when: "no signal_left by the end of stage 1"
+    level: minor
+    heading: "Signals - necessary"
+    title: "No signal for the first exit"
+    message: "Signal left on the approach for the first exit and keep it on as you leave."
+    note: "Serious if a road user is shown who would have been misled; none is shown here"
+  - when: "signal_right"
+    level: minor
+    heading: "Signals - correctly"
+    title: "Wrong signal"
+    message: "First exit: signal left. A right signal tells others you are going further round."
+  - when: "right_lane"
+    level: minor
+    heading: "Positioning - lane discipline"
+    title: "Wrong lane"
+    message: "For the first exit keep to the left lane, unless signs or markings say otherwise."
+  - when: "enter_roundabout in stage 2"
+    level: dangerous
+    heading: "Junctions - observation (roundabout)"
+    title: "Pulled out in front of the blue car"
+    message: "The blue car was already on the roundabout, a second or two from your path. Give way to traffic from your right."
+  - when: "enter_roundabout in stage 3 with no look right after the wait"
+    level: minor
+    heading: "Junctions - observation"
+    title: "Out-of-date look"
+    message: "Your last look right was before the blue car passed. Look right again just before you go."
+  - when: "give_way in stage 2 with no look right first"
+    level: minor
+    heading: "Junctions - observation"
+    title: "Waited without looking"
+    message: "Waiting was right, but look right first so you know why you are waiting."
+  - when: "give_way pressed in stage 3 (the ring clear)"
+    level: minor
+    heading: "Progress - undue hesitation"
+    title: "Missed a safe gap"
+    message: "Nothing was coming round from the right: this was the time to go."
+    note: "Only in stage 3: the picture shows the ring clear. Waiting in stage 2 is correct, never hesitation."
+
+feedback_correct: >-
+  Well handled. You checked the mirrors (the grey car was close behind), signalled left and slowed in good time. At the
+  line you looked right, saw the blue car already coming round and gave way. Once it had gone you looked right again
+  and went, with your left signal still on for the first exit.
+
+scene:
+  build: "tools/scenes/build_scene.mjs, scene brentwood-queens-road-roundabout (OpenStreetMap, 31 October 2026)"
+  capture: "tools/scenes/stage.cjs spec.json capture/ (quiet streets: only the scripted road users)"
+  limits:
+    - "Buildings and verges are approximate (decorative); road shape, the island, give way lines and traffic directions follow the map"
+    - "The pictures are frozen moments: the speedometer reads 0"
+    - "The scripted cars cannot show indicators yet; none is needed here (the blue car's path is shown by the second picture)"
+review_status: draft
+production: {capture_seconds: 133}

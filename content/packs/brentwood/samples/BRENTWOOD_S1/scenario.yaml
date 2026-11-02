@@ -1,0 +1,182 @@
+scenario_id: BRENTWOOD_S1
+set: B # West: Kavanaghs Road, London Road and Brook Street (the reported test 1 journey)
+skill: Emerging (turning left out of a side road on to a main road)
+status: sample for review # not rendered into the app until the owner has reviewed it
+centre: "Brentwood (London), 89 Warley Hill, CM14 5JN"
+
+location_and_approach: >-
+  Kavanaghs Road at its north-west end, where it meets London Road (A1023), a T-junction. Approaching along Kavanaghs
+  Road from the south-east, in its left half, to the end of the road.
+coordinates: {lat: 51.61562, lon: 0.28599} # the junction node, OpenStreetMap ways 372684822 (Kavanaghs Road) and 50706545 (London Road)
+intended_movement: "Turn left on to London Road, south-west, towards Brook Street"
+journey_role: outbound
+selection_reason: >-
+  On the owner's reported test 1: "exit from Kavanaghs Road, continue down to Brook Street". A real emerging decision on
+  to a 30 mph main road with traffic both ways.
+
+evidence_basis:
+  - "Owner's account of test 1 (supplied 30-31 October 2026): reported, not independently verified turn by turn"
+  - "OpenStreetMap (downloaded 31 October 2026): Kavanaghs Road residential, 30 mph, two-way, about 6 m wide; London Road primary (A1023), 30 mph, one lane each way (3.5 m lanes), pavements both sides, lit; no signals, crossing, give way or stop sign mapped at the junction"
+
+layout_checks: # what changes the correct answer, and how sure each is
+  - item: "Junction shape: a T, Kavanaghs Road meeting London Road almost square (about 93 degrees)"
+    status: from map data
+  - item: "Traffic directions: two-way both roads; turning left joins the near lane, where traffic comes from the right"
+    status: from map data
+  - item: "Give way lines and triangle at the end of Kavanaghs Road"
+    status: "UNCERTAIN: not mapped. The scene draws a give way triangle on the approach and short give way dashes; real markings to confirm"
+  - item: "Sightlines: anything at the corners (walls, hedges, parked cars, a bus stop) restricting the view right or left"
+    status: "UNCERTAIN: the scene's houses and gardens are approximate (no mapped walls or hedges at the corners); the scene has no parked cars here. If the real view right is restricted, the answer gains 'creep and look again'"
+  - item: "Bus stops: two mapped on London Road about 60-70 m south-west of the mouth (not at it)"
+    status: from map data; not shown occupied in this scenario
+
+learning_objective: >-
+  Emerge from a side road on to a main road: look both ways, judge whether traffic from the right (the lane you join)
+  would have to slow or swerve, wait when it would, look right again after waiting, and go at the safe gap.
+
+starting_state:
+  position: "Stopped at the give way line at the end of Kavanaghs Road, in the left half of the road, front at the line (scene metres [1.3, 4.2], heading 330 degrees)"
+  already_done:
+    - "Examiner: \"At the end of the road, turn left.\""
+    - "Interior mirror and left mirror checked on the approach"
+    - "Signalling left (the indicator is on in the scene)"
+    - "Slowed and stopped at the line"
+  not_yet_done: "Any look along London Road from the line"
+
+examiner_instruction: "At the end of the road, turn left."
+learner_prompt: "You're at the end of Kavanaghs Road, signalling left. What do you do now, in order?"
+
+traffic: # scripted, repeatable (spec.json; positions at each stage from capture/stage.json)
+  - who: "Blue car"
+    from: "the right (north-east), in the near lane of London Road: the lane you would join"
+    movement: "Towards the junction at 12.5 m/s (28 mph), not slowing, not signalling; passes the mouth and carries on south-west"
+    stage_1: "43 m from the mouth (about 3.4 s away)"
+    stage_2: "Passed; 17 m beyond the mouth, going away"
+  - who: "White car"
+    from: "the left (south-west), in the far lane"
+    movement: "Towards and past the junction at 11 m/s (25 mph), not signalling; it stays in its own lane (never in the path of a left turn)"
+    stage_1: "39 m from the mouth"
+    stage_2: "Passed; going away to the north-east"
+  - who: "Silver car"
+    from: "the right, near lane, well behind the blue car"
+    movement: "12.5 m/s (28 mph)"
+    stage_1: "160 m away"
+    stage_2: "102 m away (about 8 s): a sustained safe gap"
+
+stages:
+  - id: 1
+    moment: "t = 6 s"
+    shows: "Blue car coming from the right, 3.4 s away; white car coming from the left in the far lane, 39 m away"
+    images:
+      main: capture/a1-behind.jpg # behind the car: where the learner is (traffic is out of this view)
+      look_right: capture/a2-right.jpg # shown when Look right is pressed
+      look_right_1s: capture/a5-right-1s.jpg # one second later: how fast the blue car is coming
+      look_left: capture/a3-left.jpg # shown when Look left is pressed
+      plan: capture/a4-plan.jpg # from above, for review and for the feedback screen
+      plan_1s: capture/a6-plan-1s.jpg
+    correct_decision: "Wait: the blue car is close enough that it would have to slow if you came out"
+  - id: 2
+    entered_by: "Give way (wait): time moves on about 5 s, the blue and white cars pass"
+    moment: "t = 11 s"
+    shows: "Both cars gone; the silver car 102 m to the right (about 8 s); the left clear"
+    images:
+      main: capture/b1-behind.jpg
+      look_right: capture/b2-right.jpg
+      look_left: capture/b3-left.jpg
+      plan: capture/b4-plan.jpg
+    correct_decision: "Look right again (the last look was before the wait), then go"
+
+action_buttons: # this scenario's set (varied per scenario); ids map to the driving-practice engine (existing ones marked)
+  - {id: look_right, label: "Look right", new: true}
+  - {id: look_left, label: "Look left", new: true}
+  - {id: check_left_mirror, label: "Left mirror", existing: true}
+  - {id: give_way, label: "Give way", existing: true} # wait at the line
+  - {id: creep_forward, label: "Creep forward", new: true}
+  - {id: signal_right, label: "Signal right", existing: true}
+  - {id: sound_horn, label: "Sound horn", new: true}
+  - {id: turn_left, label: "Turn left", existing: true} # commits: ends the scenario
+
+required_actions:
+  - "look_right and look_left in stage 1, in either order, before the decision (give_way or turn_left)"
+  - "give_way in stage 1 (the blue car would have to slow)"
+  - "look_right in stage 2, after the wait and before turn_left (the stage 1 look is out of date once time has moved on)"
+  - "turn_left in stage 2"
+
+ordering:
+  - "Look before deciding: give_way and turn_left are judged on the looks made before them in the same stage"
+  - "The last look before turn_left must include right (traffic in the lane you join comes from the right); a look left after it is fine"
+
+accepted_sequences: # any of these scores as correct; extra harmless actions (a second look, the left mirror) do not change the result
+  - [look_right, look_left, give_way, look_right, turn_left]
+  - [look_left, look_right, give_way, look_right, turn_left]
+  - [look_right, look_left, look_right, give_way, look_right, look_left, turn_left]
+  - [check_left_mirror, look_right, look_left, give_way, look_left, look_right, turn_left]
+
+conditional_actions:
+  - "look_left in stage 2: good practice, not required (the white car has gone and the far lane does not cross a left turn)"
+  - "check_left_mirror at any time: acceptable (a cyclist or pedestrian on the left); no hazard there in this scenario"
+
+distractors:
+  - {action: creep_forward, why: "Nothing restricts the view in this scene, so creeping gains nothing; edging out with the blue car 3 s away can make its driver think you are pulling out"}
+  - {action: signal_right, why: "Wrong direction: misleading to the blue and silver cars' drivers and to pedestrians"}
+  - {action: sound_horn, why: "No one needs warning of your presence; the horn is not used to claim a gap"}
+
+faults: # contextual: graded on what the stage shows; titles and levels as the driving-practice engine shows them
+  - when: "turn_left in stage 1 (before the blue car has passed)"
+    level: serious
+    heading: "Junctions - observation (emerging)"
+    title: "Pulled out in front of the blue car"
+    message: "The blue car was about 3 seconds away in the lane you joined. Coming out made its driver slow down. Wait until nothing from the right would have to slow or swerve."
+  - when: "turn_left with no look right in the same stage"
+    level: serious
+    heading: "Junctions - observation"
+    title: "No look right before pulling out"
+    message: "Traffic in the lane you join comes from the right: look right last, just before you go."
+  - when: "turn_left in stage 2 after looking right only before the wait"
+    level: minor
+    heading: "Junctions - observation"
+    title: "Out-of-date look"
+    message: "Your last look right was before you waited. Things change in 5 seconds: look right again just before you go."
+  - when: "give_way in stage 1 with no look right or left made yet"
+    level: minor
+    heading: "Junctions - observation"
+    title: "Waited without looking"
+    message: "Waiting was right, but you hadn't looked to see why. Look both ways first, then decide. (Recorded even if you look later: a later look does not undo this one.)"
+  - when: "turn_left having never looked left at the line"
+    level: minor
+    heading: "Junctions - observation"
+    title: "No look left"
+    message: "Look left too: a vehicle overtaking towards you, or turning into the road, would be in your way."
+  - when: "give_way pressed in stage 2 (road clear both ways, the silver car about 8 s away)"
+    level: minor
+    heading: "Progress - undue hesitation"
+    title: "Missed a safe gap"
+    message: "The right was clear for about 8 seconds and the left was clear: this was the time to go."
+    note: "Only in stage 2: the picture shows a sustained gap. Waiting in stage 1 is correct, never hesitation."
+  - when: "signal_right"
+    level: minor
+    heading: "Signals - correctly"
+    title: "Wrong signal"
+    message: "You are turning left: a right signal misleads the drivers on London Road."
+  - when: "creep_forward in stage 1"
+    level: none
+    title: "No need to creep"
+    message: "Your view both ways is already clear here. Creep only when parked cars, a bus or a hedge hide the road."
+  - when: "sound_horn"
+    level: none
+    title: "Horn not needed"
+    message: "Use the horn only to warn others of your presence when they may not have seen you."
+
+feedback_correct: >-
+  Good emerging. You looked both ways, saw the blue car was too close for you to come out without making it slow, and
+  waited. After it passed you looked right again, saw the silver car was well back, and went. Turning left you join the
+  near lane, where traffic comes from your right: that is the look that matters last.
+
+scene:
+  build: "tools/scenes/build_scene.mjs, scene brentwood-kavanaghs-road (OpenStreetMap, 31 October 2026)"
+  capture: "tools/scenes/stage.cjs spec.json capture/ (quiet streets: only the scripted road users; no invented parking)"
+  limits:
+    - "Houses and gardens are approximate (decorative); road widths, junction shape and traffic directions follow the map"
+    - "The pictures are frozen moments: the speedometer reads 0"
+review_status: draft
+production: {capture_seconds: 89}

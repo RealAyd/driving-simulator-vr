@@ -1,0 +1,478 @@
+{
+ "spec": {
+  "scene": "brentwood-queens-road-roundabout",
+  "label": "Queen's Road roundabout, Brentwood",
+  "at": [
+   -13.46,
+   46.36,
+   9.1
+  ],
+  "actors": [
+   {
+    "id": "blue-car",
+    "kind": "passing-vehicle",
+    "body": "car",
+    "name": "blue car",
+    "colour": "#2563eb",
+    "speed": 7,
+    "delaySeconds": 0,
+    "repeat": false,
+    "yieldsToLearner": false,
+    "path": [
+     {
+      "x": 61.26,
+      "z": -77.19
+     },
+     {
+      "x": 58.19,
+      "z": -73.54
+     },
+     {
+      "x": 55.11,
+      "z": -69.88
+     },
+     {
+      "x": 52.03,
+      "z": -66.23
+     },
+     {
+      "x": 48.96,
+      "z": -62.57
+     },
+     {
+      "x": 45.88,
+      "z": -58.91
+     },
+     {
+      "x": 42.81,
+      "z": -55.26
+     },
+     {
+      "x": 39.92,
+      "z": -51.7
+     },
+     {
+      "x": 37.28,
+      "z": -47.71
+     },
+     {
+      "x": 34.65,
+      "z": -43.73
+     },
+     {
+      "x": 32.01,
+      "z": -39.74
+     },
+     {
+      "x": 29.38,
+      "z": -35.76
+     },
+     {
+      "x": 26.74,
+      "z": -31.77
+     },
+     {
+      "x": 24.11,
+      "z": -27.79
+     },
+     {
+      "x": 21.42,
+      "z": -23.81
+     },
+     {
+      "x": 18.74,
+      "z": -19.86
+     },
+     {
+      "x": 16.07,
+      "z": -15.9
+     },
+     {
+      "x": 13.39,
+      "z": -11.94
+     },
+     {
+      "x": 10.71,
+      "z": -7.99
+     },
+     {
+      "x": 8.9,
+      "z": 2.4
+     },
+     {
+      "x": 8.3,
+      "z": 4
+     },
+     {
+      "x": 7.6,
+      "z": 4.9
+     },
+     {
+      "x": 6.5,
+      "z": 6.5
+     },
+     {
+      "x": 3.8,
+      "z": 8.3
+     },
+     {
+      "x": 0.5,
+      "z": 8.9
+     },
+     {
+      "x": -3,
+      "z": 8.3
+     },
+     {
+      "x": -6,
+      "z": 6.3
+     },
+     {
+      "x": -8.1,
+      "z": 2.7
+     },
+     {
+      "x": -8.3,
+      "z": -1.9
+     },
+     {
+      "x": -8.8,
+      "z": -9.9
+     },
+     {
+      "x": -12.2,
+      "z": -29.4
+     },
+     {
+      "x": -14.4,
+      "z": -41.3
+     },
+     {
+      "x": -15.3,
+      "z": -45.9
+     }
+    ]
+   },
+   {
+    "id": "grey-car",
+    "kind": "passing-vehicle",
+    "body": "car",
+    "name": "grey car",
+    "colour": "#6b7280",
+    "speed": 6,
+    "delaySeconds": 0,
+    "repeat": false,
+    "yieldsToLearner": false,
+    "path": [
+     {
+      "x": -19.19,
+      "z": 83.94
+     },
+     {
+      "x": -18.5,
+      "z": 79.32
+     },
+     {
+      "x": -17.8,
+      "z": 74.71
+     },
+     {
+      "x": -17.11,
+      "z": 70.1
+     },
+     {
+      "x": -16.42,
+      "z": 65.48
+     },
+     {
+      "x": -15.74,
+      "z": 60.87
+     },
+     {
+      "x": -15.04,
+      "z": 56.24
+     },
+     {
+      "x": -14.3,
+      "z": 51.63
+     },
+     {
+      "x": -13.56,
+      "z": 47.02
+     },
+     {
+      "x": -12.83,
+      "z": 42.41
+     },
+     {
+      "x": -11.89,
+      "z": 37.73
+     },
+     {
+      "x": -10.86,
+      "z": 33.18
+     },
+     {
+      "x": -10.42,
+      "z": 28.78
+     },
+     {
+      "x": -10.04,
+      "z": 24.13
+     },
+     {
+      "x": -9.67,
+      "z": 19.47
+     }
+    ]
+   }
+  ],
+  "moments": [
+   {
+    "t": 4,
+    "shots": [
+     {
+      "name": "a1-behind",
+      "view": "behind",
+      "yaw": 0
+     },
+     {
+      "name": "a2-driver",
+      "view": "driver",
+      "look": [
+       0,
+       0
+      ]
+     },
+     {
+      "name": "a3-plan",
+      "view": "overhead",
+      "overhead": {
+       "x": -6,
+       "z": 22,
+       "height": 70
+      }
+     }
+    ]
+   },
+   {
+    "t": 14,
+    "at": [
+     -9.02,
+     11.5,
+     4.6
+    ],
+    "signal": "left",
+    "shots": [
+     {
+      "name": "b1-behind",
+      "view": "behind",
+      "yaw": -35
+     },
+     {
+      "name": "b2-right",
+      "view": "driver",
+      "look": [
+       70,
+       -4
+      ]
+     },
+     {
+      "name": "b3-plan",
+      "view": "overhead",
+      "overhead": {
+       "x": -1,
+       "z": 6,
+       "height": 55
+      }
+     }
+    ]
+   },
+   {
+    "t": 15,
+    "shots": [
+     {
+      "name": "b4-behind-1s",
+      "view": "behind",
+      "yaw": -35
+     },
+     {
+      "name": "b5-plan-1s",
+      "view": "overhead",
+      "overhead": {
+       "x": -1,
+       "z": 6,
+       "height": 55
+      }
+     }
+    ]
+   },
+   {
+    "t": 18,
+    "shots": [
+     {
+      "name": "c1-behind",
+      "view": "behind",
+      "yaw": -35
+     },
+     {
+      "name": "c2-right",
+      "view": "driver",
+      "look": [
+       70,
+       -4
+      ]
+     },
+     {
+      "name": "c3-plan",
+      "view": "overhead",
+      "overhead": {
+       "x": -1,
+       "z": 6,
+       "height": 55
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "moments": [
+  {
+   "t": 4,
+   "simAt": 4.02,
+   "car": {
+    "x": -13.46,
+    "z": 46.36,
+    "headingDeg": 9.1,
+    "speed": 0,
+    "indicator": "off"
+   },
+   "users": [
+    {
+     "id": "blue-car",
+     "started": true,
+     "x": 43.2,
+     "z": -55.7,
+     "headingDeg": 220,
+     "speed": 7
+    },
+    {
+     "id": "grey-car",
+     "started": true,
+     "x": -15.6,
+     "z": 60.1,
+     "headingDeg": 9,
+     "speed": 6
+    }
+   ],
+   "shots": [
+    "a1-behind",
+    "a2-driver",
+    "a3-plan"
+   ]
+  },
+  {
+   "t": 14,
+   "simAt": 14.07,
+   "car": {
+    "x": -9.02,
+    "z": 11.5,
+    "headingDeg": 4.6,
+    "speed": 0,
+    "indicator": "left"
+   },
+   "users": [
+    {
+     "id": "blue-car",
+     "started": true,
+     "x": 8.1,
+     "z": 4.3,
+     "headingDeg": 218,
+     "speed": 7
+    },
+    {
+     "id": "grey-car",
+     "started": true,
+     "x": -9.7,
+     "z": 19.5,
+     "headingDeg": 5,
+     "speed": 6
+    }
+   ],
+   "shots": [
+    "b1-behind",
+    "b2-right",
+    "b3-plan"
+   ]
+  },
+  {
+   "t": 15,
+   "simAt": 15.08,
+   "car": {
+    "x": -9.02,
+    "z": 11.5,
+    "headingDeg": 4.6,
+    "speed": 0,
+    "indicator": "left"
+   },
+   "users": [
+    {
+     "id": "blue-car",
+     "started": true,
+     "x": 2.6,
+     "z": 8.5,
+     "headingDeg": 260,
+     "speed": 7
+    },
+    {
+     "id": "grey-car",
+     "started": true,
+     "x": -9.7,
+     "z": 19.5,
+     "headingDeg": 5,
+     "speed": 6
+    }
+   ],
+   "shots": [
+    "b4-behind-1s",
+    "b5-plan-1s"
+   ]
+  },
+  {
+   "t": 18,
+   "simAt": 18.1,
+   "car": {
+    "x": -9.02,
+    "z": 11.5,
+    "headingDeg": 4.6,
+    "speed": 0,
+    "indicator": "left"
+   },
+   "users": [
+    {
+     "id": "blue-car",
+     "started": true,
+     "x": -8.5,
+     "z": -4.9,
+     "headingDeg": 356,
+     "speed": 7
+    },
+    {
+     "id": "grey-car",
+     "started": true,
+     "x": -9.7,
+     "z": 19.5,
+     "headingDeg": 5,
+     "speed": 6
+    }
+   ],
+   "shots": [
+    "c1-behind",
+    "c2-right",
+    "c3-plan"
+   ]
+  }
+ ],
+ "seconds": 133,
+ "capturedAt": "2026-11-02T10:12:35.486Z"
+}

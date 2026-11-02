@@ -20,6 +20,11 @@ export interface AreaRequest{
   /** A scene built in advance (tools/scenes/build_scene.mjs), served under scenes/: its pack, named `label` (or any
    * name when `label` is empty: the pack's own is used). */
   scene?:string;
+  /**
+   * A staged scene (scenario captures, tools/scenes/capture.cjs): road users scripted for it (scenario actors) and the
+   * streets quiet otherwise (no background traffic or kerbside parking: what is there is what the decision needs).
+   */
+  stage?:{actors:unknown[]};
 }
 export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
 
@@ -101,6 +106,7 @@ export async function buildArea(asked:AreaRequest,progress:(step:string,percent:
     built='Built just now from OpenStreetMap data';
   }
   const location=parseLocation(raw);
+  if(request.stage)location.streetParking=0;
   const scenario=parseScenario({
     schemaVersion:1,id:`${id}-free-drive`,locationId:id,
     title:`${request.label} (free drive)`,
@@ -108,7 +114,7 @@ export async function buildArea(asked:AreaRequest,progress:(step:string,percent:
     briefing:`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after a minute and a half, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
     rubricId:'none',
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
-    end:{completeAfterSeconds:90,timeLimitSeconds:150}
+    ...(request.stage?{actors:request.stage.actors,end:{timeLimitSeconds:900}}:{end:{completeAfterSeconds:90,timeLimitSeconds:150}})
   });
   const mockTest=parseScenario({
     schemaVersion:1,id:`${id}-mock-test`,locationId:id,

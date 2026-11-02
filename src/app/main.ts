@@ -2369,7 +2369,11 @@ export async function boot():Promise<void>{
     /** Diagnostics (review screenshots): put the car at a point on the road, stationary. Not a driving feature. */
     placeCar:(x:number,z:number,headingDeg:number)=>{vehicle.setSpawn({position:{x,y:0,z},heading:degToRad(headingDeg)});vehicle.reset()},
     /** Diagnostics (scenario captures): open a scene built in advance (public/scenes/<id>.json.gz, named `label`). */
-    openScene:(id:string,label:string)=>/^[a-z0-9-]+$/.test(id)?openArea({label,lat:0,lon:0,scene:id}):Promise.resolve(),
+    openScene:(id:string,label:string,stage?:{actors:unknown[]})=>/^[a-z0-9-]+$/.test(id)?openArea({label,lat:0,lon:0,scene:id,...(stage?{stage}:{})}):Promise.resolve(),
+    /** Diagnostics (scenario captures): an action as the driver's controls give it, e.g. 'indicator-left'. */
+    act:(action:InputAction)=>onAction(action),
+    /** Diagnostics (scenario captures): the camera behind the car, turned `yawDeg` round it (0: looking ahead). */
+    behindView:(on:boolean,yawDeg=0)=>{setBehind(on);if(on)orbit.yaw=degToRad(yawDeg)},
     /** Diagnostics (memory): meshes by name (up to the first digit or dash-digit), with vertices and indices, biggest
      * first; and the instances and textures. */
     meshStats:()=>{
