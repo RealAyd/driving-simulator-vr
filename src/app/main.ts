@@ -127,6 +127,10 @@ import {renderDecisionResults} from '../ui/decisionResults';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
+/** Background road users on a decision test's streets (busier than a drive's: nothing else needs the phone's time). */
+const DECISION_TRAFFIC={cars:26,buses:2,cycles:2};
+/** And kept within this far of the car (metres): a car further off comes back nearer, out of sight. */
+const DECISION_RANGE=180;
 /** A place with roads further than this from its middle (metres; over 2 km across) builds its scenery near the car only. */
 const LARGE_AREA=1000;
 /** How far round the car a large area's houses and street (fog closes in by 650 m), and parked cars (drawn to 160 m), are kept built. */
@@ -676,17 +680,24 @@ export async function boot():Promise<void>{
     if(follower){
       dynamicFootprints.push({id:follower.id,shape:()=>({kind:'box',pose:follower.pose,halfWidth:FOLLOWER_HALF_WIDTH,halfLength:FOLLOWER_HALF_LENGTH})});
     }
-    for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.started||p.shownWaiting});
+    for(const p of passers)dynamicFootprints.push({id:p.id,shape:()=>({kind:'box',pose:p.pose,...p.size}),active:()=>p.present});
     // Traffic lights from the map (generated areas): they run, traffic obeys them, a mock test marks the learner.
     // Exercises that set their own signals (scenario `signals`) keep those instead.
     const trafficSignals=place.signals.length>0&&Object.keys(scenario.signals).length===0?new TrafficSignals(place):null;
     const signalLights=trafficSignals?buildSignalLights(scene,trafficSignals.stops,(x:number,z:number)=>surfaceAt(place,x,z)?.kind==='carriageway'):null;
     for(const pole of signalLights?.poles??[])dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
     // Background traffic on generated areas' roads: solid, never assessed.
-    const level=DIFFICULTIES[difficulty];
+    // (A decision test's streets are busier: the car drives itself, and the traffic is what is to be read.)
+    const decisionStreets=!!decisionAsked&&scenario.locationId===decisionLocation;
+    const level=decisionStreets?{...DIFFICULTIES[difficulty],traffic:DECISION_TRAFFIC}:DIFFICULTIES[difficulty];
     const busStops=place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position);
     const traffic=place.streetParking>0?new Traffic(place,{count:level.traffic.cars+level.traffic.buses+level.traffic.cycles,buses:level.traffic.buses,cycles:level.traffic.cycles,busStops,
-      parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed}),signals:()=>trafficSignals?.stops??[]}):null;
+      parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed}),signals:()=>trafficSignals?.stops??[],
+      // (A decision test keeps the junction in hand to its own road users; the exercise's road users are followed.)
+      keepClear:()=>decision&&runtime?.scenario.id===decision.scenarioId?decision.runner.keepClear():[],
+      // (Oncoming traffic down the learner's road too: the car keeps to its lane.)
+      oncoming:decisionStreets,careful:decisionStreets,...(decisionStreets?{range:DECISION_RANGE}:{}),
+      others:()=>passers.filter(p=>p.present).map(p=>({id:p.id,pose:p.pose,speed:p.started?p.speed:0,halfLength:p.size.halfLength}))}):null;
     boarding=traffic&&level.traffic.buses>0?new BusStopBoarding(busStops,crowd.filter(p=>p.kind==='stander')):null;
     for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
     // Background buses: solid road users that slow for the learner; never assessed.
@@ -701,7 +712,7 @@ export async function boot():Promise<void>{
         :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3))??[]),
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
-      ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.started||p.shownWaiting,roadUserModel(i+1),2*p.size.halfLength)),
+      ...passers.map((p,i)=>vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.present,roadUserModel(i+1),2*p.size.halfLength)),
       ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time,busModels[b.def.deck]))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.
@@ -1790,7 +1801,8 @@ export async function boot():Promise<void>{
     pause:describeBinding(controller.bindings.pause),recentre:describeBinding(controller.bindings.recentre),view:extraBinding('view')?controlName('view'):null});
   const hideTip=()=>{clearTimeout(tipTimer);byId('hud-tip').hidden=true};
   const showTip=(tries=0)=>{
-    if(session.state!=='running')return;
+    // (Not in a decision test: the car drives itself and no control is used.)
+    if(session.state!=='running'||decision)return;
     // Not over the tour (it shows every control) or a Tell me question: after it, or not at all.
     if(tutorial.active||!byId('hud-question').hidden){if(tries<20)tipTimer=window.setTimeout(()=>showTip(tries+1),1500);return}
     const input=tipInput();
@@ -2022,12 +2034,17 @@ export async function boot():Promise<void>{
     // A decision test on this place: the way it drives is planned first (the steering assistance and the off-route
     // check follow it).
     const asked=decisionAsked&&scenario.locationId===decisionLocation?decisionAsked:null;
-    const path=asked?decisionPath(place,asked):null;
+    const path=asked?decisionPath(place,asked,kerbCars):null;
     runtime=buildExercise(path?{...scenario,assistPath:path}:scenario,!!options.familiarisation);
     decision=asked&&path?{route:asked,scenarioId:scenario.id,runner:new DecisionRunner(asked,path,vehicle.params,decisionScene),practice:null,frozen:false,result:null}:null;
-    // (Following the learner's car, a road user keeps a gap behind it rather than only braking for it.)
-    // (A car waiting at a junction is there to be seen before it moves.)
-    if(decision)for(const p of runtime.passers){p.followsLearner=p.def.yieldsToLearner;p.shownWaiting=!!decision.route.actors.find(a=>a.id===p.id)?.waits}
+    // (Following the learner's car, a road user keeps a gap behind it rather than only braking for it. The runner
+    // shows a car waiting at a junction while its challenge is in hand.)
+    // (Background traffic ahead is followed too; and a road user at the end of its way turns off, out of the way.)
+    if(decision)for(const p of runtime.passers){
+      p.followsLearner=p.def.yieldsToLearner;p.goneAtEnd=true;
+      const traffic=runtime.traffic;
+      p.traffic=traffic&&(()=>traffic.cars.filter(c=>c.visible).map(c=>({pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength,speed:c.speed})));
+    }
     document.body.classList.toggle('decision',!!decision);
     attachRunner();
     visitDrive=driveKind(scenarioId);
@@ -2309,6 +2326,8 @@ export async function boot():Promise<void>{
   const decisionScene:RunnerScene={
     car:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:vehicle.state.speed,steerAngle:vehicle.state.steerAngle}),
     actor:id=>runtime?.passers.find(p=>p.id===id),
+    traffic:()=>runtime?.traffic?.cars.filter(c=>c.visible).map(c=>c.pose.position)??[],
+    signals:()=>runtime?.trafficSignals?.stops??[],
     setSignal:side=>{
       const now=vehicle.indicators.state;
       if(side==='off'){if(now!=='off')vehicle.toggleIndicator(now,clock.time)}
@@ -2349,6 +2368,8 @@ export async function boot():Promise<void>{
     decision.result=null;decision.frozen=false;
     decisionPanel.hide();
     decision.runner.begin(decision.practice);
+    // (Background traffic brought in again round where the car now starts, clear of the junctions in hand.)
+    runtime?.traffic?.reset();
     setBehind(true);
     aimCamera(0,null);
   };
@@ -2364,7 +2385,7 @@ export async function boot():Promise<void>{
     decisionAsked=null;
     // (No label: the scene's own name, which the pack is checked against.)
     const id=await openArea({label:'',lat:0,lon:0,scene:route.scene,testCentre:true,
-      stage:{actors:actorDefs(route),title:route.title,briefing:route.briefing,start:{position:{x:route.start.x,z:route.start.z},headingDeg:route.start.headingDeg}}});
+      stage:{actors:actorDefs(route),lived:true,title:route.title,briefing:route.briefing,start:{position:{x:route.start.x,z:route.start.z},headingDeg:route.start.headingDeg}}});
     if(id){decisionAsked=route;decisionLocation=id}
   };
   for(const b of document.querySelectorAll<HTMLButtonElement>('[data-decision-route]'))b.addEventListener('click',()=>{

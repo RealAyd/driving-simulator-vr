@@ -6,8 +6,14 @@ learner judges observations, position, priority and decisions. Pilot: Brentwood 
 
 ## How a test runs
 
-1. The car drives the route with the camera behind and above it. It slows for bends, stops at give way lines and keeps
-   back from road users ahead.
+1. The car drives the route with the camera behind and above it. It keeps to the right lane for each turn, slows
+   for bends, stops at give way lines and red lights, and keeps back from road users ahead.
+   The streets are lived in: parked cars, people on the pavements and background traffic, busier than on a drive
+   (30 road users, two of them buses and two cyclists, kept within about 180 m of the car, oncoming as well as
+   following). Traffic coming out of side roads slows in good time and waits short of the main road.
+   Each junction in hand is kept to its own road users from a little before the direction is given until the car is
+   past it, so the decision is the one depicted. Background traffic takes another way round it, and the challenge's
+   road users are paced to meet the car at the moment shown, even when traffic held it up on the way.
 2. The examiner gives each direction in good time, spoken and shown at the top.
 3. At each decision the traffic that matters is seen moving, then the whole scene stops (car, traffic, people,
    lights). The camera frames the junction.
@@ -49,16 +55,24 @@ A route is data (`src/decision/routes/`), played on a scene built from the map (
 - `through`: the points the drive passes. The way is planned on the scene's roads, keeping to one-way streets
   (`RoadNetwork.planThrough`).
 - `actors`: the road users, each on a path in scene metres. Each waits at the start of its path until a challenge
-  starts it. `waits: true` draws a car waiting at a junction; `yields: true` follows or stops for the learner's car.
+  starts it, and turns off once at its end. `waits: true` draws a car waiting at a junction (while its challenge is in hand); `yields: true` follows
+  or stops for the learner's car. They keep back from background traffic ahead, and it waits for them.
 - For each challenge:
   - the instruction and where it is given;
   - the road users started, and where;
   - for each stage, where the scene stops (on the move, or stopped at a line) and the road user to wait for first;
   - the camera framing, and what the learner is told is already done;
+  - `quiet`: circles round the junction and the approaches its road users come along, kept clear of background
+    traffic while the challenge is in hand;
   - the stages' buttons, rules, accepted orders and explanations.
 
-Check a route with `tests/unit/decisionDrive.test.ts`. It drives the route headless and checks where each pause
-falls, where the traffic is, that nothing is hit and that the car stays on the road. Then use
+Check a route with `tests/unit/decisionDrive.test.ts`. It drives the route headless, with and without background
+traffic in several patterns, and checks:
+
+- where each pause falls, and where the challenge's road users are then;
+- that no background car is coming towards the car in a quiet circle at a pause;
+- that nothing is hit, no red light is run and the car stays on the road;
+- that no parked car stands on the car's way or a road user's path. Then use
 `tests/browser/g40-decision-test.spec.ts`.
 
 ## To confirm (pilot)

@@ -16,6 +16,26 @@ const ALONGSIDE=4;
  * tighter than about 4.3 m. */
 const TIGHTEST_TURN=4.7;
 
+/** Turning right by more than this at the end of a leg (radians) takes the right-hand lane of a one-way road. */
+const RIGHT_TURN=.5;
+
+/**
+ * The lane along a leg (metres left of the centreline): the left lane; on a one-way road of two lanes or more, the
+ * left-hand lane, or the right-hand lane for a right turn at its end (Highway Code rule 186, and rule 177 for a
+ * right turn off a one-way street).
+ */
+function laneFor(leg:RouteLeg,next:RouteLeg|undefined):number{
+  const {count,width}=leg.road.lanes;
+  if(!leg.road.oneway||count<2)return keepLeftOffset(leg.road,HALF_WIDTH);
+  const outer=(count-1)*width/2;
+  if(!next)return outer;
+  const a=pointAtAlong(leg.road,leg.to).direction,b=pointAtAlong(next.road,next.from).direction;
+  const ax=a.x*leg.dir,az=a.z*leg.dir,bx=b.x*next.dir,bz=b.z*next.dir;
+  // (Positive: to the right, clockwise.)
+  const turn=Math.atan2(ax*bz-az*bx,ax*bx+az*bz);
+  return turn>RIGHT_TURN?-outer:outer;
+}
+
 /**
  * The lane path along a mock test route, for assisted steering: points every 3 m in the left lane; past parked
  * cars, out towards the crown of the road (as a driver would), or between cars parked on both sides, easing in and
@@ -26,7 +46,7 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
   onRoad?:(x:number,z:number)=>boolean):Vec2[]{
   const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number}>=[];
   for(const [legIndex,leg] of legs.entries()){
-    const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=keepLeftOffset(leg.road,HALF_WIDTH);
+    const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=laneFor(leg,legs[legIndex+1]);
     for(let k=0;k<=n;k++){
       const p=pointAtAlong(leg.road,leg.from+(leg.to-leg.from)*k/n),dx=p.direction.x*leg.dir,dz=p.direction.z*leg.dir;
       let hi=lane,lo=-Infinity;

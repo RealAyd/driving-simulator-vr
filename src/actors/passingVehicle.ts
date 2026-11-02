@@ -37,6 +37,11 @@ export class PassingVehicle implements SimModule{
   followsLearner=false;
   /** Drawn (and solid) while waiting to start, not only once moving: a car waiting at a junction. Set by the app. */
   shownWaiting=false;
+  /** Its speed held to at most this now (m/s), or null: a decision test paces a road user to meet the learner's car
+   * at the moment depicted. Set by the runner. */
+  pace:number|null=null;
+  /** Other traffic on the roads (background cars): followed when on its path ahead, keeping a gap. Set by the app. */
+  traffic:(()=>ReadonlyArray<LearnerFootprint>)|null=null;
 
   constructor(
     readonly def:PassingVehicleActorDef,
@@ -71,6 +76,13 @@ export class PassingVehicle implements SimModule{
   /** True once it has started moving (after its delay). */
   get started():boolean{return this.waited>=this.delay}
 
+  /** Gone once at the end of its path (turned off, out of the way of the traffic behind), rather than left standing
+   * there. Set by the app. */
+  goneAtEnd=false;
+
+  /** Drawn and solid now: on its way (or at its path's end, unless gone), or waiting where it is shown waiting. */
+  get present():boolean{return this.started?!(this.goneAtEnd&&!this.def.repeat&&this.s>=this.length):this.shownWaiting}
+
   /** Timing for this attempt (variants); takes effect from the next reset. */
   setTiming(delaySeconds:number,speed?:number):void{
     this.delay=delaySeconds;
@@ -88,9 +100,13 @@ export class PassingVehicle implements SimModule{
 
   /** Free distance ahead along the path before the learner's car, or Infinity. */
   gapToLearner(lookahead=45):number{
-    if(!this.learner)return Infinity;
-    const l=this.learner();
+    return this.learner?this.gapTo(this.learner(),lookahead):Infinity;
+  }
+
+  /** Free distance ahead along the path before a road user, or Infinity. */
+  private gapTo(l:LearnerFootprint,lookahead=45):number{
     const {halfWidth,halfLength}=this.size;
+    if(Math.hypot(l.pose.position.x-this.pose.position.x,l.pose.position.z-this.pose.position.z)>lookahead+halfLength+l.halfLength+2)return Infinity;
     for(let d=0;d<=lookahead;d+=.5){
       const p=this.sample(this.s+halfLength+d).position;
       if(pointToBox(p.x,p.z,l.pose,l.halfWidth,l.halfLength)<halfWidth+.25)return d;
@@ -100,7 +116,8 @@ export class PassingVehicle implements SimModule{
 
   fixedUpdate(dt:Seconds):void{
     if(this.waited<this.delay){this.waited+=dt;return}
-    let target=this.cruise;
+    let target=this.pace===null?this.cruise:Math.min(this.cruise,this.pace);
+    if(this.speed>target)this.speed=Math.max(target,this.speed-1.5*dt);
     if(this.def.yieldsToLearner&&this.learner&&this.followsLearner){
       const gap=this.gapToLearner();
       if(gap<Infinity){
@@ -129,6 +146,16 @@ export class PassingVehicle implements SimModule{
         this.harsh=false;
       }
     }
+    // Background traffic ahead on its path: followed with a gap, as the learner is.
+    for(const o of this.traffic?.()??[]){
+      const gap=this.gapTo(o);
+      if(gap===Infinity)continue;
+      const lead=Math.max(0,o.speed??0),want=Math.max(0,Math.min(this.cruise,lead+.6*(gap-STOP_GAP-1.2*lead)));
+      if(want<target){
+        target=want;
+        if(this.speed>target)this.speed=Math.max(target,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(1.5,(this.speed-target)*2))*dt);
+      }
+    }
     if(target>0&&this.speed<target)this.speed=Math.min(target,this.speed+ACCELERATION[this.def.body]*dt);
     this.s+=this.speed*dt;
     if(this.s>this.length)this.s=this.def.repeat?0:this.length;
@@ -137,6 +164,7 @@ export class PassingVehicle implements SimModule{
 
   reset():void{
     this.s=0;
+    this.pace=null;
     this.waited=0;
     this.speed=this.cruise;
     this.braking=false;

@@ -23,7 +23,8 @@ export interface RouteActor{
   id:string;name:string;colour:string;speed:number;path:readonly Vec2[];
   /** Brakes for the learner's car when it is in the way (a car following it). */
   yields?:boolean;
-  /** Seen waiting at the start of its path before it moves (a car waiting to come out of a junction). */
+  /** Seen waiting at the start of its path before it moves (a car waiting to come out of a junction), while the
+   * challenge that starts it is in hand. */
   waits?:boolean;
 }
 
@@ -39,6 +40,9 @@ export interface ChallengeDef extends ChallengeLogic{
   place:Record<string,StagePlace>;
   /** The challenge is over (signal cancelled) once the car passes here. */
   endAt:Vec2;
+  /** Kept to the challenge's own road users while it is in hand: background traffic keeps out of these circles (the
+   * junction, and the approaches its road users come along), so the decision is the one depicted. */
+  quiet:readonly {x:number;z:number;radius:number}[];
 }
 
 export interface StagePlace{

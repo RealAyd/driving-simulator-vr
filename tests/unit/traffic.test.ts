@@ -57,7 +57,7 @@ describe('Background traffic (generated areas)',()=>{
       shares.push(n/(120*30));
     }
     expect(shares.reduce((s,x)=>s+x,0)/shares.length,`by seed: ${shares.map(x=>(x*100).toFixed(2)+'%').join(' ')}`).toBeLessThan(.01);
-    expect(Math.max(...shares)).toBeLessThan(.04);
+    expect(Math.max(...shares),`by seed: ${shares.map(x=>(x*100).toFixed(2)+"%").join(" ")}`).toBeLessThan(.04);
     expect(traffic.cars.filter(c=>c.kind==='bus').length).toBe(2);
     // A bus called at a stop (stood beside it) at some point.
     expect(busStopped).toBeGreaterThan(30);

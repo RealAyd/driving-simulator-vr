@@ -25,6 +25,9 @@ export interface AreaRequest{
    * streets quiet otherwise (no background traffic or kerbside parking: what is there is what the decision needs).
    */
   stage?:{actors:unknown[];
+    /** Lived in as anywhere else (parked cars, people, background traffic), not quiet: a decision test, which keeps
+     * each junction in hand to its own road users. */
+    lived?:boolean;
     /** A decision mock test on the scene: its name, briefing and where the drive starts. */
     title?:string;briefing?:string;start?:{position:{x:number;z:number};headingDeg:number}};
 }
@@ -108,7 +111,7 @@ export async function buildArea(asked:AreaRequest,progress:(step:string,percent:
     built='Built just now from OpenStreetMap data';
   }
   const location=parseLocation(raw);
-  if(request.stage)location.streetParking=0;
+  if(request.stage&&!request.stage.lived)location.streetParking=0;
   const scenario=parseScenario({
     schemaVersion:1,id:`${id}-free-drive`,locationId:id,
     title:request.stage?.title??`${request.label} (free drive)`,
