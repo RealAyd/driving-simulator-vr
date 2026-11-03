@@ -320,7 +320,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       // The mini-roundabout and the stretch of William Hunter Way the green car comes along.
       quiet:[{x:185,z:-490,radius:30},{x:240,z:-505,radius:30},{x:275,z:-516,radius:18}],
       place:{
-        line:{pause:{kind:'stop',at:{x:177.8,z:-484}},when:{actor:'green-car',at:{x:233.4,z:-503.5}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.2},
+        line:{pause:{kind:'stop',at:{x:177.8,z:-484}},when:{actor:'green-car',at:{x:233.4,z:-503.5}},frame:{yaw:-30,pitch:20},
           state:'At the give way line. The app has checked the mirrors and slowed down.'}
       },
       stages:[

@@ -2314,7 +2314,8 @@ export async function boot():Promise<void>{
   /** The framing of a decision: from behind the car, turned and raised; or from the driver's seat, looking ahead. */
   const showFrame=(frame:{yaw:number;pitch:number;shift?:number;view?:'driver'})=>{
     forwardView();
-    if(frame.view==='driver'){if(behind)setBehind(false);return}
+    // (From the driver's seat, looking level along the road at what is ahead, not down at the dashboard.)
+    if(frame.view==='driver'){if(behind)setBehind(false);glance=0;return}
     if(!behind)setBehind(true);
     aimCamera(frame.yaw,frame.pitch,frame.shift);
   };
@@ -2468,7 +2469,8 @@ export async function boot():Promise<void>{
       camera.position.set(from.x,from.y,from.z);
       camera.setTarget(new Vector3(to.x,to.y,to.z));
     }else{
-      glance+=Math.max(-dt*.5,Math.min(dt*.5,(heldView||viewer.active?0:FORWARD_GLANCE)-glance));
+      // (Level, not glancing down at the road just ahead: a held view, a headset, or a decision framed from the seat.)
+      glance+=Math.max(-dt*.5,Math.min(dt*.5,(heldView||viewer.active||decisionFrame?.view==='driver'?0:FORWARD_GLANCE)-glance));
       const across=Math.hypot(look.x,look.z);
       camera.position.set(eye.x,eye.y,eye.z);
       camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y-Math.tan(glance)*across,eye.z+look.z));
