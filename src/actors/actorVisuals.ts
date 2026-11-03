@@ -179,7 +179,9 @@ export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts')
     body.mesh(`${bus.id}-bus-body`,scene,m,root);
   }
   const lampMats={left:mat(scene,`${bus.id}-bus-lamps-left`,new Color3(.35,.22,.05)),right:mat(scene,`${bus.id}-bus-lamps-right`,new Color3(.35,.22,.05))};
-  for(const side of ['left','right'] as const){lampMats[side].backFaceCulling=false;lamps[side].mesh(`${bus.id}-bus-lamps-${side}`,scene,lampMats[side],root)}
+  // (Shown only while lit, as a car's.)
+  const lampMeshes={left:lamps.left.mesh(`${bus.id}-bus-lamps-left`,scene,lampMats.left,root),right:lamps.right.mesh(`${bus.id}-bus-lamps-right`,scene,lampMats.right,root)};
+  for(const side of ['left','right'] as const){lampMats[side].backFaceCulling=false;lampMats[side].emissiveColor.set(1,.6,.08);lampMeshes[side].isVisible=false}
   let travelled=0,last={...bus.pose.position};
   return {
     update(){
@@ -191,7 +193,7 @@ export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts')
         model.roll(copy,travelled);
       }
       const side=bus.indicating===true?'right':bus.indicating===false?'off':bus.indicating,on=Math.floor(time()*3)%2===0;
-      for(const s of ['left','right'] as const){const lit=side===s&&on;lampMats[s].emissiveColor.set(lit?1:0,lit?.6:0,lit?.08:0)}
+      for(const s of ['left','right'] as const)lampMeshes[s].isVisible=side===s&&on;
     },
     dispose:()=>root.dispose(false,true)
   };
@@ -260,15 +262,20 @@ export type Indicating='left'|'right'|'off';
  */
 function indicatorLamps(scene:Scene,root:TransformNode,id:string,body:{left:number;right:number;front:number;back:number;y:number}){
   const lampMat=(side:string)=>{const m=mat(scene,`${id}-indicator-${side}`,new Color3(.35,.22,.05));m.backFaceCulling=false;return m};
-  const left=lampMat('left'),right=lampMat('right');
-  // (At the body's corners, just inside its outline.)
-  for(const [x,m] of [[body.left+.1,left],[body.right-.1,right]] as const)for(const z of [body.front+.08,body.back-.08]){
+  const left=lampMat('left'),right=lampMat('right'),meshes={left:[] as Mesh[],right:[] as Mesh[]};
+  // (At the body's corners, just inside its outline. Shown only while lit: unlit, a box on the body reads as a dark
+  // mark, not a lamp.)
+  for(const [x,m,s] of [[body.left+.1,left,'left'],[body.right-.1,right,'right']] as const)for(const z of [body.front+.08,body.back-.08]){
     const lamp=CreateBox(`${id}-indicator`,{width:.16,height:.09,depth:.12},scene);
-    lamp.position.set(x,body.y,z);lamp.material=m;lamp.parent=root;lamp.isPickable=false;
+    lamp.position.set(x,body.y,z);lamp.material=m;lamp.parent=root;lamp.isPickable=false;lamp.isVisible=false;
+    meshes[s].push(lamp);
   }
   return (side:Indicating,time:number)=>{
     const on=Math.floor(time*3)%2===0;
-    for(const [m,s] of [[left,'left'],[right,'right']] as const){const lit=side===s&&on;m.emissiveColor.set(lit?1:0,lit?.6:0,lit?.08:0)}
+    for(const [m,s] of [[left,'left'],[right,'right']] as const){
+      const lit=side===s&&on;m.emissiveColor.set(1,.6,.08);
+      for(const lamp of meshes[s])lamp.isVisible=lit;
+    }
   };
 }
 
