@@ -1,5 +1,5 @@
 import {applyPose,rotationYFromHeading} from '../engine/babylonAdapter';
-import {Color3,CreateBox,Mesh,StandardMaterial,TransformNode,VertexData,type Scene} from '../engine/babylon';
+import {Color3,CreateBox,CreatePlane,Mesh,Ray,StandardMaterial,TransformNode,Vector3,VertexData,type AbstractMesh,type Scene} from '../engine/babylon';
 import type {Appearance} from '../world/crowd';
 import type {Figure} from '../world/peopleMesh';
 import type {CarModel} from '../assets/models';
@@ -260,22 +260,69 @@ export type Indicating='left'|'right'|'off';
  * signalled, dim otherwise. `update` takes the side and the time now (wall-clock time: they go on flashing while
  * the scene is paused, for a decision about a road user's signal).
  */
-function indicatorLamps(scene:Scene,root:TransformNode,id:string,body:{left:number;right:number;front:number;back:number;y:number}){
-  const lampMat=(side:string)=>{const m=mat(scene,`${id}-indicator-${side}`,new Color3(.35,.22,.05));m.backFaceCulling=false;return m};
-  const left=lampMat('left'),right=lampMat('right'),meshes={left:[] as Mesh[],right:[] as Mesh[]};
-  // (At the body's corners, just inside its outline. Shown only while lit: unlit, a box on the body reads as a dark
-  // mark, not a lamp.)
-  for(const [x,m,s] of [[body.left+.1,left,'left'],[body.right-.1,right,'right']] as const)for(const z of [body.front+.08,body.back-.08]){
-    const lamp=CreateBox(`${id}-indicator`,{width:.16,height:.09,depth:.12},scene);
-    lamp.position.set(x,body.y,z);lamp.material=m;lamp.parent=root;lamp.isPickable=false;lamp.isVisible=false;
-    meshes[s].push(lamp);
+/** One indicator lamp: where it is on the body (the car's own frame) and the way it faces out. */
+interface Lamp{side:'left'|'right';x:number;y:number;z:number;nx:number;nz:number;w:number;h:number}
+
+/**
+ * Where a car's indicators are, as on a real car: at the outer corners of the headlights (and round them), in the
+ * tail lights, and a small repeater on each front wing behind the wheel. Found on the body itself (a ray in from outside to its surface,
+ * in the car's frame, the root at the origin): `box` is the body's extent, `meshes` what a ray can hit (none: the box).
+ */
+function lampPlaces(box:{min:Vector3;max:Vector3},meshes:readonly AbstractMesh[]):Lamp[]{
+  const {min,max}=box,height=max.y-min.y,length=max.z-min.z;
+  // (The box's width takes in the mirrors; the lamps are a little in from the body's sides.)
+  const half=(max.x-min.x)/2,cx=(min.x+max.x)/2;
+  const hit=(from:Vector3,dir:Vector3,fallback:number):number=>{
+    const ray=new Ray(from,dir,20);let best=Infinity;
+    for(const m of meshes){const r=ray.intersectsMesh(m as Mesh,false);if(r.hit&&r.distance<best)best=r.distance}
+    return best<Infinity?best:fallback;
+  };
+  const lamps:Lamp[]=[];
+  for(const [side,sx] of [['left',-1],['right',1]] as const){
+    const x=cx+sx*half*.74;
+    // Front: headlight height, just outside the surface (facing forward, −z).
+    const fy=min.y+height*.46,fz=min.z-1+hit(new Vector3(x,fy,min.z-1),new Vector3(0,0,1),1);
+    lamps.push({side,x,y:fy,z:fz-.012,nx:0,nz:-1,w:.15,h:.07});
+    // And round the corner of the headlight (seen from the side at an angle, as most cars' are).
+    {
+      const n={x:sx*Math.SQRT1_2,z:-Math.SQRT1_2},px=cx+sx*half*.86,pz=min.z+length*.05;
+      const d=hit(new Vector3(px+n.x,fy,pz+n.z),new Vector3(-n.x,0,-n.z),1);
+      lamps.push({side,x:px+n.x*(1-d+.012),y:fy,z:pz+n.z*(1-d+.012),nx:n.x,nz:n.z,w:.1,h:.07});
+    }
+    // Rear: in the tail light, a little higher (facing back, +z).
+    const ry=min.y+height*.55,rz=max.z+1-hit(new Vector3(x,ry,max.z+1),new Vector3(0,0,-1),1);
+    lamps.push({side,x,y:ry,z:rz+.012,nx:0,nz:1,w:.14,h:.08});
+    // Side repeater: on the front wing, behind the wheel arch (facing out to that side).
+    const wz=min.z+length*.27,wy=min.y+height*.5;
+    const wx=sx*(half+1)+cx-sx*hit(new Vector3(cx+sx*(half+1),wy,wz),new Vector3(-sx,0,0),1);
+    lamps.push({side,x:wx+sx*.012,y:wy,z:wz,nx:sx,nz:0,w:.09,h:.04});
+  }
+  return lamps;
+}
+
+/**
+ * A car's indicator lamps: small amber plates on its body, each facing out its own way (seen only from that side: the
+ * rear ones not from in front), flashing at 1.5 Hz on the side signalled. Shown only while lit: unlit, a mark on the
+ * body reads as a dark spot, not a lamp. `update` takes the side and the time now (wall-clock time: they go on
+ * flashing while the scene is paused, for a decision about a road user's signal).
+ */
+function indicatorLamps(scene:Scene,root:TransformNode,id:string,places:readonly Lamp[]){
+  const lampMat=(side:string)=>{
+    const m=mat(scene,`${id}-indicator-${side}`,new Color3(.35,.22,.05));
+    m.emissiveColor.set(1,.6,.08);m.backFaceCulling=true;
+    return m;
+  };
+  const mats={left:lampMat('left'),right:lampMat('right')},meshes={left:[] as Mesh[],right:[] as Mesh[]};
+  for(const l of places){
+    const lamp=CreatePlane(`${id}-indicator`,{width:l.w,height:l.h},scene);
+    // (A plane faces −z; turned to face out along (nx, nz).)
+    lamp.rotation.y=Math.atan2(-l.nx,-l.nz);
+    lamp.position.set(l.x,l.y,l.z);lamp.material=mats[l.side];lamp.parent=root;lamp.isPickable=false;lamp.isVisible=false;
+    meshes[l.side].push(lamp);
   }
   return (side:Indicating,time:number)=>{
     const on=Math.floor(time*3)%2===0;
-    for(const [m,s] of [[left,'left'],[right,'right']] as const){
-      const lit=side===s&&on;m.emissiveColor.set(1,.6,.08);
-      for(const lamp of meshes[s])lamp.isVisible=lit;
-    }
+    for(const s of ['left','right'] as const)for(const lamp of meshes[s])lamp.isVisible=side===s&&on;
   };
 }
 
@@ -293,10 +340,11 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
   if(shape==='car'&&model){
     const copy=model.instantiate(root,id,colour,length);
     if(signals){
-      // (Fitted to the model as drawn: its body is a little shorter and narrower than its collision box.)
+      // (Found on the model as drawn, before it is placed: the root still at the origin, facing −z.)
       root.computeWorldMatrix(true);
-      const {min,max}=root.getHierarchyBoundingVectors(true);
-      lamps=indicatorLamps(scene,root,id,{left:min.x,right:max.x,front:min.z,back:max.z,y:min.y+(max.y-min.y)*.47});
+      const parts=root.getChildMeshes(false).filter(m=>m.getTotalVertices()>0);
+      for(const m of parts){m.computeWorldMatrix(true);m.refreshBoundingInfo({})}
+      lamps=indicatorLamps(scene,root,id,lampPlaces(root.getHierarchyBoundingVectors(true),parts));
     }
     let travelled=0,last=pose().position;
     return {
@@ -348,7 +396,7 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
   cabin.position.set(0,1.18,.25);cabin.material=mat(scene,`${id}-glass`,new Color3(.12,.14,.18));cabin.parent=root;
   const roof=CreateBox(`${id}-roof`,{width:1.62,height:.08,depth:2.0},scene);
   roof.position.set(0,1.44,.3);roof.material=paint;roof.parent=root;
-  if(shape==='car'&&signals)lamps=indicatorLamps(scene,root,id,{left:-.89,right:.89,front:-length/2,back:length/2,y:.7});
+  if(shape==='car'&&signals)lamps=indicatorLamps(scene,root,id,lampPlaces({min:new Vector3(-.89,0,-length/2),max:new Vector3(.89,1.45,length/2)},[]));
   return {
     update(){root.setEnabled(visible());applyPose(root,pose());flash()},
     dispose:()=>root.dispose(false,true)
