@@ -27,6 +27,8 @@ export interface RouteActor{
   yields?:boolean;
   /** Stays parked at the end of its path (turned into a car park) rather than turning off out of sight. */
   parks?:boolean;
+  /** Its indicators where its path's turns alone do not tell (round a roundabout): a side from one point to another. */
+  signals?:readonly {from:Vec2;to:Vec2;side:'left'|'right'|'off'}[];
   /** Seen waiting at the start of its path before it moves (a car waiting to come out of a junction), while the
    * challenge that starts it is in hand. */
   waits?:boolean;

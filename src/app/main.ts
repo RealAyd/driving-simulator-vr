@@ -127,6 +127,8 @@ import {renderDecisionResults} from '../ui/decisionResults';
 
 const LOOK_SENSITIVITY=.004;
 const SIM_STEP=1/60;
+/** Indicators flash by wall-clock time (seconds): on while the scene is paused, for a decision about a signal. */
+const flashTime=()=>performance.now()/1000;
 /** Background road users on a decision test's streets (busier than a drive's: nothing else needs the phone's time). */
 const DECISION_TRAFFIC={cars:26,buses:2,cycles:2};
 /** And kept within this far of the car (metres): a car further off comes back nearer, out of sight. */
@@ -715,12 +717,12 @@ export async function boot():Promise<void>{
     for(const f of figures)people.add(f);
     const visuals=[
       ...(traffic?.cars.map((c,i)=>c.kind==='bus'
-        ?busVisual(scene,{id:c.id,get pose(){return c.pose},get visible(){return c.visible},indicating:false,def:{colour:c.colour}},BUS_SIZE,()=>clock.time,busModels[i%2?'double':'single'])
+        ?busVisual(scene,{id:c.id,get pose(){return c.pose},get visible(){return c.visible},get indicating(){return c.indicating??'off'},def:{colour:c.colour}},BUS_SIZE,flashTime,busModels[i%2?'double':'single'])
         :c.kind==='cycle'?vehicleVisual(scene,c.id,c.colour,()=>c.pose,'cyclist',()=>c.visible)
-        :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3))??[]),
+        :vehicleVisual(scene,c.id,c.colour,()=>c.pose,'car',()=>c.visible,roadUserModel(i),4.3,{side:()=>c.indicating??'off',time:flashTime}))??[]),
 
       ...(follower?[vehicleVisual(scene,follower.id,follower.def.colour,()=>follower.pose,'car',()=>true,carModel,2*FOLLOWER_HALF_LENGTH)]:[]),
-      ...passers.flatMap((p,i)=>p.def.body==='pedestrian'?[]:[vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.present,roadUserModel(i+1),2*p.size.halfLength)]),
+      ...passers.flatMap((p,i)=>p.def.body==='pedestrian'?[]:[vehicleVisual(scene,p.id,p.def.colour,()=>p.pose,p.def.body,()=>p.present,roadUserModel(i+1),2*p.size.halfLength,{side:()=>p.indicating,time:flashTime})]),
       ...buses.map(b=>busVisual(scene,b,BUS_SIZE,()=>clock.time,busModels[b.def.deck]))
     ];
     // Route guidance on the road is optional: off for an independent attempt, on while learning the controls.

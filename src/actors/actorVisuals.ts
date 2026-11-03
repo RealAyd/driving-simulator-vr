@@ -114,8 +114,8 @@ class Shapes{
  * A generic single-deck bus (project-owned shapes, no operator's livery, no route or destination shown),
  * forward −z, nearside (doors) on −x, exactly filling its collision box.
  */
-function busBody(paint:RGB,W:number,L:number,H:number):{body:Shapes;lamps:Shapes}{
-  const g=new Shapes(),lamps=new Shapes();
+function busBody(paint:RGB,W:number,L:number,H:number):{body:Shapes;lamps:{left:Shapes;right:Shapes}}{
+  const g=new Shapes(),lampsBy={left:new Shapes(),right:new Shapes()};
   const skirt:RGB=[.25,.26,.28],glass:RGB=[.1,.12,.15],tyre:RGB=[.06,.06,.06],hub:RGB=[.5,.5,.52],roof:RGB=[.8,.81,.82];
   const w=W/2,l=L/2,o=.012;
   g.box(0,.32,0,W,.6,L,skirt,'+x-x+z-z');
@@ -152,12 +152,13 @@ function busBody(paint:RGB,W:number,L:number,H:number):{body:Shapes;lamps:Shapes
   for(const side of [-1,1]){
     g.box(side*(w-.28),.55,-l-o*2,.32,.18,.001,[.95,.95,.9],'-z');
     g.box(side*(w-.2),.55,l+o*2,.22,.4,.001,[.6,.05,.05],'+z');
-    // Indicators (separate mesh: they flash).
+    // Indicators (separate meshes, a side each: they flash).
+    const lamps=side<0?lampsBy.left:lampsBy.right;
     lamps.box(side*(w-.06),.82,-l-o*3,.14,.12,.001,[1,.62,.1],'-z');
     lamps.box(side*(w-.06),1.05,l+o*3,.14,.12,.001,[1,.62,.1],'+z');
     lamps.box(side*(w+o*3),.75,-l+1.2,.001,.1,.25,[1,.62,.1],side>0?'+x':'-x');
   }
-  return {body:g,lamps};
+  return {body:g,lamps:lampsBy};
 }
 
 /**
@@ -165,7 +166,9 @@ function busBody(paint:RGB,W:number,L:number,H:number):{body:Shapes;lamps:Shapes
  * turning with the distance driven; otherwise simple shapes in the bus's colour. Hidden once it has left;
  * indicators flash (1.5 Hz) while it signals to pull away.
  */
-export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts').Pose;visible:boolean;indicating:boolean;def:{colour:string}},size:{halfWidth:number;halfLength:number;height:number},time:()=>number,model:CarModel|null=null){
+export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts').Pose;visible:boolean;
+  /** Signalling: to pull away from a stop (true: the offside, right), or a side for a turn. */
+  indicating:boolean|Indicating;def:{colour:string}},size:{halfWidth:number;halfLength:number;height:number},time:()=>number,model:CarModel|null=null){
   const root=new TransformNode(`actor-${bus.id}`,scene);
   const c=Color3.FromHexString(bus.def.colour);
   const {body,lamps}=busBody([c.r,c.g,c.b],size.halfWidth*2,size.halfLength*2,size.height);
@@ -175,9 +178,8 @@ export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts')
     m.backFaceCulling=false;m.twoSidedLighting=true;
     body.mesh(`${bus.id}-bus-body`,scene,m,root);
   }
-  const lampMat=mat(scene,`${bus.id}-bus-lamps`,new Color3(.35,.22,.05));
-  lampMat.backFaceCulling=false;
-  const lampMesh=lamps.mesh(`${bus.id}-bus-lamps`,scene,lampMat,root);
+  const lampMats={left:mat(scene,`${bus.id}-bus-lamps-left`,new Color3(.35,.22,.05)),right:mat(scene,`${bus.id}-bus-lamps-right`,new Color3(.35,.22,.05))};
+  for(const side of ['left','right'] as const){lampMats[side].backFaceCulling=false;lamps[side].mesh(`${bus.id}-bus-lamps-${side}`,scene,lampMats[side],root)}
   let travelled=0,last={...bus.pose.position};
   return {
     update(){
@@ -188,9 +190,8 @@ export function busVisual(scene:Scene,bus:{id:string;pose:import('../contracts')
         last={...bus.pose.position};
         model.roll(copy,travelled);
       }
-      const lit=bus.indicating&&Math.floor(time()*3)%2===0;
-      lampMat.emissiveColor.set(lit?1:0,lit?.6:0,lit?.08:0);
-      lampMesh.isVisible=true;
+      const side=bus.indicating===true?'right':bus.indicating===false?'off':bus.indicating,on=Math.floor(time()*3)%2===0;
+      for(const s of ['left','right'] as const){const lit=side===s&&on;lampMats[s].emissiveColor.set(lit?1:0,lit?.6:0,lit?.08:0)}
     },
     dispose:()=>root.dispose(false,true)
   };
@@ -249,15 +250,47 @@ function cyclistLegs(a:number):Shapes{
   return g;
 }
 
+/** Which way a road user is signalling. */
+export type Indicating='left'|'right'|'off';
+
+/**
+ * Indicator lamps at a car's four corners (forward −z, left −x): amber, flashing (1.5 Hz, as the bus's) on the side
+ * signalled, dim otherwise. `update` takes the side and the time now (wall-clock time: they go on flashing while
+ * the scene is paused, for a decision about a road user's signal).
+ */
+function indicatorLamps(scene:Scene,root:TransformNode,id:string,body:{left:number;right:number;front:number;back:number;y:number}){
+  const lampMat=(side:string)=>{const m=mat(scene,`${id}-indicator-${side}`,new Color3(.35,.22,.05));m.backFaceCulling=false;return m};
+  const left=lampMat('left'),right=lampMat('right');
+  // (At the body's corners, just inside its outline.)
+  for(const [x,m] of [[body.left+.1,left],[body.right-.1,right]] as const)for(const z of [body.front+.08,body.back-.08]){
+    const lamp=CreateBox(`${id}-indicator`,{width:.16,height:.09,depth:.12},scene);
+    lamp.position.set(x,body.y,z);lamp.material=m;lamp.parent=root;lamp.isPickable=false;
+  }
+  return (side:Indicating,time:number)=>{
+    const on=Math.floor(time*3)%2===0;
+    for(const [m,s] of [[left,'left'],[right,'right']] as const){const lit=side===s&&on;m.emissiveColor.set(lit?1:0,lit?.6:0,lit?.08:0)}
+  };
+}
+
 /**
  * Body for other vehicles: the car model when one is loaded (scaled to the
  * collision length), otherwise simple shapes; or a cyclist on a bicycle.
  * `visible`: hidden until the road user sets off, so a waiting actor never sits in the road.
+ * `signals`: which way a car is signalling now (its indicators flash), and the time to flash them by.
  */
-export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car',visible:()=>boolean=()=>true,model:CarModel|null=null,length=4.3){
+export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>import('../contracts').Pose,shape:'car'|'cyclist'='car',visible:()=>boolean=()=>true,model:CarModel|null=null,length=4.3,
+  signals?:{side:()=>Indicating;time:()=>number}){
   const root=new TransformNode(`actor-${id}`,scene);
+  let lamps:((side:Indicating,time:number)=>void)|null=null;
+  const flash=()=>{if(lamps&&signals)lamps(signals.side(),signals.time())};
   if(shape==='car'&&model){
     const copy=model.instantiate(root,id,colour,length);
+    if(signals){
+      // (Fitted to the model as drawn: its body is a little shorter and narrower than its collision box.)
+      root.computeWorldMatrix(true);
+      const {min,max}=root.getHierarchyBoundingVectors(true);
+      lamps=indicatorLamps(scene,root,id,{left:min.x,right:max.x,front:min.z,back:max.z,y:min.y+(max.y-min.y)*.47});
+    }
     let travelled=0,last=pose().position;
     return {
       update(){
@@ -268,6 +301,7 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
         last=p.position;
         applyPose(root,p);
         model.roll(copy,travelled);
+        flash();
       },
       dispose:()=>root.dispose(false,true)
     };
@@ -307,8 +341,9 @@ export function vehicleVisual(scene:Scene,id:string,colour:string,pose:()=>impor
   cabin.position.set(0,1.18,.25);cabin.material=mat(scene,`${id}-glass`,new Color3(.12,.14,.18));cabin.parent=root;
   const roof=CreateBox(`${id}-roof`,{width:1.62,height:.08,depth:2.0},scene);
   roof.position.set(0,1.44,.3);roof.material=paint;roof.parent=root;
+  if(shape==='car'&&signals)lamps=indicatorLamps(scene,root,id,{left:-.89,right:.89,front:-length/2,back:length/2,y:.7});
   return {
-    update(){root.setEnabled(visible());applyPose(root,pose())},
+    update(){root.setEnabled(visible());applyPose(root,pose());flash()},
     dispose:()=>root.dispose(false,true)
   };
 }

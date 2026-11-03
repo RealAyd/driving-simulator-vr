@@ -32,8 +32,12 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
   through:pts([[54.9,20.1],[-38.1,-243.9],[-73.1,-329.9],[-97.1,-366.9],[-18.1,-463.9],[147.9,-459.9],[184.9,-489.9],[434.9,-608.9],
     [482.9,-547.9],[473.9,-530.9],[584.9,-334.9],[227.9,-123.9],[69.9,100.1],[27.9,235.1]]),
   actors:[
-    {id:'grey-car',name:'grey car',colour:'#8a9099',speed:12,yields:true,path:pts([...BEHIND,...UP_KINGS_ROAD.slice(3)])},
-    {id:'blue-car',name:'blue car',colour:'#2563eb',speed:7,path:pts([...BLUE_RING,...UP_KINGS_ROAD])},
+    // Signals left for the first exit, as the car does; the blue car (from Queen's Road, past twelve o'clock) right
+    // on the way to the ring and round it, then left from passing Kings Road south to its exit.
+    {id:'grey-car',name:'grey car',colour:'#8a9099',speed:12,yields:true,path:pts([...BEHIND,...UP_KINGS_ROAD.slice(3)]),
+      signals:[{from:{x:54.4,z:118},to:{x:58.1,z:33.3},side:'left'}]},
+    {id:'blue-car',name:'blue car',colour:'#2563eb',speed:7,path:pts([...BLUE_RING,...UP_KINGS_ROAD]),
+      signals:[{from:{x:131.1,z:-18.2},to:{x:63.8,z:65.3},side:'right'},{from:{x:63.8,z:65.3},to:{x:57.6,z:29.6},side:'left'}]},
     {id:'carpark-car',name:'white car',colour:'#e8e8e4',speed:6,yields:true,waits:true,path:pts([[-49.1,-243.9],[-44.5,-244.5],[-41.8,-243.3],[-39.6,-241.4],[-37.2,-239.3],
       [-35.7,-237.4],[-35,-232.3],[-30.8,-217.8],[-27.8,-209.4],[-24.1,-200],[-2,-143.1],[12.2,-109.2],[16.7,-98.1]])},
     // Finishing crossing Weald Road (the signal crossing just past the High Street lights), from the east kerb.

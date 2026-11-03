@@ -57,7 +57,10 @@ export const PassingVehicleActorSchema=z.object({
   /** Slows or stops for the learner's car when it moves into this road user's path. */
   yieldsToLearner:z.boolean().default(false),
   /** Name used in feedback, e.g. "purple car". */
-  name:z.string().optional()
+  name:z.string().optional(),
+  /** Its indicators where its turns alone do not tell (round a roundabout: right on the way round, then left to come
+   * off): which side from one point on its path to another. Elsewhere a car signals for each turn on its path. */
+  signals:z.array(z.object({from:point,to:point,side:z.enum(['left','right','off'])}).strict()).optional()
 }).strict();
 
 /**

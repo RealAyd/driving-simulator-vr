@@ -104,6 +104,9 @@ const HALF_WIDTH=.9;
 const TRAFFIC_GAP=3.5;
 /** And kept at least this far from it sideways (metres, beyond a quarter-metre allowance on the car's width). */
 const TRAFFIC_MARGIN=.3;
+/** Traffic moving more than this off the car's way (radians), either way, is turning across it (not following it round
+ * a bend), and kept ACROSS_ROOM further from. */
+const TURNING_ACROSS=.9,ACROSS_ROOM=1.2;
 
 type Box={x:number;z:number;heading:number;halfWidth:number;halfLength:number};
 /** Roughly how far apart two boxes are (metres; 0 or less: they touch), from each one's corners and side middles. */
@@ -239,7 +242,12 @@ export class DecisionRunner{
       for(let d=0;d<=45;d+=1.5){
         const p=this.assist.pointAt(s+d),r=this.assist.pointAt(s+d+1);
         const me={x:p.x,z:p.z,heading:Math.atan2(r.x-p.x,-(r.z-p.z)),halfWidth:HALF_WIDTH+.25,halfLength:HALF_LENGTH};
-        if(Math.min(boxGap(me,other),boxGap(me,soon))<TRAFFIC_MARGIN){
+        // (Turning across the car's way, as one pulling out of a side road in front of it: its body swings round, off the
+        // straight line ahead of it, so it is kept further from.)
+        // (Not one coming the other way in its lane.)
+        const off=Math.abs(Math.atan2(Math.sin(q.heading-me.heading),Math.cos(q.heading-me.heading))),across=q.speed>.3&&off>TURNING_ACROSS&&off<Math.PI-TURNING_ACROSS;
+        const margin=TRAFFIC_MARGIN+(across?ACROSS_ROOM:0);
+        if(Math.min(boxGap(me,other),boxGap(me,soon))<margin){
           // (Stopped a car's length short of where it would touch; at once, where it already nearly does.)
           v=lim(v,Math.sqrt(2*BRAKING*Math.max(0,d-TRAFFIC_GAP)),`traffic ${q.id}`);
           break;

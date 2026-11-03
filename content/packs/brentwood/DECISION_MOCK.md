@@ -87,6 +87,14 @@ Road users' paths are planned on the scene's roads, as the car's own way is (`Ro
 `routeLanePath`, from a start pose to the points given), so they keep to their lanes and go round mini-roundabouts
 properly.
 
+Every car signals. A scripted car signals for each turn on its path, from 35 m before it until it has turned (two
+turns close together, as at Wilson's Corner: the first, then the second); a bend in the road is not a turn. Round a
+bigger roundabout its turns alone do not tell, so the route says (`signals` on the actor: a side from one point to
+another): the blue car right on the way to the Queen's Road ring and round it, left from passing Kings Road south;
+the grey car left for the first exit. Background cars and buses choose their way on 30 m before a junction and signal
+for it, right round a roundabout past twelve o'clock and left off it. Indicators go on flashing while a decision is
+on screen.
+
 ## To confirm (route 1)
 
 - Give way markings at each junction, and the view across the Queen's Road roundabout island.
@@ -94,4 +102,3 @@ properly.
 - The High Street lights: the challenge holds Kings Road green; the real phases (and whether people cross Weald
   Road on that phase) are not mapped.
 - Wilson's Corner lane markings between the two mini-roundabouts.
-- Scripted road users cannot signal yet.

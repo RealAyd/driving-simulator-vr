@@ -13,6 +13,12 @@ const STOP_GAP=3;
 /** Braking firmer than this counts as an avoiding response the learner caused (m/s²). */
 export const AVOIDING_DECEL=1.5;
 const ACCELERATION={car:2.5,cyclist:1.2,pedestrian:1.5};
+/** A car signals for a turn on its path from this far before it (metres). */
+const SIGNAL_AHEAD=35;
+/** A turn of more than this in all (radians, 35 degrees) is signalled for. */
+const SIGNAL_TURN=.6;
+/** Turning faster than this (radians in 6 m: a curve tighter than about 40 m radius) is turning, not a bend. */
+const TURNING=.15;
 const MAX_DECEL={car:7.5,cyclist:4.5,pedestrian:3};
 
 /**
@@ -32,6 +38,8 @@ export class PassingVehicle implements SimModule{
   private braking=false;
   private harsh=false;
   private readonly lengths:number[];
+  /** Its signal along its path, a metre at a time (cars only). */
+  private readonly signalPlan:ReadonlyArray<'left'|'right'|'off'>;
   /** Follows the learner's car when it is ahead on the path (keeping a gap of about a second), rather than only
    * braking for it: a car behind it on a decision route. Set by the app; not part of the scenario file. */
   followsLearner=false;
@@ -58,6 +66,58 @@ export class PassingVehicle implements SimModule{
       return total;
     });
     this.pose=this.sample(0);
+    this.signalPlan=def.body==='car'?this.planSignals():[];
+  }
+
+  /**
+   * Where it signals: for each turn on its path (a stretch turning one way, more than SIGNAL_TURN in all), from
+   * SIGNAL_AHEAD before it until it has turned, the turn before taking precedence where they overlap (two
+   * mini-roundabouts, one after the other: the first turn, then the second). A bend in the road is not a turn. Where
+   * the scenario says (round a roundabout), as it says.
+   */
+  private planSignals():Array<'left'|'right'|'off'>{
+    const n=Math.floor(this.length)+1,heading=(s:number)=>this.sample(Math.max(0,Math.min(this.length,s))).heading;
+    const wrap=(a:number)=>Math.atan2(Math.sin(a),Math.cos(a));
+    // Turning this way now: its heading 3 m on against 3 m back.
+    const rate=Array.from({length:n},(_,s)=>{const r=wrap(heading(s+3)-heading(s-3));return Math.abs(r)<TURNING?0:Math.sign(r)});
+    const plan:Array<'left'|'right'|'off'>=Array.from({length:n},()=>'off');
+    let taken=-1;
+    for(let a=0;a<n;){
+      if(rate[a]===0){a++;continue}
+      // (The same way on after a straight metre or three: still the same turn.)
+      let b=a;
+      for(let k=a+1;k<n&&(rate[k]===rate[a]||(rate[k]===0&&k-b<=3));k++)if(rate[k]===rate[a])b=k;
+      const turn=wrap(heading(b+3)-heading(a-3));
+      if(Math.abs(turn)>SIGNAL_TURN){
+        const side=turn>0?'right':'left';
+        for(let s=Math.max(0,a-SIGNAL_AHEAD,taken+1);s<=b;s++)plan[s]=side;
+        taken=b;
+      }
+      a=b+1;
+    }
+    for(const g of this.def.signals??[]){
+      const from=Math.floor(this.along(g.from)),to=Math.ceil(this.along(g.to));
+      for(let s=Math.max(0,from);s<=Math.min(n-1,to);s++)plan[s]=g.side;
+    }
+    return plan;
+  }
+
+  /** How far along its path (metres) a point is: where the path comes nearest it. */
+  private along(p:{x:number;z:number}):number{
+    let best=Infinity,at=0;
+    for(let i=1;i<this.def.path.length;i++){
+      const a=this.def.path[i-1]!,b=this.def.path[i]!,dx=b.x-a.x,dz=b.z-a.z,l2=dx*dx+dz*dz||1;
+      const k=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/l2));
+      const d=Math.hypot(a.x+dx*k-p.x,a.z+dz*k-p.z);
+      if(d<best){best=d;at=this.lengths[i-1]!+k*Math.sqrt(l2)}
+    }
+    return at;
+  }
+
+  /** Which way it is signalling now (a car on its way, or waiting to go). */
+  get indicating():'left'|'right'|'off'{
+    if(!this.present||(this.def.repeat?false:this.s>=this.length))return 'off';
+    return this.signalPlan[Math.min(this.signalPlan.length-1,Math.round(this.s))]??'off';
   }
 
   get length():number{return this.lengths[this.lengths.length-1]!}
