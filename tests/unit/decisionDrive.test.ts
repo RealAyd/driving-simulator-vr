@@ -33,13 +33,13 @@ function asDepicted(r:Run){
 
 describe('Brentwood route 1, driven',()=>{
   it('plans a way through the route on the scene\'s roads',async()=>{
-    const {place,kerb}=await loadScene();
-    const path=decisionPath(place,BRENTWOOD_ROUTE_1,kerb);
+    const {place,keepClear}=await loadScene();
+    const path=decisionPath(place,BRENTWOOD_ROUTE_1,keepClear);
     expect(path&&path.length).toBeGreaterThan(50);
   });
   it('has cars parked at the kerbs, none on the car\'s way or the road users\' paths',async()=>{
-    const {place,kerb}=await loadScene();
-    const path=decisionPath(place,BRENTWOOD_ROUTE_1,kerb)!;
+    const {place,kerb,keepClear}=await loadScene();
+    const path=decisionPath(place,BRENTWOOD_ROUTE_1,keepClear)!;
     expect(kerb.length).toBeGreaterThan(60);
     const near=(line:readonly {x:number;z:number}[])=>kerb.filter(k=>line.some((p,i)=>i>0&&segDistance(line[i-1]!,p,k)<k.halfWidth+2));
     expect(near(path)).toEqual([]);
@@ -57,6 +57,7 @@ describe('Brentwood route 1, driven',()=>{
     expect(r.closest,r.closestWho).toBeGreaterThan(3);
     expect(r.offRoad).toBe(0);
     expect(r.redRun,r.redAt.join('; ')).toBe(0);
+    expect(r.fixedHits).toEqual([]);
   },300_000);
   it('holds the car when the learner pulls out in front of the blue car, records it, and asks again',async()=>{
     const r=await drive({'queens-road-roundabout/line':['look-right','go']},0);
@@ -110,6 +111,7 @@ describe('Brentwood route 1 with background traffic',()=>{
       expect(r.closest).toBeGreaterThan(3);
       expect(r.redRun,r.redAt.join('; ')).toBe(0);
       expect(r.offRoad).toBe(0);
+      expect(r.fixedHits).toEqual([]);
       // Never stuck: a stand while driving on is a wait at a line or a red light (a long one at a busy junction).
       expect(r.longestStand,r.standAt).toBeLessThan(45);
     },400_000);

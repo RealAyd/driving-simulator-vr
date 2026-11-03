@@ -26,7 +26,7 @@ learner judges observations, position, priority and decisions. Brentwood route 1
 6. **Continue** plays on. After giving way, the traffic passes and the scene stops again for a fresh decision. After
    going, the car drives on to the next challenge.
 
-Going where it was unsafe is not driven: the examiner takes control and holds the car. This is recorded (dangerous,
+The car is the app's: a bump from background traffic never ends the test. Going where it was unsafe is not driven: the examiner takes control and holds the car. This is recorded (dangerous,
 as an intervention), and the decision comes again once the traffic has passed. Where the app did part of the
 preparation (mirrors and slowing on the way to a mini-roundabout), the paused screen says so.
 
@@ -66,7 +66,8 @@ A route is data (`src/decision/routes/`), played on a scene built from the map (
   - the instruction and where it is given;
   - the road users started, and where;
   - for each stage, where the scene stops (on the move, or stopped at a line) and the road user to wait for first;
-  - the camera framing, and what the learner is told is already done;
+  - the camera framing (from behind the car, turned, raised and shifted sideways; or, where what matters is well
+    ahead, from the driver's seat, zoomed in a little), and what the learner is told is already done;
   - `quiet`: circles round the junction and the approaches its road users come along, kept clear of background
     traffic while the challenge is in hand (traffic heading in waits short of them);
   - `lights`: a stop line whose lights are held green while the challenge is in hand (the learner's, or a road

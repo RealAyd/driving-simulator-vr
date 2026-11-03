@@ -4,7 +4,9 @@ import {PassingVehicle} from '../../src/actors/passingVehicle';
 import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
 import {prepareRoundabouts} from '../../src/world/roundabouts';
 import {surfaceAt} from '../../src/world/roadGeometry';
-import {decisionPath,junctionDiscs} from '../../src/decision/plan';
+import {decisionPath,junctionDiscs,streetFurniture} from '../../src/decision/plan';
+import {layoutSignage} from '../../src/world/signage';
+import {StaticObstacles} from '../../src/world/obstacles';
 import {DecisionRunner,type DecisionRunResult,type PausedAt} from '../../src/decision/runner';
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {actorDefs} from '../../src/decision/actors';
@@ -21,7 +23,11 @@ export async function loadScene(){
   const {gunzipSync}=await node('node:zlib'),{readFileSync}=await node('node:fs');
   const place=parseLocation(JSON.parse(gunzipSync(readFileSync('public/scenes/brentwood-route-1.json.gz')).toString()).location);
   prepareRoundabouts(place);
-  return {place,kerb:kerbFootprints(layoutStreetscape(place)??layoutTownscape(place))};
+  // (As the app has them: parked cars, and the fixed things the car must not touch.)
+  const layout=layoutStreetscape(place)??layoutTownscape(place);
+  const colliders=[...place.blocks,...(layout?.colliders??[]),...layoutSignage(place,layout).colliders];
+  const furniture=streetFurniture(colliders);
+  return {place,kerb:kerbFootprints(layout),furniture,keepClear:[...kerbFootprints(layout),...furniture],obstacles:new StaticObstacles(colliders)};
 }
 type Box={x:number;z:number;heading:number;halfWidth:number;halfLength:number};
 /** Gap between two cars' boxes (metres; about, from their corners and middles), 0 when they touch. */
@@ -39,8 +45,8 @@ function gapBetween(a:Box,b:Box):number{
  * of them buses and two cyclists, as the app has, kept off the junctions in hand).
  */
 export async function drive(answers:Record<string,string[]>,only:number|null=null,traffic=0,seed?:number){
-  const {place,kerb}=await loadScene();
-  const route=BRENTWOOD_ROUTE_1,path=decisionPath(place,route,kerb)!;
+  const {place,kerb,keepClear,obstacles}=await loadScene();
+  const route=BRENTWOOD_ROUTE_1,path=decisionPath(place,route,keepClear)!;
   const junctions=junctionDiscs(place);
   let car:VehicleState={position:{x:0,y:0,z:0},heading:0,speed:0,steerAngle:0};
   const learner=()=>({pose:{position:car.position,heading:car.heading},halfWidth:.9,halfLength:2.15,speed:car.speed});
@@ -64,9 +70,10 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   runner=new DecisionRunner(route,path,LEARNER_CAR,{
     car:()=>({x:car.position.x,z:car.position.z,heading:car.heading,speed:car.speed,steerAngle:car.steerAngle}),
     actor:id=>actors.get(id),
-    traffic:()=>others().map(c=>({id:c.id,x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed,halfWidth:c.halfWidth,halfLength:c.halfLength})),
+    traffic:()=>{const why=new Map((background?.reasons()??[]).map(r=>[r.id,r.why]));return others().map(c=>({id:c.id,x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed,halfWidth:c.halfWidth,halfLength:c.halfLength,why:why.get(c.id)??''}))},
     junctions:()=>junctions,
     waveOn:id=>background?.waveOn(id),
+    retire:id=>{background?.retire(id);retired.push(id)},
     signals:()=>lights.stops,
     holdLights:at=>lights.hold(at),
     setSignal:s=>signals.push(s),say:t=>said.push(t),freeze:on=>{frozen=on},
@@ -94,7 +101,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   runner.begin(only);
   background?.reset();
   let closest=Infinity,offRoad=0,closestWho='',redRun=0,stood=0,longestStand=0,met=0,standAt='',nearSum=0,nearSteps=0,aheadSum=0;
-  let closestTraffic=Infinity,closestTrafficWho='';const redAt:string[]=[];const metWho:string[]=[];
+  let closestTraffic=Infinity,closestTrafficWho='';const fixedHits:string[]=[];const retired:string[]=[];const redAt:string[]=[];const metWho:string[]=[];
   for(let t=0;t<1200&&!result;t+=DT){
     if(pending){
       const p:PausedAt=pending;pending=null;
@@ -132,11 +139,13 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
     nearSum+=others().filter(c=>Math.hypot(c.pose.position.x-car.position.x,c.pose.position.z-car.position.z)<100).length;nearSteps++;
     {const fx=Math.sin(car.heading),fz=-Math.cos(car.heading);aheadSum+=others().filter(c=>{const dx=c.pose.position.x-car.position.x,dz=c.pose.position.z-car.position.z,d=Math.hypot(dx,dz);return d<100&&(dx*fx+dz*fz)/d>.5}).length}
     if(surfaceAt(place,car.position.x,car.position.z)?.kind!=='carriageway')offRoad++;
+    // Touching anything fixed (a lamp column, a bollard, a parked car, a wall), as the app stops the car for.
+    {const hit=obstacles.firstCollision({position:car.position,heading:car.heading},.9,2.15);if(hit&&!hit.startsWith('edge-barrier')&&fixedHits.length<5&&!fixedHits.some(h=>h.startsWith(hit+' ')))fixedHits.push(`${hit} at ${t.toFixed(1)} s (${car.position.x.toFixed(1)}, ${car.position.z.toFixed(1)})`)}
     // (Standing while driving on: waiting for traffic, not for a decision.)
     stood=car.speed<.1&&runner.state==='drive'?stood+DT:0;if(stood>longestStand){longestStand=stood;standAt=`${t.toFixed(1)} s (${car.position.x.toFixed(1)}, ${car.position.z.toFixed(1)}) held by ${runner.heldBy}${(()=>{const w=runner.heldBy.match(/(traffic-\d+)/)?.[1];const c=w&&others().find(x=>x.id===w);return c?`: ${c.kind} at (${c.pose.position.x.toFixed(1)}, ${c.pose.position.z.toFixed(1)}) heading ${Math.round(c.pose.heading*180/Math.PI)}, ${background!.reasons().find(x=>x.id===w)?.why}`:''})()}`}
     runner.update();
   }
-  return {result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
+  return {result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,fixedHits,retired,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
 }
 
 export const segDistance=(a:{x:number;z:number},b:{x:number;z:number},p:{x:number;z:number})=>{

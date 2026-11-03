@@ -15,6 +15,8 @@ export class ScenarioRunner implements SimModule{
   readonly id='scenario';
   ended:Outcome|null=null;
   elapsed=0;
+  /** The car is driven for the learner (a decision test): a collision, or leaving the route, does not end it. */
+  drivenForLearner=false;
   private readonly fired=new Set<string>();
   private offRoute=0;
   onEnded:(outcome:Outcome)=>void=()=>{};
@@ -56,7 +58,7 @@ export class ScenarioRunner implements SimModule{
     const l=this.learner();
     // A collision ends an exercise. A mock test or lesson goes on (the marking records it as a dangerous fault; reverse
     // away and carry on), as does touching the barriers at the edge of a generated area (reverse and turn round).
-    const mock=this.scenario.rubricId==='mock-test'||this.scenario.rubricId==='lesson';
+    const mock=this.scenario.rubricId==='mock-test'||this.scenario.rubricId==='lesson'||this.drivenForLearner;
     if(l.collidedWith&&!mock&&!l.collidedWith.startsWith('edge-barrier'))return this.finish('collision');
     // Leaving the route: off any road surface, or driving the wrong way.
     const wrongWay=Math.abs(headingDelta(l.heading,l.roadHeading))>WRONG_WAY_RADIANS;

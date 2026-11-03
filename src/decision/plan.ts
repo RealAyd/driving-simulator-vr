@@ -1,4 +1,4 @@
-import type {Location,Vec2} from '../contracts';
+import type {Block,Location,Vec2} from '../contracts';
 import {RoadNetwork} from '../test/route';
 import {routeLanePath} from '../test/routePath';
 import {surfaceAt} from '../world/roadGeometry';
@@ -25,3 +25,15 @@ export function junctionDiscs(place:Location):Array<{x:number;z:number;radius:nu
     return {x:j.position.x,z:j.position.z,radius:outer};
   });
 }
+
+/** The small fixed things at the roadside the car must keep clear of (lamp columns, sign posts, bollards on traffic
+ * islands), as footprints the lane path eases away from, as it does from parked cars. */
+export function streetFurniture(colliders:ReadonlyArray<Block>):Array<Vec2&{heading:number;halfWidth:number;halfLength:number}>{
+  return colliders.filter(c=>c.kind==='wall'&&Math.max(c.size.width,c.size.depth)<FURNITURE_SIZE)
+    .map(c=>({x:c.position.x,z:c.position.z,heading:c.headingDeg*Math.PI/180,halfWidth:c.size.width/2+FURNITURE_ROOM,halfLength:c.size.depth/2+FURNITURE_ROOM}));
+}
+/** Smaller than this (metres, its longer side) is street furniture rather than a wall. */
+const FURNITURE_SIZE=1.2;
+/** Kept this much further from street furniture than from a parked car (metres): turning, the car's front corner
+ * swings out past the line it follows. */
+const FURNITURE_ROOM=.6;

@@ -118,7 +118,7 @@ import {AdaptiveScale} from '../engine/renderScale';
 import {DecisionRunner,type DecisionRunResult,type RunnerScene} from '../decision/runner';
 import type {DecisionRoute} from '../decision/route';
 import {DECISION_ROUTES} from '../decision/routes';
-import {decisionPath,junctionDiscs} from '../decision/plan';
+import {decisionPath,junctionDiscs,streetFurniture} from '../decision/plan';
 import {actorDefs} from '../decision/actors';
 import {decisionReport} from '../decision/report';
 import {ACTION_LOOK} from '../decision/actions';
@@ -362,6 +362,8 @@ export async function boot():Promise<void>{
   let boarding:BusStopBoarding|null=null;
   /** Cars parked at the kerb (generated areas): background traffic passes them. */
   let kerbCars:KerbFootprint[]=[];
+  /** The roadside furniture a decision test's lane path keeps clear of (lamp columns, posts, island bollards). */
+  let furniture:ReturnType<typeof streetFurniture>=[];
   let people!:PeopleRenderer;
   let animatedPeople:AnimatedPeople|null=null;
   /** Street furniture models (asset Batch A); null until loaded. */
@@ -409,6 +411,7 @@ export async function boot():Promise<void>{
       ...(p.kind==='stander'?{visible:()=>boarding?.visible(p.id)??true}:{})});
     const colliders=[...place.blocks,...(layout?.colliders??[]),...signPlan.colliders];
     staticObstacles=new StaticObstacles(colliders);
+    furniture=streetFurniture(colliders);
     sceneryStats={houses:(layout?.houses.length??0)+(layout?.town?.buildings.length??0),parkedCars:parked.length,colliders:colliders.length};
     yield [at(.88),'Laying it on the ground'];
     if(terrain)drape(world.root,terrain);
@@ -2039,7 +2042,7 @@ export async function boot():Promise<void>{
     // A decision test on this place: the way it drives is planned first (the steering assistance and the off-route
     // check follow it).
     const asked=decisionAsked&&scenario.locationId===decisionLocation?decisionAsked:null;
-    const path=asked?decisionPath(place,asked,kerbCars):null;
+    const path=asked?decisionPath(place,asked,[...kerbCars,...furniture]):null;
     if(asked)decisionJunctions=junctionDiscs(place);
     runtime=buildExercise(path?{...scenario,assistPath:path}:scenario,!!options.familiarisation);
     decision=asked&&path?{route:asked,scenarioId:scenario.id,runner:new DecisionRunner(asked,path,vehicle.params,decisionScene),practice:null,frozen:false,result:null}:null;
@@ -2052,6 +2055,7 @@ export async function boot():Promise<void>{
       p.traffic=traffic&&(()=>traffic.cars.filter(c=>c.visible).map(c=>({pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength,speed:c.speed})));
     }
     document.body.classList.toggle('decision',!!decision);
+    runtime.runner.drivenForLearner=!!decision;
     attachRunner();
     visitDrive=driveKind(scenarioId);
     if(!session.to('running'))return;
@@ -2306,7 +2310,14 @@ export async function boot():Promise<void>{
    * into view clear of the decision panel. */
   let cameraShift=0,shiftNow=0;
   /** The framing of the decision paused at (the camera goes back to it after a look). */
-  let decisionFrame:{yaw:number;pitch:number;shift?:number}|null=null;
+  let decisionFrame:{yaw:number;pitch:number;shift?:number;view?:'driver';zoom?:number}|null=null;
+  /** The framing of a decision: from behind the car, turned and raised; or from the driver's seat, looking ahead. */
+  const showFrame=(frame:{yaw:number;pitch:number;shift?:number;view?:'driver'})=>{
+    forwardView();
+    if(frame.view==='driver'){if(behind)setBehind(false);return}
+    if(!behind)setBehind(true);
+    aimCamera(frame.yaw,frame.pitch,frame.shift);
+  };
   let lookTimer=0;
   /** An observation pressed while paused: the camera turns to what it sees (or the mirror view), then back. */
   const decisionLook=(action:string)=>{
@@ -2320,8 +2331,7 @@ export async function boot():Promise<void>{
     else holdView(look,'touch');
     lookTimer=window.setTimeout(()=>{
       if(!decision||session.state!=='running')return;
-      forwardView();if(!behind)setBehind(true);
-      if(decisionFrame)aimCamera(decisionFrame.yaw,decisionFrame.pitch,decisionFrame.shift);
+      if(decisionFrame)showFrame(decisionFrame);else{forwardView();if(!behind)setBehind(true)}
     },1700);
   };
   const decisionPanel=new DecisionPanel({
@@ -2332,9 +2342,14 @@ export async function boot():Promise<void>{
   const decisionScene:RunnerScene={
     car:()=>({x:vehicle.state.position.x,z:vehicle.state.position.z,heading:vehicle.state.heading,speed:vehicle.state.speed,steerAngle:vehicle.state.steerAngle}),
     actor:id=>runtime?.passers.find(p=>p.id===id),
-    traffic:()=>runtime?.traffic?.cars.filter(c=>c.visible).map(c=>({id:c.id,x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed,halfWidth:c.halfWidth,halfLength:c.halfLength}))??[],
+    traffic:()=>{
+      const t=runtime?.traffic;if(!t)return [];
+      const why=new Map(t.reasons().map(r=>[r.id,r.why]));
+      return t.cars.filter(c=>c.visible).map(c=>({id:c.id,x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed,halfWidth:c.halfWidth,halfLength:c.halfLength,why:why.get(c.id)??''}));
+    },
     junctions:()=>decisionJunctions,
     waveOn:id=>runtime?.traffic?.waveOn(id),
+    retire:id=>runtime?.traffic?.retire(id),
     signals:()=>runtime?.trafficSignals?.stops??[],
     holdLights:at=>runtime?.trafficSignals?.hold(at),
     setSignal:side=>{
@@ -2352,8 +2367,7 @@ export async function boot():Promise<void>{
       clearTimeout(lookTimer);
       if(at){
         decisionFrame=at.place.frame;
-        forwardView();if(!behind)setBehind(true);
-        aimCamera(at.place.frame.yaw,at.place.frame.pitch,at.place.frame.shift);
+        showFrame(at.place.frame);
         decisionPanel.show(at,decision?.practice!==null);
       }else{
         decisionFrame=null;
@@ -2416,7 +2430,9 @@ export async function boot():Promise<void>{
       perf.record(engine.getDeltaTime());
       head.animate(dt);
       if(behind)behindSeconds+=dt;
-      const wantFov=behind||!heldView||heldView.endsWith('shoulder')?HORIZONTAL_FOV:heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
+      // (From the driver's seat, paused for a decision framed there, zoomed in on what is well ahead: a narrower view.)
+      const wantFov=behind||heldView?.endsWith('shoulder')?HORIZONTAL_FOV
+        :!heldView?HORIZONTAL_FOV/(decisionFrame?.view==='driver'?decisionFrame.zoom??1:1):heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
       camera.fov+=Math.max(-3*dt,Math.min(3*dt,wantFov-camera.fov));
       observation.source=observationSource();
       clock.advance(dt,step);

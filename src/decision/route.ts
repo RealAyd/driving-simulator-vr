@@ -60,7 +60,11 @@ export interface StagePlace{
   /** The camera behind the car: turned round it (degrees; negative shows the right) and raised (degrees). */
   frame:{yaw:number;pitch:number;
     /** Looking this far beside the car (metres right; negative: left): the junction's far side clear of the panel. */
-    shift?:number};
+    shift?:number;
+    /** From the driver's seat, looking ahead, instead of from behind the car: what matters is well ahead. */
+    view?:'driver';
+    /** From the driver's seat, zoomed in this many times (a narrower view), as a driver looks hard at what is ahead. */
+    zoom?:number};
   /** Where the car is and what is already done (shown with the buttons). */
   state:string;
 }

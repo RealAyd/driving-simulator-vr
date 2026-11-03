@@ -161,6 +161,9 @@ export class Traffic implements SimModule{
   readonly cars:TrafficCar[]=[];
   /** The learner, standing waiting for this road user (one waiting for the learner in turn), waves it on. */
   waveOn(id:string):void{const d=this.drivers.find(x=>x.car.id===id);if(d)d.wavedByLearner=WAVED_SECONDS}
+  /** Takes a road user off the road (it comes back elsewhere, out of sight): the last resort when it and the learner's
+   * car are stuck face to face with no way past (a decision test, where the car is driven for the learner). */
+  retire(id:string):void{const d=this.drivers.find(x=>x.car.id===id);if(d){d.car.visible=false;d.car.speed=0}}
   /** Diagnostics: why each car is slowing or waiting, and for how long it has stood. */
   reasons():Array<{id:string;why:string;waited:number}>{return this.drivers.map(d=>({id:d.car.id,why:d.why??'',waited:d.waited}))}
   private drivers:Driver[]=[];

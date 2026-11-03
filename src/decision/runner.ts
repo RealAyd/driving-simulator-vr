@@ -42,9 +42,14 @@ export interface RunnerScene{
   finished(result:DecisionRunResult):void;
   /** Background traffic (where each is now, and which way and how fast it is going): the car keeps back from any
    * ahead on its way, as from the route's own, and gives way to any on or coming on to a junction it drives through. */
-  traffic?():ReadonlyArray<{id:string;x:number;z:number;heading:number;speed:number;halfWidth?:number;halfLength?:number}>;
+  traffic?():ReadonlyArray<{id:string;x:number;z:number;heading:number;speed:number;halfWidth?:number;halfLength?:number;
+    /** What it is waiting for (diagnostics: 'learner' when it waits for the car). */
+    why?:string}>;
   /** Waves on a background road user the car has stood waiting for a while (each waiting for the other). */
   waveOn?(id:string):void;
+  /** Takes a background road user off the road (it comes back elsewhere): the last resort when it and the car are
+   * stuck face to face with no way past. */
+  retire?(id:string):void;
   /** The junctions on the place's roads (mini-roundabouts and roundabouts, as discs). */
   junctions?():ReadonlyArray<{x:number;z:number;radius:number}>;
   /** Traffic lights (each stop line's lane, the heading it stops and its aspect): the car stops at red, and at amber
@@ -78,6 +83,10 @@ const QUIET_BEFORE=150;
 const STANDING_WAITS=4;
 /** Stood this long (seconds) held by one background road user, the car waves it on. */
 const WAVE_AFTER=8;
+/** Stuck with one road user this long (seconds, backing up and all), it turns off as a last resort. */
+const RETIRE_AFTER=25;
+/** Still held by it this long (seconds), the car backs up this far (metres) to make room. */
+const BACK_AFTER=12,BACK_DISTANCE=3.5;
 /** On the way back, the junctions within this far ahead (metres) are kept clear. */
 const RETURN_CLEAR=90;
 /** Practising one challenge, the car pulls up this far past it (metres). */
@@ -162,7 +171,7 @@ export class DecisionRunner{
   /** From the start (the whole test), or practising one challenge. The car must already be at `startPose`. */
   begin(only:number|null=null):void{
     this.only=only;this.challenge=only??0;this.stage=this.route.challenges[this.challenge]!.stages[0]!.id;
-    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.endWait=0;this.started.clear();this.records.length=0;this.last=null;this.ending=false;
+    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.started.clear();this.records.length=0;this.last=null;this.ending=false;
     for(const a of this.route.actors){const x=this.scene.actor(a.id);if(x){x.setTiming(1e9);x.reset()}}
     this.assist.setPath(this.path);
     this.showWaiting();
@@ -193,6 +202,12 @@ export class DecisionRunner{
   /** Pedals and steering for this step (assisted throughout). */
   controls():Controls{
     const car=this.scene.car(),s=this.assist.progress(car.x,car.z);
+    // Backing up a few metres to make room (face to face with a road user at a junction): straight back, slowly, and
+    // only while the way behind is clear.
+    if(this.backTo!==null){
+      if(s>this.backTo&&!this.blockedBehind(s)&&this.phase==='drive'){this.heldBy='backing to make room';return {throttle:.25,brake:0,steer:0,reverse:true}}
+      this.backTo=null;
+    }
     const steer=this.assist.steer({position:{x:car.x,y:0,z:car.z},heading:car.heading,steerAngle:car.steerAngle},car.speed);
     let v=this.phase==='drive'?CRUISE:0;
     // (What holds the car to its speed now: diagnostics.)
@@ -280,20 +295,52 @@ export class DecisionRunner{
   }
 
   private heldWho='';
+  private waved=false;
+  private stuckWho='';
+  private stuckTime=0;
+  /** Backing up to here (path metres) to make room, or null. */
+  private backTo:number|null=null;
+
+  /** Anything just behind the car (the way it would back): a road user, background traffic. */
+  private blockedBehind(s:number):boolean{
+    const others=[...(this.scene.traffic?.()??[]).map(q=>({x:q.x,z:q.z,heading:q.heading,halfWidth:q.halfWidth??.9,halfLength:q.halfLength??2.2})),
+      ...this.route.actors.flatMap(a=>{const x=this.scene.actor(a.id);return x?.started?[{x:x.pose.position.x,z:x.pose.position.z,heading:0,halfWidth:1.2,halfLength:2.4}]:[]})];
+    for(let d=1;d<=4;d+=1){
+      const p=this.assist.pointAt(s-d),r=this.assist.pointAt(s-d+1);
+      const me={x:p.x,z:p.z,heading:Math.atan2(r.x-p.x,-(r.z-p.z)),halfWidth:HALF_WIDTH+.2,halfLength:HALF_LENGTH};
+      if(others.some(o=>boxGap(me,o)<.3))return true;
+    }
+    return false;
+  }
   private heldFor=0;
   /** Seconds each background road user has stood still (one standing on a junction a while is waiting for the car). */
   private readonly standing=new Map<string,number>();
+  private readonly standAt=new Map<string,{x:number;z:number}>();
 
   /** Once a simulation step (after the car and the road users have moved). */
   update():void{
     if(this.phase!=='drive')return;
-    for(const q of this.scene.traffic?.()??[])this.standing.set(q.id,q.speed<.3?(this.standing.get(q.id)??0)+1/60:0);
+    // (Standing: not 2 m from where it was, creeping to and fro or not.)
+    for(const q of this.scene.traffic?.()??[]){
+      const at=this.standAt.get(q.id);
+      if(!at||Math.hypot(q.x-at.x,q.z-at.z)>2){this.standAt.set(q.id,{x:q.x,z:q.z});this.standing.set(q.id,0)}
+      else this.standing.set(q.id,(this.standing.get(q.id)??0)+1/60);
+    }
     // Stood a while for one background road user, in the way or on the junction ahead (waiting, it may be, for the
     // car): it is waved on.
     {
-      const by=this.heldBy.match(/^traffic (\S+)$|^junction busy \((\S+)\)$/)?.slice(1).find(Boolean)??'',car0=this.scene.car();
+      // (Only one waiting in turn for the car: one queuing at red lights, or behind another, is simply waited behind.)
+      const held=this.heldBy.match(/^traffic (\S+)$|^junction busy \((\S+)\)$/)?.slice(1).find(Boolean)??'',car0=this.scene.car();
+      const by=held&&/learner/.test((this.scene.traffic?.()??[]).find(q=>q.id===held)?.why??'')?held:'';
       this.heldFor=by&&by===this.heldWho&&car0.speed<.1?this.heldFor+1/60:0;this.heldWho=by;
-      if(by&&this.heldFor>WAVE_AFTER){this.scene.waveOn?.(by);this.heldFor=0}
+      if(by&&this.heldFor>WAVE_AFTER&&!this.waved){this.scene.waveOn?.(by);this.waved=true}
+      // Still face to face a while later (it cannot get by either): the car backs up a little to make room.
+      if(by&&this.heldFor>BACK_AFTER){this.scene.waveOn?.(by);this.backTo=this.carS()-BACK_DISTANCE;this.heldFor=0;this.waved=false}
+      if(!by&&car0.speed>1)this.waved=false;
+      // Stuck with it longer still (no room behind to back into either): as a last resort it turns off, rather than
+      // the test standing still for good.
+      if(by){this.stuckTime=by===this.stuckWho?this.stuckTime+1/60:0;this.stuckWho=by}else if(car0.speed>1){this.stuckTime=0;this.stuckWho=''}
+      if(by&&this.stuckTime>RETIRE_AFTER){this.scene.retire?.(by);this.stuckTime=0}
     }
     const car=this.scene.car(),s=this.carS();
     // Paced: the road user the stage in hand waits for, and that of the next challenge's first stage (already on its
@@ -375,12 +422,14 @@ export class DecisionRunner{
    * direction is given until the car is past it). */
   keepClear():ReadonlyArray<{x:number;z:number;radius:number}>{
     if(this.phase==='finished')return [];
+    // (And the junctions just ahead of the car: traffic coming to one waits for the car to go through, rather than a
+    // stream of it crossing in front of the car standing at the line.)
     if(this.ending)return this.nextJunctions();
-    return this.inHand().flatMap(c=>c.quiet);
+    return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions()];
   }
 
-  /** On the way back after the last challenge, the junctions just ahead are kept clear (the drive back is not part of
-   * the test: it must not stick in a busy junction). Worked out once a step. */
+  /** The junctions just ahead of the car, kept clear of traffic coming to them (it waits short of them for the car to
+   * go through: the car is never kept standing at a junction by a stream of it). Worked out once a step. */
   private nextJunctions():ReadonlyArray<{x:number;z:number;radius:number}>{
     const car=this.scene.car();
     if(this.nextAt&&this.nextAt.x===car.x&&this.nextAt.z===car.z)return this.next;

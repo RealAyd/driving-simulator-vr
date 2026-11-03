@@ -1,7 +1,7 @@
 import {forwardFromHeading,rightFromHeading,type Vec2} from '../contracts';
 import {aroundMini,miniAt,type MiniRoundabout} from '../world/miniRoundabout';
 import {aroundRing,onRing,ringLanes} from '../world/roundaboutLanes';
-import {keepLeftOffset,pointAtAlong} from '../world/roadGeometry';
+import {keepLeftOffset,pointAtAlong,roadHalfWidth} from '../world/roadGeometry';
 import type {KerbFootprint} from '../world/townscape';
 import type {RouteLeg} from './route';
 
@@ -15,6 +15,8 @@ const ALONGSIDE=4;
 /** The tightest circle (metres, the car's middle) the learner's car drives round a mini-roundabout: it can turn no
  * tighter than about 4.3 m. */
 const TIGHTEST_TURN=4.7;
+/** Kept this far from the left kerb, eased over for something on the right (metres). */
+const KERB_ROOM=.3;
 
 /** Turning right by more than this at the end of a leg (radians) takes the right-hand lane of a one-way road. */
 const RIGHT_TURN=.5;
@@ -44,7 +46,7 @@ function laneFor(leg:RouteLeg,next:RouteLeg|undefined):number{
  */
 export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<KerbFootprint>>,minis:readonly MiniRoundabout[]=[],
   onRoad?:(x:number,z:number)=>boolean):Vec2[]{
-  const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number}>=[];
+  const raw:Array<{x:number;z:number;dx:number;dz:number;lane:number;hi:number;lo:number;leg:number;edge:number}>=[];
   for(const [legIndex,leg] of legs.entries()){
     const n=Math.max(1,Math.ceil(Math.abs(leg.to-leg.from)/3)),lane=laneFor(leg,legs[legIndex+1]);
     for(let k=0;k<=n;k++){
@@ -52,7 +54,8 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
       let hi=lane,lo=-Infinity;
       for(const c of parked){
         const ox=c.x-p.x,oz=c.z-p.z,along=ox*dx+oz*dz,left=ox*dz-oz*dx;
-        if(Math.abs(along)>12||Math.abs(left)>4.5||Math.abs(left)<.3)continue;
+        // (On the centre line, such as a traffic island's bollard: passed on the right, keeping left.)
+        if(Math.abs(along)>12||Math.abs(left)>4.5)continue;
         // The parked car's extent along the road and across it.
         const hw=c.halfWidth??.9,hl=c.halfLength??2.2;
         const f=c.heading===undefined?{x:dx,z:dz}:forwardFromHeading(c.heading),r=c.heading===undefined?{x:-dz,z:dx}:rightFromHeading(c.heading);
@@ -60,9 +63,11 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
         const extAcross=hl*Math.abs(f.x*dz-f.z*dx)+hw*Math.abs(r.x*dz-r.z*dx);
         if(Math.abs(along)>extAlong+HALF_LENGTH+ALONGSIDE)continue;
         const room=extAcross+HALF_WIDTH+CLEARANCE;
-        if(left>0)hi=Math.min(hi,left-room);else lo=Math.max(lo,left+room);
+        if(left>=.3)hi=Math.min(hi,left-room);else lo=Math.max(lo,left+room);
       }
-      raw.push({x:p.x,z:p.z,dx,dz,lane,hi,lo,leg:legIndex});
+      // (How far left the car can go: to just short of the left kerb.)
+      const edge=Math.max(lane,roadHalfWidth(leg.road)-HALF_WIDTH-KERB_ROOM);
+      raw.push({x:p.x,z:p.z,dx,dz,lane,hi,lo,leg:legIndex,edge});
     }
   }
   // Each point takes the tightest room needed within 24 m ahead (pulled out in good time) and 12 m behind (back in
@@ -79,7 +84,9 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
       const ease=Math.abs(j-i)*(j<i?.6:.3);
       hi=Math.min(hi,raw[j]!.hi+(turnedIn?.1*Math.abs(j-i):ease));lo=Math.max(lo,raw[j]!.lo-ease);
     }
-    const off=hi>=lo?hi:(hi+lo)/2;
+    // Pressed from the right (a traffic island's bollard) with nothing on the left: over to the left as far as it
+    // needs, short of the kerb; between things both sides, the middle of the gap.
+    const off=hi>=lo?hi:hi>=p.lane?Math.min(lo,p.edge):(hi+lo)/2;
     return {x:p.x+p.dz*off,z:p.z-p.dx*off,leg:p.leg};
   });
   // Corners: the lane lines of two roads meet at an angle (and the lane offsets put the last point of one a little

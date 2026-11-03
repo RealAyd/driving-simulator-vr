@@ -167,7 +167,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       endAt:{x:-77.4,z:-330.8},
       quiet:[{x:-68,z:-312,radius:30}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:-50.4,z:-264.4}},when:{actor:'weald-pedestrian',at:{x:-72.6,z:-321.4}},frame:{yaw:0,pitch:16},
+        approach:{pause:{kind:'moving',at:{x:-56.2,z:-280.3}},when:{actor:'weald-pedestrian',at:{x:-72.6,z:-321.4}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.6},
           state:'Approaching the lights on green.'},
         clear:{pause:{kind:'stop',at:{x:-61.6,z:-297.5}},when:{actor:'weald-pedestrian',at:{x:-76.2,z:-322.5}},frame:{yaw:0,pitch:28},
           state:'Stopped at the line. The light is still green.'}
@@ -265,11 +265,11 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       where:'William Hunter Way zebra crossing',
       instruction:'Follow the road ahead.',
       instructAt:{x:12.8,z:-451.6},
-      starts:[{actor:'silver-car',at:{x:-41.5,z:-436.3},delay:0},{actor:'zebra-pedestrian',at:{x:102,z:-449},delay:.4}],
+      starts:[{actor:'silver-car',at:{x:-41.5,z:-436.3},delay:0},{actor:'zebra-pedestrian',at:{x:117.7,z:-451.9},delay:.4}],
       endAt:{x:157.2,z:-465.8},
       quiet:[{x:148,z:-460,radius:28}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:100,z:-448.5}},frame:{yaw:6,pitch:18},state:'Approaching the zebra crossing at about 25 mph.'},
+        approach:{pause:{kind:'moving',at:{x:114.8,z:-451.3}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.6},state:'Approaching the zebra crossing at about 20 mph.'},
         clear:{pause:{kind:'stop',at:{x:141.7,z:-459}},when:{actor:'zebra-pedestrian',at:{x:150,z:-456.4}},frame:{yaw:0,pitch:30},state:'Stopped at the zebra crossing.'}
       },
       stages:[
@@ -320,7 +320,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       // The mini-roundabout and the stretch of William Hunter Way the green car comes along.
       quiet:[{x:185,z:-490,radius:30},{x:240,z:-505,radius:30},{x:275,z:-516,radius:18}],
       place:{
-        line:{pause:{kind:'stop',at:{x:177.8,z:-484}},when:{actor:'green-car',at:{x:233.4,z:-503.5}},frame:{yaw:-25,pitch:30},
+        line:{pause:{kind:'stop',at:{x:177.8,z:-484}},when:{actor:'green-car',at:{x:233.4,z:-503.5}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.2},
           state:'At the give way line. The app has checked the mirrors and slowed down.'}
       },
       stages:[
@@ -350,7 +350,9 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       where:'Wilson\'s Corner, on to Ingrave Road',
       instruction:'At the mini-roundabouts, go ahead, then turn left on to Ingrave Road.',
       instructAt:{x:454.9,z:-591.4},
-      starts:[{actor:'black-car',at:{x:471.7,z:-566.6},delay:0}],
+      // (Set off once the car is nearly at the second mini-roundabout: held up on the way by traffic through the first,
+      // the car would otherwise find it gone by.)
+      starts:[{actor:'black-car',at:{x:479.9,z:-549.6},delay:0}],
       // (The High Street lights the black car comes through are held green for it.)
       lights:{x:444,z:-521.2},
       endAt:{x:482.2,z:-522.9},
