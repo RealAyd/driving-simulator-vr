@@ -310,9 +310,11 @@ export class DecisionRunner{
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;
     // (Someone on foot not yet off the kerb waits there while the car is held up well short of the junction: its
     // time to get there is unknown.)
-    if(def.kind==='pedestrian'&&x.travelled<KERB_WAIT&&speed<.5&&d>15){x.pace=0;return}
+    // (So does a car shown waiting at a junction, edging out.)
+    if((def.kind==='pedestrian'?x.travelled<KERB_WAIT:!!def.waits)&&speed<.5&&d>15){x.pace=0;return}
     // (Someone on foot not yet stepped off the kerb waits there, as people do, rather than crossing early.)
-    const least=def.kind==='pedestrian'?(x.travelled<KERB_WAIT?0:PACE_LEAST_ON_FOOT):PACE_LEAST;
+    // (A car shown waiting at a junction edges out as slowly as it needs to, as drivers do, rather than early.)
+    const least=def.kind==='pedestrian'?(x.travelled<KERB_WAIT?0:PACE_LEAST_ON_FOOT):def.waits?0:PACE_LEAST;
     x.pace=Math.max(def.speed*least,Math.min(def.speed,left/(eta+PACE_MARGIN)));
   }
 

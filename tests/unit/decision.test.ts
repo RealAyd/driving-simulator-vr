@@ -3,7 +3,7 @@ import {assessStage,summarise,type ChallengeLogic} from '../../src/decision/asse
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {DECISION_ROUTES} from '../../src/decision/routes';
 
-const C1=BRENTWOOD_ROUTE_1.challenges[0]!,C2=BRENTWOOD_ROUTE_1.challenges[1]!;
+const C1=BRENTWOOD_ROUTE_1.challenges[0]!,C2=BRENTWOOD_ROUTE_1.challenges.find(c=>c.id==='st-james-crossroads')!;
 const levels=(v:{faults:{level:string}[]})=>v.faults.map(f=>f.level);
 
 describe('decision challenges as authored',()=>{
@@ -60,12 +60,12 @@ describe('judging a decision',()=>{
     expect(assessStage(C1,'clear',['go'],history).faults.map(f=>f.ruleId)).toEqual(['fresh-look']);
   });
   it('the first decision counts: a second one is ignored',()=>{
-    const v=assessStage(C2,'line',['look-right','go','give-way']);
+    const v=assessStage(C2,'approach',['look-right','look-left','go','give-way']);
     expect(v.decision).toBe('go');expect(v.faults).toEqual([]);
   });
   it('grades a misleading signal by what the picture shows',()=>{
-    expect(assessStage(C2,'line',['look-right','signal-right','go']).faults.map(f=>f.level)).toEqual(['serious']);
-    expect(assessStage(C2,'line',['look-right','signal-left','go']).faults.map(f=>f.level)).toEqual(['minor']);
+    expect(assessStage(C2,'approach',['look-right','look-left','signal-right','go']).faults.map(f=>f.level)).toEqual(['serious']);
+    expect(assessStage(C2,'approach',['look-right','look-left','signal-left','go']).faults.map(f=>f.level)).toEqual(['minor']);
   });
   it('anything no rule names is an unnecessary action (feedback only)',()=>{
     const c:ChallengeLogic={id:'t',stages:[{id:'s',safe:'go',go:'go',wait:'give-way',buttons:['look-right','horn','go','give-way'],rules:[],accepted:[['look-right','go']],next:{go:'done'},explain:''}]};

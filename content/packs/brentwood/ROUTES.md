@@ -21,13 +21,17 @@ Western Road, William Hunter Way, Wilson's Corner, Ingrave Road, back by Queen's
 | # | Where and movement | Traffic that makes the decision | Answer | Status |
 |---|---|---|---|---|
 | 1 | Queen's Road roundabout from Kings Road south, first exit | Car close behind; blue car already on the ring from Queen's Road | both | **built** |
-| 2 | Kings Road / Chatham Way mini-roundabout, ahead | Car waiting at the left entrance (car park road); Chatham Way (right) clear; exit clear | go | **built** |
-| 3 | Kings Road at the High Street lights, ahead into Weald Road | Green (held); a pedestrian still finishing crossing Weald Road | both | **built**; check: signal phases |
-| 4 | Weald Road / Western Road mini-roundabout, right into Western Road | Car arriving from the right on Western Road | both | **built** |
-| 5 | William Hunter Way zebra crossing | Pedestrian at the kerb about to step out; car close behind | both | **built** |
-| 6 | William Hunter Way mini-roundabout (by the car park), ahead | Car coming from the right, about 50 m away: a safe gap (the junction has no arm opposite) | go | **built** |
-| 7 | Wilson's Corner: two mini-roundabouts close together, on to Ingrave Road | Car coming out of the High Street, on the right at the second mini | both | **built**; check: lane markings between the two minis |
-| 8 | Ingrave Road / Queen's Road mini-roundabout, right on to Queen's Road | Van waiting opposite (no left arm); right clear | go | **built** |
+| 2 | Kings Road at the High Street lights, ahead into Weald Road | Green (held); a pedestrian still finishing crossing Weald Road | both | **built**; check: signal phases |
+| 3 | Weald Road / Western Road mini-roundabout, right into Western Road | Car arriving from the right on Western Road | both | **built** |
+| 4 | William Hunter Way zebra crossing | Pedestrian at the kerb about to step out; car close behind | both | **built** |
+| 5 | Wilson's Corner: two mini-roundabouts close together, on to Ingrave Road | Car coming out of the High Street, on the right at the second mini | both | **built**; check: lane markings between the two minis |
+| 6 | Ingrave Road at Cathedral Place (on the right), ahead | Car edging out of Cathedral Place, then pulling out across the car's lane | both | **built** |
+| 7 | Ingrave Road / Queen's Road mini-roundabout, right on to Queen's Road | Van waiting opposite (no left arm); right clear | go | **built** |
+| 8 | Kings Road crossroads at St James's Road (right) and King Edward Road (left), ahead | Car waiting at the St James's Road give way line | go | **built** |
+
+Every junction challenge starts with an approach decision (mirrors, signal): the app never does them for the learner.
+The Kings Road / Chatham Way and William Hunter Way mini-roundabouts (the first plan's 2 and 6) are driven by the app:
+the owner asked for crossroads and other junctions instead of more mini-roundabouts.
 
 Then auto-driven: Queen's Road (Crown Street mini, zebra), Queen's Road roundabout to Kings Road south, Warley Hill.
 

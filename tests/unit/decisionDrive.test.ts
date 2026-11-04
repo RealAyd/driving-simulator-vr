@@ -4,11 +4,11 @@ import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {drive,loadScene,segDistance} from './decisionDrive';
 
 /** Every pause of route 1 driven right, in order. */
-const PAUSES=['queens-road-roundabout/approach','queens-road-roundabout/line','queens-road-roundabout/clear','chatham-way-mini/approach',
-  'chatham-way-mini/line','high-street-lights/approach','high-street-lights/clear','western-road-mini/approach','western-road-mini/line',
-  'western-road-mini/clear','william-hunter-way-zebra/approach','william-hunter-way-zebra/clear','william-hunter-way-mini/approach',
-  'william-hunter-way-mini/line','wilsons-corner/approach','wilsons-corner/line','wilsons-corner/clear','queens-road-mini/approach',
-  'queens-road-mini/line'];
+const PAUSES=['queens-road-roundabout/approach','queens-road-roundabout/line','queens-road-roundabout/clear',
+  'high-street-lights/approach','high-street-lights/clear','western-road-mini/approach','western-road-mini/line',
+  'western-road-mini/clear','william-hunter-way-zebra/approach','william-hunter-way-zebra/clear','wilsons-corner/approach',
+  'wilsons-corner/line','wilsons-corner/clear','cathedral-place/approach','cathedral-place/clear','queens-road-mini/approach',
+  'queens-road-mini/line','st-james-crossroads/approach'];
 
 type Run=Awaited<ReturnType<typeof drive>>;
 /** Each pause as its challenge depicts it: stopped at a line, or on the move; the road user the moment waits for at its
@@ -27,7 +27,9 @@ function asDepicted(r:Run){
   expect(near('queens-road-roundabout/approach','grey-car'),'grey car behind').toBeLessThan(25);
   expect(near('william-hunter-way-zebra/approach','silver-car'),'silver car behind').toBeLessThan(25);
   // Waiting where they are shown waiting.
-  expect(at('chatham-way-mini/line').actors['carpark-car']!.started).toBe(false);
+  expect(at('st-james-crossroads/approach').actors['stjames-car']!.started).toBe(false);
+  // Pulling out of Cathedral Place as the car comes.
+  expect(at('cathedral-place/approach').actors['cathedral-car']!.started).toBe(true);
   expect(at('william-hunter-way-zebra/approach').actors['zebra-pedestrian']!.started).toBe(false);
   expect(at('queens-road-mini/line').actors['white-van']!.started).toBe(false);
 }
@@ -71,7 +73,7 @@ describe('Brentwood route 1, driven',()=>{
     expect(r.closest).toBeGreaterThan(3);
   },120_000);
   it('holds the car short of the zebra when the learner goes on with the pedestrian about to cross',async()=>{
-    const r=await drive({'william-hunter-way-zebra/approach':['mirror-interior','go']},4);
+    const r=await drive({'william-hunter-way-zebra/approach':['mirror-interior','go']},3);
     expect(r.result?.interventions).toBe(1);
     expect(r.result?.dangerous).toBe(1);
     expect(r.pauses.map(p=>p.at.stage.id)).toEqual(['approach','clear']);
@@ -82,12 +84,12 @@ describe('Brentwood route 1, driven',()=>{
     expect(r.closest).toBeGreaterThan(3);
   },120_000);
   it('practises one challenge on its own, from a little before it, and pulls up just past it',async()=>{
-    const r=await drive({'chatham-way-mini/line':['look-right','give-way']},1);
+    const r=await drive({'cathedral-place/clear':['look-right','give-way']},5);
     expect(r.result?.practice).toBe(true);
-    expect(r.pauses.map(p=>`${p.at.challenge.id}/${p.at.stage.id}`)).toEqual(['chatham-way-mini/approach','chatham-way-mini/line']);
+    expect(r.pauses.map(p=>`${p.at.challenge.id}/${p.at.stage.id}`)).toEqual(['cathedral-place/approach','cathedral-place/clear']);
     expect(r.result?.faults.map(f=>f.ruleId)).toEqual(['hesitation']);
     // Not on round the rest of the route.
-    expect(Math.hypot(r.car.position.x+43,r.car.position.z+250)).toBeLessThan(45);
+    expect(Math.hypot(r.car.position.x-531,r.car.position.z+431)).toBeLessThan(45);
   },120_000);
 });
 

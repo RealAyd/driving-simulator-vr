@@ -80,8 +80,8 @@ describe('road users signal for their turns',()=>{
     expect(at(get('blue-car'),61.5,57.1)).toBe('left');
     // The grey car behind (first exit): left.
     expect(at(get('grey-car'),62.9,54.7)).toBe('left');
-    // The white car waiting to come out of the car park, to turn right.
-    expect(get('carpark-car').indicating).toBe('right');
+    // The white car waiting to come out of Cathedral Place, to turn right.
+    expect(get('cathedral-car').indicating).toBe('right');
   });
 
   it('background traffic signals before it turns at a junction',async()=>{

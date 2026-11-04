@@ -17,8 +17,6 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     'queens-road-roundabout/approach':['signal-left','mirror-interior','mirror-left'],
     'queens-road-roundabout/line':['look-right','go'],
     'queens-road-roundabout/clear':['look-right','go'],
-    'chatham-way-mini/approach':['mirror-interior'],
-    'chatham-way-mini/line':['look-right','go'],
     'high-street-lights/approach':['give-way'],
     'high-street-lights/clear':['look-left','go'],
     'western-road-mini/approach':['mirror-interior','mirror-right','signal-right'],
@@ -26,13 +24,14 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     'western-road-mini/clear':['look-right','go'],
     'william-hunter-way-zebra/approach':['mirror-interior','give-way'],
     'william-hunter-way-zebra/clear':['look-left','look-right','go'],
-    'william-hunter-way-mini/approach':['mirror-interior'],
-    'william-hunter-way-mini/line':['look-right','go'],
     'wilsons-corner/approach':['mirror-interior','mirror-left','signal-left'],
     'wilsons-corner/line':['look-right','give-way'],
     'wilsons-corner/clear':['look-right','go'],
+    'cathedral-place/approach':['mirror-interior','give-way'],
+    'cathedral-place/clear':['look-right','go'],
     'queens-road-mini/approach':['mirror-interior','mirror-right','signal-right'],
-    'queens-road-mini/line':['look-right','go']
+    'queens-road-mini/line':['look-right','go'],
+    'st-james-crossroads/approach':['look-right','look-left','go']
   };
   const seen:string[]=[];
   for(;;){

@@ -39,6 +39,8 @@ export class PassingVehicle implements SimModule{
   private cruise:number;
   private braking=false;
   private harsh=false;
+  /** Under way since its start (its speed set once as it moves off). */
+  private moving=false;
   private readonly lengths:number[];
   /** Its signal along its path, a metre at a time (cars only). */
   private readonly signalPlan:ReadonlyArray<'left'|'right'|'off'>;
@@ -192,6 +194,8 @@ export class PassingVehicle implements SimModule{
 
   fixedUpdate(dt:Seconds):void{
     if(this.waited<this.delay){this.waited+=dt;return}
+    // (One shown waiting moves off from standing, not at its cruising speed.)
+    if(!this.moving){this.moving=true;if(this.shownWaiting)this.speed=0}
     let target=this.pace===null?this.cruise:Math.min(this.cruise,this.pace);
     if(this.speed>target)this.speed=Math.max(target,this.speed-1.5*dt);
     if(this.def.yieldsToLearner&&this.learner&&this.followsLearner){
@@ -264,6 +268,7 @@ export class PassingVehicle implements SimModule{
     this.speed=this.cruise;
     this.braking=false;
     this.harsh=false;
+    this.moving=false;
     this.pose=this.sample(0);
   }
 
