@@ -745,7 +745,9 @@ export async function boot():Promise<void>{
     const lesson:Lesson|null=scenario.rubricId==='lesson'&&!familiarisation?LESSONS.find(l=>l.id===chosenLessonId)??LESSONS[0]!:null;
     const mock=(scenario.rubricId==='mock-test'||!!lesson)&&!familiarisation;
     // The examiner speaks on a mock test, the instructor in a lesson.
-    examinerVoice.use(mock&&!lesson?EXAMINER_CLIPS:INSTRUCTOR_CLIPS);
+    // (And on a decision test: it is a mock test, the examiner's directions.)
+    const decisionDrive=!!decisionAsked&&scenario.locationId===decisionLocation;
+    examinerVoice.use(mock&&!lesson||decisionDrive?EXAMINER_CLIPS:INSTRUCTOR_CLIPS);
     const mockAssessor=mock?new MockTestAssessor({location:place,events,now:()=>clock.time,
       learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed,indicator:vehicle.indicators.state,surface:vehicle.surfaceKind}),
       traffic:()=>(traffic?.cars??[]).filter(c=>c.visible).map(c=>({x:c.pose.position.x,z:c.pose.position.z,heading:c.pose.heading,speed:c.speed})),

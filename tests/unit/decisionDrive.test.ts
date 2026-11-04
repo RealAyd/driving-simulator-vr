@@ -5,7 +5,7 @@ import {drive,loadScene,segDistance} from './decisionDrive';
 
 /** Every pause of route 1 driven right, in order. */
 const PAUSES=['queens-road-roundabout/approach','queens-road-roundabout/line','queens-road-roundabout/clear',
-  'high-street-lights/approach','high-street-lights/clear','western-road-mini/approach','western-road-mini/line',
+  'high-street-lights/approach','western-road-mini/approach','western-road-mini/line',
   'western-road-mini/clear','william-hunter-way-zebra/approach','william-hunter-way-zebra/clear','wilsons-corner/approach',
   'wilsons-corner/line','wilsons-corner/clear','cathedral-place/approach','cathedral-place/clear','queens-road-mini/approach',
   'queens-road-mini/line','st-james-crossroads/approach'];

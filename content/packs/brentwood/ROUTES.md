@@ -21,7 +21,7 @@ Western Road, William Hunter Way, Wilson's Corner, Ingrave Road, back by Queen's
 | # | Where and movement | Traffic that makes the decision | Answer | Status |
 |---|---|---|---|---|
 | 1 | Queen's Road roundabout from Kings Road south, first exit | Car close behind; blue car already on the ring from Queen's Road | both | **built** |
-| 2 | Kings Road at the High Street lights, ahead into Weald Road | Green (held); a pedestrian still finishing crossing Weald Road | both | **built**; check: signal phases |
+| 2 | Kings Road at the High Street lights, ahead into Weald Road | Green (held); a pedestrian reaching the far pavement of Weald Road, clear before the car gets there | go | **built**; check: signal phases |
 | 3 | Weald Road / Western Road mini-roundabout, right into Western Road | Car arriving from the right on Western Road | both | **built** |
 | 4 | William Hunter Way zebra crossing | Pedestrian at the kerb about to step out; car close behind | both | **built** |
 | 5 | Wilson's Corner: two mini-roundabouts close together, on to Ingrave Road | Car coming out of the High Street, on the right at the second mini | both | **built**; check: lane markings between the two minis |

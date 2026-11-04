@@ -788,7 +788,7 @@ export class Traffic implements SimModule{
       const wavedOn=(d.wavedByLearner??0)>0;
       if(wavedOn)d.wavedByLearner=d.wavedByLearner!-dt;
       if(this.options.careful&&Math.hypot(learner.pose.position.x-pos.x,learner.pose.position.z-pos.z)<12){
-        const pad=wavedOn?.15:.3;
+        const pad=wavedOn?.15:.45;
         // (Along its own way, round a bend or a roundabout as it will go, not straight on from where it points now.)
         const me=(k:number)=>{
           const q=this.at(d.leg,Math.min(d.leg.lengths.at(-1)!,d.s+k));
@@ -1180,9 +1180,10 @@ export class Traffic implements SimModule{
           const ob=boxOf(o.car);
           if(boxesOverlap(next,ob)&&!boxesOverlap(now,ob)){target=0;car.speed=Math.min(car.speed,1);why=`blocked by ${o.car.id}`;break}
         }
-        // (And a scenario's own road users standing still: a car waiting at a junction's mouth.)
+        // (And a scenario's own road users, standing (a car waiting at a junction's mouth) or on the move: a bus's
+        // body sweeping round a mini-roundabout is held short of one going by it.)
         for(const o of this.options.others?.()??[]){
-          if(o.speed>=.1||Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>20)continue;
+          if(Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>20)continue;
           const ob={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfLength>1?.9:.3,halfD:o.halfLength+.1};
           if(boxesOverlap(next,ob)&&!boxesOverlap(now,ob)){target=0;car.speed=Math.min(car.speed,1);why=`blocked by ${o.id}`;break}
         }

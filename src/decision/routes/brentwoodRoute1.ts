@@ -43,7 +43,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     {id:'blue-car',name:'blue car',colour:'#2563eb',speed:7,path:pts([...BLUE_RING,...UP_KINGS_ROAD]),
       signals:[{from:{x:131.1,z:-18.2},to:{x:63.8,z:65.3},side:'right'},{from:{x:63.8,z:65.3},to:{x:57.6,z:29.6},side:'left'}]},
     // Finishing crossing Weald Road (the signal crossing just past the High Street lights), from the east kerb.
-    {id:'weald-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-67.5,-323.8],[-75.1,-320.2],[-77.3,-324.7]])},
+    {id:'weald-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-67.5,-323.8],[-75.1,-320.2],[-78.3,-324.2]])},
     {id:'red-car',name:'red car',colour:'#b91c1c',speed:8,path:pts(RED)},
     // Close behind the car from Western Road along William Hunter Way, then into the car park road at the
     // mini-roundabout (parked there).
@@ -141,24 +141,24 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
         approach:{pause:{kind:'moving',at:{x:-56.2,z:-280.3}},when:{actor:'weald-pedestrian',at:{x:-72.6,z:-321.4}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.25},
           state:'Approaching the lights on green.'},
         clear:{pause:{kind:'stop',at:{x:-61.6,z:-297.5}},when:{actor:'weald-pedestrian',at:{x:-76.2,z:-322.5}},frame:{yaw:25,pitch:24,shift:-6},
-          state:'Stopped at the line for the pedestrian crossing Weald Road.'}
+          state:'Stopped at the line.'}
       },
       stages:[
         {
-          id:'approach',safe:'wait',go:'go',wait:'give-way',
+          id:'approach',safe:'go',go:'go',wait:'give-way',
           buttons:['look-left','look-right','mirror-interior','signal-left','go','give-way','horn'],
           neutral:['look-left','look-right','mirror-interior'],
           rules:[
-            {kind:'unsafe',id:'drove-at-pedestrian',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Drove on with a pedestrian crossing',
-              message:'A pedestrian was still crossing Weald Road, in your path. A green light means go only if the way is clear: give way to people still crossing (Highway Code rule 176). The examiner had to stop the car.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
-              message:'Going ahead, no signal is needed. A left signal says you are turning into the High Street.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Stopped at a green light',
+              message:'The light was green and the pedestrian was already reaching the far pavement: they were clear well before you got there. Keep going at a steady speed, watching them (a green light means go if the way is clear, Highway Code rule 176).'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Misleading signal',
+              message:'Going ahead, no signal is needed. A left signal says you are turning into the High Street: drivers waiting there, and people about to cross it, would act on it.'}},
             {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
               message:'Never use the horn to hurry a pedestrian who is crossing.'}}
           ],
-          accepted:[['give-way'],['look-left','give-way'],['mirror-interior','give-way'],['look-right','look-left','give-way']],
-          next:{wait:'clear',go:'clear'},
-          explain:'Give way: the light was green, but a pedestrian was still crossing Weald Road ahead of you. Wait at the line until they are clear.'
+          accepted:[['go'],['look-left','go'],['mirror-interior','go'],['look-right','look-left','go']],
+          next:{wait:'clear',go:'done'},
+          explain:'Go, watching the pedestrian: the light was green, and they were reaching the far pavement, clear of your way well before you got there.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
@@ -256,7 +256,8 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       starts:[{actor:'silver-car',at:{x:-41.5,z:-436.3},delay:0},{actor:'zebra-pedestrian',at:{x:117.7,z:-451.9},delay:.4}],
       endAt:{x:150.8,z:-463.2},
       // (And the mini-roundabout beyond it, where traffic coming towards the crossing would come from.)
-      quiet:[{x:148,z:-460,radius:28},{x:185,z:-490,radius:24}],
+      // (And the mini-roundabout before it, where the silver car follows the car through.)
+      quiet:[{x:148,z:-460,radius:28},{x:185,z:-490,radius:24},{x:-18,z:-464,radius:22}],
       place:{
         approach:{pause:{kind:'moving',at:{x:114.8,z:-451.3}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.6},state:'Approaching the zebra crossing at about 20 mph.'},
         clear:{pause:{kind:'stop',at:{x:141.7,z:-459}},when:{actor:'zebra-pedestrian',at:{x:150,z:-456.4}},frame:{yaw:0,pitch:30},state:'Stopped at the zebra crossing.'}
