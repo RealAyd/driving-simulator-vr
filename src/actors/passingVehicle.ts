@@ -20,6 +20,8 @@ const SIGNAL_TURN=.6;
 /** Turning faster than this (radians in 6 m: a curve tighter than about 40 m radius) is turning, not a bend. */
 const TURNING=.15;
 const MAX_DECEL={car:7.5,cyclist:4.5,pedestrian:3};
+/** Braking for red lights (m/s²): steady, as a driver does. */
+const LIGHTS_DECEL=2.5;
 
 /**
  * Drives a fixed lane path (an overtaking car, a cyclist). If it yields to the
@@ -48,6 +50,9 @@ export class PassingVehicle implements SimModule{
   /** Its speed held to at most this now (m/s), or null: a decision test paces a road user to meet the learner's car
    * at the moment depicted. Set by the runner. */
   pace:number|null=null;
+  /** Traffic lights' stop lines (each with the heading of the traffic it stops, and its light now): a car or cyclist
+   * stops short of one at red (or red and amber), and at amber unless too close to stop. Set by the app. */
+  signals:(()=>ReadonlyArray<{lane:{x:number;z:number};heading:number;state:string}>)|null=null;
   /** Other traffic on the roads (background cars): followed when on its path ahead, keeping a gap. Set by the app. */
   traffic:(()=>ReadonlyArray<LearnerFootprint>)|null=null;
 
@@ -158,6 +163,17 @@ export class PassingVehicle implements SimModule{
     return {position:{x:a.x+(b.x-a.x)*k,y:0,z:a.z+(b.z-a.z)*k},heading:headingFromDirection({x:b.x-a.x,z:b.z-a.z})};
   }
 
+  /** How far along its path ahead (metres, from its middle; up to 60 m) a stop line on its way is, or Infinity. */
+  private lineAhead(p:{x:number;z:number}):number{
+    if(Math.hypot(p.x-this.pose.position.x,p.z-this.pose.position.z)>62)return Infinity;
+    for(let d=0;d<=60;d+=.5){
+      const q=this.sample(this.s+d).position;
+      if(Math.hypot(q.x-p.x,q.z-p.z)<2.5)return d;
+      if(this.s+d>=this.length)break;
+    }
+    return Infinity;
+  }
+
   /** Free distance ahead along the path before the learner's car, or Infinity. */
   gapToLearner(lookahead=45):number{
     return this.learner?this.gapTo(this.learner(),lookahead):Infinity;
@@ -216,9 +232,28 @@ export class PassingVehicle implements SimModule{
         if(this.speed>target)this.speed=Math.max(target,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(1.5,(this.speed-target)*2))*dt);
       }
     }
+    // Traffic lights on its path ahead: stopped 1.5 m short of the line, braking steadily.
+    if(this.def.body!=='pedestrian'){
+      const {halfLength}=this.size;
+      for(const st of this.signals?.()??[]){
+        if(st.state==='green'||Math.cos(st.heading-this.pose.heading)<.8)continue;
+        const front=this.lineAhead(st.lane);
+        if(front===Infinity)continue;
+        const room=front-halfLength-1.5;
+        // (At amber, on through if it is too close to stop comfortably.)
+        if(st.state==='amber'&&room<this.speed*this.speed/6+1)continue;
+        const want=Math.sqrt(2*LIGHTS_DECEL*Math.max(0,room));
+        if(want<target){
+          target=want;
+          if(this.speed>want)this.speed=Math.max(want,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(LIGHTS_DECEL,(this.speed-want)*2))*dt);
+          if(room<.2)this.speed=0;
+        }
+      }
+    }
     if(target>0&&this.speed<target)this.speed=Math.min(target,this.speed+ACCELERATION[this.def.body]*dt);
     this.s+=this.speed*dt;
-    if(this.s>this.length)this.s=this.def.repeat?0:this.length;
+    // (At the end of its path it stands there: stopped, not still at speed to those following it.)
+    if(this.s>this.length){this.s=this.def.repeat?0:this.length;if(!this.def.repeat)this.speed=0}
     this.pose=this.sample(this.s);
   }
 

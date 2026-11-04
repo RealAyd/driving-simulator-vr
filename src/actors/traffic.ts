@@ -105,8 +105,12 @@ const IDM={a:ACCEL,b:2.2,T:1.4,s0:2.5};
 /** A gap in the main road's traffic taken out of a side road or across the oncoming lane (seconds). */
 const SAFE_GAP=4;
 const SPLIT_EASE=25;
+/** Traffic comes into and leaves a mini-roundabout this far out from its middle (of its radius). */
+const MINI_EDGE=.75;
 /** Two standing this long (seconds) at a junction with others going by: a knot, undone as one with all standing is. */
 const KNOT_WAIT=20;
+/** A scenario's road user standing in the way this long (seconds) is gone by rather than waited for. */
+const OTHER_STANDING=12;
 /** A way on turning more than this far back (about 150°, as cosine) is a U-turn: traffic never takes one. */
 const UTURN_COS=.87;
 /** The lane offset a car keeps at distance `s` along a leg (left of the road's centre, metres). */
@@ -338,8 +342,13 @@ export class Traffic implements SimModule{
     {
       const [na0,nb0]=this.roadNodes.get(road)!;
       const edge=(at:number,node:number,step:number)=>{
-        const r=this.ringAt(node);if(!r)return at;
-        let b=at;for(let k=0;k<60&&onRing(r,pointAtAlong(road,b),.3);k++)b+=step;
+        const r=this.ringAt(node);
+        if(r){let b=at;for(let k=0;k<60&&onRing(r,pointAtAlong(road,b),.3);k++)b+=step;return b}
+        // A mini-roundabout mapped as one point (the roads meet at its middle): from and to its edge, so the way through
+        // goes round the painted disc, not over it.
+        const n=this.nodes[node],m=n?.junction?miniAt(this.minis,n):null;
+        if(!m)return at;
+        let b=at;for(let k=0;k<20;k++){const p=pointAtAlong(road,b);if(Math.hypot(p.x-m.position.x,p.z-m.position.z)>=m.radius*MINI_EDGE)break;b+=step}
         return b;
       };
       if(!exit){const b=edge(a1,dir>0?nb0:na0,-dir);if((b-a0)*dir>3)a1=b}
@@ -768,6 +777,9 @@ export class Traffic implements SimModule{
         // (Not one standing beside its way, not in it: someone waiting at the kerb to cross, who goes when the learner
         // comes; waited for, it would be waiting for this car, and the learner behind it for both.)
         if(o.speed<.1&&Math.abs((op.x-pos.x)*fwd.z-(op.z-pos.z)*fwd.x)>car.halfWidth+.6)continue;
+        // (Nor, after a while, one standing at a junction's mouth, waiting for the learner to come: it is gone by, as a
+        // parked car is, kept from touching it below.)
+        if(o.speed<.1&&d.waited>OTHER_STANDING&&facing<=.3)continue;
         if(facing>.3)ahead(op.x,op.z,o.halfLength,`behind ${o.id}`,o.speed*facing);
         else ahead(op.x,op.z,o.halfLength+1,`crossing ${o.id}`);
       }
@@ -1144,13 +1156,14 @@ export class Traffic implements SimModule{
         }
         else{target=0;why=`letting ${y.for} by`;want=Math.max(want,tuckIn)}
       }
-      // Going by the learner standing (round it, or tucked in to make room): kept clear of it sideways until by, not
-      // back to the middle of its lane alongside it, into it.
+      // Going by the learner (round it, or tucked in to make room): kept clear of it sideways until by, not back to the
+      // middle of its lane alongside it, into it.
       // (Alongside it only: behind it, it can still pull back in behind it.)
-      if(d.leg.road&&Math.abs(learner.speed)<.5&&Math.abs(learnerAlong)<car.halfLength+2.15+.5){
-        const clear=car.halfWidth+.9+.1;
-        if(learnerAcross<d.lat&&d.lat-learnerAcross>clear-.3)want=Math.max(want,Math.min(tuckIn,learnerAcross+clear));
-        else if(learnerAcross>d.lat&&learnerAcross-d.lat>clear-.3)want=Math.min(want,learnerAcross-clear);
+      // (Standing or moving off: either way, not back into the lane beside it.)
+      if(d.leg.road&&Math.abs(learnerAlong)<car.halfLength+2.15+.5&&Math.cos(learner.pose.heading-car.pose.heading)>.5){
+        const clear=car.halfWidth+.9+.45;
+        if(learnerAcross<d.lat&&d.lat-learnerAcross>clear-.6)want=Math.max(want,Math.min(tuckIn,learnerAcross+clear));
+        else if(learnerAcross>d.lat&&learnerAcross-d.lat>clear-.6)want=Math.min(want,learnerAcross-clear);
       }
       d.lat+=Math.max(-SIDEWAYS*dt,Math.min(SIDEWAYS*dt,want-d.lat));
       // Its whole body a little further on against every other vehicle's (a bus's corner sweeping round a turn, a car
@@ -1166,6 +1179,12 @@ export class Traffic implements SimModule{
           if(d.waved&&o.car.speed<.3)continue;
           const ob=boxOf(o.car);
           if(boxesOverlap(next,ob)&&!boxesOverlap(now,ob)){target=0;car.speed=Math.min(car.speed,1);why=`blocked by ${o.car.id}`;break}
+        }
+        // (And a scenario's own road users standing still: a car waiting at a junction's mouth.)
+        for(const o of this.options.others?.()??[]){
+          if(o.speed>=.1||Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>20)continue;
+          const ob={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfLength>1?.9:.3,halfD:o.halfLength+.1};
+          if(boxesOverlap(next,ob)&&!boxesOverlap(now,ob)){target=0;car.speed=Math.min(car.speed,1);why=`blocked by ${o.id}`;break}
         }
       }
       if(following&&gap<Infinity&&target>=.05){

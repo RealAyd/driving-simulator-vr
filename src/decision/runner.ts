@@ -54,7 +54,7 @@ export interface RunnerScene{
   junctions?():ReadonlyArray<{x:number;z:number;radius:number}>;
   /** Traffic lights (each stop line's lane, the heading it stops and its aspect): the car stops at red, and at amber
    * when it can. */
-  signals?():ReadonlyArray<{lane:{x:number;z:number};heading:number;state:string}>;
+  signals?():ReadonlyArray<{id:string;lane:{x:number;z:number};heading:number;state:string}>;
   /** Holds the lights at a stop line (near `at`) green for the car, or releases the hold (null). */
   holdLights?(at:Vec2|null):void;
 }
@@ -98,6 +98,8 @@ const END_REACH=60;
 const PACE_LEAST=.4,PACE_MARGIN=.6;
 /** A pedestrian may be paced down further: people dawdle (a share of their speed). */
 const PACE_LEAST_ON_FOOT=.15;
+/** Within this far of the start of their path (metres) someone on foot may stand and wait. */
+const KERB_WAIT=1.5;
 /** The car's half-width (metres). */
 const HALF_WIDTH=.9;
 /** Stopped this far short of where the car would touch background traffic ahead (metres, along its way). */
@@ -269,13 +271,20 @@ export class DecisionRunner{
       if(busy)v=lim(v,Math.sqrt(2*BRAKING*Math.max(0,at-HALF_LENGTH-1)),`junction busy (${busy.id})`);
     }
     // Traffic lights on the way: stopped for at red (and red and amber), and at amber unless too close to stop.
+    // (The way's direction at the line, not the car's now: coming out of a turn, a line just beyond it is stopped for.)
     for(const st of this.scene.signals?.()??[]){
-      if(st.state==='green'||Math.cos(st.heading-car.heading)<.8)continue;
+      if(st.state!=='amber')this.amberGo.delete(st.id);
+      if(st.state==='green')continue;
       for(let d=0;d<=60;d+=1.5){
         const p=this.assist.pointAt(s+d);
         if(Math.hypot(p.x-st.lane.x,p.z-st.lane.z)>2.5)continue;
+        const q=this.assist.pointAt(s+d+1);
+        if(Math.cos(st.heading-Math.atan2(q.x-p.x,-(q.z-p.z)))<.8)continue;
         const room=d-HALF_LENGTH-1;
-        if(!(st.state==='amber'&&room<car.speed*car.speed/6+1))v=lim(v,Math.sqrt(2*BRAKING*Math.max(0,room)),'lights');
+        // (At amber, decided once as it changes: on through if too close to stop then, otherwise stopped for, braking
+        // gently; not stopping for it first, then too close to stop later, on into the red.)
+        if(st.state==='amber'&&!this.amberGo.has(st.id))this.amberGo.set(st.id,room<car.speed*car.speed/6+1);
+        if(!(st.state==='amber'&&this.amberGo.get(st.id)))v=lim(v,Math.sqrt(2*BRAKING*Math.max(0,room)),'lights');
         break;
       }
     }
@@ -299,10 +308,19 @@ export class DecisionRunner{
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;
-    x.pace=Math.max(def.speed*(def.kind==='pedestrian'?PACE_LEAST_ON_FOOT:PACE_LEAST),Math.min(def.speed,left/(eta+PACE_MARGIN)));
+    // (Someone on foot not yet off the kerb waits there while the car is held up well short of the junction: its
+    // time to get there is unknown.)
+    if(def.kind==='pedestrian'&&x.travelled<KERB_WAIT&&speed<.5&&d>15){x.pace=0;return}
+    // (Someone on foot not yet stepped off the kerb waits there, as people do, rather than crossing early.)
+    const least=def.kind==='pedestrian'?(x.travelled<KERB_WAIT?0:PACE_LEAST_ON_FOOT):PACE_LEAST;
+    x.pace=Math.max(def.speed*least,Math.min(def.speed,left/(eta+PACE_MARGIN)));
   }
 
+  /** At each stop line now at amber: whether the car was too close to stop when it changed (on through). */
+  private readonly amberGo=new Map<string,boolean>();
   private heldWho='';
+  private actorStuck=0;
+  private actorStuckWho='';
   private waved=false;
   private stuckWho='';
   private stuckTime=0;
@@ -349,6 +367,17 @@ export class DecisionRunner{
       // the test standing still for good.
       if(by){this.stuckTime=by===this.stuckWho?this.stuckTime+1/60:0;this.stuckWho=by}else if(car0.speed>1){this.stuckTime=0;this.stuckWho=''}
       if(by&&this.stuckTime>RETIRE_AFTER){this.scene.retire?.(by);this.stuckTime=0}
+      // (One itself waiting for one of the route's own road users, standing (a car waiting at a junction's mouth, for the
+      // car): neither goes; it turns off too, as a last resort.)
+      const why=(this.scene.traffic?.()??[]).find(q=>q.id===held)?.why??'';
+      // (Or waiting itself at a junction the car holds busy, or face to face with or blocked by something: each waiting for
+      // the other. Not one at red lights or in a queue: those go in time.)
+      const forActor=!by&&!!held&&(this.route.actors.some(a=>why.includes(a.id))||/^(junction busy|crossing |facing |blocked by )/.test(why));
+      // (Counted until the car moves on: one creeping to and fro, now and then not waiting as such, still counts.)
+      if(forActor&&held!==this.actorStuckWho){this.actorStuckWho=held;this.actorStuck=0}
+      else if(this.actorStuckWho&&held===this.actorStuckWho)this.actorStuck+=1/60;
+      if(car0.speed>1){this.actorStuck=0;this.actorStuckWho=''}
+      if(this.actorStuckWho&&this.actorStuck>RETIRE_AFTER){this.scene.retire?.(this.actorStuckWho);this.actorStuck=0;this.actorStuckWho=''}
     }
     const car=this.scene.car(),s=this.carS();
     // Paced: the road user the stage in hand waits for, and that of the next challenge's first stage (already on its
@@ -421,7 +450,7 @@ export class DecisionRunner{
   private actorAt(id:string,p:Vec2):number{
     const key=`${id}@${p.x},${p.z}`;
     let v=this.actorMarks.get(key);
-    if(v===undefined){v=along(this.route.actors.find(a=>a.id===id)?.path??[],p);this.actorMarks.set(key,v)}
+    if(v===undefined){v=along(this.scene.actor(id)?.path??this.route.actors.find(a=>a.id===id)?.path??[],p);this.actorMarks.set(key,v)}
     return v;
   }
   private readonly actorMarks=new Map<string,number>();

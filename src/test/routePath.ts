@@ -1,5 +1,5 @@
 import {forwardFromHeading,rightFromHeading,type Vec2} from '../contracts';
-import {aroundMini,miniAt,type MiniRoundabout} from '../world/miniRoundabout';
+import {aroundMini,miniAt,roundMinis,type MiniRoundabout} from '../world/miniRoundabout';
 import {aroundRing,onRing,ringLanes} from '../world/roundaboutLanes';
 import {keepLeftOffset,pointAtAlong,roadHalfWidth} from '../world/roadGeometry';
 import type {KerbFootprint} from '../world/townscape';
@@ -158,5 +158,6 @@ export function routeLanePath(legs:RouteLeg[],parked:ReadonlyArray<Vec2&Partial<
     }
     for(const p of kept)out.push({x:p.x,z:p.z});
   }
-  return out;
+  // (Where the map has a mini-roundabout as one point, the joins above cross its disc: taken round it.)
+  return roundMinis(out,minis.filter(m=>!ringLanes(m)),TIGHTEST_TURN,onRoad);
 }

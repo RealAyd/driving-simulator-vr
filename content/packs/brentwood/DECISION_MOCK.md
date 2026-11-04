@@ -27,8 +27,9 @@ learner judges observations, position, priority and decisions. Brentwood route 1
    going, the car drives on to the next challenge.
 
 The car is the app's: a bump from background traffic never ends the test. Going where it was unsafe is not driven: the examiner takes control and holds the car. This is recorded (dangerous,
-as an intervention), and the decision comes again once the traffic has passed. Where the app did part of the
-preparation (mirrors and slowing on the way to a mini-roundabout), the paused screen says so.
+as an intervention), and the decision comes again once the traffic has passed. The app never checks the mirrors or
+signals for the learner (the owner's rule: that is the learner's job): every junction challenge starts with an approach
+decision, mirrors and signal, before the decision at the line.
 
 ## Marking (`src/decision/assess.ts`)
 
@@ -84,8 +85,10 @@ traffic in several patterns, and checks:
 `tests/browser/g40-decision-test.spec.ts`.
 
 Road users' paths are planned on the scene's roads, as the car's own way is (`RoadNetwork.planThrough` and
-`routeLanePath`, from a start pose to the points given), so they keep to their lanes and go round mini-roundabouts
-properly.
+`routeLanePath`, from a start pose to the points given), so they keep to their lanes. Every car goes round a
+mini-roundabout's painted disc clockwise, never over it (`roundMinis`: the map draws most minis as one point where
+the roads meet, and a path planned through that point crossed the disc); background traffic comes into a mini and
+leaves it at its edge for the same reason. Scripted road users stop at red lights, as background traffic does.
 
 Every car signals. A scripted car signals for each turn on its path, from 35 m before it until it has turned (two
 turns close together, as at Wilson's Corner: the first, then the second); a bend in the road is not a turn. Round a

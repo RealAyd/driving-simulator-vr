@@ -135,9 +135,26 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       // the grey and blue cars turn off into Primrose Hill, behind (they turn across the oncoming lane).
       quiet:[{x:-38,z:-244,radius:30},{x:-58,z:-290,radius:28},{x:51,z:-17,radius:16}],
       place:{
-        line:{pause:{kind:'stop',at:{x:-38.4,z:-234.6}},frame:{yaw:-8,pitch:38,shift:-7},state:'At the give way line. The app has checked the mirrors and slowed down.'}
+        approach:{pause:{kind:'moving',at:{x:-24.6,z:-192.2}},frame:{yaw:0,pitch:18},state:'Approaching the mini-roundabout.'},
+        line:{pause:{kind:'stop',at:{x:-38.4,z:-234.6}},frame:{yaw:-8,pitch:38,shift:-7},state:'At the give way line.'}
       },
       stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          neutral:['mirror-left','mirror-right'],
+          rules:[
+            {kind:'required',id:'no-mirror',anyOf:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed without checking behind',
+              message:'Check the interior mirror before you slow down for the mini-roundabout: you need to know what is behind you.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
+              message:'Going ahead, no signal is needed. A left signal suggests you are turning into the car park.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Misleading signal',
+              message:'Going ahead, you need no signal. A right signal tells the driver waiting at the car park exit that you are going round past it, so they may pull out into your path.'}}
+          ],
+          accepted:[['mirror-interior'],['mirror-interior','mirror-left'],['mirror-interior','mirror-right']],
+          next:{then:'line'},
+          explain:'Interior mirror before slowing down. Going ahead, no signal.'
+        },
         {
           id:'line',safe:'go',go:'go',wait:'give-way',
           buttons:['look-right','look-left','mirror-interior','signal-left','signal-right','give-way','creep','go'],
@@ -168,13 +185,13 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       instructAt:{x:-44.2,z:-251.8},
       starts:[{actor:'weald-pedestrian',at:{x:-38.4,z:-232.9},delay:0}],
       lights:{x:-61.5,z:-300.5},
-      endAt:{x:-77.4,z:-330.8},
+      endAt:{x:-74.6,z:-325.6},
       quiet:[{x:-68,z:-312,radius:30}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:-56.2,z:-280.3}},when:{actor:'weald-pedestrian',at:{x:-72.6,z:-321.4}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.6},
+        approach:{pause:{kind:'moving',at:{x:-56.2,z:-280.3}},when:{actor:'weald-pedestrian',at:{x:-72.6,z:-321.4}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.25},
           state:'Approaching the lights on green.'},
-        clear:{pause:{kind:'stop',at:{x:-61.6,z:-297.5}},when:{actor:'weald-pedestrian',at:{x:-76.2,z:-322.5}},frame:{yaw:0,pitch:28},
-          state:'Stopped at the line. The light is still green.'}
+        clear:{pause:{kind:'stop',at:{x:-61.6,z:-297.5}},when:{actor:'weald-pedestrian',at:{x:-76.2,z:-322.5}},frame:{yaw:25,pitch:24,shift:-6},
+          state:'Stopped at the line for the pedestrian crossing Weald Road.'}
       },
       stages:[
         {
@@ -216,17 +233,34 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       title:'Mini-roundabout, right turn',
       where:'Weald Road and Western Road mini-roundabout',
       instruction:'At the mini-roundabout, turn right.',
-      instructAt:{x:-80.1,z:-336.2},
+      instructAt:{x:-75.6,z:-327.4},
       starts:[{actor:'red-car',at:{x:-66,z:-308.6},delay:0}],
       endAt:{x:-86.3,z:-382.6},
       // The mini-roundabout and Western Road, where the red car comes from.
       quiet:[{x:-97,z:-366,radius:30},{x:-60,z:-415,radius:25}],
       place:{
+        approach:{pause:{kind:'moving',at:{x:-81.4,z:-339}},frame:{yaw:0,pitch:18},state:'Approaching the mini-roundabout.'},
         line:{pause:{kind:'stop',at:{x:-93,z:-357.8}},when:{actor:'red-car',at:{x:-86.5,z:-377.2}},frame:{yaw:-40,pitch:34},
-          state:'At the give way line. The app has checked the mirrors and signalled right.'},
+          state:'At the give way line.'},
         clear:{pause:{kind:'stop',at:{x:-93,z:-357.8}},when:{actor:'red-car',at:{x:-121,z:-377.8}},frame:{yaw:-40,pitch:34},state:'Still at the give way line.'}
       },
       stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          neutral:['mirror-left'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
+              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
+            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
+              message:'Signal right on the approach so others know where you are going.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'A left signal says you are turning left, the opposite of where you are going: the red car and anyone waiting would be misled.'}}
+          ],
+          accepted:[['mirror-interior','mirror-right','signal-right'],['mirror-right','mirror-interior','signal-right']],
+          next:{then:'line'},
+          explain:'Mirrors (interior, then right), then signal right for the right turn.'
+        },
         {
           id:'line',safe:'wait',go:'go',wait:'give-way',
           buttons:['look-right','look-left','mirror-right','signal-left','give-way','go','horn'],
@@ -270,7 +304,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       instruction:'Follow the road ahead.',
       instructAt:{x:12.8,z:-451.6},
       starts:[{actor:'silver-car',at:{x:-41.5,z:-436.3},delay:0},{actor:'zebra-pedestrian',at:{x:117.7,z:-451.9},delay:.4}],
-      endAt:{x:157.2,z:-465.8},
+      endAt:{x:150.8,z:-463.2},
       quiet:[{x:148,z:-460,radius:28}],
       place:{
         approach:{pause:{kind:'moving',at:{x:114.8,z:-451.3}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.6},state:'Approaching the zebra crossing at about 20 mph.'},
@@ -318,16 +352,33 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       title:'Mini-roundabout, ahead (judging a gap)',
       where:'William Hunter Way mini-roundabout',
       instruction:'At the mini-roundabout, follow the road ahead.',
-      instructAt:{x:158.9,z:-466.8},
+      instructAt:{x:152.2,z:-463.9},
       starts:[{actor:'green-car',at:{x:148.3,z:-461.2},delay:0}],
       endAt:{x:195.9,z:-496.6},
       // The mini-roundabout and the stretch of William Hunter Way the green car comes along.
       quiet:[{x:185,z:-490,radius:30},{x:240,z:-505,radius:30},{x:275,z:-516,radius:18}],
       place:{
+        approach:{pause:{kind:'moving',at:{x:164,z:-470.1}},frame:{yaw:0,pitch:18},state:'Approaching the mini-roundabout.'},
         line:{pause:{kind:'stop',at:{x:177.8,z:-484}},when:{actor:'green-car',at:{x:233.4,z:-503.5}},frame:{yaw:-30,pitch:20},
-          state:'At the give way line. The app has checked the mirrors and slowed down.'}
+          state:'At the give way line.'}
       },
       stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          neutral:['mirror-left','mirror-right'],
+          rules:[
+            {kind:'required',id:'no-mirror',anyOf:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed without checking behind',
+              message:'Check the interior mirror before you slow down for the mini-roundabout: you need to know what is behind you.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
+              message:'Going ahead, no signal is needed. A left signal suggests you are turning off.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Misleading signal',
+              message:'Going ahead, you need no signal. A right signal tells the green car coming from the right that you are going round past it.'}}
+          ],
+          accepted:[['mirror-interior'],['mirror-interior','mirror-left'],['mirror-interior','mirror-right']],
+          next:{then:'line'},
+          explain:'Interior mirror before slowing down. Going ahead, no signal.'
+        },
         {
           id:'line',safe:'go',go:'go',wait:'give-way',
           buttons:['look-right','look-left','mirror-interior','signal-right','give-way','creep','go'],
@@ -363,11 +414,28 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       // Both mini-roundabouts, and the High Street, where the black car comes from.
       quiet:[{x:478,z:-540,radius:32},{x:440,z:-519,radius:22}],
       place:{
+        approach:{pause:{kind:'moving',at:{x:469.7,z:-569.1}},frame:{yaw:0,pitch:18},state:'Past the first mini-roundabout, approaching the second.'},
         line:{pause:{kind:'stop',at:{x:479.6,z:-538.6}},when:{actor:'black-car',at:{x:462.4,z:-529.2}},frame:{yaw:-35,pitch:34},
-          state:'At the second mini-roundabout. The app has checked the mirrors and signalled left.'},
+          state:'At the second mini-roundabout.'},
         clear:{pause:{kind:'stop',at:{x:479.6,z:-538.6}},when:{actor:'black-car',at:{x:492.4,z:-557.3}},frame:{yaw:-35,pitch:34},state:'Still at the give way line.'}
       },
       stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          neutral:['mirror-right'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
+              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
+            {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the left turn',
+              message:'Signal left on the approach so others know where you are going.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'A right signal says you are going round past Ingrave Road: the black car would expect you to carry on round.'}}
+          ],
+          accepted:[['mirror-interior','mirror-left','signal-left'],['mirror-left','mirror-interior','signal-left']],
+          next:{then:'line'},
+          explain:'Mirrors (interior, then left), then signal left for Ingrave Road.'
+        },
         {
           id:'line',safe:'wait',go:'go',wait:'give-way',
           buttons:['look-right','look-left','mirror-left','signal-right','give-way','go','horn'],
@@ -415,16 +483,31 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       // The mini-roundabout and Queen's Road, on the right.
       quiet:[{x:585,z:-335,radius:30},{x:555,z:-310,radius:20}],
       place:{
-        line:{pause:{kind:'stop',at:{x:583.1,z:-344.2}},frame:{yaw:-25,pitch:34},state:'At the give way line. The app has checked the mirrors.'}
+        approach:{pause:{kind:'moving',at:{x:559.3,z:-382.7}},frame:{yaw:0,pitch:18},state:'Approaching the mini-roundabout.'},
+        line:{pause:{kind:'stop',at:{x:583.1,z:-344.2}},frame:{yaw:-25,pitch:34},state:'At the give way line.'}
       },
       stages:[
         {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          neutral:['mirror-left'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
+              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
+            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
+              message:'Signal right on the approach so others know where you are going.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'A left signal says you are turning left: the white van waiting opposite could pull out across your path.'}}
+          ],
+          accepted:[['mirror-interior','mirror-right','signal-right'],['mirror-right','mirror-interior','signal-right']],
+          next:{then:'line'},
+          explain:'Mirrors (interior, then right), then signal right for the right turn.'
+        },
+        {
           id:'line',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-right','signal-right','signal-left','give-way','creep','go'],
+          buttons:['look-right','look-left','mirror-right','signal-left','give-way','creep','go'],
           neutral:['look-left','mirror-right'],
           rules:[
-            {kind:'required',id:'no-signal',anyOf:['signal-right'],when:'go',fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
-              message:'Signal right so the van waiting opposite knows you are turning across its path.'}},
             {kind:'before',id:'look-right-first',action:'go',needs:['look-right'],fault:{level:'serious',heading:'Junctions - observation',title:'Went without looking right',
               message:'Traffic from Queen\'s Road, on your right, has priority. Look right before you go.'}},
             {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
@@ -434,7 +517,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
             {kind:'distractor',id:'creep',action:'creep',fault:{level:'feedback',heading:'Junctions - approach',title:'No need to creep',
               message:'Your view of Queen\'s Road is clear. Edging out can confuse the van\'s driver.'}}
           ],
-          accepted:[['look-right','signal-right','go'],['signal-right','look-right','go'],['mirror-right','signal-right','look-right','go'],['signal-right','look-right','look-left','go']],
+          accepted:[['look-right','go'],['look-right','look-left','go'],['mirror-right','look-right','go'],['look-left','look-right','go']],
           next:{go:'done'},
           explain:'Signal right and go: Queen\'s Road on your right was clear, and the van opposite gives way to traffic from its right, which is you.'
         }

@@ -2,7 +2,8 @@
 import {parseLocation,type PassingVehicleActorDef} from '../../src/contracts';
 import {PassingVehicle} from '../../src/actors/passingVehicle';
 import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinematics';
-import {prepareRoundabouts} from '../../src/world/roundabouts';
+import {drivingView,prepareRoundabouts} from '../../src/world/roundabouts';
+import {roundMinis} from '../../src/world/miniRoundabout';
 import {surfaceAt} from '../../src/world/roadGeometry';
 import {decisionPath,junctionDiscs,streetFurniture} from '../../src/decision/plan';
 import {layoutSignage} from '../../src/world/signage';
@@ -50,7 +51,8 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   const junctions=junctionDiscs(place);
   let car:VehicleState={position:{x:0,y:0,z:0},heading:0,speed:0,steerAngle:0};
   const learner=()=>({pose:{position:car.position,heading:car.heading},halfWidth:.9,halfLength:2.15,speed:car.speed});
-  const actors=new Map(actorDefs(route).map(d=>[d.id,new PassingVehicle(d as PassingVehicleActorDef,learner)]));
+  const minis=drivingView(place).junctions;
+  const actors=new Map(actorDefs(route).map(d=>[d.id,new PassingVehicle((d.body==='car'?{...d,path:roundMinis(d.path,minis)}:d) as PassingVehicleActorDef,learner)]));
   const lights=new TrafficSignals(place);
   let runner!:DecisionRunner;
   const busStops=place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position);
@@ -60,6 +62,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   const others=()=>(background?.cars??[]).filter(c=>c.visible);
   for(const a of actors.values()){
     a.followsLearner=a.def.yieldsToLearner;a.goneAtEnd=!route.actors.find(x=>x.id===a.id)?.parks;
+    a.signals=()=>lights.stops;
     a.traffic=()=>others().map(c=>({pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength,speed:c.speed}));
   }
   let frozen=false,result:DecisionRunResult|null=null;

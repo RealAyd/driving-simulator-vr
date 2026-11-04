@@ -4,9 +4,10 @@ import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {drive,loadScene,segDistance} from './decisionDrive';
 
 /** Every pause of route 1 driven right, in order. */
-const PAUSES=['queens-road-roundabout/approach','queens-road-roundabout/line','queens-road-roundabout/clear','chatham-way-mini/line',
-  'high-street-lights/approach','high-street-lights/clear','western-road-mini/line','western-road-mini/clear',
-  'william-hunter-way-zebra/approach','william-hunter-way-zebra/clear','william-hunter-way-mini/line','wilsons-corner/line','wilsons-corner/clear',
+const PAUSES=['queens-road-roundabout/approach','queens-road-roundabout/line','queens-road-roundabout/clear','chatham-way-mini/approach',
+  'chatham-way-mini/line','high-street-lights/approach','high-street-lights/clear','western-road-mini/approach','western-road-mini/line',
+  'western-road-mini/clear','william-hunter-way-zebra/approach','william-hunter-way-zebra/clear','william-hunter-way-mini/approach',
+  'william-hunter-way-mini/line','wilsons-corner/approach','wilsons-corner/line','wilsons-corner/clear','queens-road-mini/approach',
   'queens-road-mini/line'];
 
 type Run=Awaited<ReturnType<typeof drive>>;
@@ -83,7 +84,7 @@ describe('Brentwood route 1, driven',()=>{
   it('practises one challenge on its own, from a little before it, and pulls up just past it',async()=>{
     const r=await drive({'chatham-way-mini/line':['look-right','give-way']},1);
     expect(r.result?.practice).toBe(true);
-    expect(r.pauses.map(p=>p.at.challenge.id)).toEqual(['chatham-way-mini']);
+    expect(r.pauses.map(p=>`${p.at.challenge.id}/${p.at.stage.id}`)).toEqual(['chatham-way-mini/approach','chatham-way-mini/line']);
     expect(r.result?.faults.map(f=>f.ruleId)).toEqual(['hesitation']);
     // Not on round the rest of the route.
     expect(Math.hypot(r.car.position.x+43,r.car.position.z+250)).toBeLessThan(45);

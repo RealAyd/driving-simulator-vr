@@ -18,6 +18,7 @@ import {busVisual,pedestrianFigure,vehicleVisual,walkerFigure} from '../actors/a
 import {Bus,BUS_SIZE} from '../actors/bus';
 import {appearance,layoutCrowd,personPose,type Person} from '../world/crowd';
 import {drivingView,prepareRoundabouts} from '../world/roundabouts';
+import {roundMinis} from '../world/miniRoundabout';
 import {centralReservations} from '../world/dualCarriageway';
 import {Visits} from './visits';
 import {PeopleRenderer} from '../world/peopleMesh';
@@ -679,7 +680,10 @@ export async function boot():Promise<void>{
     const pedestrian=pedDef?new Pedestrian(pedDef,events,(p,r)=>pointToBox(p.x,p.z,vehicle.pose,vehicle.halfWidth,vehicle.halfLength)<r):null;
     const follower=followerDef?new FollowingVehicle(followerDef,()=>vehicle.pose,()=>Math.max(0,vehicle.state.speed)):null;
     const learnerFootprint=()=>({pose:vehicle.pose,halfWidth:vehicle.halfWidth,halfLength:vehicle.halfLength,speed:vehicle.state.speed});
-    const passers=scenario.actors.filter((a):a is PassingVehicleActorDef=>a.kind==='passing-vehicle').map(d=>new PassingVehicle(d,learnerFootprint,events));
+    // (Cars round mini-roundabouts' discs, not over them, where their paths were planned through the middle.)
+    const minis=drivingView(place).junctions;
+    const passers=scenario.actors.filter((a):a is PassingVehicleActorDef=>a.kind==='passing-vehicle')
+      .map(d=>new PassingVehicle(d.body==='car'?{...d,path:roundMinis(d.path,minis)}:d,learnerFootprint,events));
     if(pedestrian){
       pedestrian.onward=onwardPath(place,pedestrian.def);
       dynamicFootprints.push({id:pedestrian.id,shape:()=>({kind:'circle',x:pedestrian.position.x,z:pedestrian.position.z,radius:PEDESTRIAN_RADIUS})});
@@ -691,6 +695,8 @@ export async function boot():Promise<void>{
     // Traffic lights from the map (generated areas): they run, traffic obeys them, a mock test marks the learner.
     // Exercises that set their own signals (scenario `signals`) keep those instead.
     const trafficSignals=place.signals.length>0&&Object.keys(scenario.signals).length===0?new TrafficSignals(place):null;
+    // (A scenario's own road users stop at red too.)
+    if(trafficSignals)for(const p of passers)p.signals=()=>trafficSignals.stops;
     const signalLights=trafficSignals?buildSignalLights(scene,trafficSignals.stops,(x:number,z:number)=>surfaceAt(place,x,z)?.kind==='carriageway'):null;
     for(const pole of signalLights?.poles??[])dynamicFootprints.push({id:pole.id,shape:()=>({kind:'circle',x:pole.x,z:pole.z,radius:.1})});
     // Background traffic on generated areas' roads: solid, never assessed.
