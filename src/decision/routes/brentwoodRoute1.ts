@@ -195,7 +195,8 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       lights:p(463.6,-965.1),
       endAt:p(479.5,-990.4),
       // The junction, and Weald Road, where the oncoming blue car comes from.
-      quiet:[{x:458,z:-979,radius:28},{x:440,z:-1018,radius:22}],
+      // (And the Chatham Way mini-roundabout the blue car goes on through.)
+      quiet:[{x:458,z:-979,radius:28},{x:440,z:-1018,radius:22},{x:488,z:-909,radius:16}],
       place:{
         approach:{pause:{kind:'moving',at:p(477.8,-924)},frame:{yaw:0,pitch:20},state:'Approaching the lights on green.'},
         centre:{pause:{kind:'stop',at:p(459.5,-974.7)},when:{actor:'weald-car',at:p(447,-1006.1)},frame:{yaw:10,pitch:32},

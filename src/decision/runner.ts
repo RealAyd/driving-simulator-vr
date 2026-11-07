@@ -86,6 +86,8 @@ const QUIET_BEFORE=150;
 const STANDING_WAITS=4;
 /** Stood this long (seconds) held by one background road user, the car waves it on. */
 const WAVE_AFTER=8;
+/** A background road user stood this long (seconds) blocked by a route's road user turns off. */
+const ACTOR_KNOT=8;
 /** Stuck with one road user this long (seconds, backing up and all), it turns off as a last resort. */
 const RETIRE_AFTER=25;
 /** Still held by it this long (seconds), the car backs up this far (metres) to make room. */
@@ -414,6 +416,12 @@ export class DecisionRunner{
       else if(this.actorStuckWho&&held===this.actorStuckWho)this.actorStuck+=1/60;
       if(car0.speed>1){this.actorStuck=0;this.actorStuckWho=''}
       if(this.actorStuckWho&&this.actorStuck>RETIRE_AFTER){this.scene.retire?.(this.actorStuckWho);this.actorStuck=0;this.actorStuckWho=''}
+    }
+    // A background road user stood a while blocked by, or face to face with, one of the route's own (each waiting for
+    // the other, as on a narrow road): it turns off, so the moment depicted still comes.
+    for(const q of this.scene.traffic?.()??[]){
+      const m=q.why?.match(/^(?:blocked by|facing) (\S+)/);
+      if(m&&this.route.actors.some(a=>a.id===m[1])&&(this.standing.get(q.id)??0)>ACTOR_KNOT){this.scene.retire?.(q.id);this.standing.set(q.id,0)}
     }
     const car=this.scene.car(),s=this.carS();
     // Paced: the road user the stage in hand waits for, and that of the next challenge's first stage (already on its

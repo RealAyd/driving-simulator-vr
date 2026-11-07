@@ -523,6 +523,8 @@ export class Traffic implements SimModule{
       options.push({road,dir:1,at:at.along,make:()=>this.legOf(road,1,at.along,bus,cycle)});
       if(!road.oneway)options.push({road,dir:-1,at:at.along,make:()=>this.legOf(road,-1,at.along,bus,cycle)});
     }
+    // Never into a private way (a test centre's way in, built only for the drive that starts there).
+    options=options.filter(o=>!this.privateWay(o.road));
     // Buses keep to the through roads where they can.
     if(bus&&options.some(o=>o.road.markings.centre!=='none'))options=options.filter(o=>o.road.markings.centre!=='none');
     // Never back the way it came (a U-turn): the other carriageway of a split road, or a road leaving almost straight
@@ -580,10 +582,17 @@ export class Traffic implements SimModule{
    * Brings a road user in on a road near where roads meet, 60–260 m from the learner and out of its sight, clear of
    * other traffic; seldom heading down the learner's road towards it.
    */
+  /** A service road built only because a drive starts on it (not a mini-roundabout's arm): traffic keeps off it. */
+  private privateWay(r:Road):boolean{
+    if(!r.id.startsWith('service-'))return false;
+    const ends=[r.centreline[0]!,r.centreline.at(-1)!];
+    return !this.minis.some(m=>ends.some(e=>Math.hypot(e.x-m.position.x,e.z-m.position.z)<m.radius+3));
+  }
+
   private spawn(d:Driver|null,i:number):Driver{
     const kind=d?.car.kind??this.kindOf(i),isBus=kind==='bus',isCycle=kind==='cycle';
     // Buses keep to the through roads (a centre line), where the bus stops are; cyclists to roads of 30 mph or less.
-    const all=this.location.roads.filter(r=>roadLength(r)>30);
+    const all=this.location.roads.filter(r=>roadLength(r)>30&&!this.privateWay(r));
     const main=all.filter(r=>r.markings.centre!=='none'),slow=all.filter(r=>(r.speedLimitMph??30)<=30);
     const roads=isBus&&main.length?main:isCycle&&slow.length?slow:all;
     const learnerNow=this.options.learner(),learner=learnerNow.pose.position;
