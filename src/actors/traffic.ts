@@ -800,7 +800,8 @@ export class Traffic implements SimModule{
       const wavedOn=(d.wavedByLearner??0)>0;
       if(wavedOn)d.wavedByLearner=d.wavedByLearner!-dt;
       if(this.options.careful&&Math.hypot(learner.pose.position.x-pos.x,learner.pose.position.z-pos.z)<12){
-        const pad=wavedOn?.15:.45;
+        // (More room from a learner standing still: one turning past its corner keeps well clear of it.)
+        const pad=wavedOn?.15:learner.speed<.3?.7:.45;
         // (Along its own way, round a bend or a roundabout as it will go, not straight on from where it points now.)
         const me=(k:number)=>{
           const q=this.at(d.leg,Math.min(d.leg.lengths.at(-1)!,d.s+k));

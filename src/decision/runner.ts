@@ -106,6 +106,8 @@ const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
 const PRACTICE_RUNOUT=30;
 /** The test can end with the car pulled up this far short of the route's end (path metres). */
 const END_REACH=60;
+/** And only after standing there this long (seconds): a bus at a stop, or a queue, is waited for first. */
+const END_WAIT=30;
 /** A road user paced to meet the car eases down to no less than this share of its speed; and reaches its point this
  * long (seconds) after the car is stopped at the line. */
 const PACE_LEAST=.4,PACE_MARGIN=.6;
@@ -449,7 +451,7 @@ export class DecisionRunner{
     if(this.ending){
       this.endWait=car.speed<.05?this.endWait+1/60:0;
       const end=this.endS();
-      if(car.speed<.05&&(s>=end-1||s>=end-END_REACH&&this.endWait>2))this.finish();
+      if(car.speed<.05&&(s>=end-1||s>=end-END_REACH&&this.endWait>END_WAIT))this.finish();
       return;
     }
     const c=this.route.challenges[this.challenge];
