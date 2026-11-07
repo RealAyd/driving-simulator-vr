@@ -334,7 +334,7 @@ export class Traffic implements SimModule{
     let a0=from??(dir>0?0:len);
     let a1=dir>0?len:0,exit:Leg['exit'];
     for(const e of (this.sideRoads.get(road)??[]).filter(e=>dir>0?e.along>a0+10:e.along<a0-10).sort((p,q)=>dir*(p.along-q.along))){
-      if(bus&&e.road.markings.centre==='none'||this.closedTo(e.road,e.dir))continue;
+      if(bus&&e.road.markings.centre==='none'||this.closedTo(e.road,e.dir)||this.privateWay(e.road))continue;
       if(this.rand()<.3){a1=e.along;exit={road:e.road,dir:e.dir};break}
     }
     // At a roundabout bigger than a mini: from and to the ring's edge, not its middle line (the way round begins and
