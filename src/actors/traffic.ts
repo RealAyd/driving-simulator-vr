@@ -125,6 +125,9 @@ const JERSEYS=['#f97316','#0ea5e9','#facc15','#22c55e','#e11d48','#a855f7'];
 const COLOURS=['#1f2a44','#c9ccd1','#7a1e1e','#2e3a2f','#4d5f73','#3f444b','#24476b','#5b6168','#8a8f96','#14161a'];
 const mph=(v:number)=>v/2.237;
 /** Signalling this far before a turn (metres). */
+/** A learner standing in the road is passed only this far to one side, centre to centre (metres): two half-widths
+ * and room between. */
+const PASS_SIDE=2.45;
 const SIGNAL_AHEAD=30;
 /** Round a roundabout, signalling left this far before leaving it (metres). */
 const RING_OFF=18;
@@ -875,7 +878,7 @@ export class Traffic implements SimModule{
       else if(squeeze){if(Math.abs(d.lat-learnerAcross)<car.halfWidth+.9+(this.learnerIdle>12?0:.05))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner')}
       // (Standing with room to go round it: not stopped for from afar, but come up to it and gone round, as a parked car
       // is, from PASS_AHEAD.)
-      else if(!(learnerStopped&&(learnerLeft>2.15||learnerAlong>PASS_AHEAD-2)))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
+      else if(!(learnerStopped&&(learnerLeft>PASS_SIDE||learnerAlong>PASS_AHEAD-2)))ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
       // Traffic lights ahead in this lane: stop about 1.5 m short of the line at red (and red and amber), and at
       // amber unless too close to stop comfortably (3 m/s²). Seen from far enough off to stop for them, braking
       // steadily (lightStop: metres to where it stops).

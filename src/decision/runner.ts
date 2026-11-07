@@ -88,6 +88,8 @@ const STANDING_WAITS=4;
 const WAVE_AFTER=8;
 /** A background road user stood this long (seconds) blocked by a route's road user turns off. */
 const ACTOR_KNOT=8;
+/** Held by one standing background road user this long (seconds), whatever it waits for, it turns off. */
+const JAM_AFTER=45;
 /** Stuck with one road user this long (seconds, backing up and all), it turns off as a last resort. */
 const RETIRE_AFTER=25;
 /** Still held by it this long (seconds), the car backs up this far (metres) to make room. */
@@ -100,8 +102,6 @@ const TRANSIT_RATE=4,TRANSIT_LEAD=60;
 /** Pulling out from the start: the road joined, this far along the way (metres), kept clear this wide (metres) until
  * the car is this far along. */
 const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
-/** The route's end kept clear from this far before it (metres). */
-const END_CLEAR=150;
 /** Practising one challenge, the car pulls up this far past it (metres). */
 const PRACTICE_RUNOUT=30;
 /** The test can end with the car pulled up this far short of the route's end (path metres). */
@@ -363,6 +363,8 @@ export class DecisionRunner{
   private readonly amberGo=new Map<string,boolean>();
   private heldWho='';
   private actorStuck=0;
+  private jamTime=0;
+  private jamWho='';
   private actorStuckWho='';
   private waved=false;
   private stuckWho='';
@@ -421,6 +423,10 @@ export class DecisionRunner{
       else if(this.actorStuckWho&&held===this.actorStuckWho)this.actorStuck+=1/60;
       if(car0.speed>1){this.actorStuck=0;this.actorStuckWho=''}
       if(this.actorStuckWho&&this.actorStuck>RETIRE_AFTER){this.scene.retire?.(this.actorStuckWho);this.actorStuck=0;this.actorStuckWho=''}
+      // (Held by one background road user, standing, a long while whatever it waits for (a jam of traffic at a junction
+      // ahead): it turns off as a last resort, rather than the test standing still for good.)
+      if(held&&car0.speed<.1){this.jamTime=held===this.jamWho?this.jamTime+1/60:0;this.jamWho=held}else if(car0.speed>1){this.jamTime=0;this.jamWho=''}
+      if(this.jamWho&&this.jamTime>JAM_AFTER){this.scene.retire?.(this.jamWho);this.jamTime=0;this.jamWho=''}
     }
     // A background road user stood a while blocked by, or face to face with, one of the route's own (each waiting for
     // the other, as on a narrow road): it turns off, so the moment depicted still comes.
@@ -512,15 +518,8 @@ export class DecisionRunner{
     if(this.phase==='finished')return [];
     // (And the junctions just ahead of the car: traffic coming to one waits for the car to go through, rather than a
     // stream of it crossing in front of the car standing at the line.)
-    if(this.ending)return [...this.nextJunctions(),...this.wayIn()];
+    if(this.ending)return this.nextJunctions();
     return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions(),...this.wayOut()];
-  }
-
-  /** On the last stretch: where the route ends (a test centre's way in) kept clear, so the car can turn in. */
-  private wayIn():ReadonlyArray<{x:number;z:number;radius:number}>{
-    if(this.only!==null||this.endS()-this.carS()>END_CLEAR)return [];
-    const p=this.assist.pointAt(this.endS()-START_JOIN);
-    return [{x:p.x,z:p.z,radius:START_RADIUS}];
   }
 
   /** While the car is pulling out from where the drive starts (a test centre's way out): the road it joins, kept clear
