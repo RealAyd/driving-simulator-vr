@@ -19,6 +19,8 @@ const SIGNAL_AHEAD=35;
 const SIGNAL_TURN=.6;
 /** Turning faster than this (radians in 6 m: a curve tighter than about 40 m radius) is turning, not a bend. */
 const TURNING=.15;
+/** Turning stretches this close (metres) are one manoeuvre (round a mini-roundabout's disc). */
+const WEAVE_GAP=6;
 const MAX_DECEL={car:7.5,cyclist:4.5,pedestrian:3};
 /** Braking for red lights (m/s²): steady, as a driver does. */
 const LIGHTS_DECEL=2.5;
@@ -88,19 +90,28 @@ export class PassingVehicle implements SimModule{
     // Turning this way now: its heading 3 m on against 3 m back.
     const rate=Array.from({length:n},(_,s)=>{const r=wrap(heading(s+3)-heading(s-3));return Math.abs(r)<TURNING?0:Math.sign(r)});
     const plan:Array<'left'|'right'|'off'>=Array.from({length:n},()=>'off');
-    let taken=-1;
+    // Stretches turning one way (the same way on after a straight metre or three: still the same stretch).
+    const stretches:Array<{a:number;b:number}>=[];
     for(let a=0;a<n;){
       if(rate[a]===0){a++;continue}
-      // (The same way on after a straight metre or three: still the same turn.)
       let b=a;
       for(let k=a+1;k<n&&(rate[k]===rate[a]||(rate[k]===0&&k-b<=3));k++)if(rate[k]===rate[a])b=k;
-      const turn=wrap(heading(b+3)-heading(a-3));
+      stretches.push({a,b});
+      a=b+1;
+    }
+    // Stretches close together are one manoeuvre, signalled for its turn in all: round a mini-roundabout's disc, a right
+    // turn first swings left, and going ahead swings left, right and left again (no turn, no signal).
+    let taken=-1;
+    for(let i=0;i<stretches.length;){
+      let j=i;
+      while(j+1<stretches.length&&stretches[j+1]!.a-stretches[j]!.b<=WEAVE_GAP)j++;
+      const a=stretches[i]!.a,b=stretches[j]!.b,turn=wrap(heading(b+3)-heading(a-3));
       if(Math.abs(turn)>SIGNAL_TURN){
         const side=turn>0?'right':'left';
         for(let s=Math.max(0,a-SIGNAL_AHEAD,taken+1);s<=b;s++)plan[s]=side;
         taken=b;
       }
-      a=b+1;
+      i=j+1;
     }
     for(const g of this.def.signals??[]){
       const from=Math.floor(this.along(g.from)),to=Math.ceil(this.along(g.to));

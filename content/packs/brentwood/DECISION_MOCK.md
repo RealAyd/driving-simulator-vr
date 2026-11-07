@@ -1,12 +1,14 @@
 # Decision mock tests
 
 Under Mock Tests, **Decisions only**. The car drives itself, using assisted steering and its own speed control. The
-learner judges observations, position, priority and decisions. Brentwood route 1 has all eight challenges
-(`ROUTES.md`); routes 2 to 5 are planned.
+learner judges observations, position, priority and decisions. Brentwood routes 1 and 2 (the owner's) have eight
+challenges each (`ROUTES.md`); routes 3 to 5 are planned.
 
 ## How a test runs
 
-1. The car drives the route with the camera behind and above it. It keeps to the right lane for each turn, slows
+1. The car drives the route with the camera behind and above it (always: no driver's-seat framings). Between
+   challenges far apart the scene plays four times as fast, back to real time well before the next direction. It
+   keeps to the right lane for each turn, slows
    for bends, stops at give way lines and red lights, keeps back from road users ahead, and gives way at the
    mini-roundabouts and roundabouts it drives through between challenges.
    The streets are lived in: parked cars, people on the pavements and background traffic, busier than on a drive
@@ -38,8 +40,8 @@ decision, mirrors and signal, before the decision at the line.
 - `before`: a fault is recorded at the moment the action is taken. A check made afterwards does not undo it.
 - `required`: omissions, judged when submitted (an out-of-date look after waiting, a missing signal).
 - `unsafe`: the depicted traffic is put at risk (an intervention).
-- `distractor`: graded by what the picture shows. A right signal at a mini-roundabout with a car waiting to come out
-  is serious; a left one is minor.
+- `distractor`: graded by what the picture shows. A right signal going ahead at a mini-roundabout is serious; one
+  while waiting behind a parked van is minor.
 - `hesitation`: only in a stage showing a clear, safe opportunity, and only from the decision chosen. Time spent
   reading or thinking while paused never counts.
 - Speed is the app's, not the learner's: no button changes it and nothing marks it. The paused screen says where the
@@ -58,21 +60,30 @@ A route is data (`src/decision/routes/`), played on a scene built from the map (
 
 - `through`: the points the drive passes. The way is planned on the scene's roads, keeping to one-way streets
   (`RoadNetwork.planThrough`).
-- `actors`: the road users (cars, or `kind: 'pedestrian'` on foot), each on a path in scene metres. Each waits at the start of its path until a challenge
+- `actors`: the road users (cars, `kind: 'cyclist'`, or `kind: 'pedestrian'` on foot), each on a path in scene metres. Each waits at the start of its path until a challenge
   starts it, and turns off once at its end. `waits: true` draws a car waiting at a junction (while its challenge is in hand); `yields: true` follows
   or stops for the learner's car; `parks: true` stays at the end of its path (turned into a car park). They keep back
   from background traffic ahead, and it waits for them. A road user set going waits until its starting spot is clear
-  of background traffic.
+  of background traffic. One road user two challenges start (one shared by a challenge and the one after it, so each
+  can be practised on its own) is set going once.
+- `parked`: vehicles the route parks (a van on the car's side, to be passed): drawn, solid, and passed by the car and
+  by traffic as kerb-side cars are.
+- `shifts`: the car's way moved left (pulled in to the kerb to stop) or right (round a corner the lane path cuts)
+  between two points, easing in and out.
 - For each challenge:
   - the instruction and where it is given;
   - the road users started, and where;
   - for each stage, where the scene stops (on the move, or stopped at a line) and the road user to wait for first;
-  - the camera framing (from behind the car, turned, raised and shifted sideways; or, where what matters is well
-    ahead, from the driver's seat, zoomed in a little), and what the learner is told is already done;
+  - the camera framing (from behind the car, turned, raised and shifted sideways; turned right round to show the
+    road behind for a move-off), and what the learner is told is already done;
   - `quiet`: circles round the junction and the approaches its road users come along, kept clear of background
     traffic while the challenge is in hand (traffic heading in waits short of them);
   - `lights`: a stop line whose lights are held green while the challenge is in hand (the learner's, or a road
-    user's), so the moment depicted never depends on the lights' timing;
+    user's), so the moment depicted never depends on the lights' timing; red in a stage that says so (people
+    crossing, a red light to stop at); `lightsAll` holds its whole set green (crossings close together mapped as one
+    set, no one using them);
+  - `selfCancel: false` where the signal is not cancelled by itself at the end (pulling up: cancelling it is the
+    learner's);
   - the stages' buttons, rules, accepted orders and explanations.
 
 Check a route with `tests/unit/decisionDrive.test.ts`. It drives the route headless, with and without background
@@ -91,17 +102,18 @@ the roads meet, and a path planned through that point crossed the disc); backgro
 leaves it at its edge for the same reason. Scripted road users stop at red lights, as background traffic does.
 
 Every car signals. A scripted car signals for each turn on its path, from 35 m before it until it has turned (two
-turns close together, as at Wilson's Corner: the first, then the second); a bend in the road is not a turn. Round a
+turns close together, as at Wilson's Corner: the first, then the second); a bend in the road is not a turn. Turning
+stretches within 6 m of each other are one manoeuvre, signalled for its turn in all: round a mini-roundabout's disc a
+right turn first swings left (signalled right throughout), and going ahead swings both ways (no signal). Round a
 bigger roundabout its turns alone do not tell, so the route says (`signals` on the actor: a side from one point to
-another): the blue car right on the way to the Queen's Road ring and round it, left from passing Kings Road south;
-the grey car left for the first exit. Background cars and buses choose their way on 30 m before a junction and signal
+another). Background cars and buses choose their way on 30 m before a junction and signal
 for it, right round a roundabout past twelve o'clock and left off it. Indicators go on flashing while a decision is
 on screen.
 
-## To confirm (route 1)
+## To confirm (routes 1 and 2)
 
-- Give way markings at each junction, and the view across the Queen's Road roundabout island.
-- The Chatham Way car park exit is mapped as a plain service road and drawn as a fourth arm of the mini-roundabout.
-- The High Street lights: the challenge holds Kings Road green; the real phases (and whether people cross Weald
-  Road on that phase) are not mapped.
-- Wilson's Corner lane markings between the two mini-roundabouts.
+- The test centre's way in (taken to be OpenStreetMap ways 876629792 and 876629793, `ROUTES.md`).
+- The station crossing and the High Street lights: the challenges hold them (red, then green; green for Kings Road
+  and Weald Road); the real phases are not mapped.
+- Wilson's Corner lane markings between the two mini-roundabouts, and whether its crossings are one set.
+- The Brook Street lights' phases, and the give way markings at the Eagle Way crossroads (Mascalls Lane gives way).

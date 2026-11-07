@@ -1,323 +1,497 @@
+import type {Vec2} from '../../contracts';
+import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
+import {CYCLIST,INGRAVE,KINGS,QUEENS,TC_CAR,WEALD} from './brentwoodRoute1Paths';
 
 /**
- * Brentwood route 1: eight challenges from the test centre round the town centre and back (content/packs/brentwood/
- * ROUTES.md, route 1). Scene brentwood-route-1 (OpenStreetMap, 31 October 2026). A practice route, not a confirmed
- * test route. The road users' paths are scene metres: the blue car's follows sample S2 (content/packs/brentwood); the
- * later ones are lane paths planned on the scene's roads (as the car's own way is), from a start to the points given.
+ * Brentwood route 1, town centre and residential return: eight challenges from the test centre on Warley Hill, up
+ * Kings Road past the station, right at the High Street lights, Wilson's Corner, Queen's Road, Rose Valley and back
+ * by King Edward Road (the owner's route, 6 November 2026; content/packs/brentwood/ROUTES.md). Scene brentwood-routes
+ * (OpenStreetMap). A practice route, not a confirmed test route.
  */
-const BLUE_RING=[[131.1,-18.2],[124.9,-10.9],[118.8,-3.6],[112.6,3.7],[107.1,11.3],[101.8,19.3],[96.5,27.2],[91.2,35.2],[85.9,43.1],[80.5,51],
-  [78.7,61.4],[78.1,63],[77.4,63.9],[76.3,65.5],[73.6,67.3],[70.3,67.9],[66.8,67.3],[63.8,65.3],[61.7,61.7],[61.5,57.1],[61,49.1],[57.6,29.6]];
-// Up Kings Road (its left lane) and right into Primrose Hill (one-way, away from the route).
-const UP_KINGS_ROAD=[[53.8,17.9],[52.9,13.4],[51.5,5.7],[47.8,-9],[49.6,-17.6],[52.4,-20.2],[55.9,-22.9],[61.8,-29.4],[67.9,-39],[82,-70],[96.9,-101.9]];
-// The learner's lane along Kings Road from behind the start, through the roundabout's first exit.
-const BEHIND=[[34.8,262],[36.3,240.5],[37.7,229],[39.3,217.6],[40.8,206.1],[42,198.4],[43.5,188.6],[45.4,176.9],[47.2,165.1],[49,153.3],
-  [50.8,141.6],[52.6,129.8],[54.4,118],[56.2,106.3],[59.2,95.6],[60.9,88.2],[61.8,78.2],[63,67.7],[63,60.3],[62.9,54.7],[60,43.3],[58.1,33.3],[55.6,25.9]];
-// Challenges 3 to 8: the road users' lanes (planned on the scene's roads: tools in DECISION_MOCK.md).
-const RED=[[-43.1,-429.4],[-45,-427.2],[-47,-424.9],[-48.9,-422.7],[-50.8,-420.4],[-52.7,-418.1],[-54.6,-415.9],[-56.5,-413.6],[-58.4,-411.4],[-60.3,-409.1],[-62.2,-406.8],[-64.1,-404.6],[-66,-402.3],[-67.9,-400.1],[-69.8,-397.8],[-71.7,-395.6],[-73.6,-393.3],[-75.5,-391],[-77.4,-388.8],[-79.2,-386.4],[-81,-384.1],[-82.9,-381.8],[-84.7,-379.5],[-86.5,-377.2],[-88.3,-374.8],[-90.1,-372.5],[-91.9,-370.2],[-93.5,-368.7],[-95.2,-367.7],[-96.9,-367.1],[-98.8,-367],[-100.7,-367.2],[-102.8,-367.9],[-105.4,-369.3],[-108,-370.7],[-110.6,-372.2],[-113.2,-373.6],[-115.8,-375],[-118.4,-376.4],[-121,-377.8],[-123.6,-379.3],[-126.2,-380.7],[-128.8,-382.1],[-131.4,-383.5],[-134,-385],[-136.6,-386.4],[-139.1,-387.9],[-141.7,-389.3],[-144.3,-390.8],[-146.9,-392.2],[-149.5,-393.7],[-152.1,-395.2],[-154.6,-396.8],[-157.1,-398.4],[-159.6,-400],[-162.1,-401.6],[-164.6,-403.2],[-167.1,-404.8]];
-const BLACK=[[429.1,-515.7],[432.9,-517.3],[436.2,-518.6],[439.1,-519.9],[441.5,-520.9],[443.5,-521.7],[446.2,-522.9],[448.8,-524],[451.5,-525.1],[454.1,-526.2],[456.8,-527.4],[459.4,-528.5],[462.4,-529.2],[465.2,-529.9],[468,-530.5],[469.5,-530.8],[470.6,-531.5],[471.2,-532.3],[471.5,-533.4],[471.3,-534.7],[470.8,-536.3],[470.1,-539.2],[471.9,-542.8],[473.8,-545.2],[477,-546.6],[480.9,-549.4],[484.4,-551.8],[487.5,-554],[490.2,-555.8],[492.4,-557.3],[494.2,-558.5],[496.7,-560],[499.2,-561.5],[501.7,-563],[504.2,-564.5],[506.7,-565.9],[509.2,-567.4],[511.7,-568.9],[514.2,-570.4],[516.9,-571.3],[519.7,-572.3],[521.4,-573],[523.1,-573.9],[524.7,-575],[526.3,-576.1],[527.8,-577.4],[529.2,-578.8],[531.7,-580.4],[534.2,-582],[536.7,-583.6],[539.2,-585.2],[541.7,-586.8],[544.2,-588.4],[546.7,-590],[549.2,-591.6],[551.7,-593.2],[554.1,-594.8],[556.6,-596.4],[559.1,-598],[561.6,-599.6],[564.1,-601.2],[566.6,-602.8],[569.1,-604.4],[571.6,-606],[574.1,-607.6],[576.5,-609.2],[579,-610.9],[581.4,-612.5],[583.9,-614.2],[586.3,-615.9],[588.8,-617.5],[591.2,-619.2]];
-const VAN=[[590.5,-325.7],[587.4,-329.2],[586.2,-330.8],[585,-332.5],[584,-334.3],[583,-336],[582,-337.9],[581.2,-339.7],[580.1,-342.5],[578.8,-345],[577.5,-347.6],[576.1,-350.1],[574.5,-352.6],[572.9,-355.1],[571.4,-357.6],[569.8,-360.1],[568.2,-362.6],[566.5,-365.1],[564.9,-367.5],[563.3,-370],[561.7,-372.5],[560.1,-375],[558.5,-377.5],[556.9,-380],[555.2,-382.5],[553.6,-384.9],[552,-387.4],[550.4,-389.9],[548.8,-392.4],[547.3,-395.1],[545.9,-397.7],[544.4,-400.3],[543,-402.9]];
-const SILVER=[[-60.9,-413.4],[-58.9,-415.7],[-57.0,-418.0],[-55.0,-420.3],[-53.1,-422.6],[-51.2,-424.9],[-49.2,-427.2],[-47.3,-429.5],[-45.4,-431.7],[-43.4,-434.0],[-41.5,-436.3],[-39.6,-438.6],[-37.6,-440.9],[-35.8,-443.3],[-34.2,-445.8],[-32.6,-448.4],[-31.0,-450.9],[-29.2,-453.3],[-27.4,-455.7],[-25.6,-458.1],[-23.6,-460.3],[-21.3,-462.2],[-18.6,-463.5],[-15.6,-463.8],[-11.8,-463],[-9.1,-461.7],[-6.5,-460.4],[-3.8,-459.1],[-1.2,-457.9],[1.5,-456.7],[4.2,-455.5],[6.9,-454.2],[9.6,-453],[12.3,-451.8],[15,-450.6],[17.7,-449.2],[20.4,-447.9],[22.9,-446.6],[25.6,-445.6],[28.4,-444.5],[31.2,-443.5],[33.7,-442.9],[36.6,-442.5],[39.6,-442],[42.5,-441.6],[45.3,-441.4],[48.3,-441.1],[51.2,-440.8],[54.1,-440.8],[57,-440.7],[60,-440.7],[62.8,-441],[65.7,-441.3],[68.5,-441.6],[71.4,-442.3],[74.3,-442.9],[77.2,-443.5],[80.1,-444.1],[82.9,-444.8],[85.8,-445.4],[88.7,-446],[91.6,-446.6],[94.5,-447.3],[97.4,-447.9],[100.3,-448.6],[103.2,-449.2],[106.2,-449.8],[109.1,-450.3],[112,-450.8],[114.9,-451.3],[117.8,-451.9],[120.5,-452.6],[123.4,-453.4],[126.2,-454.2],[129,-455.1],[131.8,-456],[134.7,-456.8],[137.5,-457.7],[140.3,-458.6],[143.1,-459.5],[146,-460.4],[148.5,-461.3],[151.1,-462.6],[153.7,-464],[156.3,-465.4],[158.7,-466.7],[161,-468.5],[163.4,-470.3],[165.7,-472.1],[168,-473.9],[170.1,-475.6],[172.1,-477.8],[174.1,-480],[176.1,-482.2],[178.1,-484.4],[180.1,-486.5],[181.3,-487.6],[182,-488.7],[182.3,-489.8],[182.1,-490.9],[181.6,-492],[180.5,-493.1],[178.6,-495.2],[176.5,-498.1],[175.9,-500.8],[175.3,-503.6],[174.7,-506.4],[174.1,-509.1],[173.2,-511.8],[172.3,-514.5],[171.4,-517.2],[170.6,-519.9]];
-// Out of Cathedral Place (on the car's right) across Ingrave Road, right into the car's lane, on through the Queen's
-// Road mini-roundabout and away up Ingrave Road.
-const CATHEDRAL=[[512.5,-433.6],[514.8,-435.0],[517.2,-436.4],[519.5,-437.8],[523.1,-438.7],[526.3,-437.9],[529.1,-435.2],[530.6,-432.6],[532.0,-430.0],[533.5,-427.5],[534.9,-424.9],[536.3,-422.3],[537.7,-419.7],[539.2,-417.1],[540.6,-414.6],[542.0,-412.0],[543.4,-409.4],[544.8,-406.8],[546.3,-404.2],[547.7,-401.6],[549.1,-399.1],[550.5,-396.5],[551.9,-394.0],[553.5,-391.5],[555.1,-389.1],[556.7,-386.6],[558.3,-384.1],[559.9,-381.7],[561.5,-379.2],[563.1,-376.7],[564.8,-374.2],[566.4,-371.8],[568.0,-369.3],[569.6,-366.8],[571.2,-364.3],[572.8,-361.9],[574.4,-359.4],[576.0,-356.9],[577.5,-354.4],[579.1,-351.9],[580.4,-349.1],[581.8,-346.5],[583.2,-343.8],[584.4,-341.1],[586.7,-339.6],[589.0,-337.9],[590.0,-335.2],[589.3,-332.5],[592.0,-329.3],[594.0,-327.1],[596.1,-324.9],[598.0,-322.5],[599.8,-320.1],[601.5,-317.6],[603.2,-315.2],[604.9,-312.7],[606.5,-310.3],[608.1,-307.7],[609.7,-305.2],[611.3,-302.6],[612.8,-300.1],[614.4,-297.6],[615.9,-295.1],[617.5,-292.6],[619.1,-290.2],[620.8,-287.7],[622.4,-285.2],[624.1,-282.9],[625.9,-280.6],[627.7,-278.3],[629.5,-275.9],[631.4,-273.6],[633.2,-271.5]];
-// Out of St James's Road (on the car's right at the crossroads), left on to Kings Road northbound, behind the car.
-const ST_JAMES=[[35.6,199.2],[38.2,199.2],[41.4,198.3],[42.6,194.5],[43.1,191.6],[43.5,188.7],[44.0,185.7],[44.5,182.8],[45.0,179.9],[45.4,177.0],[45.9,174.0],[46.3,171.1],[46.8,168.2],[47.2,165.3],[47.7,162.3],[48.1,159.4],[48.5,156.5],[49.0,153.5],[49.4,150.6],[49.9,147.7],[50.3,144.8],[50.8,141.8],[51.2,138.9],[51.7,136.0],[52.1,133.0],[52.5,130.1],[53.0,127.2],[53.4,124.2],[53.9,121.3]];
-const pts=(a:number[][])=>a.map(([x,z])=>({x:x!,z:z!}));
+const pts=(a:readonly (readonly number[])[]):Vec2[]=>a.map(([x,z])=>({x:x!,z:z!}));
+const p=(x:number,z:number):Vec2=>({x,z});
+
+// Faults used at more than one challenge.
+const MIRRORS_FIRST:Fault={level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
+  message:'Mirrors first, then signal: you need to know who your signal is for.'};
+const HORN:Fault={level:'feedback',heading:'Use of horn',title:'Horn not needed',
+  message:'Use the horn only to warn others of your presence when they may not have seen you.'};
+const flash:Fault={level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
+  message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'};
 
 export const BRENTWOOD_ROUTE_1:DecisionRoute={
   id:'brentwood-1',
   title:'Brentwood route 1',
-  scene:'brentwood-route-1',
-  briefing:'Brentwood route 1: decisions only\n\nThe car drives itself. At each junction the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nPractice route built from OpenStreetMap data; not a confirmed test route. The app\'s assessment, not a DVSA result.',
-  start:{x:36.3,z:240.5,headingDeg:7.5},
-  // Kings Road, the High Street lights, Weald Road, Western Road, William Hunter Way, Wilson's Corner, Ingrave Road,
-  // Queen's Road, the roundabout and back down Kings Road.
-  through:pts([[54.9,20.1],[-38.1,-243.9],[-73.1,-329.9],[-97.1,-366.9],[-18.1,-463.9],[147.9,-459.9],[184.9,-489.9],[434.9,-608.9],
-    [482.9,-547.9],[473.9,-530.9],[584.9,-334.9],[227.9,-123.9],[69.9,100.1],[27.9,235.1]]),
+  scene:'brentwood-routes',
+  briefing:'Brentwood route 1: decisions only\n\nThe car drives itself. At each challenge the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nPractice route built from OpenStreetMap data; not a confirmed test route. The app\'s assessment, not a DVSA result.',
+  start:{x:493.9,z:12.1,headingDeg:98},
+  // Warley Hill, Kings Road past the station, the High Street lights (right), Wilson's Corner, Ingrave Road, Queen's
+  // Road, Rose Valley, King Edward Road, Kings Road and back down Warley Hill into the test centre.
+  through:pts([[556,-367],[578,-520],[458,-979],[611,-1037],[1000,-1195],[1051,-1103],[1111,-999],[956,-918],[758,-679],[799,-539],
+    [738,-443],[587,-460],[556,-367],[520,10],[473,16]]),
+  // On Queen's Road, in the car's lane: what it waits behind for the oncoming car.
+  parked:[{x:862.8,z:-849.2,headingDeg:237.4,kind:'van',colour:'#f1f1ee'}],
+  // Pulled in to the kerb on Rose Valley; and a little out from the left kerb at the end of King Edward Road, to turn
+  // left without the car's middle cutting the corner (the road narrows where it meets Kings Road).
+  shifts:[{from:p(772.2,-635.8),to:p(778.5,-614.8),left:.35},{from:p(581,-459.9),to:p(575.1,-460.5),left:-.6}],
   actors:[
-    // Signals left for the first exit, as the car does; the blue car (from Queen's Road, past twelve o'clock) right
-    // on the way to the ring and round it, then left from passing Kings Road south to its exit.
-    {id:'grey-car',name:'grey car',colour:'#8a9099',speed:12,yields:true,path:pts([...BEHIND,...UP_KINGS_ROAD.slice(3)]),
-      signals:[{from:{x:54.4,z:118},to:{x:58.1,z:33.3},side:'left'}]},
-    {id:'blue-car',name:'blue car',colour:'#2563eb',speed:7,path:pts([...BLUE_RING,...UP_KINGS_ROAD]),
-      signals:[{from:{x:131.1,z:-18.2},to:{x:63.8,z:65.3},side:'right'},{from:{x:63.8,z:65.3},to:{x:57.6,z:29.6},side:'left'}]},
-    // Finishing crossing Weald Road (the signal crossing just past the High Street lights), from the east kerb.
-    {id:'weald-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-67.5,-323.8],[-75.1,-320.2],[-78.3,-324.2]])},
-    {id:'red-car',name:'red car',colour:'#b91c1c',speed:8,path:pts(RED)},
-    // Close behind the car from Western Road along William Hunter Way, then into the car park road at the
-    // mini-roundabout (parked there).
-    {id:'silver-car',name:'silver car',colour:'#b8bcc2',speed:14,yields:true,parks:true,path:pts(SILVER)},
-    // At the zebra crossing on William Hunter Way, on the car's left, about to step out.
-    {id:'zebra-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.4,kind:'pedestrian',waits:true,path:pts([[146.6,-462.9],[150.2,-455.9],[154.7,-458.2]])},
-    {id:'black-car',name:'black car',colour:'#1f2328',speed:7,path:pts(BLACK)},
-    // Waiting opposite at the Ingrave Road and Queen's Road mini-roundabout; it gives way to the car.
-    // Edging out of Cathedral Place, then pulling out across the car's way, right into its lane.
-    {id:'cathedral-car',name:'white car',colour:'#e8e8e4',speed:7,waits:true,path:pts(CATHEDRAL)},
-    // Waiting at the St James's Road give way line for the car to pass; then left on to Kings Road behind it.
-    {id:'stjames-car',name:'yellow car',colour:'#d4a017',speed:8,yields:true,waits:true,path:pts(ST_JAMES)},
-    {id:'white-van',name:'white van',colour:'#f1f1ee',speed:5,yields:true,waits:true,path:pts(VAN)}
+    // Along the footway past the test centre's way out, from the left.
+    {id:'tc-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',path:pts([[514.6,2],[514.6,40]])},
+    {id:'tc-car',name:'silver car',colour:'#b8bcc2',speed:11,path:pts(TC_CAR)},
+    // Waiting at the station crossing, east kerb, then across in front of the car.
+    {id:'station-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[585.7,-519.4],[570.7,-521.6],[570.4,-532]])},
+    {id:'weald-car',name:'blue car',colour:'#2563eb',speed:10,path:pts(WEALD)},
+    // (Held back out of sight up Ingrave Road while the car is held up on the way, so it comes on as depicted.)
+    {id:'ingrave-car',name:'red car',colour:'#b91c1c',speed:8,waits:true,path:pts(INGRAVE)},
+    {id:'queens-car',name:'black car',colour:'#1f2328',speed:10,path:pts(QUEENS)},
+    {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
+    {id:'kings-car',name:'grey car',colour:'#8a9099',speed:10,path:pts(KINGS)}
   ],
   challenges:[
     {
-      id:'queens-road-roundabout',
-      title:'Roundabout, first exit',
-      where:'Queen\'s Road roundabout, from Kings Road',
-      instruction:'At the roundabout, take the first exit.',
-      instructAt:{x:45.4,z:176.9},
-      starts:[{actor:'grey-car',at:{x:36.3,z:240.5},delay:0},{actor:'blue-car',at:{x:47.2,z:165.1},delay:0}],
-      endAt:{x:55.6,z:25.9},
-      // The roundabout and the ring to its right, where the blue car comes from.
-      quiet:[{x:70,z:59,radius:34},{x:110,z:0,radius:30}],
+      id:'leave-test-centre',
+      title:'Leaving the test centre',
+      where:'The test centre\'s way out, left on to Warley Hill',
+      instruction:'When you\'re ready, drive out of the test centre and turn left, please.',
+      instructAt:p(493.9,12.1),
+      starts:[{actor:'tc-pedestrian',at:p(493.9,12.1),delay:0},{actor:'tc-car',at:p(506.8,14),delay:0}],
+      endAt:p(517.8,8.1),
+      // The way out, and Warley Hill to the right (south), where the silver car comes from.
+      quiet:[{x:516,z:15,radius:26},{x:510,z:70,radius:34}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:56.3,z:105.4}},frame:{yaw:0,pitch:18},state:'Approaching the roundabout at about 20 mph. The app slows the car for you.'},
-        line:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:78.1,z:63}},frame:{yaw:-30,pitch:34},state:'At the give way line.'},
-        clear:{pause:{kind:'stop',at:{x:62.4,z:72.4}},when:{actor:'blue-car',at:{x:53.8,z:17.9}},frame:{yaw:-30,pitch:34},state:'Still at the give way line.'}
+        footway:{pause:{kind:'stop',at:p(503.8,13.5)},when:{actor:'tc-pedestrian',at:p(514.6,12)},frame:{yaw:30,pitch:30},
+          state:'Stopped short of the footway at the end of the way out.'},
+        line:{pause:{kind:'stop',at:p(512.7,14.9)},when:{actor:'tc-car',at:p(514.8,40.4)},frame:{yaw:-75,pitch:32},
+          state:'At the edge of Warley Hill.'},
+        clear:{pause:{kind:'stop',at:p(512.7,14.9)},when:{actor:'tc-car',at:p(518.9,-16.1)},frame:{yaw:-60,pitch:32},
+          state:'Still at the edge of Warley Hill.'}
+      },
+      stages:[
+        {
+          id:'footway',safe:'wait',go:'go',wait:'wait',
+          buttons:['look-left','look-right','mirror-interior','wait','go','horn'],
+          neutral:['mirror-interior','look-right'],
+          rules:[
+            {kind:'before',id:'look-before-waiting',action:'wait',needs:['look-left','look-right'],any:true,fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
+              message:'Waiting was right, but look along the footway first so you know who you are waiting for.'}},
+            {kind:'unsafe',id:'across-footway',action:'go',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Drove across the footway in front of a pedestrian',
+              message:'People on the footway have priority across a way out. The pedestrian was about to walk across in front of you: wait for them. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:{level:'serious',heading:'Use of horn',title:'Horn at a pedestrian',
+              message:'Sounding the horn to hurry someone on the footway is aggressive and can startle them. Wait for them to pass.'}}
+          ],
+          accepted:[['look-left','wait'],['look-left','look-right','wait'],['look-right','look-left','wait']],
+          next:{wait:'line',go:'line'},
+          explain:'Wait: the pedestrian walking along the footway from the left has priority across the way out.'
+        },
+        {
+          id:'line',safe:'wait',go:'go',wait:'wait',
+          buttons:['look-right','look-left','mirror-left','signal-left','signal-right','wait','go'],
+          neutral:['look-left','mirror-left'],
+          rules:[
+            {kind:'before',id:'look-before-waiting',action:'wait',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
+              message:'Look right first: that is where the traffic you join comes from.'}},
+            {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the left turn',
+              message:'Signal left so the drivers on Warley Hill know what you are doing.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'You are turning left: a right signal misleads everyone on Warley Hill.'}},
+            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the silver car',
+              message:'The silver car was a second or two away in the lane you were joining. Wait for it to pass. The examiner had to stop the car.'}}
+          ],
+          accepted:[['look-right','signal-left','wait'],['signal-left','look-right','wait'],['look-right','look-left','signal-left','wait']],
+          next:{wait:'clear',go:'clear'},
+          explain:'Signal left and wait: the silver car was close, coming up Warley Hill from the right in the lane you were joining.'
+        },
+        {
+          id:'clear',safe:'go',go:'go',wait:'wait',
+          buttons:['look-right','look-left','mirror-interior','wait','go'],
+          neutral:['mirror-interior'],
+          rules:[
+            {kind:'required',id:'fresh-look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
+              message:'Your last look right was before the silver car passed. Look right again just before you go.'}},
+            {kind:'required',id:'look-left',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No look left',
+              message:'Look left too before you go: something may be pulling out or stopped just up the road.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
+              message:'Warley Hill was clear both ways: this was the time to go.'}}
+          ],
+          accepted:[['look-right','look-left','go'],['look-left','look-right','go'],['look-right','look-left','look-right','go']],
+          next:{go:'done'},
+          explain:'Look right and left again, then go: Warley Hill was clear.'
+        }
+      ]
+    },
+    {
+      id:'station-crossing',
+      title:'Pedestrian crossing',
+      where:'Kings Road, the signal crossing by the station',
+      instruction:'Follow the road ahead, please.',
+      instructAt:p(560.5,-408.6),
+      starts:[{actor:'station-pedestrian',at:p(560.5,-408.6),delay:0}],
+      lights:p(576.1,-518),
+      endAt:p(581.4,-552.5),
+      quiet:[{x:578,z:-520,radius:30},{x:572,z:-470,radius:22}],
+      place:{
+        approach:{pause:{kind:'moving',at:p(570.7,-482.9)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the crossing at 25 mph.'},
+        line:{pause:{kind:'stop',at:p(575.5,-513.5)},lights:'red',when:{actor:'station-pedestrian',at:p(578.2,-520.5)},frame:{yaw:0,pitch:30},
+          state:'Stopped at the crossing.'},
+        clear:{pause:{kind:'stop',at:p(575.5,-513.5)},when:{actor:'station-pedestrian',at:p(570.6,-524)},frame:{yaw:0,pitch:30},
+          state:'Still at the crossing.'}
       },
       stages:[
         {
           id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right','lane-right'],
-          neutral:['mirror-right'],
+          buttons:['mirror-interior','mirror-left','mirror-right','slow-down','speed-up','horn'],
+          neutral:['mirror-left','mirror-right'],
           rules:[
-            {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
-              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
-            {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the first exit',
-              message:'Signal left on the approach for the first exit and keep it on as you leave.'}},
-            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'A right signal says you are going past twelve o\'clock. The grey car behind could come up on your left, expecting you to go right, as you turn off at the first exit.'}},
-            {kind:'distractor',id:'lane-right',action:'lane-right',fault:{level:'serious',heading:'Positioning - lane discipline',title:'Wrong lane for the first exit',
-              message:'For the first exit keep to the left lane. Moving right, then cutting back across to the first exit, puts the grey car behind at risk.'}}
+            {kind:'before',id:'mirror-before-slowing',action:'slow-down',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
+              message:'Check the interior mirror before you slow down: you need to know how close the traffic behind is.'}},
+            {kind:'required',id:'no-slowing',anyOf:['slow-down'],fault:{level:'serious',heading:'Response to signals - traffic lights',title:'Did not slow for the red light',
+              message:'The crossing\'s lights were red. Slow down in good time to stop at the line.'}},
+            {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'dangerous',heading:'Response to signals - traffic lights',title:'Sped up at a red light',
+              message:'The lights were red with someone waiting to cross. Speeding up to get through would put them at risk.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:HORN}
           ],
-          accepted:[['mirror-interior','mirror-left','signal-left'],['mirror-left','mirror-interior','signal-left']],
+          accepted:[['mirror-interior','slow-down'],['mirror-interior','mirror-left','slow-down']],
           next:{then:'line'},
-          explain:'Mirrors first (the grey car was close behind), then signal left for the first exit.'
+          explain:'Interior mirror, then slow down: the crossing was at red, with someone waiting to cross.'
         },
         {
-          id:'line',safe:'wait',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-interior','give-way','go','horn'],
-          neutral:['look-left','mirror-interior'],
+          id:'line',safe:'wait',go:'go',wait:'wait',
+          buttons:['look-right','look-left','mirror-interior','wait','go','horn'],
+          neutral:['look-right','look-left','mirror-interior'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
-              message:'Waiting was right, but look right first so you know what you are waiting for. (A look afterwards does not undo it.)'}},
-            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the blue car',
-              message:'The blue car was already on the roundabout, a second or two from your path. Give way to traffic coming from your right. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
+            {kind:'unsafe',id:'red-light',action:'go',fault:{level:'dangerous',heading:'Response to signals - traffic lights',title:'Went through a red light',
+              message:'The lights were red and the pedestrian was crossing in front of you. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:{level:'serious',heading:'Use of horn',title:'Horn at a pedestrian',
+              message:'Never sound the horn at someone crossing: it can startle them in the road.'}}
           ],
-          accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
+          accepted:[['wait'],['look-right','wait'],['look-left','wait']],
           next:{wait:'clear',go:'clear'},
-          explain:'Give way: the blue car was already on the roundabout, coming round from your right, and would have reached your path as you came out.'
+          explain:'Wait at the line: the lights were red and the pedestrian was crossing.'
         },
         {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-left','give-way','go','horn'],
-          neutral:['look-left','mirror-left'],
+          id:'clear',safe:'go',go:'go',wait:'wait',
+          buttons:['look-right','look-left','mirror-interior','wait','go'],
+          neutral:['mirror-interior'],
           rules:[
-            {kind:'required',id:'fresh-look',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look',
-              message:'Your last look right was before the blue car passed. Look right again just before you go.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'Nothing was coming round from the right: this was the time to go. (Waiting for the blue car was right; this was the moment after it.)'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
+            {kind:'required',id:'check-crossing',anyOf:['look-right','look-left'],when:'go',fault:{level:'minor',heading:'Pedestrian crossings',title:'No check before going',
+              message:'Green means go only if the way is clear. Check the crossing both ways for anyone late across before you move off.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Waited at a green light',
+              message:'The lights were green and the crossing was clear: this was the time to go.'}}
           ],
-          accepted:[['look-right','go'],['look-right','mirror-left','go'],['look-left','look-right','go']],
+          accepted:[['look-right','look-left','go'],['look-left','look-right','go']],
           next:{go:'done'},
-          explain:'Look right again, then go: the roundabout was clear. Keep the left signal on as you leave.'
+          explain:'Check the crossing both ways, then go: the lights were green and the pedestrian was across.'
         }
       ]
     },
     {
       id:'high-street-lights',
-      title:'Traffic lights, ahead',
-      where:'Kings Road at the High Street lights, ahead into Weald Road',
-      instruction:'At the traffic lights, follow the road ahead.',
-      instructAt:{x:-44.2,z:-251.8},
-      starts:[{actor:'weald-pedestrian',at:{x:-38.4,z:-232.9},delay:0}],
-      lights:{x:-61.5,z:-300.5},
-      endAt:{x:-74.6,z:-325.6},
-      quiet:[{x:-68,z:-312,radius:30}],
+      title:'Traffic lights, right turn',
+      where:'Kings Road at the High Street lights, right into the High Street',
+      instruction:'At the traffic lights, turn right, please.',
+      instructAt:p(483.5,-910.9),
+      starts:[{actor:'weald-car',at:p(483.5,-910.9),delay:0}],
+      lights:p(463.6,-965.1),
+      endAt:p(479.5,-990.4),
+      // The junction, and Weald Road, where the oncoming blue car comes from.
+      quiet:[{x:458,z:-979,radius:28},{x:440,z:-1018,radius:22}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:-56.2,z:-280.3}},when:{actor:'weald-pedestrian',at:{x:-72.6,z:-321.4}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.25},
-          state:'Approaching the lights on green.'},
-        clear:{pause:{kind:'stop',at:{x:-61.6,z:-297.5}},when:{actor:'weald-pedestrian',at:{x:-76.2,z:-322.5}},frame:{yaw:25,pitch:24,shift:-6},
-          state:'Stopped at the line.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-left','look-right','mirror-interior','signal-left','go','give-way','horn'],
-          neutral:['look-left','look-right','mirror-interior'],
-          rules:[
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Stopped at a green light',
-              message:'The light was green and the pedestrian was already reaching the far pavement: they were clear well before you got there. Keep going at a steady speed, watching them (a green light means go if the way is clear, Highway Code rule 176).'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Misleading signal',
-              message:'Going ahead, no signal is needed. A left signal says you are turning into the High Street: drivers waiting there, and people about to cross it, would act on it.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Never use the horn to hurry a pedestrian who is crossing.'}}
-          ],
-          accepted:[['go'],['look-left','go'],['mirror-interior','go'],['look-right','look-left','go']],
-          next:{wait:'clear',go:'done'},
-          explain:'Go, watching the pedestrian: the light was green, and they were reaching the far pavement, clear of your way well before you got there.'
-        },
-        {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-left','look-right','mirror-interior','give-way','go','horn'],
-          neutral:['look-right','mirror-interior'],
-          rules:[
-            {kind:'required',id:'check-crossing',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Moved off without checking the crossing',
-              message:'The pedestrian was walking off to your left. Look left to check the crossing is clear before you move off.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'The pedestrian had reached the pavement and the light was still green: this was the time to go.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
-          ],
-          accepted:[['look-left','go'],['look-right','look-left','go'],['look-left','look-right','go']],
-          next:{go:'done'},
-          explain:'Go: the pedestrian had reached the pavement, the crossing was clear and the light was still green.'
-        }
-      ]
-    },
-    {
-      id:'western-road-mini',
-      title:'Mini-roundabout, right turn',
-      where:'Weald Road and Western Road mini-roundabout',
-      instruction:'At the mini-roundabout, turn right.',
-      instructAt:{x:-75.6,z:-327.4},
-      starts:[{actor:'red-car',at:{x:-66,z:-308.6},delay:0}],
-      endAt:{x:-86.3,z:-382.6},
-      // The mini-roundabout and Western Road, where the red car comes from.
-      quiet:[{x:-97,z:-366,radius:30},{x:-60,z:-415,radius:25}],
-      place:{
-        approach:{pause:{kind:'moving',at:{x:-81.4,z:-339}},frame:{yaw:0,pitch:18},state:'Approaching the mini-roundabout.'},
-        line:{pause:{kind:'stop',at:{x:-93,z:-357.8}},when:{actor:'red-car',at:{x:-86.5,z:-377.2}},frame:{yaw:-40,pitch:34},
-          state:'At the give way line.'},
-        clear:{pause:{kind:'stop',at:{x:-93,z:-357.8}},when:{actor:'red-car',at:{x:-121,z:-377.8}},frame:{yaw:-40,pitch:34},state:'Still at the give way line.'}
+        approach:{pause:{kind:'moving',at:p(477.8,-924)},frame:{yaw:0,pitch:20},state:'Approaching the lights on green.'},
+        centre:{pause:{kind:'stop',at:p(459.5,-974.7)},when:{actor:'weald-car',at:p(447,-1006.1)},frame:{yaw:10,pitch:32},
+          state:'Waiting in the junction to turn right. The lights are green.'},
+        clear:{pause:{kind:'stop',at:p(459.5,-974.7)},when:{actor:'weald-car',at:p(476.5,-935.8)},frame:{yaw:10,pitch:32},
+          state:'Still waiting in the junction.'}
       },
       stages:[
         {
           id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          buttons:['mirror-interior','mirror-right','mirror-left','signal-right','signal-left','position-right'],
           neutral:['mirror-left'],
           rules:[
-            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
-              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
+            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:MIRRORS_FIRST},
             {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
-              message:'Signal right on the approach so others know where you are going.'}},
+              message:'Signal right in good time so the drivers behind and coming the other way know you are turning.'}},
+            {kind:'required',id:'no-position',anyOf:['position-right'],fault:{level:'minor',heading:'Positioning - normal driving',title:'Not positioned for the right turn',
+              message:'Move to just left of the middle of the road to turn right: traffic behind can pass on your left.'}},
+            {kind:'before',id:'signal-before-position',action:'position-right',needs:['signal-right'],fault:{level:'minor',heading:'Signals - timed',title:'Moved over before signalling',
+              message:'Mirrors, signal, then position: signal before you move towards the middle of the road.'}},
             {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'A left signal says you are turning left, the opposite of where you are going: the red car and anyone waiting would be misled.'}}
+              message:'A left signal at the lights tells everyone you are turning left into the High Street the other way.'}}
           ],
-          accepted:[['mirror-interior','mirror-right','signal-right'],['mirror-right','mirror-interior','signal-right']],
-          next:{then:'line'},
-          explain:'Mirrors (interior, then right), then signal right for the right turn.'
+          accepted:[['mirror-interior','mirror-right','signal-right','position-right'],['mirror-right','mirror-interior','signal-right','position-right']],
+          next:{then:'centre'},
+          explain:'Interior and right mirrors, signal right, then position just left of the middle of the road.'
         },
         {
-          id:'line',safe:'wait',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-right','signal-left','give-way','go','horn'],
-          neutral:['look-left','mirror-right'],
+          id:'centre',safe:'wait',go:'go',wait:'wait',
+          buttons:['look-right','look-left','mirror-right','wait','go','flash-lights'],
+          neutral:['look-right','look-left','mirror-right'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
-              message:'Waiting was right, but look right first so you know what you are waiting for. (A look afterwards does not undo it.)'}},
-            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the red car',
-              message:'The red car was coming from Western Road, on your right, a second from the mini-roundabout. Give way to traffic from your right. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'A left signal tells the red car\'s driver you are turning left, away from Western Road, when you are turning right into it.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
+            {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming blue car',
+              message:'Green does not give you priority over oncoming traffic going ahead. The blue car was a few seconds away. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'flash',action:'flash-lights',fault:flash}
           ],
-          accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
+          accepted:[['wait'],['look-right','wait'],['mirror-right','wait']],
           next:{wait:'clear',go:'clear'},
-          explain:'Give way: the red car was coming from Western Road, on your right, and would have reached the mini-roundabout as you pulled out.'
+          explain:'Wait in the junction: the blue car coming down Weald Road was going ahead, and it has priority over you turning right.'
         },
         {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-right','give-way','go','horn'],
-          neutral:['look-left','mirror-right'],
+          id:'clear',safe:'go',go:'go',wait:'wait',
+          buttons:['look-left','look-right','mirror-right','wait','go'],
+          neutral:['look-right','mirror-right'],
           rules:[
-            {kind:'required',id:'fresh-look',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look',
-              message:'Your last look right was before the red car passed. Look right again just before you go.'}},
+            {kind:'required',id:'check-turn',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into the High Street',
+              message:'Before you turn, look into the road you are turning into (on your left as you wait) for anyone crossing it.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'Western Road was clear once the red car had gone by: this was the time to go.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
+              message:'Nothing more was coming the other way: this was the time to turn.'}}
           ],
-          accepted:[['look-right','go'],['look-right','look-left','go'],['look-left','look-right','go'],['look-right','mirror-right','go']],
+          accepted:[['look-left','go'],['look-right','look-left','go']],
           next:{go:'done'},
-          explain:'Look right again, then go: Western Road was clear.'
-        }
-      ]
-    },
-    {
-      id:'william-hunter-way-zebra',
-      title:'Zebra crossing',
-      where:'William Hunter Way zebra crossing',
-      instruction:'Follow the road ahead.',
-      instructAt:{x:12.8,z:-451.6},
-      starts:[{actor:'silver-car',at:{x:-41.5,z:-436.3},delay:0},{actor:'zebra-pedestrian',at:{x:117.7,z:-451.9},delay:.4}],
-      endAt:{x:150.8,z:-463.2},
-      // (And the mini-roundabout beyond it, where traffic coming towards the crossing would come from.)
-      // (And the mini-roundabout before it, where the silver car follows the car through.)
-      quiet:[{x:148,z:-460,radius:28},{x:185,z:-490,radius:24},{x:-18,z:-464,radius:22}],
-      place:{
-        approach:{pause:{kind:'moving',at:{x:114.8,z:-451.3}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.6},state:'Approaching the zebra crossing at about 20 mph.'},
-        clear:{pause:{kind:'stop',at:{x:141.7,z:-459}},when:{actor:'zebra-pedestrian',at:{x:150,z:-456.4}},frame:{yaw:0,pitch:30},state:'Stopped at the zebra crossing.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'wait',go:'go',wait:'give-way',
-          buttons:['mirror-interior','look-left','look-right','signal-left','go','give-way','horn'],
-          neutral:['look-left','look-right'],
-          rules:[
-            {kind:'before',id:'mirror-before-stopping',action:'give-way',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Stopped without checking behind',
-              message:'The silver car was close behind. Check the interior mirror before you decide to stop, so you know who is behind you. (A check afterwards does not undo it.)'}},
-            {kind:'unsafe',id:'zebra-go',action:'go',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Did not stop for the pedestrian',
-              message:'The pedestrian at the kerb was about to step on to the crossing, and did. Be ready to stop for people waiting at a zebra, and you must give way once they step on (Highway Code rule 195). The examiner had to stop the car.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
-              message:'No signal is needed to stop at a crossing. A left signal says you are pulling in or turning, and could mislead the pedestrian.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Never use the horn to hurry a pedestrian at a crossing.'}}
-          ],
-          accepted:[['mirror-interior','give-way'],['mirror-interior','look-left','give-way'],['look-left','mirror-interior','give-way']],
-          next:{wait:'clear',go:'clear'},
-          explain:'Check the mirror (the silver car was close behind), then stop: the pedestrian at the kerb was about to step on to the crossing.'
-        },
-        {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-left','look-right','mirror-interior','give-way','go','horn'],
-          neutral:['look-right','mirror-interior'],
-          rules:[
-            {kind:'required',id:'check-crossing',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Pedestrian crossings',title:'Moved off without checking the crossing',
-              message:'Check the crossing is clear both ways before you move off: someone else may be about to step out from the left, where the pedestrian came from.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Waited too long',
-              message:'The pedestrian had reached the far pavement and nobody else was waiting: this was the time to go.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
-          ],
-          accepted:[['look-left','look-right','go'],['look-right','look-left','go'],['look-left','go']],
-          next:{go:'done'},
-          explain:'Go once the pedestrian has reached the far pavement and nobody else is about to step out.'
+          explain:'Check the High Street is clear to turn into, then go: nothing more was coming the other way.'
         }
       ]
     },
     {
       id:'wilsons-corner',
-      title:'Double mini-roundabout',
-      where:'Wilson\'s Corner, on to Ingrave Road',
-      instruction:'At the mini-roundabouts, go ahead, then turn left on to Ingrave Road.',
-      instructAt:{x:454.9,z:-591.4},
-      // (Set off once the car is nearly at the second mini-roundabout: held up on the way by traffic through the first,
-      // the car would otherwise find it gone by.)
-      starts:[{actor:'black-car',at:{x:479.9,z:-549.6},delay:0}],
-      // (The High Street lights the black car comes through are held green for it.)
-      lights:{x:444,z:-521.2},
-      endAt:{x:482.2,z:-522.9},
-      // Both mini-roundabouts, and the High Street, where the black car comes from.
-      quiet:[{x:478,z:-540,radius:32},{x:440,z:-519,radius:22}],
+      title:'Mini-roundabouts, right turn',
+      where:'Wilson\'s Corner, right on to Ingrave Road',
+      instruction:'At the mini-roundabout, turn right, please.',
+      instructAt:p(914.7,-1160.8),
+      starts:[{actor:'ingrave-car',at:p(955.2,-1180.3),delay:0}],
+      // (The crossings by Wilson's Corner: no one using them.)
+      lights:p(969.4,-1187.4),lightsAll:true,
+      endAt:p(1029.1,-1146.4),
+      // Both mini-roundabouts and Ingrave Road, where the red car comes from.
+      quiet:[{x:1004,z:-1204,radius:26},{x:1030,z:-1135,radius:24}],
       place:{
-        approach:{pause:{kind:'moving',at:{x:469.7,z:-569.1}},frame:{yaw:0,pitch:18},state:'Past the first mini-roundabout, approaching the second.'},
-        line:{pause:{kind:'stop',at:{x:479.6,z:-538.6}},when:{actor:'black-car',at:{x:462.4,z:-529.2}},frame:{yaw:-35,pitch:34},
-          state:'At the second mini-roundabout.'},
-        clear:{pause:{kind:'stop',at:{x:479.6,z:-538.6}},when:{actor:'black-car',at:{x:492.4,z:-557.3}},frame:{yaw:-35,pitch:34},state:'Still at the give way line.'}
+        approach:{pause:{kind:'moving',at:p(955.2,-1180.3)},frame:{yaw:0,pitch:20},state:'Approaching Wilson\'s Corner at 20 mph.'},
+        line:{pause:{kind:'stop',at:p(991,-1194.3)},when:{actor:'ingrave-car',at:p(1002,-1181.1)},frame:{yaw:-30,pitch:34},
+          state:'At the give way line of the first mini-roundabout.'},
+        clear:{pause:{kind:'stop',at:p(991,-1194.3)},when:{actor:'ingrave-car',at:p(1011.2,-1216.8)},frame:{yaw:-10,pitch:36},
+          state:'Still at the give way line.'}
+      },
+      stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-right','mirror-left','signal-right','signal-left'],
+          neutral:['mirror-left'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:MIRRORS_FIRST},
+            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
+              message:'Signal right on the approach to turn right at a mini-roundabout.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'A left signal says you are turning left at the first exit: the cars waiting at Wilson\'s Corner would pull out expecting it.'}}
+          ],
+          accepted:[['mirror-interior','mirror-right','signal-right'],['mirror-right','mirror-interior','signal-right']],
+          next:{then:'line'},
+          explain:'Interior and right mirrors, then signal right for Ingrave Road.'
+        },
+        {
+          id:'line',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','give-way','go','horn'],
+          neutral:['look-left'],
+          rules:[
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
+              message:'Look right first: at a mini-roundabout you give way to traffic from the right.'}},
+            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the red car',
+              message:'The red car coming out of Ingrave Road, on your right, was about to cross your path. Give way to it. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:HORN}
+          ],
+          accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
+          next:{wait:'clear',go:'clear'},
+          explain:'Give way: the red car from Ingrave Road, on your right, was coming on to the mini-roundabout.'
+        },
+        {
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','give-way','go','horn'],
+          neutral:['look-left'],
+          rules:[
+            {kind:'required',id:'fresh-look',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
+              message:'Your last look right was before the red car went by. Look right again just before you go.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
+              message:'The red car had gone round to the second mini-roundabout and nothing more was coming from the right: this was the time to go.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:HORN}
+          ],
+          accepted:[['look-right','go'],['look-right','look-left','go'],['look-left','look-right','go']],
+          next:{go:'done'},
+          explain:'Look right again, then go: the red car had gone by and nothing more was coming from the right.'
+        }
+      ]
+    },
+    {
+      id:'queens-road-meeting',
+      title:'Meeting traffic',
+      where:'Queen\'s Road, a van parked on your side',
+      instruction:'Follow the road ahead, please.',
+      instructAt:p(980.4,-926.8),
+      starts:[{actor:'queens-car',at:p(980.4,-926.8),delay:0}],
+      endAt:p(825.6,-827.7),
+      quiet:[{x:862,z:-850,radius:40},{x:800,z:-814,radius:30}],
+      place:{
+        approach:{pause:{kind:'moving',at:p(906.2,-877.8)},when:{actor:'queens-car',at:p(845.3,-843.2)},frame:{yaw:0,pitch:30},
+          state:'Approaching the parked van at 25 mph.'},
+        held:{pause:{kind:'stop',at:p(885.6,-863.5)},when:{actor:'queens-car',at:p(891.3,-871)},frame:{yaw:0,pitch:26},
+          state:'Stopped behind the parked van.'}
+      },
+      stages:[
+        {
+          id:'approach',safe:'wait',go:'go',wait:'wait',
+          buttons:['mirror-interior','mirror-right','signal-right','flash-lights','wait','go'],
+          neutral:['mirror-right'],
+          rules:[
+            {kind:'before',id:'mirror-before-waiting',action:'wait',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
+              message:'Check the interior mirror before you slow down to wait.'}},
+            {kind:'unsafe',id:'squeezed-past',action:'go',fault:{level:'dangerous',heading:'Judgement - meeting',title:'Tried to pass the van into the black car',
+              message:'The van is on your side, so the black car coming towards you has priority. There was not room for both of you. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
+              message:'A right signal behind a parked van can look like you are turning right. It is not needed to wait or to pass.'}},
+            {kind:'distractor',id:'flash',action:'flash-lights',fault:{level:'serious',heading:'Response to signals - other road users',title:'Flashed headlights at the oncoming car',
+              message:'Flashing your headlights means only "I am here". The black car\'s driver could take it as an invitation and come on while you pull out round the van.'}}
+          ],
+          accepted:[['mirror-interior','wait'],['mirror-interior','mirror-right','wait']],
+          next:{wait:'held',go:'held'},
+          explain:'Interior mirror, then hold back behind the van: it is on your side, so the black car coming towards you goes first.'
+        },
+        {
+          id:'held',safe:'go',go:'go',wait:'wait',
+          buttons:['mirror-interior','mirror-right','signal-right','wait','go'],
+          neutral:['mirror-interior','signal-right'],
+          rules:[
+            {kind:'required',id:'mirror-before-passing',anyOf:['mirror-right'],when:'go',fault:{level:'minor',heading:'Use of mirrors - change direction',title:'No right mirror before pulling out',
+              message:'Check the right mirror before you move out round the van: a cyclist or motorcyclist may be coming past.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe chance to pass',
+              message:'The black car had gone by and the road ahead was clear: this was the time to pass the van.'}}
+          ],
+          accepted:[['mirror-right','go'],['mirror-interior','mirror-right','go']],
+          next:{go:'done'},
+          explain:'Right mirror, then pass the van, giving it plenty of room: the black car had gone by.'
+        }
+      ]
+    },
+    {
+      id:'rose-valley-pull-up',
+      title:'Pulling up on the left',
+      where:'Rose Valley, past The Close',
+      instruction:'Pull up on the left at a convenient place, please.',
+      instructAt:p(753.1,-758.5),
+      starts:[],
+      endAt:p(777.9,-616.7),
+      selfCancel:false,
+      quiet:[{x:770,z:-650,radius:40}],
+      place:{
+        approach:{pause:{kind:'moving',at:p(757,-693.8)},frame:{yaw:20,pitch:28},state:'On Rose Valley at 20 mph, The Close just ahead on the left.'},
+        stopped:{pause:{kind:'stop',at:p(777.9,-616.7)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
+      },
+      stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-left','signal-left','signal-right','stop-at-junction','stop-past-junction'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:MIRRORS_FIRST},
+            {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal to pull in',
+              message:'Signal left before you pull in, after the mirrors, so the traffic behind knows.'}},
+            {kind:'required',id:'place',anyOf:['stop-past-junction'],fault:{level:'serious',heading:'Normal stops',title:'No safe place chosen',
+              message:'Choose where to stop before you pull in: past The Close, clear of the junction.'}},
+            {kind:'distractor',id:'at-junction',action:'stop-at-junction',fault:{level:'serious',heading:'Normal stops',title:'Stopped at a junction',
+              message:'Never stop within 10 metres of a junction: drivers coming out of The Close could not see past you, and those turning in would have to swing out.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'A right signal says you are turning right or pulling out: to pull in on the left, signal left.'}},
+            {kind:'before',id:'signal-junction',action:'signal-left',needs:['stop-past-junction','stop-at-junction'],any:true,fault:{level:'minor',heading:'Signals - timed',title:'Signal could be misread',
+              message:'With The Close just ahead on the left, a left signal given now looks like a turn into it. Choose your place first, then signal once past the junction.'}}
+          ],
+          accepted:[['mirror-interior','mirror-left','stop-past-junction','signal-left'],['stop-past-junction','mirror-interior','mirror-left','signal-left']],
+          next:{then:'stopped'},
+          explain:'Choose a place past The Close, clear of the junction; then mirrors and signal left once past it, so the signal is not read as a turn.'
+        },
+        {
+          id:'stopped',safe:'approach',
+          buttons:['handbrake','neutral','signal-off','hazards','horn'],
+          rules:[
+            {kind:'required',id:'handbrake',anyOf:['handbrake'],fault:{level:'minor',heading:'Control - parking brake',title:'Handbrake not on',
+              message:'Put the handbrake on when you stop: the car must not roll.'}},
+            {kind:'required',id:'neutral',anyOf:['neutral'],fault:{level:'minor',heading:'Control - gears',title:'Left in gear',
+              message:'Select neutral once the handbrake is on.'}},
+            {kind:'required',id:'cancel',anyOf:['signal-off'],fault:{level:'minor',heading:'Signals - correctly',title:'Signal left on',
+              message:'Cancel the signal once you have stopped: left on, it says you are about to pull out or turn.'}},
+            {kind:'before',id:'handbrake-first',action:'neutral',needs:['handbrake'],fault:{level:'minor',heading:'Control - parking brake',title:'Neutral before the handbrake',
+              message:'Handbrake first, then neutral: in that order the car cannot roll.'}},
+            {kind:'distractor',id:'hazards',action:'hazards',fault:{level:'feedback',heading:'Signals - correctly',title:'Hazard lights not needed',
+              message:'Hazard lights are for warning of a hazard or an obstruction, not for a normal stop at the kerb.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:HORN}
+          ],
+          accepted:[['handbrake','neutral','signal-off'],['handbrake','signal-off','neutral'],['signal-off','handbrake','neutral']],
+          next:{then:'done'},
+          explain:'Handbrake on, neutral, and cancel the signal.'
+        }
+      ]
+    },
+    {
+      id:'rose-valley-move-off',
+      title:'Moving off',
+      where:'Rose Valley, from the kerb',
+      instruction:'Move off when you\'re ready, please.',
+      instructAt:p(777.9,-616.7),
+      // (Out of The Close as the car passes it, coming to pull up.)
+      starts:[{actor:'cyclist',at:p(760.8,-674.2),delay:0}],
+      endAt:p(790.7,-573.6),
+      quiet:[{x:778,z:-617,radius:40}],
+      place:{
+        check:{pause:{kind:'stop',at:p(777.9,-616.7)},when:{actor:'cyclist',at:p(770.8,-638.6)},frame:{yaw:-155,pitch:26},
+          state:'Stopped at the kerb, handbrake on.'},
+        clear:{pause:{kind:'stop',at:p(777.9,-616.7)},when:{actor:'cyclist',at:p(782.3,-601)},frame:{yaw:-170,pitch:26},
+          state:'Still at the kerb.'}
+      },
+      stages:[
+        {
+          id:'check',safe:'wait',go:'go',wait:'wait',
+          buttons:['mirror-interior','mirror-right','blind-spot-right','signal-right','signal-left','wait','go'],
+          neutral:['signal-right'],
+          rules:[
+            {kind:'before',id:'look-before-waiting',action:'wait',needs:['mirror-right','blind-spot-right'],any:true,fault:{level:'minor',heading:'Move off - safety',title:'Waited without looking',
+              message:'Waiting was right, but check the right mirror and over your shoulder first so you know what you are waiting for.'}},
+            {kind:'unsafe',id:'pulled-into-cyclist',action:'go',fault:{level:'dangerous',heading:'Move off - safety',title:'Moved off into the cyclist',
+              message:'The cyclist was coming past, just behind your right shoulder. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+              message:'You are moving off to the right, away from the kerb: a left signal misleads the cyclist behind.'}}
+          ],
+          accepted:[['mirror-interior','mirror-right','blind-spot-right','wait'],['mirror-right','blind-spot-right','wait'],['blind-spot-right','wait']],
+          next:{wait:'clear',go:'clear'},
+          explain:'Mirrors and your right blind spot, then wait: the cyclist was coming past.'
+        },
+        {
+          id:'clear',safe:'go',go:'go',wait:'wait',
+          buttons:['mirror-interior','mirror-right','blind-spot-right','signal-right','wait','go'],
+          neutral:['mirror-interior','signal-right'],
+          rules:[
+            {kind:'required',id:'fresh-blind-spot',anyOf:['blind-spot-right'],when:'go',fault:{level:'serious',heading:'Move off - safety',title:'No blind spot check before moving off',
+              message:'Look over your right shoulder just before you move off: a cyclist can be there, out of the mirror\'s view.'}},
+            {kind:'before',id:'mirror-before-blind-spot',action:'go',needs:['mirror-right'],fault:{level:'minor',heading:'Move off - safety',title:'No right mirror',
+              message:'Check the right mirror as well as your blind spot before moving off.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe chance to move off',
+              message:'The cyclist had gone by and nothing else was coming: this was the time to move off.'}}
+          ],
+          accepted:[['mirror-right','blind-spot-right','go'],['mirror-interior','mirror-right','blind-spot-right','go'],['mirror-right','blind-spot-right','signal-right','go']],
+          next:{go:'done'},
+          explain:'Right mirror and blind spot again, then move off: the cyclist had gone by.'
+        }
+      ]
+    },
+    {
+      id:'king-edward-emerge',
+      title:'Emerging, left turn',
+      where:'King Edward Road, left on to Kings Road',
+      instruction:'At the end of the road, turn left, please.',
+      instructAt:p(635,-454.8),
+      starts:[{actor:'kings-car',at:p(635,-454.8),delay:0}],
+      // (The station crossing the grey car comes through: no one using it.)
+      lights:p(580,-523),lightsAll:true,
+      endAt:p(568.3,-444.6),
+      quiet:[{x:572,z:-462,radius:24},{x:578,z:-505,radius:26},{x:564,z:-428,radius:24}],
+      place:{
+        approach:{pause:{kind:'moving',at:p(596,-459.2)},frame:{yaw:0,pitch:22},state:'Approaching the end of King Edward Road at 15 mph.'},
+        line:{pause:{kind:'stop',at:p(575.1,-460.5)},when:{actor:'kings-car',at:p(573.4,-478.4)},frame:{yaw:-75,pitch:34},state:'At the give way line.'},
+        clear:{pause:{kind:'stop',at:p(575.1,-460.5)},when:{actor:'kings-car',at:p(567.8,-440.7)},frame:{yaw:-60,pitch:34},state:'Still at the give way line.'}
       },
       stages:[
         {
@@ -325,194 +499,46 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
           buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
           neutral:['mirror-right'],
           rules:[
-            {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
-              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
+            {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:MIRRORS_FIRST},
             {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the left turn',
-              message:'Signal left on the approach so others know where you are going.'}},
+              message:'Signal left on the approach so the traffic on Kings Road knows where you are going.'}},
             {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'A right signal says you are going round past Ingrave Road: the black car would expect you to carry on round.'}}
+              message:'A right signal tells the drivers on Kings Road you are turning right, across their way.'}}
           ],
           accepted:[['mirror-interior','mirror-left','signal-left'],['mirror-left','mirror-interior','signal-left']],
           next:{then:'line'},
-          explain:'Mirrors (interior, then left), then signal left for Ingrave Road.'
+          explain:'Interior and left mirrors, then signal left, keeping to the left side of King Edward Road.'
         },
         {
           id:'line',safe:'wait',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-left','signal-right','give-way','go','horn'],
-          neutral:['look-left','mirror-left'],
+          buttons:['look-right','look-left','creep','give-way','go'],
+          neutral:['look-left'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
-              message:'Waiting was right, but look right first so you know what you are waiting for. (A look afterwards does not undo it.)'}},
-            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the black car',
-              message:'The black car was coming out of the High Street, on your right, on to the second mini-roundabout. Give way to traffic from your right at each mini-roundabout. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'You are turning left on to Ingrave Road. A right signal says you are going round, past the High Street.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
+              message:'Look right first: that is where the traffic in the lane you join comes from.'}},
+            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the grey car',
+              message:'The grey car coming down Kings Road from the right was too close to pull out in front of. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'creep',action:'creep',fault:{level:'serious',heading:'Junctions - observation',title:'Crept out into the grey car\'s way',
+              message:'The view right was already clear: creeping forward only puts the front of the car into the grey car\'s lane.'}}
           ],
           accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
           next:{wait:'clear',go:'clear'},
-          explain:'Give way: the black car was coming out of the High Street, on your right. At two mini-roundabouts together, treat each one separately and give way to the right at each.'
+          explain:'Give way: the grey car coming down Kings Road from the right was close.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-left','give-way','go','horn'],
-          neutral:['look-left','mirror-left'],
+          buttons:['look-right','look-left','give-way','go'],
           rules:[
-            {kind:'required',id:'fresh-look',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look',
-              message:'Your last look right was before the black car went. Look right again just before you go.'}},
+            {kind:'required',id:'fresh-look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
+              message:'Your last look right was before the grey car passed. Look right again just before you go.'}},
+            {kind:'required',id:'look-left',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No look left',
+              message:'Look left too: something may be overtaking a parked car on your side of Kings Road, coming towards you.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'The High Street was clear once the black car had gone: this was the time to go.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
+              message:'Kings Road was clear both ways: this was the time to go.'}}
           ],
-          accepted:[['look-right','go'],['look-right','mirror-left','go'],['look-left','look-right','go']],
+          accepted:[['look-right','look-left','go'],['look-left','look-right','go'],['look-right','look-left','look-right','go']],
           next:{go:'done'},
-          explain:'Look right again, then go left on to Ingrave Road: the High Street was clear.'
-        }
-      ]
-    },
-    {
-      id:'cathedral-place',
-      title:'Car emerging from the right',
-      where:'Ingrave Road at Cathedral Place',
-      instruction:'Follow the road ahead.',
-      instructAt:{x:487.8,z:-512.4},
-      starts:[{actor:'cathedral-car',at:{x:487.8,z:-512.4},delay:0}],
-      endAt:{x:531.2,z:-431.4},
-      // The junction, and Cathedral Place behind it.
-      quiet:[{x:525,z:-440,radius:28},{x:495,z:-422,radius:20}],
-      place:{
-        approach:{pause:{kind:'moving',at:{x:500.5,z:-485.3}},when:{actor:'cathedral-car',at:{x:523.1,z:-438.7}},frame:{yaw:0,pitch:0,view:'driver',zoom:1.25},
-          state:'Approaching Cathedral Place, on the right.'},
-        clear:{pause:{kind:'stop',at:{x:518.2,z:-455.2}},when:{actor:'cathedral-car',at:{x:546.3,z:-404.2}},frame:{yaw:-10,pitch:24},
-          state:'Stopped for the car pulling out of Cathedral Place.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'wait',go:'go',wait:'give-way',
-          buttons:['mirror-interior','look-left','look-right','signal-left','signal-right','give-way','go','horn'],
-          neutral:['look-left','look-right'],
-          rules:[
-            {kind:'before',id:'mirror-before-slowing',action:'give-way',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed without checking behind',
-              message:'Check the interior mirror before you slow down: you need to know what is behind you.'}},
-            {kind:'unsafe',id:'drove-on',action:'go',fault:{level:'dangerous',heading:'Awareness and planning',title:'Drove on as a car pulled out',
-              message:'The car from Cathedral Place, on your right, was already pulling out across your lane. Slow down and be ready to stop: the driver may not have seen you. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
-              message:'Going ahead on Ingrave Road, no signal is needed.'}},
-            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Misleading signal',
-              message:'Going ahead, no signal is needed. A right signal suggests you are turning into Cathedral Place, so the driver there may pull out further.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Slow down first',
-              message:'The horn may warn a driver who has not seen you, but slowing down and being ready to stop comes first.'}}
-          ],
-          accepted:[['mirror-interior','give-way'],['mirror-interior','look-right','give-way'],['look-right','mirror-interior','give-way']],
-          next:{wait:'clear',go:'clear'},
-          explain:'Mirror, then slow down and be ready to stop: the car from Cathedral Place, on your right, was pulling out across your lane.'
-        },
-        {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['mirror-interior','look-right','look-left','give-way','go','horn'],
-          neutral:['look-left','mirror-interior'],
-          rules:[
-            {kind:'required',id:'fresh-look',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look',
-              message:'Your last look into Cathedral Place was before the car came out. Look right again before you go on: another may follow it out.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'The car had pulled away ahead and Cathedral Place was clear: this was the time to go on.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'Use the horn only to warn others of your presence when they may not have seen you.'}}
-          ],
-          accepted:[['look-right','go'],['mirror-interior','look-right','go'],['look-right','look-left','go']],
-          next:{go:'done'},
-          explain:'Look right into Cathedral Place again, then go on, a safe gap behind the car ahead.'
-        }
-      ]
-    },
-    {
-      id:'queens-road-mini',
-      title:'Mini-roundabout, right turn (vehicle opposite)',
-      where:'Ingrave Road and Queen\'s Road mini-roundabout',
-      instruction:'At the mini-roundabout, turn right.',
-      instructAt:{x:539,z:-417.3},
-      starts:[{actor:'white-van',at:{x:582.1,z:-330.8},delay:1.2}],
-      endAt:{x:572.6,z:-323.5},
-      // The mini-roundabout and Queen's Road, on the right.
-      quiet:[{x:585,z:-335,radius:30},{x:555,z:-310,radius:20}],
-      place:{
-        approach:{pause:{kind:'moving',at:{x:559.3,z:-382.7}},frame:{yaw:0,pitch:18},state:'Approaching the mini-roundabout.'},
-        line:{pause:{kind:'stop',at:{x:583.1,z:-344.2}},frame:{yaw:-25,pitch:34},state:'At the give way line.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
-          neutral:['mirror-left'],
-          rules:[
-            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:{level:'minor',heading:'Use of mirrors - signalling',title:'Signalled before the mirrors',
-              message:'Mirrors first, then signal: you need to know who your signal is for.'}},
-            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
-              message:'Signal right on the approach so others know where you are going.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'A left signal says you are turning left: the white van waiting opposite could pull out across your path.'}}
-          ],
-          accepted:[['mirror-interior','mirror-right','signal-right'],['mirror-right','mirror-interior','signal-right']],
-          next:{then:'line'},
-          explain:'Mirrors (interior, then right), then signal right for the right turn.'
-        },
-        {
-          id:'line',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-right','signal-left','give-way','creep','go'],
-          neutral:['look-left','mirror-right'],
-          rules:[
-            {kind:'before',id:'look-right-first',action:'go',needs:['look-right'],fault:{level:'serious',heading:'Junctions - observation',title:'Went without looking right',
-              message:'Traffic from Queen\'s Road, on your right, has priority. Look right before you go.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
-              message:'A left signal tells the van\'s driver you are turning away from it, so it may pull out across your path as you turn right.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'Queen\'s Road was clear, and the van opposite was waiting for you: it gives way to traffic from its right, which is you.'}},
-            {kind:'distractor',id:'creep',action:'creep',fault:{level:'feedback',heading:'Junctions - approach',title:'No need to creep',
-              message:'Your view of Queen\'s Road is clear. Edging out can confuse the van\'s driver.'}}
-          ],
-          accepted:[['look-right','go'],['look-right','look-left','go'],['mirror-right','look-right','go'],['look-left','look-right','go']],
-          next:{go:'done'},
-          explain:'Signal right and go: Queen\'s Road on your right was clear, and the van opposite gives way to traffic from its right, which is you.'
-        }
-      ]
-    },
-    {
-      id:'st-james-crossroads',
-      title:'Crossroads, ahead',
-      where:'Kings Road at St James\'s Road and King Edward Road',
-      instruction:'Follow the road ahead.',
-      instructAt:{x:55.1,z:134.5},
-      starts:[{actor:'stjames-car',at:{x:43.2,z:212},delay:.5}],
-      endAt:{x:42,z:222},
-      // The crossroads, and St James's Road on the right.
-      quiet:[{x:43,z:201,radius:26},{x:15,z:200,radius:22}],
-      place:{
-        approach:{pause:{kind:'moving',at:{x:49.9,z:169.2}},frame:{yaw:-15,pitch:18},state:'Approaching the crossroads.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'go',go:'go',wait:'give-way',
-          buttons:['mirror-interior','look-right','look-left','signal-left','signal-right','give-way','go','horn'],
-          neutral:['mirror-interior'],
-          rules:[
-            {kind:'required',id:'look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Did not check St James\'s Road',
-              message:'At a crossroads look into each side road as you approach: the driver waiting in St James\'s Road, on your right, could pull out.'}},
-            {kind:'required',id:'look-left',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Did not check King Edward Road',
-              message:'Look into King Edward Road, on your left, too: traffic can come out of either side road.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Stopped with priority',
-              message:'You had priority on Kings Road and the car in St James\'s Road was waiting at its give way line: keep going, watching it.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'minor',heading:'Signals - correctly',title:'Signal not needed',
-              message:'Going ahead over the crossroads, no signal is needed: a signal suggests you are turning into a side road.'}},
-            {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Misleading signal',
-              message:'A right signal tells the driver waiting in St James\'s Road that you are turning in there, so they may pull out in front of you.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:{level:'feedback',heading:'Use of horn',title:'Horn not needed',
-              message:'The driver in St James\'s Road was waiting for you. Use the horn only when someone may not have seen you.'}}
-          ],
-          accepted:[['look-right','look-left','go'],['look-left','look-right','go'],['mirror-interior','look-right','look-left','go']],
-          next:{go:'done'},
-          explain:'Look into both side roads, then keep going: you have priority on Kings Road, and the car in St James\'s Road was waiting for you.'
+          explain:'Look right and left again, then go, keeping to the left: Kings Road was clear.'
         }
       ]
     }

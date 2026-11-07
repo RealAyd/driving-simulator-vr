@@ -1,55 +1,58 @@
-# Brentwood decision mock tests: five practice routes
+# Brentwood decision mock tests: practice routes
 
-Draft for the owner's review (2 November 2026). Practice routes, not confirmed official test routes. Each starts and
-ends on Warley Hill at the test centre (89 Warley Hill; the entrance is not mapped, so the drive starts on Warley Hill
-outside it). Each route is a connected path through the OpenStreetMap road graph (downloaded 31 October 2026) that
-keeps to one-way streets and the mapped turn restrictions (`tools/scenes` route check). Coverage follows the route
-families in the supplied screenshots and the two reported tests; they never decide lanes, priority or signal timings.
+Routes 1 and 2 are the owner's (6 November 2026), built on scene `brentwood-routes` (OpenStreetMap, one 2.5 km
+square round both routes). Routes 3 to 5 are the earlier draft, not yet built. Practice routes, not confirmed official
+test routes. Each starts and finishes at the test centre, 89 Warley Hill: its way in is taken to be the service road
+on the west side of Warley Hill at about 51.6104, 0.2980 (OpenStreetMap ways 876629792 and 876629793, built into the
+scene for this). **To confirm with the owner: that this is the test centre's way in.**
 
-The app drives between challenges. At each challenge it stops before the decision, plays the traffic briefly, pauses
-everything and asks for the learner's observations and actions (`DECISION_MOCK.md`).
+The app drives between challenges (four times as fast where they are far apart, back to real time well before the
+next one). At each challenge the examiner gives the direction, the traffic plays briefly, the scene pauses and the
+learner chooses observations and actions in order (`DECISION_MOCK.md`). Other junctions on the way are driven by the
+app and not scored.
 
 Key: **wait** (the depicted traffic means waiting is right), **go** (a clear, safe opportunity: waiting is hesitation),
-**both** (wait, then a fresh decision after traffic passes). Status: **ready**, **check** (one detail to confirm),
-**blocked** (needs facts the map does not have).
+**both** (wait, then a fresh decision after the traffic passes), **choose** (a place to stop, then the stopping
+sequence).
 
-## Route 1: Station, Kings Road and the town centre (about 3.3 km)
+## Route 1: Town centre and residential return (about 3.4 km)
 
-Warley Hill north, Kings Road past the station, Queen's Road roundabout, Kings Road to the High Street, Weald Road,
-Western Road, William Hunter Way, Wilson's Corner, Ingrave Road, back by Queen's Road and Kings Road.
+Test centre, Warley Hill, Kings Road past the station, right at the High Street lights, High Street, Wilson's Corner,
+Ingrave Road, Queen's Road, Rose Valley, King Edward Road, Kings Road, Warley Hill, test centre.
 
-| # | Where and movement | Traffic that makes the decision | Answer | Status |
-|---|---|---|---|---|
-| 1 | Queen's Road roundabout from Kings Road south, first exit | Car close behind; blue car already on the ring from Queen's Road | both | **built** |
-| 2 | Kings Road at the High Street lights, ahead into Weald Road | Green (held); a pedestrian reaching the far pavement of Weald Road, clear before the car gets there | go | **built**; check: signal phases |
-| 3 | Weald Road / Western Road mini-roundabout, right into Western Road | Car arriving from the right on Western Road | both | **built** |
-| 4 | William Hunter Way zebra crossing | Pedestrian at the kerb about to step out; car close behind | both | **built** |
-| 5 | Wilson's Corner: two mini-roundabouts close together, on to Ingrave Road | Car coming out of the High Street, on the right at the second mini | both | **built**; check: lane markings between the two minis |
-| 6 | Ingrave Road at Cathedral Place (on the right), ahead | Car edging out of Cathedral Place, then pulling out across the car's lane | both | **built** |
-| 7 | Ingrave Road / Queen's Road mini-roundabout, right on to Queen's Road | Van waiting opposite (no left arm); right clear | go | **built** |
-| 8 | Kings Road crossroads at St James's Road (right) and King Edward Road (left), ahead | Car waiting at the St James's Road give way line | go | **built** |
+| # | Where and movement | Traffic that makes the decision | Answer |
+|---|---|---|---|
+| 1 | Leaving the test centre, left on to Warley Hill | Pedestrian on the footway across the way out; then a car up Warley Hill from the right | wait, both |
+| 2 | Kings Road signal crossing by the station | Red (held) with a pedestrian crossing; then green, the crossing clear | both |
+| 3 | Kings Road / High Street lights, right into the High Street | Green (held); oncoming car down Weald Road going ahead | both |
+| 4 | Wilson's Corner, first mini-roundabout, right on to Ingrave Road | Car from Ingrave Road (right) on to the mini; then a car waiting at the second mini (left) that gives way to you | both |
+| 5 | Queen's Road, a van parked on your side | Oncoming car: hold back behind the van, then pass | both |
+| 6 | Rose Valley, pull up on the left | The Close just ahead on the left: stop past it; then handbrake, neutral, cancel the signal | choose |
+| 7 | Moving off from the same place | Cyclist out of The Close coming past; then clear | both |
+| 8 | King Edward Road, left on to Kings Road | Car down Kings Road from the right; then clear | both |
 
-Every junction challenge starts with an approach decision (mirrors, signal): the app never does them for the learner.
-The Kings Road / Chatham Way and William Hunter Way mini-roundabouts (the first plan's 2 and 6) are driven by the app:
-the owner asked for crossroads and other junctions instead of more mini-roundabouts.
+The crossings by Wilson's Corner and the station crossing (at challenge 8) are held green while no one uses them.
 
-Then auto-driven: Queen's Road (Crown Street mini, zebra), Queen's Road roundabout to Kings Road south, Warley Hill.
+## Route 2: Kavanaghs Road, London Road and Mascalls Lane (about 5.2 km)
 
-## Route 2: West by Kavanaghs Road, London Road and Brook Street (about 5.7 km; reported test 1)
+Test centre, Warley Hill, Crescent Road, Kavanaghs Road, London Road west, left at the Brook Street lights, Mascalls
+Lane, left at the Eagle Way crossroads, Warley Hill through The Drive mini-roundabout, test centre.
 
-| # | Where and movement | Traffic that makes the decision | Answer | Status |
-|---|---|---|---|---|
-| 1 | Warley Hill, left into Crescent Road | Pedestrian crossing the mouth of Crescent Road | wait | ready |
-| 2 | Crescent Road, meeting traffic past parked cars (narrow residential road) | Oncoming car; gap on your side | wait | check: parking side (authored) |
-| 3 | End of Kavanaghs Road, left on to London Road | Car from the right 3 s away (sample S1), then a long gap | both | ready |
-| 4 | London Road, pull up on the left (reported) | Choice: bus stop, driveway, opposite a junction, clear kerb | choose | check: restrictions not mapped |
-| 5 | Moving off from that stop | Cyclist coming up behind | wait | ready |
-| 6 | Brook Street at the Mascalls Lane lights, ahead | Amber as you approach, car close behind | stop | check: phases |
-| 7 | Brook Street at the Wigley Bush Lane lights, right | Oncoming car on green, then a gap | both | check: filter arrow |
-| 8 | London Road, right into Kavanaghs Road (reported test 2) | Oncoming car turning left into Kavanaghs Road | wait | ready |
+The map has no mini-roundabout on Mascalls Lane: the one on the way is Warley Hill / The Drive, after the Eagle Way
+crossroads, so challenges 6 and 7 are in that order (the owner's choice, 6 November 2026). Route 2 has a marked
+crossing after all: the zebra 20 m into Crescent Road, where challenge 1 gives way to the pedestrian crossing the side
+road.
 
-Then auto-driven: Kavanaghs Road, Crescent Road, right on to Warley Hill. (The router's return from Wigley Bush Lane
-by Spital Lane and South Weald is long; a shorter return by London Road is preferred if the turn back is confirmed.)
+| # | Where and movement | Traffic that makes the decision | Answer |
+|---|---|---|---|
+| 1 | Warley Hill, left into Crescent Road | Pedestrian on the zebra just inside Crescent Road | both |
+| 2 | Kavanaghs Road, left on to London Road | Car from the right; then a gap before the van behind it | both |
+| 3 | London Road, pull up on the left | Westwood Avenue just ahead on the left, a van behind: stop past it; then the stopping sequence | choose |
+| 4 | Moving off from that place | The van coming past; then clear | both |
+| 5 | Brook Street lights, left into Mascalls Lane | Red; then green with a car stopped just inside Mascalls Lane (no space to complete the turn); then clear | both |
+| 6 | Mascalls Lane / Warley Hill / Eagle Way crossroads, left | Car up Warley Road from the right; then clear | both |
+| 7 | Warley Hill / The Drive mini-roundabout, ahead | Oncoming car going straight on; nothing from The Drive | go |
+| 8 | Left into the test centre | Pedestrian on the footway across the way in; then clear | both |
 
 ## Route 3: East by Queen's Road and Ingrave Road (about 4.3 km)
 

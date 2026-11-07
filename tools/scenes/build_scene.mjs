@@ -2,7 +2,7 @@
 // same generator as the test centres' streets, written gzipped to public/scenes/<id>.json.gz. The app opens one with
 // window.__drivingPractice.openScene(id,label) (scenario captures: tools/scenes/capture.cjs).
 //
-//   node tools/scenes/build_scene.mjs <id> "<label>" <lat> <lon> [half-size-metres=300] [saved .osm file] [start lat,lon] [facing lat,lon]
+//   node tools/scenes/build_scene.mjs <id> "<label>" <lat> <lon> [half-size-metres=300] [saved .osm file] [start lat,lon] [facing lat,lon] [service way ids, comma separated]
 //
 // (The drive starts on the road nearest the middle, or nearest `start lat,lon`. For an area too big for one OSM API
 // call, save an Overpass download of centreBbox(lat, lon, half) and pass it as the .osm file.)
@@ -13,7 +13,7 @@ import zlib from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {createServer} from 'vite';
 
-const [id,label,latArg,lonArg,halfArg='300',osmFile,startArg,facingArg]=process.argv.slice(2);
+const [id,label,latArg,lonArg,halfArg='300',osmFile,startArg,facingArg,includeArg='']=process.argv.slice(2);
 if(!id||!label||!latArg||!lonArg||!/^[a-z0-9-]+$/.test(id))throw new Error('usage: build_scene.mjs <id> "<label>" <lat> <lon> [half] [osm-file]');
 const lat=Number(latArg),lon=Number(lonArg),half=Number(halfArg);
 const vite=await createServer({configFile:false,root:process.cwd(),server:{middlewareMode:true},appType:'custom',logLevel:'error'});
@@ -24,9 +24,9 @@ await vite.close();
 const xml=osmFile&&osmFile!=='-'?fs.readFileSync(osmFile,'utf8')
   :execFileSync('curl',['-sS','--compressed','--fail','-m','180','-A','DrivingPractice-scene-builder/1.0',`https://api.openstreetmap.org/api/0.6/map?bbox=${centreBbox(lat,lon,half).join(',')}`],{encoding:'utf8',maxBuffer:512*1024*1024});
 const start=startArg?(([a,b])=>({lat:a,lon:b}))(startArg.split(',').map(Number)):undefined;
-const {location,summary}=locationFromMap({label,lat,lon},xml,half,start);
+const {location,summary}=locationFromMap({label,lat,lon},xml,half,start,includeArg.split(',').filter(Boolean));
 // Facing a point (the start road's own direction may point away): turned round into the other lane where it does.
-if(facingArg){
+if(facingArg&&facingArg!=='-'){
   const [fl,fo]=facingArg.split(',').map(Number),KX=111320*Math.cos(lat*Math.PI/180);
   const to={x:(fo-lon)*KX,z:-(fl-lat)*111320},sp=location.spawn,h=sp.headingDeg*Math.PI/180;
   if((to.x-sp.position.x)*Math.sin(h)-(to.z-sp.position.z)*Math.cos(h)<0){

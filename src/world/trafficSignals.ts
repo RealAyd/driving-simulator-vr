@@ -29,6 +29,9 @@ export interface LiveStop{
 
 const GREEN={junction:14,crossing:22},AMBER=3,ALL_RED=2,RED_AMBER=2,PEOPLE={junction:7,crossing:9};
 
+/** A held set's every stop green. */
+const ALL_GREEN=-2;
+
 interface Segment{until:number;stage:number;aspect:Aspect}
 
 export class TrafficSignals implements SimModule{
@@ -80,23 +83,25 @@ export class TrafficSignals implements SimModule{
   private readonly held=new Map<number,number>();
 
   /**
-   * Holds the lights whose stop line is nearest `at` (within 15 m) on green for that approach, and red for the rest of
-   * its set, until released (null releases every hold).
+   * Holds the lights whose stop line is nearest `at` (within 15 m) on green for that approach and red for the rest of
+   * its set (or red for all of it: people crossing; or green for all of it: a set of crossings no one is using), until
+   * released (null releases it). One hold at a time.
    */
-  hold(at:{x:number;z:number}|null):void{
+  hold(at:{x:number;z:number}|null,aspect:'green'|'red'|'all-green'='green'):void{
     if(!at){this.held.clear();this.update();return}
     let best:{set:number;stage:number;d:number}|null=null;
     this.sets.forEach((set,k)=>set.stops.forEach((st,i)=>{
       const d=Math.hypot(st.lane.x-at.x,st.lane.z-at.z);
       if(d<15&&(!best||d<best.d))best={set:k,stage:set.stages[i]!,d};
     }));
-    if(best){const b=best as {set:number;stage:number};this.held.set(b.set,b.stage)}
+    // (Red: every stop of the set red, as while people cross. All green: no one crossing anywhere in it.)
+    if(best){const b=best as {set:number;stage:number};this.held.clear();this.held.set(b.set,aspect==='red'?-1:aspect==='all-green'?ALL_GREEN:b.stage)}
     this.update();
   }
 
   /** The state of every stop now. */
   private update(){
-    for(const [k,stage] of this.held){const set=this.sets[k]!;set.stops.forEach((stop,i)=>{stop.state=set.stages[i]===stage?'green':'red'})}
+    for(const [k,stage] of this.held){const set=this.sets[k]!;set.stops.forEach((stop,i)=>{stop.state=stage===ALL_GREEN||set.stages[i]===stage?'green':'red'})}
     for(const [k,set] of this.sets.entries()){
       if(this.held.has(k))continue;
       const t=(this.time+set.offset)%set.cycle;

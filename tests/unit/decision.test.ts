@@ -1,9 +1,14 @@
 import {describe,expect,it} from 'vitest';
 import {assessStage,summarise,type ChallengeLogic} from '../../src/decision/assess';
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
+import {BRENTWOOD_ROUTE_2} from '../../src/decision/routes/brentwoodRoute2';
 import {DECISION_ROUTES} from '../../src/decision/routes';
 
-const C1=BRENTWOOD_ROUTE_1.challenges[0]!,C2=BRENTWOOD_ROUTE_1.challenges.find(c=>c.id==='st-james-crossroads')!;
+const challenge=(route:typeof BRENTWOOD_ROUTE_1,id:string)=>route.challenges.find(c=>c.id===id)!;
+// An emerging left turn (approach, line, clear), the mini-roundabout ahead (one decision, on the move), meeting
+// traffic behind a parked van.
+const C1=challenge(BRENTWOOD_ROUTE_1,'king-edward-emerge'),C2=challenge(BRENTWOOD_ROUTE_2,'the-drive-mini'),
+  C3=challenge(BRENTWOOD_ROUTE_1,'queens-road-meeting');
 const levels=(v:{faults:{level:string}[]})=>v.faults.map(f=>f.level);
 
 describe('decision challenges as authored',()=>{
@@ -47,7 +52,7 @@ describe('judging a decision',()=>{
     const v=assessStage(C1,'line',['look-right','give-way']);
     expect(v.faults).toEqual([]);expect(v.decision).toBe('wait');expect(v.next).toBe('clear');
   });
-  it('going in front of the blue car is dangerous and the car is held',()=>{
+  it('going in front of the grey car is dangerous and the car is held',()=>{
     const v=assessStage(C1,'line',['look-right','go']);
     expect(levels(v)).toEqual(['dangerous']);expect(v.intervened).toBe(true);expect(v.next).toBe('clear');
   });
@@ -57,15 +62,26 @@ describe('judging a decision',()=>{
   });
   it('a look before waiting is out of date once the traffic has passed',()=>{
     const history=new Map([['line',['look-right','give-way']]]);
-    expect(assessStage(C1,'clear',['go'],history).faults.map(f=>f.ruleId)).toEqual(['fresh-look']);
+    expect(assessStage(C1,'clear',['look-left','go'],history).faults.map(f=>f.ruleId)).toEqual(['fresh-look-right']);
   });
   it('the first decision counts: a second one is ignored',()=>{
     const v=assessStage(C2,'approach',['look-right','look-left','go','give-way']);
     expect(v.decision).toBe('go');expect(v.faults).toEqual([]);
   });
   it('grades a misleading signal by what the picture shows',()=>{
-    expect(assessStage(C2,'approach',['look-right','look-left','signal-right','go']).faults.map(f=>f.level)).toEqual(['serious']);
-    expect(assessStage(C2,'approach',['look-right','look-left','signal-left','go']).faults.map(f=>f.level)).toEqual(['minor']);
+    // At a mini-roundabout going ahead, a right signal says the car is going round: serious.
+    expect(assessStage(C2,'approach',['look-right','signal-right','go']).faults.map(f=>f.level)).toEqual(['serious']);
+    // Waiting behind a parked van, it says little more than that the car will pull out: minor.
+    expect(assessStage(C3,'approach',['mirror-interior','signal-right','wait']).faults.map(f=>f.level)).toEqual(['minor']);
+  });
+  it('waiting at a mini-roundabout with no one to give way to is hesitation',()=>{
+    expect(assessStage(C2,'approach',['look-right','give-way']).faults.map(f=>f.ruleId)).toEqual(['hesitation']);
+  });
+  it('a pull-up: the place, then the signal, then the stopping sequence in order',()=>{
+    const P=challenge(BRENTWOOD_ROUTE_1,'rose-valley-pull-up');
+    expect(assessStage(P,'approach',['mirror-interior','mirror-left','signal-left','stop-past-junction']).faults.map(f=>f.ruleId)).toEqual(['signal-junction']);
+    expect(assessStage(P,'approach',['mirror-interior','mirror-left','stop-at-junction','signal-left']).faults.map(f=>[f.ruleId,f.level])).toEqual([['at-junction','serious'],['place','serious']]);
+    expect(assessStage(P,'stopped',['neutral','handbrake']).faults.map(f=>f.ruleId)).toEqual(['handbrake-first','cancel']);
   });
   it('anything no rule names is an unnecessary action (feedback only)',()=>{
     const c:ChallengeLogic={id:'t',stages:[{id:'s',safe:'go',go:'go',wait:'give-way',buttons:['look-right','horn','go','give-way'],rules:[],accepted:[['look-right','go']],next:{go:'done'},explain:''}]};

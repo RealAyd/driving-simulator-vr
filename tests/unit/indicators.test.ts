@@ -5,6 +5,7 @@ import {Traffic} from '../../src/actors/traffic';
 import {kerbFootprints,layoutTownscape} from '../../src/world/townscape';
 import {prepareRoundabouts} from '../../src/world/roundabouts';
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
+import {BRENTWOOD_ROUTE_2} from '../../src/decision/routes/brentwoodRoute2';
 import {actorDefs} from '../../src/decision/actors';
 
 const node=(m:string)=>import(/* @vite-ignore */ m);
@@ -61,12 +62,22 @@ describe('road users signal for their turns',()=>{
     expect(plan[10]).toBe('off');expect(plan[40]).toBe('right');expect(plan[100]).toBe('off');
   });
 
+  it('round a mini-roundabout\'s disc: right for a right turn (not left for its first swing), none for ahead',()=>{
+    // A right turn round a disc at (0,-100), radius 4: swinging left to pass it on the right, then round to the east.
+    const right:Array<[number,number]>=[[0,0],[0,-90],[-2,-95],[-4,-99],[-3.5,-102],[-2,-104],[0,-104.5],[3,-104],[6,-103],[12,-102],[60,-102]];
+    const plan=signals(car(right));
+    expect(plan.includes('left')).toBe(false);expect(plan.filter(s=>s==='right').length).toBeGreaterThan(30);
+    // Ahead: left round it, then back to the line.
+    const ahead:Array<[number,number]>=[[0,0],[0,-92],[-2.5,-96],[-4,-100],[-2.5,-104],[0,-108],[0,-200]];
+    expect(signals(car(ahead)).every(s=>s==='off')).toBe(true);
+  });
+
   it('a cyclist or someone on foot shows no indicators',()=>{
     expect(signals(car(turnPath(-90),{body:'cyclist'})).every(s=>s==='off')).toBe(true);
   });
 
-  it('route 1: the cars at the Queen\'s Road roundabout signal as the Highway Code says',()=>{
-    const defs=actorDefs(BRENTWOOD_ROUTE_1),get=(id:string)=>new PassingVehicle({...defs.find(d=>d.id===id)!,delaySeconds:0});
+  it('the routes\' cars signal for their turns as the Highway Code says',()=>{
+    const get=(route:typeof BRENTWOOD_ROUTE_1,id:string)=>new PassingVehicle({...actorDefs(route).find(d=>d.id===id)!,delaySeconds:0});
     const at=(v:PassingVehicle,x:number,z:number)=>{
       let best=Infinity,side='';
       for(let s=0;s<v.length;s+=1){
@@ -75,13 +86,14 @@ describe('road users signal for their turns',()=>{
       }
       return side;
     };
-    // The blue car (past twelve o'clock): right on the way and round, left from passing Kings Road south.
-    expect(at(get('blue-car'),101.8,19.3)).toBe('right');
-    expect(at(get('blue-car'),61.5,57.1)).toBe('left');
-    // The grey car behind (first exit): left.
-    expect(at(get('grey-car'),62.9,54.7)).toBe('left');
-    // The white car waiting to come out of Cathedral Place, to turn right.
-    expect(get('cathedral-car').indicating).toBe('right');
+    // Route 1: the grey car down Kings Road on to Warley Hill, left into Myrtle Road.
+    expect(at(get(BRENTWOOD_ROUTE_1,'kings-car'),547,-300),'kings-car').toBe('left');
+    // On straight down Kings Road, no signal.
+    expect(at(get(BRENTWOOD_ROUTE_1,'kings-car'),566,-420),'kings-car straight').toBe('off');
+    // Route 2: the red car along London Road, right into South Weald Road.
+    expect(at(get(BRENTWOOD_ROUTE_2,'london-car'),-440,-526),'london-car').toBe('right');
+    // The blue car up Warley Hill, right into The Drive at the mini-roundabout.
+    expect(at(get(BRENTWOOD_ROUTE_2,'warley-car'),326,582),'warley-car').toBe('right');
   });
 
   it('background traffic signals before it turns at a junction',async()=>{

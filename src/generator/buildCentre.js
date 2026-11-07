@@ -15,9 +15,10 @@ export function centreBbox(lat,lon,half=450){
 
 /**
  * Builds the location. `xml`: the OSM API 0.6 map response for centreBbox(lat, lon, half). Returns the location
- * object and a one-line summary; throws if there is no road near the point.
+ * object and a one-line summary; throws if there is no road near the point. `include`: service roads (way ids) to
+ * build as well (a test centre's way in).
  */
-export function buildCentre({xml,id,name,lat:LAT,lon:LON,half:HALF=450,sourceNote='downloaded',date=new Date().toISOString().slice(0,10),start:START=null}){
+export function buildCentre({xml,id,name,lat:LAT,lon:LON,half:HALF=450,sourceNote='downloaded',date=new Date().toISOString().slice(0,10),start:START=null,include:INCLUDE=[]}){
 const KX=111320*Math.cos(LAT*Math.PI/180),KY=111320;
 const xy=(lat,lon)=>({x:+((lon-LON)*KX).toFixed(2),z:+(-(lat-LAT)*KY).toFixed(2)});
 const r2=v=>+v.toFixed(2);
@@ -45,7 +46,8 @@ for(const w of ways){
   // A plain service road (a car park's way in, say) that is an arm of a mini-roundabout is built too: traffic comes
   // out of it on to the roundabout, and a learner has to see it.
   const armOfMini=w.tags.highway==='service'&&!w.tags.service&&w.nds.some(ref=>miniNodes.has(ref));
-  const width=DRIVEN[w.tags.highway]??(armOfMini?2.8:undefined);
+  // (And a service road asked for by id: a test centre's way in, which the drive starts and ends on.)
+  const width=DRIVEN[w.tags.highway]??(armOfMini||INCLUDE.includes(w.id)?2.8:undefined);
   if(!width||w.tags.area==='yes'||w.tags.access==='private')continue;
   // Split at mini-roundabouts and where the way leaves the square.
   const runs=[];let run=[];

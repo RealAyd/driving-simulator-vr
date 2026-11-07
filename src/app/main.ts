@@ -119,7 +119,7 @@ import {AdaptiveScale} from '../engine/renderScale';
 import {DecisionRunner,type DecisionRunResult,type RunnerScene} from '../decision/runner';
 import type {DecisionRoute} from '../decision/route';
 import {DECISION_ROUTES} from '../decision/routes';
-import {decisionPath,junctionDiscs,streetFurniture} from '../decision/plan';
+import {decisionPath,junctionDiscs,routeBlocks,streetFurniture} from '../decision/plan';
 import {actorDefs} from '../decision/actors';
 import {decisionReport} from '../decision/report';
 import {ACTION_LOOK} from '../decision/actions';
@@ -383,7 +383,8 @@ export async function boot():Promise<void>{
     const layout=layoutStreetscape(place)??layoutTownscape(place);
     streetLamps=layout?.lamps??[];
     yield [at(.25),'Building houses and gardens'];
-    kerbCars=kerbFootprints(layout);
+    // (And the vehicles a decision route parks: passed as the kerb's own are.)
+    kerbCars=[...kerbFootprints(layout),...place.blocks.filter(b=>b.id.startsWith('route-parked-')).map(b=>({x:b.position.x,z:b.position.z,heading:degToRad(b.headingDeg),halfWidth:b.size.width/2,halfLength:b.size.depth/2}))];
     const parked:ParkedCar[]=[
       ...place.blocks.filter(b=>b.vehicleModel&&b.vehicleModel in CAR_MODELS).map(b=>({model:b.vehicleModel as CarModelId,colour:b.colour??'#c9ccd1',x:b.position.x,y:0,z:b.position.z,heading:degToRad(b.headingDeg)})),
       ...(layout?.cars??[]).map(c=>({model:c.model,colour:c.colour,x:c.x,y:c.y,z:c.z,heading:c.heading}))
@@ -2320,12 +2321,10 @@ export async function boot():Promise<void>{
    * into view clear of the decision panel. */
   let cameraShift=0,shiftNow=0;
   /** The framing of the decision paused at (the camera goes back to it after a look). */
-  let decisionFrame:{yaw:number;pitch:number;shift?:number;view?:'driver';zoom?:number}|null=null;
-  /** The framing of a decision: from behind the car, turned and raised; or from the driver's seat, looking ahead. */
-  const showFrame=(frame:{yaw:number;pitch:number;shift?:number;view?:'driver'})=>{
+  let decisionFrame:{yaw:number;pitch:number;shift?:number}|null=null;
+  /** The framing of a decision: from behind the car, turned and raised. */
+  const showFrame=(frame:{yaw:number;pitch:number;shift?:number})=>{
     forwardView();
-    // (From the driver's seat, looking level along the road at what is ahead, not down at the dashboard.)
-    if(frame.view==='driver'){if(behind)setBehind(false);glance=0;return}
     if(!behind)setBehind(true);
     aimCamera(frame.yaw,frame.pitch,frame.shift);
   };
@@ -2362,7 +2361,7 @@ export async function boot():Promise<void>{
     waveOn:id=>runtime?.traffic?.waveOn(id),
     retire:id=>runtime?.traffic?.retire(id),
     signals:()=>runtime?.trafficSignals?.stops??[],
-    holdLights:at=>runtime?.trafficSignals?.hold(at),
+    holdLights:(at,aspect)=>runtime?.trafficSignals?.hold(at,aspect),
     setSignal:side=>{
       const now=vehicle.indicators.state;
       if(side==='off'){if(now!=='off')vehicle.toggleIndicator(now,clock.time)}
@@ -2419,7 +2418,7 @@ export async function boot():Promise<void>{
     decisionAsked=null;
     // (No label: the scene's own name, which the pack is checked against.)
     const id=await openArea({label:'',lat:0,lon:0,scene:route.scene,testCentre:true,
-      stage:{actors:actorDefs(route),lived:true,title:route.title,briefing:route.briefing,start:{position:{x:route.start.x,z:route.start.z},headingDeg:route.start.headingDeg}}});
+      stage:{actors:actorDefs(route),lived:true,blocks:routeBlocks(route),title:route.title,briefing:route.briefing,start:{position:{x:route.start.x,z:route.start.z},headingDeg:route.start.headingDeg}}});
     if(id){decisionAsked=route;decisionLocation=id}
   };
   for(const b of document.querySelectorAll<HTMLButtonElement>('[data-decision-route]'))b.addEventListener('click',()=>{
@@ -2441,12 +2440,11 @@ export async function boot():Promise<void>{
       perf.record(engine.getDeltaTime());
       head.animate(dt);
       if(behind)behindSeconds+=dt;
-      // (From the driver's seat, paused for a decision framed there, zoomed in on what is well ahead: a narrower view.)
-      const wantFov=behind||heldView?.endsWith('shoulder')?HORIZONTAL_FOV
-        :!heldView?HORIZONTAL_FOV/(decisionFrame?.view==='driver'?decisionFrame.zoom??1:1):heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
+      const wantFov=behind||heldView?.endsWith('shoulder')||!heldView?HORIZONTAL_FOV:heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
       camera.fov+=Math.max(-3*dt,Math.min(3*dt,wantFov-camera.fov));
       observation.source=observationSource();
-      clock.advance(dt,step);
+      // (A decision test plays faster on the long way between its challenges.)
+      clock.advance(dt*(decision&&runtime.scenario.id===decision.scenarioId?decision.runner.rate:1),step);
       // Stopping unusually early: the pedestrian waits; prompt the learner on.
       const trigger=runtime.zones.stats.get('pedestrian-trigger');
       stoppedEarlyFor=trigger&&!trigger.entered&&vehicle.state.speed<.15?stoppedEarlyFor+dt:0;
@@ -2480,7 +2478,7 @@ export async function boot():Promise<void>{
       camera.setTarget(new Vector3(to.x,to.y,to.z));
     }else{
       // (Level, not glancing down at the road just ahead: a held view, a headset, or a decision framed from the seat.)
-      glance+=Math.max(-dt*.5,Math.min(dt*.5,(heldView||viewer.active||decisionFrame?.view==='driver'?0:FORWARD_GLANCE)-glance));
+      glance+=Math.max(-dt*.5,Math.min(dt*.5,(heldView||viewer.active?0:FORWARD_GLANCE)-glance));
       const across=Math.hypot(look.x,look.z);
       camera.position.set(eye.x,eye.y,eye.z);
       camera.setTarget(new Vector3(eye.x+look.x,eye.y+look.y-Math.tan(glance)*across,eye.z+look.z));

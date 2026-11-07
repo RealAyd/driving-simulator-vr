@@ -27,6 +27,8 @@ export interface RunnerActor{
   pace?:number|null;
   /** Seen waiting at the start of its path before it moves (set while its challenge is in hand). */
   shownWaiting?:boolean;
+  /** On the road (false once gone at the end of its path). */
+  readonly present?:boolean;
   readonly speed?:number;
 }
 
@@ -55,8 +57,9 @@ export interface RunnerScene{
   /** Traffic lights (each stop line's lane, the heading it stops and its aspect): the car stops at red, and at amber
    * when it can. */
   signals?():ReadonlyArray<{id:string;lane:{x:number;z:number};heading:number;state:string}>;
-  /** Holds the lights at a stop line (near `at`) green for the car, or releases the hold (null). */
-  holdLights?(at:Vec2|null):void;
+  /** Holds the lights at a stop line (near `at`) green for the car (or red: people crossing), or releases the hold
+   * (null). */
+  holdLights?(at:Vec2|null,aspect?:'green'|'red'|'all-green'):void;
 }
 
 export interface PausedAt{challenge:ChallengeDef;stage:Stage;place:StagePlace;index:number;of:number}
@@ -89,6 +92,12 @@ const RETIRE_AFTER=25;
 const BACK_AFTER=12,BACK_DISTANCE=3.5;
 /** On the way back, the junctions within this far ahead (metres) are kept clear. */
 const RETURN_CLEAR=90;
+/** Between challenges far apart the scene plays this many times faster, until this far (path metres) before the
+ * next challenge comes in hand (or the end of the route). */
+const TRANSIT_RATE=4,TRANSIT_LEAD=60;
+/** Pulling out from the start: the road joined, this far along the way (metres), kept clear this wide (metres) until
+ * the car is this far along. */
+const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
 /** Practising one challenge, the car pulls up this far past it (metres). */
 const PRACTICE_RUNOUT=30;
 /** The test can end with the car pulled up this far short of the route's end (path metres). */
@@ -166,6 +175,19 @@ export class DecisionRunner{
   /** Practising one challenge (from the results) rather than the whole test. */
   get practice(){return this.only!==null}
 
+  /**
+   * How fast the scene plays (times real time): faster on a long way between challenges, back to real time well
+   * before the next direction (the traffic to read is seen at its own speed) and on the last stretch.
+   */
+  get rate():number{
+    if(this.phase!=='drive'||this.backTo!==null)return 1;
+    const s=this.carS();
+    if(this.ending)return this.endS()-s>TRANSIT_LEAD?TRANSIT_RATE:1;
+    const c=this.route.challenges[this.challenge];
+    if(!c||this.released||this.inHand().length)return 1;
+    return this.s(c.instructAt)-QUIET_BEFORE-s>TRANSIT_LEAD?TRANSIT_RATE:1;
+  }
+
   /** Where the car starts: the route's start, or a little before the challenge practised. */
   startPose(only:number|null=null):{x:number;z:number;heading:number}{
     if(only===null||only===0){const st=this.route.start;return {x:st.x,z:st.z,heading:st.headingDeg*Math.PI/180}}
@@ -229,7 +251,7 @@ export class DecisionRunner{
     // alongside, cutting in or turning across is kept clear of too).
     for(const a of this.route.actors){
       const x=this.scene.actor(a.id);
-      if(!x?.started)continue;
+      if(!x?.started||x.present===false)continue;
       const q=x.pose.position;
       for(let d=HALF_LENGTH;d<=45;d+=1.5){
         const p=this.assist.pointAt(s+d);
@@ -299,12 +321,17 @@ export class DecisionRunner{
    * of its speed, never stopped. Free again once the moment has come.
    */
   private paceFor(c:ChallengeDef,stage:string,s:number,speed:number):void{
-    const place=c.place[stage];
+    // (A stage with no road user to wait for, as an approach: the next stage's, already on its way.)
+    const from=c.stages.findIndex(x=>x.id===stage);
+    const place=c.stages.slice(Math.max(0,from)).map(x=>c.place[x.id]).find(q=>q?.when);
     if(!place?.when)return;
     const x=this.scene.actor(place.when.actor),def=this.route.actors.find(a=>a.id===place.when!.actor);
     if(!x?.started||!def||!('pace' in x))return;
     const left=this.actorAt(def.id,place.when.at)-x.travelled,d=Math.max(0,this.s(place.pause.at)-s);
     if(left<=0)return;
+    // (The car already waiting at its line: the moment has come, so the road user comes on at its own speed. Paced to
+    // the time left, it would ease ever slower towards its point and never reach it.)
+    if(place.pause.kind==='stop'&&d<1.5&&speed<.5)return;
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;
@@ -407,6 +434,8 @@ export class DecisionRunner{
     for(const ch of new Set([c,...this.inHand()]))for(const st of ch.starts){
       const key=`${ch.id}/${st.actor}`;
       if(!this.started.has(key)&&s>=this.s(st.at)){
+        // (One already set going by another challenge, as a road user that two challenges share, goes on as it is.)
+        if([...this.started].some(k=>k.endsWith(`/${st.actor}`))){this.started.add(key);continue}
         // (Not on top of background traffic at the start of its way: it sets off once the spot is clear.)
         const from=this.route.actors.find(a=>a.id===st.actor)?.path[0];
         if(from&&!this.route.actors.find(a=>a.id===st.actor)?.waits&&(this.scene.traffic?.()??[]).some(q=>Math.hypot(q.x-from.x,q.z-from.z)<8))continue;
@@ -418,7 +447,7 @@ export class DecisionRunner{
     if(this.released){
       // Past the challenge: the signal goes off, and the next challenge (or the end of the route) is in hand.
       if(s>=this.s(c.endAt)){
-        this.scene.setSignal('off');
+        if(c.selfCancel!==false)this.scene.setSignal('off');
         if(this.only!==null||this.challenge+1>=this.route.challenges.length){this.ending=true;return}
         this.challenge++;this.released=false;this.stage=this.route.challenges[this.challenge]!.stages[0]!.id;
       }
@@ -464,7 +493,15 @@ export class DecisionRunner{
     // (And the junctions just ahead of the car: traffic coming to one waits for the car to go through, rather than a
     // stream of it crossing in front of the car standing at the line.)
     if(this.ending)return this.nextJunctions();
-    return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions()];
+    return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions(),...this.wayOut()];
+  }
+
+  /** While the car is pulling out from where the drive starts (a test centre's way out): the road it joins, kept clear
+   * (traffic waiting there for it stood close enough to touch as it swung out). */
+  private wayOut():ReadonlyArray<{x:number;z:number;radius:number}>{
+    if(this.only!==null||this.carS()>START_CLEAR)return [];
+    const p=this.assist.pointAt(START_JOIN);
+    return [{x:p.x,z:p.z,radius:START_RADIUS}];
   }
 
   /** The junctions just ahead of the car, kept clear of traffic coming to them (it waits short of them for the car to
@@ -495,15 +532,28 @@ export class DecisionRunner{
   private hand:ChallengeDef[]=[];
   private handAt:{x:number;z:number}|null=null;
 
-  /** The lights of a challenge in hand held green for the car (released once it is past). */
+  /** The lights of a challenge in hand held green for the car (or red, in a stage that shows people crossing),
+   * released once it is past. */
   private holdLights():void{
-    const at=this.phase==='finished'?null:this.inHand().find(c=>c.lights)?.lights??null;
-    const key=at?`${at.x},${at.z}`:'';
+    const c=this.phase==='finished'?null:this.inHand().find(x=>x.lights)??null,at=c?.lights??null;
+    const red=!!c&&c===this.route.challenges[this.challenge]&&!this.released&&c.place[this.stage]?.lights==='red'&&!this.trafficBefore(c.lights!);
+    const aspect=red?'red':c?.lightsAll?'all-green':'green',key=at?`${at.x},${at.z},${aspect}`:'';
     if(key===this.heldKey)return;
     this.heldKey=key;
-    this.scene.holdLights?.(at);
+    this.scene.holdLights?.(at,aspect);
   }
   private heldKey='';
+
+  /** Background traffic on the car's way between it and a stop line (queued there, it would keep the car from the
+   * line while the lights are held red): the lights let it through first. */
+  private trafficBefore(line:Vec2):boolean{
+    const s=this.carS(),end=this.s(line),traffic=this.scene.traffic?.()??[];
+    for(let d=HALF_LENGTH+1;s+d<=end+2;d+=1.5){
+      const p=this.assist.pointAt(s+d);
+      if(traffic.some(q=>Math.hypot(p.x-q.x,p.z-q.z)<2.5))return true;
+    }
+    return false;
+  }
 
   /** A road user seen waiting (a car at a junction) is there only while its challenge is in hand: from out of the
    * learner's sight, while the junction is kept clear (traffic going by it before then would have to get past it). */

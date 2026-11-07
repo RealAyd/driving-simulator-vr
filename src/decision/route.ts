@@ -17,12 +17,18 @@ export interface DecisionRoute{
   /** Scenario actors (passing vehicles): they wait at the start of their path until a challenge starts them. */
   actors:readonly RouteActor[];
   challenges:readonly ChallengeDef[];
+  /** Vehicles parked for the route (a van on the car's side of the road, to be passed): drawn, solid, and passed by
+   * the car and by traffic, as the cars parked at the kerb are. */
+  parked?:readonly {x:number;z:number;headingDeg:number;kind:'van'|'car';colour?:string}[];
+  /** The car's way moved this far to the left of its lane (metres) from one point to the other, easing in and out:
+   * pulled in to the kerb to stop. */
+  shifts?:readonly {from:Vec2;to:Vec2;left:number}[];
 }
 
 export interface RouteActor{
   id:string;name:string;colour:string;speed:number;path:readonly Vec2[];
-  /** A car (the default), or a person on foot walking the path. */
-  kind?:'car'|'pedestrian';
+  /** A car (the default), someone on a bicycle, or a person on foot walking the path. */
+  kind?:'car'|'cyclist'|'pedestrian';
   /** Brakes for the learner's car when it is in the way (a car following it). */
   yields?:boolean;
   /** Stays parked at the end of its path (turned into a car park) rather than turning off out of sight. */
@@ -44,11 +50,15 @@ export interface ChallengeDef extends ChallengeLogic{
   starts:readonly {actor:string;at:Vec2;delay:number}[];
   /** How each stage is set up in the scene. */
   place:Record<string,StagePlace>;
-  /** The challenge is over (signal cancelled) once the car passes here. */
+  /** The challenge is over once the car passes here: the signal cancels itself, as after a turn (not after pulling up:
+   * `selfCancel` false, where cancelling it is the learner's to do). */
   endAt:Vec2;
+  selfCancel?:false;
   /** Traffic lights the car comes to here, held green for it while the challenge is in hand (the stop line's middle,
    * near enough): the decision is about who is still in the way, not the lights' timing. */
   lights?:Vec2;
+  /** The whole set those lights belong to held green (crossings close together, mapped as one set, no one using). */
+  lightsAll?:true;
   /** Kept to the challenge's own road users while it is in hand: background traffic keeps out of these circles (the
    * junction, and the approaches its road users come along), so the decision is the one depicted. */
   quiet:readonly {x:number;z:number;radius:number}[];
@@ -59,14 +69,12 @@ export interface StagePlace{
   pause:{kind:'moving';at:Vec2}|{kind:'stop';at:Vec2};
   /** The traffic that matters, seen moving first: the pause comes once this road user reaches this point. */
   when?:{actor:string;at:Vec2};
+  /** The challenge's lights shown red to the car in this stage (people crossing): held green otherwise. */
+  lights?:'red';
   /** The camera behind the car: turned round it (degrees; negative shows the right) and raised (degrees). */
   frame:{yaw:number;pitch:number;
     /** Looking this far beside the car (metres right; negative: left): the junction's far side clear of the panel. */
-    shift?:number;
-    /** From the driver's seat, looking ahead, instead of from behind the car: what matters is well ahead. */
-    view?:'driver';
-    /** From the driver's seat, zoomed in this many times (a narrower view), as a driver looks hard at what is ahead. */
-    zoom?:number};
+    shift?:number};
   /** Where the car is and what is already done (shown with the buttons). */
   state:string;
 }

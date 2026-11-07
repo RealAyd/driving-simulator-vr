@@ -1,4 +1,4 @@
-import {parseLocation,parseScenario,type Location,type Scenario} from '../contracts';
+import {parseLocation,parseScenario,type Block,type Location,type Scenario} from '../contracts';
 import {buildCentre,centreBbox} from './buildCentre.js';
 import {versioned} from '../assets/versioned';
 
@@ -29,11 +29,15 @@ export interface AreaRequest{
      * each junction in hand to its own road users. */
     lived?:boolean;
     /** A decision mock test on the scene: its name, briefing and where the drive starts. */
-    title?:string;briefing?:string;start?:{position:{x:number;z:number};headingDeg:number}};
+    title?:string;briefing?:string;start?:{position:{x:number;z:number};headingDeg:number};
+    /** Vehicles the drive parks (an obstruction to pass), added to the location's blocks. */
+    blocks?:readonly Block[]};
 }
 export interface BuiltArea{location:Location;scenario:Scenario;mockTest:Scenario;lesson:Scenario;summary:string}
 
 const OSM_API='https://api.openstreetmap.org/api/0.6/map';
+/** A staged drive's time limit (seconds): a decision test route runs to five kilometres, with the stops on it. */
+const STAGE_TIME_LIMIT=2400;
 const slug=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'area';
 
 /**
@@ -87,8 +91,8 @@ export async function downloadArea(lat:number,lon:number,fetcher:typeof fetch=fe
 
 /** The location built from map data (what a pack holds, and what the phone builds where there is none). */
 /** `start`: where the drive starts (the nearest road to it), when not at the middle of the area. */
-export function locationFromMap(request:AreaRequest,xml:string,half:number,start?:{lat:number;lon:number}){
-  return buildCentre({xml,id:`area-${slug(request.label)}`,name:request.label,lat:request.lat,lon:request.lon,half,...(start?{start}:{})});
+export function locationFromMap(request:AreaRequest,xml:string,half:number,start?:{lat:number;lon:number},include:readonly string[]=[]){
+  return buildCentre({xml,id:`area-${slug(request.label)}`,name:request.label,lat:request.lat,lon:request.lon,half,include,...(start?{start}:{})});
 }
 
 /** Builds the area: a test centre's pack where there is one, otherwise from the OSM API on the phone. */
@@ -112,6 +116,7 @@ export async function buildArea(asked:AreaRequest,progress:(step:string,percent:
   }
   const location=parseLocation(raw);
   if(request.stage&&!request.stage.lived)location.streetParking=0;
+  if(request.stage?.blocks)location.blocks.push(...request.stage.blocks);
   const scenario=parseScenario({
     schemaVersion:1,id:`${id}-free-drive`,locationId:id,
     title:request.stage?.title??`${request.label} (free drive)`,
@@ -119,7 +124,7 @@ export async function buildArea(asked:AreaRequest,progress:(step:string,percent:
     briefing:request.stage?.briefing??`${request.label}\n\nDrive anywhere you like in the ${(2*half/1000).toFixed(1)} km square round ${request.testCentre?'the test centre':'this point'}, keeping to the left and to the speed limits.\n\nThere is no set route and nothing is scored. The drive ends after a minute and a half, if you leave the road or if you hit something.\n\n${built}: roads, crossings and mapped buildings follow the map; houses where the map has none are typical terraces, and the ground is flat. It is not an official test route.`,
     rubricId:'none',
     controllerDriving:{assistedSpeedMph:25,accelerationLimit:1.5},
-    ...(request.stage?{actors:request.stage.actors,end:{timeLimitSeconds:900},...(request.stage.start?{start:request.stage.start}:{})}:{end:{completeAfterSeconds:90,timeLimitSeconds:150}})
+    ...(request.stage?{actors:request.stage.actors,end:{timeLimitSeconds:STAGE_TIME_LIMIT},...(request.stage.start?{start:request.stage.start}:{})}:{end:{completeAfterSeconds:90,timeLimitSeconds:150}})
   });
   const mockTest=parseScenario({
     schemaVersion:1,id:`${id}-mock-test`,locationId:id,

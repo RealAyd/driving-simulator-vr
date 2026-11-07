@@ -5,11 +5,12 @@ import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinem
 import {drivingView,prepareRoundabouts} from '../../src/world/roundabouts';
 import {roundMinis} from '../../src/world/miniRoundabout';
 import {surfaceAt} from '../../src/world/roadGeometry';
-import {decisionPath,junctionDiscs,streetFurniture} from '../../src/decision/plan';
+import {decisionPath,junctionDiscs,routeBlocks,routeParking,streetFurniture} from '../../src/decision/plan';
 import {layoutSignage} from '../../src/world/signage';
 import {StaticObstacles} from '../../src/world/obstacles';
 import {DecisionRunner,type DecisionRunResult,type PausedAt} from '../../src/decision/runner';
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
+import type {DecisionRoute} from '../../src/decision/route';
 import {actorDefs} from '../../src/decision/actors';
 import {Traffic} from '../../src/actors/traffic';
 import {TrafficSignals} from '../../src/world/trafficSignals';
@@ -19,10 +20,12 @@ import {kerbFootprints,layoutTownscape} from '../../src/world/townscape';
 const node=(m:string)=>import(/* @vite-ignore */ m);
 const DT=1/60;
 
-/** The pilot's scene as the app has it: its roads (roundabouts prepared) and the cars parked at its kerbs. */
-export async function loadScene(){
+/** A route's scene as the app has it: its roads (roundabouts prepared), the cars parked at its kerbs and those the
+ * route parks. */
+export async function loadScene(route:DecisionRoute=BRENTWOOD_ROUTE_1){
   const {gunzipSync}=await node('node:zlib'),{readFileSync}=await node('node:fs');
-  const place=parseLocation(JSON.parse(gunzipSync(readFileSync('public/scenes/brentwood-route-1.json.gz')).toString()).location);
+  const place=parseLocation(JSON.parse(gunzipSync(readFileSync(`public/scenes/${route.scene}.json.gz`)).toString()).location);
+  place.blocks.push(...routeBlocks(route));
   prepareRoundabouts(place);
   // (As the app has them: parked cars, and the fixed things the car must not touch.)
   const layout=layoutStreetscape(place)??layoutTownscape(place);
@@ -45,9 +48,9 @@ function gapBetween(a:Box,b:Box):number{
  * answers given; with the scene's parked cars, its traffic lights and background traffic (`traffic` road users, two
  * of them buses and two cyclists, as the app has, kept off the junctions in hand).
  */
-export async function drive(answers:Record<string,string[]>,only:number|null=null,traffic=0,seed?:number){
-  const {place,kerb,keepClear,obstacles}=await loadScene();
-  const route=BRENTWOOD_ROUTE_1,path=decisionPath(place,route,keepClear)!;
+export async function drive(answers:Record<string,string[]>,only:number|null=null,traffic=0,seed?:number,route:DecisionRoute=BRENTWOOD_ROUTE_1){
+  const {place,kerb,keepClear,obstacles}=await loadScene(route);
+  const path=decisionPath(place,route,keepClear)!;
   const junctions=junctionDiscs(place);
   let car:VehicleState={position:{x:0,y:0,z:0},heading:0,speed:0,steerAngle:0};
   const learner=()=>({pose:{position:car.position,heading:car.heading},halfWidth:.9,halfLength:2.15,speed:car.speed});
@@ -56,7 +59,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   const lights=new TrafficSignals(place);
   let runner!:DecisionRunner;
   const busStops=place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position);
-  const background=traffic>0?new Traffic(place,{count:traffic,buses:2,cycles:2,busStops,parked:kerb,learner:()=>({pose:learner().pose,speed:car.speed}),signals:()=>lights.stops,...(seed===undefined?{}:{seed}),
+  const background=traffic>0?new Traffic(place,{count:traffic,buses:2,cycles:2,busStops,parked:[...kerb,...routeParking(route)],learner:()=>({pose:learner().pose,speed:car.speed}),signals:()=>lights.stops,...(seed===undefined?{}:{seed}),
     keepClear:()=>runner?.keepClear()??[],oncoming:true,careful:true,range:180,
     others:()=>[...actors.values()].filter(a=>a.present).map(a=>({id:a.id,pose:a.pose,speed:a.started?a.speed:0,halfLength:a.size.halfLength}))}):null;
   const others=()=>(background?.cars??[]).filter(c=>c.visible);
@@ -78,7 +81,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
     waveOn:id=>background?.waveOn(id),
     retire:id=>{background?.retire(id);retired.push(id)},
     signals:()=>lights.stops,
-    holdLights:at=>lights.hold(at),
+    holdLights:(at,aspect)=>lights.hold(at,aspect),
     setSignal:s=>signals.push(s),say:t=>said.push(t),freeze:on=>{frozen=on},
     paused:p=>{
       if(!p)return;
@@ -104,8 +107,8 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   runner.begin(only);
   background?.reset();
   let closest=Infinity,offRoad=0,closestWho='',redRun=0,stood=0,longestStand=0,met=0,standAt='',nearSum=0,nearSteps=0,aheadSum=0;
-  let closestTraffic=Infinity,closestTrafficWho='';const fixedHits:string[]=[];const retired:string[]=[];const redAt:string[]=[];const metWho:string[]=[];
-  for(let t=0;t<1200&&!result;t+=DT){
+  let closestTraffic=Infinity,closestTrafficWho='';const fixedHits:string[]=[];const offAt:string[]=[];const retired:string[]=[];const redAt:string[]=[];const metWho:string[]=[];
+  for(let t=0;t<2400&&!result;t+=DT){
     if(pending){
       const p:PausedAt=pending;pending=null;
       runner.submit(answers[`${p.challenge.id}/${p.stage.id}`]??p.stage.accepted[0]!);
@@ -141,14 +144,17 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
     // How much traffic is about: background road users within 100 m (averaged over the drive).
     nearSum+=others().filter(c=>Math.hypot(c.pose.position.x-car.position.x,c.pose.position.z-car.position.z)<100).length;nearSteps++;
     {const fx=Math.sin(car.heading),fz=-Math.cos(car.heading);aheadSum+=others().filter(c=>{const dx=c.pose.position.x-car.position.x,dz=c.pose.position.z-car.position.z,d=Math.hypot(dx,dz);return d<100&&(dx*fx+dz*fz)/d>.5}).length}
-    if(surfaceAt(place,car.position.x,car.position.z)?.kind!=='carriageway')offRoad++;
+    if(surfaceAt(place,car.position.x,car.position.z)?.kind!=='carriageway'){offRoad++;if(offAt.length<4)offAt.push(`${t.toFixed(1)} s (${car.position.x.toFixed(1)}, ${car.position.z.toFixed(1)}) ${surfaceAt(place,car.position.x,car.position.z)?.kind}`)}
     // Touching anything fixed (a lamp column, a bollard, a parked car, a wall), as the app stops the car for.
     {const hit=obstacles.firstCollision({position:car.position,heading:car.heading},.9,2.15);if(hit&&!hit.startsWith('edge-barrier')&&fixedHits.length<5&&!fixedHits.some(h=>h.startsWith(hit+' ')))fixedHits.push(`${hit} at ${t.toFixed(1)} s (${car.position.x.toFixed(1)}, ${car.position.z.toFixed(1)})`)}
     // (Standing while driving on: waiting for traffic, not for a decision.)
     stood=car.speed<.1&&runner.state==='drive'?stood+DT:0;if(stood>longestStand){longestStand=stood;standAt=`${t.toFixed(1)} s (${car.position.x.toFixed(1)}, ${car.position.z.toFixed(1)}) held by ${runner.heldBy}${(()=>{const w=runner.heldBy.match(/(traffic-\d+)/)?.[1];const c=w&&others().find(x=>x.id===w);return c?`: ${c.kind} at (${c.pose.position.x.toFixed(1)}, ${c.pose.position.z.toFixed(1)}) heading ${Math.round(c.pose.heading*180/Math.PI)}, ${background!.reasons().find(x=>x.id===w)?.why}`:''})()}`}
     runner.update();
   }
-  return {result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,fixedHits,retired,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
+  // (Where each road user ended up, and what held the car last: diagnostics for a drive that did not finish.)
+  const final=Object.fromEntries([...actors].map(([id,a])=>[id,`(${a.pose.position.x.toFixed(1)}, ${a.pose.position.z.toFixed(1)}) ${a.started?'started':'waiting'} ${a.speed.toFixed(1)} m/s`]));
+  const near=others().filter(c=>Math.hypot(c.pose.position.x-car.position.x,c.pose.position.z-car.position.z)<60).map(c=>`${c.id} (${c.pose.position.x.toFixed(0)}, ${c.pose.position.z.toFixed(0)}) ${c.speed.toFixed(1)} ${background!.reasons().find(x=>x.id===c.id)?.why}`);
+  return {final,near,heldBy:runner.heldBy,result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,offAt,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,fixedHits,retired,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
 }
 
 export const segDistance=(a:{x:number;z:number},b:{x:number;z:number},p:{x:number;z:number})=>{

@@ -4,4 +4,4 @@ import type {Location} from '../contracts';
 export function centreBbox(lat:number,lon:number,half?:number):[number,number,number,number];
 
 /** Builds a drivable location from the OSM API 0.6 map XML for centreBbox(lat, lon, half). */
-export function buildCentre(options:{xml:string;id:string;name:string;lat:number;lon:number;half?:number;sourceNote?:string;date?:string}):{location:Location;summary:string};
+export function buildCentre(options:{xml:string;id:string;name:string;lat:number;lon:number;half?:number;sourceNote?:string;date?:string;start?:{lat:number;lon:number}|null;include?:readonly string[]}):{location:Location;summary:string};

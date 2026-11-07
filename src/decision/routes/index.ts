@@ -1,5 +1,6 @@
 import type {DecisionRoute} from '../route';
 import {BRENTWOOD_ROUTE_1} from './brentwoodRoute1';
+import {BRENTWOOD_ROUTE_2} from './brentwoodRoute2';
 
-/** Decision mock test routes (Brentwood route 1 is the pilot; the rest of the plan: content/packs/brentwood/ROUTES.md). */
-export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1];
+/** The decision mock test routes, as offered on the home screen. */
+export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2];
