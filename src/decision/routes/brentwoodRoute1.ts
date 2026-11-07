@@ -71,27 +71,27 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
       },
       stages:[
         {
-          id:'footway',safe:'wait',go:'go',wait:'wait',
-          buttons:['look-left','look-right','mirror-interior','wait','go','horn'],
+          id:'footway',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-left','look-right','mirror-interior','give-way','go','horn'],
           neutral:['mirror-interior','look-right'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'wait',needs:['look-left','look-right'],any:true,fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-left','look-right'],any:true,fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
               message:'Waiting was right, but look along the footway first so you know who you are waiting for.'}},
             {kind:'unsafe',id:'across-footway',action:'go',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Drove across the footway in front of a pedestrian',
               message:'People on the footway have priority across a way out. The pedestrian was about to walk across in front of you: wait for them. The examiner had to stop the car.'}},
             {kind:'distractor',id:'horn',action:'horn',fault:{level:'serious',heading:'Use of horn',title:'Horn at a pedestrian',
               message:'Sounding the horn to hurry someone on the footway is aggressive and can startle them. Wait for them to pass.'}}
           ],
-          accepted:[['look-left','wait'],['look-left','look-right','wait'],['look-right','look-left','wait']],
+          accepted:[['look-left','give-way'],['look-left','look-right','give-way'],['look-right','look-left','give-way']],
           next:{wait:'line',go:'line'},
           explain:'Wait: the pedestrian walking along the footway from the left has priority across the way out.'
         },
         {
-          id:'line',safe:'wait',go:'go',wait:'wait',
-          buttons:['look-right','look-left','mirror-left','signal-left','signal-right','wait','go'],
+          id:'line',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-left','signal-left','signal-right','give-way','go'],
           neutral:['look-left','mirror-left'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'wait',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
               message:'Look right first: that is where the traffic you join comes from.'}},
             {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the left turn',
               message:'Signal left so the drivers on Warley Hill know what you are doing.'}},
@@ -100,13 +100,13 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
             {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the silver car',
               message:'The silver car was a second or two away in the lane you were joining. Wait for it to pass. The examiner had to stop the car.'}}
           ],
-          accepted:[['look-right','signal-left','wait'],['signal-left','look-right','wait'],['look-right','look-left','signal-left','wait']],
+          accepted:[['look-right','signal-left','give-way'],['signal-left','look-right','give-way'],['look-right','look-left','signal-left','give-way']],
           next:{wait:'clear',go:'clear'},
           explain:'Signal left and wait: the silver car was close, coming up Warley Hill from the right in the lane you were joining.'
         },
         {
-          id:'clear',safe:'go',go:'go',wait:'wait',
-          buttons:['look-right','look-left','mirror-interior','wait','go'],
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-interior','give-way','go'],
           neutral:['mirror-interior'],
           rules:[
             {kind:'required',id:'fresh-look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
@@ -158,8 +158,8 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
           explain:'Interior mirror, then slow down: the crossing was at red, with someone waiting to cross.'
         },
         {
-          id:'line',safe:'wait',go:'go',wait:'wait',
-          buttons:['look-right','look-left','mirror-interior','wait','go','horn'],
+          id:'line',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-interior','give-way','go','horn'],
           neutral:['look-right','look-left','mirror-interior'],
           rules:[
             {kind:'unsafe',id:'red-light',action:'go',fault:{level:'dangerous',heading:'Response to signals - traffic lights',title:'Went through a red light',
@@ -167,13 +167,13 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
             {kind:'distractor',id:'horn',action:'horn',fault:{level:'serious',heading:'Use of horn',title:'Horn at a pedestrian',
               message:'Never sound the horn at someone crossing: it can startle them in the road.'}}
           ],
-          accepted:[['wait'],['look-right','wait'],['look-left','wait']],
+          accepted:[['give-way'],['look-right','give-way'],['look-left','give-way']],
           next:{wait:'clear',go:'clear'},
           explain:'Wait at the line: the lights were red and the pedestrian was crossing.'
         },
         {
-          id:'clear',safe:'go',go:'go',wait:'wait',
-          buttons:['look-right','look-left','mirror-interior','wait','go'],
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-interior','give-way','go'],
           neutral:['mirror-interior'],
           rules:[
             {kind:'required',id:'check-crossing',anyOf:['look-right','look-left'],when:'go',fault:{level:'minor',heading:'Pedestrian crossings',title:'No check before going',
@@ -228,21 +228,21 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
           explain:'Interior and right mirrors, signal right, then position just left of the middle of the road.'
         },
         {
-          id:'centre',safe:'wait',go:'go',wait:'wait',
-          buttons:['look-right','look-left','mirror-right','wait','go','flash-lights'],
+          id:'centre',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-right','give-way','go','flash-lights'],
           neutral:['look-right','look-left','mirror-right'],
           rules:[
             {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming blue car',
               message:'Green does not give you priority over oncoming traffic going ahead. The blue car was a few seconds away. The examiner had to stop the car.'}},
             {kind:'distractor',id:'flash',action:'flash-lights',fault:flash}
           ],
-          accepted:[['wait'],['look-right','wait'],['mirror-right','wait']],
+          accepted:[['give-way'],['look-right','give-way'],['mirror-right','give-way']],
           next:{wait:'clear',go:'clear'},
           explain:'Wait in the junction: the blue car coming down Weald Road was going ahead, and it has priority over you turning right.'
         },
         {
-          id:'clear',safe:'go',go:'go',wait:'wait',
-          buttons:['look-left','look-right','mirror-right','wait','go'],
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['look-left','look-right','mirror-right','give-way','go'],
           neutral:['look-right','mirror-right'],
           rules:[
             {kind:'required',id:'check-turn',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into the High Street',
@@ -342,11 +342,11 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
       },
       stages:[
         {
-          id:'approach',safe:'wait',go:'go',wait:'wait',
-          buttons:['mirror-interior','mirror-right','signal-right','flash-lights','wait','go'],
+          id:'approach',safe:'wait',go:'go',wait:'give-way',
+          buttons:['mirror-interior','mirror-right','signal-right','flash-lights','give-way','go'],
           neutral:['mirror-right'],
           rules:[
-            {kind:'before',id:'mirror-before-waiting',action:'wait',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
+            {kind:'before',id:'mirror-before-waiting',action:'give-way',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
               message:'Check the interior mirror before you slow down to wait.'}},
             {kind:'unsafe',id:'squeezed-past',action:'go',fault:{level:'dangerous',heading:'Judgement - meeting',title:'Tried to pass the van into the black car',
               message:'The van is on your side, so the black car coming towards you has priority. There was not room for both of you. The examiner had to stop the car.'}},
@@ -355,13 +355,13 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
             {kind:'distractor',id:'flash',action:'flash-lights',fault:{level:'serious',heading:'Response to signals - other road users',title:'Flashed headlights at the oncoming car',
               message:'Flashing your headlights means only "I am here". The black car\'s driver could take it as an invitation and come on while you pull out round the van.'}}
           ],
-          accepted:[['mirror-interior','wait'],['mirror-interior','mirror-right','wait']],
+          accepted:[['mirror-interior','give-way'],['mirror-interior','mirror-right','give-way']],
           next:{wait:'held',go:'held'},
           explain:'Interior mirror, then hold back behind the van: it is on your side, so the black car coming towards you goes first.'
         },
         {
-          id:'held',safe:'go',go:'go',wait:'wait',
-          buttons:['mirror-interior','mirror-right','signal-right','wait','go'],
+          id:'held',safe:'go',go:'go',wait:'give-way',
+          buttons:['mirror-interior','mirror-right','signal-right','give-way','go'],
           neutral:['mirror-interior','signal-right'],
           rules:[
             {kind:'required',id:'mirror-before-passing',anyOf:['mirror-right'],when:'go',fault:{level:'minor',heading:'Use of mirrors - change direction',title:'No right mirror before pulling out',
@@ -452,24 +452,24 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
       },
       stages:[
         {
-          id:'check',safe:'wait',go:'go',wait:'wait',
-          buttons:['mirror-interior','mirror-right','blind-spot-right','signal-right','signal-left','wait','go'],
+          id:'check',safe:'wait',go:'go',wait:'give-way',
+          buttons:['mirror-interior','mirror-right','blind-spot-right','signal-right','signal-left','give-way','go'],
           neutral:['signal-right'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'wait',needs:['mirror-right','blind-spot-right'],any:true,fault:{level:'minor',heading:'Move off - safety',title:'Waited without looking',
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['mirror-right','blind-spot-right'],any:true,fault:{level:'minor',heading:'Move off - safety',title:'Waited without looking',
               message:'Waiting was right, but check the right mirror and over your shoulder first so you know what you are waiting for.'}},
             {kind:'unsafe',id:'pulled-into-cyclist',action:'go',fault:{level:'dangerous',heading:'Move off - safety',title:'Moved off into the cyclist',
               message:'The cyclist was coming past, just behind your right shoulder. The examiner had to stop the car.'}},
             {kind:'distractor',id:'signal-left',action:'signal-left',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
               message:'You are moving off to the right, away from the kerb: a left signal misleads the cyclist behind.'}}
           ],
-          accepted:[['mirror-interior','mirror-right','blind-spot-right','wait'],['mirror-right','blind-spot-right','wait'],['blind-spot-right','wait']],
+          accepted:[['mirror-interior','mirror-right','blind-spot-right','give-way'],['mirror-right','blind-spot-right','give-way'],['blind-spot-right','give-way']],
           next:{wait:'clear',go:'clear'},
           explain:'Mirrors and your right blind spot, then wait: the cyclist was coming past.'
         },
         {
-          id:'clear',safe:'go',go:'go',wait:'wait',
-          buttons:['mirror-interior','mirror-right','blind-spot-right','signal-right','wait','go'],
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['mirror-interior','mirror-right','blind-spot-right','signal-right','give-way','go'],
           neutral:['mirror-interior','signal-right'],
           rules:[
             {kind:'required',id:'fresh-blind-spot',anyOf:['blind-spot-right'],when:'go',fault:{level:'serious',heading:'Move off - safety',title:'No blind spot check before moving off',

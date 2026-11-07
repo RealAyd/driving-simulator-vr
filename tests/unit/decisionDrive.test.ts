@@ -107,7 +107,7 @@ describe('Brentwood decision routes, driven',()=>{
     expect(r.closest).toBeGreaterThan(2.2);
   },120_000);
   it('practises one challenge on its own, from a little before it, and pulls up just past it',async()=>{
-    const r=await drive({'rose-valley-move-off/clear':['mirror-right','blind-spot-right','wait']},6);
+    const r=await drive({'rose-valley-move-off/clear':['mirror-right','blind-spot-right','give-way']},6);
     expect(r.result?.practice).toBe(true);
     expect(r.pauses.map(keyOf)).toEqual(['rose-valley-move-off/check','rose-valley-move-off/clear']);
     expect(r.result?.faults.map(f=>f.ruleId)).toEqual(['hesitation']);

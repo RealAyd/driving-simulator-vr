@@ -1,14 +1,15 @@
 import type {Stage,StageRule} from './assess';
 import type {ChallengeDef,DecisionRoute} from './route';
 
-/** Shown at every stage of a challenge with a turn (the owner's rule): the learner always chooses among them. */
-export const TURN_BUTTONS=['mirror-left','mirror-right','signal-left','signal-right'] as const;
+/** Shown at every stage of a challenge with a turn (the owner's rule): the learner always chooses among them. The
+ * interior mirror too: before slowing down or giving way, it is the first check. */
+export const TURN_BUTTONS=['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'] as const;
 
 /** Stages where the car stands still to be secured (handbrake, neutral), not a decision about the turn. */
 const SECURING=new Set(['stopped']);
 
 /**
- * Each stage of a challenge with a turn shows both signals and both door mirrors, before its decision buttons. One
+ * Each stage of a challenge with a turn shows both signals and all three mirrors, before its decision buttons. One
  * the stage's rules do not already mark: a mirror is harmless (neutral); the signal for the way the car is going is
  * harmless too (kept on); the other way is a serious fault (it misleads everyone round the car).
  */

@@ -86,9 +86,10 @@ A route is data (`src/decision/routes/`), played on a scene built from the map (
     learner's);
   - the stages' buttons, rules, accepted orders and explanations;
   - `turn`: the way the car turns or pulls out (a turn, pulling in, moving off, out round an obstruction). Every
-    stage then shows both signals and both door mirrors (the owner's rule, `withTurnButtons`): a mirror, or the signal
+    stage then shows both signals and all three mirrors (the owner's rule, `withTurnButtons`): a mirror, or the signal
     for the way it is going, is harmless where no rule says otherwise; the other way's signal is a serious fault.
-    The decision buttons (give way, wait, go) always come last in the panel.
+    Holding back is always **Give way** (never "Wait"), and the interior mirror is offered wherever the car slows
+    or gives way. The decision buttons (Give way, Go) always come last in the panel.
 
 Check a route with `tests/unit/decisionDrive.test.ts`. It drives the route headless, with and without background
 traffic in several patterns, and checks:

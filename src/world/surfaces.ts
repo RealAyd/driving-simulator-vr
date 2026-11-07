@@ -150,9 +150,13 @@ export function buildSky(scene:Scene,horizon:Color3,zenith:Color3):Mesh{
   m.backFaceCulling=false;
   m.fogEnabled=false;
   sky.material=m;
-  sky.infiniteDistance=true;
   sky.isPickable=false;
   sky.applyFog=false;
+  // Centred on each camera as it renders (the main view and every mirror). (Babylon's infiniteDistance left it at the
+  // place's middle: in a large area, everything over 550 m from there was hidden behind the dome, and roads seemed to
+  // end in sky.)
+  const follow=scene.onBeforeCameraRenderObservable.add(camera=>{sky.setAbsolutePosition(camera.globalPosition);sky.computeWorldMatrix(true)});
+  sky.onDisposeObservable.add(()=>scene.onBeforeCameraRenderObservable.remove(follow));
   return sky;
 }
 

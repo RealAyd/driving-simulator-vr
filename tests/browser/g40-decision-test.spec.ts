@@ -14,23 +14,23 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
   await expect(page.locator('#exercise-detail')).toBeVisible({timeout:300_000});
   await page.click('#start-practice');
   const answers:Record<string,string[]>={
-    'leave-test-centre/footway':['look-left','wait'],
+    'leave-test-centre/footway':['look-left','give-way'],
     'leave-test-centre/line':['look-right','signal-left','go'],
     'leave-test-centre/clear':['look-right','look-left','go'],
     'station-crossing/approach':['mirror-interior','slow-down'],
-    'station-crossing/line':['wait'],
+    'station-crossing/line':['give-way'],
     'station-crossing/clear':['look-right','look-left','go'],
     'high-street-lights/approach':['signal-right','mirror-interior','mirror-right','position-right'],
-    'high-street-lights/centre':['wait'],
+    'high-street-lights/centre':['give-way'],
     'high-street-lights/clear':['look-left','go'],
     'wilsons-corner/approach':['mirror-interior','mirror-right','signal-right'],
     'wilsons-corner/line':['look-right','give-way'],
     'wilsons-corner/clear':['look-right','go'],
-    'queens-road-meeting/approach':['mirror-interior','wait'],
+    'queens-road-meeting/approach':['mirror-interior','give-way'],
     'queens-road-meeting/held':['mirror-right','go'],
     'rose-valley-pull-up/approach':['mirror-interior','mirror-left','stop-past-junction','signal-left'],
     'rose-valley-pull-up/stopped':['handbrake','neutral','signal-off'],
-    'rose-valley-move-off/check':['mirror-right','blind-spot-right','wait'],
+    'rose-valley-move-off/check':['mirror-right','blind-spot-right','give-way'],
     'rose-valley-move-off/clear':['mirror-right','blind-spot-right','go'],
     'king-edward-emerge/approach':['mirror-interior','mirror-left','signal-left'],
     'king-edward-emerge/line':['look-right','give-way'],
@@ -70,7 +70,7 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
   // Practise leaving the test centre again: the marking shows after the decision.
   await page.click('.decision-practise >> nth=0');
   await page.waitForFunction(()=>(window as any).__drivingPractice.decision()?.state==='paused',undefined,{timeout:300_000,polling:250});
-  for(const a of ['look-left','wait'])await page.click(`#decision-buttons [data-action="${a}"]`);
+  for(const a of ['look-left','give-way'])await page.click(`#decision-buttons [data-action="${a}"]`);
   await page.click('#decision-done');await page.click('#decision-yes');
   await expect(page.locator('#decision-note')).toHaveText('Well judged.');
 });

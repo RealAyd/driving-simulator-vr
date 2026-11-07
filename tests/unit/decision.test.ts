@@ -31,7 +31,7 @@ describe('decision challenges as authored',()=>{
         expect(v.faults.some(f=>f.ruleId.startsWith('unnecessary-')),`${st.id}: ${b}`).toBe(false);
       }
     });
-    if(c.turn)it(`${route.id} ${c.id}: turning ${c.turn}, every decision shows both signals and both door mirrors`,()=>{
+    if(c.turn)it(`${route.id} ${c.id}: turning ${c.turn}, every decision shows both signals and all three mirrors`,()=>{
       for(const st of c.stages.filter(x=>x.id!=='stopped'))for(const b of TURN_BUTTONS)expect(st.buttons,`${st.id}: ${b}`).toContain(b);
     });
     it(`${route.id} ${c.id}: the scene is set up for each stage`,()=>{
@@ -41,6 +41,16 @@ describe('decision challenges as authored',()=>{
 });
 
 describe('turn buttons',()=>{
+  it('every stage where the car slows or gives way offers the interior mirror',()=>{
+    for(const route of DECISION_ROUTES)for(const c of route.challenges)for(const st of c.stages)
+      if(st.wait==='give-way'||st.buttons.includes('slow-down')||c.place[st.id]?.pause.kind==='moving')expect(st.buttons,`${c.id}/${st.id}`).toContain('mirror-interior');
+  });
+  it('the decision to hold back is always Give way',()=>{
+    for(const route of DECISION_ROUTES)for(const c of route.challenges)for(const st of c.stages){
+      if(st.wait)expect(st.wait,`${c.id}/${st.id}`).toBe('give-way');
+      expect(st.buttons,`${c.id}/${st.id}`).not.toContain('wait');
+    }
+  });
   it('every challenge that turns or pulls out says which way',()=>{
     const ahead=new Set(['station-crossing','the-drive-mini']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)if(!ahead.has(c.id))expect(c.turn,c.id).toBeTruthy();
@@ -88,7 +98,7 @@ describe('judging a decision',()=>{
     // At a mini-roundabout going ahead, a right signal says the car is going round: serious.
     expect(assessStage(C2,'approach',['look-right','signal-right','go']).faults.map(f=>f.level)).toEqual(['serious']);
     // Waiting behind a parked van, it says little more than that the car will pull out: minor.
-    expect(assessStage(C3,'approach',['mirror-interior','signal-right','wait']).faults.map(f=>f.level)).toEqual(['minor']);
+    expect(assessStage(C3,'approach',['mirror-interior','signal-right','give-way']).faults.map(f=>f.level)).toEqual(['minor']);
   });
   it('waiting at a mini-roundabout with no one to give way to is hesitation',()=>{
     expect(assessStage(C2,'approach',['look-right','give-way']).faults.map(f=>f.ruleId)).toEqual(['hesitation']);

@@ -16,7 +16,6 @@ export const ACTION_LABEL:Record<string,string>={
   'creep':'Creep forward',
   'horn':'Sound horn',
   'give-way':'Give way',
-  'wait':'Wait',
   'slow-down':'Slow down',
   'speed-up':'Speed up',
   'flash-lights':'Flash headlights',
