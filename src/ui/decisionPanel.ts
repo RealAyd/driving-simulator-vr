@@ -40,7 +40,9 @@ export class DecisionPanel{
     byId('decision-state').textContent=at.place.state;
     byId('decision-confirm').hidden=true;byId('decision-after').hidden=true;byId('decision-choose').hidden=false;
     const buttons=byId('decision-buttons');
-    buttons.replaceChildren(...at.stage.buttons.map(id=>{
+    // (The decision, giving way or going, comes last: the checks and actions are chosen first.)
+    const decide=(id:string)=>id===at.stage.go||id===at.stage.wait;
+    buttons.replaceChildren(...[...at.stage.buttons.filter(id=>!decide(id)),...at.stage.buttons.filter(decide)].map(id=>{
       const b=document.createElement('button');
       b.type='button';b.dataset['action']=id;b.textContent=actionLabel(id);
       if(id===at.stage.go||id===at.stage.wait)b.classList.add('decide');

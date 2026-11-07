@@ -1,6 +1,7 @@
 import type {Vec2} from '../../contracts';
 import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
+import {withTurnButtons} from '../turnButtons';
 import {BROOK_CAR,DRIVE_CAR,LONDON_CAR,LONDON_VAN,PULLUP_VAN,WARLEY_CAR} from './brentwoodRoute2Paths';
 
 /**
@@ -20,7 +21,7 @@ const HORN:Fault={level:'feedback',heading:'Use of horn',title:'Horn not needed'
 const WRONG_LEFT:Fault={level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
   message:'You are turning left: a right signal tells everyone you are going the other way.'};
 
-export const BRENTWOOD_ROUTE_2:DecisionRoute={
+export const BRENTWOOD_ROUTE_2:DecisionRoute=withTurnButtons({
   id:'brentwood-2',
   title:'Brentwood route 2',
   scene:'brentwood-routes',
@@ -51,6 +52,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
   challenges:[
     {
       id:'crescent-road-zebra',
+      turn:'left',
       title:'Left turn, zebra crossing',
       where:'Warley Hill, left into Crescent Road',
       instruction:'Take the next road on the left, please.',
@@ -112,6 +114,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
     },
     {
       id:'kavanaghs-emerge',
+      turn:'left',
       title:'Emerging, left turn',
       where:'Kavanaghs Road, left on to London Road',
       instruction:'At the end of the road, turn left, please.',
@@ -175,6 +178,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
     },
     {
       id:'london-road-pull-up',
+      turn:'left',
       title:'Pulling up on the left',
       where:'London Road, past Westwood Avenue',
       instruction:'Pull up on the left at a convenient place, please.',
@@ -233,6 +237,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
     },
     {
       id:'london-road-move-off',
+      turn:'right',
       title:'Moving off',
       where:'London Road, from the kerb',
       instruction:'Move off when you\'re ready, please.',
@@ -284,6 +289,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
     },
     {
       id:'brook-street-lights',
+      turn:'left',
       title:'Traffic lights, left turn',
       where:'London Road at the Brook Street lights, left into Mascalls Lane',
       instruction:'At the traffic lights, turn left, please.',
@@ -361,6 +367,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
     },
     {
       id:'eagle-way-crossroads',
+      turn:'left',
       title:'Crossroads, left turn',
       where:'Mascalls Lane at the Eagle Way crossroads, left on to Warley Hill',
       instruction:'At the crossroads, turn left, please.',
@@ -438,8 +445,8 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
       stages:[
         {
           id:'approach',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-interior','signal-left','signal-right','give-way','go'],
-          neutral:['look-left','mirror-interior'],
+          buttons:['look-right','look-left','mirror-interior','mirror-left','mirror-right','signal-left','signal-right','give-way','go'],
+          neutral:['look-left','mirror-interior','mirror-left','mirror-right'],
           rules:[
             {kind:'required',id:'look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No look right',
               message:'Look right into The Drive before you go: at a mini-roundabout, traffic from the right has priority.'}},
@@ -458,6 +465,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
     },
     {
       id:'test-centre-entry',
+      turn:'left',
       title:'Into the test centre',
       where:'Warley Hill, left into the test centre',
       instruction:'Turn left into the test centre, please.',
@@ -520,4 +528,4 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute={
       ]
     }
   ]
-};
+});

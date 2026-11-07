@@ -1,6 +1,7 @@
 import type {Vec2} from '../../contracts';
 import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
+import {withTurnButtons} from '../turnButtons';
 import {CYCLIST,INGRAVE,KINGS,QUEENS,TC_CAR,WEALD} from './brentwoodRoute1Paths';
 
 /**
@@ -20,7 +21,7 @@ const HORN:Fault={level:'feedback',heading:'Use of horn',title:'Horn not needed'
 const flash:Fault={level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
   message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'};
 
-export const BRENTWOOD_ROUTE_1:DecisionRoute={
+export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
   id:'brentwood-1',
   title:'Brentwood route 1',
   scene:'brentwood-routes',
@@ -51,6 +52,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
   challenges:[
     {
       id:'leave-test-centre',
+      turn:'left',
       title:'Leaving the test centre',
       where:'The test centre\'s way out, left on to Warley Hill',
       instruction:'When you\'re ready, drive out of the test centre and turn left, please.',
@@ -187,6 +189,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     },
     {
       id:'high-street-lights',
+      turn:'right',
       title:'Traffic lights, right turn',
       where:'Kings Road at the High Street lights, right into the High Street',
       instruction:'At the traffic lights, turn right, please.',
@@ -255,6 +258,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     },
     {
       id:'wilsons-corner',
+      turn:'right',
       title:'Mini-roundabouts, right turn',
       where:'Wilson\'s Corner, right on to Ingrave Road',
       instruction:'At the mini-roundabout, turn right, please.',
@@ -322,6 +326,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     },
     {
       id:'queens-road-meeting',
+      turn:'right',
       title:'Meeting traffic',
       where:'Queen\'s Road, a van parked on your side',
       instruction:'Follow the road ahead, please.',
@@ -372,6 +377,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     },
     {
       id:'rose-valley-pull-up',
+      turn:'left',
       title:'Pulling up on the left',
       where:'Rose Valley, past The Close',
       instruction:'Pull up on the left at a convenient place, please.',
@@ -429,6 +435,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     },
     {
       id:'rose-valley-move-off',
+      turn:'right',
       title:'Moving off',
       where:'Rose Valley, from the kerb',
       instruction:'Move off when you\'re ready, please.',
@@ -480,6 +487,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
     },
     {
       id:'king-edward-emerge',
+      turn:'left',
       title:'Emerging, left turn',
       where:'King Edward Road, left on to Kings Road',
       instruction:'At the end of the road, turn left, please.',
@@ -544,4 +552,4 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute={
       ]
     }
   ]
-};
+});

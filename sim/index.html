@@ -329,6 +329,9 @@ body.decision #touch-controls,body.decision #steer-buttons,body.decision #hud-ce
 .dp-feedback li.sev-minor{background:rgba(245,158,11,.14)}
 .dp-feedback li.right{background:rgba(45,212,191,.12)}
 @media (orientation:portrait){#decision-panel{right:var(--sr);top:auto;width:auto;max-height:58vh}}
+/* Undo and Done always in view (a turn shows up to ten buttons), and on a short landscape screen three buttons a row. */
+#decision-choose>.dp-row{position:sticky;bottom:-10px;margin:6px -10px -10px;padding:6px 10px 10px;background:rgba(20,24,32,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:0 0 14px 14px}
+@media (orientation:landscape) and (max-height:430px){#decision-panel{width:min(48vw,440px);gap:6px}.dp-buttons{grid-template-columns:1fr 1fr 1fr}#hud .dp-buttons button,#hud .dp-row button{min-height:32px;font-size:12px;padding:2px 4px}.dp-instruction{font-size:14px}}
 .decision-disclaimer{font-size:13px}
 .decision-result{border-top:1px solid #e7e5e4;padding:12px 0;display:grid;gap:8px}
 .decision-result-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}

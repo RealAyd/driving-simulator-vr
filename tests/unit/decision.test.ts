@@ -3,6 +3,7 @@ import {assessStage,summarise,type ChallengeLogic} from '../../src/decision/asse
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {BRENTWOOD_ROUTE_2} from '../../src/decision/routes/brentwoodRoute2';
 import {DECISION_ROUTES} from '../../src/decision/routes';
+import {TURN_BUTTONS} from '../../src/decision/turnButtons';
 
 const challenge=(route:typeof BRENTWOOD_ROUTE_1,id:string)=>route.challenges.find(c=>c.id===id)!;
 // An emerging left turn (approach, line, clear), the mini-roundabout ahead (one decision, on the move), meeting
@@ -30,10 +31,25 @@ describe('decision challenges as authored',()=>{
         expect(v.faults.some(f=>f.ruleId.startsWith('unnecessary-')),`${st.id}: ${b}`).toBe(false);
       }
     });
+    if(c.turn)it(`${route.id} ${c.id}: turning ${c.turn}, every decision shows both signals and both door mirrors`,()=>{
+      for(const st of c.stages.filter(x=>x.id!=='stopped'))for(const b of TURN_BUTTONS)expect(st.buttons,`${st.id}: ${b}`).toContain(b);
+    });
     it(`${route.id} ${c.id}: the scene is set up for each stage`,()=>{
       for(const st of c.stages)expect(c.place[st.id],st.id).toBeTruthy();
     });
   }
+});
+
+describe('turn buttons',()=>{
+  it('every challenge that turns or pulls out says which way',()=>{
+    const ahead=new Set(['station-crossing','the-drive-mini']);
+    for(const route of DECISION_ROUTES)for(const c of route.challenges)if(!ahead.has(c.id))expect(c.turn,c.id).toBeTruthy();
+  });
+  it('a wrong-way signal at a later stage is serious; the right way and the mirrors are harmless',()=>{
+    const c=BRENTWOOD_ROUTE_2.challenges.find(x=>x.id==='kavanaghs-emerge')!;
+    expect(assessStage(c,'line',['look-right','signal-right','give-way']).faults.map(f=>f.level)).toEqual(['serious']);
+    expect(assessStage(c,'line',['mirror-left','mirror-right','signal-left','look-right','give-way']).faults).toEqual([]);
+  });
 });
 
 describe('judging a decision',()=>{

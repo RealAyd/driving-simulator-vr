@@ -42,6 +42,9 @@ export interface RouteActor{
 
 export interface ChallengeDef extends ChallengeLogic{
   title:string;
+  /** The way the car turns or pulls out here (a turn, pulling in, moving off, out round an obstruction): every stage
+   * then shows both signals and both door mirrors (withTurnButtons). */
+  turn?:'left'|'right';
   /** Where on the route it is, for the results ("Queen's Road roundabout, from Kings Road"). */
   where:string;
   /** What the examiner says, and where (the car passing this point). */
