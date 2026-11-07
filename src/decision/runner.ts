@@ -98,6 +98,8 @@ const TRANSIT_RATE=4,TRANSIT_LEAD=60;
 /** Pulling out from the start: the road joined, this far along the way (metres), kept clear this wide (metres) until
  * the car is this far along. */
 const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
+/** The route's end kept clear from this far before it (metres). */
+const END_CLEAR=150;
 /** Practising one challenge, the car pulls up this far past it (metres). */
 const PRACTICE_RUNOUT=30;
 /** The test can end with the car pulled up this far short of the route's end (path metres). */
@@ -334,9 +336,9 @@ export class DecisionRunner{
     // (The car already waiting at its line: the moment has come, so the road user comes on at its own speed. Paced to
     // the time left, it would ease ever slower towards its point and never reach it.)
     if(place.pause.kind==='stop'&&d<1.5&&speed<.5)return;
-    // (Nearly at its point with the car not yet there, held up behind traffic: it stands and waits, rather than passing
+    // (A car nearly at its point with the learner's not yet there, held up behind traffic: it stands and waits, rather than passing
     // the moment depicted before the car arrives.)
-    if(left<HOLD_SHORT&&d>1.5){x.pace=0;return}
+    if(def.kind!=='pedestrian'&&left<HOLD_SHORT&&d>3){x.pace=0;return}
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;
@@ -497,8 +499,15 @@ export class DecisionRunner{
     if(this.phase==='finished')return [];
     // (And the junctions just ahead of the car: traffic coming to one waits for the car to go through, rather than a
     // stream of it crossing in front of the car standing at the line.)
-    if(this.ending)return this.nextJunctions();
+    if(this.ending)return [...this.nextJunctions(),...this.wayIn()];
     return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions(),...this.wayOut()];
+  }
+
+  /** On the last stretch: where the route ends (a test centre's way in) kept clear, so the car can turn in. */
+  private wayIn():ReadonlyArray<{x:number;z:number;radius:number}>{
+    if(this.only!==null||this.endS()-this.carS()>END_CLEAR)return [];
+    const p=this.assist.pointAt(this.endS()-START_JOIN);
+    return [{x:p.x,z:p.z,radius:START_RADIUS}];
   }
 
   /** While the car is pulling out from where the drive starts (a test centre's way out): the road it joins, kept clear
