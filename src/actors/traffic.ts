@@ -128,6 +128,8 @@ const mph=(v:number)=>v/2.237;
 /** A learner standing in the road is passed only this far to one side, centre to centre (metres): two half-widths
  * and room between. */
 const PASS_SIDE=2.45;
+/** Room kept (metres) between a turning car's body as it is now and a learner standing close by. */
+const NOW_PAD=.3;
 const SIGNAL_AHEAD=30;
 /** Round a roundabout, signalling left this far before leaving it (metres). */
 const RING_OFF=18;
@@ -809,6 +811,13 @@ export class Traffic implements SimModule{
         };
         const them={id:'learner',cx:learner.pose.position.x,cz:learner.pose.position.z,heading:learner.pose.heading,halfW:.9,halfD:2.15};
         for(const k of [.5,1.5,3])if(boxesOverlap(me(k),them)){if(k-.5<gap){gap=Math.max(0,k-.5);why='learner';leadSpeed=0;following=false}break}
+        // (Its body as it is now, swinging round as it turns out past a learner standing close by: stopped before its rear
+        // corner sweeps across the learner's front.)
+        if(learner.speed<.3&&car.speed>.3){
+          const now={id:car.id,cx:pos.x,cz:pos.z,heading:car.pose.heading,halfW:car.halfWidth+NOW_PAD,halfD:car.halfLength+NOW_PAD};
+          const turning=Math.abs(Math.atan2(Math.sin(headingFromDirection(this.at(d.leg,Math.min(d.leg.lengths.at(-1)!,d.s+4)).dir)-car.pose.heading),Math.cos(headingFromDirection(this.at(d.leg,Math.min(d.leg.lengths.at(-1)!,d.s+4)).dir)-car.pose.heading)))>.15;
+          if(turning&&boxesOverlap(now,them)){gap=0;why='learner';leadSpeed=0;following=false}
+        }
       }
       // The learner: followed when moving; when stopped in this lane, passed like a parked car (below) once there is room.
       const lx=learner.pose.position.x-pos.x,lz=learner.pose.position.z-pos.z;
