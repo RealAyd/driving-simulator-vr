@@ -40,6 +40,13 @@ describe('decision challenges as authored',()=>{
   }
 });
 
+describe('before and after',()=>{
+  it('one decision before and one after at each challenge, more only where two hazards meet at one place',()=>{
+    const overlap=new Set(['leave-test-centre','brook-street-lights']);
+    for(const route of DECISION_ROUTES)for(const c of route.challenges)expect(c.stages.length,c.id).toBeLessThanOrEqual(overlap.has(c.id)?3:2);
+  });
+});
+
 describe('turn buttons',()=>{
   it('every stage where the car slows or gives way offers the interior mirror',()=>{
     for(const route of DECISION_ROUTES)for(const c of route.challenges)for(const st of c.stages)
@@ -57,8 +64,8 @@ describe('turn buttons',()=>{
   });
   it('a wrong-way signal at a later stage is serious; the right way and the mirrors are harmless',()=>{
     const c=BRENTWOOD_ROUTE_2.challenges.find(x=>x.id==='kavanaghs-emerge')!;
-    expect(assessStage(c,'line',['look-right','signal-right','give-way']).faults.map(f=>f.level)).toEqual(['serious']);
-    expect(assessStage(c,'line',['mirror-left','mirror-right','signal-left','look-right','give-way']).faults).toEqual([]);
+    expect(assessStage(c,'clear',['look-right','look-left','signal-right','go']).faults.map(f=>f.level)).toEqual(['serious']);
+    expect(assessStage(c,'clear',['mirror-left','mirror-right','signal-left','look-right','look-left','go']).faults).toEqual([]);
   });
 });
 
@@ -75,11 +82,11 @@ describe('judging a decision',()=>{
     expect(v.faults.map(f=>f.ruleId)).toEqual(['no-signal']);
   });
   it('waiting with traffic coming is right, never hesitation',()=>{
-    const v=assessStage(C1,'line',['look-right','give-way']);
+    const v=assessStage(C1,'approach',['mirror-interior','mirror-left','signal-left','look-right','give-way']);
     expect(v.faults).toEqual([]);expect(v.decision).toBe('wait');expect(v.next).toBe('clear');
   });
   it('going in front of the grey car is dangerous and the car is held',()=>{
-    const v=assessStage(C1,'line',['look-right','go']);
+    const v=assessStage(C1,'approach',['mirror-interior','mirror-left','signal-left','look-right','go']);
     expect(levels(v)).toEqual(['dangerous']);expect(v.intervened).toBe(true);expect(v.next).toBe('clear');
   });
   it('waiting when the way is clear is hesitation (only there), and the drive goes on',()=>{
@@ -87,7 +94,7 @@ describe('judging a decision',()=>{
     expect(v.faults.map(f=>f.ruleId)).toEqual(['hesitation']);expect(v.next).toBe('done');
   });
   it('a look before waiting is out of date once the traffic has passed',()=>{
-    const history=new Map([['line',['look-right','give-way']]]);
+    const history=new Map([['approach',['mirror-interior','mirror-left','signal-left','look-right','give-way']]]);
     expect(assessStage(C1,'clear',['look-left','go'],history).faults.map(f=>f.ruleId)).toEqual(['fresh-look-right']);
   });
   it('the first decision counts: a second one is ignored',()=>{
@@ -117,7 +124,7 @@ describe('judging a decision',()=>{
   it('sums the test: no serious or dangerous fault and at most 15 minor ones passes',()=>{
     const ok=summarise(['a'],[{challengeId:'a',verdict:assessStage(C1,'clear',['look-right','give-way'])}]);
     expect(ok.passed).toBe(true);expect(ok.minor).toBe(1);
-    const bad=summarise([C1.id],[{challengeId:C1.id,verdict:assessStage(C1,'line',['go'])}]);
+    const bad=summarise([C1.id],[{challengeId:C1.id,verdict:assessStage(C1,'approach',['go'])}]);
     expect(bad.passed).toBe(false);expect(bad.interventions).toBe(1);expect(bad.challenges[0]!.worst).toBe('dangerous');
   });
 });

@@ -33,6 +33,17 @@ as an intervention), and the decision comes again once the traffic has passed. T
 signals for the learner (the owner's rule: that is the learner's job): every junction challenge starts with an approach
 decision, mirrors and signal, before the decision at the line.
 
+## One decision before, one after (the owner's rule)
+
+Each challenge has one decision before and one after, more only where two different hazards meet at one place
+(leaving the test centre: a pedestrian on the footway, then a car on Warley Hill; the Brook Street lights: red, then a
+car blocking the turn on green). The "before" decision is taken on the move, close in, where the junction and what is
+coming are both in view: mirrors, signal, position, looks and the decision (Give way, or Go) in one order. The "after"
+decision is taken at the line once the traffic has passed. A route lists which written stages merge into the before
+decision and where it is taken (`withBeforeAfter`, `src/decision/beforeAfter.ts`); a test holds every challenge to it.
+Lights held red at a stopping pause stay red until its road user is clear (or a moment after the car stops), then the
+after decision comes on green.
+
 ## Marking (`src/decision/assess.ts`)
 
 - Rules, not one model answer: any safe order the rules allow passes (each challenge lists accepted orders, and the

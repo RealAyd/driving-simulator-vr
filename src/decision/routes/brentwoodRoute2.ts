@@ -2,6 +2,7 @@ import type {Vec2} from '../../contracts';
 import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
 import {withTurnButtons} from '../turnButtons';
+import {withBeforeAfter,type BeforeMerge} from '../beforeAfter';
 import {BROOK_CAR,DRIVE_CAR,LONDON_CAR,LONDON_VAN,PULLUP_VAN,WARLEY_CAR} from './brentwoodRoute2Paths';
 
 /**
@@ -21,7 +22,22 @@ const HORN:Fault={level:'feedback',heading:'Use of horn',title:'Horn not needed'
 const WRONG_LEFT:Fault={level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
   message:'You are turning left: a right signal tells everyone you are going the other way.'};
 
-export const BRENTWOOD_ROUTE_2:DecisionRoute=withTurnButtons({
+/** One decision before and one after at each challenge (the owner's rule, beforeAfter.ts); Brook Street keeps a third:
+ * the red light, then a car blocking the turn on green, are two hazards at one place. */
+const BEFORE:Record<string,BeforeMerge>={
+  'crescent-road-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(534.4,-264.8)},when:{actor:'zebra-pedestrian',at:p(515.4,-271.6)},frame:{yaw:30,pitch:30},
+    state:'Turning into Crescent Road, the zebra crossing just ahead.'}},
+  'kavanaghs-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-349.3,-547.9)},when:{actor:'london-car',at:p(-303.4,-595.9)},frame:{yaw:-45,pitch:30},
+    state:'Approaching the end of Kavanaghs Road.'}},
+  'brook-street-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-1051.5,-204.6)},lights:'red',frame:{yaw:0,pitch:26},
+    state:'Approaching the lights. They are red.'}},
+  'eagle-way-crossroads':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(53.8,1015.7)},when:{actor:'warley-car',at:p(49.3,1086.8)},frame:{yaw:-50,pitch:28},
+    state:'Approaching the crossroads.'}},
+  'test-centre-entry':{first:'approach',second:'entrance',place:{pause:{kind:'moving',at:p(514.3,43.8)},when:{actor:'tc-pedestrian',at:p(514.6,29)},frame:{yaw:20,pitch:30},
+    state:'Approaching the test centre\'s way in.'}}
+};
+
+export const BRENTWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
   id:'brentwood-2',
   title:'Brentwood route 2',
   scene:'brentwood-routes',
@@ -301,7 +317,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute=withTurnButtons({
       place:{
         approach:{pause:{kind:'moving',at:p(-1046.3,-207.5)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 20 mph.'},
         line:{pause:{kind:'stop',at:p(-1067.2,-195.6)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
-        green:{pause:{kind:'stop',at:p(-1067.2,-195.6)},frame:{yaw:60,pitch:30},state:'At the stop line. The lights have turned green.'},
+        green:{pause:{kind:'stop',at:p(-1067.2,-195.6)},lights:'red',frame:{yaw:60,pitch:30},state:'At the stop line. The lights have turned green.'},
         clear:{pause:{kind:'stop',at:p(-1067.2,-195.6)},when:{actor:'brook-car',at:p(-1049.7,-124.4)},frame:{yaw:55,pitch:30},state:'Still at the stop line, on green.'}
       },
       stages:[
@@ -528,4 +544,4 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute=withTurnButtons({
       ]
     }
   ]
-});
+},BEFORE));

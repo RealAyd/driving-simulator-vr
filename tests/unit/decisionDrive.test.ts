@@ -8,21 +8,21 @@ import {drive,loadScene,segDistance} from './decisionDrive';
 /** Every pause of each route driven right, in order. */
 const PAUSES:Record<string,string[]>={
   'brentwood-1':['leave-test-centre/footway','leave-test-centre/line','leave-test-centre/clear',
-    'station-crossing/approach','station-crossing/line','station-crossing/clear',
-    'high-street-lights/approach','high-street-lights/centre','high-street-lights/clear',
-    'wilsons-corner/approach','wilsons-corner/line','wilsons-corner/clear',
+    'station-crossing/approach','station-crossing/clear',
+    'high-street-lights/approach','high-street-lights/clear',
+    'wilsons-corner/approach','wilsons-corner/clear',
     'queens-road-meeting/approach','queens-road-meeting/held',
     'rose-valley-pull-up/approach','rose-valley-pull-up/stopped',
     'rose-valley-move-off/check','rose-valley-move-off/clear',
-    'king-edward-emerge/approach','king-edward-emerge/line','king-edward-emerge/clear'],
-  'brentwood-2':['crescent-road-zebra/approach','crescent-road-zebra/zebra','crescent-road-zebra/clear',
-    'kavanaghs-emerge/approach','kavanaghs-emerge/line','kavanaghs-emerge/clear',
+    'king-edward-emerge/approach','king-edward-emerge/clear'],
+  'brentwood-2':['crescent-road-zebra/approach','crescent-road-zebra/clear',
+    'kavanaghs-emerge/approach','kavanaghs-emerge/clear',
     'london-road-pull-up/approach','london-road-pull-up/stopped',
     'london-road-move-off/check','london-road-move-off/clear',
-    'brook-street-lights/approach','brook-street-lights/line','brook-street-lights/green','brook-street-lights/clear',
-    'eagle-way-crossroads/approach','eagle-way-crossroads/line','eagle-way-crossroads/clear',
+    'brook-street-lights/approach','brook-street-lights/green','brook-street-lights/clear',
+    'eagle-way-crossroads/approach','eagle-way-crossroads/clear',
     'the-drive-mini/approach',
-    'test-centre-entry/approach','test-centre-entry/entrance','test-centre-entry/clear']
+    'test-centre-entry/approach','test-centre-entry/clear']
 };
 const ROUTES:DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2];
 
@@ -118,7 +118,7 @@ describe('Brentwood decision routes, driven',()=>{
     const r=await drive({'brook-street-lights/green':['look-left','go']},4,0,undefined,BRENTWOOD_ROUTE_2);
     expect(r.result?.interventions).toBe(1);
     expect(r.result?.faults.map(f=>[f.ruleId,f.level])).toEqual([['no-space','serious']]);
-    expect(r.pauses.map(p=>p.at.stage.id)).toEqual(['approach','line','green','clear']);
+    expect(r.pauses.map(p=>p.at.stage.id)).toEqual(['approach','green','clear']);
     expect(r.closest).toBeGreaterThan(3);
   },120_000);
 });

@@ -102,6 +102,8 @@ const TRANSIT_RATE=4,TRANSIT_LEAD=60;
 /** Pulling out from the start: the road joined, this far along the way (metres), kept clear this wide (metres) until
  * the car is this far along. */
 const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
+/** Stopped at red lights with no one crossing, they change after this long (seconds). */
+const RED_AT_LINE=2.5;
 /** Practising one challenge, the car pulls up this far past it (metres). */
 const PRACTICE_RUNOUT=30;
 /** The test can end with the car pulled up this far short of the route's end (path metres). */
@@ -483,7 +485,10 @@ export class DecisionRunner{
     }
     const place=c.place[this.stage]!,pause=place.pause;
     const there=pause.kind==='moving'?s>=this.s(pause.at):car.speed<.05&&s>=this.s(pause.at)-1.2;
+    this.atLine=there&&pause.kind==='stop'?this.atLine+1/60:0;
     if(!there)return;
+    // (Stopped at red lights: the decision comes once they change.)
+    if(pause.kind==='stop'&&this.redNow(c))return;
     if(place.when){
       const x=this.scene.actor(place.when.actor);
       if(x&&!(x.started&&x.travelled>=this.actorAt(place.when.actor,place.when.at)))return;
@@ -564,13 +569,28 @@ export class DecisionRunner{
    * released once it is past. */
   private holdLights():void{
     const c=this.phase==='finished'?null:this.inHand().find(x=>x.lights)??null,at=c?.lights??null;
-    const red=!!c&&c===this.route.challenges[this.challenge]&&!this.released&&c.place[this.stage]?.lights==='red'&&!this.trafficBefore(c.lights!);
+    const red=!!c&&c===this.route.challenges[this.challenge]&&!this.released&&this.redNow(c)&&!this.trafficBefore(c.lights!);
     const aspect=red?'red':c?.lightsAll?'all-green':'green',key=at?`${at.x},${at.z},${aspect}`:'';
     if(key===this.heldKey)return;
     this.heldKey=key;
     this.scene.holdLights?.(at,aspect);
   }
   private heldKey='';
+
+  /**
+   * Whether the stage in hand shows its lights red: on the move, throughout; stopped at the line after it, until its
+   * road user is clear (people crossing) or, with none, a moment after the car has stopped: then green, and the
+   * decision comes.
+   */
+  private redNow(c:ChallengeDef):boolean{
+    const place=c.place[this.stage];
+    if(place?.lights!=='red')return false;
+    if(place.pause.kind==='moving')return true;
+    if(place.when){const x=this.scene.actor(place.when.actor);return !(x?.started&&x.travelled>=this.actorAt(place.when.actor,place.when.at))}
+    return this.atLine<RED_AT_LINE;
+  }
+  /** Seconds the car has stood at the stop of the stage in hand. */
+  private atLine=0;
 
   /** Background traffic on the car's way between it and a stop line (queued there, it would keep the car from the
    * line while the lights are held red): the lights let it through first. */

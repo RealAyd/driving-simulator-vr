@@ -56,6 +56,13 @@ What a new session needs to carry on with the Brentwood decision mock test route
 9. Update `ROUTES.md`, `DECISION_MOCK.md`, the browser test `tests/browser/g40-decision-test.spec.ts`, then commit,
    push and stage.
 
+## Owner's rules added on review (7 and 8 November)
+
+- One decision before and one after per challenge, more only where two hazards meet (`beforeAfter.ts`).
+- Holding back is always **Give way**. Every turn offers both signals and all three mirrors (`turnButtons.ts`).
+- The challenge panel can be hidden while paused (‹), and brought back from the tab on the left.
+- The sky dome follows the camera (it hid everything over 550 m from the place's middle).
+
 ## New engine pieces (this round)
 
 - `route.parked`: vehicles a route parks (the Queen's Road van), drawn, solid, passed by car and traffic.

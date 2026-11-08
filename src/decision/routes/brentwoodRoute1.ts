@@ -2,6 +2,7 @@ import type {Vec2} from '../../contracts';
 import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
 import {withTurnButtons} from '../turnButtons';
+import {withBeforeAfter,type BeforeMerge} from '../beforeAfter';
 import {CYCLIST,INGRAVE,KINGS,QUEENS,TC_CAR,WEALD} from './brentwoodRoute1Paths';
 
 /**
@@ -21,7 +22,20 @@ const HORN:Fault={level:'feedback',heading:'Use of horn',title:'Horn not needed'
 const flash:Fault={level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
   message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'};
 
-export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
+/** One decision before and one after at each challenge (the owner's rule, beforeAfter.ts): the approach and the decision at
+ * the line taken together, close in, where the junction and what is coming are both in view. */
+const BEFORE:Record<string,BeforeMerge>={
+  'station-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(572.6,-494.4)},lights:'red',when:{actor:'station-pedestrian',at:p(583.7,-519.7)},frame:{yaw:0,pitch:24},
+    state:'Approaching the crossing. The lights are red.'}},
+  'high-street-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(466.7,-954.7)},when:{actor:'weald-car',at:p(433.2,-1034)},frame:{yaw:5,pitch:26},
+    state:'Approaching the lights on green.'}},
+  'wilsons-corner':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(972.9,-1186.3)},when:{actor:'ingrave-car',at:p(1014.1,-1161)},frame:{yaw:-20,pitch:30},
+    state:'Approaching Wilson\'s Corner.'}},
+  'king-edward-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(591.6,-459.3)},when:{actor:'kings-car',at:p(577.9,-507.7)},frame:{yaw:-45,pitch:30},
+    state:'Approaching the end of King Edward Road.'}}
+};
+
+export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   id:'brentwood-1',
   title:'Brentwood route 1',
   scene:'brentwood-routes',
@@ -43,8 +57,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
     // Waiting at the station crossing, east kerb, then across in front of the car.
     {id:'station-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[585.7,-519.4],[570.7,-521.6],[570.4,-532]])},
     {id:'weald-car',name:'blue car',colour:'#2563eb',speed:10,path:pts(WEALD)},
-    // (Held back out of sight up Ingrave Road while the car is held up on the way, so it comes on as depicted.)
-    {id:'ingrave-car',name:'red car',colour:'#b91c1c',speed:8,waits:true,path:pts(INGRAVE)},
+    {id:'ingrave-car',name:'red car',colour:'#b91c1c',speed:8,path:pts(INGRAVE)},
     {id:'queens-car',name:'black car',colour:'#1f2328',speed:10,path:pts(QUEENS)},
     {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
     {id:'kings-car',name:'grey car',colour:'#8a9099',speed:10,path:pts(KINGS)}
@@ -136,7 +149,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
         approach:{pause:{kind:'moving',at:p(570.7,-482.9)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the crossing at 25 mph.'},
         line:{pause:{kind:'stop',at:p(575.5,-513.5)},lights:'red',when:{actor:'station-pedestrian',at:p(578.2,-520.5)},frame:{yaw:0,pitch:30},
           state:'Stopped at the crossing.'},
-        clear:{pause:{kind:'stop',at:p(575.5,-513.5)},when:{actor:'station-pedestrian',at:p(570.6,-524)},frame:{yaw:0,pitch:30},
+        clear:{pause:{kind:'stop',at:p(575.5,-513.5)},lights:'red',when:{actor:'station-pedestrian',at:p(570.6,-524)},frame:{yaw:0,pitch:30},
           state:'Still at the crossing.'}
       },
       stages:[
@@ -147,7 +160,9 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
           rules:[
             {kind:'before',id:'mirror-before-slowing',action:'slow-down',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
               message:'Check the interior mirror before you slow down: you need to know how close the traffic behind is.'}},
-            {kind:'required',id:'no-slowing',anyOf:['slow-down'],fault:{level:'serious',heading:'Response to signals - traffic lights',title:'Did not slow for the red light',
+            {kind:'before',id:'mirror-before-stopping',action:'give-way',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Stopped before the mirror',
+              message:'Check the interior mirror before you slow down to stop: you need to know how close the traffic behind is.'}},
+            {kind:'required',id:'no-slowing',anyOf:['slow-down','give-way'],fault:{level:'serious',heading:'Response to signals - traffic lights',title:'Did not slow for the red light',
               message:'The crossing\'s lights were red. Slow down in good time to stop at the line.'}},
             {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'dangerous',heading:'Response to signals - traffic lights',title:'Sped up at a red light',
               message:'The lights were red with someone waiting to cross. Speeding up to get through would put them at risk.'}},
@@ -263,7 +278,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
       where:'Wilson\'s Corner, right on to Ingrave Road',
       instruction:'At the mini-roundabout, turn right, please.',
       instructAt:p(914.7,-1160.8),
-      starts:[{actor:'ingrave-car',at:p(955.2,-1180.3),delay:0}],
+      starts:[{actor:'ingrave-car',at:p(914.7,-1160.8),delay:0}],
       // (The crossings by Wilson's Corner: no one using them.)
       lights:p(969.4,-1187.4),lightsAll:true,
       endAt:p(1029.1,-1146.4),
@@ -552,4 +567,4 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons({
       ]
     }
   ]
-});
+},BEFORE));

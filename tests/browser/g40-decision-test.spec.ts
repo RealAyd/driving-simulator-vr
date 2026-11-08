@@ -17,14 +17,11 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     'leave-test-centre/footway':['look-left','give-way'],
     'leave-test-centre/line':['look-right','signal-left','go'],
     'leave-test-centre/clear':['look-right','look-left','go'],
-    'station-crossing/approach':['mirror-interior','slow-down'],
-    'station-crossing/line':['give-way'],
+    'station-crossing/approach':['mirror-interior','slow-down','give-way'],
     'station-crossing/clear':['look-right','look-left','go'],
-    'high-street-lights/approach':['signal-right','mirror-interior','mirror-right','position-right'],
-    'high-street-lights/centre':['give-way'],
+    'high-street-lights/approach':['signal-right','mirror-interior','mirror-right','position-right','give-way'],
     'high-street-lights/clear':['look-left','go'],
-    'wilsons-corner/approach':['mirror-interior','mirror-right','signal-right'],
-    'wilsons-corner/line':['look-right','give-way'],
+    'wilsons-corner/approach':['mirror-interior','mirror-right','signal-right','look-right','give-way'],
     'wilsons-corner/clear':['look-right','go'],
     'queens-road-meeting/approach':['mirror-interior','give-way'],
     'queens-road-meeting/held':['mirror-right','go'],
@@ -32,10 +29,10 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
     'rose-valley-pull-up/stopped':['handbrake','neutral','signal-off'],
     'rose-valley-move-off/check':['mirror-right','blind-spot-right','give-way'],
     'rose-valley-move-off/clear':['mirror-right','blind-spot-right','go'],
-    'king-edward-emerge/approach':['mirror-interior','mirror-left','signal-left'],
-    'king-edward-emerge/line':['look-right','give-way'],
+    'king-edward-emerge/approach':['mirror-interior','mirror-left','signal-left','look-right','give-way'],
     'king-edward-emerge/clear':['look-right','look-left','go']
   };
+
 
   const seen:string[]=[];
   for(;;){
