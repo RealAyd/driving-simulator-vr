@@ -29,9 +29,19 @@ export class DecisionPanel{
     byId('decision-no').addEventListener('click',()=>this.confirming(false));
     byId('decision-yes').addEventListener('click',()=>this.submit());
     byId('decision-continue').addEventListener('click',()=>{this.hide();this.hooks.continue()});
+    // Hidden to see the whole road while paused; the tab on the left brings it back.
+    byId('decision-minimise').addEventListener('click',()=>this.minimise(true));
+    byId('decision-expand').addEventListener('click',()=>this.minimise(false));
   }
 
-  get open(){return !byId('decision-panel').hidden}
+  get open(){return !byId('decision-panel').hidden||!byId('decision-expand').hidden}
+
+  /** The challenge put away (the whole road in view) or brought back. */
+  minimise(on:boolean):void{
+    if(!this.at)return;
+    byId('decision-panel').hidden=on;byId('decision-expand').hidden=!on;
+    (on?byId('decision-expand'):byId('decision-minimise')).focus();
+  }
 
   show(at:PausedAt,practice:boolean):void{
     this.at=at;this.practice=practice;this.sequence=[];
@@ -49,11 +59,11 @@ export class DecisionPanel{
       b.addEventListener('click',()=>this.press(id));
       return b;
     }));
-    byId('decision-panel').hidden=false;
+    byId('decision-panel').hidden=false;byId('decision-expand').hidden=true;
     this.render();
   }
 
-  hide():void{byId('decision-panel').hidden=true;this.at=null}
+  hide():void{byId('decision-panel').hidden=true;byId('decision-expand').hidden=true;this.at=null}
 
   private decided(){const st=this.at?.stage;return !!st&&this.sequence.some(a=>a===st.go||a===st.wait)}
 

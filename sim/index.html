@@ -311,6 +311,12 @@ body.decision #touch-controls,body.decision #steer-buttons,body.decision #hud-ce
 /* On the left: traffic to give way to comes from the right, which stays in view. */
 #decision-panel{left:var(--sl);top:var(--st);bottom:var(--sb);width:min(36vw,330px);overflow:auto;display:flex;flex-direction:column;gap:8px;padding:10px;font-size:13px}
 #decision-panel p{margin:0}
+
+.dp-head{padding-right:34px}
+#hud #decision-panel .dp-minimise{position:absolute;top:8px;right:8px;width:32px;height:32px;min-height:0;padding:0;display:grid;place-items:center;border-radius:10px}
+#decision-expand{position:absolute;left:var(--sl);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:0 14px 14px 0;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+#decision-expand[hidden]{display:none}
+#decision-expand span{writing-mode:vertical-rl;transform:rotate(180deg)}
 .dp-head{display:grid;gap:3px}
 .dp-step{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
 .dp-instruction{font-size:15px;font-weight:700}
@@ -912,6 +918,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
   </div>
   <!-- A decision mock test, paused at a decision: the buttons for it, the order chosen, then confirm and Continue. -->
   <div id="decision-panel" class="hud-panel" role="dialog" aria-labelledby="decision-instruction" hidden>
+    <button id="decision-minimise" type="button" class="dp-minimise" aria-label="Hide the challenge to see the whole road" title="See the whole road"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="dp-head"><span id="decision-step" class="dp-step"></span><p id="decision-instruction" class="dp-instruction"></p><p id="decision-state" class="dp-state"></p></div>
     <ol id="decision-sequence" class="dp-seq" aria-label="Your order" hidden></ol>
     <div id="decision-choose" class="dp-choose">
@@ -921,6 +928,8 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
     <div id="decision-confirm" class="dp-confirm" hidden><p>Finished your observations?</p><div class="dp-row"><button id="decision-no" type="button">No</button><button id="decision-yes" type="button" class="primary">Yes</button></div></div>
     <div id="decision-after" class="dp-after" hidden><p id="decision-note" class="dp-note" role="status"></p><ul id="decision-feedback" class="dp-feedback"></ul><button id="decision-continue" type="button" class="primary">Continue</button></div>
   </div>
+  <!-- The challenge hidden to see the whole road: this tab brings it back. -->
+  <button id="decision-expand" class="hud-panel" type="button" aria-label="Show the challenge" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Challenge</span></button>
   <div id="touch-controls" class="hud-panel">
     <button id="gear-toggle" type="button" class="gear" aria-pressed="false" aria-label="Gear: drive. Tap for reverse"><span class="gear-d">D</span><span class="gear-r">R</span></button>
     <button type="button" data-hold="brake" aria-label="Brake">Brake</button>
