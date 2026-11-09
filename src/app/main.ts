@@ -2577,6 +2577,8 @@ export async function boot():Promise<void>{
     /** Diagnostics (scenario captures): open a scene built in advance (public/scenes/<id>.json.gz, named `label`). */
     /** A decision test route (src/decision/routes), opened ready to start; and how it is going. */
     openDecision:(id:string)=>{const r=DECISION_ROUTES.find(x=>x.id===id);return r?openDecision(r):Promise.resolve()},
+    /** Diagnostics: the paused decision framed this way instead (choosing a challenge's camera). */
+    decisionFrame:(frame:{yaw:number;pitch:number;shift?:number})=>{if(decision?.frozen){decisionFrame=frame;showFrame(frame)}},
     decision:()=>decision?{state:decision.runner.state,heldBy:decision.runner.heldBy,at:decision.runner.current?{challenge:decision.runner.current.challenge.id,stage:decision.runner.current.stage.id}:null,
       frozen:decision.frozen,practice:decision.practice,records:decision.runner.records.map(r=>({challenge:r.challengeId,stage:r.stageId,sequence:r.sequence,faults:r.verdict.faults.map(f=>f.ruleId)}))}:null,
     openScene:(id:string,label:string,stage?:{actors:unknown[]})=>/^[a-z0-9-]+$/.test(id)?openArea({label,lat:0,lon:0,scene:id,...(stage?{stage}:{})}):Promise.resolve(),
