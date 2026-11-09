@@ -59,6 +59,9 @@ export class DecisionPanel{
       b.addEventListener('click',()=>this.press(id));
       return b;
     }));
+    // (On the right where what matters is on the left.)
+    const right=at.place.panel==='right';
+    byId('decision-panel').classList.toggle('dp-right',right);byId('decision-expand').classList.toggle('dp-right',right);
     byId('decision-panel').hidden=false;byId('decision-expand').hidden=true;
     this.render();
   }

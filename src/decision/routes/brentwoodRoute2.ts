@@ -25,15 +25,15 @@ const WRONG_LEFT:Fault={level:'serious',heading:'Signals - correctly',title:'Sig
 /** One decision before and one after at each challenge (the owner's rule, beforeAfter.ts); Brook Street keeps a third:
  * the red light, then a car blocking the turn on green, are two hazards at one place. */
 const BEFORE:Record<string,BeforeMerge>={
-  'crescent-road-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(534.4,-264.8)},when:{actor:'zebra-pedestrian',at:p(515.4,-271.6)},frame:{yaw:30,pitch:30},
-    state:'Turning into Crescent Road, the zebra crossing just ahead.'}},
-  'kavanaghs-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-349.3,-547.9)},when:{actor:'london-car',at:p(-303.4,-595.9)},frame:{yaw:-45,pitch:30},
+  'crescent-road-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(532,-275.7)},when:{actor:'zebra-pedestrian',at:p(516.1,-270.9)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
+    state:'Turned into Crescent Road, the zebra crossing just ahead.'}},
+  'kavanaghs-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-349.3,-547.9)},when:{actor:'london-car',at:p(-330.1,-582.5)},frame:{yaw:-45,pitch:50,shift:-5},
     state:'Approaching the end of Kavanaghs Road.'}},
-  'brook-street-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-1051.5,-204.6)},lights:'red',frame:{yaw:0,pitch:26},
+  'brook-street-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-1051.5,-204.6)},lights:'red',panel:'right',frame:{yaw:10,pitch:44,shift:5},
     state:'Approaching the lights. They are red.'}},
-  'eagle-way-crossroads':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(53.8,1015.7)},when:{actor:'warley-car',at:p(49.3,1086.8)},frame:{yaw:-50,pitch:28},
+  'eagle-way-crossroads':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(53.8,1015.7)},when:{actor:'warley-car',at:p(61.3,1059.7)},frame:{yaw:-45,pitch:50,shift:-5},
     state:'Approaching the crossroads.'}},
-  'test-centre-entry':{first:'approach',second:'entrance',place:{pause:{kind:'moving',at:p(514.3,43.8)},when:{actor:'tc-pedestrian',at:p(514.6,29)},frame:{yaw:20,pitch:30},
+  'test-centre-entry':{first:'approach',second:'entrance',place:{pause:{kind:'moving',at:p(514.3,43.8)},when:{actor:'tc-pedestrian',at:p(514.6,24)},panel:'right',frame:{yaw:15,pitch:44,shift:5},
     state:'Approaching the test centre\'s way in.'}}
 };
 
@@ -135,7 +135,7 @@ export const BRENTWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Kavanaghs Road, left on to London Road',
       instruction:'At the end of the road, turn left, please.',
       instructAt:p(-262,-491),
-      starts:[{actor:'london-car',at:p(-262,-491),delay:0},{actor:'london-van',at:p(-262,-491),delay:0}],
+      starts:[{actor:'london-car',at:p(-223.5,-468.5),delay:0},{actor:'london-van',at:p(-223.5,-468.5),delay:0}],
       endAt:p(-377.5,-558),
       // The junction, and London Road to the right, where the red car and the van come from.
       quiet:[{x:-360,z:-568,radius:26},{x:-290,z:-604,radius:45}],

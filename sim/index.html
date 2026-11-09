@@ -316,6 +316,9 @@ body.decision #touch-controls,body.decision #steer-buttons,body.decision #hud-ce
 #hud #decision-panel .dp-minimise{position:absolute;top:8px;right:8px;width:32px;height:32px;min-height:0;padding:0;display:grid;place-items:center;border-radius:10px}
 #decision-expand{position:absolute;left:var(--sl);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:0 14px 14px 0;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
 #decision-expand[hidden]{display:none}
+#decision-panel.dp-right{left:auto;right:var(--sr);top:calc(var(--st) + 58px)}
+#decision-expand.dp-right{left:auto;right:var(--sr);border-radius:14px 0 0 14px}
+#decision-panel.dp-right .dp-minimise svg,#decision-expand.dp-right svg{transform:scaleX(-1)}
 #decision-expand span{writing-mode:vertical-rl;transform:rotate(180deg)}
 .dp-head{display:grid;gap:3px}
 .dp-step{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
@@ -334,7 +337,7 @@ body.decision #touch-controls,body.decision #steer-buttons,body.decision #hud-ce
 .dp-feedback li.sev-serious,.dp-feedback li.sev-dangerous{background:rgba(239,68,68,.16)}
 .dp-feedback li.sev-minor{background:rgba(245,158,11,.14)}
 .dp-feedback li.right{background:rgba(45,212,191,.12)}
-@media (orientation:portrait){#decision-panel{right:var(--sr);top:auto;width:auto;max-height:58vh}}
+@media (orientation:portrait){#decision-panel,#decision-panel.dp-right{left:var(--sl);right:var(--sr);top:auto;width:auto;max-height:58vh}}
 /* Undo and Done always in view (a turn shows up to ten buttons), and on a short landscape screen three buttons a row. */
 #decision-choose>.dp-row{position:sticky;bottom:-10px;margin:6px -10px -10px;padding:6px 10px 10px;background:rgba(20,24,32,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:0 0 14px 14px}
 @media (orientation:landscape) and (max-height:430px){#decision-panel{width:min(48vw,440px);gap:6px}.dp-buttons{grid-template-columns:1fr 1fr 1fr}#hud .dp-buttons button,#hud .dp-row button{min-height:32px;font-size:12px;padding:2px 4px}.dp-instruction{font-size:14px}}

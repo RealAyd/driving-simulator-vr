@@ -72,6 +72,9 @@ export interface StagePlace{
   pause:{kind:'moving';at:Vec2}|{kind:'stop';at:Vec2};
   /** The traffic that matters, seen moving first: the pause comes once this road user reaches this point. */
   when?:{actor:string;at:Vec2};
+  /** The buttons on the right of the screen, where what matters is on the left (a footway, a zebra, signals on the near
+   * side): the panel would hide it. */
+  panel?:'right';
   /** The challenge's lights shown red to the car in this stage (people crossing): held green otherwise. */
   lights?:'red';
   /** The camera behind the car: turned round it (degrees; negative shows the right) and raised (degrees). */

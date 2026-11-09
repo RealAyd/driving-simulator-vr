@@ -25,13 +25,13 @@ const flash:Fault={level:'minor',heading:'Response to signals - other road users
 /** One decision before and one after at each challenge (the owner's rule, beforeAfter.ts): the approach and the decision at
  * the line taken together, close in, where the junction and what is coming are both in view. */
 const BEFORE:Record<string,BeforeMerge>={
-  'station-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(572.6,-494.4)},lights:'red',when:{actor:'station-pedestrian',at:p(583.7,-519.7)},frame:{yaw:0,pitch:24},
+  'station-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(572.6,-494.4)},lights:'red',when:{actor:'station-pedestrian',at:p(583.7,-519.7)},frame:{yaw:0,pitch:52,shift:-6},
     state:'Approaching the crossing. The lights are red.'}},
-  'high-street-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(466.7,-954.7)},when:{actor:'weald-car',at:p(433.2,-1034)},frame:{yaw:5,pitch:26},
+  'high-street-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(466.7,-954.7)},when:{actor:'weald-car',at:p(447,-1006.1)},frame:{yaw:0,pitch:52,shift:-6},
     state:'Approaching the lights on green.'}},
-  'wilsons-corner':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(972.9,-1186.3)},when:{actor:'ingrave-car',at:p(1014.1,-1161)},frame:{yaw:-20,pitch:30},
+  'wilsons-corner':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(972.9,-1186.3)},when:{actor:'ingrave-car',at:p(1002,-1181.1)},frame:{yaw:-35,pitch:50,shift:-5},
     state:'Approaching Wilson\'s Corner.'}},
-  'king-edward-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(591.6,-459.3)},when:{actor:'kings-car',at:p(577.9,-507.7)},frame:{yaw:-45,pitch:30},
+  'king-edward-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(591.6,-459.3)},when:{actor:'kings-car',at:p(573.4,-478.4)},frame:{yaw:-45,pitch:50,shift:-5},
     state:'Approaching the end of King Edward Road.'}}
 };
 
@@ -278,7 +278,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Wilson\'s Corner, right on to Ingrave Road',
       instruction:'At the mini-roundabout, turn right, please.',
       instructAt:p(914.7,-1160.8),
-      starts:[{actor:'ingrave-car',at:p(914.7,-1160.8),delay:0}],
+      starts:[{actor:'ingrave-car',at:p(876,-1141.9),delay:0}],
       // (The crossings by Wilson's Corner: no one using them.)
       lights:p(969.4,-1187.4),lightsAll:true,
       endAt:p(1029.1,-1146.4),
@@ -507,7 +507,7 @@ export const BRENTWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'King Edward Road, left on to Kings Road',
       instruction:'At the end of the road, turn left, please.',
       instructAt:p(635,-454.8),
-      starts:[{actor:'kings-car',at:p(635,-454.8),delay:0}],
+      starts:[{actor:'kings-car',at:p(672.8,-433.5),delay:0}],
       // (The station crossing the grey car comes through: no one using it.)
       lights:p(580,-523),lightsAll:true,
       endAt:p(568.3,-444.6),
