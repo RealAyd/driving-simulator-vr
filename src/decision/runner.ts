@@ -102,6 +102,9 @@ const TRANSIT_RATE=4,TRANSIT_LEAD=60;
 /** Pulling out from the start: the road joined, this far along the way (metres), kept clear this wide (metres) until
  * the car is this far along. */
 const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
+/** Said between challenges more than ANNOUNCE_AFTER metres apart, and on the way back at the end. */
+export const TO_NEXT='Driving to the next challenge.',BACK_TO_CENTRE='Driving back to the test centre.';
+const ANNOUNCE_AFTER=150;
 /** Stopped at red lights with no one crossing, they change after this long (seconds). */
 const RED_AT_LINE=2.5;
 /** Practising one challenge, the car pulls up this far past it (metres). */
@@ -478,8 +481,14 @@ export class DecisionRunner{
       // Past the challenge: the signal goes off, and the next challenge (or the end of the route) is in hand.
       if(s>=this.s(c.endAt)){
         if(c.selfCancel!==false)this.scene.setSignal('off');
-        if(this.only!==null||this.challenge+1>=this.route.challenges.length){this.ending=true;return}
+        if(this.only!==null||this.challenge+1>=this.route.challenges.length){
+          this.ending=true;
+          if(this.only===null&&this.endS()-s>ANNOUNCE_AFTER)this.scene.say(BACK_TO_CENTRE);
+          return;
+        }
         this.challenge++;this.released=false;this.stage=this.route.challenges[this.challenge]!.stages[0]!.id;
+        // (A long way to the next one: said so, rather than the drive just carrying on.)
+        if(this.s(this.route.challenges[this.challenge]!.instructAt)-s>ANNOUNCE_AFTER)this.scene.say(TO_NEXT);
       }
       return;
     }

@@ -4,6 +4,7 @@ import {CORRECTIONS} from '../lessons/instructor';
 import {LESSONS} from '../lessons/syllabus';
 import {MANOEUVRE_COACHING,MANOEUVRE_SENTENCES} from '../test/manoeuvres';
 import {DECISION_ROUTES} from '../decision/routes';
+import {BACK_TO_CENTRE,TO_NEXT} from '../decision/runner';
 
 /**
  * Everything the examiner and the instructor say, sentence by sentence: the clips recorded in the British neural
@@ -93,7 +94,7 @@ function unique(texts:string[]):string[]{
 export const examinerPhrases=():string[]=>unique([TELL_ME_INTRO,BRIEFING,PULL_UP,END,REDIRECT,
   ...TELL_ME.map(q=>q.question),...SHOW_ME.map(q=>q.question),...directions(),...MANOEUVRE_SENTENCES,
   // (A decision test's directions: the examiner gives them there too.)
-  ...DECISION_ROUTES.flatMap(r=>r.challenges.map(c=>c.instruction))]);
+  ...DECISION_ROUTES.flatMap(r=>r.challenges.map(c=>c.instruction)),TO_NEXT,BACK_TO_CENTRE]);
 
 /** Every sentence there is a clip for in the instructor's voice: the examiner's too, since the instructor gives the
  * directions in a lesson. */

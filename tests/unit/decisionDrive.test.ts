@@ -4,6 +4,7 @@ import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {BRENTWOOD_ROUTE_2} from '../../src/decision/routes/brentwoodRoute2';
 import type {DecisionRoute} from '../../src/decision/route';
 import {drive,loadScene,segDistance} from './decisionDrive';
+import {BACK_TO_CENTRE,TO_NEXT} from '../../src/decision/runner';
 
 /** Every pause of each route driven right, in order. */
 const PAUSES:Record<string,string[]>={
@@ -78,7 +79,9 @@ describe('Brentwood decision routes, driven',()=>{
       expect(r.result?.faults).toEqual([]);
       expect(r.pauses.map(keyOf)).toEqual(PAUSES[route.id]);
       asDepicted(r,route);
-      expect(r.said).toEqual(route.challenges.map(c=>c.instruction));
+      // The directions, in order; and between challenges far apart, that the drive goes on to the next.
+      expect(r.said.filter(t=>t!==TO_NEXT&&t!==BACK_TO_CENTRE)).toEqual(route.challenges.map(c=>c.instruction));
+      expect(r.said).toContain(TO_NEXT);
       // (A cyclist or van passing the car pulled up at the kerb is the closest: centre to centre.)
       expect(r.closest,r.closestWho).toBeGreaterThan(2.2);
       expect(r.offRoad,r.offAt.join('; ')).toBe(0);

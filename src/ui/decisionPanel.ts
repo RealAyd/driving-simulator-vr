@@ -3,6 +3,9 @@ import {actionLabel} from '../decision/actions';
 import type {PausedAt} from '../decision/runner';
 
 const byId=<T extends HTMLElement=HTMLElement>(id:string)=>document.getElementById(id) as T;
+/** Remembered once the picture has been dragged during a decision. */
+const DRAGGED='dp-decision-dragged';
+const dragged=()=>{try{return localStorage.getItem(DRAGGED)==='1'}catch{return false}};
 const LEVEL:Record<string,string>={minor:'Minor',serious:'Serious',dangerous:'Dangerous',feedback:'Note'};
 
 export interface DecisionPanelHooks{
@@ -62,11 +65,19 @@ export class DecisionPanel{
     // (On the right where what matters is on the left.)
     const right=at.place.panel==='right';
     byId('decision-panel').classList.toggle('dp-right',right);byId('decision-expand').classList.toggle('dp-right',right);
+    // (The picture can be dragged to look round: shown until the first drag.)
+    const hint=byId('decision-drag-hint');hint.classList.toggle('dp-right',right);hint.hidden=dragged();
     byId('decision-panel').hidden=false;byId('decision-expand').hidden=true;
     this.render();
   }
 
-  hide():void{byId('decision-panel').hidden=true;byId('decision-expand').hidden=true;this.at=null}
+  hide():void{byId('decision-panel').hidden=true;byId('decision-expand').hidden=true;byId('decision-drag-hint').hidden=true;this.at=null}
+
+  /** The picture has been dragged: the hint is not shown again. */
+  dragged():void{
+    byId('decision-drag-hint').hidden=true;
+    try{localStorage.setItem(DRAGGED,'1')}catch{/* not kept: shown again next time */}
+  }
 
   private decided(){const st=this.at?.stage;return !!st&&this.sequence.some(a=>a===st.go||a===st.wait)}
 

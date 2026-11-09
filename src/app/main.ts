@@ -41,7 +41,7 @@ import {FreeDriveAssist} from '../test/freeDriveAssist';
 import {SHOW_ME,TELL_ME,pick,tellMeChoices,type ShowMeQuestion,type TellMeQuestion} from '../test/vehicleChecks';
 import {CAR_CONTROLS,CarControls,type CarControlId} from '../vehicle/carControls';
 import {CarControlsPanel,askTellMe,hideQuestion} from '../ui/carControlsPanel';
-import {DRIVE_TOUR,HOME_TOUR,PLACE_TOUR,Tutorial} from '../ui/tutorial';
+import {DRIVE_TOUR,DECISION_TOUR,HOME_TOUR,PLACE_TOUR,Tutorial} from '../ui/tutorial';
 import {nextTip,type ControllerNames,type TipInput} from '../ui/controlTips';
 import {LESSONS,planLesson,type Lesson} from '../lessons/syllabus';
 import {Instructor} from '../lessons/instructor';
@@ -1053,6 +1053,7 @@ export async function boot():Promise<void>{
     if(Math.abs(dx)+Math.abs(dy)<1)return;
     // Behind the car: a drag swings the camera round the car (all the way round), and up or down.
     if(behind){
+      if(decision?.frozen)decisionPanel.dragged();
       orbit.yaw-=dx*ORBIT_SENSITIVITY;
       orbit.pitch=Math.max(.08,Math.min(1.25,orbit.pitch+dy*ORBIT_SENSITIVITY));
       lastX=event.clientX;lastY=event.clientY;
@@ -2379,6 +2380,8 @@ export async function boot():Promise<void>{
         decisionFrame=at.place.frame;
         showFrame(at.place.frame);
         decisionPanel.show(at,decision?.practice!==null);
+        // (The first decision: a short tour of the panel and the picture.)
+        setTimeout(()=>{if(decision?.frozen&&!tutorial.active)tutorial.startOnce('decision',DECISION_TOUR)},700);
       }else{
         decisionFrame=null;
         decisionPanel.hide();

@@ -48,6 +48,14 @@ export const DRIVE_TOUR:readonly TourStep[]=[
   {target:'#hud-tutorial',title:'See this again',text:'Tap ? at any time to replay this tour.'}
 ];
 
+/** A decision mock test, the first time it pauses for a decision. */
+export const DECISION_TOUR:readonly TourStep[]=[
+  {target:'#decision-buttons',title:'Your checks and decision',text:'Tap the checks and actions in the order you would do them, then Give way or Go. Undo takes the last one back.'},
+  {target:'#decision-done',title:'Done',text:'Confirm when you have finished. The scene stays still while you decide: time spent thinking never counts against you.'},
+  {target:'#decision-minimise',title:'See the whole road',text:'Hide the buttons to study the scene. The tab at the side brings them back.'},
+  {target:'#decision-drag-hint',title:'Look around',text:'Drag anywhere on the picture to swing the camera round the car, and up or down, to spot every hazard.'}
+];
+
 const visible=(el:Element|null):el is HTMLElement=>{
   if(!(el instanceof HTMLElement))return false;
   const r=el.getBoundingClientRect();
