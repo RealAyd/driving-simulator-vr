@@ -92,6 +92,8 @@ const ACTOR_KNOT=8;
 const JAM_AFTER=45;
 /** Driving back to the centre: lights this far ahead (metres) are held green for the car. */
 const RETURN_LIGHTS=50;
+/** Driving back to the centre: the road this far ahead (metres) is kept clear of traffic. */
+const RETURN_AHEAD=40;
 /** A route's road user sets off only with no background car this near the start of its way (metres; further for a
  * longer vehicle, as a bus, its middle a good way from its ends). */
 const ACTOR_START_CLEAR=8;
@@ -553,8 +555,15 @@ export class DecisionRunner{
     if(this.phase==='finished')return [];
     // (And the junctions just ahead of the car: traffic coming to one waits for the car to go through, rather than a
     // stream of it crossing in front of the car standing at the line.)
-    if(this.ending)return [...this.nextJunctions(),...this.streamClear()];
+    if(this.ending)return [...this.nextJunctions(),...this.streamClear(),...this.wayAhead()];
     return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions(),...this.wayOut()];
+  }
+
+  /** Driving back to the centre, nothing left to decide: the road just ahead, kept clear of traffic coming the other
+   * way (met face to face on a narrow street with cars parked along it, there is no room to pass). */
+  private wayAhead():ReadonlyArray<{x:number;z:number;radius:number}>{
+    const p=this.assist.pointAt(this.carS()+RETURN_AHEAD);
+    return [{x:p.x,z:p.z,radius:RETURN_AHEAD}];
   }
 
   /** Long held standing by a stream of traffic: the spot round the car, kept clear (STREAM_CLEAR). */
