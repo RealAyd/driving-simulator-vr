@@ -2,8 +2,12 @@
 
 The format every decision test route uses: the "Decisions only" mock tests, where the car drives itself and the
 learner decides at each challenge. A route is TypeScript data in `src/decision/routes/`, played on a map scene in
-`public/scenes/`. This is the contract an agent building a new route works to. The worked example is Brentwood
-(`content/packs/brentwood/HOW_WE_BUILT_IT.md`).
+`public/scenes/`. This is the contract an agent building a new route works to. The worked examples are Brentwood
+(`content/packs/brentwood/HOW_WE_BUILT_IT.md`) and Chelmsford (`content/packs/chelmsford/HOW_WE_BUILT_IT.md`).
+
+Choosing the routes: from the best evidence available (the map, the centre's current address, published route
+information), not waiting for the owner to send them (the owner, 11 November 2026). Check every turn against the map
+(one-way streets, lights, crossings) and say in the centre's `ROUTES.md` what is not confirmed.
 
 Source of truth: `src/decision/route.ts` (the route), `src/decision/assess.ts` (stages and marking),
 `src/decision/beforeAfter.ts` and `src/decision/turnButtons.ts` (the shared rules). If this file and the code
@@ -72,6 +76,7 @@ export const CENTRE_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   instructAt:{x,z},           // said as the car passes here
   starts:[{actor:'london-car',at:{x,z},delay:0}],             // road users set going as the car passes a point
   endAt:{x,z},                // challenge over (signal cancels) once the car passes here
+  quietUntil:{x,z},           // optional: `quiet` kept on until here (a narrow street just past it, no room to meet traffic)
   selfCancel:false,           // only after pulling up: cancelling the signal is the learner's job
   lights:{x,z},lightsAll:true,// optional: the stop line whose lights are held (green unless a stage says red)
   quiet:[{x,z,radius}],       // background traffic kept out: the junction and the approaches its road users use
@@ -144,7 +149,9 @@ dangerous fault and at most 15 minor (the app's assessment, not a DVSA result).
    panel (`panel:'right'` when it is on the left). Checked by eye on screenshots before shipping.
 8. **No long gaps**: the drive plays four times as fast between challenges far apart, and says "Driving to the next
    challenge."
-9. **Background traffic never decides a challenge**: `quiet` circles keep it out while the challenge is in hand.
+9. **Background traffic never decides a challenge**: `quiet` circles keep it out while the challenge is in hand. It
+   keeps off the road the drive starts on (the centre's way out or estate road, `startRoads` in `plan.ts`).
+10. **Road users stand out from the learner's car**, which is red: give them other colours.
 
 ## Checks before a route ships
 
@@ -153,5 +160,7 @@ dangerous fault and at most 15 minor (the app's assessment, not a DVSA result).
    background road users in two patterns. Each pause where it should be, its road user at its point, nothing hit,
    no red light run, the car on the road throughout, back inside the test centre at the end.
 3. Played in the app (`npm run build`, `vite preview`, a Playwright script answering each pause) with a screenshot of
-   every pause, looked at one by one.
+   every pause, looked at one by one. To choose a pause's camera quickly: `__drivingPractice.decisionPractise(i)` practises
+   challenge i on its own, and `__drivingPractice.decisionFrame({yaw,pitch,shift})` reframes the paused picture. A
+   hazard round a corner (houses on the corner) is in view only close to the line: pause the "before" there.
 4. Staging (`hostless-staging.yml`), then the owner tries it. Production only when the owner says "deploy".

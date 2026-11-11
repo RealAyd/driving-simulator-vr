@@ -56,6 +56,9 @@ export interface ChallengeDef extends ChallengeLogic{
   /** The challenge is over once the car passes here: the signal cancels itself, as after a turn (not after pulling up:
    * `selfCancel` false, where cancelling it is the learner's to do). */
   endAt:Vec2;
+  /** Background traffic kept out of `quiet` until the car passes here (by default, endAt): a narrow street just past
+   * the challenge, with no room to meet traffic. */
+  quietUntil?:Vec2;
   selfCancel?:false;
   /** Traffic lights the car comes to here, held green for it while the challenge is in hand (the stop line's middle,
    * near enough): the decision is about who is still in the way, not the lights' timing. */

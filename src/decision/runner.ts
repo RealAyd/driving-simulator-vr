@@ -90,6 +90,17 @@ const WAVE_AFTER=8;
 const ACTOR_KNOT=8;
 /** Held by one standing background road user this long (seconds), whatever it waits for, it turns off. */
 const JAM_AFTER=45;
+/** A route's road user sets off only with no background car this near the start of its way (metres; further for a
+ * longer vehicle, as a bus, its middle a good way from its ends). */
+const ACTOR_START_CLEAR=8;
+/** A car's half-length (metres), the measure ACTOR_START_CLEAR is for. */
+const CAR_HALF=2.3;
+/** Driving back to the centre, stood this long (seconds) held by background traffic, one road user after another (a
+ * stream of it through a junction the car waits to turn across), the spot round the car is kept clear: the next ones
+ * wait for it to go. (Between challenges, the junctions ahead are kept clear already.) */
+const STREAM_CLEAR=10;
+/** How far round the car that spot reaches (metres). */
+const STREAM_RADIUS=24;
 /** Stuck with one road user this long (seconds, backing up and all), it turns off as a last resort. */
 const RETIRE_AFTER=25;
 /** Still held by it this long (seconds), the car backs up this far (metres) to make room. */
@@ -372,6 +383,8 @@ export class DecisionRunner{
   private actorStuck=0;
   private jamTime=0;
   private jamWho='';
+  /** Seconds the car has stood held by background traffic (STREAM_CLEAR). */
+  private streamTime=0;
   private actorStuckWho='';
   private waved=false;
   private stuckWho='';
@@ -434,6 +447,8 @@ export class DecisionRunner{
       // ahead): it turns off as a last resort, rather than the test standing still for good.)
       if(held&&car0.speed<.1){this.jamTime=held===this.jamWho?this.jamTime+1/60:0;this.jamWho=held}else if(car0.speed>1){this.jamTime=0;this.jamWho=''}
       if(this.jamWho&&this.jamTime>JAM_AFTER){this.scene.retire?.(this.jamWho);this.jamTime=0;this.jamWho=''}
+      // (Held standing by traffic, whoever holds it from one moment to the next: counted until the car moves on.)
+      this.streamTime=held&&car0.speed<.1?this.streamTime+1/60:car0.speed>1?0:this.streamTime;
     }
     // A background road user stood a while blocked by, or face to face with, one of the route's own (each waiting for
     // the other, as on a narrow road): it turns off, so the moment depicted still comes.
@@ -471,7 +486,7 @@ export class DecisionRunner{
         if([...this.started].some(k=>k.endsWith(`/${st.actor}`))){this.started.add(key);continue}
         // (Not on top of background traffic at the start of its way: it sets off once the spot is clear.)
         const from=this.route.actors.find(a=>a.id===st.actor)?.path[0];
-        if(from&&!this.route.actors.find(a=>a.id===st.actor)?.waits&&(this.scene.traffic?.()??[]).some(q=>Math.hypot(q.x-from.x,q.z-from.z)<8))continue;
+        if(from&&!this.route.actors.find(a=>a.id===st.actor)?.waits&&(this.scene.traffic?.()??[]).some(q=>Math.hypot(q.x-from.x,q.z-from.z)<ACTOR_START_CLEAR+Math.max(0,(q.halfLength??CAR_HALF)-CAR_HALF)))continue;
         this.started.add(key);
         const x=this.scene.actor(st.actor);
         if(x){x.setTiming(st.delay);x.reset()}
@@ -507,6 +522,8 @@ export class DecisionRunner{
     if(pause.kind==='stop'&&!place.when&&this.clearing<CLEARING&&this.trafficAhead(c)){this.clearing+=1/60;return}
     this.clearing=0;
     this.phase='paused';
+    // (The lights as the moment shows them: turned green at this very step, they are not left showing red.)
+    this.holdLights();
     this.scene.freeze(true);
     const stage=c.stages.find(x=>x.id===this.stage)!;
     this.scene.paused({challenge:c,stage,place,index:this.challenge,of:this.route.challenges.length});
@@ -534,8 +551,15 @@ export class DecisionRunner{
     if(this.phase==='finished')return [];
     // (And the junctions just ahead of the car: traffic coming to one waits for the car to go through, rather than a
     // stream of it crossing in front of the car standing at the line.)
-    if(this.ending)return this.nextJunctions();
+    if(this.ending)return [...this.nextJunctions(),...this.streamClear()];
     return [...this.inHand().flatMap(c=>c.quiet),...this.nextJunctions(),...this.wayOut()];
+  }
+
+  /** Long held standing by a stream of traffic: the spot round the car, kept clear (STREAM_CLEAR). */
+  private streamClear():ReadonlyArray<{x:number;z:number;radius:number}>{
+    if(this.streamTime<STREAM_CLEAR)return [];
+    const car=this.scene.car();
+    return [{x:car.x,z:car.z,radius:STREAM_RADIUS}];
   }
 
   /** While the car is pulling out from where the drive starts (a test centre's way out): the road it joins, kept clear
@@ -569,7 +593,7 @@ export class DecisionRunner{
     if(this.handAt&&this.handAt.x===car.x&&this.handAt.z===car.z)return this.hand;
     const s=this.carS(),list=this.only!==null?[this.route.challenges[this.only]!]:this.route.challenges;
     this.handAt={x:car.x,z:car.z};
-    return this.hand=list.filter(c=>s>=this.s(c.instructAt)-QUIET_BEFORE&&s<=this.s(c.endAt)+5);
+    return this.hand=list.filter(c=>s>=this.s(c.instructAt)-QUIET_BEFORE&&s<=this.s(c.quietUntil??c.endAt)+5);
   }
   private hand:ChallengeDef[]=[];
   private handAt:{x:number;z:number}|null=null;

@@ -119,7 +119,7 @@ import {AdaptiveScale} from '../engine/renderScale';
 import {DecisionRunner,type DecisionRunResult,type RunnerScene} from '../decision/runner';
 import type {DecisionRoute} from '../decision/route';
 import {DECISION_ROUTES} from '../decision/routes';
-import {decisionPath,junctionDiscs,routeBlocks,streetFurniture} from '../decision/plan';
+import {decisionPath,junctionDiscs,routeBlocks,startRoads,streetFurniture} from '../decision/plan';
 import {actorDefs} from '../decision/actors';
 import {decisionReport} from '../decision/report';
 import {ACTION_LOOK} from '../decision/actions';
@@ -710,7 +710,7 @@ export async function boot():Promise<void>{
       // (A decision test keeps the junction in hand to its own road users; the exercise's road users are followed.)
       keepClear:()=>decision&&runtime?.scenario.id===decision.scenarioId?decision.runner.keepClear():[],
       // (Oncoming traffic down the learner's road too: the car keeps to its lane.)
-      oncoming:decisionStreets,careful:decisionStreets,...(decisionStreets?{range:DECISION_RANGE}:{}),
+      oncoming:decisionStreets,careful:decisionStreets,...(decisionStreets?{range:DECISION_RANGE,offLimits:startRoads(place,decisionAsked!)}:{}),
       others:()=>passers.filter(p=>p.present).map(p=>({id:p.id,pose:p.pose,speed:p.started?p.speed:0,halfLength:p.size.halfLength}))}):null;
     boarding=traffic&&level.traffic.buses>0?new BusStopBoarding(busStops,crowd.filter(p=>p.kind==='stander')):null;
     for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
@@ -2580,6 +2580,9 @@ export async function boot():Promise<void>{
     /** Diagnostics (scenario captures): open a scene built in advance (public/scenes/<id>.json.gz, named `label`). */
     /** A decision test route (src/decision/routes), opened ready to start; and how it is going. */
     openDecision:(id:string)=>{const r=DECISION_ROUTES.find(x=>x.id===id);return r?openDecision(r):Promise.resolve()},
+    /** Diagnostics: one challenge of the decision test being driven, practised on its own from a little before it
+     * (choosing its camera, or checking it, without driving the route to it). */
+    decisionPractise:(index:number)=>{if(!decision)return;decision.practice=index;resetAttempt();if(session.state!=='running')session.to('running');clock.resume()},
     /** Diagnostics: the paused decision framed this way instead (choosing a challenge's camera). */
     decisionFrame:(frame:{yaw:number;pitch:number;shift?:number})=>{if(decision?.frozen){decisionFrame=frame;showFrame(frame)}},
     decision:()=>decision?{state:decision.runner.state,heldBy:decision.runner.heldBy,at:decision.runner.current?{challenge:decision.runner.current.challenge.id,stage:decision.runner.current.stage.id}:null,

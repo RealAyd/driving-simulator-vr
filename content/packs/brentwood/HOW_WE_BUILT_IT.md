@@ -14,8 +14,9 @@ The owner gave each route as a journey and eight challenges, each with what it a
 > crossing. 3 Kings Road / High Street lights, turn right. ... 8 Emerge back towards Kings Road.
 
 An earlier attempt where the routes were chosen by the agent was scrapped: the challenges were not ones that teach
-(going ahead on a main road, a car that had already pulled out). **The owner picks the routes and what each challenge
-teaches; the build makes them real.**
+(going ahead on a main road, a car that had already pulled out). **For Brentwood the owner picked the routes and what each challenge
+teaches; the build made them real.** (From 11 November 2026 the routes for a new centre are chosen from the best
+evidence available, Brentwood being the guide: see `../chelmsford/HOW_WE_BUILT_IT.md`.)
 
 ## 2. Check the spec against the map before building
 

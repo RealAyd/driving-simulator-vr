@@ -2,6 +2,8 @@ import {describe,expect,it} from 'vitest';
 import {decisionPath} from '../../src/decision/plan';
 import {BRENTWOOD_ROUTE_1} from '../../src/decision/routes/brentwoodRoute1';
 import {BRENTWOOD_ROUTE_2} from '../../src/decision/routes/brentwoodRoute2';
+import {CHELMSFORD_ROUTE_1} from '../../src/decision/routes/chelmsfordRoute1';
+import {CHELMSFORD_ROUTE_2} from '../../src/decision/routes/chelmsfordRoute2';
 import type {DecisionRoute} from '../../src/decision/route';
 import {drive,loadScene,segDistance} from './decisionDrive';
 import {BACK_TO_CENTRE,TO_NEXT} from '../../src/decision/runner';
@@ -23,9 +25,30 @@ const PAUSES:Record<string,string[]>={
     'brook-street-lights/approach','brook-street-lights/green','brook-street-lights/clear',
     'eagle-way-crossroads/approach','eagle-way-crossroads/clear',
     'the-drive-mini/approach',
-    'test-centre-entry/approach','test-centre-entry/clear']
+    'test-centre-entry/approach','test-centre-entry/clear'],
+  'chelmsford-1':['leave-test-centre/approach','leave-test-centre/green','leave-test-centre/clear',
+    'westway-lights/approach','westway-lights/clear',
+    'britvic-roundabout/approach','britvic-roundabout/clear',
+    'st-johns-right/approach','st-johns-right/clear',
+    'hamlet-pull-up/approach','hamlet-pull-up/stopped',
+    'hamlet-move-off/check','hamlet-move-off/clear',
+    'hamlet-emerge/approach','hamlet-emerge/clear',
+    'moulsham-zebra/approach','moulsham-zebra/clear'],
+  'chelmsford-2':['leave-test-centre/approach','leave-test-centre/clear',
+    'primrose-emerge/approach','primrose-emerge/line','primrose-emerge/clear',
+    'chignal-lights/approach','chignal-lights/clear',
+    'melbourne-pull-up/approach','melbourne-pull-up/stopped',
+    'melbourne-move-off/check','melbourne-move-off/clear',
+    'melbourne-zebra/approach','melbourne-zebra/clear',
+    'north-avenue-roundabout/approach','north-avenue-roundabout/clear',
+    'kings-road-emerge/approach','kings-road-emerge/clear']
 };
-const ROUTES:DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2];
+/** Where each route's drive ends: inside the test centre's way in (Brentwood), or back on Cromar Way short of the
+ * units (Chelmsford: the centre's own gate is not in the map). */
+const END:Record<string,{x:number;z:number}>={
+  'brentwood-1':{x:480,z:14},'brentwood-2':{x:480,z:14},'chelmsford-1':{x:-661.6,z:-105},'chelmsford-2':{x:-6.6,z:1008.2}
+};
+const ROUTES:DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2,CHELMSFORD_ROUTE_1,CHELMSFORD_ROUTE_2];
 
 type Run=Awaited<ReturnType<typeof drive>>;
 const keyOf=(p:Run['pauses'][number])=>`${p.at.challenge.id}/${p.at.stage.id}`;
@@ -47,17 +70,24 @@ function asDepicted(r:Run,route:DecisionRoute){
     expect(at('station-crossing/approach').actors['station-pedestrian']!.started).toBe(true);
     // The pulled-up car: the cyclist close behind as it is to move off.
     expect(near('rose-valley-move-off/check','cyclist'),'cyclist behind').toBeLessThan(25);
-  }else{
+  }else if(route===BRENTWOOD_ROUTE_2){
     // The van close behind as the car is to pull up, and as it is to move off.
     expect(near('london-road-pull-up/approach','pullup-van'),'van behind').toBeLessThan(30);
     expect(near('london-road-move-off/check','pullup-van'),'van behind').toBeLessThan(20);
     // Stopped in Mascalls Lane, in the way, when the lights turn green.
     expect(at('brook-street-lights/green').actors['brook-car']!.started).toBe(false);
     expect(near('brook-street-lights/green','brook-car'),'silver car in the way').toBeLessThan(30);
+  }else if(route===CHELMSFORD_ROUTE_1){
+    // Still on the crossing as the lights turn green; the cyclist close behind as the car is to move off.
+    expect(near('leave-test-centre/green','cromar-pedestrian'),'pedestrian in front').toBeLessThan(9);
+    expect(near('hamlet-move-off/check','cyclist'),'cyclist behind').toBeLessThan(30);
+  }else if(route===CHELMSFORD_ROUTE_2){
+    // The grey car close behind as the car is to move off.
+    expect(near('melbourne-move-off/check','melbourne-car'),'grey car behind').toBeLessThan(30);
   }
 }
 
-describe('Brentwood decision routes, driven',()=>{
+describe('decision routes, driven',()=>{
   for(const route of ROUTES){
     it(`${route.id}: plans a way through the route on the scene's roads`,async()=>{
       const {place,keepClear}=await loadScene(route);
@@ -87,9 +117,10 @@ describe('Brentwood decision routes, driven',()=>{
       expect(r.offRoad,r.offAt.join('; ')).toBe(0);
       expect(r.redRun,r.redAt.join('; ')).toBe(0);
       expect(r.fixedHits).toEqual([]);
-      // Back into the test centre at the end.
-      expect(Math.hypot(r.car.position.x-480,r.car.position.z-14)).toBeLessThan(12);
-    },400_000);
+      // Back at the test centre at the end.
+      const end=END[route.id]!;
+      expect(Math.hypot(r.car.position.x-end.x,r.car.position.z-end.z)).toBeLessThan(12);
+    },900_000);
   }
   it('holds the car when the learner pulls out of the test centre in front of the silver car, records it, and asks again',async()=>{
     const r=await drive({'leave-test-centre/line':['look-right','signal-left','go']},0);
@@ -126,7 +157,7 @@ describe('Brentwood decision routes, driven',()=>{
   },120_000);
 });
 
-describe('Brentwood decision routes with background traffic',()=>{
+describe('decision routes with background traffic',()=>{
   // Several patterns of traffic (each seed brings the cars in differently).
   for(const route of ROUTES)for(const seed of [4,14]){
     it(`${route.id}: drives the right answers to a pass as depicted, with traffic about (pattern ${seed})`,async()=>{

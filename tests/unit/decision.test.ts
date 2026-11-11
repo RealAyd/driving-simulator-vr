@@ -42,7 +42,7 @@ describe('decision challenges as authored',()=>{
 
 describe('before and after',()=>{
   it('one decision before and one after at each challenge, more only where two hazards meet at one place',()=>{
-    const overlap=new Set(['leave-test-centre','brook-street-lights']);
+    const overlap=new Set(['leave-test-centre','brook-street-lights','primrose-emerge']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)expect(c.stages.length,c.id).toBeLessThanOrEqual(overlap.has(c.id)?3:2);
   });
 });
@@ -59,7 +59,7 @@ describe('turn buttons',()=>{
     }
   });
   it('every challenge that turns or pulls out says which way',()=>{
-    const ahead=new Set(['station-crossing','the-drive-mini']);
+    const ahead=new Set(['station-crossing','the-drive-mini','westway-lights','moulsham-zebra','melbourne-zebra']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)if(!ahead.has(c.id))expect(c.turn,c.id).toBeTruthy();
   });
   it('a wrong-way signal at a later stage is serious; the right way and the mirrors are harmless',()=>{

@@ -5,7 +5,7 @@ import {LEARNER_CAR,stepVehicle,type VehicleState} from '../../src/vehicle/kinem
 import {drivingView,prepareRoundabouts} from '../../src/world/roundabouts';
 import {roundMinis} from '../../src/world/miniRoundabout';
 import {surfaceAt} from '../../src/world/roadGeometry';
-import {decisionPath,junctionDiscs,routeBlocks,routeParking,streetFurniture} from '../../src/decision/plan';
+import {startRoads,decisionPath,junctionDiscs,routeBlocks,routeParking,streetFurniture} from '../../src/decision/plan';
 import {layoutSignage} from '../../src/world/signage';
 import {StaticObstacles} from '../../src/world/obstacles';
 import {DecisionRunner,type DecisionRunResult,type PausedAt} from '../../src/decision/runner';
@@ -60,7 +60,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   let runner!:DecisionRunner;
   const busStops=place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position);
   const background=traffic>0?new Traffic(place,{count:traffic,buses:2,cycles:2,busStops,parked:[...kerb,...routeParking(route)],learner:()=>({pose:learner().pose,speed:car.speed}),signals:()=>lights.stops,...(seed===undefined?{}:{seed}),
-    keepClear:()=>runner?.keepClear()??[],oncoming:true,careful:true,range:180,
+    keepClear:()=>runner?.keepClear()??[],oncoming:true,careful:true,range:180,offLimits:startRoads(place,route),
     others:()=>[...actors.values()].filter(a=>a.present).map(a=>({id:a.id,pose:a.pose,speed:a.started?a.speed:0,halfLength:a.size.halfLength}))}):null;
   const others=()=>(background?.cars??[]).filter(c=>c.visible);
   for(const a of actors.values()){

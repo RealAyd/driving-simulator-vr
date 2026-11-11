@@ -181,6 +181,8 @@ export interface TrafficOptions{
   /** Coming out of a side road, slowing in good time for the give way or STOP line and waiting with the nose short of
    * the main road's edge (a decision test, where every junction is looked at closely). */
   careful?:boolean;
+  /** Roads kept to the learner (ids): a decision test's start road, the test centre's own. */
+  offLimits?:ReadonlySet<string>;
   /** Other road users on the roads (a scenario's own): followed, or waited for when across the way, as traffic is. */
   others?:()=>ReadonlyArray<{id:string;pose:Pose;speed:number;halfLength:number}>;
 }
@@ -585,8 +587,10 @@ export class Traffic implements SimModule{
    * Brings a road user in on a road near where roads meet, 60–260 m from the learner and out of its sight, clear of
    * other traffic; seldom heading down the learner's road towards it.
    */
-  /** A service road built only because a drive starts on it (not a mini-roundabout's arm): traffic keeps off it. */
+  /** A service road built only because a drive starts on it (not a mini-roundabout's arm), or a road kept to the learner
+   * (offLimits): traffic keeps off it. */
   private privateWay(r:Road):boolean{
+    if(this.options.offLimits?.has(r.id))return true;
     if(!r.id.startsWith('service-'))return false;
     const ends=[r.centreline[0]!,r.centreline.at(-1)!];
     return !this.minis.some(m=>ends.some(e=>Math.hypot(e.x-m.position.x,e.z-m.position.z)<m.radius+3));

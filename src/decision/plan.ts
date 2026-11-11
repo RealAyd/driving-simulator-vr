@@ -20,6 +20,23 @@ export function decisionPath(place:Location,route:DecisionRoute,parked:ReadonlyA
   return shifted(lane,route.shifts??[]);
 }
 
+/** The road a route starts on (a test centre's way out, or the estate road it is on) and the rest of that road by name,
+ * end to end: background traffic keeps off it (on a dead-end estate road, a car meeting the learner's face to face has
+ * nowhere to go). */
+export function startRoads(place:Location,route:DecisionRoute):ReadonlySet<string>{
+  const near=(r:Location['roads'][number])=>Math.min(...r.centreline.map(q=>Math.hypot(q.x-route.start.x,q.z-route.start.z)));
+  const first=place.roads.reduce((a,b)=>near(b)<near(a)?b:a);
+  const out=new Set([first.id]);
+  if(!first.name)return out;
+  const ends=(r:Location['roads'][number])=>[r.centreline[0]!,r.centreline.at(-1)!];
+  for(let grew=true;grew;){
+    grew=false;
+    for(const r of place.roads)if(!out.has(r.id)&&r.name===first.name&&ends(r).some(e=>place.roads.some(o=>out.has(o.id)&&ends(o).some(f=>Math.hypot(e.x-f.x,e.z-f.z)<1))))
+      {out.add(r.id);grew=true}
+  }
+  return out;
+}
+
 /** The car model a route's parked car is drawn with. */
 const ROUTE_CAR='batch-b-saloon';
 
