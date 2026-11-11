@@ -94,6 +94,9 @@ const JAM_AFTER=45;
 const RETURN_LIGHTS=120;
 /** Driving back to the centre: the road this far ahead (metres) is kept clear of traffic. */
 const RETURN_AHEAD=40;
+/** Driving back to the centre, stood this long (seconds) short of the end: traffic within BACK_CLEAR turns off. */
+const BACK_STAND=20;
+const BACK_CLEAR=30;
 /** A route's road user sets off only with no background car this near the start of its way (metres; further for a
  * longer vehicle, as a bus, its middle a good way from its ends). */
 const ACTOR_START_CLEAR=8;
@@ -228,7 +231,7 @@ export class DecisionRunner{
   /** From the start (the whole test), or practising one challenge. The car must already be at `startPose`. */
   begin(only:number|null=null):void{
     this.only=only;this.challenge=only??0;this.stage=this.route.challenges[this.challenge]!.stages[0]!.id;
-    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.started.clear();this.records.length=0;this.last=null;this.ending=false;
+    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.started.clear();this.records.length=0;this.last=null;this.ending=false;
     for(const a of this.route.actors){const x=this.scene.actor(a.id);if(x){x.setTiming(1e9);x.reset()}}
     this.assist.setPath(this.path);
     this.showWaiting();
@@ -389,6 +392,8 @@ export class DecisionRunner{
   private jamWho='';
   /** Seconds the car has stood held by background traffic (STREAM_CLEAR). */
   private streamTime=0;
+  /** Seconds stood on the way back, short of the end (BACK_STAND). */
+  private backStand=0;
   private actorStuckWho='';
   private waved=false;
   private stuckWho='';
@@ -474,6 +479,13 @@ export class DecisionRunner{
     this.holdLights();
     // At the end of the route: pulled up at its end, or stood a moment short of it (behind traffic there).
     if(this.ending){
+      // (Stood a while on the way back, short of the end, boxed in by traffic in a big junction: the traffic round the car
+      // turns off, rather than the car standing there for good. Nothing is being judged.)
+      this.backStand=car.speed<.05&&this.endS()-s>END_REACH?this.backStand+1/60:0;
+      if(this.backStand>BACK_STAND){
+        for(const q of this.scene.traffic?.()??[])if(Math.hypot(q.x-car.x,q.z-car.z)<BACK_CLEAR)this.scene.retire?.(q.id);
+        this.backStand=0;
+      }
       this.endWait=car.speed<.05?this.endWait+1/60:0;
       const end=this.endS();
       if(car.speed<.05&&(s>=end-1||s>=end-END_REACH&&this.endWait>END_WAIT))this.finish();
