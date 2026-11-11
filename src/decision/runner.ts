@@ -454,10 +454,11 @@ export class DecisionRunner{
       // (Held standing by traffic, whoever holds it from one moment to the next: counted until the car moves on.)
       this.streamTime=held&&car0.speed<.1?this.streamTime+1/60:car0.speed>1?0:this.streamTime;
     }
-    // A background road user stood a while blocked by, or face to face with, one of the route's own (each waiting for
-    // the other, as on a narrow road): it turns off, so the moment depicted still comes.
+    // A background road user stood a while blocked by, face to face with, or waiting to cross one of the route's own
+    // (each waiting for the other, as on a narrow road or across a junction): it turns off, so the moment depicted still
+    // comes.
     for(const q of this.scene.traffic?.()??[]){
-      const m=q.why?.match(/^(?:blocked by|facing) (\S+)/);
+      const m=q.why?.match(/^(?:blocked by|facing|crossing) (\S+)/);
       if(m&&this.route.actors.some(a=>a.id===m[1])&&(this.standing.get(q.id)??0)>ACTOR_KNOT){this.scene.retire?.(q.id);this.standing.set(q.id,0)}
     }
     const car=this.scene.car(),s=this.carS();
