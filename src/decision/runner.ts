@@ -90,6 +90,8 @@ const WAVE_AFTER=8;
 const ACTOR_KNOT=8;
 /** Held by one standing background road user this long (seconds), whatever it waits for, it turns off. */
 const JAM_AFTER=45;
+/** Driving back to the centre: lights this far ahead (metres) are held green for the car. */
+const RETURN_LIGHTS=50;
 /** A route's road user sets off only with no background car this near the start of its way (metres; further for a
  * longer vehicle, as a bus, its middle a good way from its ends). */
 const ACTOR_START_CLEAR=8;
@@ -601,7 +603,10 @@ export class DecisionRunner{
   /** The lights of a challenge in hand held green for the car (or red, in a stage that shows people crossing),
    * released once it is past. */
   private holdLights():void{
-    const c=this.phase==='finished'?null:this.inHand().find(x=>x.lights)??null,at=c?.lights??null;
+    const c=this.phase==='finished'?null:this.inHand().find(x=>x.lights)??null;
+    // (Driving back to the centre, nothing left to decide: lights the car comes to are held green for it, rather than it
+    // standing through a long cycle at a big junction.)
+    const at=c?.lights??(this.ending&&this.phase!=='finished'?this.stopAhead(RETURN_LIGHTS):null);
     const red=!!c&&c===this.route.challenges[this.challenge]&&!this.released&&this.redNow(c)&&!this.trafficBefore(c.lights!);
     const aspect=red?'red':c?.lightsAll?'all-green':'green',key=at?`${at.x},${at.z},${aspect}`:'';
     if(key===this.heldKey)return;
@@ -609,6 +614,17 @@ export class DecisionRunner{
     this.scene.holdLights?.(at,aspect);
   }
   private heldKey='';
+
+  /** The stop line of the next traffic lights on the car's way within `reach` metres (for the car's direction), or null. */
+  private stopAhead(reach:number):Vec2|null{
+    const s=this.carS();
+    for(let d=0;d<=reach;d+=1.5){
+      const p=this.assist.pointAt(s+d),q=this.assist.pointAt(s+d+1);
+      for(const st of this.scene.signals?.()??[])
+        if(Math.hypot(p.x-st.lane.x,p.z-st.lane.z)<=2.5&&Math.cos(st.heading-Math.atan2(q.x-p.x,-(q.z-p.z)))>=.8)return {x:st.lane.x,z:st.lane.z};
+    }
+    return null;
+  }
 
   /**
    * Whether the stage in hand shows its lights red: on the move, throughout; stopped at the line after it, until its

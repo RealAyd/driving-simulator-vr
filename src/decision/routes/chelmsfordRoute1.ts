@@ -28,7 +28,8 @@ const WRONG_RIGHT:Fault={level:'serious',heading:'Signals - correctly',title:'Si
 const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a pedestrian',
   message:'Never sound the horn at someone crossing: it can startle them in the road.'};
 
-/** One decision before and one after at each challenge (the owner's rule, beforeAfter.ts); the Cromar Way lights keep
+/** One decision before and one after at each challenge (the owner's rule, beforeAfter.ts), the first on the move unless
+ * the hazard is in view only at the line; the Cromar Way lights keep
  * a third: the red light, then someone still crossing on green, are two hazards at one place. */
 const BEFORE:Record<string,BeforeMerge>={
   'leave-test-centre':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-747,-132.4)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
@@ -39,8 +40,9 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'Approaching the Britvic Roundabout.'}},
   'st-johns-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(173.1,202)},when:{actor:'moulsham-car',at:p(215.3,159.4)},frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the St John\'s Road crossroads.'}},
-  'hamlet-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(302.9,89)},when:{actor:'hamlet-car',at:p(319.3,50.6)},frame:{yaw:-75,pitch:30},
-    state:'Approaching the end of Hamlet Road. Moulsham Street is one-way, from the right.'}},
+  // (At the line: the corner houses hide Moulsham Street until there.)
+  'hamlet-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(298.3,85.2)},when:{actor:'hamlet-car',at:p(302.3,67.5)},frame:{yaw:-60,pitch:44,shift:-4},
+    state:'At the end of Hamlet Road. Moulsham Street is one-way, from the right.'}},
   'moulsham-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(215.4,159.4)},when:{actor:'zebra-pedestrian',at:p(204.2,177.7)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
     state:'On Moulsham Street, the zebra crossing just ahead.'}}
 };

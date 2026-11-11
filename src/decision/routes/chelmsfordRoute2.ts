@@ -39,10 +39,11 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'Approaching the Chignal Road lights on green.'}},
   'melbourne-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(-244,-1124.5)},when:{actor:'zebra-pedestrian',at:p(-217,-1130.4)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
     state:'On Melbourne Avenue, the zebra crossing just ahead.'}},
-  'north-avenue-roundabout':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(0.2,-1149.7)},when:{actor:'north-car',at:p(43.5,-1122.8)},frame:{yaw:-25,pitch:30},
-    state:'Approaching the roundabout.'}},
-  'kings-road-emerge':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(303,-675.3)},when:{actor:'kings-car',at:p(258.7,-631.6)},frame:{yaw:-60,pitch:30},
-    state:'Approaching the end of North Avenue.'}}
+  // (At the line, as Kings Road below: the corner houses hide the road from the right until there.)
+  'north-avenue-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(8.2,-1148.8)},when:{actor:'north-car',at:p(22.7,-1136.9)},frame:{yaw:-60,pitch:44,shift:-4},
+    state:'At the give way line.'}},
+  'kings-road-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(306.9,-668.2)},when:{actor:'kings-car',at:p(296.4,-653.1)},frame:{yaw:-60,pitch:44,shift:-4},
+    state:'At the end of North Avenue.'}}
 };
 
 export const CHELMSFORD_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({

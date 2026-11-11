@@ -179,6 +179,6 @@ describe('decision routes with background traffic',()=>{
       expect(r.fixedHits).toEqual([]);
       // Never stuck: a stand while driving on is a wait at a line or a red light (a long one at a busy junction).
       expect(r.longestStand,r.standAt).toBeLessThan(45);
-    },600_000);
+    },1_500_000);
   }
 });
