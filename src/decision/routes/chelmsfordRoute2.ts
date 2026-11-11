@@ -523,10 +523,10 @@ export const CHELMSFORD_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'North Avenue, right on to Kings Road',
       instruction:'At the end of the road, turn right, please.',
       instructAt:p(242.4,-787),
-      starts:[{actor:'kings-car',at:p(265,-743.4),delay:0}],
+      starts:[{actor:'kings-car',at:p(294.3,-691),delay:0}],
       endAt:p(263.7,-632.3),
       // The junction, and Kings Road to the right, where the black car comes from.
-      quiet:[{x:305,z:-655,radius:28},{x:255,z:-628,radius:40}],
+      quiet:[{x:305,z:-655,radius:28},{x:245,z:-622,radius:45}],
       place:{
         approach:{pause:{kind:'moving',at:p(279.7,-717.2)},frame:{yaw:0,pitch:22},state:'Approaching the end of North Avenue at 15 mph.'},
         line:{pause:{kind:'stop',at:p(306.9,-668.2)},when:{actor:'kings-car',at:p(258.7,-631.6)},frame:{yaw:-80,pitch:26},state:'At the give way line.'},
