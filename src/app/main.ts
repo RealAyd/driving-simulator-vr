@@ -55,6 +55,7 @@ import goodmayesLessonJson from '../../content/scenarios/goodmayes-lesson.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
+import {showRecent} from '../access/recent';
 import {fullScreenNow,installed,portraitTouch,preferLandscape,setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
@@ -1090,7 +1091,8 @@ export async function boot():Promise<void>{
   paidAccess.onSignIn=()=>visits.signedIn();
   /** The drive whose session is in use (its result is reported when it ends). */
   let paidDrive:PaidDrive|null=null;
-  void paidAccess.init();
+  // (Recently practised: where the accounts service runs, once the gate is known.)
+  void paidAccess.init().then(()=>{if(paidAccess.gate)showRecent(byId('recent-practice'),byId('recent-list'))});
   const controller=new ControllerInput({
     getGamepads:()=>typeof navigator.getGamepads==='function'?[...navigator.getGamepads()]:[],
     addEventListener:(type,listener)=>window.addEventListener(type,listener as EventListener)

@@ -53,6 +53,7 @@ const str=(v:unknown,max=500)=>typeof v==='string'&&v.length<=max?v:null;
 
 /** The request handler: everything under /api, plus /healthz. */
 export function handler(service:Service,outbox:OutboxMailer|null){
+  let recentCache:{at:number;items:Awaited<ReturnType<Service['recent']>>}|null=null;
   const {config}=service;
   const admin=new Admin(config,service.store);
   const {support}=service;
@@ -86,6 +87,12 @@ export function handler(service:Service,outbox:OutboxMailer|null){
       const trialCookie=readSession(config.sessionSecret,cookies(req)[TRIAL_COOKIE]);
       const trialId=trialCookie?.startsWith('trial:')?trialCookie.slice(6):null;
 
+      // Recently practised (public; nothing about who): kept for a minute, so busy home screens cost one query a minute.
+      if(method==='GET'&&path==='/api/recent'){
+        if(!recentCache||Date.now()-recentCache.at>60_000)recentCache={at:Date.now(),items:await service.recent()};
+        const age=Math.round((Date.now()-recentCache.at)/1000);
+        return send(res,200,{recent:recentCache.items.map(r=>({...r,secondsAgo:r.secondsAgo+age}))});
+      }
       if(method==='GET'&&path==='/api/config')return send(res,200,{
         gate:true,googleClientId:config.googleClientId,appleServicesId:config.appleServicesId,packs:service.packs(),devCheckout:config.devFakes,signInFirst:config.signInFirst,
         appleRedirect:`${config.appBaseUrl}/api/auth/apple/callback`});

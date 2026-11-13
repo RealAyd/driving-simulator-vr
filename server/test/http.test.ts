@@ -72,6 +72,13 @@ describe('the API over HTTP',()=>{
     expect((await c('/api/me')).json).toMatchObject({signedIn:false});
   });
 
+  it('recently practised: completed drives only, newest first, nothing about who',async()=>{
+    const r=await (await fetch(`${base}/api/recent`)).json() as {recent:Array<Record<string,unknown>>};
+    expect(r.recent.length).toBeGreaterThan(0);
+    for(const d of r.recent)expect(Object.keys(d).sort()).toEqual(['mode','scenario','secondsAgo']);
+    expect(r.recent[0]).toMatchObject({scenario:'goodmayes-free-drive',mode:'free'});
+  });
+
   it('a tampered cookie is not accepted',async()=>{
     const res=await fetch(`${base}/api/me`,{headers:{Cookie:'dp_session=eyJhIjoieCIsImUiOjk5OTk5OTk5OTk5OTl9.forged'}});
     expect(await res.json()).toMatchObject({signedIn:false});

@@ -536,6 +536,9 @@ html[data-theme="light"] .free-badge{color:#15803d}
 .invite-home{display:flex;align-items:center;gap:14px;width:100%;margin:14px 0 4px;padding:16px 18px!important;border-radius:20px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--ink);text-align:left;font:inherit}
 .invite-home>svg{flex:none;color:var(--accent)}.invite-home>span:not(.invite-go){flex:1;display:grid;gap:2px}.invite-home b{font-size:clamp(18px,4.6vw,21px)}.invite-home span span{font-size:clamp(15px,4vw,17px);color:var(--soft)}
 .invite-home .invite-go{flex:none;padding:8px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700}
+.recent-practice{margin:18px 0 4px}.recent-practice h3{margin:0 0 10px;font-size:clamp(19px,5vw,24px);font-weight:800;letter-spacing:-.01em;color:var(--ink)}.recent-practice ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.recent-practice li{display:grid;grid-template-columns:auto 1fr;column-gap:12px;row-gap:2px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);font-size:clamp(15px,4vw,17px)}
+.recent-practice li::before{content:"";grid-row:span 2;width:9px;height:9px;border-radius:50%;background:#22c55e}.recent-practice li span{grid-column:2;color:var(--soft);font-size:.92em}
 .view-passes{justify-self:center;margin:10px 0 2px;padding:6px 4px!important;font-size:17px!important;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
 #place-back{margin-top:14px}
 .place-title{margin:8px 0 10px}
@@ -627,6 +630,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         </div>
         <button id="view-passes" type="button" class="link view-passes" hidden>View passes</button>
         <button id="invite-home" type="button" class="invite-home" hidden><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 8v6M15 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span><b>Invite a friend</b><span>You both get 2 free drives</span></span><span class="invite-go" aria-hidden="true">Invite</span></button>
+        <section id="recent-practice" class="recent-practice" aria-labelledby="recent-title" hidden><h3 id="recent-title">Recently practised</h3><ul id="recent-list"></ul></section>
         <section class="reviews" aria-labelledby="reviews-title">
           <h3 id="reviews-title">What learners say</h3>
           <p class="reviews-source">Reviews of the Driving Practice app</p>
