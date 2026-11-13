@@ -7,8 +7,9 @@ import type {Pot} from './store.js';
  * `starter`: once per account. `links`: its Stripe Payment Link in each mode (public addresses).
  */
 export interface Pack{id:string;label:string;price:string;description?:string;sessions:number;allowances?:Partial<Record<Pot,number>>;starter?:boolean;links:{test:string;live:string};
-  /** Unlimited drives of every kind: for `days` from payment, or `monthly` (a Stripe subscription: a month, and each renewal another). */
-  unlimited?:{days?:number;monthly?:boolean};
+  /** Unlimited drives of every kind: for `days` from payment, or `monthly`; `renews` (a Stripe subscription): each renewal extends it to
+   * the end of the period paid for, with a day's grace for the renewal to arrive. */
+  unlimited?:{days?:number;monthly?:boolean;renews?:boolean};
   /** The last day it is on sale (YYYY-MM-DD, UK): after it, not offered and not sold. */
   saleEnds?:string;
   /** No longer sold, kept so that payments and refunds of it are still recognised. */

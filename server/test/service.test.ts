@@ -381,22 +381,22 @@ describe('referrals',()=>{
 });
 
 describe('unlimited passes',()=>{
-  it('the week pass: every kind of drive for 7 days, nothing used; buying again adds 7 more; a full refund ends it',async()=>{
+  it('the week pass: every kind of drive for a week (and a day\'s grace, as it renews), nothing used; buying again adds another; a full refund ends it',async()=>{
     const {service,checkout,store}=setup();
     const a=await signUp(service,'week@example.com');
     await service.handleStripeEvent(checkout(a.id,'black-friday-week',499));
     const me=(await service.me(a.id))!;
     const days=(Date.parse(me.unlimitedUntil!)-Date.now())/86400_000;
-    expect(days).toBeGreaterThan(6.9);expect(days).toBeLessThan(7.1);
+    expect(days).toBeGreaterThan(7.9);expect(days).toBeLessThan(8.1);
     for(const s of ['goodmayes-free-drive','goodmayes-lesson','goodmayes-mock-test','goodmayes-free-drive'])expect(await complete(service,a.id,s)).toBe(true);
     expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
     expect((await service.me(a.id))!.history.some(h=>h.type==='consumed')).toBe(false);
     await service.handleStripeEvent(checkout(a.id,'black-friday-week',499));
-    expect((Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000).toBeGreaterThan(13.9);
+    expect((Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000).toBeGreaterThan(15.9);
     // The same checkout delivered twice adds nothing.
     const once=checkout(a.id,'black-friday-week',499);
     await service.handleStripeEvent(once);await service.handleStripeEvent(once);
-    expect((Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000).toBeLessThan(21.1);
+    expect((Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000).toBeLessThan(24.1);
     const pi=(once.data.object as {payment_intent:string}).payment_intent;
     await service.handleStripeEvent({id:'evt_refund_week',type:'charge.refunded',data:{object:{id:'ch_week',payment_intent:pi,refunded:true,amount:499,amount_refunded:499,currency:'gbp'}}});
     expect((await service.me(a.id))!.unlimitedUntil).toBeNull();
@@ -419,5 +419,28 @@ describe('unlimited passes',()=>{
     expect(await complete(service,a.id,'goodmayes-mock-test')).toBe(true);
     await service.handleStripeEvent({id:'evt_inv_x',type:'invoice.paid',data:{object:{id:'in_x',billing_reason:'subscription_cycle',subscription:'sub_unknown',amount_paid:1499,currency:'gbp'}}});
     expect((await store.flags()).some(f=>f.kind==='renewal-no-account')).toBe(true);
+  });
+});
+
+describe('renewing passes follow the period paid for',()=>{
+  it('the Black Friday pass renews weekly: each renewal runs to the end of the week paid for (and a day), not a month; both passes on one account',async()=>{
+    const {service,checkout}=setup();
+    const a=await signUp(service,'weekly@example.com');
+    await service.handleStripeEvent(checkout(a.id,'black-friday-week',499,{mode:'subscription',subscription:'sub_week',payment_intent:null}));
+    // A week and a day's grace.
+    const first=(Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000;
+    expect(first).toBeGreaterThan(7.9);expect(first).toBeLessThan(8.1);
+    const weekEnd=Math.floor(Date.now()/1000)+14*86400;
+    await service.handleStripeEvent({id:'evt_w1',type:'invoice.paid',data:{object:{id:'in_w1',billing_reason:'subscription_cycle',subscription:'sub_week',amount_paid:499,currency:'gbp',
+      lines:{data:[{period:{start:weekEnd-7*86400,end:weekEnd}}]}}}});
+    const renewed=Date.parse((await service.me(a.id))!.unlimitedUntil!);
+    expect(Math.abs(renewed-(weekEnd*1000+86400_000))).toBeLessThan(1000);
+    // The same account buys Monthly too: its renewals are recognised as well.
+    await service.handleStripeEvent(checkout(a.id,'monthly',1099,{mode:'subscription',subscription:'sub_month',payment_intent:null}));
+    const monthEnd=Math.floor(Date.now()/1000)+70*86400;
+    await service.handleStripeEvent({id:'evt_m1',type:'invoice.paid',data:{object:{id:'in_m1',billing_reason:'subscription_cycle',subscription:'sub_month',amount_paid:1099,currency:'gbp',
+      lines:{data:[{period:{end:monthEnd}}]}}}});
+    expect(Math.abs(Date.parse((await service.me(a.id))!.unlimitedUntil!)-(monthEnd*1000+86400_000))).toBeLessThan(1000);
+    expect((await service.me(a.id))!.history.filter(h=>h.reason.endsWith('renewed')).map(h=>h.reason).sort()).toEqual(['Black Friday All Week Unlimited Pass renewed','Monthly renewed']);
   });
 });

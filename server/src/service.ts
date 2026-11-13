@@ -32,10 +32,11 @@ export function onSale(p:Pack,mode:'test'|'live',now=new Date()):boolean{
   return !p.saleEnds||now.getTime()<=new Date(`${p.saleEnds}T23:59:59Z`).getTime();
 }
 /** The end of an unlimited pass bought (or renewed) now, on top of any time already held. */
-export function passUntil(held:Date|undefined,unlimited:{days?:number;monthly?:boolean},now=new Date()):Date{
+export function passUntil(held:Date|undefined,unlimited:{days?:number;monthly?:boolean;renews?:boolean},now=new Date()):Date{
   const from=new Date(Math.max(now.getTime(),held?.getTime()??0));
+  // (A renewing pass gets a day's grace, so a renewal that arrives a little late does not interrupt it.)
   if(unlimited.monthly){const d=new Date(from);d.setUTCMonth(d.getUTCMonth()+1);return new Date(d.getTime()+86400_000)}
-  return new Date(from.getTime()+(unlimited.days??7)*86400_000);
+  return new Date(from.getTime()+(unlimited.days??7)*86400_000+(unlimited.renews?86400_000:0));
 }
 
 /** What a drive is, from its scenario id (the browser's own description of it is not trusted). */
@@ -452,18 +453,24 @@ export class Service{
         return;
       }
       case 'invoice.paid':{
-        // A monthly pass renewed (the first payment is the checkout's): another month, from the end of the one held.
+        // A renewing pass renewed (the first payment is the checkout's): unlimited to the end of the period now paid for.
         if(o['billing_reason']==='subscription_create')return;
         const parent=o['parent'] as {subscription_details?:{subscription?:string}}|null|undefined;
         const sub=typeof o['subscription']==='string'?o['subscription']:parent?.subscription_details?.subscription;
         const account=sub?await this.store.findAccount({subscription:sub}):null;
         if(!account){await this.store.flag('renewal-no-account',{event:event.id,invoice:o['id'],subscription:sub??null});return}
-        const pack=this.config.packs.find(p=>p.unlimited?.monthly);
+        const packId=account.subscriptions?.find(s=>s.id===sub)?.pack;
+        const pack=this.config.packs.find(p=>p.id===packId);
         const pi=typeof o['payment_intent']==='string'?o['payment_intent']:undefined;
         const r=await this.store.appendLedger({product:'simulator',accountId:account.id,type:'purchase',sessionsDelta:0,amountPence:Number(o['amount_paid']??0),
-          currency:String(o['currency']??'gbp'),actor:'stripe',stripe:{event:event.id,...(pi?{paymentIntent:pi}:{})},reason:`${pack?.label??'Monthly'} renewed`,
+          currency:String(o['currency']??'gbp'),actor:'stripe',stripe:{event:event.id,...(pi?{paymentIntent:pi}:{})},reason:`${pack?.label??'Pass'} renewed`,
           idempotencyKey:`invoice:${String(o['id'])}`});
-        if(r==='ok')await this.store.updateAccount(account.id,{unlimitedUntil:passUntil(account.unlimitedUntil,{monthly:true})});
+        if(r!=='ok')return;
+        // The period paid for, from the invoice (weekly or monthly alike); the pack's own length if Stripe does not say.
+        const lines=o['lines'] as {data?:Array<{period?:{end?:number}}>}|undefined;
+        const end=Number(lines?.data?.[0]?.period?.end??0)*1000;
+        const until=end>Date.now()?new Date(Math.max(end+86400_000,account.unlimitedUntil?.getTime()??0)):passUntil(account.unlimitedUntil,pack?.unlimited??{monthly:true});
+        await this.store.updateAccount(account.id,{unlimitedUntil:until});
         return;
       }
       case 'charge.dispute.created':
@@ -530,7 +537,8 @@ export class Service{
     // An unlimited pass: time on the account (once per checkout, whichever of the webhook or the return from paying is first).
     if(pack.unlimited&&recorded==='ok'){
       const sub=typeof o['subscription']==='string'?o['subscription']:undefined;
-      await this.store.updateAccount(account.id,{unlimitedUntil:passUntil(account.unlimitedUntil,pack.unlimited),...(sub?{subscription:sub}:{})});
+      await this.store.updateAccount(account.id,{unlimitedUntil:passUntil(account.unlimitedUntil,pack.unlimited),
+        ...(sub?{subscriptions:[...(account.subscriptions??[]).filter(s=>s.id!==sub),{id:sub,pack:pack.id}]}:{})});
     }
     if(pack.starter){
       for(const pot of POTS){

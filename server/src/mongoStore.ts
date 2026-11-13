@@ -84,7 +84,7 @@ export class MongoStore implements Store{
 
   async findAccount(q:AccountQuery){
     const [k,v]=Object.entries(q)[0] as [string,string];
-    return out<Account>(await this.accounts.findOne(k==='id'?{_id:v}:{[k]:v}));
+    return out<Account>(await this.accounts.findOne(k==='id'?{_id:v}:k==='subscription'?{'subscriptions.id':v}:{[k]:v}));
   }
   async createAccount(a:Omit<Account,'id'|'balance'|'createdAt'>){
     const doc={...a,_id:randomUUID(),balance:0,createdAt:new Date()} as Doc<Account>;

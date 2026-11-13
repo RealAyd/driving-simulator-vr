@@ -33,8 +33,8 @@ export interface Account{
   starterBought?:boolean;
   /** Unlimited drives (an unlimited pass) until this moment. */
   unlimitedUntil?:Date;
-  /** The Stripe subscription of a monthly unlimited pass (its renewals extend `unlimitedUntil`). */
-  subscription?:string;
+  /** The Stripe subscriptions of renewing passes, with the pack each is for (their renewals extend `unlimitedUntil`). */
+  subscriptions?:Array<{id:string;pack:string}>;
   /** The checkout that bought the Starter Pass (a second one is refunded, not granted). */
   starterCheckout?:string;
   /** The lessons finished (their ids), from any device: signing in brings them to a new one. */
@@ -204,8 +204,8 @@ export class MemoryStore implements Store{
   }
 
   async findAccount(q:AccountQuery){
-    const [k,v]=Object.entries(q)[0] as [keyof Account,string];
-    const a=[...this.accounts.values()].find(x=>x[k]===v);
+    const [k,v]=Object.entries(q)[0] as [string,string];
+    const a=[...this.accounts.values()].find(x=>k==='subscription'?x.subscriptions?.some(s=>s.id===v):x[k as keyof Account]===v);
     return a?{...a,allowances:{...a.allowances}}:null;
   }
   async createAccount(a:Omit<Account,'id'|'balance'|'createdAt'>){
