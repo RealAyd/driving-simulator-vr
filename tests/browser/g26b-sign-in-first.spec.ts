@@ -14,6 +14,9 @@ test('G26b: sign-in first: no free try signed out; Start opens sign-in; signed i
   await page.goto('./');
   await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
   await expect(page.locator('#free-badge')).toBeHidden();
+  // A way to the public site, on the home screen and on sign-in.
+  await expect(page.locator('#screen-start [data-public-link] a')).toHaveAttribute('href','https://vr.drivingpractice.live/');
+  await expect(page.locator('#screen-start [data-public-link]')).toBeVisible();
   await expect(page.locator('[data-try]')).toHaveCount(3);
   for(const tag of await page.locator('[data-try]').all())await expect(tag).toBeHidden();
   await pick(page,'moving-off');
@@ -21,6 +24,7 @@ test('G26b: sign-in first: no free try signed out; Start opens sign-in; signed i
   await page.click('#start-practice');
   await expect(page.locator('#screen-account')).toBeVisible();
   await expect(page.locator('#account-title')).toHaveText('Sign in');
+  await expect(page.locator('#screen-account [data-public-link]')).toBeVisible();
   await page.fill('#email-input','tester@example.com');
   await page.click('#email-send');
   await expect(page.locator('#code-form')).toBeVisible();

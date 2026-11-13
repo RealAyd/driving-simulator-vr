@@ -35,6 +35,7 @@ test('G26: a free try without signing up (three free drives here), used only whe
   await gated(page);
   await expect(page.locator('#account-chip')).toHaveText('Sign in');
   await expect(page.locator('#free-badge')).toHaveText('Your first 9 drives are free');
+  await expect(page.locator('[data-public-link]').first()).toBeHidden();
   await expect(page.locator('#view-passes')).toBeVisible();
   // Each card says its free try is there.
   await expect(page.locator('[data-try]')).toHaveText(['3 free','3 free','3 free']);

@@ -284,6 +284,8 @@ export class Access{
       :`Still free to try on this device, no sign-up needed: ${counts.slice(0,-1).join(', ')}${counts.length>1?' and ':''}${counts.at(-1)}.`;
     // "or with your email" only under a Google or Apple button.
     document.querySelector<HTMLElement>('#account-signin .divider')!.hidden=!this.config?.googleClientId&&!this.config?.appleServicesId;
+    // Staging (sign-in first) is a test site: a way to the public one for anyone but the admins.
+    for(const el of document.querySelectorAll<HTMLElement>('[data-public-link]'))el.hidden=!this.config?.signInFirst||(signedIn&&!!me.admin);
     const chip=byId('account-chip');
     const starterLeft=signedIn?me.allowances.lesson+me.allowances.test+me.allowances.free:0;
     const drives=total(me);
