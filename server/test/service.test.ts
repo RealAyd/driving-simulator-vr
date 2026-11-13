@@ -441,6 +441,6 @@ describe('renewing passes follow the period paid for',()=>{
     await service.handleStripeEvent({id:'evt_m1',type:'invoice.paid',data:{object:{id:'in_m1',billing_reason:'subscription_cycle',subscription:'sub_month',amount_paid:1099,currency:'gbp',
       lines:{data:[{period:{end:monthEnd}}]}}}});
     expect(Math.abs(Date.parse((await service.me(a.id))!.unlimitedUntil!)-(monthEnd*1000+86400_000))).toBeLessThan(1000);
-    expect((await service.me(a.id))!.history.filter(h=>h.reason.endsWith('renewed')).map(h=>h.reason).sort()).toEqual(['Black Friday All Week Unlimited Pass renewed','Monthly renewed']);
+    expect((await service.me(a.id))!.history.filter(h=>h.reason.endsWith('renewed')).map(h=>h.reason).sort()).toEqual(['Monthly Unlimited Pass renewed','Weekly Unlimited Pass renewed']);
   });
 });

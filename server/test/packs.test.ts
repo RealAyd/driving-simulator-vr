@@ -10,7 +10,7 @@ describe('the passes on sale follow the Stripe key',()=>{
     expect(config.stripeMode).toBe('live');
     for(const p of config.packs)expect(p.links.live).toMatch(/^https:\/\/buy\.stripe\.com\/(?!test_)\w+$/);
     const service=new Service(config,new MemoryStore(),new OutboxMailer(),fakeIdentities,fakeStripe(config));
-    expect(service.packs().map(p=>[p.id,p.label])).toEqual([['black-friday-week','Black Friday All Week Unlimited Pass'],['monthly','Monthly']]);
+    expect(service.packs().map(p=>[p.id,p.label])).toEqual([['black-friday-week','Weekly Unlimited Pass'],['monthly','Monthly Unlimited Pass']]);
     const a=await service.signIn('email',{sub:'l',email:'live@example.com',emailVerified:true});
     const url=await service.checkoutUrl(a.id,'monthly');
     expect('url' in url&&url.url.startsWith('https://buy.stripe.com/cNidR17ou99O6FreqO0VO0a?')).toBe(true);

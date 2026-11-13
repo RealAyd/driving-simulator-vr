@@ -85,7 +85,8 @@ test('G26: a free try without signing up (one free drive here), used only when c
   await expect(page.locator('#screen-account')).toHaveAttribute('data-mode','paywall');
   await expect(page.locator('#account-main-title')).toHaveText('Keep driving');
   await expect(page.locator('#account-balance')).toBeHidden();
-  await expect(page.locator('#pack-list [data-pack=monthly]')).toContainText('Unlimited free drives, lessons and mock tests, renews monthly');
+  await expect(page.locator('#pack-list [data-pack=monthly]')).toContainText('Monthly Unlimited Pass');
+  await expect(page.locator('#pack-list [data-pack=monthly]')).toContainText('Cancel anytime');
   await expect(page.locator('#pack-list [data-pack=starter]')).toHaveCount(0);
   // Invite a friend is there too: the way to keep driving for free.
   await expect(page.locator('#screen-account .invite-box')).toBeVisible();

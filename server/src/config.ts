@@ -13,7 +13,9 @@ export interface Pack{id:string;label:string;price:string;description?:string;se
   /** The last day it is on sale (YYYY-MM-DD, UK): after it, not offered and not sold. */
   saleEnds?:string;
   /** No longer sold, kept so that payments and refunds of it are still recognised. */
-  retired?:boolean}
+  retired?:boolean;
+  /** Shown on the pass: the offer ("-85% off") and a sticker above it ("Limited Time Discount"). */
+  deal?:string;sticker?:string}
 
 export interface Config{
   port:number;

@@ -8,6 +8,7 @@ type Pot='lesson'|'test'|'free';
 type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean;
   /** Staging: shown as it will be live, bought on the live site. */
   preview?:boolean;
+  deal?:string;sticker?:string;
   unlimited?:{days?:number;monthly?:boolean};saleEnds?:string};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean;signInFirst?:boolean};
 /** The device's free try (no sign-up): what is left of its lessons, mock tests and free drives (FREE_EACH of each). */
@@ -340,11 +341,14 @@ export class Access{
     const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&(p.onSale||p.preview));
     byId('pack-list').replaceChildren(...packs.map(p=>{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;
-      const left=document.createElement('span');
-      const t=document.createElement('b');t.textContent=p.label;
-      const d=document.createElement('small');d.textContent=` ${p.description}${p.starter?' · once per account':''}${p.saleEnds?` · on sale until ${day(`${p.saleEnds}T12:00:00Z`)}`:''}`;
-      left.append(t,d);
-      const price=document.createElement('span');price.className='price';price.textContent=p.price;
+      const el=(tag:string,cls:string,text:string)=>{const e=document.createElement(tag);e.className=cls;e.textContent=text;return e};
+      const left=el('span','pack-text','');
+      if(p.sticker)left.append(el('span','pack-sticker',p.sticker));
+      const title=el('span','pack-title','');title.append(el('b','',p.label),...(p.deal?[el('span','pack-deal',p.deal)]:[]));
+      left.append(title,el('small','',`${p.description}${p.starter?' · once per account':''}`));
+      // "£4.99 a week": the amount large, how often under it.
+      const [amount,per]=p.price.split(' a ');
+      const price=el('span','price','');price.append(el('b','',amount??''),...(per?[el('small','',`/${per}`)]:[]));
       b.append(left,...(p.price?[price]:[]));
       b.addEventListener('click',()=>void this.buy(p));
       return b;

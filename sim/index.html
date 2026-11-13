@@ -214,6 +214,13 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .pack-list button{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:12px 14px;border-radius:14px}
 .pack-list button b{font-size:16px}
 .pack-list button .price{font-weight:700;color:var(--accent)}
+.pack-list button[data-pack]{align-items:center;gap:12px;padding:14px 16px;border-radius:16px}
+.pack-list .pack-text{display:grid;gap:4px;min-width:0}
+.pack-list .pack-sticker{justify-self:start;padding:3px 8px;border-radius:6px;background:#facc15;color:#0b0b0f;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;transform:rotate(-2deg)}
+.pack-list .pack-title{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}.pack-list .pack-title b{font-size:17px}
+.pack-list .pack-deal{padding:2px 7px;border-radius:999px;background:#dc2626;color:#fff;font-size:12px;font-weight:800}
+.pack-list small{color:var(--soft);font-size:14px}
+.pack-list .price{flex:none;display:grid;justify-items:end;line-height:1.1}.pack-list .price b{font-size:22px;font-weight:800}.pack-list .price small{color:var(--soft);font-size:13px;font-weight:600}
 .pack-list button[data-pack=starter]{border-color:var(--accent);background:var(--accent-soft)}
 #screen-account[data-mode=paywall] .not-paywall{display:none}
 .admin-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;border:1px solid var(--accent);border-radius:14px;padding:12px;margin:12px 0}
