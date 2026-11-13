@@ -370,7 +370,15 @@ export class Access{
 
   private async buy(p:Pack){
     if(!this.me.signedIn)return;
-    if(p.preview){byId('account-note').textContent='This is the test site: passes are bought on vr.drivingpractice.live.';return}
+    if(p.preview){
+      // Staging: said on the pass that was tapped, where it is seen.
+      const card=document.querySelector<HTMLElement>(`#pack-list [data-pack="${p.id}"]`);
+      if(card&&!card.querySelector('.pack-note')){
+        const n=document.createElement('span');n.className='pack-note';n.textContent='Test site: buy this on vr.drivingpractice.live';
+        card.querySelector('.pack-text')?.append(n);
+      }
+      return;
+    }
     store.set(BUY_KEY,JSON.stringify({total:total(this.me),balance:this.me.balance,starter:this.me.starterBought,until:this.me.unlimitedUntil??null,at:Date.now()}));
     if(this.config?.devCheckout){
       // Local development: a pretend payment, delivered to the server as Stripe would.
