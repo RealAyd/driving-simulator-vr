@@ -103,6 +103,9 @@ test('G26: a free try without signing up (one free drive here), used only when c
   await expect(page.locator('#account-chip')).toHaveText('Unlimited');
   await expect(page.locator('#account-balance')).toHaveText('Unlimited');
   await expect(page.locator('#account-balance-unit')).toHaveText(/^until \d{1,2} \w{3}$/);
+  // While the pass runs: just how long it lasts, nothing to buy, no sessions row.
+  await expect(page.locator('#pack-list')).toBeHidden();
+  await expect(page.locator('#account-breakdown')).toBeHidden();
 });
 
 test('G26: invite a friend from the home screen: the friend signs in with 2 free drives; once they complete a drive, the inviter gets 2',async({browser})=>{

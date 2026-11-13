@@ -331,13 +331,18 @@ export class Access{
       const span=document.createElement('span');span.textContent='for any lesson, mock test or free drive';
       li.append(b,span);rows.push(li);
     }
-    {
+    // (Sessions: only what can be used; never a number below nothing.)
+    if(me.balance>0||(!until&&!starterLeft)){
+      const n=Math.max(0,me.balance);
       const li=document.createElement('li');
-      const b=document.createElement('b');b.textContent=`${me.balance} session${me.balance===1?'':'s'}`;
-      const span=document.createElement('span');span.textContent=me.balance>0?'for any lesson, mock test or free drive':until?'kept for after your pass':'or choose a pass below';
+      const b=document.createElement('b');b.textContent=`${n} session${n===1?'':'s'}`;
+      const span=document.createElement('span');span.textContent=n>0?until?'kept for after your pass':'for any lesson, mock test or free drive':'or choose a pass below';
       li.append(b,span);rows.push(li);
     }
     byId('account-breakdown').replaceChildren(...rows);
+    byId('account-breakdown').hidden=!rows.length;
+    // A pass running: just how long it lasts; nothing to buy until it ends.
+    byId('pack-list').hidden=!!until;
     const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&(p.onSale||p.preview));
     byId('pack-list').replaceChildren(...packs.map(p=>{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;
