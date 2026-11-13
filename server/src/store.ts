@@ -8,7 +8,7 @@ import type {VisitEvent} from './analytics.js';
  * in tests and local development.
  */
 /** Free drives of each kind (lesson, mock test, free drive) on a device's free try, without signing up. */
-export const TRIAL_EACH=3;
+export const TRIAL_EACH=1;
 /** A new free try: all of it left. */
 export const freshTrial=():Record<Mode,number>=>({lesson:TRIAL_EACH,test:TRIAL_EACH,free:TRIAL_EACH});
 

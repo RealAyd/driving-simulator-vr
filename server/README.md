@@ -139,7 +139,7 @@ API: `GET /api/admin/overview`, `GET /api/admin/customers?q=`, `GET /api/admin/c
 
 ## Free try (no sign-up)
 
-Each device can complete **three lessons, three mock tests and three free drives** without an account (`TRIAL_EACH`
+Each device can complete **one lesson, one mock test and one free drive** without an account (`TRIAL_EACH`
 in `src/store.ts`; one is used when a drive is completed). The try is held by the server (`trials`), named in an HttpOnly signed cookie (`dp_trial`, a
 year). New tries are limited to 30 a day per address (clearing cookies does not give unlimited drives; many phones
 share one address). Signed in, an account's sessions are used first; with none left, the device's free try. Admins (`ADMIN_EMAILS`) drive without sessions or tries.

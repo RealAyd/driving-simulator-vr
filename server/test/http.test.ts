@@ -38,7 +38,7 @@ describe('the API over HTTP',()=>{
     const cfg=await c('/api/config');
     expect(cfg.json).toMatchObject({gate:true,devCheckout:true});
     expect((cfg.json!['packs'] as Array<{id:string}>).map(p=>p.id)).toEqual(['starter','vr-5','vr-15','vr-35']);
-    expect((await c('/api/me')).json).toEqual({signedIn:false,trial:{lesson:3,test:3,free:3}});
+    expect((await c('/api/me')).json).toEqual({signedIn:false,trial:{lesson:1,test:1,free:1}});
   });
 
   it('email code sign-in sets a signed, HttpOnly, Secure cookie; a drive needs a session; buying adds them',async()=>{
@@ -51,8 +51,8 @@ describe('the API over HTTP',()=>{
     expect(set).toContain('HttpOnly');expect(set).toContain('Secure');expect(set).toContain('SameSite=Lax');
     expect(readSession(config.sessionSecret,decodeURIComponent(c.length?r.cookie().split('=').slice(1).join('='):''))).not.toBeNull();
     expect((await c('/api/me')).json).toMatchObject({signedIn:true,email:'h@example.com',balance:0});
-    // (The device's free try first, three free drives: then a drive needs a session.)
-    for(let k=0;k<3;k++){
+    // (The device's free try first, one free drive: then a drive needs a session.)
+    for(let k=0;k<1;k++){
       const tried=await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
       expect(tried.json).toMatchObject({trial:true});
       await c(`/api/drives/${tried.json!['driveId']}/completed`,{});

@@ -30,12 +30,14 @@ const REF_KEY='dp.referral.v1',BUY_KEY='dp.buying.v1';
 const modeOf=(scenario:string):Pot=>scenario.endsWith('-mock-test')?'test':scenario.endsWith('-lesson')?'lesson':'free';
 const POT_NAME:Record<Pot,string>={lesson:'lesson',test:'mock test',free:'free drive'};
 /** Free drives of each kind on a device's free try (the server's TRIAL_EACH decides; this is for the wording). */
-const FREE_EACH=3;
+const FREE_EACH=1;
 /** A free try's drives by kind, as said to the learner: one, and more than one. */
 const TRY_NAME:Record<Pot,[string,string]>={lesson:['free lesson','free lessons'],test:['free mock test','free mock tests'],free:['free drive','free drives']};
 /** "3 free lessons", "1 free drive". */
 const cap=(t:string)=>t[0]!.toUpperCase()+t.slice(1);
 const freeCount=(k:Pot,n:number)=>`${n} ${TRY_NAME[k][n===1?0:1]}`;
+/** What unlocks more drives for free, said where the free ones run out. */
+const INVITE_UNLOCK='Invite a friend: you both get 2 free drives.';
 /** Everything the account can start: general sessions plus Starter allowances. */
 const total=(me:Me)=>me.signedIn?me.balance+me.allowances.lesson+me.allowances.test+me.allowances.free:0;
 
@@ -177,14 +179,14 @@ export class Access{
     const pot=scenario?modeOf(scenario):null;
     const left=pot?this.me.trial?.[pot]??0:0;
     if(!this.me.signedIn&&this.config?.signInFirst)return 'Sign in to start';
-    if(!this.me.signedIn)return pot&&left>0?`${cap(TRY_NAME[pot][0])} ${Math.max(1,FREE_EACH-left+1)} of ${Math.max(FREE_EACH,left)}: no sign-up needed, used if you complete it`
-      :pot?`You have used your ${TRY_NAME[pot][1]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: a completed drive uses one session.';
+    if(!this.me.signedIn)return pot&&left>0?`${left===1&&FREE_EACH===1?`Your ${TRY_NAME[pot][0]}`:`${cap(TRY_NAME[pot][0])} ${Math.max(1,FREE_EACH-left+1)} of ${Math.max(FREE_EACH,left)}`}: no sign-up needed, used if you complete it`
+      :pot?`You have used your ${TRY_NAME[pot][FREE_EACH===1?0:1]}. ${this.stillFree(pot)||INVITE_UNLOCK}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
     const n=total(this.me);
     if(n>0)return `Uses 1 session if you complete it · you have ${n}`;
     if(pot&&left>0)return `Uses one of your ${freeCount(pot,left)}`;
     const rest=pot?this.stillFree(pot):'';
-    return pot&&rest?`You have used your ${TRY_NAME[pot][1]}. ${rest}`:'No sessions left: buy more to start.';
+    return pot&&rest?`You have used your ${TRY_NAME[pot][FREE_EACH===1?0:1]}. ${rest}`:`No drives left. ${INVITE_UNLOCK}`;
   }
 
   /**

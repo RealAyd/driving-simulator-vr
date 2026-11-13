@@ -184,9 +184,9 @@ describe('the admin hub API',()=>{
     const me=(await boss('/api/me')).json;
     expect(me).toMatchObject({admin:true,balance:0});
     expect(me.history.filter((h:{type:string})=>h.type==='consumed'||h.type==='drive_refund')).toEqual([]);
-    // A learner with no sessions: the device's free try (three free drives), then a session is needed.
+    // A learner with no sessions: the device's free try (one free drive), then a session is needed.
     const learner=await as('learner-nodrive@example.com');
-    for(let k=0;k<3;k++){
+    for(let k=0;k<1;k++){
       const tried=await learner('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
       expect(tried.json).toMatchObject({trial:true});
       await learner(`/api/drives/${tried.json.driveId}/completed`,{});
