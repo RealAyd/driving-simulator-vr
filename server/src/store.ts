@@ -39,6 +39,8 @@ export interface Account{
   starterCheckout?:string;
   /** The lessons finished (their ids), from any device: signing in brings them to a new one. */
   lessonsDone?:string[];
+  /** Leaderboards: whether and how they show (board.ts). */
+  board?:import('./board.js').BoardSettings;
 }
 
 /** What a drive is: the server decides from the scenario, never from what the browser says. */
