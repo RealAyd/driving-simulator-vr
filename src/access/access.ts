@@ -6,6 +6,8 @@
  */
 type Pot='lesson'|'test'|'free';
 type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean;
+  /** Staging: shown as it will be live, bought on the live site. */
+  preview?:boolean;
   unlimited?:{days?:number;monthly?:boolean};saleEnds?:string};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean;signInFirst?:boolean};
 /** The device's free try (no sign-up): what is left of its lessons, mock tests and free drives (FREE_EACH of each). */
@@ -179,7 +181,7 @@ export class Access{
 
   /** The offer on sale now for the home screen's banner (the Black Friday pass while it is sold), or null. */
   offer():{price:string}|null{
-    const p=this.gate?this.config?.packs.find(x=>x.id==='black-friday-week'&&x.onSale):undefined;
+    const p=this.gate?this.config?.packs.find(x=>x.id==='black-friday-week'&&(x.onSale||x.preview)):undefined;
     return p?{price:p.price}:null;
   }
 
@@ -335,7 +337,7 @@ export class Access{
       li.append(b,span);rows.push(li);
     }
     byId('account-breakdown').replaceChildren(...rows);
-    const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&p.onSale);
+    const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&(p.onSale||p.preview));
     byId('pack-list').replaceChildren(...packs.map(p=>{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;
       const left=document.createElement('span');
@@ -363,6 +365,7 @@ export class Access{
 
   private async buy(p:Pack){
     if(!this.me.signedIn)return;
+    if(p.preview){byId('account-note').textContent='This is the test site: passes are bought on vr.drivingpractice.live.';return}
     store.set(BUY_KEY,JSON.stringify({total:total(this.me),balance:this.me.balance,starter:this.me.starterBought,until:this.me.unlimitedUntil??null,at:Date.now()}));
     if(this.config?.devCheckout){
       // Local development: a pretend payment, delivered to the server as Stripe would.

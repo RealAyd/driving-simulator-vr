@@ -36,4 +36,14 @@ describe('the passes on sale follow the Stripe key',()=>{
     expect(priceText({amountPence:499,currency:'gbp',interval:null})).toBe('£4.99');
     expect(priceText({amountPence:1499,currency:'gbp',interval:'month'})).toBe('£14.99 a month');
   });
+
+  it('staging (a test key, sign-in first): the passes sold live are shown to preview, not sold',async()=>{
+    const base=loadConfig({DP_DEV_FAKES:'1',APP_BASE_URL:'https://staging.drivingpractice.live',STRIPE_SECRET_KEY:'sk_test_x'});
+    // (As on staging: the passes have live links only.)
+    const config={...base,packs:base.packs.map(p=>({...p,links:{...p.links,test:''}}))};
+    const service=new Service(config,new MemoryStore(),new OutboxMailer(),fakeIdentities,fakeStripe(config));
+    expect(service.packs().map(p=>[p.id,p.price,p.onSale,!!p.preview])).toEqual([['black-friday-week','£4.99 a week',false,!!service.packs()[0]!.preview],['monthly','£10.99 a month',false,true]]);
+    const a=await service.signIn('email',{sub:'s',email:'stage@example.com',emailVerified:true});
+    expect(await service.checkoutUrl(a.id,'monthly')).toEqual({error:'not-on-sale'});
+  });
 });

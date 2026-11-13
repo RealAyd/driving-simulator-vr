@@ -1998,6 +1998,17 @@ export async function boot():Promise<void>{
   byId('view-passes').addEventListener('click',()=>paidAccess.viewPasses());
   byId('invite-home').addEventListener('click',()=>paidAccess.invite());
   byId('offer-banner').addEventListener('click',()=>paidAccess.viewPasses());
+  // The numbers under the sub-line: one at a time, sliding on every 4 s (not while the page is hidden).
+  {
+    const slider=byId('proof-slider'),track=slider.querySelector<HTMLElement>('.proof-track')!,dots=[...slider.querySelectorAll<HTMLElement>('.proof-dots i')];
+    let at=0;
+    setInterval(()=>{
+      if(document.hidden||!track.children.length)return;
+      at=(at+1)%track.children.length;
+      track.style.transform=`translateX(${-100*at}%)`;
+      dots.forEach((d,i)=>d.classList.toggle('on',i===at));
+    },4000);
+  }
 
   // ---- Upright phone during a drive: ask for landscape, and hold the drive still until then ----
   let heldForRotate=false;
