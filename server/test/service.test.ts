@@ -337,31 +337,40 @@ describe('Starter Pass: three sessions for any drive, once per account',()=>{
 });
 
 describe('referrals',()=>{
-  it('a person who signs up through a link gets one free drive; the referrer gets one free session after their first payment (once)',async()=>{
+  it('invite a friend: the friend gets two free drives on joining; the inviter gets two once the friend completes a drive (once)',async()=>{
     const {service,checkout,store}=setup();
     const referrer=await signUp(service,'ref@example.com');
     const friend=await signUp(service,'friend@example.com',referrer.referralCode.toLowerCase());
-    expect(friend.balance).toBe(1);
+    expect(friend.balance).toBe(2);
     expect(friend.referredBy).toBe(referrer.id);
-    // The free drive is used before any payment.
-    expect((await service.startDrive(friend.id,'free','goodmayes-free-drive')).ok).toBe(true);
+    // Started, not completed: nothing yet for the inviter.
+    const d=await service.startDrive(friend.id,'free','goodmayes-free-drive');
+    if(!d.ok)throw new Error('drive did not start');
     expect((await store.findAccount({id:referrer.id}))!.balance).toBe(0);
-    await service.handleStripeEvent(checkout(friend.id,'starter',299));
+    await service.driveStatus(friend.id,d.drive.id,'completed');
+    expect((await store.findAccount({id:referrer.id}))!.balance).toBe(2);
+    // A second completed drive, and paying, add nothing more.
+    const d2=await service.startDrive(friend.id,'free','goodmayes-free-drive');
+    if(!d2.ok)throw new Error('drive did not start');
+    await service.driveStatus(friend.id,d2.drive.id,'completed');
     await service.handleStripeEvent(checkout(friend.id,'vr-5',999));
-    expect((await store.findAccount({id:referrer.id}))!.balance).toBe(1);
-    const me=await service.me(referrer.id);
-    expect(me).toMatchObject({invited:1,rewarded:1});
+    expect((await store.findAccount({id:referrer.id}))!.balance).toBe(2);
+    expect(await service.me(referrer.id)).toMatchObject({invited:1,rewarded:2});
   });
 
-  it('a 100% promotion code does not count as the paying that rewards the referrer',async()=>{
-    const {service,checkout,store}=setup();
-    const referrer=await signUp(service,'r2@example.com');
-    const friend=await signUp(service,'f2@example.com',referrer.referralCode);
-    await service.handleStripeEvent(checkout(friend.id,'vr-5',0));
-    expect((await store.findAccount({id:referrer.id}))!.balance).toBe(0);
+  it('an inviter earns at most 10 sessions from invites in 30 days',async()=>{
+    const {service,store}=setup();
+    const referrer=await signUp(service,'busy@example.com');
+    for(let i=0;i<7;i++){
+      const f=await signUp(service,`f${i}@example.com`,referrer.referralCode);
+      const d=await service.startDrive(f.id,'free','goodmayes-free-drive');
+      if(!d.ok)throw new Error('drive did not start');
+      await service.driveStatus(f.id,d.drive.id,'completed');
+    }
+    expect((await store.findAccount({id:referrer.id}))!.balance).toBe(10);
   });
 
-  it('no free drive for your own link, an existing account, or a new alias of an existing person',async()=>{
+  it('no free drives for your own link, an existing account, or a new alias of an existing person',async()=>{
     const {service}=setup();
     const referrer=await signUp(service,'jo.bloggs@gmail.com');
     const existing=await signUp(service,'old@example.com');

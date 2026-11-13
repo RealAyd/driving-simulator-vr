@@ -65,16 +65,16 @@ reference to the pack).
 - **Partial refunds** (a goodwill gesture, a missed promotion code): the money is recorded and the sessions stay.
   Under £5 in all on one payment, that is all. From £5, it is also flagged (`partial-refund`) for a person to decide
   whether to remove sessions (by hand, with an adjustment).
-- **Referral rewards** earned by a payment that is later refunded stay with the referrer.
 - **Disputes:** flagged (`dispute`); access is not changed automatically.
 
 Flags are in the `flags` collection for review.
 
 ## Referrals
 
-A new account arriving through `?ref=CODE` gets one free drive (a general session, usable for any kind of drive),
-once per person (email aliases count as one person). The referrer gets one session after that person's first payment
-with money (once per referred person).
+Invite a friend, both get 2 free drives (`REFERRAL_SESSIONS` in `src/service.ts`). A new account arriving through
+`?ref=CODE` gets 2 general sessions, once per person (email aliases count as one person). The inviter gets 2 sessions
+once that friend completes a drive (once per friend), up to 10 sessions from invites in any 30 days
+(`REFERRAL_CAP_30_DAYS`; over it, the friend's next completed drive tries again). Paying earns the inviter nothing more.
 
 ## Admin hub (`/admin.html`)
 

@@ -533,6 +533,9 @@ html[data-theme="light"] .free-badge{color:#15803d}
 .mode-card .mc-try{justify-self:start;margin-top:6px;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:700;background:#15803d;color:#fff}
 .mode-card .mc-try.used{background:rgba(15,23,42,.1);color:#475569}
 .mc-test{--mc-bg:#fef3c7;--mc-ico:#a16207}
+.invite-home{display:flex;align-items:center;gap:14px;width:100%;margin:14px 0 4px;padding:16px 18px!important;border-radius:20px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--ink);text-align:left;font:inherit}
+.invite-home>svg{flex:none;color:var(--accent)}.invite-home>span:not(.invite-go){flex:1;display:grid;gap:2px}.invite-home b{font-size:clamp(18px,4.6vw,21px)}.invite-home span span{font-size:clamp(15px,4vw,17px);color:var(--soft)}
+.invite-home .invite-go{flex:none;padding:8px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700}
 .view-passes{justify-self:center;margin:10px 0 2px;padding:6px 4px!important;font-size:17px!important;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
 #place-back{margin-top:14px}
 .place-title{margin:8px 0 10px}
@@ -623,6 +626,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <button class="mode-card mc-test" type="button" data-drive-mode="test"><span class="mc-ico"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8h7M8.5 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m8.5 16 1.4 1.4 2.6-2.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 16.4h1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="mc-txt"><b>Mock Tests</b><small>Put your judgement to the test</small><span class="mc-try" data-try="test" hidden></span></span><svg class="mc-go" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <button id="view-passes" type="button" class="link view-passes" hidden>View passes</button>
+        <button id="invite-home" type="button" class="invite-home" hidden><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 8v6M15 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span><b>Invite a friend</b><span>You both get 2 free drives</span></span><span class="invite-go" aria-hidden="true">Invite</span></button>
         <section class="reviews" aria-labelledby="reviews-title">
           <h3 id="reviews-title">What learners say</h3>
           <p class="reviews-source">Reviews of the Driving Practice app</p>
@@ -763,7 +767,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p class="public-link" data-public-link hidden>Test site. <a href="https://vr.drivingpractice.live/">Go to Driving Practice</a></p>
       <p id="account-reason" class="unit" hidden></p>
       <p id="trial-note" class="unit invited" hidden></p>
-      <p id="account-invited" class="unit invited" hidden>You were invited by a friend: your first drive is free once you sign in.</p>
+      <p id="account-invited" class="unit invited" hidden>A friend invited you: sign in for 2 free drives.</p>
       <div class="signin-buttons">
         <div id="google-button" class="provider" hidden></div>
         <button id="apple-button" type="button" class="provider apple" hidden><svg viewBox="0 0 17 20" width="16" height="18" aria-hidden="true"><path fill="currentColor" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM11.6 3c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span>Continue with Apple</span></button>
@@ -795,7 +799,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p id="account-note" class="unit" role="status"></p>
       <div id="pack-list" class="pack-list"></div>
       <div class="invite-box not-paywall">
-        <b>Give a friend a free drive</b>
+        <b>Invite a friend: you both get 2 free drives</b>
         <div class="invite-row"><input id="invite-link" type="text" readonly aria-label="Your invite link"><button id="invite-share" type="button">Share</button></div>
         <p id="invite-stats" class="unit"></p>
       </div>

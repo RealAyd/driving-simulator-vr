@@ -161,6 +161,13 @@ export class Access{
     return `Your ${left.join(' and ')} ${left.length>1||!left[0]!.startsWith('1 ')?'are':'is'} still there.`;
   }
 
+  /** Invite a friend (the home screen's card): signed in, share the link at once; otherwise sign in, then the account screen has it. */
+  invite():void{
+    if(!this.me.signedIn){this.open();return}
+    this.open();
+    byId('invite-share').click();
+  }
+
   /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
   viewPasses():void{this.open(undefined,this.me.signedIn?'paywall':'save')}
 
@@ -266,7 +273,7 @@ export class Access{
     byId('invite-share').addEventListener('click',()=>{
       const link=byId<HTMLInputElement>('invite-link').value;
       const nav=navigator as Navigator&{share?:(d:{title:string;text:string;url:string})=>Promise<void>};
-      if(nav.share)void nav.share({title:'Driving Practice',text:'Practise for your driving test on real UK streets. Your first drive is free with my link:',url:link}).catch(()=>{});
+      if(nav.share)void nav.share({title:'Driving Practice',text:'Practise for your driving test on real UK streets. You get 2 free drives with my link:',url:link}).catch(()=>{});
       else void navigator.clipboard?.writeText(link).then(()=>{byId('invite-share').textContent='Copied'});
     });
   }
@@ -325,8 +332,8 @@ export class Access{
     if(!packs.length)byId('pack-list').textContent='Sessions are not on sale yet.';
     byId<HTMLInputElement>('invite-link').value=`${location.origin}${location.pathname}?ref=${me.referralCode}`;
     byId('admin-tools').hidden=!me.admin;
-    byId('invite-stats').textContent=me.invited?`${me.invited} joined with your link · ${me.rewarded} free session${me.rewarded===1?'':'s'} earned`:'';
-    const LABEL:Record<string,string>={purchase:'Bought',promo:'Promotion',referral_free_drive:'Free drive (invited)',referral_bonus:'Free session (you invited someone)',
+    byId('invite-stats').textContent=me.invited?`${me.invited} joined with your link · ${me.rewarded} free drive${me.rewarded===1?'':'s'} earned`:'';
+    const LABEL:Record<string,string>={purchase:'Bought',promo:'Promotion',referral_free_drive:'Free drives (invited)',referral_bonus:'Free drives (a friend you invited drove)',
       consumed:'Used',drive_refund:'Given back (did not load)',refund:'Refunded',adjustment:'Adjusted',allowance:'Starter Pass',
       starter_duplicate:'Starter Pass already bought: payment refunded'};
     byId('account-history').replaceChildren(...me.history.map(h=>{

@@ -114,29 +114,32 @@ test('G26: a free try without signing up (three free drives here), used only whe
   expect(me.history[0].type).toBe('purchase');
 });
 
-test('G26: an invite link: the friend signs in and has one free drive; the inviter is rewarded with one session after the friend first pays',async({browser})=>{
+test('G26: invite a friend from the home screen: the friend signs in with 2 free drives; once they complete a drive, the inviter gets 2',async({browser})=>{
   test.setTimeout(240_000);
   const inviter=await browser.newPage();
   await gated(inviter);
-  await inviter.click('#account-chip');
+  // The home screen's invite card: signed out, it opens sign-in; signed in, the account screen with the link.
+  await expect(inviter.locator('#invite-home')).toBeVisible();
+  await expect(inviter.locator('#invite-home')).toContainText('You both get 2 free drives');
+  await inviter.click('#invite-home');
   await signInByEmail(inviter,'inviter@example.com');
   const link=await inviter.inputValue('#invite-link');
   expect(link).toMatch(/\?ref=[A-Z2-9]{8}$/);
   const friend=await browser.newPage();
   await gated(friend,`./${new URL(link).search}`);
   await friend.click('#account-chip');
-  await expect(friend.locator('#account-invited')).toBeVisible();
+  await expect(friend.locator('#account-invited')).toHaveText('A friend invited you: sign in for 2 free drives.');
   await signInByEmail(friend,'friend@example.com');
-  await expect(friend.locator('#account-balance')).toHaveText('1');
-  await friend.click('#pack-list [data-pack=vr-5]');
-  await expect(friend.locator('#account-balance')).toHaveText('6',{timeout:20_000});
-  await expect(friend.locator('#account-note')).toContainText('Payment received. 5 sessions added.');
+  await expect(friend.locator('#account-balance')).toHaveText('2');
+  // The friend completes a drive (as the app reports it).
+  const drive=await (await friend.request.post('/api/drives',{data:{kind:'free',scenario:'goodmayes-free-drive'}})).json() as {driveId:string};
+  await friend.request.post(`/api/drives/${drive.driveId}/completed`,{data:{}});
   await friend.close();
   await inviter.reload();
   await expect(inviter.locator('#screen-start')).toBeVisible({timeout:60_000});
-  await expect(inviter.locator('#account-chip')).toHaveText('1 drive',{timeout:30_000});
+  await expect(inviter.locator('#account-chip')).toHaveText('2 drives',{timeout:30_000});
   await inviter.click('#account-chip');
-  await expect(inviter.locator('#invite-stats')).toContainText('1 joined with your link · 1 free session earned');
+  await expect(inviter.locator('#invite-stats')).toContainText('1 joined with your link · 2 free drives earned');
 });
 
 test('G26: blocking access.json does not open the paid app: where the accounts service answers, drives still go through it (the free try)',async({page})=>{

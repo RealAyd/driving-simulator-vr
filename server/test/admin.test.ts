@@ -167,8 +167,11 @@ describe('the admin hub API',()=>{
     const a=await as('friend-a@example.com',inviter.code);
     await as('friend-b@example.com',inviter.code);
     await a('/api/dev/checkout',{pack:'vr-5'});
+    // (The friend completes a drive: the inviter earns two sessions.)
+    const drive=(await a('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).json;
+    await a(`/api/drives/${drive.driveId}/completed`,{});
     const r=(await (await as('boss@example.com'))('/api/admin/referrals')).json;
-    expect(r.referrers.find((x:{id:string})=>x.id===inviter.id)).toEqual({id:inviter.id,email:'inviter-admin@example.com',code:inviter.code,joined:2,paid:1,rewards:1});
+    expect(r.referrers.find((x:{id:string})=>x.id===inviter.id)).toEqual({id:inviter.id,email:'inviter-admin@example.com',code:inviter.code,joined:2,paid:1,rewards:2});
   });
 
   it('the admins drive without sessions: a drive starts with none, nothing is taken, nothing given back; a learner still needs one',async()=>{
