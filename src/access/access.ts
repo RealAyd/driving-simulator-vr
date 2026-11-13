@@ -345,7 +345,8 @@ export class Access{
       const left=el('span','pack-text','');
       if(p.sticker)left.append(el('span','pack-sticker',p.sticker));
       const title=el('span','pack-title','');title.append(el('b','',p.label),...(p.deal?[el('span','pack-deal',p.deal)]:[]));
-      left.append(title,el('small','',`${p.description}${p.starter?' · once per account':''}`));
+      // (Each part of the description on its own line: "15 drives used to cost £24.99", "Cancel anytime".)
+      left.append(title,...`${p.description}${p.starter?' · once per account':''}`.split(' · ').filter(Boolean).map(t=>el('small','',t)));
       // "£4.99 a week": the amount large, how often under it.
       const [amount,per]=p.price.split(' a ');
       const price=el('span','price','');price.append(el('b','',amount??''),...(per?[el('small','',`/${per}`)]:[]));
