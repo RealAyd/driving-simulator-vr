@@ -1997,6 +1997,24 @@ export async function boot():Promise<void>{
   byId('view-passes').addEventListener('click',()=>paidAccess.viewPasses());
   byId('invite-home').addEventListener('click',()=>paidAccess.invite());
   byId('offer-banner').addEventListener('click',()=>paidAccess.viewPasses());
+  // The reviews: one after another every 5 s, round again after the last; a touch, a hover or a scroll of
+  // their own pauses it for a while (not at all with reduced motion, nor while the page is hidden).
+  {
+    const list=document.querySelector<HTMLElement>('.review-list');
+    if(list&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      let pausedUntil=0;
+      const pause=()=>{pausedUntil=Date.now()+12_000};
+      for(const ev of ['pointerdown','pointerenter','wheel','touchstart','focusin'])list.addEventListener(ev,pause,{passive:true});
+      setInterval(()=>{
+        if(document.hidden||Date.now()<pausedUntil||list.offsetParent===null)return;
+        const cards=[...list.children] as HTMLElement[];
+        if(cards.length<2)return;
+        const step=cards[1]!.offsetLeft-cards[0]!.offsetLeft;
+        const atEnd=list.scrollLeft+list.clientWidth>=list.scrollWidth-4;
+        list.scrollTo({left:atEnd?0:list.scrollLeft+step,behavior:'smooth'});
+      },5000);
+    }
+  }
   // The numbers under the sub-line: one at a time, sliding on every 4 s (not while the page is hidden).
   {
     const slider=byId('proof-slider'),track=slider.querySelector<HTMLElement>('.proof-track')!,dots=[...slider.querySelectorAll<HTMLElement>('.proof-dots i')];
