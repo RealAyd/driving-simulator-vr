@@ -45,3 +45,15 @@ test('G26d: once the week pass is not on sale, no banner',async({page})=>{
   await page.waitForTimeout(1000);
   await expect(page.locator('#offer-banner')).toBeHidden();
 });
+
+test('G26d: with a pass running, no banner; View passes shows the account with how long the pass lasts',async({page})=>{
+  test.setTimeout(120_000);
+  await home(page,true,{...signedIn,unlimitedUntil:new Date(Date.now()+8*86400_000).toISOString()});
+  await page.waitForTimeout(1000);
+  await expect(page.locator('#offer-banner')).toBeHidden();
+  await page.click('#view-passes');
+  await expect(page.locator('#screen-account')).toHaveAttribute('data-mode','account');
+  await expect(page.locator('#account-balance')).toHaveText('Unlimited');
+  await expect(page.locator('#account-balance-unit')).toHaveText(/^until \d{1,2} \w{3}$/);
+  await expect(page.locator('#pack-list')).toBeHidden();
+});

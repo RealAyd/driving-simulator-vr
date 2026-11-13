@@ -182,12 +182,14 @@ export class Access{
 
   /** The offer on sale now for the home screen's banner (the Black Friday pass while it is sold), or null. */
   offer():{price:string}|null{
+    // (Not for someone whose pass is running: nothing to buy.)
+    if(unlimitedUntil(this.me))return null;
     const p=this.gate?this.config?.packs.find(x=>x.id==='black-friday-week'&&(x.onSale||x.preview)):undefined;
     return p?{price:p.price}:null;
   }
 
   /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
-  viewPasses():void{this.open(undefined,this.me.signedIn?'paywall':'save')}
+  viewPasses():void{this.open(undefined,!this.me.signedIn?'save':unlimitedUntil(this.me)?'account':'paywall')}
 
   /** A line for the exercise screen under Start, for the drive about to start. */
   note(scenario:string|null):string{
