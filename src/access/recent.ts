@@ -50,7 +50,7 @@ export function ago(seconds:number):string{
 }
 
 /** How the notification paces itself (ms): first one after FIRST, each shown for SHOW, GAP between, ROUND before going round again. */
-export const TOAST={FIRST:4000,SHOW:6000,GAP:9000,ROUND:45_000,REFRESH:120_000};
+export const TOAST={FIRST:2000,SHOW:5000,GAP:3000,ROUND:20_000,REFRESH:120_000};
 
 /**
  * The home screen's notification: one recent drive at a time slides in at the bottom, stays a few seconds and goes,
