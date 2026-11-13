@@ -6,7 +6,7 @@
  */
 type Pot='lesson'|'test'|'free';
 type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean};
-type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean};
+type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean;signInFirst?:boolean};
 /** The device's free try (no sign-up): what is left of its lessons, mock tests and free drives (FREE_EACH of each). */
 type Trial=Record<Pot,number>;
 type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
@@ -145,7 +145,7 @@ export class Access{
   freeOf(pot:Pot):number{return Math.max(0,this.me.trial?.[pot]??0)}
 
   /** Whether a drive here would use the device's free try (paid drives, nothing bought or signed out, not an admin). */
-  private onFreeTry():boolean{return this.gate&&(!this.me.signedIn||(!this.me.admin&&total(this.me)===0))}
+  private onFreeTry():boolean{return this.gate&&(!this.me.signedIn&&!this.config?.signInFirst||this.me.signedIn&&(!this.me.admin&&total(this.me)===0))}
   /**
    * The free try of one kind on this device: 'free' (still there), 'used', or null where it is not what a drive would
    * use. The home screen's cards show it, so nobody tries for a second free one and thinks the app is not working.
@@ -169,6 +169,7 @@ export class Access{
     if(!this.gate)return '';
     const pot=scenario?modeOf(scenario):null;
     const left=pot?this.me.trial?.[pot]??0:0;
+    if(!this.me.signedIn&&this.config?.signInFirst)return 'Sign in to start';
     if(!this.me.signedIn)return pot&&left>0?`${cap(TRY_NAME[pot][0])} ${Math.max(1,FREE_EACH-left+1)} of ${Math.max(FREE_EACH,left)}: no sign-up needed, used if you complete it`
       :pot?`You have used your ${TRY_NAME[pot][1]}. ${this.stillFree(pot)||'Sign up to keep driving.'}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
@@ -217,7 +218,7 @@ export class Access{
     if(mode==='account')this.pending=null;
     const screen=byId('screen-account');
     screen.dataset['mode']=mode;
-    byId('account-title').textContent=mode==='save'?'Sign up to save your progress':'Sign in';
+    byId('account-title').textContent=mode==='save'&&!this.config?.signInFirst?'Sign up to save your progress':'Sign in';
     byId('code-send').textContent=mode==='save'?'Continue driving':'Sign in';
     byId('account-main-title').textContent=mode==='paywall'?'Keep driving':'Your drives';
     screen.hidden=false;

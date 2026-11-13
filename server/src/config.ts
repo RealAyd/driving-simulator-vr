@@ -24,6 +24,8 @@ export interface Config{
   googleClientId:string|null;
   appleServicesId:string|null;
   adminEmails:string[];
+  /** Every drive needs a signed-in account (no free try while signed out). On by default for staging.drivingpractice.live; SIGN_IN_FIRST=1 or 0 overrides. */
+  signInFirst:boolean;
   /** Where new support requests and overdue reminders are emailed. */
   supportInbox:string;
   /** Optional phone alerts: an ntfy topic URL (e.g. https://ntfy.sh/<private topic>). */
@@ -63,6 +65,7 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
     supportInbox:env['SUPPORT_INBOX']??env['EMAIL_REPLY_TO']??'support.drivingpractice@gmail.com',
     supportPushUrl:env['SUPPORT_PUSH_URL']||null,
     supportReminderMinutes:Math.max(5,Number(env['SUPPORT_REMINDER_MINUTES']??30)||30),
+    signInFirst:env['SIGN_IN_FIRST']?env['SIGN_IN_FIRST']==='1':/^https:\/\/staging\.drivingpractice\.live\/?$/.test(env['APP_BASE_URL']??''),
     adminEmails:(env['ADMIN_EMAILS']??'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean),
     // (Local fakes: each pack gets a placeholder link so a pretend checkout can name it.)
     packs:(JSON.parse(readFileSync(packsFile,'utf8')) as {packs:Pack[]}).packs

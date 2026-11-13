@@ -143,3 +143,6 @@ Each device can complete **three lessons, three mock tests and three free drives
 in `src/store.ts`; one is used when a drive is completed). The try is held by the server (`trials`), named in an HttpOnly signed cookie (`dp_trial`, a
 year). New tries are limited to 30 a day per address (clearing cookies does not give unlimited drives; many phones
 share one address). Signed in, an account's sessions are used first; with none left, the device's free try. Admins (`ADMIN_EMAILS`) drive without sessions or tries.
+
+Sign-in first (`SIGN_IN_FIRST=1`; on by default when `APP_BASE_URL` is `https://staging.drivingpractice.live`, `0` turns it
+off): signed out, no drive starts (`/api/drives` answers 401) and no free try is offered; signed in, as above.
