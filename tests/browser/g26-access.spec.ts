@@ -81,31 +81,27 @@ test('G26: a free try without signing up (one free drive here), used only when c
   expect(await read(page,'session()')).toBe('ready');
   await signInByEmail(page,'learner@example.com');
   expect((await (await page.request.get('/api/me')).json()).lessonsDone).toEqual(['moving-off-and-stopping']);
-  // Continue driving, with nothing to drive on: the paywall, from the Starter Pass up.
+  // Continue driving, with nothing to drive on: the paywall, with the unlimited passes.
   await expect(page.locator('#screen-account')).toHaveAttribute('data-mode','paywall');
   await expect(page.locator('#account-main-title')).toHaveText('Keep driving');
   await expect(page.locator('#account-balance')).toBeHidden();
-  await expect(page.locator('#pack-list [data-pack]')).toHaveCount(4);
-  await expect(page.locator('#pack-list [data-pack]').first()).toHaveAttribute('data-pack','starter');
-  await expect(page.locator('#pack-list [data-pack=starter]')).toContainText('3 sessions · once per account');
+  await expect(page.locator('#pack-list [data-pack=monthly]')).toContainText('Unlimited free drives, lessons and mock tests, renews monthly');
+  await expect(page.locator('#pack-list [data-pack=starter]')).toHaveCount(0);
   // Invite a friend is there too: the way to keep driving for free.
   await expect(page.locator('#screen-account .invite-box')).toBeVisible();
   await expect(page.locator('#screen-account .invite-box')).toContainText('you both get 2 free drives');
   await page.screenshot({path:test.info().outputPath('g26-paywall.png')});
-  // Paid: the drive that was waiting starts. The Starter Pass is three sessions for any drive; none is used yet.
-  await page.click('#pack-list [data-pack=starter]');
+  // Paid: the drive that was waiting starts, and every drive is unlimited for the month.
+  await page.click('#pack-list [data-pack=monthly]');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
   await expect(page.locator('#screen-account')).toBeHidden();
   const me=await (await page.request.get('/api/me')).json();
-  expect(me.allowances).toEqual({lesson:0,test:0,free:0});
-  expect(me.balance).toBe(3);
+  expect(me.balance).toBe(0);
+  expect((Date.parse(me.unlimitedUntil)-Date.now())/86400_000).toBeGreaterThan(28);
   // (The account screen is behind the drive: its contents are checked as they are.)
-  await expect(page.locator('#account-chip')).toHaveText('3 drives');
-  await expect(page.locator('#account-balance-unit')).toHaveText('drives');
-  await expect(page.locator('#account-breakdown')).toContainText('3 sessions');
-  // Once per account: no longer offered.
-  await expect(page.locator('#pack-list [data-pack=starter]')).toHaveCount(0);
-  expect(me.history[0].type).toBe('purchase');
+  await expect(page.locator('#account-chip')).toHaveText('Unlimited');
+  await expect(page.locator('#account-balance')).toHaveText('Unlimited');
+  await expect(page.locator('#account-balance-unit')).toHaveText(/^until \d{1,2} \w{3}$/);
 });
 
 test('G26: invite a friend from the home screen: the friend signs in with 2 free drives; once they complete a drive, the inviter gets 2',async({browser})=>{

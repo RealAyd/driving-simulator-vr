@@ -269,16 +269,13 @@ describe('Starter Pass: three sessions for any drive, once per account',()=>{
     expect([acc.allowances?.lesson,acc.balance]).toEqual([0,0]);
   });
 
-  it('the checkout address is made by the server for the signed-in account; the Starter is not offered once bought',async()=>{
-    const {service,checkout}=setup();
+  it('the checkout address is made by the server for the signed-in account; session packs are no longer sold',async()=>{
+    const {service}=setup();
     const a=await signUp(service,'link@example.com');
-    const r=await service.checkoutUrl(a.id,'starter');
+    const r=await service.checkoutUrl(a.id,'monthly');
     expect('url' in r&&new URL(r.url).searchParams.get('client_reference_id')).toBe(a.id);
-    expect('url' in r&&r.url.startsWith('https://buy.stripe.com/test_3cI8wHeQWfyc6Fr4Qe0VO02?')).toBe(true);
-    await service.handleStripeEvent(checkout(a.id,'starter',299));
-    expect(await service.checkoutUrl(a.id,'starter')).toEqual({error:'starter-bought'});
-    expect('url' in await service.checkoutUrl(a.id,'vr-35')).toBe(true);
-    expect(await service.checkoutUrl(a.id,'free-stuff')).toEqual({error:'unknown-pack'});
+    for(const old of ['starter','vr-5','vr-15','vr-35'])expect(await service.checkoutUrl(a.id,old)).toEqual({error:'not-on-sale'});
+    expect(service.packs().map(p=>p.id)).toEqual(['black-friday-week','monthly']);
   });
 
   it('if Stripe refuses the automatic refund, it is flagged for a person to refund',async()=>{
@@ -380,5 +377,47 @@ describe('referrals',()=>{
     expect((await signUp(service,'jobloggs+2@gmail.com',referrer.referralCode)).balance).toBe(0);
     // An unknown code is ignored.
     expect((await signUp(service,'new@example.com','NOPE1234')).balance).toBe(0);
+  });
+});
+
+describe('unlimited passes',()=>{
+  it('the week pass: every kind of drive for 7 days, nothing used; buying again adds 7 more; a full refund ends it',async()=>{
+    const {service,checkout,store}=setup();
+    const a=await signUp(service,'week@example.com');
+    await service.handleStripeEvent(checkout(a.id,'black-friday-week',499));
+    const me=(await service.me(a.id))!;
+    const days=(Date.parse(me.unlimitedUntil!)-Date.now())/86400_000;
+    expect(days).toBeGreaterThan(6.9);expect(days).toBeLessThan(7.1);
+    for(const s of ['goodmayes-free-drive','goodmayes-lesson','goodmayes-mock-test','goodmayes-free-drive'])expect(await complete(service,a.id,s)).toBe(true);
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
+    expect((await service.me(a.id))!.history.some(h=>h.type==='consumed')).toBe(false);
+    await service.handleStripeEvent(checkout(a.id,'black-friday-week',499));
+    expect((Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000).toBeGreaterThan(13.9);
+    // The same checkout delivered twice adds nothing.
+    const once=checkout(a.id,'black-friday-week',499);
+    await service.handleStripeEvent(once);await service.handleStripeEvent(once);
+    expect((Date.parse((await service.me(a.id))!.unlimitedUntil!)-Date.now())/86400_000).toBeLessThan(21.1);
+    const pi=(once.data.object as {payment_intent:string}).payment_intent;
+    await service.handleStripeEvent({id:'evt_refund_week',type:'charge.refunded',data:{object:{id:'ch_week',payment_intent:pi,refunded:true,amount:499,amount_refunded:499,currency:'gbp'}}});
+    expect((await service.me(a.id))!.unlimitedUntil).toBeNull();
+    expect(await complete(service,a.id,'goodmayes-free-drive')).toBe(false);
+  });
+
+  it('monthly: a month from the checkout; each renewal another; an unknown subscription is flagged',async()=>{
+    const {service,checkout,store}=setup();
+    const a=await signUp(service,'monthly@example.com');
+    await service.handleStripeEvent(checkout(a.id,'monthly',1499,{mode:'subscription',subscription:'sub_1',payment_intent:null}));
+    const first=Date.parse((await service.me(a.id))!.unlimitedUntil!);
+    expect((first-Date.now())/86400_000).toBeGreaterThan(28);
+    // The first invoice is the checkout's: nothing more.
+    await service.handleStripeEvent({id:'evt_inv_0',type:'invoice.paid',data:{object:{id:'in_0',billing_reason:'subscription_create',subscription:'sub_1',amount_paid:1499,currency:'gbp'}}});
+    expect(Date.parse((await service.me(a.id))!.unlimitedUntil!)).toBe(first);
+    const renewal={id:'evt_inv_1',type:'invoice.paid',data:{object:{id:'in_1',billing_reason:'subscription_cycle',parent:{subscription_details:{subscription:'sub_1'}},amount_paid:1499,currency:'gbp'}}};
+    await service.handleStripeEvent(renewal);await service.handleStripeEvent(renewal);
+    const renewed=Date.parse((await service.me(a.id))!.unlimitedUntil!);
+    expect((renewed-first)/86400_000).toBeGreaterThan(28);expect((renewed-first)/86400_000).toBeLessThan(33);
+    expect(await complete(service,a.id,'goodmayes-mock-test')).toBe(true);
+    await service.handleStripeEvent({id:'evt_inv_x',type:'invoice.paid',data:{object:{id:'in_x',billing_reason:'subscription_cycle',subscription:'sub_unknown',amount_paid:1499,currency:'gbp'}}});
+    expect((await store.flags()).some(f=>f.kind==='renewal-no-account')).toBe(true);
   });
 });

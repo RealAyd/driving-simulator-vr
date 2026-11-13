@@ -5,11 +5,14 @@
  * preview copies) nothing is gated.
  */
 type Pot='lesson'|'test'|'free';
-type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean};
+type Pack={id:string;label:string;price:string;description:string;sessions:number;allowances:Partial<Record<Pot,number>>;starter:boolean;onSale:boolean;
+  unlimited?:{days?:number;monthly?:boolean};saleEnds?:string};
 type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean;signInFirst?:boolean};
 /** The device's free try (no sign-up): what is left of its lessons, mock tests and free drives (FREE_EACH of each). */
 type Trial=Record<Pot,number>;
 type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
+  /** An unlimited pass: every drive until then (ISO), or null. */
+  unlimitedUntil?:string|null;
   lessonsDone?:string[];
   history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>})&{trial?:Trial};
 /** A drive the server has started (its session used). */
@@ -40,6 +43,10 @@ const freeCount=(k:Pot,n:number)=>`${n} ${TRY_NAME[k][n===1?0:1]}`;
 const INVITE_UNLOCK='Invite a friend: you both get 2 free drives.';
 /** Everything the account can start: general sessions plus Starter allowances. */
 const total=(me:Me)=>me.signedIn?me.balance+me.allowances.lesson+me.allowances.test+me.allowances.free:0;
+/** The end of an unlimited pass still running, or null. */
+const unlimitedUntil=(me:Me):Date|null=>me.signedIn&&me.unlimitedUntil&&Date.parse(me.unlimitedUntil)>Date.now()?new Date(me.unlimitedUntil):null;
+/** "27 Nov". */
+const day=(d:Date|string)=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 
 async function api<T>(path:string,body?:unknown):Promise<{status:number;data:T|null}>{
   try{
@@ -125,14 +132,14 @@ export class Access{
   /** Whether a drive of this kind can start now. */
   private canStart(pot:Pot):boolean{
     if((this.me.trial?.[pot]??0)>0)return true;
-    return this.me.signedIn&&(!!this.me.admin||total(this.me)>0);
+    return this.me.signedIn&&(!!this.me.admin||!!unlimitedUntil(this.me)||total(this.me)>0);
   }
 
   /** After signing up or paying: the drive that was waiting starts; signed up with nothing to drive on, the paywall. */
   private carryOn(){
     if(!this.me.signedIn||byId('screen-account').hidden)return;
     if(this.pending&&this.canStart(this.pending.pot)){const {again}=this.pending;this.pending=null;this.close();again();return}
-    if(this.mode==='save')this.open(undefined,this.pending||(!this.me.admin&&total(this.me)===0)?'paywall':'account');
+    if(this.mode==='save')this.open(undefined,this.pending||(!this.me.admin&&!unlimitedUntil(this.me)&&total(this.me)===0)?'paywall':'account');
   }
 
   /** The free try still on this device, for someone not signed in (0 where nothing is gated). */
@@ -147,7 +154,7 @@ export class Access{
   freeOf(pot:Pot):number{return Math.max(0,this.me.trial?.[pot]??0)}
 
   /** Whether a drive here would use the device's free try (paid drives, nothing bought or signed out, not an admin). */
-  private onFreeTry():boolean{return this.gate&&(!this.me.signedIn&&!this.config?.signInFirst||this.me.signedIn&&(!this.me.admin&&total(this.me)===0))}
+  private onFreeTry():boolean{return this.gate&&(!this.me.signedIn&&!this.config?.signInFirst||this.me.signedIn&&(!this.me.admin&&!unlimitedUntil(this.me)&&total(this.me)===0))}
   /**
    * The free try of one kind on this device: 'free' (still there), 'used', or null where it is not what a drive would
    * use. The home screen's cards show it, so nobody tries for a second free one and thinks the app is not working.
@@ -170,6 +177,12 @@ export class Access{
     byId('invite-share').click();
   }
 
+  /** The offer on sale now for the home screen's banner (the Black Friday pass while it is sold), or null. */
+  offer():{price:string}|null{
+    const p=this.gate?this.config?.packs.find(x=>x.id==='black-friday-week'&&x.onSale):undefined;
+    return p?{price:p.price}:null;
+  }
+
   /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
   viewPasses():void{this.open(undefined,this.me.signedIn?'paywall':'save')}
 
@@ -182,6 +195,8 @@ export class Access{
     if(!this.me.signedIn)return pot&&left>0?`${left===1&&FREE_EACH===1?`Your ${TRY_NAME[pot][0]}`:`${cap(TRY_NAME[pot][0])} ${Math.max(1,FREE_EACH-left+1)} of ${Math.max(FREE_EACH,left)}`}: no sign-up needed, used if you complete it`
       :pot?`You have used your ${TRY_NAME[pot][FREE_EACH===1?0:1]}. ${this.stillFree(pot)||INVITE_UNLOCK}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
+    const until=unlimitedUntil(this.me);
+    if(until)return `Unlimited until ${day(until)}`;
     const n=total(this.me);
     if(n>0)return `Uses 1 session if you complete it · you have ${n}`;
     if(pot&&left>0)return `Uses one of your ${freeCount(pot,left)}`;
@@ -298,12 +313,13 @@ export class Access{
     const chip=byId('account-chip');
     const starterLeft=signedIn?me.allowances.lesson+me.allowances.test+me.allowances.free:0;
     const drives=total(me);
-    chip.textContent=signedIn?(me.admin?'Admin':`${drives} drive${drives===1?'':'s'}`):'Sign in';
+    const until=unlimitedUntil(me);
+    chip.textContent=signedIn?(me.admin?'Admin':until?'Unlimited':`${drives} drive${drives===1?'':'s'}`):'Sign in';
     if(!signedIn)return;
     byId('account-email').textContent=me.email??'Apple account';
     // The headline is everything that can be started; below it, what that is made of.
-    byId('account-balance').textContent=String(drives);
-    byId('account-balance-unit').textContent=drives===1?'drive':'drives';
+    byId('account-balance').textContent=until?'Unlimited':String(drives);
+    byId('account-balance-unit').textContent=until?`until ${day(until)}`:drives===1?'drive':'drives';
     const rows:HTMLElement[]=[];
     // Starter Pass drives still held from before it became sessions (for any kind of drive).
     if(starterLeft>0){
@@ -315,7 +331,7 @@ export class Access{
     {
       const li=document.createElement('li');
       const b=document.createElement('b');b.textContent=`${me.balance} session${me.balance===1?'':'s'}`;
-      const span=document.createElement('span');span.textContent=me.balance>0?'for any lesson, mock test or free drive':'buy a pack below';
+      const span=document.createElement('span');span.textContent=me.balance>0?'for any lesson, mock test or free drive':until?'kept for after your pass':'or choose a pass below';
       li.append(b,span);rows.push(li);
     }
     byId('account-breakdown').replaceChildren(...rows);
@@ -324,14 +340,14 @@ export class Access{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;
       const left=document.createElement('span');
       const t=document.createElement('b');t.textContent=p.label;
-      const d=document.createElement('small');d.textContent=` ${p.description}${p.starter?' · once per account':''}`;
+      const d=document.createElement('small');d.textContent=` ${p.description}${p.starter?' · once per account':''}${p.saleEnds?` · on sale until ${day(`${p.saleEnds}T12:00:00Z`)}`:''}`;
       left.append(t,d);
       const price=document.createElement('span');price.className='price';price.textContent=p.price;
-      b.append(left,price);
+      b.append(left,...(p.price?[price]:[]));
       b.addEventListener('click',()=>void this.buy(p));
       return b;
     }));
-    if(!packs.length)byId('pack-list').textContent='Sessions are not on sale yet.';
+    if(!packs.length)byId('pack-list').textContent='Passes are not on sale yet.';
     byId<HTMLInputElement>('invite-link').value=`${location.origin}${location.pathname}?ref=${me.referralCode}`;
     byId('admin-tools').hidden=!me.admin;
     byId('invite-stats').textContent=me.invited?`${me.invited} joined with your link · ${me.rewarded} free drive${me.rewarded===1?'':'s'} earned`:'';
@@ -347,7 +363,7 @@ export class Access{
 
   private async buy(p:Pack){
     if(!this.me.signedIn)return;
-    store.set(BUY_KEY,JSON.stringify({total:total(this.me),balance:this.me.balance,starter:this.me.starterBought,at:Date.now()}));
+    store.set(BUY_KEY,JSON.stringify({total:total(this.me),balance:this.me.balance,starter:this.me.starterBought,until:this.me.unlimitedUntil??null,at:Date.now()}));
     if(this.config?.devCheckout){
       // Local development: a pretend payment, delivered to the server as Stripe would.
       await api('dev/checkout',{pack:p.id});
@@ -364,15 +380,21 @@ export class Access{
 
   /** Back from checkout: Stripe tells the server a moment later, so the balance is checked until it rises. */
   private async awaitPayment(){
-    const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {total:number;balance?:number;starter?:boolean}|null}catch{return null}})();
+    const before=(()=>{try{return JSON.parse(store.get(BUY_KEY)??'null') as {total:number;balance?:number;starter?:boolean;until?:string|null}|null}catch{return null}})();
     // (Paying from the paywall without leaving the page: the drive that was waiting starts once the sessions arrive.)
     this.open(undefined,this.pending?this.mode:'account');
     const note=byId('account-note');
-    note.textContent='Payment received: adding your sessions…';
+    note.textContent='Payment received: adding it to your account…';
     for(let i=0;i<30;i++){
       // Every few seconds the server also asks Stripe directly (crediting does not wait for Stripe's webhook).
       if(i%3===0)await api('checkout/reconcile',{}).catch(()=>null);
       await this.refresh();
+      const until=unlimitedUntil(this.me);
+      if(until&&this.me.signedIn&&this.me.unlimitedUntil!==(before?.until??null)){
+        note.textContent=`Payment received. Unlimited drives until ${day(until)}. Choose a drive and press Start.`;
+        store.set(BUY_KEY,null);
+        return;
+      }
       if(this.me.signedIn&&total(this.me)>(before?.total??-1)){
         // What this payment added, said plainly.
         const added=this.me.balance-(before?.balance??0),starterNow=this.me.starterBought&&before?.starter===false;

@@ -31,6 +31,10 @@ export interface Account{
   /** First payment with money (not a 100% promo code): starts the referrer's reward. */
   firstPaidAt?:Date;
   starterBought?:boolean;
+  /** Unlimited drives (an unlimited pass) until this moment. */
+  unlimitedUntil?:Date;
+  /** The Stripe subscription of a monthly unlimited pass (its renewals extend `unlimitedUntil`). */
+  subscription?:string;
   /** The checkout that bought the Starter Pass (a second one is refunded, not granted). */
   starterCheckout?:string;
   /** The lessons finished (their ids), from any device: signing in brings them to a new one. */
@@ -82,7 +86,7 @@ export interface Drive{
    * Where its session came from (a refund goes back there); 'admin': an ADMIN_EMAILS account's drive, uses none;
    * 'trial': the device's free try (the drive's accountId is then `trial:<id>`).
    */
-  paidFrom:Pot|'sessions'|'admin'|'trial';
+  paidFrom:Pot|'sessions'|'admin'|'trial'|'pass';
   /**
    * Its session is taken when it is completed, not when it starts (true until then; drives started before that rule
    * have no `due` and were paid at the start).
@@ -119,7 +123,7 @@ export type LedgerQuery={accountId?:string;paymentIntent?:string;type?:LedgerTyp
 /** Sign-ups through each referrer's link: how many joined, and how many of those have paid with money. */
 export interface ReferrerCount{referrerId:string;joined:number;paid:number}
 
-export type AccountQuery={id:string}|{email:string}|{emailKey:string}|{googleSub:string}|{appleSub:string}|{referralCode:string};
+export type AccountQuery={id:string}|{email:string}|{emailKey:string}|{googleSub:string}|{appleSub:string}|{referralCode:string}|{subscription:string};
 
 export interface Store{
   /** Support tickets, their messages and screenshots, and the notification outbox. */

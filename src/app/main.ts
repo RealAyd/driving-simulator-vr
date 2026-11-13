@@ -1982,6 +1982,10 @@ export async function boot():Promise<void>{
     byId('free-badge-text').textContent=left===paidAccess.freeTotal?`Your first ${left} drives are free`:`${left} free drive${left===1?'':'s'} left`;
     byId('view-passes').hidden=!paidAccess.gate;
     byId('invite-home').hidden=!paidAccess.gate;
+    // Black Friday: the banner while the week pass is on sale (gone after 30 November by itself).
+    const offer=paidAccess.offer();
+    byId('offer-banner').hidden=!offer;
+    byId('offer-detail').textContent=`Lessons, mock tests and free drives${offer?.price?` · ${offer.price}`:''}`;
     for(const tag of document.querySelectorAll<HTMLElement>('[data-try]')){
       const state=paidAccess.tryState(tag.dataset['try'] as 'free'|'lesson'|'test');
       tag.hidden=!state;
@@ -1993,6 +1997,7 @@ export async function boot():Promise<void>{
   paidAccess.onChange=showOffer;
   byId('view-passes').addEventListener('click',()=>paidAccess.viewPasses());
   byId('invite-home').addEventListener('click',()=>paidAccess.invite());
+  byId('offer-banner').addEventListener('click',()=>paidAccess.viewPasses());
 
   // ---- Upright phone during a drive: ask for landscape, and hold the drive still until then ----
   let heldForRotate=false;

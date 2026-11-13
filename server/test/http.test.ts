@@ -37,7 +37,7 @@ describe('the API over HTTP',()=>{
     const c=client();
     const cfg=await c('/api/config');
     expect(cfg.json).toMatchObject({gate:true,devCheckout:true});
-    expect((cfg.json!['packs'] as Array<{id:string}>).map(p=>p.id)).toEqual(['starter','vr-5','vr-15','vr-35']);
+    expect((cfg.json!['packs'] as Array<{id:string}>).map(p=>p.id)).toEqual(['black-friday-week','monthly']);
     expect((await c('/api/me')).json).toEqual({signedIn:false,trial:{lesson:1,test:1,free:1}});
   });
 
@@ -59,9 +59,11 @@ describe('the API over HTTP',()=>{
     }
     expect((await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'})).status).toBe(402);
     // The checkout address comes from the server, for this account; the browser cannot name another price or account.
-    const link=await c('/api/checkout',{pack:'vr-5'});
+    const link=await c('/api/checkout',{pack:'monthly'});
     expect(new URL(String(link.json!['url'])).searchParams.get('client_reference_id')).toBeTruthy();
-    expect((await c('/api/checkout',{pack:'vr-5',sessions:99,price:1})).json!['url']).toBe(link.json!['url']);
+    expect((await c('/api/checkout',{pack:'monthly',sessions:99,price:1})).json!['url']).toBe(link.json!['url']);
+    // (Session packs are no longer sold; one bought before still adds its sessions.)
+    expect((await c('/api/checkout',{pack:'vr-5'})).status).toBe(400);
     await c('/api/dev/checkout',{pack:'vr-5'});
     const d=await c('/api/drives',{kind:'free',scenario:'goodmayes-free-drive'});
     expect(d.json).toMatchObject({balance:5});
