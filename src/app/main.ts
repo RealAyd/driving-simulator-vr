@@ -1985,7 +1985,6 @@ export async function boot():Promise<void>{
     // Black Friday: the banner while the week pass is on sale (gone after 30 November by itself).
     const offer=paidAccess.offer();
     byId('offer-banner').hidden=!offer;
-    byId('offer-detail').textContent=`Lessons, mock tests and free drives${offer?.price?` · ${offer.price}`:''}`;
     for(const tag of document.querySelectorAll<HTMLElement>('[data-try]')){
       const state=paidAccess.tryState(tag.dataset['try'] as 'free'|'lesson'|'test');
       tag.hidden=!state;

@@ -509,14 +509,18 @@ a.wide-link svg{vertical-align:-3px;margin-right:6px}
 .home-menu>details{border:none;background:none;margin:0}
 .home-menu>details>summary{justify-content:space-between}
 .home-main{display:grid;gap:0;margin-top:14px}
+.offer-banner{position:relative;overflow:hidden;isolation:isolate;display:flex;align-items:center;gap:12px;width:100%;margin:12px 0 0;padding:14px 12px 14px 18px!important;border-radius:18px;border:1px solid rgba(250,204,21,.45);text-align:left;font:inherit;color:#fff;background:radial-gradient(120% 140% at 100% 0%,rgba(250,204,21,.28) 0%,rgba(250,204,21,0) 55%),linear-gradient(135deg,#0b0b0f 0%,#17171f 60%,#0b0b0f 100%);box-shadow:0 12px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06)}
+.offer-banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.14) 50%,transparent 65%);transform:translateX(-120%);animation:offer-shine 5s ease-in-out 1.5s infinite}
+@keyframes offer-shine{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.offer-banner .offer-txt{flex:1;min-width:0;display:grid;gap:2px}
+.offer-banner .offer-tag{font-size:clamp(11px,3vw,13px);font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#facc15}
+.offer-banner b{font-size:clamp(17px,4.6vw,21px);font-weight:800;letter-spacing:-.01em;line-height:1.2}
+.offer-banner .offer-go{flex:none;display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:999px;background:linear-gradient(180deg,#fde047,#facc15);color:#0b0b0f;font-weight:800;font-size:clamp(14px,3.8vw,16px);box-shadow:0 6px 16px rgba(250,204,21,.3)}
+.offer-banner:active{transform:scale(.99)}
+@media (prefers-reduced-motion:reduce){.offer-banner::after{animation:none;display:none}}
 .home-shot{display:block;width:100%;height:auto;aspect-ratio:1280/533;border-radius:16px;border:1px solid var(--line);margin:0 0 18px;background:var(--surface-2);box-shadow:0 14px 34px rgba(2,6,23,.28)}
 .home-tagline{text-wrap:balance;margin:0;font-size:clamp(28px,7.4vw,44px);line-height:1.12;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
 .home-sub{margin:8px 0 0;font-size:clamp(16px,4.2vw,20px);color:var(--soft)}
-.offer-banner{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px 12px;width:100%;margin:12px 0 0;padding:12px 12px 12px 14px!important;border-radius:20px;border:0;background:linear-gradient(120deg,#0b0b0f 0%,#1f1f2b 100%);color:#fff;text-align:left;font:inherit;box-shadow:0 10px 26px rgba(0,0,0,.25)}
-.offer-banner .offer-tag{padding:4px 8px;border-radius:8px;background:#facc15;color:#0b0b0f;font-weight:800;font-size:clamp(11px,3vw,13px);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.offer-banner .offer-txt{display:grid;gap:1px;min-width:0}.offer-banner b{font-size:clamp(16px,4.3vw,19px)}.offer-banner #offer-detail{color:#d4d4d8;font-size:clamp(13px,3.5vw,15px)}
-.offer-banner .offer-go{padding:8px 13px;border-radius:999px;background:#facc15;color:#0b0b0f;font-weight:800;white-space:nowrap}
-@media (max-width:420px){.offer-banner{grid-template-columns:1fr auto}.offer-banner .offer-tag{grid-column:1/-1;justify-self:start;margin-bottom:-4px}}
 .proof-slider{position:relative;overflow:hidden;margin:16px 0 0;padding:0;border-radius:18px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 20%,transparent),color-mix(in srgb,var(--accent) 5%,transparent))}
 .proof-track{display:flex;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
 .proof-slide{flex:0 0 100%;box-sizing:border-box;margin:0;padding:11px 16px 22px;display:flex;align-items:baseline;flex-wrap:wrap;column-gap:8px;row-gap:0}
@@ -641,7 +645,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <div class="proof-track"><p class="proof-slide"><b>£7520</b><span>saved in lessons and mock tests in the last 14 days</span></p><p class="proof-slide"><b>12,982 minutes</b><span>of driving practice in the last 14 days</span></p></div>
           <span class="proof-dots" aria-hidden="true"><i class="on"></i><i></i></span>
         </div>
-        <button id="offer-banner" type="button" class="offer-banner" hidden><span class="offer-tag">Black Friday</span><span class="offer-txt"><b>Unlimited drives all week</b><span id="offer-detail">Lessons, mock tests and free drives</span></span><span class="offer-go">See offer</span></button>
+        <button id="offer-banner" type="button" class="offer-banner" hidden><span class="offer-txt"><span class="offer-tag">Black Friday</span><b>Unlimited drives all week</b></span><span class="offer-go">See offer<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         <p class="public-link" data-public-link hidden>Test site. <a href="https://vr.drivingpractice.live/">Go to Driving Practice</a></p>
         <p id="free-badge" class="free-badge" hidden><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M5 12v8.5h14V12M12 8v12.5M12 8S10.6 4 8.2 4.3C6.4 4.5 6.5 7.6 8.6 8M12 8s1.4-4 3.8-3.7c1.8.2 1.7 3.3-.4 3.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg><span id="free-badge-text">Your first 3 drives are free</span></p>
         <div class="mode-cards">

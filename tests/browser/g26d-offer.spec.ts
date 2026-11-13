@@ -22,7 +22,8 @@ test('G26d: Black Friday banner while the week pass is on sale; it opens the pas
   const banner=page.locator('#offer-banner');
   await expect(banner).toBeVisible();
   await expect(banner).toContainText('Black Friday');
-  await expect(page.locator('#offer-detail')).toHaveText('Lessons, mock tests and free drives · £4.99');
+  await expect(banner).toContainText('Unlimited drives all week');
+  await expect(banner).not.toContainText('£');
   await banner.click();
   await expect(page.locator('#screen-account')).toHaveAttribute('data-mode','paywall');
   await expect(page.locator('#pack-list [data-pack=black-friday-week]')).toContainText('on sale until 30 Nov');
