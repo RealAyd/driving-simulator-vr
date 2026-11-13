@@ -11,6 +11,8 @@ const out=<T extends {id:string}>(d:Doc<T>|null):T|null=>{
   return {...rest,id:_id} as unknown as T;
 };
 const duplicate=(e:unknown)=>e instanceof MongoServerError&&e.code===11000;
+/** How long visit and click events are kept (days): the admin hub shows up to 90; a 512 MB database fills with more. */
+export const VISITS_KEPT_DAYS=180;
 /** Text typed into the admin search, matched literally. */
 const literal=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 
@@ -20,12 +22,18 @@ export class MongoStore implements Store{
   private constructor(private readonly db:Db){this.support=new MongoSupportStore(db)}
 
   static async connect(uri:string):Promise<MongoStore>{
-    const client=new MongoClient(uri);
-    await client.connect();
-    const store=new MongoStore(client.db());
-    await store.indexes();
-    await store.support.indexes();
-    return store;
+    const client=new MongoClient(uri,{serverSelectionTimeoutMS:10_000});
+    try{
+      await client.connect();
+      const store=new MongoStore(client.db());
+      await store.indexes();
+      await store.support.indexes();
+      return store;
+    }catch(e){
+      // (Tried again from the start: this attempt's connections are not left open.)
+      await client.close().catch(()=>{});
+      throw e;
+    }
   }
 
   private get accounts():Collection<Doc<Account>>{return this.db.collection('accounts')}
@@ -36,6 +44,16 @@ export class MongoStore implements Store{
   private get flagged():Collection<Doc<Flag>>{return this.db.collection('flags')}
   private get trialDocs():Collection<Doc<Trial>>{return this.db.collection('trials')}
   private get visits():Collection<VisitEvent>{return this.db.collection('visit_events')}
+
+  /** An index removing documents this many seconds old; an existing one with another age is changed in place (creating
+   * it again with a different age is refused). */
+  private async expiring(collection:string,key:Record<string,1>,seconds:number){
+    try{await this.db.collection(collection).createIndex(key,{expireAfterSeconds:seconds})}
+    catch(e){
+      if(!(e instanceof MongoServerError&&(e.code===85||e.code===86)))throw e;
+      await this.db.command({collMod:collection,index:{keyPattern:key,expireAfterSeconds:seconds}});
+    }
+  }
 
   private async indexes(){
     // Sparse: an Apple account without an email, or accounts without a provider, do not collide.
@@ -51,8 +69,8 @@ export class MongoStore implements Store{
     await this.entries.createIndex({type:1,createdAt:1});
     await this.accounts.createIndex({createdAt:-1});
     await this.drives.createIndex({startedAt:-1});
-    // Visits are kept 400 days, then removed by MongoDB itself.
-    await this.visits.createIndex({at:1},{expireAfterSeconds:400*86400});
+    // Visits are kept VISITS_KEPT_DAYS, then removed by MongoDB itself.
+    await this.expiring('visit_events',{at:1},VISITS_KEPT_DAYS*86400);
     await this.flagged.createIndex({resolvedAt:1,createdAt:-1});
     await this.drives.createIndex({accountId:1,startedAt:-1});
     await this.codes.createIndex({tokenHash:1});
