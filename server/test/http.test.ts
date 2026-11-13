@@ -81,6 +81,20 @@ describe('the API over HTTP',()=>{
     expect(r.recent[0]).toMatchObject({scenario:'goodmayes-free-drive',mode:'free'});
   });
 
+  it('the profile: signed in only; a finished drive\'s result shows in it',async()=>{
+    expect((await fetch(`${base}/api/profile`)).status).toBe(401);
+    const c=client();
+    await c('/api/auth/email',{email:'profile@example.com'});
+    const code=/(\d{6})/.exec(outbox.sent.at(-1)!.subject)![1]!;
+    await c('/api/auth/email/code',{email:'profile@example.com',code});
+    const d=(await c('/api/drives',{kind:'test',scenario:'goodmayes-mock-test'})).json!;
+    await c(`/api/drives/${d['driveId']}/completed`,{result:{seconds:900,test:{passed:true,driving:5,serious:0,dangerous:0,finished:true},areas:[{label:'Use of speed',driving:2}]}});
+    const p=(await c('/api/profile')).json!;
+    expect(p['totals']).toMatchObject({test:1,minutes:15});
+    expect(p['best']).toMatchObject({tests:1,passes:1,fewestFaults:5});
+    expect(p['weak']).toEqual([{label:'Use of speed',times:2,serious:0,dangerous:0}]);
+  });
+
   it('a tampered cookie is not accepted',async()=>{
     const res=await fetch(`${base}/api/me`,{headers:{Cookie:'dp_session=eyJhIjoieCIsImUiOjk5OTk5OTk5OTk5OTl9.forged'}});
     expect(await res.json()).toMatchObject({signedIn:false});

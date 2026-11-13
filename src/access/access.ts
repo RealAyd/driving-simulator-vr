@@ -20,6 +20,9 @@ type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:num
   history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>})&{trial?:Trial};
 /** A drive the server has started (its session used). */
 export type PaidDrive={id:string};
+/** How a finished drive went, for the learner's profile (the server keeps it with the drive). */
+export interface DriveSummary{seconds:number;test?:{passed:boolean;driving:number;serious:number;dangerous:number;finished:boolean};
+  lesson?:{title:string;good:number;improve:number};areas?:Array<{label:string;driving:number;serious:number;dangerous:number}>}
 /**
  * What the account screen is for: the account itself; signing up once the free try of a kind is used ("save your
  * progress", then the drive carries on); or the paywall, the packs from the Starter Pass up.
@@ -67,6 +70,7 @@ const loadScript=(src:string)=>new Promise<void>((ok,fail)=>{
 const PAID_HOSTS=new Set(['vr.drivingpractice.live','staging.drivingpractice.live']);
 
 import {lessonsDone,mergeLessonsDone} from '../lessons/progress';
+import {renderProfile,type Profile} from './profileView';
 
 export class Access{
   /** Whether drives need sessions here. */
@@ -119,6 +123,8 @@ export class Access{
     this.render();
     this.onChange();
     this.carryOn();
+    // (Signed in on the account screen: their profile.)
+    if(this.me.signedIn&&this.mode==='account'&&!byId('screen-account').hidden)void this.loadProfile();
   }
 
   /** Progress both ways: the account's lessons come to this device, and this device's go to the account. */
@@ -234,10 +240,10 @@ export class Access{
    * How the drive went: one that failed to load gives its session back; 'completed' only when driven to its end
    * ('ended' otherwise, with how: exited, a crash, out of time).
    */
-  report(drive:PaidDrive|null,status:'loaded'|'failed'|'completed'|'ended',outcome?:string):void{
+  report(drive:PaidDrive|null,status:'loaded'|'failed'|'completed'|'ended',outcome?:string,result?:DriveSummary):void{
     if(!drive)return;
     // (A completed drive has just used its session: the balance is shown again.)
-    void api(`drives/${drive.id}/${status}`,outcome?{outcome}:{}).then(()=>{if(status==='completed'||status==='failed')void this.refresh()});
+    void api(`drives/${drive.id}/${status}`,{...(outcome?{outcome}:{}),...(result?{result}:{})}).then(()=>{if(status==='completed'||status==='failed')void this.refresh()});
   }
 
   // ---- The account screen ----
@@ -255,6 +261,15 @@ export class Access{
     byId('account-note').textContent=this.me.signedIn&&reason?reason:'';
     this.render();
     if(!this.me.signedIn)void this.providers();
+    if(mode==='account')void this.loadProfile();
+  }
+
+  /** The learner's profile under their drives (account view only, signed in). */
+  private async loadProfile(){
+    const box=byId('profile');
+    if(!this.me.signedIn){box.hidden=true;return}
+    const r=await api<Profile>('profile');
+    if(r.status===200&&r.data)renderProfile(box,r.data);
   }
   close():void{byId('screen-account').hidden=true;this.pending=null}
 

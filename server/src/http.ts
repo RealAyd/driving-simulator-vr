@@ -1,3 +1,4 @@
+import {cleanResult} from './profile.js';
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import type {IncomingMessage,ServerResponse} from 'node:http';
 import {Admin} from './admin.js';
@@ -96,6 +97,8 @@ export function handler(service:Service,outbox:OutboxMailer|null){
       if(method==='GET'&&path==='/api/config')return send(res,200,{
         gate:true,googleClientId:config.googleClientId,appleServicesId:config.appleServicesId,packs:service.packs(),devCheckout:config.devFakes,signInFirst:config.signInFirst,
         appleRedirect:`${config.appBaseUrl}/api/auth/apple/callback`});
+      // The learner's profile: their drives, best mock test, weak areas and progress.
+      if(method==='GET'&&path==='/api/profile')return send(res,200,await service.profile(signedIn()));
       if(method==='GET'&&path==='/api/me'){
         const me=accountId?await service.me(accountId):null;
         if(accountId&&!me)setSession(res,null);
@@ -164,16 +167,16 @@ export function handler(service:Service,outbox:OutboxMailer|null){
           const r=await service.startDrive(accountId,kind,scenario);
           if(r.ok)return send(res,200,{driveId:r.drive.id,balance:r.balance});
         }
-        const t=await service.startTrialDrive(trialId,ipOf(req),kind,scenario);
+        const t=await service.startTrialDrive(trialId,ipOf(req),kind,scenario,accountId??undefined);
         if(t.trialId&&t.trialId!==trialId)setTrial(res,t.trialId);
         if(t.start.ok)return send(res,200,{driveId:t.start.drive.id,balance:0,trial:true});
         return send(res,t.start.reason==='slow-down'?429:402,{error:accountId&&t.start.reason==='trial-used'?'no-sessions':t.start.reason});
       }
       const drive=/^\/api\/drives\/([\w-]{8,64})\/(loaded|failed|completed|ended)$/.exec(path);
       if(method==='POST'&&drive){
-        const status=drive[2] as 'loaded'|'failed'|'completed'|'ended',said=(await json(req))['outcome'];
-        const outcome=DRIVE_OUTCOMES.find(o=>o===said);
-        const ok=(!!accountId&&await service.driveStatus(accountId,drive[1]!,status,outcome))||(!!trialId&&await service.driveStatus(`trial:${trialId}`,drive[1]!,status,outcome));
+        const body=await json(req),status=drive[2] as 'loaded'|'failed'|'completed'|'ended',said=body['outcome'];
+        const outcome=DRIVE_OUTCOMES.find(o=>o===said),result=cleanResult(body['result']);
+        const ok=(!!accountId&&await service.driveStatus(accountId,drive[1]!,status,outcome,result))||(!!trialId&&await service.driveStatus(`trial:${trialId}`,drive[1]!,status,outcome,result));
         return send(res,ok?200:404,{ok});
       }
 

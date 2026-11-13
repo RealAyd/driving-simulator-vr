@@ -71,6 +71,8 @@ export class MongoStore implements Store{
     await this.entries.createIndex({type:1,createdAt:1});
     await this.accounts.createIndex({createdAt:-1});
     await this.drives.createIndex({startedAt:-1});
+    // (A learner's profile: their drives, newest first.)
+    await this.drives.createIndex({owner:1,startedAt:-1},{sparse:true});
     // Visits are kept VISITS_KEPT_DAYS, then removed by MongoDB itself.
     await this.expiring('visit_events',{at:1},VISITS_KEPT_DAYS*86400);
     await this.flagged.createIndex({resolvedAt:1,createdAt:-1});
@@ -187,8 +189,8 @@ export class MongoStore implements Store{
       allowances:{$sum:{$add:[{$ifNull:['$allowances.lesson',0]},{$ifNull:['$allowances.test',0]},{$ifNull:['$allowances.free',0]}]}}}}]).toArray();
     return {sessions:t?.sessions??0,allowances:t?.allowances??0};
   }
-  async listDrives(q:{accountId?:string;since?:Date;limit:number}){
-    const filter={...(q.accountId?{accountId:q.accountId}:{}),...(q.since?{startedAt:{$gte:q.since}}:{})};
+  async listDrives(q:{accountId?:string;owner?:string;since?:Date;limit:number}){
+    const filter={...(q.accountId?{accountId:q.accountId}:{}),...(q.owner?{$or:[{owner:q.owner},{accountId:q.owner}]}:{}),...(q.since?{startedAt:{$gte:q.since}}:{})};
     return (await this.drives.find(filter).sort({startedAt:-1}).limit(q.limit).toArray()).map(d=>out<Drive>(d)!);
   }
   async referrers(){

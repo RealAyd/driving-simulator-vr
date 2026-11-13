@@ -205,6 +205,21 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .balance{font-size:15px;margin:6px 0}
 .balance b{font-size:34px;color:var(--accent)}
 .pack-list{display:grid;gap:8px;margin:10px 0}
+.profile{display:grid;gap:10px;margin:12px 0}
+.profile h3{margin:8px 0 0;font-size:17px;font-weight:800;color:var(--ink)}
+.profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.profile-stat{display:grid;justify-items:center;gap:2px;padding:10px 4px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.profile-stat b{font-size:22px;font-weight:800;color:var(--accent)}.profile-stat span{font-size:12px;color:var(--soft);text-align:center}
+.profile-best{display:grid;gap:2px;padding:12px 14px;border-radius:14px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.profile-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}.profile-best b{font-size:18px}.profile-best span:last-child{color:var(--soft);font-size:14px}
+.profile-weak,.profile-recent{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.profile-weak li{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.profile-weak li span{flex:1;min-width:0}.profile-weak li b{font-weight:800}
+.profile-weak em{font-style:normal;font-size:12px;font-weight:800;padding:2px 7px;border-radius:999px;color:#fff}.profile-weak .sev-s{background:#ea580c}.profile-weak .sev-d{background:#dc2626}
+.profile-chart{width:100%;height:auto}.profile-chart rect.pass{fill:#22c55e}.profile-chart rect.fail{fill:#ef4444}.profile-chart text{font-size:11px;fill:var(--soft)}
+.profile-recent li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.profile-recent li div{display:grid;min-width:0}.profile-recent li div span{font-size:13px;color:var(--soft)}
+.profile-recent li>span{flex:none;font-size:13px;font-weight:700;text-align:right;color:var(--soft)}.profile-recent .ok{color:#16a34a}.profile-recent .no{color:#dc2626}
 .breakdown{list-style:none;margin:6px 0 8px;padding:0;display:grid;gap:6px}
 .breakdown li{border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .breakdown li>span{color:var(--soft);font-size:13px}
@@ -827,6 +842,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p id="account-email" class="unit not-paywall"></p>
       <p class="balance not-paywall"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
       <ul id="account-breakdown" class="breakdown not-paywall"></ul>
+      <section id="profile" class="profile not-paywall" aria-label="Your progress" hidden></section>
       <div id="admin-tools" class="admin-tools" hidden>
         <a id="admin-hub" class="admin-hub" href="admin.html" target="_blank" rel="noopener">Admin hub</a>
         <label>Cars <select data-sim-option="cars"><option value="">Standard</option><option value="mixed">With Peugeot and pickup</option><option value="new">New pack</option><option value="kenney">Kenney kit</option><option value="pack20">20-car pack</option></select></label>

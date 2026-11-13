@@ -93,6 +93,18 @@ export interface Drive{
    */
   due?:boolean;
   refunded?:boolean;
+  /** How it went, as the app reported it when it ended (the learner's profile is made from these). */
+  result?:DriveResult;
+  /** The signed-in learner who drove it, also when it was on the device's free try (their profile shows it). */
+  owner?:string;
+}
+
+/** A finished drive's result, summarised: a mock test's verdict and faults, a lesson's marks, the mark sheet's areas. */
+export interface DriveResult{
+  seconds?:number;
+  test?:{passed:boolean;driving:number;serious:number;dangerous:number;finished:boolean};
+  lesson?:{title:string;good:number;improve:number};
+  areas?:Array<{label:string;driving:number;serious:number;dangerous:number}>;
 }
 
 export type DriveStatus='started'|'loaded'|'failed'|'completed'|'ended'|'unpaid';
@@ -170,7 +182,8 @@ export interface Store{
   /** Sessions and Starter Pass drives held by all accounts. */
   heldTotals():Promise<{sessions:number;allowances:number}>;
   /** Newest first. */
-  listDrives(q:{accountId?:string;since?:Date;limit:number}):Promise<Drive[]>;
+  /** Newest first; `owner`: the learner's drives, theirs or on a free try while signed in. */
+  listDrives(q:{accountId?:string;owner?:string;since?:Date;limit:number}):Promise<Drive[]>;
   referrers():Promise<ReferrerCount[]>;
   /** A device's free try: TRIAL_EACH drives of each kind. */
   createTrial():Promise<Trial>;
@@ -293,8 +306,8 @@ export class MemoryStore implements Store{
     for(const a of this.accounts.values()){sessions+=a.balance;allowances+=Object.values(a.allowances??{}).reduce((n,v)=>n+(v??0),0)}
     return {sessions,allowances};
   }
-  async listDrives(q:{accountId?:string;since?:Date;limit:number}){
-    return [...this.drives.values()].filter(d=>(!q.accountId||d.accountId===q.accountId)&&(!q.since||d.startedAt>=q.since))
+  async listDrives(q:{accountId?:string;owner?:string;since?:Date;limit:number}){
+    return [...this.drives.values()].filter(d=>(!q.accountId||d.accountId===q.accountId)&&(!q.owner||d.owner===q.owner||d.accountId===q.owner)&&(!q.since||d.startedAt>=q.since))
       .sort((a,b)=>b.startedAt.getTime()-a.startedAt.getTime()).slice(0,q.limit).map(d=>({...d}));
   }
   async referrers(){

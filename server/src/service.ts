@@ -1,6 +1,7 @@
 import {createHash,randomBytes,randomInt,timingSafeEqual} from 'node:crypto';
 import type {Config,Pack} from './config.js';
-import {freshTrial,type Account,type Drive,type DriveOutcome,type Mode,type Pot,type Store} from './store.js';
+import {profileOf} from './profile.js';
+import {freshTrial,type Account,type Drive,type DriveOutcome,type DriveResult,type Mode,type Pot,type Store} from './store.js';
 import {Support,type Pusher} from './support.js';
 
 export interface Mailer{send(m:{to:string;subject:string;text:string;html:string}):Promise<void>}
@@ -211,11 +212,11 @@ export class Service{
     const admin=isAdminEmail(this.config,account.email);
     // An unlimited pass: every drive, nothing used.
     if(!admin&&account.unlimitedUntil&&account.unlimitedUntil.getTime()>Date.now()){
-      const drive=await this.store.createDrive({accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'pass',startedAt:new Date(),status:'started'});
+      const drive=await this.store.createDrive({accountId,owner:accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'pass',startedAt:new Date(),status:'started'});
       return {ok:true,drive,balance:account.balance};
     }
     if(!admin&&account.balance<=0&&!POTS.some(p=>(account.allowances?.[p]??0)>0))return {ok:false,reason:'no-sessions'};
-    const drive=await this.store.createDrive({accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:admin?'admin':'sessions',
+    const drive=await this.store.createDrive({accountId,owner:accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:admin?'admin':'sessions',
       ...(admin?{}:{due:true}),startedAt:new Date(),status:'started'});
     return {ok:true,drive,balance:account.balance};
   }
@@ -283,7 +284,7 @@ export class Service{
    * can be completed TRIAL_EACH times (one is used when a drive is completed). Returns the try's id (for the device's
    * cookie) with the outcome.
    */
-  async startTrialDrive(trialId:string|null,ip:string,kind:string,scenario:string):Promise<{trialId:string|null;start:DriveStart|{ok:false;reason:'slow-down'}}>{
+  async startTrialDrive(trialId:string|null,ip:string,kind:string,scenario:string,owner?:string):Promise<{trialId:string|null;start:DriveStart|{ok:false;reason:'slow-down'}}>{
     if(!SCENARIO.test(scenario))return {trialId,start:{ok:false,reason:'trial-used'}};
     let trial=trialId?await this.store.getTrial(trialId):null;
     if(!trial){
@@ -292,12 +293,12 @@ export class Service{
     }
     const mode=modeOf(scenario);
     if((trial.remaining[mode]??0)<=0)return {trialId:trial.id,start:{ok:false,reason:'trial-used'}};
-    const drive=await this.store.createDrive({accountId:`trial:${trial.id}`,kind:kind.slice(0,40),scenario,mode,paidFrom:'trial',due:true,startedAt:new Date(),status:'started'});
+    const drive=await this.store.createDrive({accountId:`trial:${trial.id}`,...(owner?{owner}:{}),kind:kind.slice(0,40),scenario,mode,paidFrom:'trial',due:true,startedAt:new Date(),status:'started'});
     return {trialId:trial.id,start:{ok:true,drive,balance:0}};
   }
 
   /** The app reports how the drive went: a completed one uses its session; one that failed to load used nothing. */
-  async driveStatus(accountId:string,driveId:string,status:'loaded'|'failed'|'completed'|'ended',outcome?:DriveOutcome):Promise<boolean>{
+  async driveStatus(accountId:string,driveId:string,status:'loaded'|'failed'|'completed'|'ended',outcome?:DriveOutcome,result?:DriveResult):Promise<boolean>{
     const d=await this.store.getDrive(driveId);
     if(!d||d.accountId!==accountId||d.status==='unpaid')return false;
     if(status==='completed'&&d.status!=='completed')await this.completeDrive(d);
@@ -319,9 +320,14 @@ export class Service{
     // Finished drives stay finished (a late 'loaded' does not undo one; a completed one is never made 'ended').
     if(d.status==='completed'||(d.status==='ended'&&status!=='completed'))return true;
     if(status==='completed'||status==='ended')await this.store.updateDrive(driveId,{status,endedAt:new Date(),
-      outcome:status==='completed'?'completed':outcome&&outcome!=='completed'?outcome:'abandoned'});
+      outcome:status==='completed'?'completed':outcome&&outcome!=='completed'?outcome:'abandoned',...(result?{result}:{})});
     else await this.store.updateDrive(driveId,{status});
     return true;
+  }
+
+  /** The signed-in learner's profile (profile.ts), from their last 500 drives. */
+  async profile(accountId:string){
+    return profileOf(await this.store.listDrives({owner:accountId,limit:500}));
   }
 
   // ---- Payments (Stripe Payment Links) ----

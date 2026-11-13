@@ -84,7 +84,7 @@ import {Hud} from '../ui/hud';
 import {renderResults} from '../ui/results';
 import {applyTextSize,loadTextSize,openGlossary} from '../ui/glossary';
 import {lessonsDone,markLessonDone} from '../lessons/progress';
-import type {SheetExtras} from '../ui/markSheet';
+import {markSheet,type SheetExtras} from '../ui/markSheet';
 import type {SimModule} from '../contracts';
 import {SteeringAssist} from '../vehicle/steeringAssist';
 import {VehicleController,type ControlSource} from '../vehicle/vehicleController';
@@ -1013,7 +1013,12 @@ export async function boot():Promise<void>{
       lastResult=result;
       session.to('finished');
       // Counted as completed only when it was (an exit part-way, a crash or running out of time is not).
-      paidAccess.report(paidDrive,outcome==='completed'?'completed':'ended',outcome);paidDrive=null;
+      // (With how it went, for the learner's profile: the verdict and faults, the lesson's marks, the mark sheet's areas.)
+      paidAccess.report(paidDrive,outcome==='completed'?'completed':'ended',outcome,{seconds:Math.round(result.durationSeconds),
+        ...(result.mockTest?{test:result.mockTest}:{}),
+        ...(result.lesson?{lesson:{title:result.lesson.title,good:result.lesson.good,improve:result.lesson.improve}}:{}),
+        ...(result.findings.length?{areas:markSheet(result.findings)}:{})});
+      paidDrive=null;
       visits.drive('end',result.scenarioId,{kind:visitDrive,outcome,seconds:Math.round(result.durationSeconds)});
       let saved=0,saveFailed=false;
       // Parked practice is kept apart from results: not saved.
