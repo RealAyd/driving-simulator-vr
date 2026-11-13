@@ -1,8 +1,8 @@
 import {TEST_CENTRES} from '../ui/areaSearch';
 
 /**
- * "Recently practised" on the home screen: real drives completed on this service (GET /api/recent), said plainly:
- * "Mini-roundabout practice in Brentwood · 2 mins ago". Nothing about who; nothing invented (empty means hidden).
+ * Recently practised, a notification on the home screen: real drives completed on this service (GET /api/recent),
+ * said plainly: "Mini-roundabout practice in Brentwood, completed 2 mins ago". Nothing about who; nothing invented.
  */
 
 export interface RecentDrive{scenario:string;mode:'lesson'|'test'|'free';secondsAgo:number}
@@ -49,22 +49,42 @@ export function ago(seconds:number):string{
   return n(Math.floor(seconds/86400),'day');
 }
 
-/** Fills the home screen's list (hidden while there is nothing to show), and again every two minutes. */
-export function showRecent(section:HTMLElement,list:HTMLElement):void{
+/** How the notification paces itself (ms): first one after FIRST, each shown for SHOW, GAP between, ROUND before going round again. */
+export const TOAST={FIRST:4000,SHOW:6000,GAP:9000,ROUND:45_000,REFRESH:120_000};
+
+/**
+ * The home screen's notification: one recent drive at a time slides in at the bottom, stays a few seconds and goes,
+ * then the next. Only while `onHome()` (never during a drive or over another screen); closed, it stays away for the
+ * visit. Nothing to show, nothing shows.
+ */
+export function showRecentToast(el:HTMLElement,what:HTMLElement,when:HTMLElement,close:HTMLElement,onHome:()=>boolean,timing=TOAST):void{
+  let items:RecentDrive[]=[],fetchedAt=0,next=0,closed=false;
+  try{closed=sessionStorage.getItem('dp.recent.closed')==='1'}catch{/* (No storage: it shows.) */}
   const load=async()=>{
-    let recent:RecentDrive[]=[];
     try{
       const r=await fetch('/api/recent',{cache:'no-store'});
-      if(r.ok)recent=((await r.json()) as {recent?:RecentDrive[]}).recent??[];
-    }catch{/* (Offline: the list stays as it was.) */return}
-    list.replaceChildren(...recent.map(d=>{
-      const li=document.createElement('li');
-      const what=document.createElement('b');what.textContent=describeDrive(d);
-      const when=document.createElement('span');when.textContent=`completed ${ago(d.secondsAgo)}`;
-      li.append(what,' ',when);return li;
-    }));
-    section.hidden=!recent.length;
+      if(r.ok){items=((await r.json()) as {recent?:RecentDrive[]}).recent??[];fetchedAt=Date.now();next=0}
+    }catch{/* (Offline: what was there stays.) */}
   };
-  void load();
-  setInterval(()=>{if(!document.hidden)void load()},120_000);
+  const hide=()=>{el.classList.add('out');setTimeout(()=>{if(el.classList.contains('out'))el.hidden=true},400)};
+  close.addEventListener('click',()=>{
+    closed=true;hide();
+    try{sessionStorage.setItem('dp.recent.closed','1')}catch{/* (Closed for this page only.) */}
+  });
+  const step=()=>{
+    if(closed)return;
+    // (Not on the home screen, or the tab is hidden: look again shortly.)
+    if(!items.length||document.hidden||!onHome()){setTimeout(step,timing.GAP);return}
+    const d=items[next]!;
+    what.textContent=describeDrive(d);
+    when.textContent=`completed ${ago(d.secondsAgo+Math.round((Date.now()-fetchedAt)/1000))}`;
+    el.hidden=false;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove('out')));
+    next=(next+1)%items.length;
+    // (Leaving the home screen, starting a drive or opening sign-in: it goes at once.)
+    const watch=setInterval(()=>{if(!onHome())hide()},250);
+    setTimeout(()=>{clearInterval(watch);hide();setTimeout(step,next===0?timing.ROUND:timing.GAP)},timing.SHOW);
+  };
+  void load().then(()=>setTimeout(step,timing.FIRST));
+  setInterval(()=>{if(!document.hidden)void load()},timing.REFRESH);
 }

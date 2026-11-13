@@ -55,7 +55,7 @@ import goodmayesLessonJson from '../../content/scenarios/goodmayes-lesson.json';
 import {DriverBody} from '../cockpit/driverBody';
 import {buildArea} from '../generator/area';
 import {setUpAreaSearch,setUpCentreBrowser} from '../ui/areaSearch';
-import {showRecent} from '../access/recent';
+import {showRecentToast} from '../access/recent';
 import {fullScreenNow,installed,portraitTouch,preferLandscape,setUpFullscreen} from '../ui/fullscreen';
 import {Assessor} from '../assessment/assessor';
 import {MovingOffAssessor} from '../assessment/movingOff';
@@ -1092,7 +1092,13 @@ export async function boot():Promise<void>{
   /** The drive whose session is in use (its result is reported when it ends). */
   let paidDrive:PaidDrive|null=null;
   // (Recently practised: where the accounts service runs, once the gate is known.)
-  void paidAccess.init().then(()=>{if(paidAccess.gate)showRecent(byId('recent-practice'),byId('recent-list'))});
+  void paidAccess.init().then(()=>{
+    if(!paidAccess.gate)return;
+    // (On the home screen itself: not during a drive, not over sign-in or another screen.)
+    const home=byId('home-main');
+    showRecentToast(byId('recent-toast'),byId('recent-what'),byId('recent-when'),byId('recent-close'),
+      ()=>!byId('screen-start').hidden&&byId('screen-account').hidden&&home.offsetParent!==null);
+  });
   const controller=new ControllerInput({
     getGamepads:()=>typeof navigator.getGamepads==='function'?[...navigator.getGamepads()]:[],
     addEventListener:(type,listener)=>window.addEventListener(type,listener as EventListener)
