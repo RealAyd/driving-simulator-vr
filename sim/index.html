@@ -206,6 +206,18 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .balance b{font-size:34px;color:var(--accent)}
 .pack-list{display:grid;gap:8px;margin:10px 0}
 .profile{display:grid;gap:10px;margin:12px 0}
+.board{display:grid;gap:8px;margin:12px 0}.board h3{margin:8px 0 0;font-size:17px;font-weight:800;color:var(--ink)}
+.board-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.board-list li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.board-list li.me{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.board-rank{flex:none;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--surface-3);font-weight:800;font-size:13px}
+.board-list li:first-child .board-rank{background:#facc15;color:#0b0b0f}
+.board-who{flex:1;min-width:0;display:grid}.board-who small{color:var(--soft);font-size:12px}
+.board-points{flex:none;font-weight:800;color:var(--accent)}
+.board-me,.board-leader{margin:0;font-size:14px;color:var(--soft)}.board-leader{font-weight:700;color:var(--ink)}
+.board-settings{border:1px solid var(--line);border-radius:12px;padding:10px 12px}.board-settings summary{cursor:pointer;font-weight:700}
+.board-settings[open]{display:grid;gap:8px}.board-settings input[type=text],.board-settings input:not([type]){font:inherit;color:var(--ink);background:var(--surface-2);border:1px solid var(--line-strong);border-radius:10px;padding:9px 11px}
+.board-check{display:flex;align-items:center;gap:8px}.board-status{margin:0;font-size:13px;color:var(--soft)}
 .profile h3{margin:8px 0 0;font-size:17px;font-weight:800;color:var(--ink)}
 .profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .profile-stat{display:grid;justify-items:center;gap:2px;padding:10px 4px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
@@ -843,6 +855,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p class="balance not-paywall"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
       <ul id="account-breakdown" class="breakdown not-paywall"></ul>
       <section id="profile" class="profile not-paywall" aria-label="Your progress" hidden></section>
+      <section id="board" class="board not-paywall" aria-label="Leaderboard" hidden></section>
       <div id="admin-tools" class="admin-tools" hidden>
         <a id="admin-hub" class="admin-hub" href="admin.html" target="_blank" rel="noopener">Admin hub</a>
         <label>Cars <select data-sim-option="cars"><option value="">Standard</option><option value="mixed">With Peugeot and pickup</option><option value="new">New pack</option><option value="kenney">Kenney kit</option><option value="pack20">20-car pack</option></select></label>

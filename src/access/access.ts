@@ -71,6 +71,7 @@ const PAID_HOSTS=new Set(['vr.drivingpractice.live','staging.drivingpractice.liv
 
 import {lessonsDone,mergeLessonsDone} from '../lessons/progress';
 import {renderProfile,type Profile} from './profileView';
+import {renderBoard,type Board} from './boardView';
 
 export class Access{
   /** Whether drives need sessions here. */
@@ -270,6 +271,20 @@ export class Access{
     if(!this.me.signedIn){box.hidden=true;return}
     const r=await api<Profile>('profile');
     if(r.status===200&&r.data)renderProfile(box,r.data);
+    await this.loadBoard();
+  }
+
+  /** The leaderboard for the learner's test centre, with their own settings. */
+  private async loadBoard(){
+    const box=byId('board');
+    if(!this.me.signedIn){box.hidden=true;return}
+    const r=await api<Board>('board');
+    if(r.status!==200||!r.data)return;
+    renderBoard(box,r.data,async s=>{
+      const saved=await api<{ok?:boolean;error?:string}>('board/me',s);
+      if(saved.status===200){void this.loadBoard();return null}
+      return saved.data?.error==='school'?'That driving school name cannot be used.':'Choose a name of 2 to 24 letters or numbers (no rude words).';
+    });
   }
   close():void{byId('screen-account').hidden=true;this.pending=null}
 
