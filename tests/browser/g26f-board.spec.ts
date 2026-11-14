@@ -37,6 +37,12 @@ test('G26f: the leaderboard for the learner\'s centre, and their name on it',asy
   await page.click('#board-scope [data-scope="uk"]');
   await expect(board.locator('h3')).toHaveText('UK · this week');
   await expect(board.locator('.board-me')).toHaveText('Top 8% · 37th of 500 · 30 points');
+  await page.evaluate(()=>{(window as unknown as {shared:unknown[]}).shared=[];Object.defineProperty(navigator,'share',{configurable:true,value:async(d:unknown)=>{(window as unknown as {shared:unknown[]}).shared.push(d)}})});
+  await board.locator('.board-share').click();
+  const shared=await page.evaluate(()=>(window as unknown as {shared:Array<{text:string;url:string}>}).shared[0]!);
+  expect(shared.text).toContain('top 8% in the UK');
+  expect(shared.text).toContain('we both win');
+  expect(shared.url).toContain('?ref=ABCD2345');
   await page.click('#board-scope [data-scope=""]');
   await expect(board.locator('h3')).toHaveText('Hull · this week');
   await board.locator('summary').click();

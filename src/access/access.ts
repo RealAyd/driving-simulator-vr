@@ -302,7 +302,8 @@ export class Access{
       const saved=await api<{ok?:boolean;error?:string}>('board/me',s);
       if(saved.status===200){void this.loadBoard();return null}
       return saved.data?.error==='school'?'That driving school name cannot be used.':'Choose a name of 2 to 24 letters or numbers (no rude words).';
-    },()=>{byId('screen-board').hidden=true;this.close();document.querySelector<HTMLElement>('[data-drive-mode="test"]')?.click()});
+    },()=>{byId('screen-board').hidden=true;this.close();document.querySelector<HTMLElement>('[data-drive-mode="test"]')?.click()},
+    text=>this.share(text,'.board-share'));
   }
   close():void{byId('screen-account').hidden=true;this.pending=null}
 
@@ -351,11 +352,16 @@ export class Access{
     byId('apple-button').addEventListener('click',()=>void this.appleSignIn());
     byId('account-signout').addEventListener('click',()=>void api('auth/logout',{}).then(()=>this.refresh()));
     byId('invite-share').addEventListener('click',()=>{
-      const link=byId<HTMLInputElement>('invite-link').value;
-      const nav=navigator as Navigator&{share?:(d:{title:string;text:string;url:string})=>Promise<void>};
-      if(nav.share)void nav.share({title:'Driving Practice',text:'Practise for your driving test on real UK streets. You get 2 free drives with my link:',url:link}).catch(()=>{});
-      else void navigator.clipboard?.writeText(link).then(()=>{byId('invite-share').textContent='Copied'});
+      this.share('Practise for your driving test on real UK streets. You get 2 free drives with my link:','#invite-share');
     });
+  }
+
+  /** Shares `text` with the learner's invite link (the phone's share sheet, or copied where there is none). */
+  private share(text:string,button:string){
+    const link=`${location.origin}${location.pathname}?ref=${this.me.signedIn?this.me.referralCode:''}`;
+    const nav=navigator as Navigator&{share?:(d:{title:string;text:string;url:string})=>Promise<void>};
+    if(nav.share)void nav.share({title:'Driving Practice',text,url:link}).catch(()=>{});
+    else void navigator.clipboard?.writeText(`${text} ${link}`).then(()=>{const b=document.querySelector(button);if(b)b.textContent='Copied'});
   }
 
   private render(){
