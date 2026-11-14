@@ -157,6 +157,25 @@ describe('decision routes, driven',()=>{
   },120_000);
 });
 
+describe('decision routes with Skip ahead pressed whenever it is offered',()=>{
+  for(const route of ROUTES)it(`${route.id}: every challenge still comes, as depicted, with traffic about; the drive is shorter`,async()=>{
+    const r=await drive({},null,30,4,route,true);
+    console.log(`${route.id} with skips: ${r.skips} skips, ${Math.round(r.driven)} s driven`);
+    expect(r.skips).toBeGreaterThan(1);
+    expect(r.result?.passed).toBe(true);
+    expect(r.result?.faults).toEqual([]);
+    expect(r.pauses.map(keyOf)).toEqual(PAUSES[route.id]);
+    asDepicted(r,route);
+    expect(r.pauses.flatMap(p=>p.quiet)).toEqual([]);
+    expect(r.metWho).toEqual([]);
+    expect(r.closest).toBeGreaterThan(2.2);
+    expect(r.redRun,r.redAt.join('; ')).toBe(0);
+    expect(r.offRoad,r.offAt.join('; ')).toBe(0);
+    expect(r.fixedHits).toEqual([]);
+    expect(Math.hypot(r.car.position.x-END[route.id]!.x,r.car.position.z-END[route.id]!.z)).toBeLessThan(12);
+  },1_500_000);
+});
+
 describe('decision routes with background traffic',()=>{
   // Several patterns of traffic (each seed brings the cars in differently).
   for(const route of ROUTES)for(const seed of [4,14]){

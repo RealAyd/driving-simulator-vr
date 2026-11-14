@@ -48,7 +48,8 @@ function gapBetween(a:Box,b:Box):number{
  * answers given; with the scene's parked cars, its traffic lights and background traffic (`traffic` road users, two
  * of them buses and two cyclists, as the app has, kept off the junctions in hand).
  */
-export async function drive(answers:Record<string,string[]>,only:number|null=null,traffic=0,seed?:number,route:DecisionRoute=BRENTWOOD_ROUTE_1){
+/** `skip`: Skip ahead pressed whenever it is offered (as the app does it: the car put there at a standstill, traffic brought in again). */
+export async function drive(answers:Record<string,string[]>,only:number|null=null,traffic=0,seed?:number,route:DecisionRoute=BRENTWOOD_ROUTE_1,skip=false){
   const {place,kerb,keepClear,obstacles}=await loadScene(route);
   const path=decisionPath(place,route,keepClear)!;
   const junctions=junctionDiscs(place);
@@ -108,13 +109,16 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   background?.reset();
   let closest=Infinity,offRoad=0,closestWho='',redRun=0,stood=0,longestStand=0,met=0,standAt='',nearSum=0,nearSteps=0,aheadSum=0;
   let closestTraffic=Infinity,closestTrafficWho='';const fixedHits:string[]=[];const offAt:string[]=[];const retired:string[]=[];const redAt:string[]=[];const metWho:string[]=[];
-  for(let t=0;t<2400&&!result;t+=DT){
+  let skips=0,driven=0;
+  for(let t=0;t<2400&&!result;t+=DT){driven=t;
     if(pending){
       const p:PausedAt=pending;pending=null;
       runner.submit(answers[`${p.challenge.id}/${p.stage.id}`]??p.stage.accepted[0]!);
       runner.continue();
     }
     if(frozen)continue;
+    const to=skip?runner.skipPose():null;
+    if(to){car={position:{x:to.x,y:0,z:to.z},heading:to.heading,speed:0,steerAngle:0};runner.skipped();background?.reset();skips++}
     const before=car;
     car=stepVehicle(car,runner.controls(),LEARNER_CAR,DT);
     lights.fixedUpdate(DT);
@@ -154,7 +158,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   // (Where each road user ended up, and what held the car last: diagnostics for a drive that did not finish.)
   const final=Object.fromEntries([...actors].map(([id,a])=>[id,`(${a.pose.position.x.toFixed(1)}, ${a.pose.position.z.toFixed(1)}) ${a.started?'started':'waiting'} ${a.speed.toFixed(1)} m/s`]));
   const near=others().filter(c=>Math.hypot(c.pose.position.x-car.position.x,c.pose.position.z-car.position.z)<60).map(c=>`${c.id} (${c.pose.position.x.toFixed(0)}, ${c.pose.position.z.toFixed(0)}) ${c.speed.toFixed(1)} ${background!.reasons().find(x=>x.id===c.id)?.why}`);
-  return {final,near,heldBy:runner.heldBy,result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,offAt,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,fixedHits,retired,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
+  return {skips,driven,final,near,heldBy:runner.heldBy,result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,offAt,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,fixedHits,retired,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
 }
 
 export const segDistance=(a:{x:number;z:number},b:{x:number;z:number},p:{x:number;z:number})=>{
