@@ -208,7 +208,7 @@ export class Access{
       :pot?`You have used your ${TRY_NAME[pot][FREE_EACH===1?0:1]}. ${this.stillFree(pot)||INVITE_UNLOCK}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
     const until=unlimitedUntil(this.me);
-    if(until)return `Unlimited until ${day(until)}`;
+    if(until)return until.getUTCFullYear()>=9999?'Unlimited':`Unlimited until ${day(until)}`;
     const n=total(this.me);
     if(n>0)return `Uses 1 session if you complete it · you have ${n}`;
     if(pot&&left>0)return `Uses one of your ${freeCount(pot,left)}`;
@@ -388,7 +388,7 @@ export class Access{
     byId('account-email').textContent=me.email??'Apple account';
     // The headline is everything that can be started; below it, what that is made of.
     byId('account-balance').textContent=until?'Unlimited':String(drives);
-    byId('account-balance-unit').textContent=until?`until ${day(until)}`:drives===1?'drive':'drives';
+    byId('account-balance-unit').textContent=until?(until.getUTCFullYear()>=9999?'no end date':`until ${day(until)}`):drives===1?'drive':'drives';
     const rows:HTMLElement[]=[];
     // Starter Pass drives still held from before it became sessions (for any kind of drive).
     if(starterLeft>0){

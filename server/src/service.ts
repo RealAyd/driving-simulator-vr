@@ -34,7 +34,11 @@ export function onSale(p:Pack,mode:'test'|'live',now=new Date()):boolean{
   return !p.saleEnds||now.getTime()<=new Date(`${p.saleEnds}T23:59:59Z`).getTime();
 }
 /** The end of an unlimited pass bought (or renewed) now, on top of any time already held. */
+/** Unlimited for life: the end date stored for it. */
+export const LIFETIME=new Date('9999-12-31T00:00:00Z');
+
 export function passUntil(held:Date|undefined,unlimited:{days?:number;monthly?:boolean;renews?:boolean},now=new Date()):Date{
+  if(held&&held.getTime()>=LIFETIME.getTime())return held;
   const from=new Date(Math.max(now.getTime(),held?.getTime()??0));
   // (A renewing pass gets a day's grace, so a renewal that arrives a little late does not interrupt it.)
   if(unlimited.monthly){const d=new Date(from);d.setUTCMonth(d.getUTCMonth()+1);return new Date(d.getTime()+86400_000)}
