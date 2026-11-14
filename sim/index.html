@@ -215,6 +215,10 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .board-who{flex:1;min-width:0;display:grid}.board-who small{color:var(--soft);font-size:12px}
 .board-points{flex:none;font-weight:800;color:var(--accent)}
 .board-me,.board-leader{margin:0;font-size:14px;color:var(--soft)}.board-leader{font-weight:700;color:var(--ink)}
+.board-scope{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--line,rgba(127,127,127,.18))}
+.board-scope button{padding:10px!important;border-radius:999px;border:0;background:transparent;color:var(--ink);font:inherit;font-weight:800}
+.board-scope button[aria-selected="true"]{background:var(--accent);color:#fff}
+.board-me{font-weight:800}
 .board-card{display:grid;gap:10px}.board-card h1{margin:0}
 .board-intro{display:grid;gap:10px;text-align:center}.board-intro h2{margin:6px 0 0;font-size:clamp(21px,5.6vw,26px)}.board-intro p{margin:0;color:var(--soft)}
 .board-hero{width:100%;height:auto;border-radius:18px;background:linear-gradient(160deg,#0f766e,#134e4a)}
@@ -918,6 +922,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p class="board-terms"><a href="legal/terms.html#leaderboards" target="_blank" rel="noopener">Terms</a> apply</p>
       <button id="board-continue" type="button" class="primary">Continue</button>
     </div>
+    <div id="board-scope" class="board-scope" role="tablist" hidden><button type="button" role="tab" data-scope="" aria-selected="true">My centre</button><button type="button" role="tab" data-scope="uk" aria-selected="false">UK</button></div>
     <section id="board" class="board" aria-label="This week's leaderboard" hidden></section>
   </div>
 </section>

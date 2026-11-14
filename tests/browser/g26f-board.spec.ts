@@ -14,6 +14,8 @@ test('G26f: the leaderboard for the learner\'s centre, and their name on it',asy
   await page.route('**/api/me',r=>r.fulfill({json:me}));
   await page.route('**/api/profile',r=>r.fulfill({json:empty}));
   await page.route('**/api/recent',r=>r.fulfill({json:{recent:[]}}));
+  await page.route('**/api/board?centre=uk',r=>r.fulfill({json:{centre:'uk',name:'UK',week:{from:new Date().toISOString()},settings:{show:false,name:''},
+    top:[{rank:1,name:'Ace',school:null,points:150,tests:5,passes:5,me:false}],me:{rank:37,points:30,of:500,top:8},leader:null}}));
   await page.route('**/api/board',r=>r.fulfill({json:{centre:'area-hull-test-centre',name:'Hull',week:{from:new Date().toISOString()},settings:{show:false,name:''},
     top:[{rank:1,name:'RoundaboutRuler',school:null,points:128,tests:5,passes:4,me:false},{rank:2,name:'Learner',school:null,points:30,tests:1,passes:1,me:true}],
     me:{rank:2,points:30,of:2},leader:{name:'Speedy',school:'Hull Driving Academy',points:142}}}));
@@ -32,6 +34,11 @@ test('G26f: the leaderboard for the learner\'s centre, and their name on it',asy
   await expect(board.locator('.podium .p1 .who')).toHaveText('RoundaboutRuler');
   await expect(board.locator('.podium .me .who')).toHaveText('Learner');
   await expect(board.locator('.board-leader')).toHaveText('Leader last week: Speedy (Hull Driving Academy)');
+  await page.click('#board-scope [data-scope="uk"]');
+  await expect(board.locator('h3')).toHaveText('UK · this week');
+  await expect(board.locator('.board-me')).toHaveText('Top 8% · 37th of 500 · 30 points');
+  await page.click('#board-scope [data-scope=""]');
+  await expect(board.locator('h3')).toHaveText('Hull · this week');
   await board.locator('summary').click();
   await page.check('#board-show');
   await page.fill('#board-name','x');

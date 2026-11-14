@@ -63,7 +63,7 @@ describe('leaderboards through the service',()=>{
     expect(await service.setBoard(b.id,{show:true,name:'x'})).toEqual({error:'name'});
     for(const d of [mock(a.id,40,true,3),mock(b.id,30,true,1),mock(b.id,20,false,5)])await store.createDrive(d);
     const board=await service.board(a.id);
-    expect(board).toMatchObject({centre:'area-hull-test-centre',name:'Hull',me:{rank:2,points:27,of:2}});
+    expect(board).toMatchObject({centre:'area-hull-test-centre',name:'Hull',me:{rank:2,points:27,of:2,top:100}});
     expect(board.top.map(r=>[r.rank,r.name,r.school,r.points,r.me])).toEqual([[1,'Learner',null,34,false],[2,'Ade','Top Gear Driving School',27,true]]);
   });
   it('the admin gives last week\'s leader 7 unlimited days, and the friend who invited them too, once; a name can be hidden',async()=>{
@@ -74,15 +74,37 @@ describe('leaderboards through the service',()=>{
     const lastWeek=new Date(weekStart(new Date()).getTime()-2*86400_000);
     await store.createDrive(mock(leader.id,0,true,2,{startedAt:new Date(lastWeek.getTime()-20*60_000),endedAt:lastWeek}));
     const l=await service.leaders();
-    expect(l.centres).toHaveLength(1);
-    expect(l.centres[0]).toMatchObject({name:'Hull',awarded:false,top:[{account:leader.id,name:'Speedy',points:28,referredBy:inviter.id}]});
+    expect(l.centres.map(c=>c.name)).toEqual(['UK','Hull']);
+    expect(l.centres[1]).toMatchObject({name:'Hull',awarded:false,top:[{account:leader.id,name:'Speedy',points:28,referredBy:inviter.id}]});
     expect(await service.awardLeader('boss@example.com','area-hull-test-centre',l.week)).toEqual({ok:true,winner:leader.id,referrer:inviter.id});
     expect(await service.awardLeader('boss@example.com','area-hull-test-centre',l.week)).toEqual({error:'already'});
     for(const id of [leader.id,inviter.id])expect((Date.parse((await service.me(id))!.unlimitedUntil!)-Date.now())/86400_000).toBeGreaterThan(6.9);
-    expect((await service.leaders()).centres[0]!.awarded).toBe(true);
+    expect((await service.leaders()).centres[1]!.awarded).toBe(true);
     // This week's board shows last week's leader by their name, until hidden.
     expect((await service.board(leader.id,'area-hull-test-centre')).leader).toMatchObject({name:'Speedy'});
     await service.hideOnBoard(leader.id,true);
     expect((await service.board(leader.id,'area-hull-test-centre')).leader).toMatchObject({name:'Learner'});
+  });
+  it('the UK board counts every centre, gives a percentile, and its prizes are 30, 7 and 7 days, plus 7 for whoever invited the winner',async()=>{
+    const {store,service}=setup();
+    const inviter=await signUp(service,'i@example.com');
+    const people=[await signUp(service,'a@example.com',inviter.referralCode),await signUp(service,'b@example.com'),await signUp(service,'c@example.com'),await signUp(service,'d@example.com')];
+    const lastWeek=new Date(weekStart(new Date()).getTime()-2*86400_000);
+    const at={startedAt:new Date(lastWeek.getTime()-20*60_000),endedAt:lastWeek};
+    await store.createDrive(mock(people[0]!.id,0,true,0,at));
+    await store.createDrive(mock(people[1]!.id,0,true,2,{...at,scenario:'area-wood-green-test-centre-mock-test'}));
+    await store.createDrive(mock(people[2]!.id,0,true,4,at));
+    await store.createDrive(mock(people[3]!.id,0,false,9,{...at,scenario:'area-wood-green-test-centre-mock-test'}));
+    for(const [i,p] of people.entries())await store.createDrive(mock(p.id,10,i<2,i*3));
+    const uk=await service.board(people[3]!.id,'uk');
+    expect(uk).toMatchObject({centre:'uk',name:'UK',me:{rank:4,of:4,top:100}});
+    expect((await service.board(people[0]!.id,'uk')).me).toMatchObject({rank:1,top:25});
+    const l=await service.leaders();
+    expect(l.centres[0]).toMatchObject({centre:'uk',top:[{account:people[0]!.id},{account:people[1]!.id},{account:people[2]!.id}]});
+    expect(await service.awardLeader('boss@example.com','uk',l.week)).toEqual({ok:true,winner:people[0]!.id,referrer:inviter.id});
+    const days=async(id:string)=>Math.round((Date.parse((await service.me(id))!.unlimitedUntil!)-Date.now())/86400_000);
+    expect([await days(people[0]!.id),await days(people[1]!.id),await days(people[2]!.id),await days(inviter.id)]).toEqual([30,7,7,7]);
+    expect((await service.me(people[3]!.id))!.unlimitedUntil).toBeNull();
+    expect(await service.awardLeader('boss@example.com','uk',l.week)).toEqual({error:'already'});
   });
 });

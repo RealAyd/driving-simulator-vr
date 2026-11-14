@@ -7,7 +7,7 @@ export interface Board{
   centre:string|null;name?:string;week:{from:string};
   settings:{show:boolean;name:string;school?:string;hidden?:boolean};
   top:Array<{rank:number;name:string;school:string|null;points:number;tests:number;passes:number;me:boolean}>;
-  me:{rank:number;points:number;of:number}|null;
+  me:{rank:number;points:number;of:number;top?:number}|null;
   leader:{name:string;school:string|null;points:number}|null;
 }
 
@@ -48,7 +48,7 @@ export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:s
     }
     parts.push(list);
   }
-  if(b.me&&!b.top.some(r=>r.me))parts.push(el('p','board-me',`You: ${ordinal(b.me.rank)} of ${b.me.of} · ${b.me.points} points`));
+  if(b.me)parts.push(el('p','board-me',`${b.me.top?`Top ${b.me.top}% · `:''}${ordinal(b.me.rank)} of ${b.me.of} · ${b.me.points} points`));
   if(b.leader)parts.push(el('p','board-leader',`Leader last week: ${b.leader.name}${b.leader.school?` (${b.leader.school})`:''}`));
   // Their name on the board: off until they choose it.
   const form=el('details','board-settings');

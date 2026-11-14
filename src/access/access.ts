@@ -291,10 +291,12 @@ export class Access{
   }
 
   /** The leaderboard for the learner's test centre, with their own settings. */
+  private boardScope='';
   private async loadBoard(){
     const box=byId('board');
-    if(!this.me.signedIn){box.hidden=true;byId('board-intro').hidden=false;return}
-    const r=await api<Board>('board');
+    if(!this.me.signedIn){box.hidden=true;byId('board-scope').hidden=true;byId('board-intro').hidden=false;return}
+    byId('board-scope').hidden=false;
+    const r=await api<Board>(this.boardScope?`board?centre=${this.boardScope}`:'board');
     if(r.status!==200||!r.data)return;
     renderBoard(box,r.data,async s=>{
       const saved=await api<{ok?:boolean;error?:string}>('board/me',s);
@@ -319,6 +321,11 @@ export class Access{
     byId('account-close').addEventListener('click',()=>this.close());
     byId('board-close').addEventListener('click',()=>{byId('screen-board').hidden=true});
     byId('board-continue').addEventListener('click',()=>this.continueBoard());
+    for(const tab of byId('board-scope').querySelectorAll<HTMLButtonElement>('button'))tab.addEventListener('click',()=>{
+      this.boardScope=tab.dataset['scope']??'';
+      for(const t of byId('board-scope').querySelectorAll('button'))t.setAttribute('aria-selected',String(t===tab));
+      void this.loadBoard();
+    });
     byId('account-board').addEventListener('click',()=>{this.close();this.openBoard()});
     byId('board-home').hidden=false;
     byId('board-home').addEventListener('click',()=>this.openBoard());
