@@ -17,6 +17,7 @@ type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:num
   /** An unlimited pass: every drive until then (ISO), or null. */
   unlimitedUntil?:string|null;
   lessonsDone?:string[];
+  marketing?:boolean;
   history:Array<{type:string;sessions:number;amountPence:number;reason:string;at:string}>})&{trial?:Trial};
 /** A drive the server has started (its session used). */
 export type PaidDrive={id:string};
@@ -119,6 +120,11 @@ export class Access{
     if(r.data)this.me=r.data;
     // Signed in on this visit (not already signed in when the app opened).
     if(this.checked&&!was&&this.me.signedIn)this.onSignIn();
+    // Ticked "Email me offers" when signing in: recorded once they are signed in.
+    const now=this.me as Me;
+    if(!was&&now.signedIn&&!now.marketing&&byId<HTMLInputElement>('signup-marketing').checked){
+      await api('me/marketing',{consent:true,source:'signup'});now.marketing=true;
+    }
     if(r.data)this.checked=true;
     if(this.me.signedIn){store.set(REF_KEY,null);await this.syncProgress()}
     this.render();
@@ -320,6 +326,10 @@ export class Access{
       });
     }
     byId('account-close').addEventListener('click',()=>this.close());
+    byId<HTMLInputElement>('account-marketing').addEventListener('change',e=>{
+      const consent=(e.target as HTMLInputElement).checked;
+      void api('me/marketing',{consent,source:'account'}).then(()=>{if(this.me.signedIn)this.me.marketing=consent});
+    });
     byId('board-close').addEventListener('click',()=>{byId('screen-board').hidden=true});
     byId('board-continue').addEventListener('click',()=>this.continueBoard());
     for(const tab of byId('board-scope').querySelectorAll<HTMLButtonElement>('button'))tab.addEventListener('click',()=>{
@@ -386,6 +396,7 @@ export class Access{
     chip.textContent=signedIn?(me.admin?'Admin':until?'Unlimited':`${drives} drive${drives===1?'':'s'}`):'Sign in';
     if(!signedIn)return;
     byId('account-email').textContent=me.email??'Apple account';
+    byId<HTMLInputElement>('account-marketing').checked=!!me.marketing;
     // The headline is everything that can be started; below it, what that is made of.
     byId('account-balance').textContent=until?'Unlimited':String(drives);
     byId('account-balance-unit').textContent=until?(until.getUTCFullYear()>=9999?'no end date':`until ${day(until)}`):drives===1?'drive':'drives';

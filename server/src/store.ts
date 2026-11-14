@@ -41,6 +41,8 @@ export interface Account{
   lessonsDone?:string[];
   /** Leaderboards: whether and how they show (board.ts). */
   board?:import('./board.js').BoardSettings;
+  /** Whether they agreed to offers and news by email, when, and where they said so (never assumed: off until ticked). */
+  marketing?:{consent:boolean;at:Date;source:'signup'|'account'};
 }
 
 /** What a drive is: the server decides from the scenario, never from what the browser says. */
@@ -178,7 +180,7 @@ export interface Store{
 
   // ---- For the admin hub ----
   /** Newest first. `search`: part of the email, or an exact referral code or account id. */
-  listAccounts(q:{search?:string;limit:number}):Promise<Account[]>;
+  listAccounts(q:{search?:string;marketing?:boolean;limit:number}):Promise<Account[]>;
   findAccounts(ids:string[]):Promise<Account[]>;
   countAccounts(q:{since?:Date;paid?:boolean;referred?:boolean}):Promise<number>;
   /** Sessions and Starter Pass drives held by all accounts. */
@@ -295,9 +297,9 @@ export class MemoryStore implements Store{
     return true;
   }
   private newest(){return [...this.accounts.values()].sort((a,b)=>b.createdAt.getTime()-a.createdAt.getTime())}
-  async listAccounts(q:{search?:string;limit:number}){
+  async listAccounts(q:{search?:string;marketing?:boolean;limit:number}){
     const t=q.search?.trim().toLowerCase();
-    return this.newest().filter(a=>!t||a.email?.includes(t)||a.referralCode.toLowerCase()===t||a.id===t).slice(0,q.limit).map(a=>({...a,allowances:{...a.allowances}}));
+    return this.newest().filter(a=>!q.marketing||a.marketing?.consent).filter(a=>!t||a.email?.includes(t)||a.referralCode.toLowerCase()===t||a.id===t).slice(0,q.limit).map(a=>({...a,allowances:{...a.allowances}}));
   }
   async findAccounts(ids:string[]){return ids.flatMap(id=>{const a=this.accounts.get(id);return a?[{...a}]:[]})}
   async countAccounts(q:{since?:Date;paid?:boolean;referred?:boolean}){

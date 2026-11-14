@@ -219,6 +219,7 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .board-scope button{padding:10px!important;border-radius:999px;border:0;background:transparent;color:var(--ink);font:inherit;font-weight:800}
 .board-scope button[aria-selected="true"]{background:var(--accent);color:#fff}
 .board-me{font-weight:800}
+.marketing-check{display:flex;align-items:center;gap:10px;margin:12px 0 0;font-size:16px;cursor:pointer}.marketing-check input{width:22px;height:22px;accent-color:var(--accent);flex:none}
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:900;line-height:1.5;white-space:nowrap;color:#0b0b0f;background:#fdba74}
 .badge-1{background:linear-gradient(#fde047,#eab308)}.badge-10{background:linear-gradient(#e5e7eb,#9ca3af)}
 .board-who .badge{justify-self:start;align-self:start;width:fit-content;margin-top:2px}.profile-badge{margin:0 0 6px;font-weight:800}.profile-badge .badge{font-size:14px;margin-right:6px}
@@ -872,6 +873,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <input id="code-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code" aria-label="Code from the email">
         <button id="code-send" type="submit" class="primary-inline">Sign in</button>
       </form>
+      <label class="marketing-check"><input id="signup-marketing" type="checkbox"> Email me offers and news</label>
       <p id="signin-status" class="unit" role="status"></p>
       <p class="unit legal-links">By signing in you agree to the <a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy policy</a>.</p>
     </div>
@@ -896,6 +898,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
         <div class="invite-row"><input id="invite-link" type="text" readonly aria-label="Your invite link"><button id="invite-share" type="button">Share</button></div>
         <p id="invite-stats" class="unit"></p>
       </div>
+      <label class="marketing-check not-paywall"><input id="account-marketing" type="checkbox"> Email me offers and news</label>
       <details class="more not-paywall"><summary>History</summary><div class="more-body"><ul id="account-history" class="account-history"></ul></div></details>
       <button id="account-signout" type="button" class="link">Sign out</button>
       <p class="unit legal-links"><a href="legal/terms.html" target="_blank" rel="noopener">Terms</a> · <a href="legal/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a href="legal/refunds.html" target="_blank" rel="noopener">Refunds</a> · <a href="legal/cookies.html" target="_blank" rel="noopener">Cookies</a> · <a href="support.html">Help and support</a></p>

@@ -173,9 +173,9 @@ export class MongoStore implements Store{
     const r=await this.flagged.updateOne({_id:id,resolvedAt:{$exists:false}},{$set:{resolvedAt:new Date(),resolvedBy:by,note}});
     return r.modifiedCount===1;
   }
-  async listAccounts(q:{search?:string;limit:number}){
+  async listAccounts(q:{search?:string;marketing?:boolean;limit:number}){
     const t=q.search?.trim().toLowerCase();
-    const filter=t?{$or:[{email:{$regex:literal(t)}},{referralCode:t.toUpperCase()},{_id:t}]}:{};
+    const filter={...(t?{$or:[{email:{$regex:literal(t)}},{referralCode:t.toUpperCase()},{_id:t}]}:{}),...(q.marketing?{'marketing.consent':true}:{})};
     return (await this.accounts.find(filter).sort({createdAt:-1}).limit(q.limit).toArray()).map(d=>out<Account>(d)!);
   }
   async findAccounts(ids:string[]){

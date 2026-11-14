@@ -30,3 +30,22 @@ describe('admin: unlimited drives',()=>{
     expect(ledger.every(e=>e.by==='boss@example.com'&&e.amountPence===0)).toBe(true);
   });
 });
+
+describe('offers by email',()=>{
+  it('off until ticked; the export lists only people who agreed, and someone who unticks drops out',async()=>{
+    const config=loadConfig({DP_DEV_FAKES:'1',APP_BASE_URL:'https://staging.example'});
+    const store=new MemoryStore(),service=new Service(config,store,new OutboxMailer(),fakeIdentities,fakeStripe(config)),admin=new Admin(config,store);
+    const yes=await service.signIn('email',{sub:'yes@example.com',email:'yes@example.com',emailVerified:true});
+    const no=await service.signIn('email',{sub:'no@example.com',email:'no@example.com',emailVerified:true});
+    expect((await service.me(yes.id))!.marketing).toBe(false);
+    await service.setMarketing(yes.id,true,'signup');
+    await service.setMarketing(no.id,true,'signup');
+    await service.setMarketing(no.id,false,'account');
+    expect((await service.me(yes.id))!.marketing).toBe(true);
+    const csv=await admin.marketingCsv();
+    expect(csv.split('\n')[0]).toBe('email,agreed_at,where');
+    expect(csv).toContain('yes@example.com');
+    expect(csv).not.toContain('no@example.com');
+    expect((await admin.customer(no.id))!.account.marketing).toMatchObject({consent:false,source:'account'});
+  });
+});

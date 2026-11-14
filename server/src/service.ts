@@ -153,8 +153,14 @@ export class Service{
       history:ledger.slice(-20).reverse().map(e=>({type:e.type,sessions:e.sessionsDelta,amountPence:e.amountPence,reason:e.reason,at:e.createdAt.toISOString()})),
       admin:isAdminEmail(this.config,a.email),
       unlimitedUntil:a.unlimitedUntil&&a.unlimitedUntil.getTime()>Date.now()?a.unlimitedUntil.toISOString():null,
-      lessonsDone:a.lessonsDone??[]
+      lessonsDone:a.lessonsDone??[],
+      marketing:!!a.marketing?.consent
     };
+  }
+
+  /** Offers and news by email: on only when the learner ticks it (at sign-up or in their account), off again any time. */
+  async setMarketing(accountId:string,consent:boolean,source:'signup'|'account'):Promise<void>{
+    await this.store.updateAccount(accountId,{marketing:{consent,at:new Date(),source}});
   }
 
   /** Adds lessons finished (on any device) to the account's; returns them all. */

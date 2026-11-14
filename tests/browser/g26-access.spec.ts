@@ -123,8 +123,13 @@ test('G26: invite a friend from the home screen: the friend signs in with 2 free
   await gated(friend,`./${new URL(link).search}`);
   await friend.click('#account-chip');
   await expect(friend.locator('#account-invited')).toHaveText('A friend invited you: sign in for 2 free drives.');
+  // Offers by email: off unless ticked. The friend ticks it when signing in; the inviter did not.
+  await expect(friend.locator('#signup-marketing')).not.toBeChecked();
+  await friend.check('#signup-marketing');
   await signInByEmail(friend,'friend@example.com');
   await expect(friend.locator('#account-balance')).toHaveText('2');
+  await expect(friend.locator('#account-marketing')).toBeChecked();
+  await expect(inviter.locator('#account-marketing')).not.toBeChecked();
   // The friend completes a drive (as the app reports it).
   const drive=await (await friend.request.post('/api/drives',{data:{kind:'free',scenario:'goodmayes-free-drive'}})).json() as {driveId:string};
   await friend.request.post(`/api/drives/${drive.driveId}/completed`,{data:{}});
