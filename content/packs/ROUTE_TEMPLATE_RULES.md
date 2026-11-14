@@ -1,7 +1,7 @@
 # Test centre routes: the template's rules
 
-> **DRAFT 3 for the owner's review. Not final.** Nothing here is built yet. Numbers marked *(proposed)* are starting
-> points to agree, not decisions. Open questions are at the end. Changes from draft 2 are listed at the bottom.
+> **DRAFT 4 for the owner's review. Not final.** Nothing here is built yet. Items marked *(agreed)* were confirmed by
+> the owner on 14 November 2026; *(proposed)* ones are still to agree. Changes from draft 3 are listed at the bottom.
 
 These are the rules every test centre's routes follow, so that adding a centre is a data job, done the same way each
 time. The model is **Brentwood**: a test route is a drive on the centre's real roads with **8 scenarios**, and a centre
@@ -14,8 +14,8 @@ They cover **Great Britain** (DVSA's centres). Northern Ireland's tests are run 
 - A route is a **drive on the real roads round a real test centre**, leaving from the centre and coming back, with
   **8 scenarios** on the way. At each scenario the learner decides what to do (as Brentwood); between scenarios the
   drive moves on quickly.
-- It is not an official DVSA route, and we never present it as one. A light note where routes are chosen says so
-  *(proposed wording)*: **"Based on the roads round this test centre. Your test route may differ."**
+- It is not an official DVSA route, and we never present it as one. A light note on the screen **before the test
+  starts** says so *(agreed)*: **"Based on the roads round this test centre. Your test route may differ."**
 - It **must overlap the physical test area**: the roads tests from that centre are reported to use. Section 3 makes
   that measurable; a route that does not meet it is not published.
 
@@ -42,11 +42,11 @@ Rules for rank B:
 In plain terms: **a route stays on roads near the centre, and most of it is on roads that public information says
 tests use.**
 
-1. **Test area** *(proposed)*: the roads you can reach within **15 minutes' driving** of the centre, plus any road
+1. **Test area** *(agreed)*: the roads you can reach within **15 minutes' driving** of the centre, plus any road
    further out that public information names.
 2. **Known junctions**: the junctions and features public information names for that centre (for example "the Writtle
    Road lights"), each saved with where it is and who named it.
-3. **Overlap rule** *(proposed)*. A route is published only if:
+3. **Overlap rule** *(agreed)*. A route is published only if:
    - it stays inside the test area;
    - **more than half of its length** is on roads that are confirmed or likely;
    - **at least 3 of its 8 scenarios** are at known junctions;
@@ -60,7 +60,7 @@ As Brentwood and Chelmsford (`ROUTE_FORMAT.md` has the format and the rules ever
 
 - **8 scenarios per route**, in the order the roads give them, spread along the route: no two within about 300 m,
   except a pair that belongs together (pull up, then move off).
-- **The mix** across the eight *(proposed)*: traffic lights; a large roundabout and a mini-roundabout; emerging left
+- **The mix** across the eight *(agreed)*: traffic lights; a large roundabout and a mini-roundabout; emerging left
   and emerging right; a right turn across oncoming traffic; a pedestrian crossing; and the pull-up and move-off pair.
   Where the area lacks one (no mini-roundabout nearby), the nearest kind replaces it, and the file says so.
 - **Each scenario is placed at a known junction where one exists**, so the junctions that catch candidates are the
@@ -109,9 +109,9 @@ Brentwood and Chelmsford are converted to this file first, to prove it can repro
 ## 8. The pilot, and keeping routes right
 
 - **Pilot**: the **three centres with the most public information** are built first and measured against these rules
-  (overlap, the mix, the checks, and the owner's drive). To choose them, the centres are surveyed and ranked by how
-  many separate public sources each has; the owner picks from the top of that list. The rules are changed from what
-  the pilot shows, then fixed.
+  (overlap, the mix, the checks, and the owner's drive). How that information is found, judged and recorded, and how
+  the centres are shortlisted, is planned in `EVIDENCE_PLAN.md` (a draft; not run until the owner approves it). The
+  rules are changed from what the pilot shows, then fixed.
 - The centre's address is checked monthly. Everything else for a centre is reviewed **every 6 months** *(proposed)*:
   new road layouts on the map, and new public information.
 - Learners can report "this road has changed" from the results screen; reports go to the admin hub.
@@ -123,17 +123,11 @@ not part of this template. If wanted, they would be a separate kind of route bui
 
 ## Open questions for the owner
 
-1. The overlap numbers in section 3: more than half on named roads, 3 of 8 scenarios at known junctions.
-2. The mix of the 8 scenarios in section 4: right as a standard, with swaps where an area lacks one?
-3. The disclaimer wording in section 1, and where it shows.
-4. The pilot: approve the survey of public information, then choose three centres from its top ten.
+1. The plan for finding public information and shortlisting the pilot centres: `EVIDENCE_PLAN.md`.
+2. The 6-month review in section 8.
 
-## Changes from draft 2
+## Changes from draft 3
 
-- A route is the Brentwood kind: 8 scenarios, quick between them. Parts and full-length tests are removed (see
-  "Later").
-- 2 routes per centre to start, not 4; 16 different scenarios between them.
-- Public information (rank B) is agreed as evidence.
-- Lighter disclaimer wording.
-- The overlap rule in plainer terms, counted in scenarios.
-- The pilot uses the three centres with the most public information, chosen from a survey.
+- Agreed by the owner: the overlap numbers, the mix of 8 scenarios, the disclaimer wording, shown before the test
+  starts.
+- The survey of public information is not run yet: its plan is in `EVIDENCE_PLAN.md` for review.
