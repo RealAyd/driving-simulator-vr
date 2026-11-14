@@ -1,7 +1,7 @@
 import {createHash,randomBytes,randomInt,timingSafeEqual} from 'node:crypto';
 import type {Config,Pack} from './config.js';
 import {profileOf} from './profile.js';
-import {centreName,centreOf,cleanName,percentile,shown,tally,UK,UK_PRIZES,weekStart,type BoardSettings} from './board.js';
+import {badgeOf,centreName,centreOf,cleanName,percentile,shown,tally,UK,UK_PRIZES,weekStart,type BoardSettings} from './board.js';
 import {freshTrial,type Account,type Drive,type DriveOutcome,type DriveResult,type Mode,type Pot,type Store} from './store.js';
 import {Support,type Pusher} from './support.js';
 
@@ -328,7 +328,10 @@ export class Service{
 
   /** The signed-in learner's profile (profile.ts), from their last 500 drives. */
   async profile(accountId:string){
-    return profileOf(await this.store.listDrives({owner:accountId,limit:500}));
+    const from=weekStart(new Date());
+    const uk=tally(await this.store.listDrives({since:from,limit:20000}),UK),at=uk.findIndex(r=>r.owner===accountId);
+    // Their UK badge this week (top 1%, 10% or 25%), if they have one.
+    return {...profileOf(await this.store.listDrives({owner:accountId,limit:500})),badge:at<0?null:badgeOf(percentile(at+1,uk.length))};
   }
 
   // ---- Leaderboards (board.ts) ----
@@ -361,8 +364,8 @@ export class Service{
     const people=new Map((await this.store.findAccounts([...new Set([...thisWeek.slice(0,10),...lastWeek.slice(0,1)].map(r=>r.owner))])).map(x=>[x.id,x]));
     const meAt=thisWeek.findIndex(r=>r.owner===accountId);
     return {centre,name:centreName(centre),week:{from:from.toISOString()},settings,
-      top:thisWeek.slice(0,10).map((r,i)=>({rank:i+1,...shown(people.get(r.owner)),points:r.points,tests:r.tests,passes:r.passes,me:r.owner===accountId})),
-      me:meAt<0?null:{rank:meAt+1,points:thisWeek[meAt]!.points,of:thisWeek.length,top:percentile(meAt+1,thisWeek.length)},
+      top:thisWeek.slice(0,10).map((r,i)=>({rank:i+1,badge:badgeOf(percentile(i+1,thisWeek.length)),...shown(people.get(r.owner)),points:r.points,tests:r.tests,passes:r.passes,me:r.owner===accountId})),
+      me:meAt<0?null:{rank:meAt+1,points:thisWeek[meAt]!.points,of:thisWeek.length,top:percentile(meAt+1,thisWeek.length),badge:badgeOf(percentile(meAt+1,thisWeek.length))},
       leader:lastWeek[0]?{...shown(people.get(lastWeek[0].owner)),points:lastWeek[0].points}:null};
   }
 

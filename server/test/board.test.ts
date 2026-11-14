@@ -98,7 +98,10 @@ describe('leaderboards through the service',()=>{
     for(const [i,p] of people.entries())await store.createDrive(mock(p.id,10,i<2,i*3));
     const uk=await service.board(people[3]!.id,'uk');
     expect(uk).toMatchObject({centre:'uk',name:'UK',me:{rank:4,of:4,top:100}});
-    expect((await service.board(people[0]!.id,'uk')).me).toMatchObject({rank:1,top:25});
+    expect((await service.board(people[0]!.id,'uk')).me).toMatchObject({rank:1,top:25,badge:25});
+    expect(uk.top.map(r=>r.badge)).toEqual([25,null,null,null]);
+    expect((await service.profile(people[0]!.id)).badge).toBe(25);
+    expect((await service.profile(people[3]!.id)).badge).toBe(null);
     const l=await service.leaders();
     expect(l.centres[0]).toMatchObject({centre:'uk',top:[{account:people[0]!.id},{account:people[1]!.id},{account:people[2]!.id}]});
     expect(await service.awardLeader('boss@example.com','uk',l.week)).toEqual({ok:true,winner:people[0]!.id,referrer:inviter.id});

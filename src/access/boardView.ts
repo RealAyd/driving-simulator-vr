@@ -6,14 +6,18 @@
 export interface Board{
   centre:string|null;name?:string;week:{from:string};
   settings:{show:boolean;name:string;school?:string;hidden?:boolean};
-  top:Array<{rank:number;name:string;school:string|null;points:number;tests:number;passes:number;me:boolean}>;
-  me:{rank:number;points:number;of:number;top?:number}|null;
+  top:Array<{rank:number;badge?:1|10|25|null;name:string;school:string|null;points:number;tests:number;passes:number;me:boolean}>;
+  me:{rank:number;points:number;of:number;top?:number;badge?:1|10|25|null}|null;
   leader:{name:string;school:string|null;points:number}|null;
 }
 
 const el=<K extends keyof HTMLElementTagNameMap>(tag:K,cls?:string,text?:string)=>{
   const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;
 };
+/** A badge chip: "Top 10%". */
+export function badgeChip(badge:1|10|25|null|undefined):HTMLElement[]{
+  return badge?[el('span',`badge badge-${badge}`,`Top ${badge}%`)]:[];
+}
 export const ordinal=(n:number)=>`${n}${n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]??'th'}`;
 
 /** Fills `box` with the board; before the learner's first mock test, an invitation to join (`start` opens Mock Tests). */
@@ -39,7 +43,7 @@ export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:s
     const podium=el('div','podium');
     for(const [k,cls] of [[1,'p2'],[0,'p1'],[2,'p3']] as const){
       const r=b.top[k],slot=el('div',cls+(r?.me?' me':''));
-      if(r)slot.append(el('span','who',r.name),el('span','pts',`${r.points} pts`));
+      if(r)slot.append(el('span','who',r.name),el('span','pts',`${r.points} pts`),...badgeChip(r.badge));
       slot.append(el('span','block',String(k+1)));
       podium.append(slot);
     }
@@ -49,13 +53,13 @@ export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:s
     const list=el('ol','board-list');
     for(const r of b.top.slice(3)){
       const li=el('li',r.me?'me':'');
-      const who=el('span','board-who');who.append(el('b','',r.name),...(r.school?[el('small','',r.school)]:[]));
+      const who=el('span','board-who');who.append(el('b','',r.name),...badgeChip(r.badge),...(r.school?[el('small','',r.school)]:[]));
       li.append(el('span','board-rank',String(r.rank)),who,el('span','board-points',`${r.points}`));
       list.append(li);
     }
     parts.push(list);
   }
-  if(b.me)parts.push(el('p','board-me',`${b.me.top?`Top ${b.me.top}% · `:''}${ordinal(b.me.rank)} of ${b.me.of} · ${b.me.points} points`));
+  if(b.me){const me=el('p','board-me',`${b.me.top?`Top ${b.me.top}% · `:''}${ordinal(b.me.rank)} of ${b.me.of} · ${b.me.points} points `);me.append(...badgeChip(b.me.badge));parts.push(me)}
   const shareButton=el('button','primary board-share',b.me?'Share and invite friends':'Invite friends');shareButton.type='button';
   shareButton.addEventListener('click',()=>share(shareText(b)));
   parts.push(shareButton,el('p','board-perk','Friends get 2 free drives. When one wins, you win too.'));

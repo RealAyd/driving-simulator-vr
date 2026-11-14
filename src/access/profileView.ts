@@ -13,6 +13,8 @@ export interface Profile{
   best:{tests:number;passes:number;fewestFaults:number|null;bestAt:string|null;scenario:string|null}|null;
   weak:Array<{label:string;times:number;serious:number;dangerous:number}>;
   progress:Array<{at:string;driving:number;serious:number;dangerous:number;passed:boolean}>;
+  /** Their UK leaderboard badge this week. */
+  badge?:1|10|25|null;
 }
 
 const el=<K extends keyof HTMLElementTagNameMap>(tag:K,cls?:string,text?:string)=>{
@@ -36,6 +38,7 @@ export function renderProfile(box:HTMLElement,p:Profile):void{
   box.hidden=!driven&&!p.recent.length;
   if(box.hidden){box.replaceChildren();return}
   const parts:HTMLElement[]=[];
+  if(p.badge){const b=el('p','profile-badge');b.append(el('span',`badge badge-${p.badge}`,`Top ${p.badge}%`),' in the UK this week');parts.push(b)}
   // The totals.
   const stats=el('div','profile-stats');
   for(const [n,label] of [[p.totals.test,'Mock tests'],[p.totals.lesson,'Lessons'],[p.totals.free,'Free drives'],[p.totals.minutes,'Minutes']] as const){
