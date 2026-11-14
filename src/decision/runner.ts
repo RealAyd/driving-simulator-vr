@@ -114,9 +114,9 @@ const RETIRE_AFTER=25;
 const BACK_AFTER=12,BACK_DISTANCE=3.5;
 /** On the way back, the junctions within this far ahead (metres) are kept clear. */
 const RETURN_CLEAR=90;
-/** Between challenges far apart the scene plays this many times faster, until this far (path metres) before the
- * next challenge comes in hand (or the end of the route). */
-const TRANSIT_RATE=4,TRANSIT_LEAD=60;
+/** Skip ahead (the learner's choice, on a long way between challenges): offered with more than SKIP_MIN path metres
+ * to go to where the car would be put, SKIP_LEAD before the next challenge comes in hand (or the end of the route). */
+const SKIP_MIN=80,SKIP_LEAD=30,SKIP_END=70;
 /** Pulling out from the start: the road joined, this far along the way (metres), kept clear this wide (metres) until
  * the car is this far along. */
 const START_JOIN=22,START_RADIUS=24,START_CLEAR=45;
@@ -209,16 +209,33 @@ export class DecisionRunner{
   get practice(){return this.only!==null}
 
   /**
-   * How fast the scene plays (times real time): faster on a long way between challenges, back to real time well
-   * before the next direction (the traffic to read is seen at its own speed) and on the last stretch.
+   * Where Skip ahead would put the car (path metres), or null when there is nothing to skip: only on a long way
+   * between challenges (none in hand) or back to the end of the route. The drive itself always plays at its own speed.
    */
-  get rate():number{
-    if(this.phase!=='drive'||this.backTo!==null)return 1;
+  get skipTo():number|null{
+    if(this.phase!=='drive'||this.backTo!==null||this.only!==null)return null;
     const s=this.carS();
-    if(this.ending)return this.endS()-s>TRANSIT_LEAD?TRANSIT_RATE:1;
-    const c=this.route.challenges[this.challenge];
-    if(!c||this.released||this.inHand().length)return 1;
-    return this.s(c.instructAt)-QUIET_BEFORE-s>TRANSIT_LEAD?TRANSIT_RATE:1;
+    let to:number;
+    if(this.ending)to=this.endS()-SKIP_END;
+    else{
+      const c=this.route.challenges[this.challenge];
+      if(!c||this.released||this.inHand().length)return null;
+      // (Before the challenge comes in hand, and before any of its road users is set going.)
+      to=Math.min(this.s(c.instructAt)-QUIET_BEFORE,...c.starts.map(st=>this.s(st.at)))-SKIP_LEAD;
+    }
+    return to-s>SKIP_MIN?to:null;
+  }
+  /** The car's place and heading after Skip ahead (null: nothing to skip). */
+  skipPose():{x:number;z:number;heading:number}|null{
+    const to=this.skipTo;
+    if(to===null)return null;
+    const p=this.assist.pointAt(to),q=this.assist.pointAt(to+2);
+    return {x:p.x,z:p.z,heading:Math.atan2(q.x-p.x,-(q.z-p.z))};
+  }
+  /** After the car is put there: nothing held over from where it was. */
+  skipped():void{
+    this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.clearing=0;
+    this.standing.clear();this.standAt.clear();
   }
 
   /** Where the car starts: the route's start, or a little before the challenge practised. */

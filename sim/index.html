@@ -377,6 +377,8 @@ body.decision #touch-controls,body.decision #steer-buttons,body.decision #hud-ce
 
 .dp-head{padding-right:34px}
 #hud #decision-panel .dp-minimise{position:absolute;top:8px;right:8px;width:32px;height:32px;min-height:0;padding:0;display:grid;place-items:center;border-radius:10px}
+#skip-ahead{position:absolute;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:14px 26px;border-radius:999px;font-size:18px;font-weight:800;cursor:pointer;z-index:5}
+#skip-fade{position:absolute;inset:0;background:#05070d;opacity:0;transition:opacity .3s;z-index:6;pointer-events:none}#skip-fade.on{opacity:1}
 #decision-expand{position:absolute;left:var(--sl);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:0 14px 14px 0;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
 #decision-expand[hidden]{display:none}
 #decision-drag-hint{position:absolute;left:calc(50% + 18vw);top:58%;transform:translate(-50%,-50%);color:#fff;opacity:.85;pointer-events:none;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));animation:dp-drag 1.8s ease-in-out infinite}
@@ -1017,6 +1019,8 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
   <div id="hud-status"></div>
   <div id="hud-credit" hidden></div>
   <div id="hud-task" role="status" aria-live="polite" hidden></div>
+  <button id="skip-ahead" class="hud-panel" type="button" hidden>Skip ahead <span aria-hidden="true">››</span></button>
+  <div id="skip-fade" aria-hidden="true" hidden></div>
   <div id="hud-tip" role="status" aria-live="polite" hidden><span id="hud-tip-text"></span><button id="hud-tip-close" type="button" aria-label="Close the tip">×</button></div>
   <div id="hud-flash" role="alert" hidden></div>
   <div id="hud-view-label" class="hud-pill" aria-live="polite">View: Forward</div>

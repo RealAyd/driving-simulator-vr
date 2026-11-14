@@ -2462,6 +2462,28 @@ export async function boot():Promise<void>{
     setBehind(true);
     aimCamera(0,null);
   };
+  /** Skip ahead: behind a short fade the car is put before the next challenge (or the end), and traffic brought in round it. */
+  const skipButton=byId<HTMLButtonElement>('skip-ahead'),skipFade=byId('skip-fade');
+  let skipping=false;
+  const skipAhead=()=>{
+    if(skipping||!decision||session.state!=='running')return;
+    const p=decision.runner.skipPose();
+    if(!p)return;
+    skipping=true;skipButton.hidden=true;skipFade.hidden=false;
+    requestAnimationFrame(()=>skipFade.classList.add('on'));
+    setTimeout(()=>{
+      if(decision&&session.state==='running'&&decision.runner.skipPose()){
+        vehicle.setSpawn({position:{x:p.x,y:0,z:p.z},heading:p.heading});
+        vehicle.reset();
+        decision.runner.skipped();
+        runtime?.traffic?.reset();
+        setBehind(true);aimCamera(0,null);
+      }
+      skipFade.classList.remove('on');
+      setTimeout(()=>{skipFade.hidden=true;skipping=false},350);
+    },350);
+  };
+  skipButton.addEventListener('click',skipAhead);
   /** From the results: one challenge again, on its own, with the marking shown after each decision. */
   const practiseDecision=(index:number)=>{
     if(!decision||session.state!=='finished')return;
@@ -2499,8 +2521,9 @@ export async function boot():Promise<void>{
       const wantFov=behind||heldView?.endsWith('shoulder')||!heldView?HORIZONTAL_FOV:heldView==='interior'?MIRROR_FOCUS_FOV.interior:MIRROR_FOCUS_FOV.door;
       camera.fov+=Math.max(-3*dt,Math.min(3*dt,wantFov-camera.fov));
       observation.source=observationSource();
-      // (A decision test plays faster on the long way between its challenges.)
-      clock.advance(dt*(decision&&runtime.scenario.id===decision.scenarioId?decision.runner.rate:1),step);
+      clock.advance(dt,step);
+      // Skip ahead: offered on a long way between a decision test's challenges.
+      skipButton.hidden=skipping||!(decision&&runtime.scenario.id===decision.scenarioId&&session.state==='running'&&decision.runner.skipTo!==null);
       // Stopping unusually early: the pedestrian waits; prompt the learner on.
       const trigger=runtime.zones.stats.get('pedestrian-trigger');
       stoppedEarlyFor=trigger&&!trigger.entered&&vehicle.state.speed<.15?stoppedEarlyFor+dt:0;

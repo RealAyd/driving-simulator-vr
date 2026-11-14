@@ -3,8 +3,10 @@ import {expect,test} from '@playwright/test';
 // The decision mock test (src/decision): the car drives itself; at each decision the scene stops, the learner picks
 // observations and actions in order, confirms, and Continue plays on. Brentwood route 1's eight challenges, with the
 // silver car pulled out in front of (the examiner holds the car), then practising a challenge from the results.
-test('G40: a decision test: pause, choose in order, confirm, the examiner holds an unsafe go, results and practice',async({page})=>{
+// The same again pressing Skip ahead whenever it is offered: every challenge still comes, in the same order.
+for(const skip of [false,true])test(`G40: a decision test${skip?', skipping ahead between challenges':''}: pause, choose in order, confirm, the examiner holds an unsafe go, results and practice`,async({page})=>{
   test.setTimeout(1_800_000);
+  if(skip)await page.addInitScript(()=>{(window as any).skips=0;setInterval(()=>{const b=document.getElementById('skip-ahead');if(b&&!b.hidden){(window as any).skips++;b.click()}},700)});
   await page.setViewportSize({width:844,height:390});
   await page.addInitScript(()=>{try{for(const k of ['dp-tips-seen','dp-tour-home','dp-tour-place','dp-tour-drive'])localStorage.setItem(k,'1')}catch{}});
   await page.goto('./');
@@ -59,6 +61,9 @@ test('G40: a decision test: pause, choose in order, confirm, the examiner holds 
   }
   // Pulling out in front of the silver car was held, and the decision came again once it had passed.
   expect(seen).toEqual(Object.keys(answers));
+  if(skip)expect(await page.evaluate(()=>(window as any).skips)).toBeGreaterThan(2);
+  else await expect(page.locator('#skip-ahead')).toBeHidden();
+  console.log(`G40 ${skip?'with skips':'no skips'}: ${Math.round(await page.evaluate(()=>(window as any).__drivingPractice.simTime()))} s driven, skips ${await page.evaluate(()=>(window as any).skips??0)}`);
   await expect(page.locator('#screen-results')).toBeVisible({timeout:60_000});
   await expect(page.locator('#results-title')).toHaveText('Decision mock test: FAIL');
   await expect(page.locator('#results-summary')).toHaveText('1 minor · 0 serious · 1 dangerous');
