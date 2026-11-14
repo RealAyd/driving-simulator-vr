@@ -59,7 +59,7 @@ export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:s
     }
     parts.push(list);
   }
-  if(b.me){const me=el('p','board-me',`${b.me.top?`Top ${b.me.top}% · `:''}${ordinal(b.me.rank)} of ${b.me.of} · ${b.me.points} points `);me.append(...badgeChip(b.me.badge));parts.push(me)}
+  if(b.me)parts.push(el('p','board-me',`${b.me.top?`Top ${b.me.top}% · `:''}${ordinal(b.me.rank)} of ${b.me.of} · ${b.me.points} points`));
   const shareButton=el('button','primary board-share',b.me?'Share and invite friends':'Invite friends');shareButton.type='button';
   shareButton.addEventListener('click',()=>share(shareText(b)));
   parts.push(shareButton,el('p','board-perk','Friends get 2 free drives. When one wins, you win too.'));
