@@ -38,3 +38,20 @@ test('G26f: the leaderboard for the learner\'s centre, and their name on it',asy
   await expect.poll(()=>sent.length).toBe(2);
   expect(sent[1]).toEqual({show:true,name:'Ade',school:'Top Gear Driving School'});
 });
+
+test('G26f: before a mock test: join the leaderboard by completing one; the button opens Mock Tests',async({page})=>{
+  test.setTimeout(120_000);
+  await page.route('**/access.json',r=>r.fulfill({json:{gate:true}}));
+  await page.route('**/api/config',r=>r.fulfill({json:{gate:true,googleClientId:null,appleServicesId:null,appleRedirect:'',packs:[],devCheckout:false}}));
+  await page.route('**/api/me',r=>r.fulfill({json:me}));
+  await page.route('**/api/profile',r=>r.fulfill({json:{totals:{lesson:0,test:0,free:0,minutes:0},best:null,weak:[],progress:[],recent:[]}}));
+  await page.route('**/api/recent',r=>r.fulfill({json:{recent:[]}}));
+  await page.route('**/api/board',r=>r.fulfill({json:{centre:null,settings:{show:false,name:''},top:[],me:null,leader:null,week:{from:new Date().toISOString()}}}));
+  await page.goto('./');
+  await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
+  await page.click('#account-chip');
+  await expect(page.locator('#board .board-join')).toContainText('Join the leaderboard by completing a mock test');
+  await page.click('#board .board-join button');
+  await expect(page.locator('#screen-account')).toBeHidden();
+  await expect(page.locator('#place-title')).toHaveText('Mock Tests');
+});

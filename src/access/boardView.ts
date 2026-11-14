@@ -16,10 +16,16 @@ const el=<K extends keyof HTMLElementTagNameMap>(tag:K,cls?:string,text?:string)
 };
 const ordinal=(n:number)=>`${n}${n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]??'th'}`;
 
-/** Fills `box` with the board; hidden until the learner has a mock test at a centre. `save` sends their settings. */
-export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:string;school:string})=>Promise<string|null>):void{
-  box.hidden=!b.centre;
-  if(!b.centre){box.replaceChildren();return}
+/** Fills `box` with the board; before the learner's first mock test, an invitation to join (`start` opens Mock Tests). */
+export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:string;school:string})=>Promise<string|null>,start:()=>void):void{
+  box.hidden=false;
+  if(!b.centre){
+    const join=el('div','board-join');
+    const go=el('button','','Start a mock test');go.type='button';go.addEventListener('click',start);
+    join.append(el('b','','Join the leaderboard by completing a mock test'),go);
+    box.replaceChildren(el('h3','','Leaderboard'),join);
+    return;
+  }
   const parts:HTMLElement[]=[el('h3','',`Leaderboard · ${b.name} · this week`)];
   if(b.top.length){
     const list=el('ol','board-list');

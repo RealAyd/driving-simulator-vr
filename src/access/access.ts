@@ -284,7 +284,7 @@ export class Access{
       const saved=await api<{ok?:boolean;error?:string}>('board/me',s);
       if(saved.status===200){void this.loadBoard();return null}
       return saved.data?.error==='school'?'That driving school name cannot be used.':'Choose a name of 2 to 24 letters or numbers (no rude words).';
-    });
+    },()=>{this.close();document.querySelector<HTMLElement>('[data-drive-mode="test"]')?.click()});
   }
   close():void{byId('screen-account').hidden=true;this.pending=null}
 
