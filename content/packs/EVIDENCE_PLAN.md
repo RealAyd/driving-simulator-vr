@@ -1,6 +1,7 @@
 # Finding and recording public information on test routes: the plan
 
-> **DRAFT for the owner's review. A plan only: nothing here has been run.** It says how public information would be
+> **DRAFT 2. The owner agreed its open points on 14 November 2026 (marked *agreed*). A plan only: nothing here has
+> been run, and pass 1 starts only on the owner's word.** It says how public information would be
 > found, judged and recorded for `ROUTE_TEMPLATE_RULES.md` (rank B evidence), and how the pilot centres would be
 > shortlisted from it.
 
@@ -15,6 +16,8 @@ For each test centre, two things only:
 Facts about places, in other words. Not anyone's wording, video or route file.
 
 ## 2. Where it comes from
+
+*(Agreed, forum posts included.)*
 
 | Kind of source | Example | Worth | How it is read |
 |---|---|---|---|
@@ -90,14 +93,14 @@ anything about a private person (a learner's username is not recorded; "a learne
 
 Two passes, so effort goes where the information is:
 
-- **Pass 1, every centre (light)**: run the fixed searches for each centre in Great Britain's list and record only a
+- **Pass 1, every centre in Great Britain's list (light)** *(agreed: every centre, not only the busiest)*: run the fixed searches for each centre in Great Britain's list and record only a
   count: how many separate first-hand sources appear to exist, and of which kinds. No pages are read in depth. Result:
   one table of centres, ranked.
 - **Pass 2, the top ten (full)**: do section 3 properly for the ten highest. Result for each: its evidence file, the
   number of confirmed and likely roads and junctions, and whether a pair of routes meeting the overlap rule looks
   possible.
 
-**Score for ranking** *(proposed)*: 2 points for each separate first-hand source dated after the centre's last move,
+**Score for ranking** *(agreed)*: 2 points for each separate first-hand source dated after the centre's last move,
 1 for each weaker one, capped at 5 per kind so that ten videos by one channel do not outweigh three different voices.
 Ties go to the centre with more tests a year (more learners helped).
 
@@ -106,11 +109,13 @@ the template is tried on different kinds of area.
 
 ## 6. Who does what, and when the owner decides
 
-1. Owner approves this plan (and the proposed score).
-2. Pass 1 is run; the ranked table goes to the owner. *(About 320 centres; a few searches each.)*
+1. Owner approves this plan: done, 14 November 2026.
+2. Owner says go; pass 1 is run; the ranked table goes to the owner. *(About 320 centres; a few searches each.)*
 3. Owner agrees the top ten, or swaps some in.
-4. Pass 2 is run; the ten evidence files and a one-page summary go to the owner.
-5. Owner picks the three pilot centres. Building starts only then.
+4. **The legal check on using public sources this way is done before pass 2** *(agreed)*: pass 2 does not start
+   without it.
+5. Pass 2 is run; the ten evidence files and a one-page summary go to the owner.
+6. Owner picks the three pilot centres. Building starts only then.
 
 ## 7. Risks, and what answers each
 
@@ -119,13 +124,10 @@ the template is tried on different kinds of area.
 | A source is out of date (old centre, changed road layout) | Dates recorded; pre-move sources limited; the map wins on what is physically there |
 | Sources copy each other, so "two sources" is really one | Same author or repeated text counts once |
 | A source is wrong, or about another centre | Names must match the map near the centre; one source alone only makes *likely* |
-| Using other people's material | Only place names are taken, in our words; links kept; no selling-route apps, no paywalls, no copying; a short legal check on this plan before pass 2 is worth it |
+| Using other people's material | Only place names are taken, in our words; links kept; no selling-route apps, no paywalls, no copying; the legal check comes before pass 2 |
 | Search results differ day to day | The searches and the date are saved; pass 2 can be repeated |
 | Quiet centres have nothing | They become *map-only* by the rules, and are not in the pilot |
 
 ## Open questions for the owner
 
-1. The kinds of source in section 2: any to add or leave out (for example, should forum posts count)?
-2. The score in section 5.
-3. Should pass 1 cover every centre, or only the 100 busiest, to save time?
-4. Do you want the legal check done before pass 2, or before anything is published from it?
+None. Waiting for the owner's word to start pass 1, and for who will do the legal check before pass 2.
