@@ -22,10 +22,15 @@ test('G26f: the leaderboard for the learner\'s centre, and their name on it',asy
   await page.goto('./');
   await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
   await page.click('#account-chip');
+  await expect(page.locator('#account-board-rank')).toHaveText('2nd');
+  await page.click('#account-board');
+  // First time: the intro, then the board.
+  await expect(page.locator('#board-intro')).toBeVisible();
+  await page.click('#board-continue');
   const board=page.locator('#board');
-  await expect(board.locator('h3')).toHaveText('Leaderboard · Hull · this week');
-  await expect(board.locator('.board-list li')).toHaveCount(2);
-  await expect(board.locator('.board-list li.me')).toContainText('Learner');
+  await expect(board.locator('h3')).toHaveText('Hull · this week');
+  await expect(board.locator('.podium .p1 .who')).toHaveText('RoundaboutRuler');
+  await expect(board.locator('.podium .me .who')).toHaveText('Learner');
   await expect(board.locator('.board-leader')).toHaveText('Leader last week: Speedy (Hull Driving Academy)');
   await board.locator('summary').click();
   await page.check('#board-show');
@@ -49,9 +54,11 @@ test('G26f: before a mock test: join the leaderboard by completing one; the butt
   await page.route('**/api/board',r=>r.fulfill({json:{centre:null,settings:{show:false,name:''},top:[],me:null,leader:null,week:{from:new Date().toISOString()}}}));
   await page.goto('./');
   await expect(page.locator('#account-chip')).toBeVisible({timeout:60_000});
-  await page.click('#account-chip');
+  await page.evaluate(()=>localStorage.setItem('board-intro','1'));
+  await page.click('#board-home');
+  await expect(page.locator('#board-intro')).toBeHidden();
   await expect(page.locator('#board .board-join')).toContainText('Join the leaderboard by completing a mock test');
   await page.click('#board .board-join button');
-  await expect(page.locator('#screen-account')).toBeHidden();
+  await expect(page.locator('#screen-board')).toBeHidden();
   await expect(page.locator('#place-title')).toHaveText('Mock Tests');
 });

@@ -71,7 +71,7 @@ const PAID_HOSTS=new Set(['vr.drivingpractice.live','staging.drivingpractice.liv
 
 import {lessonsDone,mergeLessonsDone} from '../lessons/progress';
 import {renderProfile,type Profile} from './profileView';
-import {renderBoard,type Board} from './boardView';
+import {renderBoard,ordinal,type Board} from './boardView';
 
 export class Access{
   /** Whether drives need sessions here. */
@@ -271,20 +271,36 @@ export class Access{
     if(!this.me.signedIn){box.hidden=true;return}
     const r=await api<Profile>('profile');
     if(r.status===200&&r.data)renderProfile(box,r.data);
-    await this.loadBoard();
+    const b=await api<Board>('board');
+    const rank=byId('account-board-rank');
+    rank.textContent=b.status===200&&b.data?.me?ordinal(b.data.me.rank):'';
+  }
+
+  /** The leaderboard screen: a first-time intro, then the board (signing in first when needed). */
+  openBoard():void{
+    byId('screen-board').hidden=false;
+    let seen=false;try{seen=localStorage.getItem('board-intro')==='1'}catch{}
+    byId('board-intro').hidden=seen;
+    if(seen)void this.loadBoard();else byId('board').hidden=true;
+  }
+  private continueBoard(){
+    try{localStorage.setItem('board-intro','1')}catch{}
+    byId('board-intro').hidden=true;
+    if(!this.me.signedIn){byId('screen-board').hidden=true;this.open();return}
+    void this.loadBoard();
   }
 
   /** The leaderboard for the learner's test centre, with their own settings. */
   private async loadBoard(){
     const box=byId('board');
-    if(!this.me.signedIn){box.hidden=true;return}
+    if(!this.me.signedIn){box.hidden=true;byId('board-intro').hidden=false;return}
     const r=await api<Board>('board');
     if(r.status!==200||!r.data)return;
     renderBoard(box,r.data,async s=>{
       const saved=await api<{ok?:boolean;error?:string}>('board/me',s);
       if(saved.status===200){void this.loadBoard();return null}
       return saved.data?.error==='school'?'That driving school name cannot be used.':'Choose a name of 2 to 24 letters or numbers (no rude words).';
-    },()=>{this.close();document.querySelector<HTMLElement>('[data-drive-mode="test"]')?.click()});
+    },()=>{byId('screen-board').hidden=true;this.close();document.querySelector<HTMLElement>('[data-drive-mode="test"]')?.click()});
   }
   close():void{byId('screen-account').hidden=true;this.pending=null}
 
@@ -301,6 +317,11 @@ export class Access{
       });
     }
     byId('account-close').addEventListener('click',()=>this.close());
+    byId('board-close').addEventListener('click',()=>{byId('screen-board').hidden=true});
+    byId('board-continue').addEventListener('click',()=>this.continueBoard());
+    byId('account-board').addEventListener('click',()=>{this.close();this.openBoard()});
+    byId('board-home').hidden=false;
+    byId('board-home').addEventListener('click',()=>this.openBoard());
     let email='';
     byId('email-form').addEventListener('submit',e=>{
       e.preventDefault();

@@ -14,7 +14,7 @@ export interface Board{
 const el=<K extends keyof HTMLElementTagNameMap>(tag:K,cls?:string,text?:string)=>{
   const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;
 };
-const ordinal=(n:number)=>`${n}${n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]??'th'}`;
+export const ordinal=(n:number)=>`${n}${n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]??'th'}`;
 
 /** Fills `box` with the board; before the learner's first mock test, an invitation to join (`start` opens Mock Tests). */
 export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:string;school:string})=>Promise<string|null>,start:()=>void):void{
@@ -23,13 +23,24 @@ export function renderBoard(box:HTMLElement,b:Board,save:(s:{show:boolean;name:s
     const join=el('div','board-join');
     const go=el('button','','Start a mock test');go.type='button';go.addEventListener('click',start);
     join.append(el('b','','Join the leaderboard by completing a mock test'),go);
-    box.replaceChildren(el('h3','','Leaderboard'),join);
+    box.replaceChildren(join);
     return;
   }
-  const parts:HTMLElement[]=[el('h3','',`Leaderboard · ${b.name} · this week`)];
+  const parts:HTMLElement[]=[el('h3','',`${b.name} · this week`)];
+  // The top three on a podium (second, first, third), the rest in a list.
   if(b.top.length){
+    const podium=el('div','podium');
+    for(const [k,cls] of [[1,'p2'],[0,'p1'],[2,'p3']] as const){
+      const r=b.top[k],slot=el('div',cls+(r?.me?' me':''));
+      if(r)slot.append(el('span','who',r.name),el('span','pts',`${r.points} pts`));
+      slot.append(el('span','block',String(k+1)));
+      podium.append(slot);
+    }
+    parts.push(podium);
+  }
+  if(b.top.length>3){
     const list=el('ol','board-list');
-    for(const r of b.top){
+    for(const r of b.top.slice(3)){
       const li=el('li',r.me?'me':'');
       const who=el('span','board-who');who.append(el('b','',r.name),...(r.school?[el('small','',r.school)]:[]));
       li.append(el('span','board-rank',String(r.rank)),who,el('span','board-points',`${r.points}`));

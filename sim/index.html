@@ -215,6 +215,20 @@ fieldset.steering{border:none;margin:0;padding:0;display:grid;gap:8px;min-width:
 .board-who{flex:1;min-width:0;display:grid}.board-who small{color:var(--soft);font-size:12px}
 .board-points{flex:none;font-weight:800;color:var(--accent)}
 .board-me,.board-leader{margin:0;font-size:14px;color:var(--soft)}.board-leader{font-weight:700;color:var(--ink)}
+.board-card{display:grid;gap:10px}.board-card h1{margin:0}
+.board-intro{display:grid;gap:10px;text-align:center}.board-intro h2{margin:6px 0 0;font-size:clamp(21px,5.6vw,26px)}.board-intro p{margin:0;color:var(--soft)}
+.board-hero{width:100%;height:auto;border-radius:18px;background:linear-gradient(160deg,#0f766e,#134e4a)}
+.board-terms a{color:var(--accent)}
+.board-home{display:flex;align-items:center;gap:14px;width:100%;margin:12px 0 4px;padding:14px 16px!important;border-radius:20px;border:1px solid rgba(250,204,21,.5);background:linear-gradient(135deg,rgba(250,204,21,.16),rgba(250,204,21,.04));color:var(--ink);text-align:left;font:inherit}
+.board-home-cup{flex:none;font-size:28px}.board-home>span:nth-child(2){flex:1;display:grid;gap:2px}.board-home b{font-size:clamp(18px,4.6vw,21px)}.board-home>span:nth-child(2) span{color:var(--soft);font-size:clamp(14px,3.8vw,16px)}
+.board-home .invite-go{background:#facc15;color:#0b0b0f}
+.board-link{display:flex;align-items:center;gap:10px;width:100%;margin:10px 0;padding:12px 14px!important;border-radius:14px;text-align:left;font:inherit}.board-link b{flex:1}.board-link span:last-child{color:var(--soft)}
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:8px;margin:6px 0 2px}
+.podium>div{display:grid;justify-items:center;gap:6px;min-width:0;text-align:center}
+.podium .who{font-weight:800;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.podium .pts{font-size:13px;color:var(--soft)}
+.podium .block{width:100%;display:grid;place-items:center;border-radius:12px 12px 6px 6px;font-size:30px;font-weight:900;color:#fff}
+.podium .p1 .block{height:96px;background:linear-gradient(#fde047,#eab308)}.podium .p2 .block{height:72px;background:linear-gradient(#e5e7eb,#9ca3af)}.podium .p3 .block{height:56px;background:linear-gradient(#fdba74,#c2410c)}
+.podium .me .who{color:var(--accent)}
 .board-join{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
 .board-join button{flex:none;padding:9px 14px;border-radius:999px;border:0;background:var(--accent);color:#04110d;font-weight:800}
 html[data-theme="light"] .board-join button{color:#fff}
@@ -693,6 +707,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
           <button class="mode-card mc-test" type="button" data-drive-mode="test"><span class="mc-ico"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8h7M8.5 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m8.5 16 1.4 1.4 2.6-2.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 16.4h1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="mc-txt"><b>Mock Tests</b><small>Put your judgement to the test</small><span class="mc-try" data-try="test" hidden></span></span><svg class="mc-go" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <button id="view-passes" type="button" class="link view-passes" hidden>View passes</button>
+        <button id="board-home" type="button" class="board-home" hidden><span class="board-home-cup" aria-hidden="true">🏆</span><span><b>Leaderboard</b><span>Weekly prizes at your test centre</span></span><span class="invite-go" aria-hidden="true">View</span></button>
         <button id="invite-home" type="button" class="invite-home" hidden><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 8v6M15 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span><b>Invite a friend</b><span>You both get 2 free drives</span></span><span class="invite-go" aria-hidden="true">Invite</span></button>
         <section class="reviews" aria-labelledby="reviews-title">
           <h3 id="reviews-title">What learners say</h3>
@@ -858,7 +873,7 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p class="balance not-paywall"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
       <ul id="account-breakdown" class="breakdown not-paywall"></ul>
       <section id="profile" class="profile not-paywall" aria-label="Your progress" hidden></section>
-      <section id="board" class="board not-paywall" aria-label="Leaderboard" hidden></section>
+      <button id="account-board" type="button" class="board-link not-paywall"><span>🏆</span><b>Leaderboard</b><span id="account-board-rank"></span></button>
       <div id="admin-tools" class="admin-tools" hidden>
         <a id="admin-hub" class="admin-hub" href="admin.html" target="_blank" rel="noopener">Admin hub</a>
         <label>Cars <select data-sim-option="cars"><option value="">Standard</option><option value="mixed">With Peugeot and pickup</option><option value="new">New pack</option><option value="kenney">Kenney kit</option><option value="pack20">20-car pack</option></select></label>
@@ -880,6 +895,32 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
   </div>
 </section>
 
+<section id="screen-board" class="screen" hidden aria-labelledby="board-title">
+  <div class="card board-card">
+    <button id="board-close" type="button" class="link account-close">Close</button>
+    <h1 id="board-title">Leaderboard</h1>
+    <div id="board-intro" class="board-intro" hidden>
+      <svg class="board-hero" viewBox="0 0 320 170" role="img" aria-label="A podium with gold, silver and bronze trophies">
+<defs><radialGradient id="bh-glow" cx="50%" cy="60%" r="70%"><stop offset="0" stop-color="#fde68a"/><stop offset=".55" stop-color="#14b8a6" stop-opacity=".35"/><stop offset="1" stop-color="#0f766e" stop-opacity="0"/></radialGradient>
+<linearGradient id="bh-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde047"/><stop offset="1" stop-color="#eab308"/></linearGradient>
+<linearGradient id="bh-silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5e7eb"/><stop offset="1" stop-color="#9ca3af"/></linearGradient>
+<linearGradient id="bh-bronze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdba74"/><stop offset="1" stop-color="#c2410c"/></linearGradient></defs>
+<rect width="320" height="170" rx="18" fill="url(#bh-glow)"/>
+<g fill="#fde68a"><path d="M42 30l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/><path d="M276 22l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/><circle cx="96" cy="22" r="2.5"/><circle cx="228" cy="48" r="2.5"/><circle cx="60" cy="74" r="2"/><circle cx="262" cy="86" r="2"/></g>
+<rect x="66" y="104" width="62" height="58" rx="6" fill="url(#bh-silver)"/><rect x="129" y="82" width="62" height="80" rx="6" fill="url(#bh-gold)"/><rect x="192" y="116" width="62" height="46" rx="6" fill="url(#bh-bronze)"/>
+<g font-family="system-ui,sans-serif" font-weight="900" font-size="34" text-anchor="middle" fill="#fff" fill-opacity=".9"><text x="97" y="148">2</text><text x="160" y="140">1</text><text x="223" y="152">3</text></g>
+<g><path d="M83 66h28v8a14 14 0 0 1-28 0z" fill="url(#bh-silver)"/><rect x="94" y="88" width="6" height="8" fill="#9ca3af"/><rect x="86" y="96" width="22" height="6" rx="2" fill="#9ca3af"/>
+<path d="M144 34h32v10a16 16 0 0 1-32 0z" fill="url(#bh-gold)"/><path d="M144 38h-8a8 8 0 0 0 8 10M176 38h8a8 8 0 0 1-8 10" fill="none" stroke="#eab308" stroke-width="3"/><rect x="157" y="60" width="6" height="10" fill="#eab308"/><rect x="148" y="70" width="24" height="7" rx="2" fill="#eab308"/>
+<path d="M209 80h28v8a14 14 0 0 1-28 0z" fill="url(#bh-bronze)"/><rect x="220" y="102" width="6" height="7" fill="#c2410c"/><rect x="212" y="109" width="22" height="6" rx="2" fill="#c2410c"/></g>
+</svg>
+      <h2>Climb your test centre's leaderboard</h2>
+      <p>Compete with learners at your centre for weekly prizes.</p>
+      <p class="board-terms"><a href="legal/terms.html#leaderboards" target="_blank" rel="noopener">Terms</a> apply</p>
+      <button id="board-continue" type="button" class="primary">Continue</button>
+    </div>
+    <section id="board" class="board" aria-label="This week's leaderboard" hidden></section>
+  </div>
+</section>
 <section id="screen-controller" class="screen" hidden aria-labelledby="controller-title">
   <div class="card">
     <h1 id="controller-title">Controller check</h1>

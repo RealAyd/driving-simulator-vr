@@ -2002,21 +2002,26 @@ export async function boot():Promise<void>{
   byId('view-passes').addEventListener('click',()=>paidAccess.viewPasses());
   byId('invite-home').addEventListener('click',()=>paidAccess.invite());
   byId('offer-banner').addEventListener('click',()=>paidAccess.viewPasses());
-  // The reviews: one after another every 5 s, round again after the last; a touch, a hover or a scroll of
-  // their own pauses it for a while (not at all with reduced motion, nor while the page is hidden).
+  // The reviews: one after another every 5 s, round again after the last; a touch, a hover or a scroll of their own
+  // pauses it for a while (not while the page is hidden). With reduced motion they still move on, without sliding.
   {
     const list=document.querySelector<HTMLElement>('.review-list');
-    if(list&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
-      let pausedUntil=0;
+    if(list){
+      const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let pausedUntil=0,at=0;
       const pause=()=>{pausedUntil=Date.now()+12_000};
-      for(const ev of ['pointerdown','pointerenter','wheel','touchstart','focusin'])list.addEventListener(ev,pause,{passive:true});
+      for(const ev of ['pointerdown','wheel','touchstart','focusin'])list.addEventListener(ev,pause,{passive:true});
+      list.addEventListener('mouseenter',pause);
       setInterval(()=>{
-        if(document.hidden||Date.now()<pausedUntil||list.offsetParent===null)return;
+        if(document.hidden||Date.now()<pausedUntil||!list.getClientRects().length)return;
         const cards=[...list.children] as HTMLElement[];
         if(cards.length<2)return;
-        const step=cards[1]!.offsetLeft-cards[0]!.offsetLeft;
+        // (Where it is now, from its own scroll: the learner may have swiped.)
+        const lefts=cards.map(c=>c.offsetLeft-cards[0]!.offsetLeft);
+        at=lefts.reduce((best,x,k)=>Math.abs(x-list.scrollLeft)<Math.abs(lefts[best]!-list.scrollLeft)?k:best,0);
         const atEnd=list.scrollLeft+list.clientWidth>=list.scrollWidth-4;
-        list.scrollTo({left:atEnd?0:list.scrollLeft+step,behavior:'smooth'});
+        at=atEnd?0:(at+1)%cards.length;
+        list.scrollTo({left:lefts[at]!,behavior:calm?'auto':'smooth'});
       },5000);
     }
   }
