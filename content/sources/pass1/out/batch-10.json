@@ -1,0 +1,503 @@
+[
+ {
+  "name": "Malton",
+  "postcode": "YO17 7LB",
+  "tests": 562,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/North-Yorkshire/Malton"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/malton-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/north-yorkshire/malton"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/malton/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/malton-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/North-Yorkshire/Malton"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/malton/"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Medway Ambely Road (Formally Gillingham LGV)",
+  "postcode": "ME8 0SJ",
+  "tests": 0,
+  "score": 6,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/Gillingham"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/gillingham-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "drivinglessonsmedway.blogspot.com",
+    "url": "https://drivinglessonsmedway.blogspot.com/2010/05/driving-test-gillingham-tips-on-how-to.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/gillingham-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Kent/Gillingham"
+   }
+  ],
+  "moved": "Renamed: centre on Ambley Road ME8 0SJ was listed as Gillingham LGV; car pages found use the Gillingham name (routes via Bailey Drive and Ambley Road). One aggregator gives a Pump Lane address.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Melton Mowbray",
+  "postcode": "LE13 0UL",
+  "tests": 2486,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Leicestershire/Melton-Mowbray"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/melton-mowbray-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/leicestershire/melton-mowbray"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/melton-mowbray/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/melton-mowbray-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Leicestershire/Melton-Mowbray"
+   },
+   {
+    "kind": "template",
+    "site": "megacasauql.pages.dev",
+    "url": "https://megacasauql.pages.dev/driving-test-centre-melton-mowbray"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/obmCs"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Merthyr Tydfil",
+  "postcode": "CF48 4DR",
+  "tests": 3703,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Mid-Glamorgan/Merthyr-Tydfil"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/merthyr-tydfil-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/merthyr-tydfil/merthyr-tydfil"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/merthyr-tydfil-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Mid-Glamorgan/Merthyr-Tydfil"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/merthyr-tydfil"
+   }
+  ],
+  "moved": "Unclear: one source gives Swansea Road CF48 1AB instead of Merthyr Industrial Park CF48 4DR",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Middlesbrough",
+  "postcode": "TS3 8TE",
+  "tests": 8952,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/North-Yorkshire/Middlesbrough"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/middlesbrough-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/north-yorkshire/middlesbrough"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/middlesbrough/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/middlesbrough-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/middlesbrough"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-middlesbrough"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/bB6OV"
+   }
+  ],
+  "moved": "Unclear: some sources give Marton Road TS4 3BS, others Maxwell Road TS3 8TE",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Mill Hill (London)",
+  "postcode": "NW7 2DQ",
+  "tests": 8688,
+  "score": 13,
+  "counts": {
+   "instructor-page": 2,
+   "video": 0,
+   "learner": 0,
+   "route-list": 4,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Mill-Hill-London"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/mill-hill-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "testprep.uk",
+    "url": "https://testprep.uk/driving-practical-test/mill-hill-test-routes"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/mill-hill-london-driving-test-routes"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "uksdrivingschool.blogspot.com",
+    "url": "https://uksdrivingschool.blogspot.com/2011"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "millhilldrivingtest.blogspot.com",
+    "url": "https://millhilldrivingtest.blogspot.com/2012/02/5-tips-pass-driving-test-at-mill-hill.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/mill-hill-london"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/mill-hill/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/mill-hill-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "presentationbuilder.internationaltrucks.com",
+    "url": "https://presentationbuilder.internationaltrucks.com/mill-hill-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "northlondondrivingguide.vercel.app",
+    "url": "https://northlondondrivingguide.vercel.app/test-centres"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/mill-hill"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/2USnf"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Mitcham (London)",
+  "postcode": "CR0 3AQ",
+  "tests": 13825,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Surrey/Mitcham-London"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Surrey/Mitcham-London"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/mitcham-london"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/mitcham/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/mitcham-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/mitcham-wadden-way/"
+   },
+   {
+    "kind": "template",
+    "site": "booklearnpass.co.uk",
+    "url": "https://www.booklearnpass.co.uk/?p=2117"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/ydjbB"
+   }
+  ],
+  "moved": "Unclear: one listing is titled Mitcham Wadden Way; most give Redhouse Road CR0 3AQ",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Monmouth",
+  "postcode": "NP25 3DP",
+  "tests": 1407,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/monmouth-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/monmouthshire/monmouth"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/monmouth-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Gwent/Monmouth"
+   }
+  ],
+  "moved": "Unclear: one source gives Wonastow Road NP25 4RZ; most give Old Dixton Road NP25 3DP",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Montrose",
+  "postcode": "DD10 8EE",
+  "tests": 633,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Angus/Montrose"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/montrose-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/montrose/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/angus/montrose"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/montrose/"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/montrose-driving-test-centre.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/qWQac"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ }
+]
