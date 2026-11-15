@@ -93,7 +93,7 @@ anything about a private person (a learner's username is not recorded; "a learne
 
 Two passes, so effort goes where the information is:
 
-- **Pass 1, every centre in Great Britain's list (light)** *(agreed: every centre, not only the busiest)*: run the fixed searches for each centre in Great Britain's list and record only a
+- **Pass 1, every centre in Great Britain's list (light)** *(agreed: every centre, not only the busiest)*: run the fixed searches for each of the 350 centres in `content/centres/test-centres.json` (the owner's list: name, postcode, position, pass rate, tests a year) and record only a
   count: how many separate first-hand sources appear to exist, and of which kinds. No pages are read in depth. Result:
   one table of centres, ranked.
 - **Pass 2, the top ten (full)**: do section 3 properly for the ten highest. Result for each: its evidence file, the
@@ -110,7 +110,7 @@ the template is tried on different kinds of area.
 ## 6. Who does what, and when the owner decides
 
 1. Owner approves this plan: done, 14 November 2026.
-2. Owner says go; pass 1 is run; the ranked table goes to the owner. *(About 320 centres; a few searches each.)*
+2. Owner says go; pass 1 is run; the ranked table goes to the owner. *(350 centres, from `content/centres/test-centres.json`; a few searches each.)*
 3. Owner agrees the top ten, or swaps some in.
 4. **The legal check on using public sources this way is done before pass 2** *(agreed)*: pass 2 does not start
    without it.
