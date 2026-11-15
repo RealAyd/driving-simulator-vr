@@ -1,0 +1,1263 @@
+{
+  "centre": "Hendon (London)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.59599,
+    "lon": -0.24014
+  },
+  "address": "3 Aviation Drive, Beaufort Park, Hendon, London NW9 5TZ",
+  "address_checked": "2026-11-15",
+  "address_note": "gov.uk 'check which driving test centres you can move your test to' (rules from 9 June 2026) lists Hendon (London) as a current centre; the find-driving-test-centre service could not be reached from this machine, so the street address comes from several listings and the 2011 instructor blog. OSM puts Aviation Drive NW9 5TZ (way/146876784) at 51.59600,-0.23990, about 20 m from the given position: matches. The centre was already at this address in 2011, so no source here predates a move.",
+  "mill_hill_note": "Mill Hill (London), Bunns Lane NW7 2DQ, still exists as a separate centre: the same gov.uk page lists it on its own and as about 2 miles from Hendon. It was not replaced by Hendon. Pass 1 marked the two Mill Hill instructor blogs as 'old_address' for Hendon; they are about a different, open centre, and the 2011 Hendon post (s3) is about the current Hendon address.",
+  "searches": [
+    "\"Hendon (London)\" driving test centre gov.uk Aviation Drive NW9 5TZ",
+    "Mill Hill driving test centre closed replaced Hendon NW7 2DQ",
+    "\"Hendon driving test\" route roundabout tips instructor",
+    "\"Hendon test centre\" driving test reddit OR mock test route video"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "Driving Test Tips (drivingtesttips.biz)",
+      "url": "https://www.drivingtesttips.biz/hendon-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/hendon-driving-test-routes-6-10.html",
+        "https://www.drivingtesttips.biz/driving-test-routes/hendon-driving-test-routes-11-15.html"
+      ],
+      "published": "about 2010 (routes as DVSA last published them)",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Aerodrome Road",
+        "Aerodrome Road and Grahame Park Way roundabout",
+        "Aerodrome Road and Watford Way lights",
+        "Apex Corner roundabout (A1/A41/Selvage Lane)",
+        "Bell Lane",
+        "Booth Road",
+        "Brent Street",
+        "Brent Street mini-roundabout",
+        "Broadfields Avenue",
+        "Bunns Lane",
+        "Bunns Lane mini-roundabouts",
+        "Burnt Oak Broadway",
+        "Camrose Avenue",
+        "Charter Way",
+        "Colindale Avenue",
+        "Colindeep Lane",
+        "Copthall Drive",
+        "Daws Lane",
+        "Deans Lane",
+        "Deans Lane roundabout",
+        "Deansbrook Road",
+        "Downage",
+        "Edgware Road",
+        "Edgware Way",
+        "Edgwarebury Lane",
+        "Featherstone Road",
+        "Finchley Lane",
+        "Fitzalan Road",
+        "Five Ways Corner (A1/A41)",
+        "Flower Lane",
+        "Gervase Road",
+        "Grahame Park Way",
+        "Gravel Hill",
+        "Great North Way (A1)",
+        "Green Lane",
+        "Greyhound Hill",
+        "Hale Drive",
+        "Hale Lane",
+        "Hale Lane mini-roundabouts",
+        "Haley Road",
+        "Haley Road roundabout",
+        "Hammers Lane",
+        "Hay Lane",
+        "Hendon Lane",
+        "Hendon Way",
+        "Hillfield Avenue",
+        "Hillside Grove",
+        "Holcombe Hill",
+        "Holders Hill Road",
+        "Holyrood Gardens",
+        "Honeypot Lane",
+        "Lanacre Avenue",
+        "Lanacre Avenue mini-roundabout",
+        "Lawrence Street",
+        "Lynford Gardens",
+        "Montrose Avenue",
+        "North Circular Road",
+        "Orange Hill Road",
+        "Page Street",
+        "Parson Street",
+        "Princes Avenue",
+        "Pursley Road",
+        "Queensbury Circle",
+        "Queensbury Circle",
+        "Regents Park Road",
+        "Renters Avenue",
+        "Sanders Lane",
+        "Selvage Lane",
+        "Sheaveshill Avenue",
+        "Shirehall Lane",
+        "Stag Lane",
+        "Station Road",
+        "Stoneyfields Lane",
+        "The Broadway",
+        "The Burroughs",
+        "The Ridgeway",
+        "Vivian Avenue",
+        "Watford Way (A41)",
+        "Watling Avenue",
+        "Westside",
+        "Windsor Avenue",
+        "Wise Lane"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "Intensive Lessons (intensivelessons.co.uk)",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Hendon-London",
+      "published": "unknown",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "duplicate_of": "s1",
+      "note": "same turn-by-turn route text as s1; counted once with s1",
+      "names": []
+    },
+    {
+      "id": "s3",
+      "kind": "instructor-page",
+      "author": "Mill Hill Driving Test blog (millhilldrivingtest.blogspot.com)",
+      "url": "https://millhilldrivingtest.blogspot.com/2011/12/hendon-test-centre-london-nw9-5tz.html",
+      "published": "2011-12",
+      "read_on": "2026-11-15",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "Apex Corner roundabout",
+        "Great North Way (A1)",
+        "Watford Way (A41)"
+      ]
+    }
+  ],
+  "sources_skipped": [
+    {
+      "url": "https://payhip.com/b/5Bvs7",
+      "why": "paid"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/hendon/mock-driving-test",
+      "why": "template, no road names"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/hendon-london",
+      "why": "page empty without scripts; template"
+    },
+    {
+      "url": "https://www.veygo.com/driving-test-centres/hendon-london/",
+      "why": "template, no road names"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/london/hendon/",
+      "why": "lesson-area template, no test roads"
+    },
+    {
+      "url": "https://northlondondrivingguide.vercel.app/test-centres",
+      "why": "generic template with a wrong address and postcode; only names 'A41'"
+    },
+    {
+      "url": "https://uksdrivingschool.blogspot.com/2011",
+      "why": "about Mill Hill centre, not Hendon"
+    }
+  ],
+  "places": [
+    {
+      "name": "Aerodrome Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59478,
+        "lon": -0.24161,
+        "osm": "way/22633658"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Grahame Park Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.60365,
+        "lon": -0.24077,
+        "osm": "way/759913598"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Watford Way (A41)",
+      "kind": "road",
+      "map": {
+        "lat": 51.58689,
+        "lon": -0.2327,
+        "osm": "way/1049393386"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Bunns Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.60772,
+        "lon": -0.23566,
+        "osm": "way/3188525"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hale Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61671,
+        "lon": -0.27389,
+        "osm": "way/3188528"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broadfields Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.62422,
+        "lon": -0.27383,
+        "osm": "way/52048191"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Montrose Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.59838,
+        "lon": -0.262,
+        "osm": "way/617907392"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lanacre Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.60117,
+        "lon": -0.25145,
+        "osm": "way/4425853"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brent Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.58915,
+        "lon": -0.22153,
+        "osm": "way/89896657"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Broadway",
+      "kind": "road",
+      "map": {
+        "lat": 51.61373,
+        "lon": -0.24985,
+        "osm": "way/1188767820"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Edgware Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.62231,
+        "lon": -0.26632,
+        "osm": "way/130756269"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59888,
+        "lon": -0.18923,
+        "osm": "way/143209213"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Colindale Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.59387,
+        "lon": -0.25276,
+        "osm": "way/22627735"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Watling Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.60609,
+        "lon": -0.25563,
+        "osm": "way/239512280"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Deans Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61568,
+        "lon": -0.26077,
+        "osm": "way/8143709"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Orange Hill Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60557,
+        "lon": -0.26412,
+        "osm": "way/4393257"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Parson Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.5928,
+        "lon": -0.2198,
+        "osm": "way/712294471"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Greyhound Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.59191,
+        "lon": -0.23129,
+        "osm": "way/2953953"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hendon Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.59514,
+        "lon": -0.20498,
+        "osm": "way/24575980"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Burnt Oak Broadway",
+      "kind": "road",
+      "map": {
+        "lat": 51.59796,
+        "lon": -0.26444,
+        "osm": "way/8125186"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Westside",
+      "kind": "road",
+      "map": {
+        "lat": 51.59955,
+        "lon": -0.23204,
+        "osm": "way/165465402"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Great North Way (A1)",
+      "kind": "road",
+      "map": {
+        "lat": 51.59348,
+        "lon": -0.213,
+        "osm": "way/302442"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Regents Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59011,
+        "lon": -0.20001,
+        "osm": "way/203933724"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fitzalan Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59361,
+        "lon": -0.20277,
+        "osm": "way/2511563"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Finchley Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.58982,
+        "lon": -0.21852,
+        "osm": "way/209243206"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Booth Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59816,
+        "lon": -0.2523,
+        "osm": "way/4425854"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Edgware Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59165,
+        "lon": -0.25685,
+        "osm": "way/783524731"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Colindeep Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.58808,
+        "lon": -0.23847,
+        "osm": "way/22633505"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Deansbrook Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.61005,
+        "lon": -0.26076,
+        "osm": "way/8143718"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Selvage Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61877,
+        "lon": -0.25846,
+        "osm": "way/4302996"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gervase Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60198,
+        "lon": -0.26025,
+        "osm": "way/9632015"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lawrence Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.62185,
+        "lon": -0.24154,
+        "osm": "way/78315290"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holcombe Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.62444,
+        "lon": -0.23643,
+        "osm": "way/23120967"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Ridgeway",
+      "kind": "road",
+      "map": {
+        "lat": 51.61931,
+        "lon": -0.23021,
+        "osm": "way/78315494"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hammers Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61824,
+        "lon": -0.23612,
+        "osm": "way/367926"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wise Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.60957,
+        "lon": -0.2283,
+        "osm": "way/28296992"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pursley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60889,
+        "lon": -0.22442,
+        "osm": "way/3142754"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "North Circular Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59979,
+        "lon": -0.17618,
+        "osm": "way/842268416"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Charter Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.5905,
+        "lon": -0.20073,
+        "osm": "way/141862193"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bell Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.58675,
+        "lon": -0.21765,
+        "osm": "way/4072300"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Green Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.62058,
+        "lon": -0.28496,
+        "osm": "way/133770663"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Flower Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61211,
+        "lon": -0.24446,
+        "osm": "way/4395978"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lynford Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.62442,
+        "lon": -0.27165,
+        "osm": "way/768530262"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windsor Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.6236,
+        "lon": -0.27272,
+        "osm": "way/4906407"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stag Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.59593,
+        "lon": -0.26924,
+        "osm": "way/228932912"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Burroughs",
+      "kind": "road",
+      "map": {
+        "lat": 51.58933,
+        "lon": -0.22803,
+        "osm": "way/3988742"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Haley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.57807,
+        "lon": -0.22031,
+        "osm": "way/44017683"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shirehall Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.57984,
+        "lon": -0.21856,
+        "osm": "way/203757008"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Vivian Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.5826,
+        "lon": -0.22825,
+        "osm": "node/4958739433"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Downage",
+      "kind": "road",
+      "map": {
+        "lat": 51.5945,
+        "lon": -0.22256,
+        "osm": "way/2953959"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Daws Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.6156,
+        "lon": -0.23974,
+        "osm": "way/51939987"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Page Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.60555,
+        "lon": -0.23316,
+        "osm": "way/132752638"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sanders Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.60934,
+        "lon": -0.21304,
+        "osm": "way/3131519"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holders Hill Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60035,
+        "lon": -0.20969,
+        "osm": "way/24573928"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Edgwarebury Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.63426,
+        "lon": -0.28326,
+        "osm": "way/4492882"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hendon Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.56403,
+        "lon": -0.20518,
+        "osm": "way/368996214"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Renters Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.57864,
+        "lon": -0.22007,
+        "osm": "way/1154053559"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sheaveshill Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.5899,
+        "lon": -0.24874,
+        "osm": "way/155441602"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hillfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.58693,
+        "lon": -0.24776,
+        "osm": "way/4425780"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hale Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.61402,
+        "lon": -0.25546,
+        "osm": "way/8143712"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stoneyfields Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.62,
+        "lon": -0.26255,
+        "osm": "way/768530258"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queensbury Circle",
+      "kind": "road",
+      "map": {
+        "lat": 51.59497,
+        "lon": -0.29309,
+        "osm": "node/469778044"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Honeypot Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.58959,
+        "lon": -0.28369,
+        "osm": "way/543731144"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Camrose Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.60074,
+        "lon": -0.28942,
+        "osm": "way/45953159"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Featherstone Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60932,
+        "lon": -0.22927,
+        "osm": "way/3191102"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gravel Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.59763,
+        "lon": -0.19851,
+        "osm": "way/26783"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holyrood Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.59655,
+        "lon": -0.27254,
+        "osm": "way/4617079"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Princes Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.59145,
+        "lon": -0.26998,
+        "osm": "way/886712561"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hay Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.58854,
+        "lon": -0.25962,
+        "osm": "way/235007683"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Copthall Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.60904,
+        "lon": -0.23641,
+        "osm": "way/3191084"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hillside Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.60838,
+        "lon": -0.23795,
+        "osm": "way/3191087"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Apex Corner roundabout (A1/A41/Selvage Lane)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.62138,
+        "lon": -0.25471,
+        "osm": "way/228683185"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Five Ways Corner (A1/A41)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.60399,
+        "lon": -0.23958,
+        "osm": "node/200285"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Aerodrome Road and Grahame Park Way roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.59478,
+        "lon": -0.24161,
+        "osm": "way/22633658"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Aerodrome Road and Watford Way lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.59478,
+        "lon": -0.24161,
+        "osm": "way/22633658"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Hale Lane mini-roundabouts",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.61671,
+        "lon": -0.27389,
+        "osm": "way/3188528"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Bunns Lane mini-roundabouts",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.60772,
+        "lon": -0.23566,
+        "osm": "way/3188525"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Brent Street mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.58915,
+        "lon": -0.22153,
+        "osm": "way/89896657"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Deans Lane roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.61568,
+        "lon": -0.26077,
+        "osm": "way/8143709"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Haley Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.57807,
+        "lon": -0.22031,
+        "osm": "way/44017683"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Lanacre Avenue mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.60117,
+        "lon": -0.25145,
+        "osm": "way/4425853"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    },
+    {
+      "name": "Queensbury Circle",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.59497,
+        "lon": -0.29309,
+        "osm": "node/469778044"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+    }
+  ],
+  "unmatched": [
+    "Queens Road (Hendon, off Wykeham Road)",
+    "Columbia Avenue",
+    "Cumberland Road"
+  ],
+  "judgement_note": "Almost all evidence is one old list of DVSA routes (s1, copied by s2); one first-hand instructor post (s3) confirms the big roads. Routes should favour the Aerodrome Road, Grahame Park Way, Watford Way and Apex Corner core and treat the list's far-off roads (Kingsbury, Temple Fortune) as optional.",
+  "summary": "Confirmed: 2 roads (Watford Way A41, Great North Way A1) and 1 junction (Apex Corner); likely: 69 roads and 10 junctions, nearly all from one old DVSA route list. Two routes meeting the overlap rule look possible: the list covers every road round the centre, with lights, large and mini roundabouts and dual carriageways, so more than half of each route and 3 of 8 scenarios at known junctions are easy to meet."
+}
