@@ -62,8 +62,9 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBefo
   through:pts([[-792,-607],[-546,-252],[-274,22],[-155,110],[-5,210],[-47,-585],[350,-962],[626,-933],[797,-661],[562,-179],[19,-326],[43,-79],
     [175,806],[5,908],[-191,911],[-273,340],[-571,-283],[-822,-652],[-844,-772.8]]),
   // Pulled in to the kerb on Wordsworth Avenue (no cars parked, and no side roads, along this stretch).
-  // (And a little wide of the corner turning right into Southey Green Road, as drivers do, not over its footway.)
-  shifts:[{from:p(789.9,-604.9),to:p(787.6,-590.1),left:.35},{from:p(392,-1000),to:p(428,-991),left:.9}],
+  // (And a little wide of the corners turning right into Southey Green Road and on to Middlewood Road at Hillsborough,
+  // as drivers do, not over their footways.)
+  shifts:[{from:p(789.9,-604.9),to:p(787.6,-590.1),left:.35},{from:p(392,-1000),to:p(428,-991),left:.9},{from:p(-76,993),to:p(-108,993),left:1.2}],
   actors:[
     {id:'mwr-car',name:'silver car',colour:'#b8bcc2',speed:11,path:pts(MWR_CAR)},
     // On the crossing over the slip to Penistone Road, left to right, as the lights turn green.

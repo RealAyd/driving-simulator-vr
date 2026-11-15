@@ -37,8 +37,9 @@ What the map changed:
   the mini-roundabout (named by the route list) is the challenge, and route 2's crossing is at the Chipper Lane lights.
 - **"London Road (A30) roundabout"** in the evidence points at a stretch of London Road with no roundabout; the Barrington
   Road lights at its end are route 1's lights challenge.
-- **No mini-roundabout or emerging left turn was left for route 2** without crossing route 1's ground: route 2 has the
-  Castle Street mini-roundabout and a second right turn across oncoming traffic instead of an emerging left turn.
+- **No emerging left turn fits route 2**: its way out of Rougemont Close is to the right, and its other turns out of
+  side roads are at lights. A second right turn across oncoming traffic takes its place; route 1 has the emerging left
+  turn.
 
 ## 3. Build the scenes
 
@@ -48,8 +49,9 @@ fetched in nine tiles and merged), then two scenes from it:
     node tools/scenes/build_scene.mjs salisbury-route-1 "Salisbury" 51.07758 -1.78371 1200 <merged.osm> 51.071858,-1.787709 51.072028,-1.786994
     node tools/scenes/build_scene.mjs salisbury-route-2 "Salisbury" 51.070573 -1.790138 1200 <merged.osm> 51.071858,-1.787709 51.072028,-1.786994
 
-Then one fix to each scene file: **a repeated point dropped** from road `residential-760027220-1` (Belle Vue Road's mini-
-roundabout, where the generator splits OSM way 760027220 at the mini-roundabout node and repeats the node). The route
+Then one fix to each scene file: **a repeated point dropped** from road `residential-760027220-1` (an unnamed road at the
+mini-roundabout off Belle Vue Road, where the generator splits OSM way 760027220 at the mini-roundabout node and repeats
+the node). The route
 planner reads that road's first segment as zero length and stops with an error ("Road ... has no non-zero segments")
 whenever its search reaches that part of the city. Rebuilding the scenes needs the same fix (consecutive identical
 points removed from every road's centreline) until the generator is fixed.
