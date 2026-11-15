@@ -346,7 +346,10 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       // (Also here, for practising this challenge on its own.)
       starts:[{actor:'wadsley-car',at:p(-216.2,303.4),delay:0}],
       endAt:p(53,276.5),
-      quiet:[{x:8,z:271,radius:50}],
+      // (Kept quiet on to Marlcliffe Road and Dunella Road, where the grey car turns off: one pulling out there would
+      // meet the car face to face.)
+      quietUntil:p(155.9,313.5),
+      quiet:[{x:8,z:271,radius:50},{x:80,z:283,radius:40},{x:140,z:306,radius:32}],
       place:{
         check:{pause:{kind:'stop',at:p(8.3,271.5)},when:{actor:'wadsley-car',at:p(-18.2,271.1)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb, handbrake on.'},
@@ -397,7 +400,9 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       starts:[{actor:'crossing-pedestrian',at:p(491.4,589.5),delay:0}],
       lights:p(500.4,495.3),
       endAt:p(501.3,460),
-      quiet:[{x:502,z:492,radius:30},{x:500,z:530,radius:22}],
+      // The crossing, and back to the end of Dixon Road, where the car turns out at the lights (narrow: one turning in
+      // there would meet it face to face).
+      quiet:[{x:502,z:492,radius:30},{x:500,z:530,radius:22},{x:472,z:688,radius:28}],
       place:{
         approach:{pause:{kind:'moving',at:p(497.8,538)},lights:'red',frame:{yaw:0,pitch:24},state:'On Middlewood Road at 30 mph, the signal crossing ahead.'},
         line:{pause:{kind:'stop',at:p(500.3,498.4)},lights:'red',when:{actor:'crossing-pedestrian',at:p(500.6,490.8)},panel:'right',frame:{yaw:0,pitch:30},
@@ -464,7 +469,7 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       lights:p(484.6,333.4),
       endAt:p(473,257.3),
       // The junction, and the mouth of Leppings Lane just beyond it on the right.
-      quiet:[{x:484,z:310,radius:36},{x:478,z:282,radius:22}],
+      quiet:[{x:484,z:310,radius:36},{x:478,z:282,radius:22},{x:490,z:362,radius:24}],
       place:{
         approach:{pause:{kind:'moving',at:p(491.2,368.8)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 30 mph.'},
         line:{pause:{kind:'stop',at:p(485.7,338.1)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
