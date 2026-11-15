@@ -1,0 +1,755 @@
+{
+  "centre": "Chichester",
+  "status": "ok",
+  "address_checked": "2026-11-15",
+  "address": "York House, City Fields Business Park, City Fields Way, Tangmere, PO20 2FR (DVSA bulletin on the 2019 move from Wyman House, Shopwhyke Road; gov.uk find-a-centre tool not readable by script)",
+  "address_matches_position": true,
+  "centre_position": {
+    "lat": 50.85303,
+    "lon": -0.711
+  },
+  "searches": [
+    "Chichester driving test centre City Fields Way Tangmere PO20 2FR gov.uk",
+    "Chichester Tangmere driving test route roundabouts instructor tips City Fields",
+    "\"Chichester driving test\" route youtube Tangmere"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (routes 1-14; intensivelessons.co.uk carries the same lists and counts once)",
+      "url": "https://www.drivingtesttips.biz/chichester-driving-test-routes.html",
+      "also": [
+        "https://drivingtesttips.biz/driving-test-routes/chichester-driving-test-routes-new.html",
+        "https://intensivelessons.co.uk/driving-test-routes/West-Sussex/Chichester"
+      ],
+      "published": "unknown (pre-2019, routes start at Wyman House)",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": true,
+      "names": [
+        "Chichester Bypass",
+        "Bognor Road",
+        "Quarry Lane",
+        "Whyke Road",
+        "Willowbed Drive",
+        "Willowbed Avenue",
+        "Florence Road",
+        "St James Road",
+        "Westhampnett Road",
+        "Spitalfield Lane",
+        "Melbourne Road",
+        "Litten Terrace",
+        "Adelaide Road",
+        "Oaklands Way",
+        "Orchard Street",
+        "Westgate",
+        "Sherborne Road",
+        "Avenue de Chartres",
+        "Via Ravenna",
+        "Terminus Road",
+        "Stockbridge Road",
+        "New Park Road",
+        "The Hornet",
+        "St Pancras",
+        "Needlemakers",
+        "Market Avenue",
+        "Basin Road",
+        "Kingsham Road",
+        "Kingsham Avenue",
+        "Pound Farm Road",
+        "Stane Street",
+        "Swanfield Drive",
+        "Barnfield Drive",
+        "Douglas Martin Road",
+        "Cherry Orchard Road",
+        "Old Broyle Road",
+        "Brandy Hole Lane",
+        "Lavant Road",
+        "Summersdale Road",
+        "Meadow Way",
+        "Tangmere Road",
+        "Shopwhyke Road",
+        "Oving Road",
+        "Norwich Road",
+        "Worcester Road",
+        "Fordwater Road",
+        "Pook Lane",
+        "Highland Road"
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "url": "https://scoobynet.com/non-scooby-related-4/435885-driving-test-routes-chichester.html",
+      "why": "page did not load; old thread about the earlier site"
+    },
+    {
+      "url": "https://passrates.uk/guide/chichester-driving-test-centre",
+      "why": "statistics template, no road names"
+    },
+    {
+      "url": "https://drivingdata-uk.pages.dev/test-centres/chichester/",
+      "why": "statistics template, no road names"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/chichester/mock-driving-test",
+      "why": "sales template, no road names"
+    },
+    {
+      "url": "https://drivingtestpass.pages.dev/centres/chichester",
+      "why": "template, wrong address"
+    },
+    {
+      "url": "https://rateddriving.com/driving-lessons/west-sussex/chichester/",
+      "why": "page did not load"
+    },
+    {
+      "url": "https://payhip.com/b/iKQgG",
+      "why": "paid"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/chichester-driving-test-routes",
+      "why": "paid"
+    }
+  ],
+  "places": [
+    {
+      "name": "Chichester Bypass",
+      "kind": "road",
+      "map": {
+        "lat": 50.8442005,
+        "lon": -0.7550701,
+        "osm": "way/4697403"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bognor Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8288568,
+        "lon": -0.7428227,
+        "osm": "way/4409543"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Quarry Lane",
+      "kind": "road",
+      "map": {
+        "lat": 50.8298343,
+        "lon": -0.7618642,
+        "osm": "way/25016139"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whyke Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.828292,
+        "lon": -0.7671355,
+        "osm": "way/62289514"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Willowbed Drive",
+      "kind": "road",
+      "map": {
+        "lat": 50.8285617,
+        "lon": -0.7654482,
+        "osm": "way/522279655"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Willowbed Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 50.8279367,
+        "lon": -0.7658529,
+        "osm": "way/26292443"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Florence Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8346469,
+        "lon": -0.760767,
+        "osm": "way/27362530"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St James Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8388963,
+        "lon": -0.7627701,
+        "osm": "way/4693615"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Westhampnett Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8412945,
+        "lon": -0.7630011,
+        "osm": "way/1217399920"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Spitalfield Lane",
+      "kind": "road",
+      "map": {
+        "lat": 50.8414845,
+        "lon": -0.7725932,
+        "osm": "way/102033868"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Melbourne Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8404902,
+        "lon": -0.7689339,
+        "osm": "way/27420518"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Litten Terrace",
+      "kind": "road",
+      "map": {
+        "lat": 50.8395595,
+        "lon": -0.7730073,
+        "osm": "way/4790769"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Adelaide Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8408598,
+        "lon": -0.7704823,
+        "osm": "way/4790768"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Oaklands Way",
+      "kind": "road",
+      "map": {
+        "lat": 50.8407177,
+        "lon": -0.7767316,
+        "osm": "way/4811091"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Orchard Street",
+      "kind": "road",
+      "map": {
+        "lat": 50.8401899,
+        "lon": -0.7797485,
+        "osm": "way/155037939"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Westgate",
+      "kind": "road",
+      "map": {
+        "lat": 50.8366315,
+        "lon": -0.7878452,
+        "osm": "way/1480017162"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sherborne Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8440437,
+        "lon": -0.7882967,
+        "osm": "way/144986053"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Avenue de Chartres",
+      "kind": "road",
+      "map": {
+        "lat": 50.8331246,
+        "lon": -0.7811059,
+        "osm": "way/833845303"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Via Ravenna",
+      "kind": "road",
+      "map": {
+        "lat": 50.8328347,
+        "lon": -0.785267,
+        "osm": "way/133606593"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Terminus Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8308088,
+        "lon": -0.7840345,
+        "osm": "way/149115807"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stockbridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8248643,
+        "lon": -0.7874968,
+        "osm": "way/87619418"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "New Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.83863,
+        "lon": -0.7734026,
+        "osm": "way/4783265"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Hornet",
+      "kind": "road",
+      "map": {
+        "lat": 50.8362961,
+        "lon": -0.7686041,
+        "osm": "way/17088800"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Pancras",
+      "kind": "road",
+      "map": {
+        "lat": 50.8392072,
+        "lon": -0.7676353,
+        "osm": "way/670196623"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Needlemakers",
+      "kind": "road",
+      "map": {
+        "lat": 50.8364423,
+        "lon": -0.7710063,
+        "osm": "way/4680428"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Market Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 50.8334965,
+        "lon": -0.7765243,
+        "osm": "way/177432081"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Basin Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8308029,
+        "lon": -0.7805769,
+        "osm": "way/62289581"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsham Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8312436,
+        "lon": -0.7764869,
+        "osm": "way/203669708"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsham Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 50.8305757,
+        "lon": -0.7696364,
+        "osm": "way/26291969"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pound Farm Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8361901,
+        "lon": -0.7638379,
+        "osm": "way/27362594"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stane Street",
+      "kind": "road",
+      "map": {
+        "lat": 50.8545011,
+        "lon": -0.7347342,
+        "osm": "way/87784957"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Swanfield Drive",
+      "kind": "road",
+      "map": {
+        "lat": 50.8426301,
+        "lon": -0.7663334,
+        "osm": "way/4786263"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Barnfield Drive",
+      "kind": "road",
+      "map": {
+        "lat": 50.8455436,
+        "lon": -0.7579846,
+        "osm": "way/4786255"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Douglas Martin Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8417708,
+        "lon": -0.7688773,
+        "osm": "way/4701322"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cherry Orchard Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8296879,
+        "lon": -0.771036,
+        "osm": "way/26292133"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Old Broyle Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8480316,
+        "lon": -0.7895321,
+        "osm": "way/10995013"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brandy Hole Lane",
+      "kind": "road",
+      "map": {
+        "lat": 50.852956,
+        "lon": -0.7835649,
+        "osm": "way/26513729"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lavant Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8562285,
+        "lon": -0.78257,
+        "osm": "way/87610566"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Summersdale Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8513365,
+        "lon": -0.7766222,
+        "osm": "way/4691347"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Meadow Way",
+      "kind": "road",
+      "map": {
+        "lat": 50.8515255,
+        "lon": -0.7131895,
+        "osm": "way/4768227"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tangmere Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8432553,
+        "lon": -0.7259498,
+        "osm": "way/503465909"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "near the old Wyman House centre; not used for leaving or returning"
+    },
+    {
+      "name": "Shopwhyke Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8379358,
+        "lon": -0.7515952,
+        "osm": "way/71850257"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "near the old Wyman House centre; not used for leaving or returning"
+    },
+    {
+      "name": "Oving Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8357982,
+        "lon": -0.7187126,
+        "osm": "way/144902264"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "near the old Wyman House centre; not used for leaving or returning"
+    },
+    {
+      "name": "Norwich Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8475989,
+        "lon": -0.7850119,
+        "osm": "way/4693622"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Worcester Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8518281,
+        "lon": -0.7854595,
+        "osm": "way/4693624"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fordwater Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8567748,
+        "lon": -0.7742133,
+        "osm": "way/220219623"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pook Lane",
+      "kind": "road",
+      "map": {
+        "lat": 50.8738114,
+        "lon": -0.7604605,
+        "osm": "way/4474951"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highland Road",
+      "kind": "road",
+      "map": {
+        "lat": 50.8536333,
+        "lon": -0.7787,
+        "osm": "way/25990007"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [
+    "Cathedral Way",
+    "Church Road",
+    "Fishbourne Road",
+    "Lavant Straight",
+    "Salthill Road",
+    "St Pauls Road",
+    "Westhampnett Lane"
+  ],
+  "summary": "0 confirmed and 48 likely roads, 0 named junctions: every free source is one route list (copied on a second site) written for the old Wyman House centre about 3 km west, so it counts only for roads further out (Chichester city ring, Whyke, Summersdale, Bognor Road, A27 bypass). Two routes with more than half their length on likely roads look possible via Tangmere Road and the A27, but the 3-of-8 known-junction requirement is not met yet because no source names junctions for the City Fields site."
+}

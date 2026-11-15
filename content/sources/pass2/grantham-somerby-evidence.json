@@ -1,0 +1,916 @@
+{
+ "centre": "Grantham (Somerby)",
+ "status": "ok",
+ "centre_position": {
+  "lat": 52.90194,
+  "lon": -0.58734
+ },
+ "address": "Grantham (Somerby), Spitalgate Airfield, Blue Harbour, Grantham, Lincolnshire NG31 7TX",
+ "address_checked": "2026-11-15",
+ "address_note": "gov.uk live centre-finder page could not be read automatically; gov.uk impact assessment (2014) confirms the move to the former goods vehicle testing station, and an instructor page gives the NG31 7TX address. Reverse geocode of the given position lands in NG31 7TX (Cold Harbour/Old Somerby): matches.",
+ "searches": [
+  "pass 1 searches (2026-11-15), no new searches run in pass 2"
+ ],
+ "sources": [
+  {
+   "id": "s1",
+   "kind": "route-list",
+   "author": "drivingtesttips.biz",
+   "url": "https://www.drivingtesttips.biz/grantham-driving-test-routes.html",
+   "published": "unknown",
+   "read_on": "2026-11-15",
+   "first_hand": false,
+   "before_centre_moved": true,
+   "names": "routes start and end at the old Cecil Street centre; town roads listed in places"
+  },
+  {
+   "id": "s2",
+   "kind": "template",
+   "author": "intensivelessons.co.uk",
+   "url": "https://intensivelessons.co.uk/driving-test-routes/Lincolnshire/Grantham-Somerby",
+   "published": "unknown",
+   "read_on": "2026-11-15",
+   "first_hand": false,
+   "before_centre_moved": true,
+   "names": [],
+   "note": "repeats s1 routes 1 to 5 (plus more from the same old start); counted with s1, not separately"
+  },
+  {
+   "id": "s3",
+   "kind": "instructor-page",
+   "author": "Big Tom Driving School",
+   "url": "https://bigtomdrivingschool.blogspot.com/2014/01/where-is-grantham-driving-test-centre.html",
+   "published": "2014-01",
+   "read_on": "2026-11-15",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "names": [
+    "A52",
+    "A1",
+    "gradients / hill starts"
+   ]
+  },
+  {
+   "id": "s4",
+   "kind": "instructor-page",
+   "author": "jaminedriving.blogspot.com",
+   "url": "https://jaminedriving.blogspot.com/2014/01/where-is-grantham-driving-test-centre.html",
+   "published": "2014-01",
+   "read_on": "not read",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "names": [],
+   "note": "near-identical to s3 per pass 1; counts once with s3"
+  }
+ ],
+ "skipped": [
+  {
+   "url": "https://payhip.com/b/WCPK5",
+   "why": "paid"
+  },
+  {
+   "url": "https://drivingdata-uk.pages.dev/test-centres/grantham/",
+   "why": "gives old St Peter's Hill address, no roads"
+  },
+  {
+   "url": "https://drivingtestpass.pages.dev/centres/grantham",
+   "why": "no road names"
+  },
+  {
+   "url": "lincolnshire.gov.uk / granthammatters.co.uk news",
+   "why": "roundabout upgrade news, not test evidence"
+  }
+ ],
+ "excluded_old_centre_roads": [
+  "Cecil Street",
+  "Granville Street",
+  "Dudley Road",
+  "St Catherine's Road",
+  "St Anne's Street"
+ ],
+ "places": [
+  {
+   "name": "A52 Somerby Hill (centre approach and roundabout)",
+   "kind": "road",
+   "map": {
+    "lat": 52.90237,
+    "lon": -0.62582,
+    "osm": "way/228700677"
+   },
+   "sources": [
+    "s1",
+    "s3"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "name": "A1 (via Harlaxton Road and A52 roundabouts)",
+   "kind": "road",
+   "map": {
+    "lat": 52.899,
+    "lon": -0.66,
+    "osm": null
+   },
+   "sources": [
+    "s1",
+    "s3"
+   ],
+   "confidence": "confirmed",
+   "note": "position approximate; A1/A52 junction west of town"
+  },
+  {
+   "name": "Hill starts and stops on gradients near the centre",
+   "kind": "feature",
+   "map": {
+    "lat": 52.90237,
+    "lon": -0.62582,
+    "osm": "way/228700677"
+   },
+   "sources": [
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bridge End Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90412,
+    "lon": -0.63521,
+    "osm": "way/4543334"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harrowby Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.91988,
+    "lon": -0.61612,
+    "osm": "way/93800406"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harrowby Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90886,
+    "lon": -0.63256,
+    "osm": "way/156497260"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Kenilworth Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91551,
+    "lon": -0.61058,
+    "osm": "way/125227241"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Belton Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.91887,
+    "lon": -0.63664,
+    "osm": "way/388298131"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Manthorpe Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92175,
+    "lon": -0.63992,
+    "osm": "way/273780269"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Avenue Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91133,
+    "lon": -0.63913,
+    "osm": "way/24888433"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "High Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.9121,
+    "lon": -0.64222,
+    "osm": "way/8260139"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Watergate",
+   "kind": "road",
+   "map": {
+    "lat": 52.91431,
+    "lon": -0.6436,
+    "osm": "way/226715767"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Brook Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.91616,
+    "lon": -0.6421,
+    "osm": "way/126610082"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Broad Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.91594,
+    "lon": -0.6446,
+    "osm": "way/91118104"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Sandon Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91578,
+    "lon": -0.6334,
+    "osm": "way/156497269"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hill Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.91746,
+    "lon": -0.63214,
+    "osm": "way/156497262"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Signal Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91829,
+    "lon": -0.62893,
+    "osm": "way/156497270"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Alma Park Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92,
+    "lon": -0.60802,
+    "osm": "node/10107206953"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Castlegate",
+   "kind": "road",
+   "map": {
+    "lat": 52.91391,
+    "lon": -0.64026,
+    "osm": "way/156364024"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bluegate",
+   "kind": "road",
+   "map": {
+    "lat": 52.91393,
+    "lon": -0.64112,
+    "osm": "way/92243281"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Westgate",
+   "kind": "road",
+   "map": {
+    "lat": 52.91143,
+    "lon": -0.64419,
+    "osm": "way/91114772"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Wharf Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90936,
+    "lon": -0.64042,
+    "osm": "way/858334089"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harlaxton Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90281,
+    "lon": -0.65142,
+    "osm": "way/388046308"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Earlsfield Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.90521,
+    "lon": -0.65232,
+    "osm": "way/51368347"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hollis Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.9043,
+    "lon": -0.65398,
+    "osm": "way/125865164"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Derwent Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90715,
+    "lon": -0.65521,
+    "osm": "way/51368522"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Foston Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90685,
+    "lon": -0.65658,
+    "osm": "way/51368525"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Trent Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90279,
+    "lon": -0.65784,
+    "osm": "way/855318253"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Gloucester Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91384,
+    "lon": -0.66678,
+    "osm": "node/502335639"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Barrowby Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.9168,
+    "lon": -0.65805,
+    "osm": "way/4543276"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Barrowby Gate",
+   "kind": "road",
+   "map": {
+    "lat": 52.9145,
+    "lon": -0.66627,
+    "osm": "way/25458331"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Dysart Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90983,
+    "lon": -0.66117,
+    "osm": "way/874036880"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "London Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.906,
+    "lon": -0.63746,
+    "osm": "way/8429308"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Springfield Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.90326,
+    "lon": -0.63877,
+    "osm": "way/388298193"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Denton Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.89716,
+    "lon": -0.65233,
+    "osm": "way/125867961"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Rosemary Crescent",
+   "kind": "road",
+   "map": {
+    "lat": 52.89709,
+    "lon": -0.65974,
+    "osm": "way/125867970"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Kitty Briggs Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.89767,
+    "lon": -0.65742,
+    "osm": "way/125867967"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Sankt Augustin Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.90993,
+    "lon": -0.64621,
+    "osm": "way/91114755"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Finkin Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.91257,
+    "lon": -0.64145,
+    "osm": "way/92243280"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Stonebridge Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91198,
+    "lon": -0.63479,
+    "osm": "way/24888430"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Welham Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.91092,
+    "lon": -0.63738,
+    "osm": "way/92243253"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "New Beacon Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.91544,
+    "lon": -0.62775,
+    "osm": "way/156494544"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Sandcliffe Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92508,
+    "lon": -0.64102,
+    "osm": "way/156497268"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Dale Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92665,
+    "lon": -0.63943,
+    "osm": "way/156497257"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Teesdale Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.9269,
+    "lon": -0.64068,
+    "osm": "way/125528642"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Longcliffe Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.93119,
+    "lon": -0.64537,
+    "osm": "way/829775167"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Gonerby Hill",
+   "kind": "road",
+   "map": {
+    "lat": 52.92681,
+    "lon": -0.65476,
+    "osm": "node/1395222760"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "North Parade",
+   "kind": "road",
+   "map": {
+    "lat": 52.91773,
+    "lon": -0.64663,
+    "osm": "way/95016328"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "East Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.91235,
+    "lon": -0.639,
+    "osm": "way/92243267"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Gonerby Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92425,
+    "lon": -0.65414,
+    "osm": "way/125669460"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Gonerby Hill Foot",
+   "kind": "road",
+   "map": {
+    "lat": 52.92681,
+    "lon": -0.65476,
+    "osm": "node/1395222760"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hazelwood Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.92665,
+    "lon": -0.64982,
+    "osm": "way/125610488"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Cherrywood Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.92876,
+    "lon": -0.64929,
+    "osm": "way/125669453"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Vale Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92766,
+    "lon": -0.6533,
+    "osm": "way/125669482"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Cliffe Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.92763,
+    "lon": -0.65431,
+    "osm": "way/125669463"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Elmer Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.91172,
+    "lon": -0.64133,
+    "osm": "way/156364028"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harrowby Lane roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 52.91988,
+    "lon": -0.61612,
+    "osm": "way/93800406"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "position is the road's, not the junction's"
+  },
+  {
+   "name": "Wharf Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 52.90936,
+    "lon": -0.64042,
+    "osm": "way/858334089"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "position is the road's, not the junction's"
+  },
+  {
+   "name": "Barrowby Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 52.9168,
+    "lon": -0.65805,
+    "osm": "way/4543276"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "position is the road's, not the junction's"
+  },
+  {
+   "name": "Belton Lane / Manthorpe Road lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.91887,
+    "lon": -0.63664,
+    "osm": "way/388298131"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "position is the road's, not the junction's"
+  },
+  {
+   "name": "Watergate / Brook Street lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.91431,
+    "lon": -0.6436,
+    "osm": "way/226715767"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "position is the road's, not the junction's"
+  },
+  {
+   "name": "Harrowby Road lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.90886,
+    "lon": -0.63256,
+    "osm": "way/156497260"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "position is the road's, not the junction's"
+  }
+ ],
+ "unmatched": [
+  "High Dyke",
+  "Swinegate",
+  "Stevenson Avenue",
+  "Goodliffe Road",
+  "Fifth Avenue (5th Avenue)"
+ ],
+ "summary": "Confirmed: 2 roads (A52 Somerby Hill, A1); likely: 53 roads and 7 junctions/features, almost all from one old-centre route list (s1). Two routes meeting the overlap rule look possible: the town roads are within 15 minutes via the A52, but most evidence is single-source, so routes rest on likely roads and judgement."
+}
