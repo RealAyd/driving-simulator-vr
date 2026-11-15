@@ -89,7 +89,7 @@ const WAVE_AFTER=8;
 /** A background road user stood this long (seconds) blocked by a route's road user turns off. */
 const ACTOR_KNOT=8;
 /** Held by one standing background road user this long (seconds), whatever it waits for, it turns off. */
-const JAM_AFTER=45;
+export const JAM_AFTER=45;
 /** Driving back to the centre: lights this far ahead (metres) are held green for the car. */
 const RETURN_LIGHTS=120;
 /** Driving back to the centre: the road this far ahead (metres) is kept clear of traffic. */
