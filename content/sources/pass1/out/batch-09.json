@@ -1085,5 +1085,44 @@
   ],
   "moved": "Possible: one aggregator lists Buckland Road, ME16 8LA; most give South Park Business Village, Armstrong Road, ME15 6JZ (input)",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Mallaig",
+  "postcode": "PH41 4PX",
+  "tests": 46,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 1,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Highlands/Mallaig"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/mallaig-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/highland/mallaig"
+   },
+   {
+    "kind": "news",
+    "site": "pressandjournal.co.uk",
+    "url": "https://pressandjournal.co.uk/fp/news/highlands-islands/4435260/driving-tests-in-mallaig-and-western-isles-dvsa"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

@@ -1139,5 +1139,59 @@
   ],
   "moved": "One aggregator gives the older College Grove Road WF1 3RN address; current is Silkwood Park, Ossett WF5 9TR. drivingtesttips routes (Union St, Marsh Way, city centre) likely describe the older site, scored half",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Wallasey",
+  "postcode": "CH44 8AT",
+  "tests": 1276,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 3
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Merseyside/Wallasey"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/wallasey-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/merseyside/wallasey"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/wallasey/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/8oAft"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/wallasey-driving-test-routes"
+   },
+   {
+    "kind": "paid",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=3638"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

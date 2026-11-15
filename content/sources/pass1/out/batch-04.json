@@ -1239,5 +1239,74 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Crawley",
+  "postcode": "RH11 9BJ",
+  "tests": 7869,
+  "score": 8,
+  "counts": {
+   "instructor-page": 0,
+   "video": 1,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/crawley-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "video",
+    "site": "yt.dorper.me",
+    "url": "https://yt.dorper.me/v/yt/hHWt9EylmhI"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/crawley/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/crawley/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/crawley"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/crawley/"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/West-Sussex/Crawley"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22497"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/ihyG1"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/crawley-driving-test-routes"
+   }
+  ],
+  "moved": "One page gives Fleming Way (RH10 1TN), likely an older site; most give The Pavilions, Brighton Road, Pease Pottage (RH11 9BJ)",
+  "searched": "2026-11-15"
  }
 ]

@@ -1263,5 +1263,49 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Greenham",
+  "postcode": null,
+  "tests": 3566,
+  "score": 3.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newbury-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/greenham/"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/greenham/"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/driving-schools/driving-instructors-new-greenham-park/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/u7QZd"
+   }
+  ],
+  "moved": "Centre at Venture West, New Greenham Park RG19 6HX; the only free route sheets are for Newbury (Hambridge Lane), probably the predecessor centre, so they are scored as old address. Check.",
+  "searched": "2026-11-15"
  }
 ]

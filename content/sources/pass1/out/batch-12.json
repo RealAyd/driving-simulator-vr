@@ -1111,5 +1111,59 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Speke (Liverpool)",
+  "postcode": "L19 2QR",
+  "tests": 6986,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 5,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "news",
+    "site": "inkl.com",
+    "url": "https://www.inkl.com/news/we-tried-taking-a-driving-test-in-the-hardest-place-to-pass-in-liverpool"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/liverpool-speke"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/merseyside/speke-liverpool"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37568"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22318"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Merseyside/Speke-Liverpool"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/S7rmP"
+   }
+  ],
+  "moved": "Current centre is Skyhawk Avenue, Dakota Business Park L19 2QR; drivingtesttips route material describes the older Speke Road centre (L24 8QB) and the closed Garston centre",
+  "searched": "2026-11-15"
  }
 ]

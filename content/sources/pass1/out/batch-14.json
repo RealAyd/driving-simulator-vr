@@ -1364,5 +1364,49 @@
   ],
   "moved": "Most sources give Abbey Manor Business Centre, Preston Road (BA20 2EN); one gives Lysander Road (BA22 8UR); possible older address",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "York",
+  "postcode": "YO32 9GW",
+  "tests": 7121,
+  "score": 2.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/york-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/north-yorkshire/york-arabesque-house"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/york/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/LsJ5N"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/york-driving-test-routes"
+   }
+  ],
+  "moved": "The old York centre on Murton Way is reported closed; the centre is now Unit 2, Arabesque House, Monks Cross Drive, Huntington (YO32 9GW). The drivingtesttips.biz route sheets (Hull Road, Murton Way, Melrosegate) describe the old centre, and one site still lists Towthorpe Road, Haxby",
+  "searched": "2026-11-15"
  }
 ]
