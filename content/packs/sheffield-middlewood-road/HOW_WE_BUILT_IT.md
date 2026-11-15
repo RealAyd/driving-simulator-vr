@@ -24,8 +24,9 @@ positions are approximate, so each was looked up on the map:
   from Middlewood Road towards Hillsborough into Langsett Avenue, which climbs to Worrall Road. Used in route 1.
 - **Winn Gardens / Middlewood Road**: no lights; Middlewood Drive's lights are 90 m south. Route 2 leaves by it, route
   1 comes back by it.
-- **Middlewood Road / Catch Bar Lane / Leppings Lane lights**: on the map two light-controlled junctions 130 m apart
-  (Middlewood Road with Catch Bar Lane, then Catch Bar Lane with Leppings Lane). Route 1 goes ahead through the first.
+- **Middlewood Road / Catch Bar Lane / Leppings Lane lights**: on the map Leppings Lane meets Middlewood Road twice,
+  at the lights with Wadsley Lane and Parkside Road and again by Catch Bar Lane, with lights at each (150 m apart), and
+  meets Catch Bar Lane at a third set. Route 1 goes ahead through the first as its lights challenge.
 - **"Leppings Lane / Penistone Road North / Herries Road roundabout"**: on the map a large light-controlled junction,
   not a roundabout. Route 2 turns left there from Herries Road.
 - **Southey Green Road roundabouts**: the Southey Green Road / Wordsworth Avenue roundabout. Route 2.
@@ -40,8 +41,14 @@ There is no roundabout at all in route 1's area (Wadsley).
 ## 3. Choose the routes
 
 Route 1 goes west: the confirmed Langsett Avenue right turn, up to Worrall Road, Wadsley Lane (quiet, no parked cars:
-the pull-up), Dixon Road and back up Middlewood Road over a signal crossing and through the Catch Bar Lane lights, then
-right into Winn Gardens. 96% of it is on roads the sources name.
+the pull-up), Dixon Road and back up Middlewood Road over a signal crossing and through the Leppings Lane lights, then
+right into Winn Gardens. 96% of it is on roads the sources name. Trial drives with traffic showed two things: a
+background car coming down Langsett Avenue could meet the car between the parked cars and stand face to face with it
+for a minute, so background traffic is kept off Langsett Avenue while the car drives up it (as Chelmsford's St John's
+Road); and the Leppings Lane lights (a 70 s cycle) could hold the car for nearly a minute, so they are the route's lights
+challenge (held for the car), rather than the Catch Bar Lane lights 150 m on (a short cycle). The right turn back into
+Winn Gardens is decided in position, stopped: traffic on Middlewood Road could hold the car short of the turn, and a
+pause on the move then came with the black car already gone by.
 
 Route 2 goes east: Middlewood Road, Catch Bar Lane, Parkside Road on to Penistone Road, Halifax Road, Southey Green Road
 and its roundabout, Wordsworth Avenue (no side roads and no parked cars for 440 m: the pull-up), right on to Herries

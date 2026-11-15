@@ -17,7 +17,7 @@ const PAUSES:Record<string,string[]>={
     'wadsley-pull-up/approach','wadsley-pull-up/stopped',
     'wadsley-move-off/check','wadsley-move-off/clear',
     'middlewood-crossing/approach','middlewood-crossing/clear',
-    'catch-bar-lights/approach','catch-bar-lights/clear',
+    'leppings-lights/approach','leppings-lights/clear',
     'winn-gardens-right/approach','winn-gardens-right/clear'],
   'sheffield-middlewood-road-2':['leave-test-centre/approach','leave-test-centre/clear',
     'parkside-lights/approach','parkside-lights/green','parkside-lights/clear',
@@ -64,7 +64,7 @@ describe('Sheffield (Middlewood Road) decision challenges as authored',()=>{
   // (Two hazards at one place: someone on the footway then a car (leaving the car park); red lights then someone
   // crossing on green (Leppings Lane).)
   const third=new Set(['leave-test-centre','parkside-lights']);
-  const ahead=new Set(['middlewood-crossing','catch-bar-lights']);
+  const ahead=new Set(['middlewood-crossing','leppings-lights']);
   for(const route of ROUTES)for(const c of route.challenges){
     it(`${route.id} ${c.id}: accepted orders fault-free, every button known, every button pressed fails, turns show both signals and all mirrors`,()=>{
       for(const st of c.stages)for(const seq of st.accepted)expect(assessStage(c,st.id,seq).faults,`${st.id}: ${seq.join(', ')}`).toEqual([]);

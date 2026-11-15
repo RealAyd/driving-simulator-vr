@@ -9,8 +9,8 @@ import {HOME_CAR,LANGSETT_CAR,TC_CAR,WADSLEY_CAR,WORRALL_CAR} from './sheffieldM
  * Sheffield (Middlewood Road) route 1, Langsett Avenue and Wadsley: eight challenges from the test centre at 508
  * Middlewood Road (its car park off Winn Gardens), right out of the car park, left on to Middlewood Road, right up
  * Langsett Avenue (the right turn local instructors name), left on to Worrall Road, along Wadsley Lane (pulling up and
- * moving off), Dixon Road, and back up Middlewood Road over the signal crossing and through the Catch Bar Lane lights,
- * right into Winn Gardens. Chosen from the map and published route information
+ * moving off), Dixon Road, and back up Middlewood Road over the signal crossing, through the Leppings Lane and Catch Bar
+ * Lane lights, and right into Winn Gardens. Chosen from the map and published route information
  * (content/packs/sheffield-middlewood-road/ROUTES.md). Scene sheffield-middlewood-road-route-1 (OpenStreetMap). A
  * practice route, not a confirmed test route.
  */
@@ -39,10 +39,12 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'At the top of Langsett Avenue.'}},
   'middlewood-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(498.7,526)},lights:'red',when:{actor:'crossing-pedestrian',at:p(499.6,490.8)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
     state:'On Middlewood Road, the signal crossing ahead. The lights are red.'}},
-  'catch-bar-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(459.6,188.7)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
-    state:'Approaching the Catch Bar Lane lights. They are red.'}},
-  'winn-gardens-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(-77.1,-530)},when:{actor:'home-car',at:p(-111,-581.4)},frame:{yaw:0,pitch:44,shift:-4},
-    state:'On Middlewood Road, Winn Gardens just ahead on the right.'}}
+  'leppings-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(491.2,368.8)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
+    state:'Approaching the Leppings Lane lights. They are red.'}},
+  // (Stopped in position: Middlewood Road's traffic can hold the car short of the turn, and the black car is then
+  // still to be waited for.)
+  'winn-gardens-right':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(-89.3,-547.1)},when:{actor:'home-car',at:p(-111,-581.4)},frame:{yaw:0,pitch:44,shift:-4},
+    state:'In position to turn right into Winn Gardens.'}}
 };
 
 export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
@@ -52,8 +54,8 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
   briefing:'Sheffield (Middlewood Road) route 1: decisions only\n\nThe car drives itself. At each challenge the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nBased on the roads round this test centre. Your test route may differ. Built from OpenStreetMap data; the app\'s assessment, not a DVSA result.',
   start:{x:-71.8,z:-616.6,headingDeg:144.8},
   // The test centre's car park, Winn Gardens, Middlewood Road, Langsett Avenue, Worrall Road, Wadsley Lane (pulling up
-  // and moving off), Dixon Road, Middlewood Road over the crossing and through the Catch Bar Lane lights, Winn Gardens
-  // and back into the car park.
+  // and moving off), Dixon Road, Middlewood Road over the crossing and through the Leppings Lane and Catch Bar Lane
+  // lights, Winn Gardens and back into the car park.
   through:pts([[-17,-447],[-70,-317],[-444,-104],[-522,74],[-46,266],[251,332],[439,651],[502,500],[469,220],[-47,-492],[-69,-612.5]]),
   // Pulled in to the kerb on Wadsley Lane, past Braemore Road (no cars parked along this stretch).
   // (And a little wide of the corner turning back into the car park, not over its footway.)
@@ -153,8 +155,11 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       instructAt:p(-3.2,-429),
       starts:[{actor:'langsett-car',at:p(-3.2,-429),delay:0}],
       endAt:p(44.2,-334.5),
-      // The junction, Middlewood Road ahead, where the blue car comes from, and the mouth of Langsett Avenue.
-      quiet:[{x:52,z:-345,radius:28},{x:85,z:-295,radius:40},{x:25,z:-332,radius:22}],
+      // (Kept quiet up Langsett Avenue: with cars parked along both kerbs, there is little room to meet traffic on it.)
+      quietUntil:p(-420.5,-128.3),
+      // The junction, Middlewood Road ahead, where the blue car comes from, and Langsett Avenue up to Worrall Road.
+      quiet:[{x:52,z:-345,radius:28},{x:85,z:-295,radius:40},{x:7,z:-329,radius:40},{x:-72,z:-314,radius:45},{x:-148,z:-292,radius:45},
+        {x:-220,z:-258,radius:45},{x:-289,z:-218,radius:45},{x:-357,z:-176,radius:45},{x:-420,z:-128,radius:45}],
       place:{
         approach:{pause:{kind:'moving',at:p(32,-378)},frame:{yaw:0,pitch:20},state:'On Middlewood Road at 30 mph, Langsett Avenue ahead on the right.'},
         centre:{pause:{kind:'stop',at:p(52.8,-348.6)},when:{actor:'langsett-car',at:p(75.2,-309.2)},frame:{yaw:0,pitch:32},
@@ -450,19 +455,20 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       ]
     },
     {
-      id:'catch-bar-lights',
+      id:'leppings-lights',
       title:'Traffic lights, ahead',
-      where:'Middlewood Road at the Catch Bar Lane lights, ahead',
+      where:'Middlewood Road at the Leppings Lane and Parkside Road lights, ahead',
       instruction:'At the traffic lights, follow the road ahead, please.',
-      instructAt:p(471,242.4),
+      instructAt:p(499.2,420.1),
       starts:[],
-      lights:p(444.2,155.5),
-      endAt:p(426.9,133.2),
-      quiet:[{x:440,z:150,radius:34}],
+      lights:p(484.6,333.4),
+      endAt:p(473,257.3),
+      // The junction, and the mouth of Leppings Lane just beyond it on the right.
+      quiet:[{x:484,z:310,radius:36},{x:478,z:282,radius:22}],
       place:{
-        approach:{pause:{kind:'moving',at:p(459.6,188.7)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 30 mph.'},
-        line:{pause:{kind:'stop',at:p(446.8,159.5)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
-        clear:{pause:{kind:'stop',at:p(446.8,159.5)},lights:'red',frame:{yaw:0,pitch:28},state:'At the stop line. The lights have turned green.'}
+        approach:{pause:{kind:'moving',at:p(491.2,368.8)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 30 mph.'},
+        line:{pause:{kind:'stop',at:p(485.7,338.1)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
+        clear:{pause:{kind:'stop',at:p(485.7,338.1)},lights:'red',frame:{yaw:0,pitch:28},state:'At the stop line. The lights have turned green.'}
       },
       stages:[
         {
@@ -475,9 +481,9 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
             {kind:'required',id:'no-slowing',anyOf:['slow-down','give-way'],fault:{level:'serious',heading:'Response to signals - traffic lights',title:'Did not slow for the red light',
               message:'The lights were red. Slow down in good time to stop at the line.'}},
             {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'dangerous',heading:'Response to signals - traffic lights',title:'Sped up at a red light',
-              message:'The lights were red. Speeding up to get through puts the traffic coming out of Catch Bar Lane, and anyone crossing, at risk.'}},
+              message:'The lights were red. Speeding up to get through puts the traffic coming out of Wadsley Lane and Parkside Road, and anyone crossing, at risk.'}},
             {kind:'distractor',id:'signal-right',action:'signal-right',fault:{level:'serious',heading:'Signals - correctly',title:'Signal for a turn you are not making',
-              message:'You are following the road ahead: a right signal says you are turning into Catch Bar Lane.'}},
+              message:'You are following the road ahead: a right signal says you are turning into Parkside Road.'}},
             {kind:'distractor',id:'horn',action:'horn',fault:HORN}
           ],
           accepted:[['mirror-interior','slow-down'],['mirror-interior','mirror-left','slow-down']],
@@ -502,7 +508,7 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
           neutral:['mirror-interior'],
           rules:[
             {kind:'required',id:'check-junction',anyOf:['look-right','look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check before going',
-              message:'Green means go only if the way is clear. Look across the junction for anyone late through the lights from Catch Bar Lane, or still crossing, before you go.'}},
+              message:'Green means go only if the way is clear. Look across the junction for anyone late through the lights from Wadsley Lane or Parkside Road, or still crossing, before you go.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Waited at a green light',
               message:'The lights were green and the junction was clear: this was the time to go.'}}
           ],
@@ -519,7 +525,8 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       where:'Middlewood Road, right into Winn Gardens',
       instruction:'Take the next road on the right, please.',
       instructAt:p(-42.4,-481),
-      starts:[{actor:'home-car',at:p(-42.4,-481),delay:0}],
+      // (Set going late, so it comes down Middlewood Road as the car stops in position, not before.)
+      starts:[{actor:'home-car',at:p(-77.1,-530),delay:0}],
       endAt:p(-80.7,-564.6),
       // The junction, Middlewood Road ahead, where the black car comes from, and the mouth of Winn Gardens.
       quiet:[{x:-90,z:-550,radius:26},{x:-120,z:-590,radius:36},{x:-75,z:-566,radius:20}],

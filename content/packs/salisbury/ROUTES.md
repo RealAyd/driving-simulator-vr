@@ -96,6 +96,12 @@ oncoming traffic (8) takes its place; route 1 has the emerging left turn. Spacin
 the way back from that side; route 1's challenges there are the London Road crossing and the turn off Kelsey Road,
 route 2's the turn off Wain-a-long Road into Manor Road.
 
+**Checks** (`tests/unit/decisionDrive.salisbury.test.ts`, 59 tests): the shared authoring rules for every challenge;
+both routes driven headless with the right answers to a pass, every pause as depicted, nothing hit, no red light run,
+on the road throughout and back on Rougemont Close; the same with 30 background road users in patterns 4 and 14
+(longest stand 26 s and 25 s on route 1, 42 s and 38 s on route 2, at the city lights by Minster Street); and with Skip
+ahead pressed whenever offered (route 1: 4 skips, 587 s driven; route 2: 3 skips, 389 s).
+
 ## Open items
 
 - The centre's own way in and out (the driveway on to Manor Road is not built).

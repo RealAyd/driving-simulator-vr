@@ -62,9 +62,10 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBefo
   through:pts([[-792,-607],[-546,-252],[-274,22],[-155,110],[-5,210],[-47,-585],[350,-962],[626,-933],[797,-661],[562,-179],[19,-326],[43,-79],
     [175,806],[5,908],[-191,911],[-273,340],[-571,-283],[-822,-652],[-844,-772.8]]),
   // Pulled in to the kerb on Wordsworth Avenue (no cars parked, and no side roads, along this stretch).
-  // (And a little wide of the corners turning right into Southey Green Road and on to Middlewood Road at Hillsborough,
-  // as drivers do, not over their footways.)
-  shifts:[{from:p(789.9,-604.9),to:p(787.6,-590.1),left:.35},{from:p(392,-1000),to:p(428,-991),left:.9},{from:p(-76,993),to:p(-108,993),left:1.2}],
+  // (And a little wide of the corners turning right into Southey Green Road, on to Middlewood Road at Hillsborough and
+  // back into the car park, as drivers do, not over their footways.)
+  shifts:[{from:p(789.9,-604.9),to:p(787.6,-590.1),left:.35},{from:p(392,-1000),to:p(428,-991),left:.9},{from:p(-76,993),to:p(-108,993),left:1.2},
+    {from:p(-838,-738),to:p(-832,-751),left:-.7}],
   actors:[
     {id:'mwr-car',name:'silver car',colour:'#b8bcc2',speed:11,path:pts(MWR_CAR)},
     // On the crossing over the slip to Penistone Road, left to right, as the lights turn green.
@@ -469,7 +470,7 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBefo
       starts:[{actor:'herries-car',at:p(722.3,-360.1),delay:0}],
       endAt:p(668.5,-271.3),
       // The junction, Herries Road to the right, where the black car comes from, and to the left.
-      quiet:[{x:707,z:-294,radius:26},{x:675,z:-275,radius:34},{x:735,z:-300,radius:26}],
+      quiet:[{x:707,z:-294,radius:30},{x:672,z:-276,radius:40},{x:745,z:-302,radius:40},{x:708,z:-325,radius:24}],
       place:{
         approach:{pause:{kind:'moving',at:p(706.2,-323.8)},frame:{yaw:0,pitch:22},state:'Approaching the end of Wordsworth Avenue at 20 mph.'},
         line:{pause:{kind:'stop',at:p(707.4,-301)},when:{actor:'herries-car',at:p(688.3,-286)},frame:{yaw:-70,pitch:26},state:'At the give way line.'},
@@ -539,8 +540,8 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBefo
       quiet:[{x:-30,z:-345,radius:34}],
       place:{
         approach:{pause:{kind:'moving',at:p(5.8,-333.7)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 30 mph.'},
-        line:{pause:{kind:'stop',at:p(-21.6,-352.1)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
-        clear:{pause:{kind:'stop',at:p(-21.6,-352.1)},lights:'red',frame:{yaw:15,pitch:28},state:'At the stop line. The lights have turned green.'}
+        line:{pause:{kind:'stop',at:p(-20.6,-350.3)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
+        clear:{pause:{kind:'stop',at:p(-20.6,-350.3)},lights:'red',frame:{yaw:15,pitch:28},state:'At the stop line. The lights have turned green.'}
       },
       stages:[
         {

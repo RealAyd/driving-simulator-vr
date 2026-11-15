@@ -16,8 +16,8 @@ address was taken from directory listings; gov.uk could not be read automaticall
 
 Car park, right on to Winn Gardens, left on to Middlewood Road, right up Langsett Avenue, left on to Worrall Road,
 Wadsley Lane (pulling up and moving off), right into Dixon Road, left at the lights on to Middlewood Road, over the
-signal crossing by Lennox Road, through the Wadsley Lane and Catch Bar Lane lights, right into Winn Gardens and left into
-the car park.
+signal crossing by Lennox Road, through the Leppings Lane and Catch Bar Lane lights, right into Winn Gardens and left
+into the car park.
 
 | # | Challenge | Road users | Right answer |
 |---|---|---|---|
@@ -27,12 +27,14 @@ the car park.
 | 4 | Pull up on Wadsley Lane, past Braemore Road | | Choose well past Braemore Road, mirrors, signal; handbrake, neutral, cancel signal |
 | 5 | Move off | A grey car coming along Wadsley Lane behind | Mirrors, wait; mirror and blind spot, go |
 | 6 | Middlewood Road signal crossing by Lennox Road | Red; a pedestrian stepping out from the left | Interior mirror, slow down; wait at the line; on green, check the crossing both ways, go |
-| 7 | Catch Bar Lane lights on Middlewood Road, ahead (known junction) | Red as you approach | Interior mirror, slow down; wait; on green, look across the junction, go |
-| 8 | Middlewood Road, right into Winn Gardens, back to the centre (known junction) | A black car coming down Middlewood Road | Mirrors, signal right, position; wait; look into Winn Gardens, go |
+| 7 | Leppings Lane lights on Middlewood Road (Wadsley Lane, Parkside Road and Leppings Lane meet it), ahead (known junction: the lights the sources name with Catch Bar Lane) | Red as you approach | Interior mirror, slow down; wait; on green, look across the junction, go |
+| 8 | Middlewood Road, right into Winn Gardens, back to the centre (known junction) | A black car coming down Middlewood Road | In position: mirrors, signal right; wait; look into Winn Gardens, go |
 
 No roundabout lies in this route's area (Wadsley and Hillsborough's west side): the second right turn across traffic
-(challenge 8) stands in for it, and route 2 has two roundabouts. The Dixon Road lights (left on to Middlewood Road) and
-the Wadsley Lane lights are driven through, not challenges.
+(challenge 8) stands in for it. The Dixon Road lights (left on to Middlewood Road) and the Catch Bar Lane lights are
+driven through, not challenges. The signal crossing (6) and the Leppings Lane lights (7) are 160 m apart, closer than the
+template's 300 m: the Leppings Lane lights hold the car for up to a minute on their own cycle, so they are taken as a
+challenge (held for the car), and the crossing is the only signal crossing on this side.
 
 ## Route 2: Parkside and Southey Green (scene `sheffield-middlewood-road-route-2`, 8.7 km)
 
@@ -69,12 +71,14 @@ and Owlerton with long cycles, and only the way back to the centre is held green
 | Length | 4.0 km | 8.7 km |
 | On confirmed or likely roads | 3.88 km, 96% (Middlewood Road 1.65, Langsett Avenue 0.71, Wadsley Lane 0.54, Worrall Road 0.46, Dixon Road 0.42, Winn Gardens 0.10) | 7.15 km, 82% (Middlewood Road 2.77, Penistone Road North 1.44, Herries Road 0.90, Wordsworth Avenue 0.59, Southey Green Road 0.41, Halifax Road 0.38, Parkside Road 0.28, Catch Bar Lane 0.26, Winn Gardens 0.10) |
 | Not named by any source | the car park road (0.08 km) | Penistone Road south of Herries Road (0.73), Bradfield Road (0.29), Owlerton Green (0.14), the car park road, roundabout and link pieces |
-| Challenges at known junctions | 3 of 8: Langsett Avenue right turn (confirmed), Catch Bar Lane lights, Winn Gardens / Middlewood Road | 3 of 8: Winn Gardens / Middlewood Road, the Southey Green Road roundabout, the Herries Road / Penistone Road North junction |
+| Challenges at known junctions | 3 of 8: Langsett Avenue right turn (confirmed), the Leppings Lane lights on Middlewood Road, Winn Gardens / Middlewood Road | 3 of 8: Winn Gardens / Middlewood Road, the Southey Green Road roundabout, the Herries Road / Penistone Road North junction |
 | Leaves | West (Langsett Avenue, Wadsley) | South-east, then north-east (Parkside, Parson Cross) |
 
 Known junctions (evidence file): 8. Used by the two routes together: 5 (Langsett Avenue, Winn Gardens, the Middlewood
-Road / Catch Bar Lane lights, the Herries Road / Penistone Road North junction, the Southey Green Road roundabout); route
-2 also drives through the Catch Bar Lane / Leppings Lane lights and, ahead, the Leppings Lane / Herries Road junction.
+Road / Catch Bar Lane / Leppings Lane lights (on the map two sets 150 m apart, Leppings Lane at the first and Catch Bar
+Lane at the second: route 1's challenge is at the first), the Herries Road / Penistone Road North junction, the Southey
+Green Road roundabout); route 2 also drives through the Catch Bar Lane / Leppings Lane lights and, ahead, the Leppings
+Lane / Herries Road junction.
 Not used: the Herries Road / Moonshine Lane roundabout and the Wordsworth Avenue / Deerlands Avenue / Chaucer Road
 roundabouts (2 to 2.5 km east: a scene that also holds the centre cannot reach them with the rest of a route; a third
 route could take them), and the "Halifax Road / Penistone Road North roundabout" (no roundabout there on the map). So 5
