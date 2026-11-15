@@ -625,15 +625,15 @@
   "name": "Ashford (Kent)",
   "postcode": "TN23 1HU",
   "tests": 3504,
-  "score": 7,
+  "score": 6,
   "counts": {
    "instructor-page": 0,
    "video": 0,
    "learner": 0,
    "route-list": 2,
-   "template": 5,
+   "template": 4,
    "news": 0,
-   "paid": 1
+   "paid": 2
   },
   "sources": [
    {
@@ -682,7 +682,7 @@
     "url": "https://www.veygo.com/?p=37375"
    },
    {
-    "kind": "template",
+    "kind": "paid",
     "site": "rhubarb-whale-39k8.squarespace.com",
     "url": "https://rhubarb-whale-39k8.squarespace.com/ashford-kent-driving-test-routes"
    },
@@ -693,6 +693,388 @@
    }
   ],
   "moved": "Sources disagree on the address: Civic Centre, Tannery Lane (TN23 1PL) vs Javelin Way (TN24 8AA); input postcode is TN23 1HU",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ashford (London Middlesex)",
+  "postcode": "TW15 2PJ",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/ashford-middlesex-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ashford-middlesex-driving-test-routes-7-9.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/ashford-middlesex-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Ashford-London-Middlesex"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/surrey/ashford-london-middlesex"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/ashford-middlesex/"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/surrey/ashford/"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/driving-schools/driving-instructors-ashford-spelthorne/"
+   }
+  ],
+  "moved": "Listings say the centre closed on 11 April 2022 (nearest: Chertsey, Uxbridge, Slough); route pages predate the closure, scored at half",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Atherton (Manchester)",
+  "postcode": "M46 0SU",
+  "tests": 7690,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 6,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-manchester/atherton-manchester"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/atherton"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/atherton/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/intensive-driving-course/atherton/"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/atherton/"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/atherton-manchester/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/Mu75I"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/atherton-manchester-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Aylesbury",
+  "postcode": "HP19 8JR",
+  "tests": 5864,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/aylesbury-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/aylesbury-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/aylesbury-driving-test-routes-11-12.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/aylesbury-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Buckinghamshire/Aylesbury"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/aylesbury/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/buckinghamshire/aylesbury"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/2ocFW"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/aylesbury-driving-test-routes"
+   }
+  ],
+  "moved": "Free route sheets start and end around Walton Road / Walton Grove, possibly an older site; current centre is Bell Business Park (HP19 8JR)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ayr",
+  "postcode": "KA8 9DJ",
+  "tests": 2015,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ayr-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ayr-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/driving-test-routes/ayr-driving-test-routes-11-15.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Ayrshire/Ayr"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22384"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/south-ayrshire/ayr"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/ayr/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/d9KYF"
+   }
+  ],
+  "moved": "Sources disagree on address: 40 Boundary Road, Heathfield (KA8 9DJ/9DN) vs Whitletts Road (KA7 2SA / KA8 0JE), possibly an older site",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Bala",
+  "postcode": "LL23 7SP",
+  "tests": 574,
+  "score": 2,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 1,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/bala-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/bala-driving-test-routes-5-7.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/gwynedd/bala"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ballachulish",
+  "postcode": "PH49 4HP",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ballachulish-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/ballachulish"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Inverness/Ballachulish"
+   }
+  ],
+  "moved": "One source says Ballachulish's nearest practical test centre is Fort William; pass-rate data stops at 2015-16, so the centre may no longer run regular tests",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ballater",
+  "postcode": "AB35 5QW",
+  "tests": 166,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ballater-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Aberdeenshire/Ballater"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/aberdeenshire/ballater"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/ballater"
+   },
+   {
+    "kind": "news",
+    "site": "pressandjournal.co.uk",
+    "url": "https://pressandjournal.co.uk/fp/lifestyle/6465254/aberdeen-driving-instructors-on-passing-the-test"
+   }
+  ],
+  "moved": "Sites give different addresses (Anderson Road; The Lecture Room); unclear which is current",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ballymena",
+  "postcode": "BT42 3ER",
+  "tests": 0,
+  "score": 2,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/ballymena"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Antrim/Ballymena"
+   }
+  ],
+  "moved": "One aggregator places the centre on Wellington Street (BT43 6AD), likely an older address; others give Pennybridge Ind Estate (BT42 3ER)",
   "searched": "2026-11-15"
  }
 ]

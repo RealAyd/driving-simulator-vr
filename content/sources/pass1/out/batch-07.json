@@ -779,5 +779,319 @@
   ],
   "moved": "Sources give several addresses (Cressex Road HP12 3TD, Cliveden Office Village Lancaster Road, London Road HP11 1LH, Regus Kingsmead Business Park); route sheets may describe an older site",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Hinckley",
+  "postcode": "LE10 2TG",
+  "tests": 3465,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/hinckley-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/hinckley-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Leicestershire/Hinckley"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/hinckley/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/leicestershire/hinckley"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/test-centres/practical/leicestershire-driving-test-centre/hinckley/"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Hornchurch (London)",
+  "postcode": "RM12 6JX",
+  "tests": 6310,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/hornchurch-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/hornchurch-london"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/elm-park/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/hornchurch/"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Greater-London/Hornchurch-London"
+   },
+   {
+    "kind": "template",
+    "site": "booklearnpass.co.uk",
+    "url": "https://booklearnpass.co.uk/?p=1417"
+   },
+   {
+    "kind": "template",
+    "site": "hornchurchdrivingtestcentreusa.blogspot.com",
+    "url": "https://hornchurchdrivingtestcentreusa.blogspot.com/2025/11/hornchurch-driving-test-centre-overview.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/nLjVF"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Horsforth",
+  "postcode": "LS18 5NY",
+  "tests": 11935,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/horsforth-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/West-Yorkshire/Horsforth"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/west-yorkshire/horsforth"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/horsforth/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/yorkshire/horsforth/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/VlYRS"
+   }
+  ],
+  "moved": "Sources disagree on the address: Woodside House, 261 Low Lane LS18 5NY vs Horsforth School, Lee Lane East LS18 5RF",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Huddersfield",
+  "postcode": "HD2 1HJ",
+  "tests": 9223,
+  "score": 3.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/huddersfield-driving-test-routes.html",
+    "old_address": true
+   },
+   {
+    "kind": "news",
+    "site": "examinerlive.co.uk",
+    "url": "https://www.examinerlive.co.uk/news/west-yorkshire-news/driving-test-huddersfield-fail-route-9631238.amp"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/West-Yorkshire/Huddersfield"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/huddersfield/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/F3mAU"
+   }
+  ],
+  "moved": "Some pages give Waverley House, Waverley Road HD1 5NA (or Leeds Road HD1 6QQ); the current centre is The Chestnut Centre, Sheepridge HD2 1HJ. drivingtesttips.biz route sheets use roads near Waverley Road, so scored at half",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Hull",
+  "postcode": "HU6 7PY",
+  "tests": 9439,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/hull-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/east-yorkshire/hull"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/newington/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/GhHJv"
+   }
+  ],
+  "moved": "Sources disagree on the address: Reservoir Road HU6 7PY vs Ennerdale, Bransholme HU7 4JQ",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Huntly",
+  "postcode": "AB54 8JX",
+  "tests": 232,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/huntly-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Aberdeenshire/Huntly"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/aberdeenshire/huntly"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37607"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Hydebank",
+  "postcode": "BT8 8JL",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 0,
+   "template": 1,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "learner",
+    "site": "reddit.com",
+    "url": "https://reddit.birdcat.cafe/r/Belfast/comments/1jp0koy/hydebank_driving_test"
+   },
+   {
+    "kind": "news",
+    "site": "infrastructure-ni.gov.uk",
+    "url": "https://www.infrastructure-ni.gov.uk/publications/dfi2023-0170-foi-request-copies-all-maps-associated-information-current-full-list-driving-test-routes-all-dvas-driving-test-centres-northern-ireland-including-new-test-centre-hydebank"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Down/Hydebank"
+   }
+  ],
+  "moved": "Hydebank is described as a new DVA test centre (DfI FOI 2023-0170); no older address seen",
+  "searched": "2026-11-15"
  }
 ]

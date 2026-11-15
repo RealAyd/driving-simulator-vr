@@ -551,5 +551,333 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Lochgilphead",
+  "postcode": "PA31 8QX",
+  "tests": 144,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 1,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Argyll-and-Bute/Lochgilphead"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lochgilphead-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/argyll-and-bute/lochgilphead"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Londonderry (Altnagelvin)",
+  "postcode": "BT47 2ED",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 2,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Londonderry/Altnagelvin"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/londonderry-driving-test-centre.html"
+   },
+   {
+    "kind": "news",
+    "site": "ballymenatimes.com",
+    "url": "https://ballymenatimes.com/news/environment/new-driving-test-centre-in-city-2722717"
+   },
+   {
+    "kind": "news",
+    "site": "derrydaily.net",
+    "url": "https://www.derrydaily.net/2022/03/08/durkan-welcomes-improvements-to-increase-derrys-driving-test-availability"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Londonderry (Newbuildings)",
+  "postcode": "BT47 2SX",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/nGoIL"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Londonderry/Ballyore"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/londonderry-driving-test-centre.html"
+   },
+   {
+    "kind": "news",
+    "site": "derryjournal.com",
+    "url": "https://derryjournal.com/news/politics/average-waiting-time-for-driving-test-appointments-at-derry-test-centres-revealed-4576200"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Loughborough",
+  "postcode": "LE11 1JP",
+  "tests": 5769,
+  "score": 10,
+  "counts": {
+   "instructor-page": 2,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Leicestershire/Loughborough"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/loughborough-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/QvuTV"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/loughborough-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/loughborough/mock-driving-test"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22306"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "4frontdrivingschool.blogspot.com",
+    "url": "https://4frontdrivingschool.blogspot.com/2020/01/roundabouts.html"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-leicester"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/loughborough"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/loughborough/"
+   }
+  ],
+  "moved": "Unclear: some listings give Epinal Way (LE11 3GE) or Forest Road (LE11 3NS); others give Ark Business Centre, Gordon Road, LE11 1JP (matches input)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Loughton (London)",
+  "postcode": "IG10 1RB",
+  "tests": 6009,
+  "score": 8,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Essex/Loughton-London"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/loughton-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/QMzSU"
+   },
+   {
+    "kind": "template",
+    "site": "loughtondrivingtestcentreuk.blogspot.com",
+    "url": "https://loughtondrivingtestcentreuk.blogspot.com/2025/11/how-to-pass-at-loughton-driving-test.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/loughton/mock-driving-test"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22079"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/essex/loughton"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/test-centres/practical/greater-london-driving-test-centres/loughton/"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Louth",
+  "postcode": "LN11 8RS",
+  "tests": 829,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lincolnshire/Louth"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/louth-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/louth/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/lincolnshire/louth"
+   }
+  ],
+  "moved": "Possible: a listing gives Fairfield Industrial Estate, Newbridge Hill, LN11 0LZ, not the input postcode LN11 8RS; route pages may describe an older site",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Lowestoft(Mobbs Way)",
+  "postcode": "NR32 3AL",
+  "tests": 4921,
+  "score": 6,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 1,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Suffolk/Lowestoft-Mobbs-Way"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lowestoft-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/cjxFI"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22414"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/suffolk/lowestoftmobbs-way"
+   },
+   {
+    "kind": "news",
+    "site": "lowestoftjournal.co.uk",
+    "url": "https://www.lowestoftjournal.co.uk/news/new-driving-test-centre-to-open-in-lowestoft-362708"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]
