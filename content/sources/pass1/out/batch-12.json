@@ -1165,5 +1165,64 @@
   ],
   "moved": "Current centre is Skyhawk Avenue, Dakota Business Park L19 2QR; drivingtesttips route material describes the older Speke Road centre (L24 8QB) and the closed Garston centre",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "St Albans",
+  "postcode": "AL1 3JX",
+  "tests": 6881,
+  "score": 8,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "instructor-page",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/hertfordshire/st-albans/colney-heath/"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Hertfordshire/St-Albans"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/st-albans-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/st-albans/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/hertfordshire/st-albans"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/st-albans"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/st-albans"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/S6IAH"
+   }
+  ],
+  "moved": "One page gives Griffiths Way; most use Beauver House, 6 Bricket Road AL1 3JX",
+  "searched": "2026-11-15"
  }
 ]

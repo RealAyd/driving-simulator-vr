@@ -1124,5 +1124,34 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Mallusk",
+  "postcode": "BT36 4YY",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 1,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-belfast"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "acclaimdriving.com",
+    "url": "https://www.acclaimdriving.com/Newtownabbey driving lessons"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

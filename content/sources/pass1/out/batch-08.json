@@ -1221,5 +1221,69 @@
   ],
   "moved": "One source gives Pennygillam Industrial Estate (PL15 7ED); most give Sheers Barton Barns, Lawhitton (PL15 9NJ). Route lists may predate the move.",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Lee On The Solent",
+  "postcode": "PO13 9JY",
+  "tests": 10409,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 6,
+   "news": 1,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "news",
+    "site": "portsmouth.co.uk",
+    "url": "https://www.portsmouth.co.uk/news/people/lee-on-the-solent-driving-test-centre-named-among-easiest-in-the-uk-find-out-why-3510165"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/hampshire/lee-on-the-solent"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/lee-on-the-solent/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/hampshire/fareham/lee-on-the-solent/"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lee-on-the-solent-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/lee-on-the-solent"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Hampshire/Lee-On-The-Solent"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/DwIKm"
+   },
+   {
+    "kind": "paid",
+    "site": "farbonvm.pages.dev",
+    "url": "https://farbonvm.pages.dev/lee-on-the-solent-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]
