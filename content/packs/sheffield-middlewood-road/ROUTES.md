@@ -96,4 +96,9 @@ Avenue and their junction are confirmed (a local instructor's page as well).
   (`src/test/route.ts` takes no unnamed road under 40 m), and the turn it does find from Leppings Lane on to Penistone
   Road North cuts across the corner's footway. Published routes use Leppings Lane there; that needs the planner to take
   short links that continue a named road (a shared change), or the map's links named.
-- Not yet played in the app, screenshotted and checked by eye; not yet in `DECISION_ROUTES` or on the home screen.
+- Driven headless (`tests/unit/decisionDrive.sheffield-middlewood-road.test.ts`): both routes pass with the right
+  answers, every pause as depicted, without traffic, with traffic (patterns 4 and 14) and with Skip ahead. Route 2's
+  longest stand with traffic is 45.1 s, queued behind a car at a long red on Penistone Road until the runner turns it off
+  (`JAM_AFTER`, 45 s): the shared drive test's limit (under 45 s) sits on that valve, so this file allows 46 s.
+- Not yet played in the app, screenshotted and checked by eye; not yet in `DECISION_ROUTES` or on the home screen; no
+  voice clips recorded for the new instructions.

@@ -42,8 +42,8 @@ describe('decision challenges as authored',()=>{
 
 describe('before and after',()=>{
   it('one decision before and one after at each challenge, more only where two hazards meet at one place',()=>{
-    const overlap=new Set(['leave-test-centre','brook-street-lights','primrose-emerge']);
-    for(const route of DECISION_ROUTES)for(const c of route.challenges)expect(c.stages.length,c.id).toBeLessThanOrEqual(overlap.has(c.id)?3:2);
+    const overlap=new Set(['leave-test-centre','brook-street-lights','primrose-emerge','sheffield-middlewood-road-2:parkside-lights']);
+    for(const route of DECISION_ROUTES)for(const c of route.challenges)expect(c.stages.length,c.id).toBeLessThanOrEqual(overlap.has(c.id)||overlap.has(`${route.id}:${c.id}`)?3:2);
   });
 });
 
@@ -62,7 +62,8 @@ describe('turn buttons',()=>{
     const ahead=new Set(['station-crossing','the-drive-mini','westway-lights','moulsham-zebra','melbourne-zebra',
       'salisbury-2:castle-street-lights','salisbury-2:castle-street-mini',
       'morden-london-1:leave-test-centre','morden-london-1:sutton-zebra',
-      'morden-london-2:tudor-zebra','morden-london-2:beverley-roundabout','morden-london-2:churston-mini']);
+      'morden-london-2:tudor-zebra','morden-london-2:beverley-roundabout','morden-london-2:churston-mini',
+      'sheffield-middlewood-road-1:middlewood-crossing','sheffield-middlewood-road-1:leppings-lights']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)
       if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();
   });

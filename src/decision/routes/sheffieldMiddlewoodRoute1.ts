@@ -37,7 +37,7 @@ const BEFORE:Record<string,BeforeMerge>={
   // (At the line: the houses on the corner hide Worrall Road until there.)
   'worrall-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-562.8,-23.5)},when:{actor:'worrall-car',at:p(-580.8,-38.3)},frame:{yaw:-60,pitch:44,shift:-4},
     state:'At the top of Langsett Avenue.'}},
-  'middlewood-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(498.7,526)},lights:'red',when:{actor:'crossing-pedestrian',at:p(499.6,490.8)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
+  'middlewood-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(498.1,533.9)},lights:'red',when:{actor:'crossing-pedestrian',at:p(499.6,490.8)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
     state:'On Middlewood Road, the signal crossing ahead. The lights are red.'}},
   'leppings-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(491.2,368.8)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the Leppings Lane lights. They are red.'}},
@@ -400,9 +400,9 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       starts:[{actor:'crossing-pedestrian',at:p(491.4,589.5),delay:0}],
       lights:p(500.4,495.3),
       endAt:p(501.3,460),
-      // The crossing, and back to the end of Dixon Road, where the car turns out at the lights (narrow: one turning in
-      // there would meet it face to face).
-      quiet:[{x:502,z:492,radius:30},{x:500,z:530,radius:22},{x:472,z:688,radius:28}],
+      // The crossing, Middlewood Road and Lennox Road beyond it, and back to the end of Dixon Road, where the car turns
+      // out at the lights (narrow: one turning in there would meet it face to face).
+      quiet:[{x:502,z:492,radius:30},{x:501,z:448,radius:32},{x:470,z:482,radius:24},{x:500,z:530,radius:22},{x:472,z:688,radius:28}],
       place:{
         approach:{pause:{kind:'moving',at:p(497.8,538)},lights:'red',frame:{yaw:0,pitch:24},state:'On Middlewood Road at 30 mph, the signal crossing ahead.'},
         line:{pause:{kind:'stop',at:p(500.3,498.4)},lights:'red',when:{actor:'crossing-pedestrian',at:p(500.6,490.8)},panel:'right',frame:{yaw:0,pitch:30},

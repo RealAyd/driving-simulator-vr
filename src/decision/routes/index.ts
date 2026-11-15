@@ -7,7 +7,10 @@ import {SALISBURY_ROUTE_1} from './salisburyRoute1';
 import {SALISBURY_ROUTE_2} from './salisburyRoute2';
 import {MORDEN_ROUTE_1} from './mordenRoute1';
 import {MORDEN_ROUTE_2} from './mordenRoute2';
+import {SHEFFIELD_MIDDLEWOOD_ROUTE_1} from './sheffieldMiddlewoodRoute1';
+import {SHEFFIELD_MIDDLEWOOD_ROUTE_2} from './sheffieldMiddlewoodRoute2';
 
 /** The decision mock test routes, as offered on the home screen. */
 export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2,CHELMSFORD_ROUTE_1,CHELMSFORD_ROUTE_2,
-  SALISBURY_ROUTE_1,SALISBURY_ROUTE_2,MORDEN_ROUTE_1,MORDEN_ROUTE_2];
+  SALISBURY_ROUTE_1,SALISBURY_ROUTE_2,MORDEN_ROUTE_1,MORDEN_ROUTE_2,
+  SHEFFIELD_MIDDLEWOOD_ROUTE_1,SHEFFIELD_MIDDLEWOOD_ROUTE_2];

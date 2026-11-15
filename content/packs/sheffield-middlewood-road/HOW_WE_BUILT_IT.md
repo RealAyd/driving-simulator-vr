@@ -90,8 +90,18 @@ sight, or runs on well away.
 
 `tests/unit/decisionDrive.sheffield-middlewood-road.test.ts` drives both routes with the right answers, without traffic,
 with 30 background road users in two patterns (seeds 4 and 14), and with Skip ahead pressed whenever offered; and checks
-the authoring rules `tests/unit/decision.test.ts` checks for routes in `DECISION_ROUTES`. Results are in the report of
-this build.
+the authoring rules `tests/unit/decision.test.ts` checks for routes in `DECISION_ROUTES`. Each drive passes with no
+fault, every pause as depicted (each road user within 0.2 m of its point), nothing hit, no red light run, the car on the
+carriageway throughout and back in the car park. Tuning on the way, for any route:
+
+| Found | Fix |
+|---|---|
+| The car stood a metre short of a stop point at red lights (the lights stop it on a 1.5 m step), so the pause never came and the lights never changed | Put the stop point where the car stops, a little short of the line rather than on it |
+| A pedestrian paced to the green pause walked on 2.7 m past its point | Rebuilt that challenge (see section 3); the new point is met exactly |
+| Corners where the planned line cut over a footway or a sign post | `shifts` easing the line wide, or a different way |
+| Long waits at lights with long cycles (70 to 91 s) on Penistone Road and at the Leppings Lane lights | The waits that can be avoided are inside challenges (lights held for the car) or on the way home (held green); queued behind a car at a long red, the car stands until the runner turns that car off (45 s) |
+| Background cars meeting the car face to face at narrow places (Langsett Avenue, the end of Dixon Road, Marlcliffe Road) or oncoming in a paused picture | Wider `quiet` circles, and `quietUntil` up Langsett Avenue and past Marlcliffe Road |
+| The oncoming car for the right turn into Winn Gardens arrived early when traffic held the car up | Its pause is stopped in position, and the car is set going late, as the car slows to stop |
 
 ## Still to do
 
