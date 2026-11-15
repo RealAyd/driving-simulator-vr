@@ -479,5 +479,417 @@
   ],
   "moved": "Dudley (Pensnett Estate, DY6 7YE) replaced the old Lower Gornal centre; the drivingtesttips route lists describe Lower Gornal. Some pages give other addresses (Stourbridge Road DY6 7AE, Caddick Road)",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Dumbarton",
+  "postcode": "G82 3PD",
+  "tests": 1812,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/dumbarton-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Dumbartonshire/Dumbarton"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/mbq52"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/dumbarton"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/dumbarton/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37447"
+   },
+   {
+    "kind": "news",
+    "site": "gov.uk",
+    "url": "https://www.gov.uk/government/news/dumbarton-leads-the-way-in-trial-to-bring-driving-tests-closer-to-candidates"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Dumfries",
+  "postcode": "DG1 2SH",
+  "tests": 2798,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/dumfries-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/dumfries/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/dumfries-and-galloway/dumfries"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/dumfries"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/dumfries/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/dumfries/"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Dumfries/Dumfries"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Dundee",
+  "postcode": "DD2 3QH",
+  "tests": 5851,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 3,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/dundee-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Angus/Dundee"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/dundee-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/dundee/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/dundee/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/dundee"
+   }
+  ],
+  "moved": "Results disagree on address: Block 23B Kilspindie Place, Dunsinane Industrial Estate (DD2 3QH) vs Marchbanks, Kingsway West (DD2 3TL)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Dunfermline (Vine)",
+  "postcode": "KY11 4JU",
+  "tests": 4422,
+  "score": 7.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Fife/Dunfermline-Vine"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/dunfermline-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/XZnwz"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/dunfermline-vine/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/fife/dunfermline"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/dunfermline/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/dunfermline/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/dunfermline"
+   },
+   {
+    "kind": "news",
+    "site": "thecourier.co.uk",
+    "url": "https://thecourier.co.uk/fp/news/fife/978324/long-term-future-of-dunfermline-driving-test-centre-secured"
+   }
+  ],
+  "moved": "drivingtesttips route lists give an older address (Estantia House, Pitreavie Drive); centre is now Vine Conference Centre, 131 Garvock Hill (KY11 4JU)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Dunoon",
+  "postcode": "PA23 8BP",
+  "tests": 183,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Argyll-and-Bute/Dunoon"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/dunoon-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/argyll-and-bute/dunoon"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/areas/dunoon"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/dunoon/"
+   }
+  ],
+  "moved": "Results disagree on postcode (PA23 8PB, PA23 8KP, PA23 8BP); one gives Dunoon Business Centre, Unit 20 Highland Avenue, Sandbank Business Park",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Duns",
+  "postcode": "TD11 3AU",
+  "tests": 132,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Berwickshire/Duns"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/duns-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/scottish-borders/duns"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/areas/duns"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Durham",
+  "postcode": "DH7 8XL",
+  "tests": 8228,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/durham-driving-test-routes-new.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/durham-driving-test-routes"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/rdAR1"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/durham/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/county-durham/durham"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/durham"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/durham/mock-driving-test"
+   }
+  ],
+  "moved": "Results disagree on address: St Johns Rd, Meadowfield (DH7 8XL) vs Belmont Business Park (DH1 1TW) and Arnison Centre (DH1 5TS); older drivingtesttips routes run from the Belmont area",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "East Kilbride",
+  "postcode": "G74 3EU",
+  "tests": 2451,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/JurnI"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/east-kilbride/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/south-lanarkshire/east-kilbride"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/east-kilbride"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/east-kilbride-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/centres/east-kilbride"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Lanarkshire/East-Kilbride"
+   }
+  ],
+  "moved": "Results give Bosfield Place, Legion Scotland, East Mains (G74 4DY), not the input postcode G74 3EU",
+  "searched": "2026-11-15"
  }
 ]

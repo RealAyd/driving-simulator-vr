@@ -252,5 +252,304 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Lichfield",
+  "postcode": "WS13 6RB",
+  "tests": 8490,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Staffordshire/Lichfield"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lichfield-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/q48WD"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/lichfield-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/lichfield/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/staffordshire/lichfield"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Lincoln",
+  "postcode": "LN6 3RT",
+  "tests": 6345,
+  "score": 6,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lincolnshire/Lincoln"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lincoln-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/bMmEN"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "lidt.co.uk",
+    "url": "https://lidt.co.uk/blog/?p=8718"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/lincoln/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/lincoln"
+   }
+  ],
+  "moved": "Unclear: one listing (drivingtestpass.pages.dev) gives Tritton Road, LN6 7QT; others give Earlsfield Close, off Sadler Road, LN6 3RT",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Lisburn",
+  "postcode": "BT28 2BP",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/lisburn-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Antrim-/Lisburn"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "acclaimdriving.com",
+    "url": "https://www.acclaimdriving.com/lisburn-driving-lessons"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Livingston",
+  "postcode": "EH54 5DE",
+  "tests": 4486,
+  "score": 6,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 4,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/S7CyV"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/livingston-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/livingston/mock-driving-test"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=25231"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/west-lothian/livingston"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/livingston/"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/easiest-test-centre-edinburgh"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Llanelli",
+  "postcode": "SA15 3SB",
+  "tests": 3442,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Dyfed/Llanelli"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/llanelli-driving-test-routes-11-13.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/yNLhQ"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/carmarthenshire/llanelli"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/llanelli/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/llanelli"
+   },
+   {
+    "kind": "learner",
+    "site": "reddit.birdcat.cafe",
+    "url": "https://reddit.birdcat.cafe/r/Llanelli/comments/1i1flsy/driving_test_in_llanelli"
+   }
+  ],
+  "moved": "Unclear: one source gives Trostre Road, SA14 9BN; others give Toft Place, Llanerch, SA15 3SB (current)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Llantrisant",
+  "postcode": "CF72 8YR",
+  "tests": 8554,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 0,
+   "template": 3,
+   "news": 2,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/xN073"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/llantrisant-driving-test-routes"
+   },
+   {
+    "kind": "learner",
+    "site": "mumsnet.com",
+    "url": "https://www.mumsnet.com/talk/_chat/5122029-driving-test-in-llantrisant"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/rhondda-cynon-taf/llantrisant"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Mid-Glamorgan/Llantrisant"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/llantrisant-driving-test-centre.html"
+   },
+   {
+    "kind": "news",
+    "site": "magzter.com",
+    "url": "https://www.magzter.com/en/stories/newspaper/Western-Mail/TESTING-TIMES-FOR-RESIDENTS-AS-LEARNER-DRIVERS-FLOCK-TO-VILLAGE"
+   },
+   {
+    "kind": "news",
+    "site": "aol.com",
+    "url": "https://www.aol.com/news/learners-causing-chaos-village-where-225015696.html"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

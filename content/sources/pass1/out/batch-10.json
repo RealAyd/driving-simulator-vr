@@ -499,5 +499,510 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Morden (London)",
+  "postcode": "SM4 4PE",
+  "tests": 16260,
+  "score": 8,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 1,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/morden-driving-test-routes.html"
+   },
+   {
+    "kind": "learner",
+    "site": "forums.overclockers.co.uk",
+    "url": "https://forums.overclockers.co.uk/threads/driving-test-question-rose-hill-roundabout.18991681"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/morden-london"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/morden/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Surrey/Morden-London"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/morden-london/"
+   },
+   {
+    "kind": "template",
+    "site": "presentationbuilder.internationaltrucks.com",
+    "url": "https://presentationbuilder.internationaltrucks.com/morden-driving-test-centre-routes"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/m82EZ"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Nelson",
+  "postcode": "BB9 9BT",
+  "tests": 6366,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lancashire/Nelson"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/nelson-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/lancashire/nelson"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/nelson-driving-test-centre.html"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/nelson-driving-test-routes"
+   }
+  ],
+  "moved": "Unclear: one source gives Pendle House, Nelson and Colne College, Scotland Road; others give Pendle Business Centre, Commercial Road",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newport (Gwent)",
+  "postcode": "NP19 4XH",
+  "tests": 7106,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 5,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newport-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/newport-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/newport/newport-gwent"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/newport/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37445"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/newport-wales"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/QfxUc"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/newport-gwent-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newport (Isle of Wight)",
+  "postcode": "PO30 5WB",
+  "tests": 3875,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 7,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/driving-test-centres/newport-isle-of-wight-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/isle-of-wight/newport-isle-of-wight"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/newport-isle-of-wight/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/isle-of-wight"
+   },
+   {
+    "kind": "template",
+    "site": "oembed.org",
+    "url": "https://oembed.org/blog/pass-your-driving-test-newport"
+   },
+   {
+    "kind": "template",
+    "site": "discourse.weareopen.coop",
+    "url": "https://discourse.weareopen.coop/news/ace-your-driving-test-newport"
+   },
+   {
+    "kind": "template",
+    "site": "sophiecress.com",
+    "url": "https://sophiecress.com/blog/ace-your-driving-test-newport"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/vAOxD"
+   }
+  ],
+  "moved": "Possible older address: pages variously give Innovation Centre St Cross Business Park PO30 5WB, Daish Way PO30 5XJ, Somerton Business Park, Riverway and Medina Avenue",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newry",
+  "postcode": "BT34 1LD",
+  "tests": 0,
+  "score": 2,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newry-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/newry"
+   }
+  ],
+  "moved": "Pages disagree: one gives Killeavy Road BT35 8PX, another 51 Rathfriland Road BT34 1LD (the listed postcode); Killeavy Road may be an older address",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newton Abbot",
+  "postcode": "TQ12 4YQ",
+  "tests": 6263,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 6,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Devon/Newton-Abbot"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newton-abbot-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "sites.google.com",
+    "url": "https://sites.google.com/view/driving-test-routes/driving-test-centres/south-west/Newton-Abbot-Driving-Test-Routes"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/newton-abbot/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/newton-abbot-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Devon/Newton-Abbot"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/newton-abbot/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/devon/newton-abbot"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/bGi0S"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/newton-abbot-driving-test-routes"
+   }
+  ],
+  "moved": "Unclear: one page gives Halcyon Road TQ12 1AL; most give Vander House, Brunel Road TQ12 4YQ",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newton Stewart",
+  "postcode": "DG8 6JW",
+  "tests": 201,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Dumfries/Newton-Stewart"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newton-stewart-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/dumfries-and-galloway/newton-stewart"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/newton-stewart-driving-test-centre.html"
+   }
+  ],
+  "moved": "Unclear: one source places the centre at the Crown Hotel, another on Wigtown Road",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newtown",
+  "postcode": "SY16 1JB",
+  "tests": 1740,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Powys/Newtown"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newtown-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/powys/newtown"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/newtown-driving-test-centre.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/io64J"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Newtownards",
+  "postcode": "BT23 4XP",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/newtownards-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/newtownards"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Down/Newtownards"
+   }
+  ],
+  "moved": "Unclear: one site lists the centre on Court Street, another on Jubilee Road, Scrabo BT23 4XP",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Norris Green (Liverpool)",
+  "postcode": "L11 5BR",
+  "tests": 13265,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 6,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Merseyside/Norris-Green-Liverpool"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/norris-green-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/merseyside/norris-green-liverpool"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/norris-green-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Merseyside/Norris-Green-Liverpool"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/norris-green-liverpool/"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/norris-green-liverpool-driving-test-centre"
+   },
+   {
+    "kind": "template",
+    "site": "wlzsysae.pages.dev",
+    "url": "https://wlzsysae.pages.dev/norris-green-driving-test-centre"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/gyzC3"
+   },
+   {
+    "kind": "paid",
+    "site": "createdbyrinji.gumroad.com",
+    "url": "https://createdbyrinji.gumroad.com/l/DoubleRoundabout"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

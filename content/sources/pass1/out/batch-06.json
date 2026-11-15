@@ -291,5 +291,309 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Fort William",
+  "postcode": "PH33 6AN",
+  "tests": 308,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 5,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/fort-william-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Inverness/Fort-William"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/highland/fort-william"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/fort-william/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/fort-william/"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/fort-william"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Fraserburgh",
+  "postcode": "AB43 9TN",
+  "tests": 496,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/fraserburgh-driving-test-routes-6-8.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/fraserburgh/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/fraserburgh/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/aberdeenshire/fraserburgh"
+   }
+  ],
+  "moved": "Results disagree on the address: one gives Watermill Road AB43 9DN, others Business Park South AB43 9TN; route sheets may predate a move. Check.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Gairloch",
+  "postcode": "IV21 2BX",
+  "tests": 52,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/gairloch-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Highlands/Gairloch"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/gairloch"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/areas/gairloch"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=5466"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Galashiels",
+  "postcode": "TD1 3BH",
+  "tests": 2193,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/galashiels-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Ettrick-and-Lauderdale/Galashiels"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/scottish-borders/galashiels"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/galashiels/"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=4184"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/ERsAF"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Gateshead",
+  "postcode": "NE11 9HU",
+  "tests": 8109,
+  "score": 7.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/gateshead-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "learner",
+    "site": "reddit.com",
+    "url": "https://www.reddit.com/r/Gateshead/comments/11qat94/gateshead_driving_test_routes"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Tyne-and-Wear/Gateshead"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/gateshead/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/gateshead/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/tyne-and-wear/gateshead"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/gateshead-driving-test-centre"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/gateshead"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/eVgCE"
+   }
+  ],
+  "moved": "Centre now at Waterside Drive, Dunston NE11 9HU; a 2023 r/Gateshead post says published routes start from the old centre (results also give Askew Road West NE8 4NA and Lobley Hill Road). drivingtesttips route sheets scored as old address.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Gillingham",
+  "postcode": "ME8 0EZ",
+  "tests": 14761,
+  "score": 8,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/gillingham-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "drivinglessonsmedway.blogspot.com",
+    "url": "https://drivinglessonsmedway.blogspot.com/2010/05/driving-test-gillingham-tips-on-how-to.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/Gillingham"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/kent/gillingham"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/gillingham/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/gillingham/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/kent/gillingham/capstone/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/jcosI"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

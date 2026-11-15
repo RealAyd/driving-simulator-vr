@@ -227,13 +227,13 @@
   "name": "Aberystwyth (Park Avenue)",
   "postcode": "SY23 1PG",
   "tests": 1469,
-  "score": 5,
+  "score": 7,
   "counts": {
    "instructor-page": 0,
    "video": 0,
    "learner": 1,
    "route-list": 1,
-   "template": 2,
+   "template": 4,
    "news": 0,
    "paid": 0
   },
@@ -267,9 +267,432 @@
     "kind": "template",
     "site": "theaa.com",
     "url": "https://theaa.com/driving-school/locations/location/aberystwyth"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/ceredigion/aberystwyth-park-avenue"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/aberystwyth"
    }
   ],
   "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Airdrie",
+  "postcode": "ML6 0DA",
+  "tests": 6673,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/airdrie-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/airdrie-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/airdrie-driving-test-routes-11-15.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/airdrie-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lanarkshire/Airdrie"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/airdrie"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/airdrie"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/airdrie/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/north-lanarkshire/airdrie"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/airdrie"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37346"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/RsbDa"
+   }
+  ],
+  "moved": "One page says Airdrie learners test from the Coatbridge centre; others give 7 Aitchison Street (ML6 0DA)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Alness",
+  "postcode": "IV17 0PJ",
+  "tests": 865,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/alness-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Highlands/Alness"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/alness/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/alness"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/alness"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=5470"
+   },
+   {
+    "kind": "paid",
+    "site": "driving2pass.gumroad.com",
+    "url": "https://driving2pass.gumroad.com/l/SsbhS"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Alnwick",
+  "postcode": "NE66 1JX",
+  "tests": 1093,
+  "score": 8,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 1,
+   "template": 5,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/alnwick-driving-test-routes-6-9.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/alnwick-driving-test-routes-10-12.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/alnwick-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "learner",
+    "site": "reddit.com",
+    "url": "https://lr.eu.psf.lt/r/alnwick/comments/18ug93t/driving_test_tips"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/alnwick"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/northumberland/alnwick"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Northumberland/Alnwick"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/alnwick/"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/intensive-driving-course/alnwick/"
+   }
+  ],
+  "moved": "Sources give different addresses for the centre; route sheets start from Roxburgh Place",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Arbroath",
+  "postcode": "DD11 2NQ",
+  "tests": 294,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/arbroath-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/arbroath-driving-test-routes-4-6.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Angus/Arbroath"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/arbroath"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/arbroath/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/arbroath"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Armagh",
+  "postcode": "BT60 1HW",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 3,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "news",
+    "site": "armaghi.com",
+    "url": "https://armaghi.com/news/armagh-news/changes-to-armagh-roundabout-will-end-in-an-accident-according-to-driving-instructor/91581"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/armagh"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/armagh"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Armagh/Armagh"
+   }
+  ],
+  "moved": "One source gives Lonsdale Road (BT61 7HN), likely an older address; most give 47 Hamiltonsbawn Road (BT60 1HW)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ashfield",
+  "postcode": "NG17 5LA",
+  "tests": 9507,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ashfield-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-instructor-training/adi-driving-test-routes/sutton-in-ashfield-adi-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Nottinghamshire/Ashfield"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/nottinghamshire/ashfield"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/sutton-in-ashfield/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/ashfield/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/nhvy2"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Ashford (Kent)",
+  "postcode": "TN23 1HU",
+  "tests": 3504,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/ashford-kent-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ashford-kent-driving-test-routes-4-6.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ashford-kent-driving-test-routes-7-9.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/ashford-kent-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/Ashford-Kent"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/kent/ashford-kent"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/ashford-kent/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://rateddriving.com/driving-lessons/kent/ashford/"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37375"
+   },
+   {
+    "kind": "template",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/ashford-kent-driving-test-routes"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/sFEP6"
+   }
+  ],
+  "moved": "Sources disagree on the address: Civic Centre, Tannery Lane (TN23 1PL) vs Javelin Way (TN24 8AA); input postcode is TN23 1HU",
   "searched": "2026-11-15"
  }
 ]

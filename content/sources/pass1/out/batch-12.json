@@ -312,5 +312,324 @@
   ],
   "moved": "One guide lists Waterside Plaza M33 7ZF; most pages use 36-38 Poplar Grove M33 7ER",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Salisbury",
+  "postcode": "SP1 1LY",
+  "tests": 5624,
+  "score": 9,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 1,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "instructor-page",
+    "site": "2nd2nonedrivingschool.co.uk",
+    "url": "https://www.2nd2nonedrivingschool.co.uk/salisbury-driving-test-centre.html"
+   },
+   {
+    "kind": "learner",
+    "site": "reddit.com",
+    "url": "https://reddit.sudovanilla.org/r/LearnerDriverUK/comments/1j9wap5/salisbury"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/salisbury-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Wiltshire/Salisbury"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/wiltshire/salisbury"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/salisbury/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/salisbury"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/iAGaJ"
+   }
+  ],
+  "moved": "Results list differing addresses (Southampton Road SP1 2ND, Churchfields Road SP2 7NN) besides Rougemont Close SP1 1LY; possibly older addresses",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Scarborough",
+  "postcode": "YO12 4AY",
+  "tests": 2658,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/scarborough-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/north-yorkshire/scarborough"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/scarborough/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/scarborough"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/bXJFz"
+   }
+  ],
+  "moved": "Route sheets start from Cayton Low Road (YO11 3BY); another page gives Falsgrave Road YO12 5EA; input postcode is YO12 4AY, so pages may describe an older address",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Scunthorpe",
+  "postcode": "DN15 6XH",
+  "tests": 5837,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lincolnshire/Scunthorpe"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/scunthorpe-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/scunthorpe/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/scunthorpe/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/lincolnshire/scunthorpe"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/kcBXK"
+   }
+  ],
+  "moved": "One data page gives Pittwood House, Ashby Road DN16 1AB; others use Onward Way off Warren Road (DN15 6AS/6XH)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Sevenoaks",
+  "postcode": "TN13 1HJ",
+  "tests": 6386,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/Sevenoaks"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/sevenoaks-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/sevenoaks/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/kent/sevenoaks"
+   },
+   {
+    "kind": "template",
+    "site": "sevenoaksdrivingtestcentreusa.blogspot.com",
+    "url": "https://sevenoaksdrivingtestcentreusa.blogspot.com/2025/11/how-to-pass-at-sevenoaks-driving-test.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/o2ryt"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Sheffield (Handsworth)",
+  "postcode": "S13 9LT",
+  "tests": 9283,
+  "score": 8,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "learner",
+    "site": "reddit.com",
+    "url": "https://lr.us.psf.lt/r/sheffield/comments/1ezmhw0/sheffield_handsworth_driving_test"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/South-Yorkshire/Sheffield-Handsworth"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/sheffield-handsworth-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/south-yorkshire/sheffield-handsworth"
+   },
+   {
+    "kind": "template",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/sheffield-handsworth-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37531"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-sheffield"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/947Kr"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Sheffield (Middlewood Road)",
+  "postcode": "S6 1TQ",
+  "tests": 9864,
+  "score": 8,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "instructor-page",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/sheffield"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/South-Yorkshire/Sheffield-Middlewood-Road"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/sheffield-middlewood-road-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/south-yorkshire/sheffield-middlewood-road"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/broomhill/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37532"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-sheffield"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/WJ8p0"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

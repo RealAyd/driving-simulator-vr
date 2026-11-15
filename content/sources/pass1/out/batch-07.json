@@ -399,5 +399,385 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Heckmondwike",
+  "postcode": "WF16 0AS",
+  "tests": 5232,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/heckmondwike-driving-test-routes-11-13.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/heckmondwike-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/West-Yorkshire/Heckmondwike"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/west-yorkshire/heckmondwike"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/heckmondwike/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/N8rCs"
+   }
+  ],
+  "moved": "Sources disagree on the address: Tower Buildings, High Street WF16 0AS vs Spen Valley Leisure Centre, Mill Lane West WF16 0QH",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Hendon (London)",
+  "postcode": "NW9 5TZ",
+  "tests": 11608,
+  "score": 8,
+  "counts": {
+   "instructor-page": 2,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/hendon-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "millhilldrivingtest.blogspot.com",
+    "url": "https://millhilldrivingtest.blogspot.com/2012/02/5-tips-pass-driving-test-at-mill-hill.html",
+    "old_address": true
+   },
+   {
+    "kind": "instructor-page",
+    "site": "uksdrivingschool.blogspot.com",
+    "url": "https://uksdrivingschool.blogspot.com/2011",
+    "old_address": true
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Hendon-London"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/hendon/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/hendon-london"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/hendon-london/"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/london/hendon/"
+   },
+   {
+    "kind": "template",
+    "site": "northlondondrivingguide.vercel.app",
+    "url": "https://northlondondrivingguide.vercel.app/test-centres"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/5Bvs7"
+   }
+  ],
+  "moved": "Two 2011-2012 instructor blogs describe the former Mill Hill centre; the current centre is 3 Aviation Drive, Beaufort Park, NW9 5TZ (scored at half)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Hereford",
+  "postcode": "HR4 9NS",
+  "tests": 3352,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/hereford-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/hereford-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Herefordshire/Hereford"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/hereford/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/herefordshire/hereford"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22237"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/uY6WF"
+   }
+  ],
+  "moved": "Sources disagree on the address: Edgar Street HR4 9JR vs Plough Lane HR4 0LE (input postcode HR4 9NS)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Herne Bay",
+  "postcode": "CT6 6GZ",
+  "tests": 7912,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/herne-bay-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/herne-bay/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/kent/herne-bay"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/herne bay"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Kent/Herne-Bay"
+   },
+   {
+    "kind": "template",
+    "site": "advanced-driving.co.uk",
+    "url": "https://advanced-driving.co.uk/?p=12996"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22270"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/rF7ma"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Hexham",
+  "postcode": "NE46 3EW",
+  "tests": 1213,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/hexham-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Northumberland/Hexham"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/hexham/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/northumberland/hexham"
+   },
+   {
+    "kind": "template",
+    "site": "sites.google.com",
+    "url": "https://sites.google.com/view/best-driving-school-hexham/"
+   }
+  ],
+  "moved": "Sources disagree on the address: St Andrews House, Haugh Lane NE46 3EW vs Wentworth Business Park NE46 3QP",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Heysham",
+  "postcode": "LA3 2UZ",
+  "tests": 3735,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/heysham-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/heysham-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lancashire/Heysham"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/lancashire/heysham"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37534"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22291"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/6b1z7"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "High Wycombe",
+  "postcode": "HP11 1TL",
+  "tests": 3891,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/high-wycombe-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Buckinghamshire/High-Wycombe"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/high-wycombe/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/buckinghamshire/high-wycombe"
+   },
+   {
+    "kind": "template",
+    "site": "advanced-driving.co.uk",
+    "url": "https://advanced-driving.co.uk/?p=9325"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/OkjX8"
+   }
+  ],
+  "moved": "Sources give several addresses (Cressex Road HP12 3TD, Cliveden Office Village Lancaster Road, London Road HP11 1LH, Regus Kingsmead Business Park); route sheets may describe an older site",
+  "searched": "2026-11-15"
  }
 ]

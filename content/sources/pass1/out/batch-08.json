@@ -234,5 +234,314 @@
   ],
   "moved": "drivingtesttips.biz also has a separate 'Islay Driving Test Centre - Port Ellen' page; current centre is Bowmore (Jamieson Street). Possible older location.",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Isle of Mull",
+  "postcode": "PA72 6JD",
+  "tests": 28,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 3,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Argyll-and-Bute/Isle-of-Mull"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/isle-of-mull-driving-test-routes.html"
+   },
+   {
+    "kind": "news",
+    "site": "staffordshire-live.co.uk",
+    "url": "https://staffordshire-live.co.uk/whats-on/whats-on-news/learner-driver-travelled-500-miles-6519263"
+   },
+   {
+    "kind": "news",
+    "site": "euroweeklynews.com",
+    "url": "https://euroweeklynews.com/2022/01/19/woman-travels-500-miles-to-take-uks-easiest-driving-test/"
+   },
+   {
+    "kind": "news",
+    "site": "inkl.com",
+    "url": "https://www.inkl.com/news/english-driver-travels-500-miles-to-scotland-to-take-easiest-driving-test-in-uk"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/argyll-and-bute/isle-of-mull"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=4092"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Isle of Skye (Broadford)",
+  "postcode": "IV49 9AQ",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Isle-of-Skye/Isle-of-Skye-Broadford"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/isle-of-skye-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/isle-of-skye-broadford"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=3955"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Isle of Skye (Portree)",
+  "postcode": "IV51 9BD",
+  "tests": 133,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 5,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/isle-of-skye-portree"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-centres/isle-of-skye-portree-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/portree"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=5451"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Highlands/Isle-of-Skye-Portree"
+   },
+   {
+    "kind": "news",
+    "site": "highland.gov.uk",
+    "url": "https://www.highland.gov.uk/download/meetings/id/85590/item_11_-_portree_link_road_update"
+   }
+  ],
+  "moved": "One result calls the Portree centre temporary; not confirmed elsewhere. Council report notes a new roundabout planned for the Portree Link Road.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Isle of Tiree",
+  "postcode": "PA77 6UH",
+  "tests": 10,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Argyll-and-Bute/Isle-of-Tiree"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/isle-of-tiree-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/argyll-and-bute/isle-of-tiree"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=4095"
+   }
+  ],
+  "moved": "Sources conflict on location: PA77 6UH (Scarinish Hotel) vs passrates.uk listing PA77 6TZ in Baile a' Phuill.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Isles of Scilly",
+  "postcode": "TR21 0LW",
+  "tests": 8,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Cornwall/Isles-of-Scilly"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/isle-of-scilly-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/cornwall/isles-of-scilly"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/driving-schools/driving-instructors-hugh-town/"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/kent/st-marys-island"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Isleworth (Fleming Way)",
+  "postcode": "TW7 6DB",
+  "tests": 12106,
+  "score": 9.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 2,
+   "learner": 0,
+   "route-list": 2,
+   "template": 6,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Isleworth-Fleming-Way"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/isleworth-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/isleworth-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/isleworth-driving-test-routes-11-16.html"
+   },
+   {
+    "kind": "video",
+    "site": "recapio.com",
+    "url": "https://recapio.com/digest/isleworth-test-route-1-isleworth-test-centre-by-driving-test-routes-uk"
+   },
+   {
+    "kind": "video",
+    "site": "yt.dorper.me",
+    "url": "https://yt.dorper.me/v/yt/tnPB70_xSPs"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/isleworth-fleming-way"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/london/hounslow/isleworth/"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/isleworth"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/test-centres/practical/greater-london-driving-test-centres/isleworth/"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/driving-schools/driving-instructors-isleworth/"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/centres/isleworth-fleming-way"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/CLdZ2"
+   }
+  ],
+  "moved": "drivingtesttips.biz route lists (Worton Rd, Hall Rd, Bridge Rd) and a 2019 mock-test video likely describe the older Isleworth centre, before the move to Fleming Way (The Wireless Factory); scored at half.",
+  "searched": "2026-11-15"
  }
 ]

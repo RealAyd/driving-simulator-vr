@@ -287,5 +287,288 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Stornoway",
+  "postcode": "HS1 2XX",
+  "tests": 374,
+  "score": 1,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 0,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/stornoway-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/m1hd9"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Stranraer",
+  "postcode": "DG9 8EH",
+  "tests": 214,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Dumfries/Stranraer"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/stranraer-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/dumfries-and-galloway/stranraer"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/stranraer/"
+   }
+  ],
+  "moved": "Address conflict in results: one page gives the North West Castle Hotel, another the fire station on Lewis Street",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Sunderland",
+  "postcode": "SR5 3JJ",
+  "tests": 9084,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Tyne-and-Wear/Sunderland"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/sunderland-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/sunderland/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/tyne-and-wear/sunderland"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/aDves"
+   },
+   {
+    "kind": "paid",
+    "site": "skool.com",
+    "url": "https://www.skool.com/sunderlanddrivingvideos"
+   }
+  ],
+  "moved": "Address conflict in results: one aggregator places the centre at Doxford International Business Park; others give North Hylton Road Industrial Estate SR5 3JJ",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Swansea",
+  "postcode": "SA1 8QY",
+  "tests": 10590,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/West-Glamorgan/Swansea"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/swansea-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/swansea/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-swansea"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/bYUfl"
+   }
+  ],
+  "moved": "Address conflict in results: one aggregator gives Ffordd Yr Afon SA6 8PN, and drivingtesttips routes centre on Valley Way/Clase Road; seller listing gives Burrows Road, Port Tennant SA1 8QY. Possible older address, unconfirmed",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Swindon",
+  "postcode": "SN5 5BL",
+  "tests": 9470,
+  "score": 3.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Wiltshire/Swindon"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/swindon-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/wiltshire/swindon"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/swindon/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/Qk9VB"
+   }
+  ],
+  "moved": "One aggregator lists the old Drakes Way SN3 3LL address; current centre is Fenn Close, Peatmoor SN5 5BL. drivingtesttips routes (Marlborough Rd, east Swindon) likely describe the older site, scored half",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Swindon LGV",
+  "postcode": null,
+  "tests": 146,
+  "score": 0,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 0,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/swindon-driving-test-routes"
+   }
+  ],
+  "moved": "LGV-only centre (Chiseldon Camp SN4 0FH); no car-test road sources, results all describe the Fenn Close car centre",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Taunton",
+  "postcode": "TA2 8RX",
+  "tests": 6957,
+  "score": 5.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Somerset/Taunton"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/taunton-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/somerset/taunton"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/taunton/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22378"
+   },
+   {
+    "kind": "news",
+    "site": "somerset.gov.uk",
+    "url": "https://www.somerset.gov.uk/roundabout/ilminster-road-roundabout-a358-m5-taunton-gateway-park-and-ride/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/VOvQa"
+   }
+  ],
+  "moved": "One aggregator gives the older Silk Mills Road TA1 1PR address; current is Acres Hill Business Park TA2 8RX. drivingtesttips routes run via Silk Mills Road, likely the older site, scored half",
+  "searched": "2026-11-15"
  }
 ]
