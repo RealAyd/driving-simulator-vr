@@ -117,12 +117,33 @@ the template is tried on different kinds of area.
 1. Owner approves this plan: done, 14 November 2026.
 2. Owner says go; pass 1 is run; the ranked table goes to the owner. *(350 centres, from `content/centres/test-centres.json`; a few searches each.)*
 3. Owner agrees the top ten, or swaps some in.
-4. **The legal check on using public sources this way is done before pass 2** *(agreed)*: pass 2 does not start
-   without it.
+4. **The legal check on using public sources this way**: done by the owner, 15 November 2026 (section 8).
 5. Pass 2 is run; the ten evidence files and a one-page summary go to the owner.
 6. Owner picks the three pilot centres. Building starts only then.
 
-## 7. Risks, and what answers each
+## 7. Judgement comes first
+
+Public sources inform a route; they do not make it. The owner built Brentwood to show the method: choose the roads
+and junctions that teach the most, place each scenario where its hazard is real, and check it drives as depicted.
+Every route is designed that way. A source can point to a road worth using, or show that a junction catches people
+out; it never decides the route, and a road with sources is left out when it would make a weaker test. Where the
+sources and good judgement disagree, judgement wins (and the file says why).
+
+## 8. The owner's legal decisions (15 November 2026)
+
+1. Free public pages (instructors, forums, route-list sites) may be read, and road and junction names recorded in our
+   own words as evidence: yes.
+2. Names taken from many route-list pages across many centres: yes, and **every source used is credited** in the
+   app's list of route sources and credits (`public/legal/credits.html`), by site and link.
+3. Website terms and robots files respected; that is enough: yes.
+4. Routes described as based on the roads round the centre, with the agreed disclaimer, never as DVSA's: yes.
+5. DVSA's centre names, addresses and pass rates used with the Open Government Licence attribution (shown in the app's
+   About screen and on the credits page): yes.
+6. Linking a learner's public forum post (no usernames recorded): yes.
+7. A takedown process: a site owner who objects has their source removed and the routes that relied on it rebuilt.
+   Requests go to the support email on the credits page.
+
+## 9. Risks, and what answers each
 
 | Risk | Answer |
 |---|---|
