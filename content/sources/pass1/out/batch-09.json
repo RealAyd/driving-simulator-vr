@@ -982,5 +982,108 @@
   ],
   "moved": "Possible: drivingtestpass.pages.dev refers to a Dunstable Road centre; others give 6-10 Adelaide Street, LU1 5BT",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Macclesfield",
+  "postcode": "SK10 1JQ",
+  "tests": 4910,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Cheshire/Macclesfield"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/macclesfield-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/1ZA5K"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/macclesfield-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/cheshire/macclesfield"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/macclesfield/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/macclesfield"
+   }
+  ],
+  "moved": "Possible: one listing gives Black Road, SK11 7NR; most give Unit 4 Bailey Court, Green Street, SK10 1JQ (input)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Maidstone",
+  "postcode": "ME15 6JZ",
+  "tests": 6330,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/Maidstone"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/maidstone-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/OBLDy"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/maidstone/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/maidstone"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/test-centres/practical/kent-driving-test-centres/maidstone/"
+   }
+  ],
+  "moved": "Possible: one aggregator lists Buckland Road, ME16 8LA; most give South Park Business Village, Armstrong Road, ME15 6JZ (input)",
+  "searched": "2026-11-15"
  }
 ]

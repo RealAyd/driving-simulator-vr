@@ -1057,5 +1057,59 @@
   ],
   "moved": "Some pages give Eastern Avenue SS2 4FB; most use Tickfield Centre SS2 6LL; a GOV.UK press release 'Driving tests return to Southend' suggests an earlier gap or relocation",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Southport (Liverpool)",
+  "postcode": "PR8 1HE",
+  "tests": 7231,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Merseyside/Southport-Liverpool"
+   },
+   {
+    "kind": "news",
+    "site": "inkl.com",
+    "url": "https://inkl.com/news/the-nerve-wracking-roundabout-no-one-knows-how-to-use"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/merseyside/southport"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/southport"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/southport-liverpool/"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-liverpool"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/2dBpT"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

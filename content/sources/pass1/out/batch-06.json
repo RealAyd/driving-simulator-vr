@@ -1150,5 +1150,118 @@
   ],
   "moved": "Centre now at Spitalgate Airfield NG31 7TX; the 2014 instructor blog posts (two near-identical blogs) describe the older Grantham centre and are scored at half; one result gives St Peters Hill.",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Grantown-On-Spey",
+  "postcode": "PH26 3JR",
+  "tests": 180,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/grantown-on-spey-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Highlands/Grantown-On-Spey"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/grantown-on-spey"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/grantown-on-spey/"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/driving-schools/driving-instructors-grantown-on-spey/"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Greenford (Horsenden Lane)",
+  "postcode": "UB6 7QH",
+  "tests": 7106,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 6,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/greenford-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "testprep.uk",
+    "url": "https://testprep.uk/driving-practical-test/greenford-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Greenford-Horsenden-Lane"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/greenford-driving-test-centre"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/greenford-london"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/greenford-horsenden-lane/"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/greenford-london/"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/middlesex/greenford/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/negqd"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/greenford-london-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

@@ -1026,5 +1026,118 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Uxbridge (London)",
+  "postcode": "UB8 2DB",
+  "tests": 7378,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Uxbridge-London"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/uxbridge-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/greater-london/uxbridge-london"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/uxbridge/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/uxbridge-driving-test-centre"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/?p=37633"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/VCgZi"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/uxbridge-london-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Wakefield",
+  "postcode": "WF5 9TR",
+  "tests": 7650,
+  "score": 5.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/West-Yorkshire/Wakefield"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/wakefield-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/west-yorkshire/wakefield"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/wakefield/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-wakefield"
+   },
+   {
+    "kind": "news",
+    "site": "hemsworthandsouthelmsallexpress.co.uk",
+    "url": "https://www.hemsworthandsouthelmsallexpress.co.uk/lifestyle/cars/the-best-roads-in-wakefield-to-pass-your-driving-test-3146651"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/yE93J"
+   }
+  ],
+  "moved": "One aggregator gives the older College Grove Road WF1 3RN address; current is Silkwood Park, Ossett WF5 9TR. drivingtesttips routes (Union St, Marsh Way, city centre) likely describe the older site, scored half",
+  "searched": "2026-11-15"
  }
 ]

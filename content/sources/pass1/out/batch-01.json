@@ -1184,5 +1184,133 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Bangor",
+  "postcode": "LL57 4YH",
+  "tests": 3433,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/bangor-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Gwynedd/Bangor"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/bangor/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/bangor"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/areas/gwynedd/bangor"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/bangor"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/bangor"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/59hSx"
+   }
+  ],
+  "moved": "Sources disagree on address: Llandygai / Llandegai Industrial Estate vs Caernarfon Road (where route sheets run)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Barnet (London)",
+  "postcode": "EN5 1AD",
+  "tests": 9720,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 5,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/barnet-driving-test-routes-4-6.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/barnet-driving-test-routes-7-9.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-instructor-training/adi-driving-test-routes/barnet-adi-driving-test-routes-6-7.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/barnet-london"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/barnet/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://rateddriving.com/driving-lessons/london/barnet/"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/barnet"
+   },
+   {
+    "kind": "template",
+    "site": "northlondondrivingguide.vercel.app",
+    "url": "https://northlondondrivingguide.vercel.app/test-centres"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/CaWAq"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/barnet-london-driving-test-routes"
+   }
+  ],
+  "moved": "Sources disagree on address: Raydean House, 15/17 Western Parade (EN5 1AD/1AH) vs Quinta Drive (EN5 3AE)",
+  "searched": "2026-11-15"
  }
 ]

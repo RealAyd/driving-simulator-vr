@@ -1064,5 +1064,98 @@
   ],
   "moved": "intensivelessons.co.uk says the centre (Lairg Fire Station, Main Street) is closing or closed; passrates.uk still lists it as current; one source gives postcode IV27 4AY.",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Lanark",
+  "postcode": "ML11 9AX",
+  "tests": 1845,
+  "score": 6,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 4,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lanarkshire/Lanark"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lanark-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/lanark"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/south-lanarkshire/lanark"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/lanark"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=4043"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Larne",
+  "postcode": "BT40 2SY",
+  "tests": 0,
+  "score": 6,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 3,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "instructor-page",
+    "site": "acclaimdriving.com",
+    "url": "https://www.acclaimdriving.com/larne-driving-lessons"
+   },
+   {
+    "kind": "news",
+    "site": "infrastructure-ni.gov.uk",
+    "url": "https://www.infrastructure-ni.gov.uk/articles/a8-millbrook-and-antiville-roundabouts-larne-overview"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/larne-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/larne"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/driving-schools/driving-instructors-larne/"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

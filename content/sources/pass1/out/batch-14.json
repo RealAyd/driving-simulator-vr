@@ -1236,5 +1236,133 @@
   ],
   "moved": "One source gives Rhosnesni Lane (LL13 9TT); most give Birchall House, Wrexham Technology Park (LL13 7YP); possible older address",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Yeading (London)",
+  "postcode": "UB4 9BS",
+  "tests": 6289,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 6,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/yeading-london"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/middlesex/hayes/yeading/"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22188"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/yeading-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/yeading"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Greater-London/Yeading-London"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/cnV4l"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/yeading-london-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Yeovil",
+  "postcode": "BA20 2EN",
+  "tests": 5754,
+  "score": 8,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 7,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "instructor-page",
+    "site": "2nd2nonedrivingschool.co.uk",
+    "url": "https://www.2nd2nonedrivingschool.co.uk/yeovil-driving-test-centre.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/yeovil-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Somerset/Yeovil"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/dorset/yeovil"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22382"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/yeovil"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=3806"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/yeovil"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/yeovil/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/TQtmL"
+   }
+  ],
+  "moved": "Most sources give Abbey Manor Business Centre, Preston Road (BA20 2EN); one gives Lysander Road (BA22 8UR); possible older address",
+  "searched": "2026-11-15"
  }
 ]

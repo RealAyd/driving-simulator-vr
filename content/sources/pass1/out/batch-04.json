@@ -1151,5 +1151,93 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Coventry",
+  "postcode": "CV7 9EJ",
+  "tests": 9102,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/coventry-driving-test-routes-new.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/West-Midlands/Coventry"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/coventry/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/coventry"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/ZI4Uv"
+   }
+  ],
+  "moved": "One page gives Cheylesmore (CV3 5HG), likely an older site; route pages describe Bayton Road, Exhall (CV7 9EJ)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Craigavon",
+  "postcode": "BT63 5RY",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/intensive-driving-course/craigavon/"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/craigavon"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/craigavon-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/craigavon"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/bpu56"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]
