@@ -1,0 +1,76 @@
+[
+ {
+  "op": "drop-tag",
+  "type": "way",
+  "id": 699009226,
+  "k": "building",
+  "why": "Beverley roundabout: a building mapped on its island stops the roundabout being found."
+ },
+ {
+  "op": "move-tags",
+  "from": 6855529945,
+  "to": 8431990619,
+  "keys": [
+   "highway",
+   "crossing",
+   "traffic_signals:direction"
+  ],
+  "why": "Tudor Drive approach to the lights: its signal sat at a way end, so the scene had no stop line; moved 5 m back on to the approach."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 9897627,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 9897628,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 9897633,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 9897646,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 524112596,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 778311502,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 778311506,
+  "k": "name",
+  "v": "Green Lane",
+  "why": "The B278 north of Green Lane: short unnamed ways the route planner will not route through."
+ }
+]

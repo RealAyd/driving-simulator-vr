@@ -40,5 +40,7 @@ if(facingArg&&facingArg!=='-'){
   }
 }
 fs.mkdirSync('public/scenes',{recursive:true});
-fs.writeFileSync(`public/scenes/${id}.json.gz`,zlib.gzipSync(packCentre(label,half,new Date().toISOString().slice(0,10),summary,location),{level:9}));
+// (With the point the scene is built round, so map positions can be placed in it: tools/centres/check_route.mjs.)
+const pack={...JSON.parse(packCentre(label,half,new Date().toISOString().slice(0,10),summary,location)),origin:{lat,lon}};
+fs.writeFileSync(`public/scenes/${id}.json.gz`,zlib.gzipSync(JSON.stringify(pack),{level:9}));
 console.log(summary);
