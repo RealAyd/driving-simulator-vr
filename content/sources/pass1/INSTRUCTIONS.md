@@ -45,3 +45,13 @@ input order:
 
 `moved` is null when nothing suggests a move. Write the file as you go (after every few centres) so work is not lost.
 Do not commit; do not edit any other file.
+
+## Resuming a batch (second run)
+
+- Read your output file first. Search **only** the centres from your input file that are not in it yet, in input
+  order.
+- Do not use the shared scratchpad. Keep any working files in your own folder
+  `/tmp/claude-0/-home-user/ab85732d-aff5-5dcd-9d6c-2b677b1f9bb8/scratchpad/pass1-bNN/`.
+- After **each** centre, append it to the output file (read it, add the centre, write it back). Keep the earlier
+  entries and keep input order.
+- If a search is refused for the limit, stop: write nothing for an unfinished centre.
