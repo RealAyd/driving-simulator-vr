@@ -25,9 +25,14 @@ Facts about places, in other words. Not anyone's wording, video or route file.
 | An instructor's video of a drive round the test area | Dashcam "mock test route" videos | High | The title, description and chapter list only (road names written there). The video itself is not downloaded or transcribed |
 | Learners' accounts | Forum and Reddit threads: "my test went down X Road then the big roundabout" | Medium: first-hand, but one drive | The post's text |
 | Local news and council notices | A centre moving or closing; long roadworks; a new junction layout | High for *what changed*, not for routes | The article |
+| Free, public route-list pages *(owner's decision, 15 Nov 2026)* | Sites listing turn-by-turn "test routes" for a centre, free to read | Medium when credible (see below); never first-hand on its own | The road and junction names only. A route is never copied, in whole or in order: it can inspire ours where it is credible |
 | DVSA and gov.uk | The centre's address and opening; "what happens on the test" | The authority on the centre and the test, silent on routes | The page |
 
-**Not used**: apps and sites that sell test routes (their lists, files or previews); anything behind a login or a
+**Credible** (for a route-list page): dated, or its roads and junctions match the map round the centre's current
+address; named the same by at least one other separate source to count as *confirmed*. A page about a centre's old
+address is used only for roads further out, as for any source.
+
+**Not used**: test routes sold for money (paid apps, paid downloads, previews of paid lists); anything behind a login or a
 paywall; route files (GPX, sat nav downloads); text or video copied in any amount; sites that say automated reading is
 not allowed (their robots file or terms). A page that blocks automated reading is left alone, not worked round.
 
@@ -124,7 +129,7 @@ the template is tried on different kinds of area.
 | A source is out of date (old centre, changed road layout) | Dates recorded; pre-move sources limited; the map wins on what is physically there |
 | Sources copy each other, so "two sources" is really one | Same author or repeated text counts once |
 | A source is wrong, or about another centre | Names must match the map near the centre; one source alone only makes *likely* |
-| Using other people's material | Only place names are taken, in our words; links kept; no selling-route apps, no paywalls, no copying; the legal check comes before pass 2 |
+| Using other people's material | Only place names are taken, in our words; links kept; free route lists inspire, never copied; nothing paid, no paywalls; the legal check comes before pass 2 |
 | Search results differ day to day | The searches and the date are saved; pass 2 can be repeated |
 | Quiet centres have nothing | They become *map-only* by the rules, and are not in the pilot |
 

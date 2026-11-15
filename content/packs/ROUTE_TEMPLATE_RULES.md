@@ -36,6 +36,9 @@ Rules for rank B:
   once), and **likely** when one does.
 - Information from before a centre moved is not used for how routes leave and return, only for roads further out.
 - Each source's terms of use are respected. No paid route lists, and nothing taken from apps that sell routes.
+- Free, public route-list pages may inspire a route where they are credible (dated, or matching the map round the
+  centre's current address) *(agreed, 15 Nov 2026)*: their road and junction names count as evidence; the route
+  itself is never copied, in whole or in order.
 
 ## 3. The test area, and the overlap rule
 
