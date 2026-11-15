@@ -1,69 +1,328 @@
 [
- {"name":"Barnsley","postcode":"S75 2DH","tests":7765,"score":3,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":1,"template":2,"news":0,"paid":2},
-  "sources":[
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/barnsley-driving-test-routes.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/South-Yorkshire/Barnsley"},
-   {"kind":"template","site":"myfourwheels.co.uk","url":"https://www.myfourwheels.co.uk/locations/hoyland/mock-driving-test"},
-   {"kind":"paid","site":"payhip.com","url":"https://payhip.com/b/5aREQ"},
-   {"kind":"paid","site":"rhubarb-whale-39k8.squarespace.com","url":"https://rhubarb-whale-39k8.squarespace.com/barnsley-driving-test-routes"}],
-  "moved":null,"searched":"2026-11-15"},
- {"name":"Barnstaple","postcode":"EX31 1AB","tests":3583,"score":4,
-  "counts":{"instructor-page":0,"video":1,"learner":0,"route-list":1,"template":1,"news":0,"paid":1},
-  "sources":[
-   {"kind":"video","site":"youtube.com","url":"https://yt.dorper.me/v/yt/DOvHpgZnNbk"},
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/barnstaple-driving-test-routes.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/Devon/Barnstaple"},
-   {"kind":"paid","site":"payhip.com","url":"https://payhip.com/b/6TzlW"}],
-  "moved":"Some results give other addresses (Whiddon Valley, Seven Brethren Bank); most give Benning Court EX31 1AB. Possible older address in some pages.","searched":"2026-11-15"},
- {"name":"Barra","postcode":"HS9 5XD","tests":10,"score":2,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":1,"template":1,"news":0,"paid":0},
-  "sources":[
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/barra-island-driving-test-routes.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/Western-Isles/Barra"}],
-  "moved":null,"searched":"2026-11-15"},
- {"name":"Barrow In Furness","postcode":"LA14 2PN","tests":1735,"score":3,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":1,"template":2,"news":0,"paid":0},
-  "sources":[
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/barrow-in-furness-driving-test-routes.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/Cumbria/Barrow-In-Furness"},
-   {"kind":"template","site":"bsm.co.uk","url":"https://bsm.co.uk/locations/barrow-in-furness"}],
-  "moved":"One aggregator gives Abbey Road LA14 5QT; most give Trinity Enterprise Centre, Ironworks Road LA14 2PN. Possible older address.","searched":"2026-11-15"},
- {"name":"Barry","postcode":"CF62 5QN","tests":1621,"score":3,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":1,"template":2,"news":0,"paid":0},
-  "sources":[
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/driving-test-routes/barry-driving-test-routes.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/South-Glamorgan/Barry"},
-   {"kind":"template","site":"myfourwheels.co.uk","url":"https://www.myfourwheels.co.uk/locations/barry/mock-driving-test"}],
-  "moved":null,"searched":"2026-11-15"},
- {"name":"Basildon","postcode":"SS14 3JS","tests":4862,"score":2,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":0,"template":2,"news":0,"paid":2},
-  "sources":[
-   {"kind":"template","site":"myfourwheels.co.uk","url":"https://www.myfourwheels.co.uk/locations/basildon/mock-driving-test"},
-   {"kind":"template","site":"rateddriving.com","url":"https://rateddriving.com/driving-lessons/essex/basildon/"},
-   {"kind":"paid","site":"payhip.com","url":"https://payhip.com/b/JNPzI"},
-   {"kind":"paid","site":"rhubarb-whale-39k8.squarespace.com","url":"https://rhubarb-whale-39k8.squarespace.com/basildon-driving-test-routes"}],
-  "moved":null,"searched":"2026-11-15"},
- {"name":"Basingstoke","postcode":"RG22 4LR","tests":4940,"score":3,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":1,"template":2,"news":0,"paid":1},
-  "sources":[
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/basingstoke-driving-test-routes-6-10.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/Hampshire/Basingstoke"},
-   {"kind":"template","site":"myfourwheels.co.uk","url":"https://www.myfourwheels.co.uk/locations/basingstoke/mock-driving-test"},
-   {"kind":"paid","site":"payhip.com","url":"https://payhip.com/b/GsQWd"}],
-  "moved":"One site lists Churchill Way West RG21 6YR; others give Sullivan Road RG22 4LR. Possible older address.","searched":"2026-11-15"},
- {"name":"Bedford","postcode":"MK41 7NY","tests":8958,"score":3,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":1,"template":2,"news":0,"paid":1},
-  "sources":[
-   {"kind":"route-list","site":"drivingtesttips.biz","url":"https://www.drivingtesttips.biz/bedford-driving-test-routes.html"},
-   {"kind":"template","site":"intensivelessons.co.uk","url":"https://intensivelessons.co.uk/driving-test-routes/Bedfordshire/Bedford"},
-   {"kind":"template","site":"myfourwheels.co.uk","url":"https://www.myfourwheels.co.uk/locations/bedford/mock-driving-test"},
-   {"kind":"paid","site":"payhip.com","url":"https://payhip.com/b/MXbED"}],
-  "moved":"One site lists Ampthill Road MK42 9AB; others give Bedford Heights, Manton Lane MK41 7NY. Possible older address.","searched":"2026-11-15"},
- {"name":"Belfast","postcode":"BT12 6QL","tests":0,"score":1,
-  "counts":{"instructor-page":0,"video":0,"learner":0,"route-list":0,"template":2,"news":0,"paid":0},
-  "sources":[
-   {"kind":"template","site":"passrates.uk","url":"https://passrates.uk/guide/passing-driving-test-belfast"},
-   {"kind":"template","site":"drivingtesttips.biz","url":"https://drivingtesttips.biz/belfast-driving-test-centre.html"}],
-  "moved":"Pages describe Balmoral Avenue BT9 6NY (and Mallusk/Hydebank); batch postcode BT12 6QL with 0 tests suggests a new or relocated centre. Sources scored at half.","searched":"2026-11-15"}
+ {
+  "name": "Barnsley",
+  "postcode": "S75 2DH",
+  "tests": 7765,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/barnsley-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/South-Yorkshire/Barnsley"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/hoyland/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/5aREQ"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/barnsley-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Barnstaple",
+  "postcode": "EX31 1AB",
+  "tests": 3583,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 1,
+   "learner": 0,
+   "route-list": 1,
+   "template": 1,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "video",
+    "site": "youtube.com",
+    "url": "https://yt.dorper.me/v/yt/DOvHpgZnNbk"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/barnstaple-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Devon/Barnstaple"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/6TzlW"
+   }
+  ],
+  "moved": "Some results give other addresses (Whiddon Valley, Seven Brethren Bank); most give Benning Court EX31 1AB. Possible older address in some pages.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Barra",
+  "postcode": "HS9 5XD",
+  "tests": 10,
+  "score": 2,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 1,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/barra-island-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Western-Isles/Barra"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Barrow In Furness",
+  "postcode": "LA14 2PN",
+  "tests": 1735,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/barrow-in-furness-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Cumbria/Barrow-In-Furness"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/barrow-in-furness"
+   }
+  ],
+  "moved": "One aggregator gives Abbey Road LA14 5QT; most give Trinity Enterprise Centre, Ironworks Road LA14 2PN. Possible older address.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Barry",
+  "postcode": "CF62 5QN",
+  "tests": 1621,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/barry-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/South-Glamorgan/Barry"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/barry/mock-driving-test"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Basildon",
+  "postcode": "SS14 3JS",
+  "tests": 4862,
+  "score": 2,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/basildon/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://rateddriving.com/driving-lessons/essex/basildon/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/JNPzI"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/basildon-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Basingstoke",
+  "postcode": "RG22 4LR",
+  "tests": 4940,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/basingstoke-driving-test-routes-6-10.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Hampshire/Basingstoke"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/basingstoke/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/GsQWd"
+   }
+  ],
+  "moved": "One site lists Churchill Way West RG21 6YR; others give Sullivan Road RG22 4LR. Possible older address.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Bedford",
+  "postcode": "MK41 7NY",
+  "tests": 8958,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/bedford-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Bedfordshire/Bedford"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/bedford/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/MXbED"
+   }
+  ],
+  "moved": "One site lists Ampthill Road MK42 9AB; others give Bedford Heights, Manton Lane MK41 7NY. Possible older address.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Belfast",
+  "postcode": "BT12 6QL",
+  "tests": 0,
+  "score": 1,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/passing-driving-test-belfast"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/belfast-driving-test-centre.html"
+   }
+  ],
+  "moved": "Pages describe Balmoral Avenue BT9 6NY (and Mallusk/Hydebank); batch postcode BT12 6QL with 0 tests suggests a new or relocated centre. Sources scored at half.",
+  "searched": "2026-11-15"
+ }
 ]
