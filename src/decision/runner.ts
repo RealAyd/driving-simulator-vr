@@ -134,9 +134,8 @@ const END_WAIT=30;
 /** A road user paced to meet the car eases down to no less than this share of its speed; and reaches its point this
  * long (seconds) after the car is stopped at the line. */
 const PACE_LEAST=.4,PACE_MARGIN=.6;
-/** The road user a stage waits for stands this far (metres) short of its point until the car is there; held from its
- * stopping distance before that (it slows at HOLD_EASE m/s², as a road user does when paced), so it never runs past. */
-const HOLD_SHORT=4,HOLD_EASE=1.5;
+/** The road user a stage waits for stands this far (metres) short of its point until the car is there. */
+const HOLD_SHORT=4;
 /** A pedestrian may be paced down further: people dawdle (a share of their speed). */
 const PACE_LEAST_ON_FOOT=.15;
 /** Within this far of the start of their path (metres) someone on foot may stand and wait. */
@@ -396,8 +395,7 @@ export class DecisionRunner{
     if(place.pause.kind==='stop'&&d<1.5&&speed<.5)return;
     // (A car nearly at its point with the learner's not yet there, held up behind traffic: it stands and waits, rather than passing
     // the moment depicted before the car arrives.)
-    const v0=x.speed??0;
-    if(def.kind!=='pedestrian'&&left<HOLD_SHORT+v0*v0/(2*HOLD_EASE)&&d>3){x.pace=0;return}
+    if(def.kind!=='pedestrian'&&left<HOLD_SHORT&&d>3){x.pace=0;return}
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;
