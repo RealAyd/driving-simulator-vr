@@ -1,0 +1,70 @@
+{
+  "centre": "West Didsbury (Manchester)",
+  "status": "ok",
+  "centre_position": {"lat": 53.42472, "lon": -2.25789},
+  "address": "Unit 11, Christie Park, West Didsbury, Manchester, M21 7QY",
+  "address_checked": "2026-11-15",
+  "address_note": "No gov.uk centre page could be fetched (the publication URL returns 404 and gov.uk search lists no centre page); address taken from DVSA-derived listings (intensivelessons, billplant), all agreeing. The postcode matches; the position sits beside Princess Road (A5103) in West Didsbury, which matches. No sign of a move or closure.",
+  "searches": [
+    "\"West Didsbury\" driving test route roads roundabout",
+    "\"West Didsbury test centre\" Christie Park tips junction",
+    "West Didsbury driving test reddit OR forum route"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "template",
+      "author": "drivingtesttips.biz",
+      "url": "https://drivingtesttips.biz/west-didsbury-driving-test-centre.html",
+      "published": "unknown",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": ["A5103 dual carriageway (Princess Road / Princess Parkway)"]
+    },
+    {
+      "id": "s2",
+      "kind": "template",
+      "author": "passrates.uk",
+      "url": "https://passrates.uk/guide/west-didsbury-manchester-driving-test-centre",
+      "published": "2026-09",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": ["Barlow Moor Road", "Burton Road"]
+    },
+    {
+      "id": "s3",
+      "kind": "instructor-page",
+      "author": "Bill Plant Driving School (lesson areas, not test roads)",
+      "url": "https://www.billplant.co.uk/driving-lessons/where-to-find-us/manchester/didsbury/",
+      "published": "unknown",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": ["Wilmslow Road", "Palatine Road"]
+    }
+  ],
+  "skipped": [
+    {"url": "https://zagros-driving-school.pages.dev/test-centres", "reason": "unreachable (proxy 502); a search summary attributes a Parrs Wood Road end roundabout and a right turn near Fog Lane Park to it, unverified so not recorded"},
+    {"url": "https://ims-driving-school.pages.dev/services/test-preparation", "reason": "read; names no West Didsbury roads"},
+    {"url": "https://ims-driving-school.pages.dev/areas/didsbury", "reason": "read; names no roads"},
+    {"url": "https://learnanddrive.uk/?p=16331", "reason": "read; names no roads"},
+    {"url": "https://just-drive.co.uk/?p=22219", "reason": "read; names no roads"},
+    {"url": "https://www.myfourwheels.co.uk/locations/didsbury/mock-driving-test", "reason": "read; names no roads"},
+    {"url": "https://www.passmefast.co.uk/test-centres/practical/greater-manchester/west-didsbury-manchester", "reason": "page shell only, no roads"},
+    {"url": "https://www.veygo.com/driving-test-centres/west-didsbury-manchester/", "reason": "page shell only, no roads"},
+    {"url": "https://payhip.com/b/MedU8", "reason": "paid"},
+    {"url": "https://rhubarb-whale-39k8.squarespace.com/west-didsbury-driving-test-routes", "reason": "paid"}
+  ],
+  "places": [
+    {"name": "Princess Road (A5103) dual carriageway", "kind": "road", "map": {"lat": 53.42299, "lon": -2.25779, "osm": "way/145483363"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Princess Parkway (A5103) dual carriageway", "kind": "road", "map": {"lat": 53.40325, "lon": -2.26754, "osm": "way/4018900"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Barlow Moor Road", "kind": "road", "map": {"lat": 53.43651, "lon": -2.27377, "osm": "way/165416704"}, "sources": ["s2"], "confidence": "likely"},
+    {"name": "Burton Road", "kind": "road", "map": {"lat": 53.43295, "lon": -2.23234, "osm": "way/1456991055"}, "sources": ["s2"], "confidence": "likely"},
+    {"name": "Palatine Road", "kind": "road", "map": {"lat": 53.42840, "lon": -2.23364, "osm": "way/1072776890"}, "sources": ["s3"], "confidence": "likely"},
+    {"name": "Wilmslow Road", "kind": "road", "map": {"lat": 53.44173, "lon": -2.21865, "osm": "way/1000359433"}, "sources": ["s3"], "confidence": "likely"}
+  ],
+  "unmatched": [],
+  "summary": "0 confirmed and 6 likely roads (A5103 Princess Road/Parkway, Barlow Moor Road, Burton Road, Palatine Road, Wilmslow Road), 0 known junctions; all from non-first-hand template or lesson-area pages. Two routes meeting the overlap rule do not look possible yet: the likely roads could carry half the length, but there are no known junctions for the 3-of-8 scenario requirement."
+}
