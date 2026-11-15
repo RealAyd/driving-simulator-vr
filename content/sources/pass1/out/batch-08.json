@@ -1334,5 +1334,44 @@
   ],
   "moved": "No postcode in input. Results describe the Harehills (Hillcrest House) centre; a separate Leeds (Colton Mill, LS15) entry has 0 tests and paid route PDFs exist for it, which suggests a move or a new site. Not confirmed.",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Leeds (Colton Mill)",
+  "postcode": "LS15 9JN",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 2,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "news",
+    "site": "goroadie.com",
+    "url": "https://goroadie.com/associations/msagb/posts/623"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/West-Yorkshire/Leeds-Colton-Mill"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/colton/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/Re3EV"
+   }
+  ],
+  "moved": "New centre: DVSA opened Colton Mill Office Park (Bullerthorpe Lane, LS15 9JN) in April 2025, taking some tests from Fearnville, which stays open. Older free route lists cover Harehills, not this site.",
+  "searched": "2026-11-15"
  }
 ]

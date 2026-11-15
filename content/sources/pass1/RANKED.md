@@ -1,6 +1,6 @@
 # Pass 1: ranked so far
 
-349 of 350 centres searched; 1 still to do. Score per EVIDENCE_PLAN section 5.
+350 of 350 centres searched; 0 still to do. Score per EVIDENCE_PLAN section 5.
 
 | # | Centre | Score | First-hand | Route lists | Template | Moved / address note |
 |---|---|---|---|---|---|---|
@@ -332,28 +332,29 @@
 | 326 | Cookstown | 3 | 0 | 0 | 3 |  |
 | 327 | Downpatrick | 3 | 0 | 0 | 3 | Results disagree on address: Rathkeltair Road (BT30 6SN) vs Cloonagh Road (BT30 6DU) |
 | 328 | Enniskillen | 3 | 0 | 0 | 3 | Results disagree on address: Coa Road (BT74 4AD) vs Tempo Road (BT74 6HR) and Chanterhill  |
-| 329 | Londonderry (Newbuildings) | 3 | 0 | 0 | 2 |  |
-| 330 | Mallusk | 3 | 1 | 0 | 1 |  |
-| 331 | Newtownards | 3 | 0 | 0 | 3 | Unclear: one site lists the centre on Court Street, another on Jubilee Road, Scrabo BT23 4 |
-| 332 | York | 2.5 | 0 | 1 | 2 | The old York centre on Murton Way is reported closed; the centre is now Unit 2, Arabesque  |
-| 333 | Basildon | 2 | 0 | 0 | 2 |  |
-| 334 | Bala | 2 | 0 | 1 | 1 |  |
-| 335 | Lerwick | 2 | 0 | 1 | 0 |  |
-| 336 | Callander | 2 | 0 | 1 | 1 | Results disagree on the venue: McLaren Community Leisure Centre (Mollands Road), Callander |
-| 337 | Carlisle LGV (Cars) | 2 | 0 | 0 | 2 |  |
-| 338 | Barra | 2 | 0 | 1 | 1 |  |
-| 339 | Ballymena | 2 | 0 | 0 | 2 | One aggregator places the centre on Wellington Street (BT43 6AD), likely an older address; |
-| 340 | Newry | 2 | 0 | 0 | 2 | Pages disagree: one gives Killeavy Road BT35 8PX, another 51 Rathfriland Road BT34 1LD (th |
-| 341 | South Uist | 2 | 0 | 1 | 1 |  |
-| 342 | Walton LGV | 1 | 0 | 0 | 1 |  |
-| 343 | Stornoway | 1 | 0 | 1 | 0 |  |
-| 344 | Belfast | 1 | 0 | 0 | 2 | Pages describe Balmoral Avenue BT9 6NY (and Mallusk/Hydebank); batch postcode BT12 6QL wit |
-| 345 | Leeds (The Old Fire Station) | 1 | 0 | 0 | 0 | New temporary site: Leeds Fearnville car, ADI and standards check tests start from the Old |
-| 346 | Aberdeen North LGV | 0 | 0 | 0 | 0 |  |
-| 347 | Exeter LGV | 0 | 0 | 0 | 0 |  |
-| 348 | Swindon LGV | 0 | 0 | 0 | 0 | LGV-only centre (Chiseldon Camp SN4 0FH); no car-test road sources, results all describe t |
-| 349 | Plymouth LGV | 0 | 0 | 0 | 0 |  |
+| 329 | Leeds (Colton Mill) | 3 | 0 | 0 | 2 | New centre: DVSA opened Colton Mill Office Park (Bullerthorpe Lane, LS15 9JN) in April 202 |
+| 330 | Londonderry (Newbuildings) | 3 | 0 | 0 | 2 |  |
+| 331 | Mallusk | 3 | 1 | 0 | 1 |  |
+| 332 | Newtownards | 3 | 0 | 0 | 3 | Unclear: one site lists the centre on Court Street, another on Jubilee Road, Scrabo BT23 4 |
+| 333 | York | 2.5 | 0 | 1 | 2 | The old York centre on Murton Way is reported closed; the centre is now Unit 2, Arabesque  |
+| 334 | Basildon | 2 | 0 | 0 | 2 |  |
+| 335 | Bala | 2 | 0 | 1 | 1 |  |
+| 336 | Lerwick | 2 | 0 | 1 | 0 |  |
+| 337 | Callander | 2 | 0 | 1 | 1 | Results disagree on the venue: McLaren Community Leisure Centre (Mollands Road), Callander |
+| 338 | Carlisle LGV (Cars) | 2 | 0 | 0 | 2 |  |
+| 339 | Barra | 2 | 0 | 1 | 1 |  |
+| 340 | Ballymena | 2 | 0 | 0 | 2 | One aggregator places the centre on Wellington Street (BT43 6AD), likely an older address; |
+| 341 | Newry | 2 | 0 | 0 | 2 | Pages disagree: one gives Killeavy Road BT35 8PX, another 51 Rathfriland Road BT34 1LD (th |
+| 342 | South Uist | 2 | 0 | 1 | 1 |  |
+| 343 | Walton LGV | 1 | 0 | 0 | 1 |  |
+| 344 | Stornoway | 1 | 0 | 1 | 0 |  |
+| 345 | Belfast | 1 | 0 | 0 | 2 | Pages describe Balmoral Avenue BT9 6NY (and Mallusk/Hydebank); batch postcode BT12 6QL wit |
+| 346 | Leeds (The Old Fire Station) | 1 | 0 | 0 | 0 | New temporary site: Leeds Fearnville car, ADI and standards check tests start from the Old |
+| 347 | Aberdeen North LGV | 0 | 0 | 0 | 0 |  |
+| 348 | Exeter LGV | 0 | 0 | 0 | 0 |  |
+| 349 | Swindon LGV | 0 | 0 | 0 | 0 | LGV-only centre (Chiseldon Camp SN4 0FH); no car-test road sources, results all describe t |
+| 350 | Plymouth LGV | 0 | 0 | 0 | 0 |  |
 
 ## Still to search
 
-Leeds (Colton Mill)
+
