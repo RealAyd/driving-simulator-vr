@@ -1285,5 +1285,54 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Leeds",
+  "postcode": null,
+  "tests": 7346,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 4,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/leeds-driving-test-routes-harehills.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/west-yorkshire/leeds-hillcrest-house"
+   },
+   {
+    "kind": "template",
+    "site": "drivesidekick.pages.dev",
+    "url": "https://drivesidekick.pages.dev/blog/test-centres/leeds-harehills-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/leeds/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-lessons/yorkshire/leeds/roundhay/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/WsBdQ"
+   }
+  ],
+  "moved": "No postcode in input. Results describe the Harehills (Hillcrest House) centre; a separate Leeds (Colton Mill, LS15) entry has 0 tests and paid route PDFs exist for it, which suggests a move or a new site. Not confirmed.",
+  "searched": "2026-11-15"
  }
 ]

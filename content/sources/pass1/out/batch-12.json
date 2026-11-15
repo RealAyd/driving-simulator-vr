@@ -1224,5 +1224,54 @@
   ],
   "moved": "One page gives Griffiths Way; most use Beauver House, 6 Bricket Road AL1 3JX",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "St Helens (Liverpool)",
+  "postcode": "WA9 1NS",
+  "tests": 9776,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Merseyside/St-Helens-Liverpool"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/st-helens-driving-test-routes.html"
+   },
+   {
+    "kind": "news",
+    "site": "inkl.com",
+    "url": "https://inkl.com/news/st-helens-roads-that-can-stump-even-the-most-experienced-drivers"
+   },
+   {
+    "kind": "template",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/st-helens-liverpool-driving-test-routes"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/st-helens-liverpool/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/TB9E5"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

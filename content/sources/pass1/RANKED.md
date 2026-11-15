@@ -1,6 +1,6 @@
 # Pass 1: ranked so far
 
-347 of 350 centres searched; 3 still to do. Score per EVIDENCE_PLAN section 5.
+349 of 350 centres searched; 1 still to do. Score per EVIDENCE_PLAN section 5.
 
 | # | Centre | Score | First-hand | Route lists | Template | Moved / address note |
 |---|---|---|---|---|---|---|
@@ -178,180 +178,182 @@
 | 172 | Watford | 5 | 0 | 1 | 4 |  |
 | 173 | Worcester | 5 | 0 | 1 | 4 |  |
 | 174 | Gosforth | 5 | 0 | 0 | 6 |  |
-| 175 | Poole | 5 | 0 | 0 | 7 | Results give two postcodes, BH17 0SA and BH17 8PJ (Harwell Road, Nuffield Industrial Estat |
-| 176 | Ashfield | 5 | 0 | 2 | 3 |  |
-| 177 | Glasgow (Baillieston) | 5 | 0 | 0 | 6 |  |
-| 178 | Southampton (Maybush) | 5 | 0 | 1 | 4 |  |
-| 179 | Glasgow (Anniesland) | 5 | 0 | 0 | 7 |  |
-| 180 | Banbury | 5 | 0 | 2 | 3 | Sources disagree on address: West Bar Street (where free route sheets start) vs Unit 4 Bea |
-| 181 | Chester | 5 | 0 | 2 | 3 | One page gives Sealand Road (CH1 4LR); the centre is listed at Chester Gates Business Park |
-| 182 | Atherton (Manchester) | 5 | 0 | 0 | 6 |  |
-| 183 | Bradford (Thornbury) | 5 | 0 | 1 | 4 |  |
-| 184 | Burton on Trent | 5 | 0 | 2 | 3 | One aggregator lists Derby Road DE14 3JG; others give Wellington Park DE14 2TG. Possible o |
-| 185 | Stoke-On-Trent (Cobridge) | 5 | 0 | 2 | 3 |  |
-| 186 | Sevenoaks | 5 | 0 | 2 | 3 |  |
-| 187 | Maidstone | 5 | 0 | 2 | 3 | Possible: one aggregator lists Buckland Road, ME16 8LA; most give South Park Business Vill |
-| 188 | Yeading (London) | 5 | 0 | 0 | 6 |  |
-| 189 | Warrington | 5 | 0 | 0 | 7 | Sources disagree on the address: one lists Winwick Road (WA2 7NE), others Festival Avenue  |
-| 190 | Camborne | 5 | 0 | 2 | 3 | One source gives Trevenson Road, Camborne TR14 0PT; others give Wilson Way, Redruth TR15 3 |
-| 191 | Scunthorpe | 5 | 0 | 2 | 3 | One data page gives Pittwood House, Ashby Road DN16 1AB; others use Onward Way off Warren  |
-| 192 | Rotherham | 5 | 0 | 2 | 3 | One result gives Brecks Lane S65 3JL; others use Mangham Way S61 4RL (possibly an older ad |
-| 193 | Grimsby Coldwater | 5 | 0 | 1 | 4 |  |
-| 194 | Shrewsbury | 5 | 0 | 2 | 3 | Some pages give Oteley Road SY2 6QQ or Sundorne Road SY1 4RQ (likely older addresses); mos |
-| 195 | Widnes | 5 | 0 | 1 | 4 |  |
-| 196 | Bishopbriggs | 5 | 0 | 0 | 5 |  |
-| 197 | Hamilton | 5 | 0 | 2 | 3 | Sources disagree on the address: 30 Selkirk Street ML3 6RQ vs Bent Road ML3 6JD |
-| 198 | Knaresborough | 5 | 0 | 0 | 7 |  |
-| 199 | Heckmondwike | 5 | 0 | 2 | 3 | Sources disagree on the address: Tower Buildings, High Street WF16 0AS vs Spen Valley Leis |
-| 200 | Macclesfield | 5 | 0 | 2 | 3 | Possible: one listing gives Black Road, SK11 7NR; most give Unit 4 Bailey Court, Green Str |
-| 201 | Abergavenny | 5 | 0 | 2 | 3 |  |
-| 202 | Chesterfield | 5 | 0 | 2 | 3 | One page gives Saltergate (S40 1SN); others give Approach Road, Stonegravels (S41 7LT). No |
-| 203 | Boston | 5 | 0 | 2 | 3 |  |
-| 204 | Wrexham | 5 | 0 | 0 | 8 | One source gives Rhosnesni Lane (LL13 9TT); most give Birchall House, Wrexham Technology P |
-| 205 | High Wycombe | 5 | 0 | 1 | 4 | Sources give several addresses (Cressex Road HP12 3TD, Cliveden Office Village Lancaster R |
-| 206 | Newport (Isle of Wight) | 5 | 0 | 0 | 7 | Possible older address: pages variously give Innovation Centre St Cross Business Park PO30 |
-| 207 | Steeton | 5 | 0 | 2 | 3 |  |
-| 208 | Winchester | 5 | 0 | 0 | 7 |  |
-| 209 | Ludlow | 5 | 1 | 2 | 1 | Possible: one source gives Ludlow Racecourse, Bromfield, SY8 2BT; most give Unit 1, The Bu |
-| 210 | Canterbury | 5 | 0 | 2 | 3 |  |
-| 211 | Workington | 5 | 0 | 1 | 4 |  |
-| 212 | East Kilbride | 5 | 0 | 0 | 6 | Results give Bosfield Place, Legion Scotland, East Mains (G74 4DY), not the input postcode |
-| 213 | Galashiels | 5 | 0 | 1 | 4 |  |
-| 214 | Carmarthen | 5 | 0 | 2 | 3 | Pages disagree on the address: Ty Myrddin, Old Station Road (SA31 1GS) vs a Johnstown addr |
-| 215 | Ayr | 5 | 0 | 2 | 3 | Sources disagree on address: 40 Boundary Road, Heathfield (KA8 9DJ/9DN) vs Whitletts Road  |
-| 216 | Aberdeen North | 5 | 0 | 2 | 2 | Results give conflicting addresses (Cloverhill Road, Bridge of Don; Balgownie Road; Ellon  |
-| 217 | Wellingborough | 5 | 0 | 0 | 9 |  |
-| 218 | Cardigan | 5 | 0 | 2 | 2 |  |
-| 219 | Hexham | 5 | 0 | 1 | 4 | Sources disagree on the address: St Andrews House, Haugh Lane NE46 3EW vs Wentworth Busine |
-| 220 | Castle Douglas | 5 | 0 | 2 | 3 |  |
-| 221 | Enfield (Brancroft Way) | 5 | 0 | 1 | 4 | One aggregator lists a Darwen, Lancashire postcode (BB5 4RT) for this centre; others give  |
-| 222 | Kelso | 5 | 0 | 1 | 4 | Sources say the centre was at Tait Hall, Edenside Road and moved (during the pandemic) to  |
-| 223 | Forfar | 5 | 0 | 1 | 4 |  |
-| 224 | Orkney | 5 | 0 | 1 | 4 |  |
-| 225 | Arbroath | 5 | 0 | 2 | 3 |  |
-| 226 | Wick | 5 | 0 | 1 | 4 |  |
-| 227 | Dunoon | 5 | 0 | 2 | 3 | Results disagree on postcode (PA23 8PB, PA23 8KP, PA23 8BP); one gives Dunoon Business Cen |
-| 228 | Grantown-On-Spey | 5 | 0 | 1 | 4 |  |
-| 229 | Thurso | 5 | 0 | 2 | 3 | Address conflict in results: one aggregator gives a Dorrery address; others give Naver Hou |
-| 230 | Ballater | 5 | 0 | 2 | 2 | Sites give different addresses (Anderson Road; The Lecture Room); unclear which is current |
-| 231 | Kyle of Lochalsh | 5 | 0 | 2 | 3 |  |
-| 232 | Crieff | 5 | 0 | 2 | 3 |  |
-| 233 | Campbeltown | 5 | 0 | 2 | 3 |  |
-| 234 | Golspie | 5 | 0 | 0 | 4 | Results say the centre is now at the fire station on Back Road, a two-minute drive from th |
-| 235 | Ullapool | 5 | 0 | 2 | 3 |  |
-| 236 | Gairloch | 5 | 0 | 1 | 4 |  |
-| 237 | Isles of Scilly | 5 | 0 | 2 | 3 |  |
-| 238 | Lairg | 5 | 0 | 2 | 3 | intensivelessons.co.uk says the centre (Lairg Fire Station, Main Street) is closing or clo |
-| 239 | Omagh | 5 | 0 | 0 | 5 | Results disagree on the address: some give Gortrush Industrial Estate, Derry Road (BT78 5E |
-| 240 | Norwich (Peachman Way) | 4.5 | 0 | 2 | 3 | Norwich car tests moved from Jupiter Road (listed as closing or closed) to Peachman Way, B |
-| 241 | Blackburn with Darwen | 4.5 | 0 | 1 | 4 | Centre is at Blackburn Interchange, M65 J4 (BB3 0DB); the drivingtesttips.biz route list i |
-| 242 | Blackpool | 4.5 | 0 | 1 | 3 | MSA GB post (Apr 2026): DVSA opening a new permanent centre at The Pavilions, Avroe Cresce |
-| 243 | Leicester (Wigston) | 4 | 0 | 2 | 2 |  |
-| 244 | Bolton (Manchester) | 4 | 0 | 1 | 3 | One result gives Tonge Moor Road BL2 2DL; others give 143 Weston Street BL3 2AW. Possible  |
-| 245 | Cheetham Hill (Manchester) | 4 | 0 | 2 | 2 |  |
-| 246 | Swansea | 4 | 0 | 2 | 2 | Address conflict in results: one aggregator gives Ffordd Yr Afon SA6 8PN, and drivingtestt |
-| 247 | Bristol (Avonmouth) | 4 | 1 | 0 | 2 |  |
-| 248 | Coventry | 4 | 0 | 2 | 2 | One page gives Cheylesmore (CV3 5HG), likely an older site; route pages describe Bayton Ro |
-| 249 | Sunderland | 4 | 0 | 2 | 2 | Address conflict in results: one aggregator places the centre at Doxford International Bus |
-| 250 | Lichfield | 4 | 0 | 2 | 2 |  |
-| 251 | Birmingham (Kings Heath) | 4 | 0 | 1 | 3 |  |
-| 252 | Bradford (Heaton) | 4 | 0 | 2 | 2 |  |
-| 253 | Stoke-on-Trent (Newcastle-Under-Lyme) | 4 | 0 | 2 | 2 |  |
-| 254 | Bridgend | 4 | 0 | 2 | 2 | One result lists Brackla Way CF31 2AD; others give Angel Street CF31 4AD. Possible older o |
-| 255 | Bishops Stortford | 4 | 0 | 1 | 3 |  |
-| 256 | Nelson | 4 | 0 | 2 | 2 | Unclear: one source gives Pendle House, Nelson and Colne College, Scotland Road; others gi |
-| 257 | Aylesbury | 4 | 0 | 2 | 2 | Free route sheets start and end around Walton Road / Walton Grove, possibly an older site; |
-| 258 | Letchworth | 4 | 0 | 2 | 2 |  |
-| 259 | Halifax | 4 | 0 | 1 | 3 |  |
-| 260 | Stevenage | 4 | 0 | 2 | 2 | Address conflict in results: one aggregator gives Monkswood Way SG1 1HX; others give 3 Dra |
-| 261 | Stirling | 4 | 0 | 2 | 2 | Address conflict in results: one page gives Springkerse Industrial Estate FK7 7SU; most gi |
-| 262 | Barnstaple | 4 | 1 | 1 | 1 | Some results give other addresses (Whiddon Valley, Seven Brethren Bank); most give Benning |
-| 263 | Skipton | 4 | 0 | 2 | 2 |  |
-| 264 | Scarborough | 4 | 0 | 1 | 3 | Route sheets start from Cayton Low Road (YO11 3BY); another page gives Falsgrave Road YO12 |
-| 265 | Greenock | 4 | 0 | 1 | 3 | Sources disagree on the address: 19A Union Street PA16 8DD vs Belville Street PA15 4AX |
-| 266 | Skegness | 4 | 0 | 2 | 2 | Pages disagree on the address (Wainfleet Road, Richmond Drive, Seacroft Road, Beaubridge B |
-| 267 | Haddington | 4 | 0 | 1 | 3 | Sources give different postcodes (EH41 3SF vs EH41 3NG) |
-| 268 | Newtown | 4 | 0 | 2 | 2 |  |
-| 269 | Monmouth | 4 | 0 | 1 | 3 | Unclear: one source gives Wonastow Road NP25 4RZ; most give Old Dixton Road NP25 3DP |
-| 270 | Wallasey | 4 | 0 | 2 | 2 |  |
-| 271 | Louth | 4 | 0 | 2 | 2 | Possible: a listing gives Fairfield Industrial Estate, Newbridge Hill, LN11 0LZ, not the i |
-| 272 | Fraserburgh | 4 | 0 | 1 | 3 | Results disagree on the address: one gives Watermill Road AB43 9DN, others Business Park S |
-| 273 | Banff | 4 | 0 | 2 | 2 |  |
-| 274 | Huntly | 4 | 0 | 1 | 3 |  |
-| 275 | Stranraer | 4 | 0 | 2 | 2 | Address conflict in results: one page gives the North West Castle Hotel, another the fire  |
-| 276 | Newton Stewart | 4 | 0 | 2 | 2 | Unclear: one source places the centre at the Crown Hotel, another on Wigtown Road |
-| 277 | Duns | 4 | 0 | 2 | 2 |  |
-| 278 | Inveraray | 4 | 0 | 1 | 3 | Sources give different addresses (The Pier PA32 8; Community Centre, Front Street PA32 8TL |
-| 279 | Mallaig | 4 | 0 | 2 | 1 |  |
-| 280 | Isle of Tiree | 4 | 0 | 2 | 2 | Sources conflict on location: PA77 6UH (Scarinish Hotel) vs passrates.uk listing PA77 6TZ  |
-| 281 | Aberfeldy | 4 | 0 | 2 | 2 | One result says Aberfeldy's nearest test centre is Perth; centre (Town Hall, Crieff Road)  |
-| 282 | Armagh | 4 | 0 | 0 | 3 | One source gives Lonsdale Road (BT61 7HN), likely an older address; most give 47 Hamiltons |
-| 283 | Brodick (Isle of Arran) | 4 | 0 | 2 | 2 |  |
-| 284 | Coleraine | 4 | 0 | 0 | 3 | One page gives Portstewart Road (BT52 1RD), likely an older site; others give Loughan Hill |
-| 285 | Craigavon | 4 | 0 | 0 | 4 |  |
-| 286 | Hydebank | 4 | 1 | 0 | 1 | Hydebank is described as a new DVA test centre (DfI FOI 2023-0170); no older address seen |
-| 287 | Islay Island | 4 | 0 | 2 | 2 | drivingtesttips.biz also has a separate 'Islay Driving Test Centre - Port Ellen' page; cur |
-| 288 | Isle of Skye (Broadford) | 4 | 0 | 2 | 2 |  |
-| 289 | Lisburn | 4 | 1 | 0 | 2 |  |
-| 290 | Londonderry (Altnagelvin) | 4 | 0 | 0 | 2 |  |
-| 291 | Rothesay | 4 | 0 | 2 | 2 |  |
-| 292 | Swindon | 3.5 | 0 | 2 | 2 | One aggregator lists the old Drakes Way SN3 3LL address; current centre is Fenn Close, Pea |
-| 293 | Huddersfield | 3.5 | 0 | 1 | 2 | Some pages give Waverley House, Waverley Road HD1 5NA (or Leeds Road HD1 6QQ); the current |
-| 294 | Greenham | 3.5 | 0 | 1 | 3 | Centre at Venture West, New Greenham Park RG19 6HX; the only free route sheets are for New |
-| 295 | Birmingham (Kingstanding) | 3 | 0 | 1 | 2 |  |
-| 296 | Bromley (London) | 3 | 0 | 0 | 3 |  |
-| 297 | Nottingham (Chilwell) | 3 | 0 | 0 | 3 |  |
-| 298 | Bredbury (Manchester) | 3 | 0 | 1 | 2 |  |
-| 299 | Hull | 3 | 0 | 1 | 2 | Sources disagree on the address: Reservoir Road HU6 7PY vs Ennerdale, Bransholme HU7 4JQ |
-| 300 | Bedford | 3 | 0 | 1 | 2 | One site lists Ampthill Road MK42 9AB; others give Bedford Heights, Manton Lane MK41 7NY.  |
-| 301 | Worthing | 3 | 0 | 1 | 2 | Sources disagree on the address: Goring Road (BN13 1JZ), Broadwater Street West (BN14 8AZ) |
-| 302 | Barnsley | 3 | 0 | 1 | 2 |  |
-| 303 | Glasgow (Shieldhall) | 3 | 0 | 0 | 3 |  |
-| 304 | Blyth | 3 | 0 | 1 | 2 | One listing gives Cowpen Road NE24 5TA; most give Sextant House, Freehold Street NE24 3BA. |
-| 305 | Hartlepool | 3 | 0 | 1 | 2 | Sources give conflicting addresses (Mainsforth Terrace TS24 9NE, Catcote Road TS26 0BQ) vs |
-| 306 | Telford | 3 | 0 | 2 | 1 |  |
-| 307 | Bodmin | 3 | 0 | 2 | 1 | One result lists Launceston Road (PL31 2DZ); most give Beatrice Road PL31 1RD. Possible ol |
-| 308 | Basingstoke | 3 | 0 | 1 | 2 | One site lists Churchill Way West RG21 6YR; others give Sullivan Road RG22 4LR. Possible o |
-| 309 | Tunbridge Wells | 3 | 0 | 1 | 2 |  |
-| 310 | Stafford | 3 | 0 | 2 | 1 | Address conflict in results: some aggregator pages give Weston Road ST16 3RS or Beaconside |
-| 311 | Inverness (Longman Drive) | 3 | 0 | 1 | 2 | Many route pages are for the separate Seafield Road centre (dropped); drivingtesttips.biz  |
-| 312 | Barrow In Furness | 3 | 0 | 1 | 2 | One aggregator gives Abbey Road LA14 5QT; most give Trinity Enterprise Centre, Ironworks R |
-| 313 | Barry | 3 | 0 | 1 | 2 |  |
-| 314 | Brecon | 3 | 0 | 2 | 1 |  |
-| 315 | Watnall | 3 | 0 | 0 | 3 |  |
-| 316 | Berwick-On-Tweed | 3 | 0 | 1 | 2 | Sites give Golden Square TD15 1RJ and Ramparts Business Park TD15 1TB as well as Tweedmout |
-| 317 | Hawick | 3 | 0 | 1 | 2 |  |
-| 318 | Buckie | 3 | 0 | 1 | 2 |  |
-| 319 | Lochgilphead | 3 | 0 | 2 | 1 |  |
-| 320 | Benbecula Island | 3 | 0 | 1 | 1 |  |
-| 321 | Ashford (London Middlesex) | 3 | 0 | 2 | 4 | Listings say the centre closed on 11 April 2022 (nearest: Chertsey, Uxbridge, Slough); rou |
-| 322 | Ballachulish | 3 | 0 | 1 | 2 | One source says Ballachulish's nearest practical test centre is Fort William; pass-rate da |
-| 323 | Birmingham (Cocks Moors Woods Leisure Centre) | 3 | 0 | 0 | 2 | DVSA post (Feb 2026) says a temporary centre opens at Cocks Moors Woods Leisure Centre fro |
-| 324 | Cookstown | 3 | 0 | 0 | 3 |  |
-| 325 | Downpatrick | 3 | 0 | 0 | 3 | Results disagree on address: Rathkeltair Road (BT30 6SN) vs Cloonagh Road (BT30 6DU) |
-| 326 | Enniskillen | 3 | 0 | 0 | 3 | Results disagree on address: Coa Road (BT74 4AD) vs Tempo Road (BT74 6HR) and Chanterhill  |
-| 327 | Londonderry (Newbuildings) | 3 | 0 | 0 | 2 |  |
-| 328 | Mallusk | 3 | 1 | 0 | 1 |  |
-| 329 | Newtownards | 3 | 0 | 0 | 3 | Unclear: one site lists the centre on Court Street, another on Jubilee Road, Scrabo BT23 4 |
-| 330 | York | 2.5 | 0 | 1 | 2 | The old York centre on Murton Way is reported closed; the centre is now Unit 2, Arabesque  |
-| 331 | Basildon | 2 | 0 | 0 | 2 |  |
-| 332 | Bala | 2 | 0 | 1 | 1 |  |
-| 333 | Lerwick | 2 | 0 | 1 | 0 |  |
-| 334 | Callander | 2 | 0 | 1 | 1 | Results disagree on the venue: McLaren Community Leisure Centre (Mollands Road), Callander |
-| 335 | Carlisle LGV (Cars) | 2 | 0 | 0 | 2 |  |
-| 336 | Barra | 2 | 0 | 1 | 1 |  |
-| 337 | Ballymena | 2 | 0 | 0 | 2 | One aggregator places the centre on Wellington Street (BT43 6AD), likely an older address; |
-| 338 | Newry | 2 | 0 | 0 | 2 | Pages disagree: one gives Killeavy Road BT35 8PX, another 51 Rathfriland Road BT34 1LD (th |
-| 339 | South Uist | 2 | 0 | 1 | 1 |  |
-| 340 | Walton LGV | 1 | 0 | 0 | 1 |  |
-| 341 | Stornoway | 1 | 0 | 1 | 0 |  |
-| 342 | Belfast | 1 | 0 | 0 | 2 | Pages describe Balmoral Avenue BT9 6NY (and Mallusk/Hydebank); batch postcode BT12 6QL wit |
-| 343 | Leeds (The Old Fire Station) | 1 | 0 | 0 | 0 | New temporary site: Leeds Fearnville car, ADI and standards check tests start from the Old |
-| 344 | Aberdeen North LGV | 0 | 0 | 0 | 0 |  |
-| 345 | Exeter LGV | 0 | 0 | 0 | 0 |  |
-| 346 | Swindon LGV | 0 | 0 | 0 | 0 | LGV-only centre (Chiseldon Camp SN4 0FH); no car-test road sources, results all describe t |
-| 347 | Plymouth LGV | 0 | 0 | 0 | 0 |  |
+| 175 | St Helens (Liverpool) | 5 | 0 | 2 | 2 |  |
+| 176 | Poole | 5 | 0 | 0 | 7 | Results give two postcodes, BH17 0SA and BH17 8PJ (Harwell Road, Nuffield Industrial Estat |
+| 177 | Ashfield | 5 | 0 | 2 | 3 |  |
+| 178 | Glasgow (Baillieston) | 5 | 0 | 0 | 6 |  |
+| 179 | Southampton (Maybush) | 5 | 0 | 1 | 4 |  |
+| 180 | Glasgow (Anniesland) | 5 | 0 | 0 | 7 |  |
+| 181 | Banbury | 5 | 0 | 2 | 3 | Sources disagree on address: West Bar Street (where free route sheets start) vs Unit 4 Bea |
+| 182 | Chester | 5 | 0 | 2 | 3 | One page gives Sealand Road (CH1 4LR); the centre is listed at Chester Gates Business Park |
+| 183 | Atherton (Manchester) | 5 | 0 | 0 | 6 |  |
+| 184 | Leeds | 5 | 0 | 1 | 4 | No postcode in input. Results describe the Harehills (Hillcrest House) centre; a separate  |
+| 185 | Bradford (Thornbury) | 5 | 0 | 1 | 4 |  |
+| 186 | Burton on Trent | 5 | 0 | 2 | 3 | One aggregator lists Derby Road DE14 3JG; others give Wellington Park DE14 2TG. Possible o |
+| 187 | Stoke-On-Trent (Cobridge) | 5 | 0 | 2 | 3 |  |
+| 188 | Sevenoaks | 5 | 0 | 2 | 3 |  |
+| 189 | Maidstone | 5 | 0 | 2 | 3 | Possible: one aggregator lists Buckland Road, ME16 8LA; most give South Park Business Vill |
+| 190 | Yeading (London) | 5 | 0 | 0 | 6 |  |
+| 191 | Warrington | 5 | 0 | 0 | 7 | Sources disagree on the address: one lists Winwick Road (WA2 7NE), others Festival Avenue  |
+| 192 | Camborne | 5 | 0 | 2 | 3 | One source gives Trevenson Road, Camborne TR14 0PT; others give Wilson Way, Redruth TR15 3 |
+| 193 | Scunthorpe | 5 | 0 | 2 | 3 | One data page gives Pittwood House, Ashby Road DN16 1AB; others use Onward Way off Warren  |
+| 194 | Rotherham | 5 | 0 | 2 | 3 | One result gives Brecks Lane S65 3JL; others use Mangham Way S61 4RL (possibly an older ad |
+| 195 | Grimsby Coldwater | 5 | 0 | 1 | 4 |  |
+| 196 | Shrewsbury | 5 | 0 | 2 | 3 | Some pages give Oteley Road SY2 6QQ or Sundorne Road SY1 4RQ (likely older addresses); mos |
+| 197 | Widnes | 5 | 0 | 1 | 4 |  |
+| 198 | Bishopbriggs | 5 | 0 | 0 | 5 |  |
+| 199 | Hamilton | 5 | 0 | 2 | 3 | Sources disagree on the address: 30 Selkirk Street ML3 6RQ vs Bent Road ML3 6JD |
+| 200 | Knaresborough | 5 | 0 | 0 | 7 |  |
+| 201 | Heckmondwike | 5 | 0 | 2 | 3 | Sources disagree on the address: Tower Buildings, High Street WF16 0AS vs Spen Valley Leis |
+| 202 | Macclesfield | 5 | 0 | 2 | 3 | Possible: one listing gives Black Road, SK11 7NR; most give Unit 4 Bailey Court, Green Str |
+| 203 | Abergavenny | 5 | 0 | 2 | 3 |  |
+| 204 | Chesterfield | 5 | 0 | 2 | 3 | One page gives Saltergate (S40 1SN); others give Approach Road, Stonegravels (S41 7LT). No |
+| 205 | Boston | 5 | 0 | 2 | 3 |  |
+| 206 | Wrexham | 5 | 0 | 0 | 8 | One source gives Rhosnesni Lane (LL13 9TT); most give Birchall House, Wrexham Technology P |
+| 207 | High Wycombe | 5 | 0 | 1 | 4 | Sources give several addresses (Cressex Road HP12 3TD, Cliveden Office Village Lancaster R |
+| 208 | Newport (Isle of Wight) | 5 | 0 | 0 | 7 | Possible older address: pages variously give Innovation Centre St Cross Business Park PO30 |
+| 209 | Steeton | 5 | 0 | 2 | 3 |  |
+| 210 | Winchester | 5 | 0 | 0 | 7 |  |
+| 211 | Ludlow | 5 | 1 | 2 | 1 | Possible: one source gives Ludlow Racecourse, Bromfield, SY8 2BT; most give Unit 1, The Bu |
+| 212 | Canterbury | 5 | 0 | 2 | 3 |  |
+| 213 | Workington | 5 | 0 | 1 | 4 |  |
+| 214 | East Kilbride | 5 | 0 | 0 | 6 | Results give Bosfield Place, Legion Scotland, East Mains (G74 4DY), not the input postcode |
+| 215 | Galashiels | 5 | 0 | 1 | 4 |  |
+| 216 | Carmarthen | 5 | 0 | 2 | 3 | Pages disagree on the address: Ty Myrddin, Old Station Road (SA31 1GS) vs a Johnstown addr |
+| 217 | Ayr | 5 | 0 | 2 | 3 | Sources disagree on address: 40 Boundary Road, Heathfield (KA8 9DJ/9DN) vs Whitletts Road  |
+| 218 | Aberdeen North | 5 | 0 | 2 | 2 | Results give conflicting addresses (Cloverhill Road, Bridge of Don; Balgownie Road; Ellon  |
+| 219 | Wellingborough | 5 | 0 | 0 | 9 |  |
+| 220 | Cardigan | 5 | 0 | 2 | 2 |  |
+| 221 | Hexham | 5 | 0 | 1 | 4 | Sources disagree on the address: St Andrews House, Haugh Lane NE46 3EW vs Wentworth Busine |
+| 222 | Castle Douglas | 5 | 0 | 2 | 3 |  |
+| 223 | Enfield (Brancroft Way) | 5 | 0 | 1 | 4 | One aggregator lists a Darwen, Lancashire postcode (BB5 4RT) for this centre; others give  |
+| 224 | Kelso | 5 | 0 | 1 | 4 | Sources say the centre was at Tait Hall, Edenside Road and moved (during the pandemic) to  |
+| 225 | Forfar | 5 | 0 | 1 | 4 |  |
+| 226 | Orkney | 5 | 0 | 1 | 4 |  |
+| 227 | Arbroath | 5 | 0 | 2 | 3 |  |
+| 228 | Wick | 5 | 0 | 1 | 4 |  |
+| 229 | Dunoon | 5 | 0 | 2 | 3 | Results disagree on postcode (PA23 8PB, PA23 8KP, PA23 8BP); one gives Dunoon Business Cen |
+| 230 | Grantown-On-Spey | 5 | 0 | 1 | 4 |  |
+| 231 | Thurso | 5 | 0 | 2 | 3 | Address conflict in results: one aggregator gives a Dorrery address; others give Naver Hou |
+| 232 | Ballater | 5 | 0 | 2 | 2 | Sites give different addresses (Anderson Road; The Lecture Room); unclear which is current |
+| 233 | Kyle of Lochalsh | 5 | 0 | 2 | 3 |  |
+| 234 | Crieff | 5 | 0 | 2 | 3 |  |
+| 235 | Campbeltown | 5 | 0 | 2 | 3 |  |
+| 236 | Golspie | 5 | 0 | 0 | 4 | Results say the centre is now at the fire station on Back Road, a two-minute drive from th |
+| 237 | Ullapool | 5 | 0 | 2 | 3 |  |
+| 238 | Gairloch | 5 | 0 | 1 | 4 |  |
+| 239 | Isles of Scilly | 5 | 0 | 2 | 3 |  |
+| 240 | Lairg | 5 | 0 | 2 | 3 | intensivelessons.co.uk says the centre (Lairg Fire Station, Main Street) is closing or clo |
+| 241 | Omagh | 5 | 0 | 0 | 5 | Results disagree on the address: some give Gortrush Industrial Estate, Derry Road (BT78 5E |
+| 242 | Norwich (Peachman Way) | 4.5 | 0 | 2 | 3 | Norwich car tests moved from Jupiter Road (listed as closing or closed) to Peachman Way, B |
+| 243 | Blackburn with Darwen | 4.5 | 0 | 1 | 4 | Centre is at Blackburn Interchange, M65 J4 (BB3 0DB); the drivingtesttips.biz route list i |
+| 244 | Blackpool | 4.5 | 0 | 1 | 3 | MSA GB post (Apr 2026): DVSA opening a new permanent centre at The Pavilions, Avroe Cresce |
+| 245 | Leicester (Wigston) | 4 | 0 | 2 | 2 |  |
+| 246 | Bolton (Manchester) | 4 | 0 | 1 | 3 | One result gives Tonge Moor Road BL2 2DL; others give 143 Weston Street BL3 2AW. Possible  |
+| 247 | Cheetham Hill (Manchester) | 4 | 0 | 2 | 2 |  |
+| 248 | Swansea | 4 | 0 | 2 | 2 | Address conflict in results: one aggregator gives Ffordd Yr Afon SA6 8PN, and drivingtestt |
+| 249 | Bristol (Avonmouth) | 4 | 1 | 0 | 2 |  |
+| 250 | Coventry | 4 | 0 | 2 | 2 | One page gives Cheylesmore (CV3 5HG), likely an older site; route pages describe Bayton Ro |
+| 251 | Sunderland | 4 | 0 | 2 | 2 | Address conflict in results: one aggregator places the centre at Doxford International Bus |
+| 252 | Lichfield | 4 | 0 | 2 | 2 |  |
+| 253 | Birmingham (Kings Heath) | 4 | 0 | 1 | 3 |  |
+| 254 | Bradford (Heaton) | 4 | 0 | 2 | 2 |  |
+| 255 | Stoke-on-Trent (Newcastle-Under-Lyme) | 4 | 0 | 2 | 2 |  |
+| 256 | Bridgend | 4 | 0 | 2 | 2 | One result lists Brackla Way CF31 2AD; others give Angel Street CF31 4AD. Possible older o |
+| 257 | Bishops Stortford | 4 | 0 | 1 | 3 |  |
+| 258 | Nelson | 4 | 0 | 2 | 2 | Unclear: one source gives Pendle House, Nelson and Colne College, Scotland Road; others gi |
+| 259 | Aylesbury | 4 | 0 | 2 | 2 | Free route sheets start and end around Walton Road / Walton Grove, possibly an older site; |
+| 260 | Letchworth | 4 | 0 | 2 | 2 |  |
+| 261 | Halifax | 4 | 0 | 1 | 3 |  |
+| 262 | Stevenage | 4 | 0 | 2 | 2 | Address conflict in results: one aggregator gives Monkswood Way SG1 1HX; others give 3 Dra |
+| 263 | Stirling | 4 | 0 | 2 | 2 | Address conflict in results: one page gives Springkerse Industrial Estate FK7 7SU; most gi |
+| 264 | Barnstaple | 4 | 1 | 1 | 1 | Some results give other addresses (Whiddon Valley, Seven Brethren Bank); most give Benning |
+| 265 | Skipton | 4 | 0 | 2 | 2 |  |
+| 266 | Scarborough | 4 | 0 | 1 | 3 | Route sheets start from Cayton Low Road (YO11 3BY); another page gives Falsgrave Road YO12 |
+| 267 | Greenock | 4 | 0 | 1 | 3 | Sources disagree on the address: 19A Union Street PA16 8DD vs Belville Street PA15 4AX |
+| 268 | Skegness | 4 | 0 | 2 | 2 | Pages disagree on the address (Wainfleet Road, Richmond Drive, Seacroft Road, Beaubridge B |
+| 269 | Haddington | 4 | 0 | 1 | 3 | Sources give different postcodes (EH41 3SF vs EH41 3NG) |
+| 270 | Newtown | 4 | 0 | 2 | 2 |  |
+| 271 | Monmouth | 4 | 0 | 1 | 3 | Unclear: one source gives Wonastow Road NP25 4RZ; most give Old Dixton Road NP25 3DP |
+| 272 | Wallasey | 4 | 0 | 2 | 2 |  |
+| 273 | Louth | 4 | 0 | 2 | 2 | Possible: a listing gives Fairfield Industrial Estate, Newbridge Hill, LN11 0LZ, not the i |
+| 274 | Fraserburgh | 4 | 0 | 1 | 3 | Results disagree on the address: one gives Watermill Road AB43 9DN, others Business Park S |
+| 275 | Banff | 4 | 0 | 2 | 2 |  |
+| 276 | Huntly | 4 | 0 | 1 | 3 |  |
+| 277 | Stranraer | 4 | 0 | 2 | 2 | Address conflict in results: one page gives the North West Castle Hotel, another the fire  |
+| 278 | Newton Stewart | 4 | 0 | 2 | 2 | Unclear: one source places the centre at the Crown Hotel, another on Wigtown Road |
+| 279 | Duns | 4 | 0 | 2 | 2 |  |
+| 280 | Inveraray | 4 | 0 | 1 | 3 | Sources give different addresses (The Pier PA32 8; Community Centre, Front Street PA32 8TL |
+| 281 | Mallaig | 4 | 0 | 2 | 1 |  |
+| 282 | Isle of Tiree | 4 | 0 | 2 | 2 | Sources conflict on location: PA77 6UH (Scarinish Hotel) vs passrates.uk listing PA77 6TZ  |
+| 283 | Aberfeldy | 4 | 0 | 2 | 2 | One result says Aberfeldy's nearest test centre is Perth; centre (Town Hall, Crieff Road)  |
+| 284 | Armagh | 4 | 0 | 0 | 3 | One source gives Lonsdale Road (BT61 7HN), likely an older address; most give 47 Hamiltons |
+| 285 | Brodick (Isle of Arran) | 4 | 0 | 2 | 2 |  |
+| 286 | Coleraine | 4 | 0 | 0 | 3 | One page gives Portstewart Road (BT52 1RD), likely an older site; others give Loughan Hill |
+| 287 | Craigavon | 4 | 0 | 0 | 4 |  |
+| 288 | Hydebank | 4 | 1 | 0 | 1 | Hydebank is described as a new DVA test centre (DfI FOI 2023-0170); no older address seen |
+| 289 | Islay Island | 4 | 0 | 2 | 2 | drivingtesttips.biz also has a separate 'Islay Driving Test Centre - Port Ellen' page; cur |
+| 290 | Isle of Skye (Broadford) | 4 | 0 | 2 | 2 |  |
+| 291 | Lisburn | 4 | 1 | 0 | 2 |  |
+| 292 | Londonderry (Altnagelvin) | 4 | 0 | 0 | 2 |  |
+| 293 | Rothesay | 4 | 0 | 2 | 2 |  |
+| 294 | Swindon | 3.5 | 0 | 2 | 2 | One aggregator lists the old Drakes Way SN3 3LL address; current centre is Fenn Close, Pea |
+| 295 | Huddersfield | 3.5 | 0 | 1 | 2 | Some pages give Waverley House, Waverley Road HD1 5NA (or Leeds Road HD1 6QQ); the current |
+| 296 | Greenham | 3.5 | 0 | 1 | 3 | Centre at Venture West, New Greenham Park RG19 6HX; the only free route sheets are for New |
+| 297 | Birmingham (Kingstanding) | 3 | 0 | 1 | 2 |  |
+| 298 | Bromley (London) | 3 | 0 | 0 | 3 |  |
+| 299 | Nottingham (Chilwell) | 3 | 0 | 0 | 3 |  |
+| 300 | Bredbury (Manchester) | 3 | 0 | 1 | 2 |  |
+| 301 | Hull | 3 | 0 | 1 | 2 | Sources disagree on the address: Reservoir Road HU6 7PY vs Ennerdale, Bransholme HU7 4JQ |
+| 302 | Bedford | 3 | 0 | 1 | 2 | One site lists Ampthill Road MK42 9AB; others give Bedford Heights, Manton Lane MK41 7NY.  |
+| 303 | Worthing | 3 | 0 | 1 | 2 | Sources disagree on the address: Goring Road (BN13 1JZ), Broadwater Street West (BN14 8AZ) |
+| 304 | Barnsley | 3 | 0 | 1 | 2 |  |
+| 305 | Glasgow (Shieldhall) | 3 | 0 | 0 | 3 |  |
+| 306 | Blyth | 3 | 0 | 1 | 2 | One listing gives Cowpen Road NE24 5TA; most give Sextant House, Freehold Street NE24 3BA. |
+| 307 | Hartlepool | 3 | 0 | 1 | 2 | Sources give conflicting addresses (Mainsforth Terrace TS24 9NE, Catcote Road TS26 0BQ) vs |
+| 308 | Telford | 3 | 0 | 2 | 1 |  |
+| 309 | Bodmin | 3 | 0 | 2 | 1 | One result lists Launceston Road (PL31 2DZ); most give Beatrice Road PL31 1RD. Possible ol |
+| 310 | Basingstoke | 3 | 0 | 1 | 2 | One site lists Churchill Way West RG21 6YR; others give Sullivan Road RG22 4LR. Possible o |
+| 311 | Tunbridge Wells | 3 | 0 | 1 | 2 |  |
+| 312 | Stafford | 3 | 0 | 2 | 1 | Address conflict in results: some aggregator pages give Weston Road ST16 3RS or Beaconside |
+| 313 | Inverness (Longman Drive) | 3 | 0 | 1 | 2 | Many route pages are for the separate Seafield Road centre (dropped); drivingtesttips.biz  |
+| 314 | Barrow In Furness | 3 | 0 | 1 | 2 | One aggregator gives Abbey Road LA14 5QT; most give Trinity Enterprise Centre, Ironworks R |
+| 315 | Barry | 3 | 0 | 1 | 2 |  |
+| 316 | Brecon | 3 | 0 | 2 | 1 |  |
+| 317 | Watnall | 3 | 0 | 0 | 3 |  |
+| 318 | Berwick-On-Tweed | 3 | 0 | 1 | 2 | Sites give Golden Square TD15 1RJ and Ramparts Business Park TD15 1TB as well as Tweedmout |
+| 319 | Hawick | 3 | 0 | 1 | 2 |  |
+| 320 | Buckie | 3 | 0 | 1 | 2 |  |
+| 321 | Lochgilphead | 3 | 0 | 2 | 1 |  |
+| 322 | Benbecula Island | 3 | 0 | 1 | 1 |  |
+| 323 | Ashford (London Middlesex) | 3 | 0 | 2 | 4 | Listings say the centre closed on 11 April 2022 (nearest: Chertsey, Uxbridge, Slough); rou |
+| 324 | Ballachulish | 3 | 0 | 1 | 2 | One source says Ballachulish's nearest practical test centre is Fort William; pass-rate da |
+| 325 | Birmingham (Cocks Moors Woods Leisure Centre) | 3 | 0 | 0 | 2 | DVSA post (Feb 2026) says a temporary centre opens at Cocks Moors Woods Leisure Centre fro |
+| 326 | Cookstown | 3 | 0 | 0 | 3 |  |
+| 327 | Downpatrick | 3 | 0 | 0 | 3 | Results disagree on address: Rathkeltair Road (BT30 6SN) vs Cloonagh Road (BT30 6DU) |
+| 328 | Enniskillen | 3 | 0 | 0 | 3 | Results disagree on address: Coa Road (BT74 4AD) vs Tempo Road (BT74 6HR) and Chanterhill  |
+| 329 | Londonderry (Newbuildings) | 3 | 0 | 0 | 2 |  |
+| 330 | Mallusk | 3 | 1 | 0 | 1 |  |
+| 331 | Newtownards | 3 | 0 | 0 | 3 | Unclear: one site lists the centre on Court Street, another on Jubilee Road, Scrabo BT23 4 |
+| 332 | York | 2.5 | 0 | 1 | 2 | The old York centre on Murton Way is reported closed; the centre is now Unit 2, Arabesque  |
+| 333 | Basildon | 2 | 0 | 0 | 2 |  |
+| 334 | Bala | 2 | 0 | 1 | 1 |  |
+| 335 | Lerwick | 2 | 0 | 1 | 0 |  |
+| 336 | Callander | 2 | 0 | 1 | 1 | Results disagree on the venue: McLaren Community Leisure Centre (Mollands Road), Callander |
+| 337 | Carlisle LGV (Cars) | 2 | 0 | 0 | 2 |  |
+| 338 | Barra | 2 | 0 | 1 | 1 |  |
+| 339 | Ballymena | 2 | 0 | 0 | 2 | One aggregator places the centre on Wellington Street (BT43 6AD), likely an older address; |
+| 340 | Newry | 2 | 0 | 0 | 2 | Pages disagree: one gives Killeavy Road BT35 8PX, another 51 Rathfriland Road BT34 1LD (th |
+| 341 | South Uist | 2 | 0 | 1 | 1 |  |
+| 342 | Walton LGV | 1 | 0 | 0 | 1 |  |
+| 343 | Stornoway | 1 | 0 | 1 | 0 |  |
+| 344 | Belfast | 1 | 0 | 0 | 2 | Pages describe Balmoral Avenue BT9 6NY (and Mallusk/Hydebank); batch postcode BT12 6QL wit |
+| 345 | Leeds (The Old Fire Station) | 1 | 0 | 0 | 0 | New temporary site: Leeds Fearnville car, ADI and standards check tests start from the Old |
+| 346 | Aberdeen North LGV | 0 | 0 | 0 | 0 |  |
+| 347 | Exeter LGV | 0 | 0 | 0 | 0 |  |
+| 348 | Swindon LGV | 0 | 0 | 0 | 0 | LGV-only centre (Chiseldon Camp SN4 0FH); no car-test road sources, results all describe t |
+| 349 | Plymouth LGV | 0 | 0 | 0 | 0 |  |
 
 ## Still to search
 
-Leeds, Leeds (Colton Mill), St Helens (Liverpool)
+Leeds (Colton Mill)
