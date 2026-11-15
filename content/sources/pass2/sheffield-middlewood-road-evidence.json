@@ -1,716 +1,721 @@
 {
-  "centre": "Sheffield (Middlewood Road)",
-  "status": "ok",
-  "centre_position": {
-    "lat": 53.41667,
-    "lon": -1.51075
+ "centre": "Sheffield (Middlewood Road)",
+ "status": "ok",
+ "centre_position": {
+  "lat": 53.41667,
+  "lon": -1.51075
+ },
+ "address": "508 Middlewood Road, Sheffield S6 1TQ",
+ "address_checked": "2026-11-15",
+ "address_note": "gov.uk search and find-driving-test-centre could not be read automatically (bot check); address taken from several directory listings, matches the given postcode and lies about 100 m from the given position next to Winn Gardens. One mock-test page gives S6 1TE. Re-check on gov.uk by hand.",
+ "searches": [
+  "Sheffield Middlewood Road driving test centre address S6 1TQ gov.uk"
+ ],
+ "sources": [
+  {
+   "id": "s1",
+   "kind": "instructor-page",
+   "author": "Drive Johnsons",
+   "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/sheffield",
+   "published": null,
+   "read_on": "2026-11-15",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "names": [
+    "Middlewood Road",
+    "Langsett Avenue",
+    "Middlewood Road / Langsett Avenue right turn"
+   ]
   },
-  "address": "508 Middlewood Road, Sheffield S6 1TQ",
-  "address_checked": "2026-11-15",
-  "address_note": "gov.uk search and find-driving-test-centre could not be read automatically (bot check); address taken from several directory listings, matches the given postcode and lies about 100 m from the given position next to Winn Gardens. One mock-test page gives S6 1TE. Re-check on gov.uk by hand.",
-  "searches": [
-    "Sheffield Middlewood Road driving test centre address S6 1TQ gov.uk"
-  ],
-  "sources": [
-    {
-      "id": "s1",
-      "kind": "instructor-page",
-      "author": "Drive Johnsons",
-      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/sheffield",
-      "published": null,
-      "read_on": "2026-11-15",
-      "first_hand": true,
-      "before_centre_moved": false,
-      "names": [
-        "Middlewood Road",
-        "Langsett Avenue",
-        "Middlewood Road / Langsett Avenue right turn"
-      ]
-    },
-    {
-      "id": "s2",
-      "kind": "route-list",
-      "author": "intensivelessons.co.uk",
-      "url": "https://intensivelessons.co.uk/driving-test-routes/South-Yorkshire/Sheffield-Middlewood-Road",
-      "published": null,
-      "read_on": "2026-11-15",
-      "first_hand": false,
-      "before_centre_moved": false,
-      "names": [
-        "Bridge Hill",
-        "Buchanan Road",
-        "Catch Bar Lane",
-        "Chaucer Road",
-        "Creswick Lane",
-        "Deerlands Avenue",
-        "Dixon Road",
-        "Far Lane",
-        "Foxhill Road",
-        "Fulmere Road",
-        "Grove Avenue",
-        "Haggstones Road",
-        "Halifax Road",
-        "Herries Road",
-        "Kirk Edge Road",
-        "Langsett Avenue",
-        "Langsett Road",
-        "Leppings Lane",
-        "Longley Avenue West",
-        "Low Road",
-        "Marcliffe Road",
-        "Middlewood Road",
-        "Moonshine Lane",
-        "Parkside Road",
-        "Penistone Road North",
-        "Shirecliffe Road",
-        "Southey Green Road",
-        "Teynham Road",
-        "Vainor Road",
-        "Wadsley Lane",
-        "Winn Gardens",
-        "Wordsworth Avenue",
-        "Worrall Road",
-        "Yew Lane"
-      ],
-      "note": "nine compiled routes; same text as s3, counted once with s3"
-    },
-    {
-      "id": "s3",
-      "kind": "route-list",
-      "author": "drivingtesttips.biz",
-      "url": "https://www.drivingtesttips.biz/sheffield-middlewood-road-driving-test-routes.html",
-      "published": null,
-      "read_on": "2026-11-15",
-      "first_hand": false,
-      "before_centre_moved": false,
-      "names": [
-        "same route list as s2 (routes 1-3 on this page)"
-      ],
-      "note": "duplicates s2"
-    },
-    {
-      "id": "s4",
-      "kind": "template",
-      "author": "passrates.uk",
-      "url": "https://passrates.uk/guide/passing-driving-test-sheffield",
-      "published": null,
-      "read_on": "2026-11-15",
-      "first_hand": false,
-      "before_centre_moved": false,
-      "names": [
-        "Hillsborough (area)",
-        "Stannington (area)"
-      ],
-      "note": "areas only, no roads"
-    },
-    {
-      "id": "s5",
-      "kind": "template",
-      "author": "myfourwheels.co.uk",
-      "url": "https://www.myfourwheels.co.uk/locations/broomhill/mock-driving-test",
-      "published": null,
-      "read_on": "2026-11-15",
-      "first_hand": false,
-      "before_centre_moved": false,
-      "names": [],
-      "note": "no roads named"
-    }
-  ],
-  "skipped": [
-    {
-      "url": "https://www.passmefast.co.uk/test-centres/practical/south-yorkshire/sheffield-middlewood-road",
-      "why": "page not readable (blocked)"
-    },
-    {
-      "url": "https://www.veygo.com/?p=37532",
-      "why": "no content returned"
-    },
-    {
-      "url": "https://payhip.com/b/WJ8p0",
-      "why": "paid"
-    }
-  ],
-  "places": [
-    {
-      "name": "Middlewood Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4134839,
-        "lon": -1.5074723,
-        "osm": "way/973619371"
-      },
-      "sources": [
-        "s1",
-        "s2",
-        "s3"
-      ],
-      "confidence": "confirmed"
-    },
-    {
-      "name": "Winn Gardens",
-      "kind": "road",
-      "map": {
-        "lat": 53.4183424,
-        "lon": -1.510517,
-        "osm": "way/138661367"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Langsett Avenue",
-      "kind": "road",
-      "map": {
-        "lat": 53.4145212,
-        "lon": -1.5172213,
-        "osm": "way/19854586"
-      },
-      "sources": [
-        "s1",
-        "s2",
-        "s3"
-      ],
-      "confidence": "confirmed"
-    },
-    {
-      "name": "Catch Bar Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.4115794,
-        "lon": -1.5042176,
-        "osm": "way/42775457"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Leppings Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.4118898,
-        "lon": -1.5029616,
-        "osm": "way/129537455"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Herries Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.41425,
-        "lon": -1.4866808,
-        "osm": "way/42494071"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Moonshine Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.4129826,
-        "lon": -1.4739829,
-        "osm": "way/92353177"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Penistone Road North",
-      "kind": "road",
-      "map": {
-        "lat": 53.4180255,
-        "lon": -1.499817,
-        "osm": "way/968861968"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Halifax Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4296605,
-        "lon": -1.492153,
-        "osm": "way/1321564161"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Southey Green Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.419778,
-        "lon": -1.4742238,
-        "osm": "way/1157016958"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Wordsworth Avenue",
-      "kind": "road",
-      "map": {
-        "lat": 53.4341289,
-        "lon": -1.4680225,
-        "osm": "way/44045767"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Deerlands Avenue",
-      "kind": "road",
-      "map": {
-        "lat": 53.4280502,
-        "lon": -1.4583463,
-        "osm": "way/43655437"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Chaucer Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4279142,
-        "lon": -1.4896706,
-        "osm": "way/15949915"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Yew Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.438731,
-        "lon": -1.4738027,
-        "osm": "way/25863880"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Creswick Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.4368087,
-        "lon": -1.4875645,
-        "osm": "way/22914168"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Parkside Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4097041,
-        "lon": -1.4997019,
-        "osm": "way/9259279"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Langsett Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.401321,
-        "lon": -1.4984403,
-        "osm": "way/1326120435"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Wadsley Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.4100591,
-        "lon": -1.5083853,
-        "osm": "way/44919370"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Vainor Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4121177,
-        "lon": -1.5146163,
-        "osm": "way/19790988"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Grove Avenue",
-      "kind": "road",
-      "map": {
-        "lat": 53.4137998,
-        "lon": -1.5141153,
-        "osm": "way/23279187"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Kirk Edge Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.423614,
-        "lon": -1.542418,
-        "osm": "way/979563470"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Haggstones Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4298816,
-        "lon": -1.5401639,
-        "osm": "way/10412771"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Bridge Hill",
-      "kind": "road",
-      "map": {
-        "lat": 53.4361829,
-        "lon": -1.5390969,
-        "osm": "way/15951237"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Low Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.3952377,
-        "lon": -1.516089,
-        "osm": "way/4392920"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Dixon Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.40839,
-        "lon": -1.5059082,
-        "osm": "way/18801221"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Fulmere Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4310387,
-        "lon": -1.4844485,
-        "osm": "way/25794364"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Shirecliffe Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4074443,
-        "lon": -1.472152,
-        "osm": "way/43592128"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Longley Avenue West",
-      "kind": "road",
-      "map": {
-        "lat": 53.4097425,
-        "lon": -1.4680109,
-        "osm": "way/22411714"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Teynham Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.412325,
-        "lon": -1.482413,
-        "osm": "way/23184979"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Foxhill Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4257095,
-        "lon": -1.500834,
-        "osm": "way/1573720657"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Buchanan Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4236305,
-        "lon": -1.4736238,
-        "osm": "way/44045626"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Worrall Road",
-      "kind": "road",
-      "map": {
-        "lat": 53.4109943,
-        "lon": -1.5168296,
-        "osm": "way/43326242"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Far Lane",
-      "kind": "road",
-      "map": {
-        "lat": 53.4081041,
-        "lon": -1.508884,
-        "osm": "way/1574711471"
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Middlewood Road / Langsett Avenue right turn (right-turn box, steep hill)",
-      "kind": "junction",
-      "map": {
-        "lat": 53.4147,
-        "lon": -1.515,
-        "osm": null
-      },
-      "sources": [
-        "s1",
-        "s2",
-        "s3"
-      ],
-      "confidence": "confirmed"
-    },
-    {
-      "name": "Winn Gardens / Middlewood Road junction (leaving and returning)",
-      "kind": "junction",
-      "map": {
-        "lat": 53.418,
-        "lon": -1.5095,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Middlewood Road / Catch Bar Lane / Leppings Lane lights",
-      "kind": "traffic-lights",
-      "map": {
-        "lat": 53.4117,
-        "lon": -1.504,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Leppings Lane / Penistone Road North / Herries Road roundabout",
-      "kind": "roundabout",
-      "map": {
-        "lat": 53.4135,
-        "lon": -1.499,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Herries Road / Moonshine Lane roundabout",
-      "kind": "roundabout",
-      "map": {
-        "lat": 53.4145,
-        "lon": -1.476,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Southey Green Road roundabouts",
-      "kind": "roundabout",
-      "map": {
-        "lat": 53.42,
-        "lon": -1.4745,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Wordsworth Avenue / Deerlands Avenue / Chaucer Road roundabout",
-      "kind": "roundabout",
-      "map": {
-        "lat": 53.429,
-        "lon": -1.464,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    },
-    {
-      "name": "Halifax Road / Penistone Road North roundabout",
-      "kind": "roundabout",
-      "map": {
-        "lat": 53.425,
-        "lon": -1.495,
-        "osm": null
-      },
-      "sources": [
-        "s2",
-        "s3"
-      ],
-      "confidence": "likely"
-    }
-  ],
-  "unmatched": [
-    "Marcliffe Road"
-  ],
-  "summary": "3 confirmed (Middlewood Road, Langsett Avenue and their junction) and 38 likely places (31 likely roads, 7 likely junctions), the likely ones from one compiled list of nine routes published on two sites. Two routes meeting the overlap rule look possible: the listed roads cover the Hillsborough, Wadsley, Stannington and Parson Cross loops with lights and several roundabouts, all within about 6 km."
+  {
+   "id": "s2",
+   "kind": "route-list",
+   "author": "intensivelessons.co.uk",
+   "url": "https://intensivelessons.co.uk/driving-test-routes/South-Yorkshire/Sheffield-Middlewood-Road",
+   "published": null,
+   "read_on": "2026-11-15",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "names": [
+    "Bridge Hill",
+    "Buchanan Road",
+    "Catch Bar Lane",
+    "Chaucer Road",
+    "Creswick Lane",
+    "Deerlands Avenue",
+    "Dixon Road",
+    "Far Lane",
+    "Foxhill Road",
+    "Fulmere Road",
+    "Grove Avenue",
+    "Haggstones Road",
+    "Halifax Road",
+    "Herries Road",
+    "Kirk Edge Road",
+    "Langsett Avenue",
+    "Langsett Road",
+    "Leppings Lane",
+    "Longley Avenue West",
+    "Low Road",
+    "Marcliffe Road",
+    "Middlewood Road",
+    "Moonshine Lane",
+    "Parkside Road",
+    "Penistone Road North",
+    "Shirecliffe Road",
+    "Southey Green Road",
+    "Teynham Road",
+    "Vainor Road",
+    "Wadsley Lane",
+    "Winn Gardens",
+    "Wordsworth Avenue",
+    "Worrall Road",
+    "Yew Lane"
+   ],
+   "note": "nine compiled routes; same text as s3, counted once with s3"
+  },
+  {
+   "id": "s3",
+   "kind": "route-list",
+   "author": "drivingtesttips.biz",
+   "url": "https://www.drivingtesttips.biz/sheffield-middlewood-road-driving-test-routes.html",
+   "published": null,
+   "read_on": "2026-11-15",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "names": [
+    "same route list as s2 (routes 1-3 on this page)"
+   ],
+   "note": "duplicates s2"
+  },
+  {
+   "id": "s4",
+   "kind": "template",
+   "author": "passrates.uk",
+   "url": "https://passrates.uk/guide/passing-driving-test-sheffield",
+   "published": null,
+   "read_on": "2026-11-15",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "names": [
+    "Hillsborough (area)",
+    "Stannington (area)"
+   ],
+   "note": "areas only, no roads"
+  },
+  {
+   "id": "s5",
+   "kind": "template",
+   "author": "myfourwheels.co.uk",
+   "url": "https://www.myfourwheels.co.uk/locations/broomhill/mock-driving-test",
+   "published": null,
+   "read_on": "2026-11-15",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "names": [],
+   "note": "no roads named"
+  }
+ ],
+ "skipped": [
+  {
+   "url": "https://www.passmefast.co.uk/test-centres/practical/south-yorkshire/sheffield-middlewood-road",
+   "why": "page not readable (blocked)"
+  },
+  {
+   "url": "https://www.veygo.com/?p=37532",
+   "why": "no content returned"
+  },
+  {
+   "url": "https://payhip.com/b/WJ8p0",
+   "why": "paid"
+  }
+ ],
+ "places": [
+  {
+   "name": "Middlewood Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4134839,
+    "lon": -1.5074723,
+    "osm": "way/973619371"
+   },
+   "sources": [
+    "s1",
+    "s2",
+    "s3"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "name": "Winn Gardens",
+   "kind": "road",
+   "map": {
+    "lat": 53.4183424,
+    "lon": -1.510517,
+    "osm": "way/138661367"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Langsett Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 53.4145212,
+    "lon": -1.5172213,
+    "osm": "way/19854586"
+   },
+   "sources": [
+    "s1",
+    "s2",
+    "s3"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "name": "Catch Bar Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.4115794,
+    "lon": -1.5042176,
+    "osm": "way/42775457"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Leppings Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.4118898,
+    "lon": -1.5029616,
+    "osm": "way/129537455"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Herries Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.41425,
+    "lon": -1.4866808,
+    "osm": "way/42494071"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Moonshine Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.4129826,
+    "lon": -1.4739829,
+    "osm": "way/92353177"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Penistone Road North",
+   "kind": "road",
+   "map": {
+    "lat": 53.4180255,
+    "lon": -1.499817,
+    "osm": "way/968861968"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Halifax Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4296605,
+    "lon": -1.492153,
+    "osm": "way/1321564161"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Southey Green Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.419778,
+    "lon": -1.4742238,
+    "osm": "way/1157016958"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Wordsworth Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 53.4341289,
+    "lon": -1.4680225,
+    "osm": "way/44045767"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Deerlands Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 53.4280502,
+    "lon": -1.4583463,
+    "osm": "way/43655437"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Chaucer Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4279142,
+    "lon": -1.4896706,
+    "osm": "way/15949915"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Yew Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.438731,
+    "lon": -1.4738027,
+    "osm": "way/25863880"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Creswick Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.4368087,
+    "lon": -1.4875645,
+    "osm": "way/22914168"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Parkside Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4097041,
+    "lon": -1.4997019,
+    "osm": "way/9259279"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Langsett Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.401321,
+    "lon": -1.4984403,
+    "osm": "way/1326120435"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Wadsley Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.4100591,
+    "lon": -1.5083853,
+    "osm": "way/44919370"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Vainor Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4121177,
+    "lon": -1.5146163,
+    "osm": "way/19790988"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Grove Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 53.4137998,
+    "lon": -1.5141153,
+    "osm": "way/23279187"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Kirk Edge Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.423614,
+    "lon": -1.542418,
+    "osm": "way/979563470"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Haggstones Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4298816,
+    "lon": -1.5401639,
+    "osm": "way/10412771"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bridge Hill",
+   "kind": "road",
+   "map": {
+    "lat": 53.4361829,
+    "lon": -1.5390969,
+    "osm": "way/15951237"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Low Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.3952377,
+    "lon": -1.516089,
+    "osm": "way/4392920"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Dixon Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.40839,
+    "lon": -1.5059082,
+    "osm": "way/18801221"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Fulmere Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4310387,
+    "lon": -1.4844485,
+    "osm": "way/25794364"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Shirecliffe Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4074443,
+    "lon": -1.472152,
+    "osm": "way/43592128"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Longley Avenue West",
+   "kind": "road",
+   "map": {
+    "lat": 53.4097425,
+    "lon": -1.4680109,
+    "osm": "way/22411714"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Teynham Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.412325,
+    "lon": -1.482413,
+    "osm": "way/23184979"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Foxhill Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4257095,
+    "lon": -1.500834,
+    "osm": "way/1573720657"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Buchanan Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4236305,
+    "lon": -1.4736238,
+    "osm": "way/44045626"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Worrall Road",
+   "kind": "road",
+   "map": {
+    "lat": 53.4109943,
+    "lon": -1.5168296,
+    "osm": "way/43326242"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Far Lane",
+   "kind": "road",
+   "map": {
+    "lat": 53.4081041,
+    "lon": -1.508884,
+    "osm": "way/1574711471"
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Middlewood Road / Langsett Avenue right turn (right-turn box, steep hill)",
+   "kind": "junction",
+   "map": {
+    "lat": 53.4147,
+    "lon": -1.515,
+    "osm": null
+   },
+   "sources": [
+    "s1",
+    "s2",
+    "s3"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "name": "Winn Gardens / Middlewood Road junction (leaving and returning)",
+   "kind": "junction",
+   "map": {
+    "lat": 53.418,
+    "lon": -1.5095,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Middlewood Road / Catch Bar Lane / Leppings Lane lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 53.4117,
+    "lon": -1.504,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Leppings Lane / Penistone Road North / Herries Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 53.4135,
+    "lon": -1.499,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Herries Road / Moonshine Lane roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 53.4145,
+    "lon": -1.476,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Southey Green Road roundabouts",
+   "kind": "roundabout",
+   "map": {
+    "lat": 53.42,
+    "lon": -1.4745,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Wordsworth Avenue / Deerlands Avenue / Chaucer Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 53.429,
+    "lon": -1.464,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Halifax Road / Penistone Road North roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 53.425,
+    "lon": -1.495,
+    "osm": null
+   },
+   "sources": [
+    "s2",
+    "s3"
+   ],
+   "confidence": "likely"
+  }
+ ],
+ "unmatched": [
+  "Marcliffe Road"
+ ],
+ "summary": "3 confirmed (Middlewood Road, Langsett Avenue and their junction) and 38 likely places (31 likely roads, 7 likely junctions), the likely ones from one compiled list of nine routes published on two sites. Two routes meeting the overlap rule look possible: the listed roads cover the Hillsborough, Wadsley, Stannington and Parson Cross loops with lights and several roundabouts, all within about 6 km.",
+ "owner_check": {
+  "date": "2026-11-15",
+  "address": "508 Middlewood Road, Sheffield, South Yorkshire, S6 1TQ",
+  "result": "Confirmed by the owner from the DVSA centre listing; matches the address and position the routes use."
+ }
 }
