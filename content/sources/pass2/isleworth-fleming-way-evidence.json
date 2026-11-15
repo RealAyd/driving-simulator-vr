@@ -1,0 +1,1079 @@
+{
+  "centre": "Isleworth (Fleming Way)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.46634,
+    "lon": -0.33722
+  },
+  "address_checked": "2026-11-15",
+  "address": "Unit 8, The Wireless Factory, Fleming Way, Isleworth TW7 6DB",
+  "address_note": "gov.uk itself could not be opened from this machine (centre page not found by URL; site search did not list it). Address taken from DVSA's own relocation bulletin (16 Apr 2018: Worton Hall closed 7 May 2018, Fleming Way opened 14 May 2018), matching the postcode given; OSM places Fleming Way way/5217117 about 30 m from the given position, so it matches. Recheck on gov.uk find-driving-test-centre when reachable.",
+  "searches": [
+    "\"Isleworth Fleming Way driving test centre\" gov.uk address TW7 6DB",
+    "\"Isleworth driving test centre\" mock test route video Worton Road roundabout",
+    "\"Isleworth\" driving test reddit OR forum route roads"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://drivingtesttips.biz/isleworth-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/isleworth-driving-test-routes-6-10.html",
+        "https://www.drivingtesttips.biz/driving-test-routes/isleworth-driving-test-routes-11-16.html"
+      ],
+      "published": "undated (likely before the May 2018 move)",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": true,
+      "names": [
+        "Worton Road",
+        "Hall Road",
+        "Bridge Road",
+        "Pears Road",
+        "London Road",
+        "Kingsley Road",
+        "Spring Grove Road",
+        "Jersey Road",
+        "Great West Road",
+        "Thornbury Road",
+        "Syon Lane",
+        "Spur Road",
+        "Twickenham Road",
+        "Mogden Lane",
+        "Whitton Dene",
+        "Chertsey Road",
+        "Hospital Bridge Road",
+        "Montrose Avenue",
+        "Ryecroft Avenue",
+        "Percy Road",
+        "Whitton High Street",
+        "Nelson Road",
+        "Warren Road",
+        "Rugby Road",
+        "Arnold Crescent",
+        "Heath Road",
+        "Hounslow Road",
+        "Hanworth Road",
+        "Pevensey Road",
+        "Eastbourne Road",
+        "Hampton Road West",
+        "Whitton Road",
+        "Inwood Road",
+        "High Street",
+        "Central Avenue",
+        "College Road",
+        "Musgrave Road",
+        "Wood Lane",
+        "Parkwood Road",
+        "Northumberland Avenue",
+        "Eversley Crescent",
+        "Lampton Road",
+        "Steve Biko Way",
+        "Hanworth Terrace",
+        "St Margarets Road",
+        "St Margarets Drive",
+        "Richmond Road",
+        "South Street",
+        "Osterley Road",
+        "Ridgeway Road",
+        "Penwerris Avenue",
+        "Powder Mill Lane",
+        "Uxbridge Road",
+        "Maswell Park Road",
+        "Little Park Drive",
+        "Kneller Road",
+        "St Mary's Crescent",
+        "Staines Road",
+        "Bell Road"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Isleworth-Fleming-Way",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": null,
+      "copy_of": "s1",
+      "note": "Routes 1-12 repeat s1 word for word under the Fleming Way name, so it counts once with s1 and adds no confirmation.",
+      "names": []
+    },
+    {
+      "id": "s3",
+      "kind": "official",
+      "author": "DVSA (govdelivery bulletin)",
+      "url": "https://content.govdelivery.com/accounts/UKDVSA/bulletins/1e9f675",
+      "published": "2018-04-16",
+      "read_on": "2026-11-15",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Address and move date only; silent on routes."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://recapio.com/digest/isleworth-test-route-1-isleworth-test-centre-by-driving-test-routes-uk",
+      "why": "page loads its content by script; no title/description road names readable"
+    },
+    {
+      "url": "https://yt.dorper.me/v/yt/tnPB70_xSPs",
+      "why": "empty response; 2019 video title names no roads"
+    },
+    {
+      "url": "https://www.rateddriving.com/driving-lessons/london/hounslow/isleworth/",
+      "why": "bot challenge page; left alone"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/isleworth-fleming-way",
+      "why": "bot challenge page; template content per pass 1"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/isleworth/mock-driving-test",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://payhip.com/b/CLdZ2",
+      "why": "paid route pack; never used"
+    }
+  ],
+  "places": [
+    {
+      "name": "Worton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46742,
+        "lon": -0.33558,
+        "osm": "way/682098788"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Leaving/returning road; the only source may predate the 2018 move from Worton Hall (same road, about 250 m away), so its use for leaving and returning rests on the map, not the source."
+    },
+    {
+      "name": "Hall Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46296,
+        "lon": -0.34783,
+        "osm": "way/5014203"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Leaving/returning road; the only source may predate the 2018 move from Worton Hall (same road, about 250 m away), so its use for leaving and returning rests on the map, not the source."
+    },
+    {
+      "name": "Bridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46793,
+        "lon": -0.34614,
+        "osm": "way/38061117"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pears Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46983,
+        "lon": -0.3511,
+        "osm": "way/33371910"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "London Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47518,
+        "lon": -0.33746,
+        "osm": "way/52714440"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47063,
+        "lon": -0.35488,
+        "osm": "way/4759551"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Spring Grove Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47555,
+        "lon": -0.34457,
+        "osm": "way/4740523"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Jersey Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.48425,
+        "lon": -0.34564,
+        "osm": "way/4288136"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Great West Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.4811,
+        "lon": -0.34983,
+        "osm": "way/551942507"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Thornbury Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47409,
+        "lon": -0.34458,
+        "osm": "node/469784678"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Syon Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.47991,
+        "lon": -0.32054,
+        "osm": "way/66969462"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Spur Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47872,
+        "lon": -0.32346,
+        "osm": "way/172806603"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Twickenham Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46452,
+        "lon": -0.33097,
+        "osm": "way/1350298872"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mogden Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.46012,
+        "lon": -0.3349,
+        "osm": "way/505580780"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whitton Dene",
+      "kind": "road",
+      "map": {
+        "lat": 51.45929,
+        "lon": -0.34067,
+        "osm": "way/663219156"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chertsey Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45654,
+        "lon": -0.32855,
+        "osm": "way/1075320488"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hospital Bridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45128,
+        "lon": -0.36718,
+        "osm": "way/1501315728"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Montrose Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.44899,
+        "lon": -0.35875,
+        "osm": "way/23060678"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ryecroft Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.44764,
+        "lon": -0.36233,
+        "osm": "way/23060673"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Percy Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46503,
+        "lon": -0.32558,
+        "osm": "way/23031373"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whitton High Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.45221,
+        "lon": -0.35807,
+        "osm": "node/469785928"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Nelson Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.4549,
+        "lon": -0.35433,
+        "osm": "way/6124934"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Warren Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45383,
+        "lon": -0.35196,
+        "osm": "way/52330533"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rugby Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45732,
+        "lon": -0.34083,
+        "osm": "way/5014292"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Arnold Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.45938,
+        "lon": -0.34764,
+        "osm": "way/7848041"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Heath Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46543,
+        "lon": -0.35044,
+        "osm": "way/4823697"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hounslow Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45436,
+        "lon": -0.35865,
+        "osm": "way/653885690"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hanworth Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46878,
+        "lon": -0.35947,
+        "osm": "way/1379312091"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pevensey Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.44471,
+        "lon": -0.38616,
+        "osm": "way/22376998"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eastbourne Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.44369,
+        "lon": -0.39051,
+        "osm": "way/22377010"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hampton Road West",
+      "kind": "road",
+      "map": {
+        "lat": 51.43694,
+        "lon": -0.37954,
+        "osm": "way/972458204"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whitton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45503,
+        "lon": -0.33856,
+        "osm": "way/7945994"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Inwood Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46898,
+        "lon": -0.35815,
+        "osm": "way/4823692"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "High Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.46837,
+        "lon": -0.36441,
+        "osm": "way/759162451"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Central Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.46217,
+        "lon": -0.35265,
+        "osm": "way/5014205"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "College Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47792,
+        "lon": -0.33665,
+        "osm": "way/4814929"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Musgrave Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47867,
+        "lon": -0.33552,
+        "osm": "way/4814940"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wood Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.47598,
+        "lon": -0.33233,
+        "osm": "node/469786826"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Parkwood Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.4776,
+        "lon": -0.33369,
+        "osm": "node/469788528"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Northumberland Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.48089,
+        "lon": -0.33062,
+        "osm": "way/5081415"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eversley Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.4775,
+        "lon": -0.3456,
+        "osm": "node/469788493"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lampton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46868,
+        "lon": -0.36689,
+        "osm": "way/50905264"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Steve Biko Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.46786,
+        "lon": -0.36891,
+        "osm": "way/4846023"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hanworth Terrace",
+      "kind": "road",
+      "map": {
+        "lat": 51.46524,
+        "lon": -0.36308,
+        "osm": "way/183140089"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Margarets Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46433,
+        "lon": -0.32328,
+        "osm": "way/1040558108"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Margarets Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.46169,
+        "lon": -0.32068,
+        "osm": "way/23342362"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Richmond Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46649,
+        "lon": -0.32479,
+        "osm": "way/24677532"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "South Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.46903,
+        "lon": -0.3285,
+        "osm": "way/4953319"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Osterley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47818,
+        "lon": -0.34202,
+        "osm": "way/165475033"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ridgeway Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.47937,
+        "lon": -0.33976,
+        "osm": "way/4814931"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Penwerris Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.48039,
+        "lon": -0.35458,
+        "osm": "way/244221350"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Powder Mill Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.44458,
+        "lon": -0.36635,
+        "osm": "way/23060376"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Uxbridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.44312,
+        "lon": -0.39427,
+        "osm": "way/738900172"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Maswell Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46234,
+        "lon": -0.36012,
+        "osm": "way/7730082"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Little Park Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.44292,
+        "lon": -0.38709,
+        "osm": "node/469773968"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kneller Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.45374,
+        "lon": -0.34706,
+        "osm": "way/7848008"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Mary's Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.48279,
+        "lon": -0.34486,
+        "osm": "way/4800250"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Staines Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46746,
+        "lon": -0.36801,
+        "osm": "way/50905937"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bell Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.46583,
+        "lon": -0.36419,
+        "osm": "node/469764581"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Worton Road / Bridge Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.46713,
+        "lon": -0.34435
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Worton Road / Twickenham Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.46771,
+        "lon": -0.32949
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Twickenham Road / A316 Chertsey Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.45859,
+        "lon": -0.33017
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate: road geometries from Nominatim are partial"
+    },
+    {
+      "name": "Whitton Dene / Rugby Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.45868,
+        "lon": -0.34102
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate"
+    },
+    {
+      "name": "Hall Road / Whitton Dene mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.45825,
+        "lon": -0.35045
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "A4 Great West Road / Jersey Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.4828,
+        "lon": -0.3478
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate"
+    },
+    {
+      "name": "A4 Great West Road / Syon Lane lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.48333,
+        "lon": -0.3272
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "A316 Chertsey Road / Hospital Bridge Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.44247,
+        "lon": -0.36494
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "A316 Chertsey Road / Whitton Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.45402,
+        "lon": -0.33824
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Spring Grove Road / Jersey Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.47802,
+        "lon": -0.36269
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsley Road / Spring Grove Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.47702,
+        "lon": -0.36078
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "London Road / Bridge Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.47199,
+        "lon": -0.34887
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate"
+    },
+    {
+      "name": "Hanworth Road / Whitton Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.46534,
+        "lon": -0.36333
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [
+    "No Name Rd (unnamed link road off the A4 in the source)"
+  ],
+  "summary": "0 confirmed and 59 likely roads plus 13 likely junctions, all from one route-list author (drivingtesttips.biz, copied by intensivelessons.co.uk) that probably predates the 2018 move to Fleming Way 250 m along Worton Road. Two routes meeting the overlap rule look possible on length and known junctions, but nothing is confirmed by a second separate source, so judgement and the map carry the weight; a first-hand source (instructor video description or learner account) would firm it up."
+}
