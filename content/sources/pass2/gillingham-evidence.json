@@ -1,0 +1,753 @@
+{
+  "centre": "Gillingham",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.36481,
+    "lon": 0.58016
+  },
+  "address": "Unit 1, Astra Park, Courteney Road, Gillingham ME8 (postcode given as ME8 0EZ by one source, ME8 0RZ by others)",
+  "address_checked": "2026-11-15",
+  "address_note": "gov.uk centre page and the DVSA finder could not be reached from this machine; address from two school pages and the Driving Test Tips centre page. Nominatim puts the given position on Courteney Road beside the Tesco, so it matches. gov.uk records only the 2014 move of the LGV centre (Campus Way) to a GVTS.",
+  "searches": [
+    "\"Gillingham driving test\" route roads Courteney Road roundabout",
+    "\"Gillingham test centre\" Medway mock test route video Bailey Drive",
+    "\"Gillingham driving test\" reddit OR forum Hoath Way roundabout Hempstead Valley"
+  ],
+  "skipped": [
+    {
+      "url": "https://payhip.com/b/jcosI",
+      "why": "paid"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/kent/gillingham",
+      "why": "bot challenge, left alone"
+    },
+    {
+      "url": "https://www.rateddriving.com/driving-lessons/kent/gillingham/capstone/",
+      "why": "403, left alone"
+    },
+    {
+      "url": "https://drivinglessonsmedway.blogspot.com/2010/05/driving-test-gillingham-tips-on-how-to.html",
+      "why": "general tips, no road names"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/gillingham/mock-driving-test",
+      "why": "template page, no road names"
+    },
+    {
+      "url": "https://passrates.uk/guide/gillingham-driving-test-centre",
+      "why": "generic, no road names"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/gillingham/",
+      "why": "its paid route PDF only; the free page is used as s4"
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "Driving Test Tips (drivingtesttips.biz)",
+      "url": "https://www.drivingtesttips.biz/gillingham-driving-test-routes-6-10.html",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": true,
+      "note": "Routes start and end at Campus Way (the former address, now LGV); used only for roads further out.",
+      "names": [
+        "Bailey Drive",
+        "Grosvenor Road",
+        "Will Adams Way",
+        "Ito Way",
+        "Yokosuka Way",
+        "Pier Road",
+        "Medway Tunnel",
+        "Maritime Way",
+        "Dock Road",
+        "Watling Street (A2)",
+        "Sovereign Boulevard",
+        "Hoath Way (A278)",
+        "Ambley Road",
+        "Hempstead Road",
+        "Hempstead Valley Drive",
+        "Dukes Meadow Drive",
+        "Pear Tree Lane",
+        "Capstone Road",
+        "Ash Tree Lane",
+        "Rainham Road",
+        "Woodlands Road",
+        "Cornwallis Avenue",
+        "Twydall Lane",
+        "Eastcourt Lane",
+        "Beechings Way",
+        "Barnsole Road",
+        "Nelson Road",
+        "Gillingham Road",
+        "Duncan Road",
+        "Balmoral Road",
+        "Canterbury Street",
+        "Napier Road",
+        "Oxford Road",
+        "Park Avenue",
+        "Jeffery Street",
+        "Skinner Street",
+        "Campus Way"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "Driving Test Tips (drivingtesttips.biz), extended test routes",
+      "url": "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/gillingham-extended-driving-test-routes.html",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": true,
+      "note": "Same author as s1: counts once with s1.",
+      "names": [
+        "Bailey Drive",
+        "Grosvenor Road",
+        "Will Adams Way",
+        "Watling Street",
+        "Featherby Road",
+        "Eastcourt Lane",
+        "Twydall Lane",
+        "Hoath Way",
+        "Sharsted Way",
+        "Hempstead Valley Drive",
+        "Hempstead Road",
+        "Capstone Road",
+        "Ash Tree Lane"
+      ]
+    },
+    {
+      "id": "s3",
+      "kind": "route-list",
+      "author": "Intensive Lessons (intensivelessons.co.uk)",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/Gillingham",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": true,
+      "note": "Same layout and wording as s1 (routes 1 to 5 of the same set): treated as a copy, counts once with s1.",
+      "names": [
+        "Bailey Drive",
+        "Ambley Road",
+        "Hempstead Road",
+        "Hempstead Valley Drive",
+        "Pear Tree Lane",
+        "Dukes Meadow Drive",
+        "Sharsted Way",
+        "Hoath Way (A278)",
+        "Hoath Lane",
+        "Maidstone Road",
+        "Lonsdale Drive",
+        "London Road (A2)",
+        "Watling Street (A2)",
+        "Will Adams Way",
+        "Grosvenor Road",
+        "Pump Lane",
+        "Twydall Lane",
+        "Ito Way",
+        "Yokosuka Way",
+        "Pier Road",
+        "Canterbury Street",
+        "Skinner Street",
+        "Jeffery Street"
+      ]
+    },
+    {
+      "id": "s4",
+      "kind": "instructor-page",
+      "author": "Drive Johnsons (driving school area page)",
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/gillingham/",
+      "published": "undated (pass rates to 2025-26)",
+      "read_on": "2026-11-15",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "note": "Gives the current Astra Park, Courteney Road address. Its paid route PDF was not used.",
+      "names": [
+        "Hoath Way",
+        "Bowaters roundabout",
+        "Hoath Way south end triple roundabout",
+        "A289",
+        "Nelson Road / Gillingham Road / Duncan Road / Trafalgar Street junction",
+        "Canterbury Street"
+      ]
+    },
+    {
+      "id": "s5",
+      "kind": "instructor-page",
+      "author": "Bill Plant Driving School (area page)",
+      "url": "https://www.billplant.co.uk/driving-lessons/where-to-find-us/gillingham/",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "Lesson areas, not test roads: likely at most.",
+      "names": [
+        "Will Adams Way roundabout (by Tesco)",
+        "Bowaters roundabout",
+        "A289",
+        "A2"
+      ]
+    },
+    {
+      "id": "s6",
+      "kind": "learner",
+      "author": "a learner's review on the Driving Test Tips centre page",
+      "url": "https://www.drivingtesttips.biz/gillingham-driving-test-centre.html",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "the Tesco roundabout"
+      ]
+    }
+  ],
+  "places": [
+    {
+      "name": "Hoath Way (A278) dual carriageway and its end roundabouts",
+      "kind": "road",
+      "map": {
+        "lat": 51.33691,
+        "lon": 0.58388,
+        "osm": "way/108779858"
+      },
+      "sources": [
+        "s1",
+        "s4"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Will Adams Way roundabouts by Tesco",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.36868,
+        "lon": 0.5687,
+        "osm": "way/732843936"
+      },
+      "sources": [
+        "s1",
+        "s5",
+        "s6"
+      ],
+      "confidence": "confirmed",
+      "note": "Learner's 'Tesco roundabout' is taken to be this junction; Tesco sits on Courteney Road beside it (node/502582430)."
+    },
+    {
+      "name": "Hempstead Valley Drive / Sharsted Way roundabouts (south end of Hoath Way)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.34054,
+        "lon": 0.57442,
+        "osm": "way/217297048"
+      },
+      "sources": [
+        "s1",
+        "s4"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "A289 (Ito Way, Yokosuka Way, Pier Road)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37602,
+        "lon": 0.57085,
+        "osm": "way/4373762"
+      },
+      "sources": [
+        "s1",
+        "s4",
+        "s5"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Nelson Road / Gillingham Road / Duncan Road / Trafalgar Street junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.38209,
+        "lon": 0.54761,
+        "osm": "way/18606782"
+      },
+      "sources": [
+        "s1",
+        "s4"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Canterbury Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.37494,
+        "lon": 0.55212,
+        "osm": "way/42714159"
+      },
+      "sources": [
+        "s1",
+        "s4"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Watling Street (A2) and Sovereign Boulevard",
+      "kind": "road",
+      "map": {
+        "lat": 51.37326,
+        "lon": 0.5541,
+        "osm": "way/203803268"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "likely",
+      "note": "Second source is a lesson-area page, so likely at most."
+    },
+    {
+      "name": "Yokosuka Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.38427,
+        "lon": 0.57745,
+        "osm": "way/4374427"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pier Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39383,
+        "lon": 0.56053,
+        "osm": "way/1357806593"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Medway Tunnel",
+      "kind": "road",
+      "map": {
+        "lat": 51.40067,
+        "lon": 0.52703,
+        "osm": "way/512863688"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Maritime Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.40467,
+        "lon": 0.53939,
+        "osm": "way/25492834"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Dock Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38924,
+        "lon": 0.52574,
+        "osm": "way/818469713"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hempstead Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.34741,
+        "lon": 0.5702,
+        "osm": "way/31056473"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hempstead Valley Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.34086,
+        "lon": 0.57069,
+        "osm": "way/217297046"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Dukes Meadow Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.35247,
+        "lon": 0.5662,
+        "osm": "way/55752724"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pear Tree Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.3592,
+        "lon": 0.56175,
+        "osm": "way/30137572"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Capstone Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.35215,
+        "lon": 0.56338,
+        "osm": "way/4729636"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ash Tree Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.36747,
+        "lon": 0.55361,
+        "osm": "way/31060666"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rainham Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37381,
+        "lon": 0.55086,
+        "osm": "way/206826818"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woodlands Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38757,
+        "lon": 0.57065,
+        "osm": "way/192784722"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cornwallis Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.38154,
+        "lon": 0.56947,
+        "osm": "way/88174968"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Twydall Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37204,
+        "lon": 0.58094,
+        "osm": "way/4824281"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eastcourt Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37307,
+        "lon": 0.57836,
+        "osm": "way/35303293"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Beechings Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.37576,
+        "lon": 0.58733,
+        "osm": "way/192778838"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Barnsole Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37646,
+        "lon": 0.55973,
+        "osm": "way/18449847"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Napier Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38084,
+        "lon": 0.55337,
+        "osm": "way/18451173"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Oxford Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.3778,
+        "lon": 0.55556,
+        "osm": "way/18450827"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Park Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.37545,
+        "lon": 0.55551,
+        "osm": "way/15807481"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Balmoral Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38654,
+        "lon": 0.55102,
+        "osm": "way/1357149445"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Jeffery Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.38808,
+        "lon": 0.54596,
+        "osm": "way/1350127321"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Featherby Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37539,
+        "lon": 0.57362,
+        "osm": "way/35263345"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hoath Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.35444,
+        "lon": 0.57999,
+        "osm": "way/4381360"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Maidstone Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.33717,
+        "lon": 0.58166,
+        "osm": "way/28859287"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lonsdale Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.35657,
+        "lon": 0.60337,
+        "osm": "way/4902976"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "London Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36723,
+        "lon": 0.59002,
+        "osm": "way/229729576"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pump Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.3695,
+        "lon": 0.59052,
+        "osm": "way/192784716"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "excluded_pre_move": [
+    {
+      "name": "Bailey Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.36398,
+        "lon": 0.57264,
+        "osm": "way/23990870"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "not-counted",
+      "note": "Leaving and returning roads named only by pre-move sources; the map shows the current centre on Courteney Road off Bailey Drive."
+    },
+    {
+      "name": "Campus Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.36278,
+        "lon": 0.57517,
+        "osm": "way/61908789"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "not-counted",
+      "note": "Leaving and returning roads named only by pre-move sources; the map shows the current centre on Courteney Road off Bailey Drive."
+    },
+    {
+      "name": "Grosvenor Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36747,
+        "lon": 0.57041,
+        "osm": "way/61832814"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "not-counted",
+      "note": "Leaving and returning roads named only by pre-move sources; the map shows the current centre on Courteney Road off Bailey Drive."
+    },
+    {
+      "name": "Ambley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36722,
+        "lon": 0.57721,
+        "osm": "way/61832815"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "not-counted",
+      "note": "Leaving and returning roads named only by pre-move sources; the map shows the current centre on Courteney Road off Bailey Drive."
+    }
+  ],
+  "unmatched": [
+    "Bowaters roundabout (no OSM name; the A2 / Hoath Way junction north of the centre)",
+    "Northern Link (A289; not a road name in OSM)"
+  ],
+  "summary": "6 confirmed and 30 likely roads and junctions (route lists are pre-move and count as one source; leaving and returning roads are excluded). Two routes meeting the overlap rule look possible: the A289 / Will Adams Way / Gillingham town loop and the Hoath Way / Hempstead Valley / Rainham loop are each mostly on confirmed or likely roads with at least 3 known junctions, though the first and last few hundred metres around Courteney Road rest on the map only."
+}

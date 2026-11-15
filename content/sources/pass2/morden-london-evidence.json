@@ -1,0 +1,95 @@
+{
+  "centre": "Morden (London)",
+  "status": "ok",
+  "address": "10 Tudor Drive, Morden, SM4 4PE",
+  "address_checked": "2026-11-15",
+  "address_source": "https://www.gov.uk/find-driving-test-centre (postcode SM4 4PE)",
+  "address_matches_position": true,
+  "address_note": "gov.uk map pin 51.38656,-0.21241 is about 55 m from the given position; car and ADI part 3 tests.",
+  "centre_position": {"lat": 51.38622, "lon": -0.21181},
+  "searches": [
+    "\"Morden driving test\" route roads Tudor Drive",
+    "Morden test centre mock test route video",
+    "\"Morden\" driving test reddit roundabout Rose Hill OR \"St Helier\""
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/morden-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/morden-driving-test-routes-6-10.html",
+        "https://www.drivingtesttips.biz/driving-test-routes/morden-driving-test-routes-11-15.html"
+      ],
+      "published": "undated (DVSA-era route lists, page says they may have changed)",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": ["Tudor Drive", "Epsom Road", "Stonecot Hill", "Sutton Common Road", "Green Lane", "St Helier Avenue", "Bishopsford Road", "Central Road", "Love Lane", "Forest Road", "Furness Road", "Middleton Road", "Morden Hall Road", "Crown Lane", "Martin Way", "Hillcross Avenue", "Leamington Avenue", "Grand Drive", "Cannon Hill Lane", "Bushey Road", "Kingston Road", "Gander Green Lane", "St Dunstan's Hill", "Malden Way", "Beverley roundabout", "Shannon Corner roundabout", "Green Lane roundabout (Rosehill Roundabout)"]
+    },
+    {
+      "id": "s2",
+      "kind": "learner",
+      "author": "a learner's forum post (Overclockers UK forums)",
+      "url": "https://forums.overclockers.co.uk/threads/driving-test-question-rose-hill-roundabout.18991681",
+      "published": "2024-08",
+      "read_on": "2026-11-15",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": ["Rosehill Roundabout", "Green Lane", "Wrythe Lane", "A297 (St Helier Avenue)"]
+    },
+    {
+      "id": "s3",
+      "kind": "instructor-page",
+      "author": "driveJohnson's",
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/morden/",
+      "published": "undated",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "note": "Lesson areas page, not test roads: counts as likely at most.",
+      "before_centre_moved": false,
+      "names": ["A24 (Epsom Road / Stonecot Hill)", "A217 (Bishopsford Road)", "A297 (St Helier Avenue)", "Leamington Avenue", "Malden Way (Kingston Bypass)"]
+    }
+  ],
+  "skipped": [
+    {"url": "https://payhip.com/b/m82EZ", "reason": "paid"},
+    {"url": "https://www.myfourwheels.co.uk/locations/morden/mock-driving-test", "reason": "robots file disallows automated reading; no road names"},
+    {"url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/morden-london", "reason": "template page, no road names"},
+    {"url": "https://intensivelessons.co.uk/Practical-Test-Centres/Surrey/Morden-London", "reason": "template page (pass 1)"},
+    {"url": "https://www.veygo.com/driving-test-centres/morden-london/", "reason": "template page (pass 1)"},
+    {"url": "https://presentationbuilder.internationaltrucks.com/morden-driving-test-centre-routes", "reason": "spam-like template with wrong address"}
+  ],
+  "places": [
+    {"name": "Rosehill Roundabout", "kind": "roundabout", "map": {"lat": 51.38436, "lon": -0.18975, "osm": "way/406063029"}, "sources": ["s1", "s2"], "confidence": "confirmed", "note": "s1 reaches it from Green Lane onto St Helier Ave and Bishopsford Rd; s2 names it directly."},
+    {"name": "Green Lane", "kind": "road", "map": {"lat": 51.38638, "lon": -0.19203, "osm": "way/406281507"}, "sources": ["s1", "s2"], "confidence": "confirmed"},
+    {"name": "St Helier Avenue (A297)", "kind": "road", "map": {"lat": 51.38726, "lon": -0.18936, "osm": "way/5239388"}, "sources": ["s1", "s2", "s3"], "confidence": "confirmed"},
+    {"name": "Tudor Drive (centre)", "kind": "road", "map": {"lat": 51.38846, "lon": -0.21602, "osm": "way/24547734"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Tudor Drive / Epsom Road lights", "kind": "traffic-lights", "map": {"lat": 51.386, "lon": -0.2111, "osm": "way/818920355"}, "sources": ["s1"], "confidence": "likely", "note": "position is the Epsom Road way nearest the junction"},
+    {"name": "Epsom Road / Stonecot Hill (A24)", "kind": "road", "map": {"lat": 51.38566, "lon": -0.21170, "osm": "way/818920349"}, "sources": ["s1", "s3"], "confidence": "likely"},
+    {"name": "Beverley roundabout", "kind": "roundabout", "map": {"lat": 51.39083, "lon": -0.22284, "osm": "way/259803087"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Sutton Common Road", "kind": "road", "map": {"lat": 51.38421, "lon": -0.20742, "osm": "way/6059608"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Forest Road mini-roundabouts", "kind": "mini-roundabout", "map": {"lat": 51.38367, "lon": -0.20262, "osm": "way/8098693"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Love Lane", "kind": "road", "map": {"lat": 51.38667, "lon": -0.19692, "osm": "way/9897570"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Furness Road", "kind": "road", "map": {"lat": 51.38900, "lon": -0.19242, "osm": "way/23109487"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Middleton Road", "kind": "road", "map": {"lat": 51.38628, "lon": -0.16687, "osm": "way/18925855"}, "sources": ["s1"], "confidence": "likely", "note": "Nominatim's first hit is the Hackbridge end; the St Helier Ave junction is further west"},
+    {"name": "Bishopsford Road (A217)", "kind": "road", "map": {"lat": 51.39088, "lon": -0.17809, "osm": "way/1060082346"}, "sources": ["s1", "s3"], "confidence": "likely"},
+    {"name": "Central Road", "kind": "road", "map": {"lat": 51.39286, "lon": -0.20033, "osm": "way/36544028"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Morden Hall Road", "kind": "road", "map": {"lat": 51.40245, "lon": -0.19092, "osm": "way/25773256"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Crown Lane (Morden one-way system)", "kind": "road", "map": {"lat": 51.40169, "lon": -0.19831, "osm": "way/24640999"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Martin Way", "kind": "road", "map": {"lat": 51.40293, "lon": -0.21044, "osm": "way/4349800"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Hillcross Avenue", "kind": "road", "map": {"lat": 51.39343, "lon": -0.21632, "osm": "way/363760436"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Leamington Avenue", "kind": "road", "map": {"lat": 51.39951, "lon": -0.21319, "osm": "way/33755170"}, "sources": ["s1", "s3"], "confidence": "likely"},
+    {"name": "Grand Drive", "kind": "road", "map": {"lat": 51.39359, "lon": -0.22431, "osm": "way/259805702"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Cannon Hill Lane", "kind": "road", "map": {"lat": 51.39689, "lon": -0.22076, "osm": "way/4346804"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Bushey Road (dual carriageway)", "kind": "road", "map": {"lat": 51.40254, "lon": -0.24188, "osm": "way/4040574"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Shannon Corner roundabout", "kind": "roundabout", "map": {"lat": 51.39965, "lon": -0.24361, "osm": "way/229316591"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Kingston Road", "kind": "road", "map": {"lat": 51.40971, "lon": -0.21703, "osm": "way/314788583"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Gander Green Lane", "kind": "road", "map": {"lat": 51.37755, "lon": -0.21698, "osm": "way/6019271"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "St Dunstan's Hill", "kind": "road", "map": {"lat": 51.36133, "lon": -0.21400, "osm": "way/1531653854"}, "sources": ["s1"], "confidence": "likely"},
+    {"name": "Malden Way (A3 Kingston Bypass)", "kind": "road", "map": {"lat": 51.38999, "lon": -0.26669, "osm": "way/33342240"}, "sources": ["s1", "s3"], "confidence": "likely"},
+    {"name": "Wrythe Lane", "kind": "road", "map": {"lat": 51.38047, "lon": -0.18269, "osm": "way/883207876"}, "sources": ["s2"], "confidence": "likely"}
+  ],
+  "unmatched": [],
+  "summary": "3 confirmed (Rosehill Roundabout, Green Lane, St Helier Avenue A297) and 25 likely roads and junctions, almost all from one undated route-list site plus one learner post and one lesson-areas page. Two routes meeting the overlap rule look possible: the likely and confirmed roads cover the whole area around Tudor Drive, and known junctions (Rosehill Roundabout, Beverley roundabout, Tudor Drive lights, Forest Road mini-roundabouts, Shannon Corner) give more than 3 scenario sites per route."
+}
