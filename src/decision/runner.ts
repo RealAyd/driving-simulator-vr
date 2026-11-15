@@ -134,8 +134,9 @@ const END_WAIT=30;
 /** A road user paced to meet the car eases down to no less than this share of its speed; and reaches its point this
  * long (seconds) after the car is stopped at the line. */
 const PACE_LEAST=.4,PACE_MARGIN=.6;
-/** The road user a stage waits for stands this far (metres) short of its point until the car is there. */
-const HOLD_SHORT=4;
+/** The road user a stage waits for stands this far (metres) short of its point until the car is there; held from its
+ * stopping distance before that (it slows at HOLD_EASE m/s², as a road user does when paced), so it never runs past. */
+const HOLD_SHORT=4,HOLD_EASE=1.5;
 /** A pedestrian may be paced down further: people dawdle (a share of their speed). */
 const PACE_LEAST_ON_FOOT=.15;
 /** Within this far of the start of their path (metres) someone on foot may stand and wait. */
@@ -225,15 +226,20 @@ export class DecisionRunner{
     }
     return to-s>SKIP_MIN?to:null;
   }
+  /** Where the last Skip ahead put the car (path metres). */
+  private skipAt:number|null=null;
   /** The car's place and heading after Skip ahead (null: nothing to skip). */
   skipPose():{x:number;z:number;heading:number}|null{
     const to=this.skipTo;
     if(to===null)return null;
     const p=this.assist.pointAt(to),q=this.assist.pointAt(to+2);
+    this.skipAt=to;
     return {x:p.x,z:p.z,heading:Math.atan2(q.x-p.x,-(q.z-p.z))};
   }
   /** After the car is put there: nothing held over from where it was. */
   skipped():void{
+    if(this.skipAt!==null)this.assist.placedAt(this.skipAt);
+    this.skipAt=null;
     this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.clearing=0;
     this.standing.clear();this.standAt.clear();
   }
@@ -241,9 +247,11 @@ export class DecisionRunner{
   /** Where the car starts: the route's start, or a little before the challenge practised. */
   startPose(only:number|null=null):{x:number;z:number;heading:number}{
     if(only===null||only===0){const st=this.route.start;return {x:st.x,z:st.z,heading:st.headingDeg*Math.PI/180}}
-    const s=Math.max(0,this.s(this.route.challenges[only]!.instructAt)-30),p=this.assist.pointAt(s),q=this.assist.pointAt(s+2);
+    const s=this.startS(only),p=this.assist.pointAt(s),q=this.assist.pointAt(s+2);
     return {x:p.x,z:p.z,heading:Math.atan2(q.x-p.x,-(q.z-p.z))};
   }
+  /** Path metres where practising challenge `only` starts. */
+  private startS(only:number):number{return Math.max(0,this.s(this.route.challenges[only]!.instructAt)-30)}
 
   /** From the start (the whole test), or practising one challenge. The car must already be at `startPose`. */
   begin(only:number|null=null):void{
@@ -251,6 +259,7 @@ export class DecisionRunner{
     this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.started.clear();this.records.length=0;this.last=null;this.ending=false;
     for(const a of this.route.actors){const x=this.scene.actor(a.id);if(x){x.setTiming(1e9);x.reset()}}
     this.assist.setPath(this.path);
+    if(only)this.assist.placedAt(this.startS(only));
     this.showWaiting();
     this.heldKey='-';this.holdLights();
     this.scene.setSignal('off');
@@ -387,7 +396,8 @@ export class DecisionRunner{
     if(place.pause.kind==='stop'&&d<1.5&&speed<.5)return;
     // (A car nearly at its point with the learner's not yet there, held up behind traffic: it stands and waits, rather than passing
     // the moment depicted before the car arrives.)
-    if(def.kind!=='pedestrian'&&left<HOLD_SHORT&&d>3){x.pace=0;return}
+    const v0=x.speed??0;
+    if(def.kind!=='pedestrian'&&left<HOLD_SHORT+v0*v0/(2*HOLD_EASE)&&d>3){x.pace=0;return}
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;

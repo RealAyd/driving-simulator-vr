@@ -3,6 +3,11 @@ import {BRENTWOOD_ROUTE_1} from './brentwoodRoute1';
 import {BRENTWOOD_ROUTE_2} from './brentwoodRoute2';
 import {CHELMSFORD_ROUTE_1} from './chelmsfordRoute1';
 import {CHELMSFORD_ROUTE_2} from './chelmsfordRoute2';
+import {SALISBURY_ROUTE_1} from './salisburyRoute1';
+import {SALISBURY_ROUTE_2} from './salisburyRoute2';
+import {MORDEN_ROUTE_1} from './mordenRoute1';
+import {MORDEN_ROUTE_2} from './mordenRoute2';
 
 /** The decision mock test routes, as offered on the home screen. */
-export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2,CHELMSFORD_ROUTE_1,CHELMSFORD_ROUTE_2];
+export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2,CHELMSFORD_ROUTE_1,CHELMSFORD_ROUTE_2,
+  SALISBURY_ROUTE_1,SALISBURY_ROUTE_2,MORDEN_ROUTE_1,MORDEN_ROUTE_2];

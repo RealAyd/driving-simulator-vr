@@ -42,6 +42,9 @@ export class SteeringAssist{
   /** Where the car was last found along the path (a route can pass the same road twice, once each way). */
   private last:number|null=null;
 
+  /** The car has been put here (path metres): found from here on, not on an earlier part of the path that runs close by. */
+  placedAt(s:number):void{this.last=s}
+
   /**
    * Distance along the path of the point closest to (x, z): searched a little behind and ahead of where the car
    * was last, so a route that comes back along the same street (the other way) is not mistaken for the part being

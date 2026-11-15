@@ -59,8 +59,12 @@ describe('turn buttons',()=>{
     }
   });
   it('every challenge that turns or pulls out says which way',()=>{
-    const ahead=new Set(['station-crossing','the-drive-mini','westway-lights','moulsham-zebra','melbourne-zebra']);
-    for(const route of DECISION_ROUTES)for(const c of route.challenges)if(!ahead.has(c.id))expect(c.turn,c.id).toBeTruthy();
+    const ahead=new Set(['station-crossing','the-drive-mini','westway-lights','moulsham-zebra','melbourne-zebra',
+      'salisbury-2:castle-street-lights','salisbury-2:castle-street-mini',
+      'morden-london-1:leave-test-centre','morden-london-1:sutton-zebra',
+      'morden-london-2:tudor-zebra','morden-london-2:beverley-roundabout','morden-london-2:churston-mini']);
+    for(const route of DECISION_ROUTES)for(const c of route.challenges)
+      if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();
   });
   it('a wrong-way signal at a later stage is serious; the right way and the mirrors are harmless',()=>{
     const c=BRENTWOOD_ROUTE_2.challenges.find(x=>x.id==='kavanaghs-emerge')!;

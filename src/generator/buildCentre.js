@@ -110,6 +110,8 @@ for(const ref of miniNodes){
     while(line.length>2&&Math.hypot(line.at(-2).x-c.x,line.at(-2).z-c.z)<RADIUS)line.pop();
     const a=line.at(-2),d=Math.hypot(a.x-c.x,a.z-c.z);
     if(d>RADIUS)line[line.length-1]={x:r2(c.x+(a.x-c.x)*RADIUS/d),z:r2(c.z+(a.z-c.z)*RADIUS/d)};
+    // (A short road whose last point before the junction is inside the radius: the junction point is not repeated.)
+    else line.pop();
     // Traffic enters from this road unless it is one way out of the junction.
     if(!r.oneway||atEnd)entries.push(r.id);
     if(atEnd){line.push(c);r.centreline=line}else{line.push(c);r.centreline=line.reverse()}
