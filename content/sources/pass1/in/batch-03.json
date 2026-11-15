@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Bodmin",
+  "postcode": "PL31 1RD",
+  "tests": 5561
+ },
+ {
+  "name": "Bolton (Manchester)",
+  "postcode": "BL3 2AW",
+  "tests": 11879
+ },
+ {
+  "name": "Borehamwood (London)",
+  "postcode": "WD6 2BT",
+  "tests": 7798
+ },
+ {
+  "name": "Boston",
+  "postcode": "PE21 8AL",
+  "tests": 4521
+ },
+ {
+  "name": "Bradford (Heaton)",
+  "postcode": "BD9 5AS",
+  "tests": 7594
+ },
+ {
+  "name": "Bradford (Thornbury)",
+  "postcode": "BD3 7AY",
+  "tests": 7107
+ },
+ {
+  "name": "Brecon",
+  "postcode": "LD3 7RT",
+  "tests": 1565
+ },
+ {
+  "name": "Bredbury (Manchester)",
+  "postcode": "SK6 2QT",
+  "tests": 9946
+ },
+ {
+  "name": "Brentwood (London)",
+  "postcode": "CM14 5JN",
+  "tests": 5485
+ },
+ {
+  "name": "Bridgend",
+  "postcode": "CF31 4AD",
+  "tests": 6938
+ },
+ {
+  "name": "Bridlington",
+  "postcode": "YO16 4SF",
+  "tests": 2766
+ },
+ {
+  "name": "Bristol (Avonmouth)",
+  "postcode": "BS11 8AQ",
+  "tests": 9980
+ },
+ {
+  "name": "Bristol (Kingswood)",
+  "postcode": "BS15 4GQ",
+  "tests": 11483
+ },
+ {
+  "name": "Brodick (Isle of Arran)",
+  "postcode": "KA27 8AU",
+  "tests": 0
+ },
+ {
+  "name": "Bromley (London)",
+  "postcode": "BR1 5AB",
+  "tests": 10868
+ },
+ {
+  "name": "Buckie",
+  "postcode": "AB56 1QJ",
+  "tests": 274
+ },
+ {
+  "name": "Burgess Hill",
+  "postcode": "RH15 9AG",
+  "tests": 11191
+ },
+ {
+  "name": "Burton on Trent",
+  "postcode": "DE14 2TG",
+  "tests": 6682
+ },
+ {
+  "name": "Bury (Manchester)",
+  "postcode": "BL9 6HH",
+  "tests": 8136
+ },
+ {
+  "name": "Bury St Edmunds",
+  "postcode": "IP33 1TJ",
+  "tests": 8452
+ },
+ {
+  "name": "Buxton",
+  "postcode": "SK17 9DS",
+  "tests": 3449
+ },
+ {
+  "name": "Callander",
+  "postcode": "FK17 8AG",
+  "tests": 133
+ },
+ {
+  "name": "Camborne",
+  "postcode": "TR15 3QS",
+  "tests": 5967
+ },
+ {
+  "name": "Cambridge (Brookmount Court)",
+  "postcode": "CB4 2QH",
+  "tests": 13610
+ },
+ {
+  "name": "Campbeltown",
+  "postcode": "PA28 6BU",
+  "tests": 115
+ }
+]

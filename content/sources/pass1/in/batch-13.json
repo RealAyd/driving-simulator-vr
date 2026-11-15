@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Stafford",
+  "postcode": "ST16 2RF",
+  "tests": 3783
+ },
+ {
+  "name": "Steeton",
+  "postcode": "BD20 6RW",
+  "tests": 3840
+ },
+ {
+  "name": "Stevenage",
+  "postcode": "SG1 3DT",
+  "tests": 4208
+ },
+ {
+  "name": "Stirling",
+  "postcode": "FK8 2HF",
+  "tests": 4111
+ },
+ {
+  "name": "Stoke-On-Trent (Cobridge)",
+  "postcode": "ST6 2HE",
+  "tests": 6450
+ },
+ {
+  "name": "Stoke-on-Trent (Newcastle-Under-Lyme)",
+  "postcode": "ST4 6PQ",
+  "tests": 7098
+ },
+ {
+  "name": "Stornoway",
+  "postcode": "HS1 2XX",
+  "tests": 374
+ },
+ {
+  "name": "Stranraer",
+  "postcode": "DG9 8EH",
+  "tests": 214
+ },
+ {
+  "name": "Sunderland",
+  "postcode": "SR5 3JJ",
+  "tests": 9084
+ },
+ {
+  "name": "Swansea",
+  "postcode": "SA1 8QY",
+  "tests": 10590
+ },
+ {
+  "name": "Swindon",
+  "postcode": "SN5 5BL",
+  "tests": 9470
+ },
+ {
+  "name": "Swindon LGV",
+  "postcode": null,
+  "tests": 146
+ },
+ {
+  "name": "Taunton",
+  "postcode": "TA2 8RX",
+  "tests": 6957
+ },
+ {
+  "name": "Telford",
+  "postcode": "TF1 7FR",
+  "tests": 5663
+ },
+ {
+  "name": "Thurso",
+  "postcode": "KW14 7QA",
+  "tests": 167
+ },
+ {
+  "name": "Tilbury",
+  "postcode": "RM18 7AE",
+  "tests": 4185
+ },
+ {
+  "name": "Tolworth (London)",
+  "postcode": "KT6 7RZ",
+  "tests": 9241
+ },
+ {
+  "name": "Tottenham",
+  "postcode": "N17 8JL",
+  "tests": 12178
+ },
+ {
+  "name": "Trowbridge",
+  "postcode": "BA14 7DZ",
+  "tests": 2547
+ },
+ {
+  "name": "Tunbridge Wells",
+  "postcode": "TN1 2ES",
+  "tests": 4887
+ },
+ {
+  "name": "Ullapool",
+  "postcode": "IV26 2UW",
+  "tests": 59
+ },
+ {
+  "name": "Upton",
+  "postcode": "CH49 0UF",
+  "tests": 10893
+ },
+ {
+  "name": "Uxbridge (London)",
+  "postcode": "UB8 2DB",
+  "tests": 7378
+ },
+ {
+  "name": "Wakefield",
+  "postcode": "WF5 9TR",
+  "tests": 7650
+ },
+ {
+  "name": "Wallasey",
+  "postcode": "CH44 8AT",
+  "tests": 1276
+ }
+]

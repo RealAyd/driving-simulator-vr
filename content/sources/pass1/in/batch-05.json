@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Crewe",
+  "postcode": "CW2 7LL",
+  "tests": 4725
+ },
+ {
+  "name": "Crieff",
+  "postcode": "PH7 3SB",
+  "tests": 121
+ },
+ {
+  "name": "Cumnock",
+  "postcode": "KA18 1DX",
+  "tests": 906
+ },
+ {
+  "name": "Darlington",
+  "postcode": "DL1 4PW",
+  "tests": 6828
+ },
+ {
+  "name": "Derby (Alvaston)",
+  "postcode": "DE21 7AY",
+  "tests": 9260
+ },
+ {
+  "name": "Doncaster",
+  "postcode": "DN2 5YL",
+  "tests": 7865
+ },
+ {
+  "name": "Dorchester",
+  "postcode": "DT1 3SU",
+  "tests": 4561
+ },
+ {
+  "name": "Downpatrick",
+  "postcode": "BT30 6DU",
+  "tests": 0
+ },
+ {
+  "name": "Dudley",
+  "postcode": "DY6 7YE",
+  "tests": 11354
+ },
+ {
+  "name": "Dumbarton",
+  "postcode": "G82 3PD",
+  "tests": 1812
+ },
+ {
+  "name": "Dumfries",
+  "postcode": "DG1 2SH",
+  "tests": 2798
+ },
+ {
+  "name": "Dundee",
+  "postcode": "DD2 3QH",
+  "tests": 5851
+ },
+ {
+  "name": "Dunfermline (Vine)",
+  "postcode": "KY11 4JU",
+  "tests": 4422
+ },
+ {
+  "name": "Dunoon",
+  "postcode": "PA23 8BP",
+  "tests": 183
+ },
+ {
+  "name": "Duns",
+  "postcode": "TD11 3AU",
+  "tests": 132
+ },
+ {
+  "name": "Durham",
+  "postcode": "DH7 8XL",
+  "tests": 8228
+ },
+ {
+  "name": "East Kilbride",
+  "postcode": "G74 3EU",
+  "tests": 2451
+ },
+ {
+  "name": "Eastbourne",
+  "postcode": "BN22 7PT",
+  "tests": 5609
+ },
+ {
+  "name": "Edinburgh (Currie)",
+  "postcode": "EH14 5LT",
+  "tests": 7475
+ },
+ {
+  "name": "Edinburgh (Musselburgh)",
+  "postcode": "EH21 6SJ",
+  "tests": 7800
+ },
+ {
+  "name": "Elgin",
+  "postcode": "IV30 1UE",
+  "tests": 2184
+ },
+ {
+  "name": "Enfield (Brancroft Way)",
+  "postcode": null,
+  "tests": 474
+ },
+ {
+  "name": "Enfield (Innova Business Park)",
+  "postcode": "EN3 7XY",
+  "tests": 8042
+ },
+ {
+  "name": "Enniskillen",
+  "postcode": "BT74 4AD",
+  "tests": 0
+ },
+ {
+  "name": "Erith (London)",
+  "postcode": "DA17 6LJ",
+  "tests": 4921
+ }
+]

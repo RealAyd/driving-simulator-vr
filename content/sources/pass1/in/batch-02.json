@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Barnsley",
+  "postcode": "S75 2DH",
+  "tests": 7765
+ },
+ {
+  "name": "Barnstaple",
+  "postcode": "EX31 1AB",
+  "tests": 3583
+ },
+ {
+  "name": "Barra",
+  "postcode": "HS9 5XD",
+  "tests": 10
+ },
+ {
+  "name": "Barrow In Furness",
+  "postcode": "LA14 2PN",
+  "tests": 1735
+ },
+ {
+  "name": "Barry",
+  "postcode": "CF62 5QN",
+  "tests": 1621
+ },
+ {
+  "name": "Basildon",
+  "postcode": "SS14 3JS",
+  "tests": 4862
+ },
+ {
+  "name": "Basingstoke",
+  "postcode": "RG22 4LR",
+  "tests": 4940
+ },
+ {
+  "name": "Bedford",
+  "postcode": "MK41 7NY",
+  "tests": 8958
+ },
+ {
+  "name": "Belfast",
+  "postcode": "BT12 6QL",
+  "tests": 0
+ },
+ {
+  "name": "Belvedere (London)",
+  "postcode": "DA17 5EE",
+  "tests": 4337
+ },
+ {
+  "name": "Benbecula Island",
+  "postcode": "HS7 5LA",
+  "tests": 104
+ },
+ {
+  "name": "Berwick-On-Tweed",
+  "postcode": "TD15 2UY",
+  "tests": 667
+ },
+ {
+  "name": "Birmingham (Cocks Moors Woods Leisure Centre)",
+  "postcode": "B14 6ER",
+  "tests": 0
+ },
+ {
+  "name": "Birmingham (Garretts Green)",
+  "postcode": "B33 0SD",
+  "tests": 21871
+ },
+ {
+  "name": "Birmingham (Kings Heath)",
+  "postcode": "B14 5JA",
+  "tests": 8488
+ },
+ {
+  "name": "Birmingham (Kingstanding)",
+  "postcode": "B44 9UL",
+  "tests": 17909
+ },
+ {
+  "name": "Birmingham (Shirley)",
+  "postcode": "B90 4AA",
+  "tests": 9582
+ },
+ {
+  "name": "Birmingham (South Yardley)",
+  "postcode": "B26 1EA",
+  "tests": 12709
+ },
+ {
+  "name": "Birmingham (Sutton Coldfield)",
+  "postcode": "B73 5UB",
+  "tests": 0
+ },
+ {
+  "name": "Bishopbriggs",
+  "postcode": "G64 2QA",
+  "tests": 5661
+ },
+ {
+  "name": "Bishops Stortford",
+  "postcode": "CM23 3JQ",
+  "tests": 6826
+ },
+ {
+  "name": "Blackburn with Darwen",
+  "postcode": "BB3 0DB",
+  "tests": 8885
+ },
+ {
+  "name": "Blackpool",
+  "postcode": "FY4 2DP",
+  "tests": 6271
+ },
+ {
+  "name": "Bletchley",
+  "postcode": "MK3 6DH",
+  "tests": 9783
+ },
+ {
+  "name": "Blyth",
+  "postcode": "NE24 3BA",
+  "tests": 6493
+ }
+]

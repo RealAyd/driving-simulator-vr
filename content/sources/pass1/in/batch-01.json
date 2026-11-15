@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Aberdeen North",
+  "postcode": "AB22 8GT",
+  "tests": 1724
+ },
+ {
+  "name": "Aberdeen North LGV",
+  "postcode": null,
+  "tests": 2368
+ },
+ {
+  "name": "Aberdeen South (Cove)",
+  "postcode": "AB12 3GQ",
+  "tests": 4807
+ },
+ {
+  "name": "Aberfeldy",
+  "postcode": "PH15 2BJ",
+  "tests": 0
+ },
+ {
+  "name": "Abergavenny",
+  "postcode": "NP7 5HT",
+  "tests": 4650
+ },
+ {
+  "name": "Aberystwyth (Park Avenue)",
+  "postcode": "SY23 1PG",
+  "tests": 1469
+ },
+ {
+  "name": "Airdrie",
+  "postcode": "ML6 0DA",
+  "tests": 6673
+ },
+ {
+  "name": "Alness",
+  "postcode": "IV17 0PJ",
+  "tests": 865
+ },
+ {
+  "name": "Alnwick",
+  "postcode": "NE66 1JX",
+  "tests": 1093
+ },
+ {
+  "name": "Arbroath",
+  "postcode": "DD11 2NQ",
+  "tests": 294
+ },
+ {
+  "name": "Armagh",
+  "postcode": "BT60 1HW",
+  "tests": 0
+ },
+ {
+  "name": "Ashfield",
+  "postcode": "NG17 5LA",
+  "tests": 9507
+ },
+ {
+  "name": "Ashford (Kent)",
+  "postcode": "TN23 1HU",
+  "tests": 3504
+ },
+ {
+  "name": "Ashford (London Middlesex)",
+  "postcode": "TW15 2PJ",
+  "tests": 0
+ },
+ {
+  "name": "Atherton (Manchester)",
+  "postcode": "M46 0SU",
+  "tests": 7690
+ },
+ {
+  "name": "Aylesbury",
+  "postcode": "HP19 8JR",
+  "tests": 5864
+ },
+ {
+  "name": "Ayr",
+  "postcode": "KA8 9DJ",
+  "tests": 2015
+ },
+ {
+  "name": "Bala",
+  "postcode": "LL23 7SP",
+  "tests": 574
+ },
+ {
+  "name": "Ballachulish",
+  "postcode": "PH49 4HP",
+  "tests": 0
+ },
+ {
+  "name": "Ballater",
+  "postcode": "AB35 5QW",
+  "tests": 166
+ },
+ {
+  "name": "Ballymena",
+  "postcode": "BT42 3ER",
+  "tests": 0
+ },
+ {
+  "name": "Banbury",
+  "postcode": "OX16 9PA",
+  "tests": 8241
+ },
+ {
+  "name": "Banff",
+  "postcode": "AB45 1DL",
+  "tests": 253
+ },
+ {
+  "name": "Bangor",
+  "postcode": "LL57 4YH",
+  "tests": 3433
+ },
+ {
+  "name": "Barnet (London)",
+  "postcode": "EN5 1AD",
+  "tests": 9720
+ }
+]

@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Rhyl",
+  "postcode": "LL18 2EL",
+  "tests": 3232
+ },
+ {
+  "name": "Rochdale (Manchester)",
+  "postcode": "OL16 5EB",
+  "tests": 9790
+ },
+ {
+  "name": "Rotherham",
+  "postcode": "S61 4RL",
+  "tests": 5817
+ },
+ {
+  "name": "Rothesay",
+  "postcode": "PA20 0DG",
+  "tests": 0
+ },
+ {
+  "name": "Rugby",
+  "postcode": "CV22 7DH",
+  "tests": 7174
+ },
+ {
+  "name": "Sale (Manchester)",
+  "postcode": "M33 7ER",
+  "tests": 9977
+ },
+ {
+  "name": "Salisbury",
+  "postcode": "SP1 1LY",
+  "tests": 5624
+ },
+ {
+  "name": "Scarborough",
+  "postcode": "YO12 4AY",
+  "tests": 2658
+ },
+ {
+  "name": "Scunthorpe",
+  "postcode": "DN15 6XH",
+  "tests": 5837
+ },
+ {
+  "name": "Sevenoaks",
+  "postcode": "TN13 1HJ",
+  "tests": 6386
+ },
+ {
+  "name": "Sheffield (Handsworth)",
+  "postcode": "S13 9LT",
+  "tests": 9283
+ },
+ {
+  "name": "Sheffield (Middlewood Road)",
+  "postcode": "S6 1TQ",
+  "tests": 9864
+ },
+ {
+  "name": "Shrewsbury",
+  "postcode": "SY1 3BF",
+  "tests": 5712
+ },
+ {
+  "name": "Sidcup (London)",
+  "postcode": "DA14 5AG",
+  "tests": 12809
+ },
+ {
+  "name": "Skegness",
+  "postcode": "PE25 2EL",
+  "tests": 1895
+ },
+ {
+  "name": "Skipton",
+  "postcode": "BD23 2BE",
+  "tests": 2812
+ },
+ {
+  "name": "Slough (London)",
+  "postcode": "SL3 6EZ",
+  "tests": 9181
+ },
+ {
+  "name": "South Uist",
+  "postcode": "HS8 5TH",
+  "tests": 0
+ },
+ {
+  "name": "Southall (London)",
+  "postcode": "UB1 2HD",
+  "tests": 6461
+ },
+ {
+  "name": "Southampton (Maybush)",
+  "postcode": "SO16 9FP",
+  "tests": 8954
+ },
+ {
+  "name": "Southend-on-Sea",
+  "postcode": "SS2 6LL",
+  "tests": 4797
+ },
+ {
+  "name": "Southport (Liverpool)",
+  "postcode": "PR8 1HE",
+  "tests": 7231
+ },
+ {
+  "name": "Speke (Liverpool)",
+  "postcode": "L19 2QR",
+  "tests": 6986
+ },
+ {
+  "name": "St Albans",
+  "postcode": "AL1 3JX",
+  "tests": 6881
+ },
+ {
+  "name": "St Helens (Liverpool)",
+  "postcode": "WA9 1NS",
+  "tests": 9776
+ }
+]

@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Canterbury",
+  "postcode": "CT1 3AS",
+  "tests": 3322
+ },
+ {
+  "name": "Cardiff (Llanishen)",
+  "postcode": "CF14 5GF",
+  "tests": 14852
+ },
+ {
+  "name": "Cardigan",
+  "postcode": "SA43 1ED",
+  "tests": 1340
+ },
+ {
+  "name": "Carlisle",
+  "postcode": "CA2 7AF",
+  "tests": 3684
+ },
+ {
+  "name": "Carlisle LGV (Cars)",
+  "postcode": "CA3 0HA",
+  "tests": 63
+ },
+ {
+  "name": "Carmarthen",
+  "postcode": "SA31 1LP",
+  "tests": 2053
+ },
+ {
+  "name": "Castle Douglas",
+  "postcode": "DG7 1TH",
+  "tests": 516
+ },
+ {
+  "name": "Chadderton",
+  "postcode": "OL9 9XA",
+  "tests": 12454
+ },
+ {
+  "name": "Cheetham Hill (Manchester)",
+  "postcode": "M8 0AL",
+  "tests": 10768
+ },
+ {
+  "name": "Chelmsford (Hanbury Road)",
+  "postcode": "CM8 3DR",
+  "tests": 10758
+ },
+ {
+  "name": "Cheltenham",
+  "postcode": "GL52 2HQ",
+  "tests": 6545
+ },
+ {
+  "name": "Chertsey (London)",
+  "postcode": "KT16 9JX",
+  "tests": 8669
+ },
+ {
+  "name": "Chester",
+  "postcode": "CH1 6LT",
+  "tests": 8026
+ },
+ {
+  "name": "Chesterfield",
+  "postcode": "S41 7LT",
+  "tests": 4608
+ },
+ {
+  "name": "Chichester",
+  "postcode": "PO20 2FR",
+  "tests": 5295
+ },
+ {
+  "name": "Chingford (London)",
+  "postcode": "E4 6AD",
+  "tests": 13235
+ },
+ {
+  "name": "Chippenham",
+  "postcode": "SN14 6LH",
+  "tests": 7641
+ },
+ {
+  "name": "Chorley",
+  "postcode": "PR6 0BT",
+  "tests": 5257
+ },
+ {
+  "name": "Clacton-on-Sea",
+  "postcode": "CO15 6QA",
+  "tests": 2867
+ },
+ {
+  "name": "Colchester",
+  "postcode": "CO2 8HF",
+  "tests": 9977
+ },
+ {
+  "name": "Coleraine",
+  "postcode": "BT52 2NJ",
+  "tests": 0
+ },
+ {
+  "name": "Cookstown",
+  "postcode": "BT80 9AR",
+  "tests": 0
+ },
+ {
+  "name": "Coventry",
+  "postcode": "CV7 9EJ",
+  "tests": 9102
+ },
+ {
+  "name": "Craigavon",
+  "postcode": "BT63 5RY",
+  "tests": 0
+ },
+ {
+  "name": "Crawley",
+  "postcode": "RH11 9BJ",
+  "tests": 7869
+ }
+]

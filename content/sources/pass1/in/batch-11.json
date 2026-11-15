@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Nuneaton",
+  "postcode": "CV10 8AA",
+  "tests": 6634
+ },
+ {
+  "name": "Oban",
+  "postcode": "PA34 4AE",
+  "tests": 287
+ },
+ {
+  "name": "Omagh",
+  "postcode": "BT78 5PW",
+  "tests": 0
+ },
+ {
+  "name": "Orkney",
+  "postcode": "KW15 1FL",
+  "tests": 350
+ },
+ {
+  "name": "Oswestry",
+  "postcode": "SY10 8GA",
+  "tests": 1660
+ },
+ {
+  "name": "Oxford (Cowley)",
+  "postcode": "OX4 2PY",
+  "tests": 6449
+ },
+ {
+  "name": "Paisley",
+  "postcode": "PA1 2FB",
+  "tests": 5777
+ },
+ {
+  "name": "Peebles",
+  "postcode": "EH45 8DN",
+  "tests": 528
+ },
+ {
+  "name": "Pembroke Dock",
+  "postcode": "SA72 6TD",
+  "tests": 2077
+ },
+ {
+  "name": "Penzance",
+  "postcode": "TR18 4JH",
+  "tests": 671
+ },
+ {
+  "name": "Perth (Arran Road)",
+  "postcode": "PH1 3DZ",
+  "tests": 2606
+ },
+ {
+  "name": "Peterborough",
+  "postcode": "PE1 5XA",
+  "tests": 11021
+ },
+ {
+  "name": "Peterhead",
+  "postcode": "AB42 3AW",
+  "tests": 1400
+ },
+ {
+  "name": "Pinner (London)",
+  "postcode": "HA5 2DZ",
+  "tests": 14672
+ },
+ {
+  "name": "Pitlochry",
+  "postcode": "PH16 5EA",
+  "tests": 0
+ },
+ {
+  "name": "Plymouth",
+  "postcode": "PL5 2EY",
+  "tests": 9867
+ },
+ {
+  "name": "Plymouth LGV",
+  "postcode": null,
+  "tests": 64
+ },
+ {
+  "name": "Pontefract",
+  "postcode": "WF10 5HW",
+  "tests": 4883
+ },
+ {
+  "name": "Poole",
+  "postcode": "BH17 0SA",
+  "tests": 9639
+ },
+ {
+  "name": "Portsmouth",
+  "postcode": "PO6 4SH",
+  "tests": 11305
+ },
+ {
+  "name": "Preston",
+  "postcode": "PR2 2PD",
+  "tests": 11380
+ },
+ {
+  "name": "Pwllheli",
+  "postcode": "LL53 5NT",
+  "tests": 750
+ },
+ {
+  "name": "Reading",
+  "postcode": "RG2 0TD",
+  "tests": 6877
+ },
+ {
+  "name": "Redditch",
+  "postcode": "B97 6HJ",
+  "tests": 4660
+ },
+ {
+  "name": "Redhill Aerodrome",
+  "postcode": "RH1 5JZ",
+  "tests": 4619
+ }
+]

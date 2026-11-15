@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Leeds (The Old Fire Station)",
+  "postcode": "LS9 6NL",
+  "tests": 0
+ },
+ {
+  "name": "Leicester (Cannock Street)",
+  "postcode": "LE4 9HT",
+  "tests": 11638
+ },
+ {
+  "name": "Leicester (Wigston)",
+  "postcode": "LE18 4WS",
+  "tests": 16361
+ },
+ {
+  "name": "Leighton Buzzard (Stanbridge Road)",
+  "postcode": "LU7 4QG",
+  "tests": 7529
+ },
+ {
+  "name": "Lerwick",
+  "postcode": "ZE1 0DJ",
+  "tests": 432
+ },
+ {
+  "name": "Letchworth",
+  "postcode": "SG6 1RF",
+  "tests": 5032
+ },
+ {
+  "name": "Lichfield",
+  "postcode": "WS13 6RB",
+  "tests": 8490
+ },
+ {
+  "name": "Lincoln",
+  "postcode": "LN6 3RT",
+  "tests": 6345
+ },
+ {
+  "name": "Lisburn",
+  "postcode": "BT28 2BP",
+  "tests": 0
+ },
+ {
+  "name": "Livingston",
+  "postcode": "EH54 5DE",
+  "tests": 4486
+ },
+ {
+  "name": "Llanelli",
+  "postcode": "SA15 3SB",
+  "tests": 3442
+ },
+ {
+  "name": "Llantrisant",
+  "postcode": "CF72 8YR",
+  "tests": 8554
+ },
+ {
+  "name": "Lochgilphead",
+  "postcode": "PA31 8QX",
+  "tests": 144
+ },
+ {
+  "name": "Londonderry (Altnagelvin)",
+  "postcode": "BT47 2ED",
+  "tests": 0
+ },
+ {
+  "name": "Londonderry (Newbuildings)",
+  "postcode": "BT47 2SX",
+  "tests": 0
+ },
+ {
+  "name": "Loughborough",
+  "postcode": "LE11 1JP",
+  "tests": 5769
+ },
+ {
+  "name": "Loughton (London)",
+  "postcode": "IG10 1RB",
+  "tests": 6009
+ },
+ {
+  "name": "Louth",
+  "postcode": "LN11 8RS",
+  "tests": 829
+ },
+ {
+  "name": "Lowestoft(Mobbs Way)",
+  "postcode": "NR32 3AL",
+  "tests": 4921
+ },
+ {
+  "name": "Ludlow",
+  "postcode": "SY8 1FD",
+  "tests": 3529
+ },
+ {
+  "name": "Luton",
+  "postcode": "LU1 5BT",
+  "tests": 8304
+ },
+ {
+  "name": "Macclesfield",
+  "postcode": "SK10 1JQ",
+  "tests": 4910
+ },
+ {
+  "name": "Maidstone",
+  "postcode": "ME15 6JZ",
+  "tests": 6330
+ },
+ {
+  "name": "Mallaig",
+  "postcode": "PH41 4PX",
+  "tests": 46
+ },
+ {
+  "name": "Mallusk",
+  "postcode": "BT36 4YY",
+  "tests": 0
+ }
+]

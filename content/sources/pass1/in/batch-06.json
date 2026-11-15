@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Exeter",
+  "postcode": "EX2 8FS",
+  "tests": 8714
+ },
+ {
+  "name": "Exeter LGV",
+  "postcode": null,
+  "tests": 216
+ },
+ {
+  "name": "Farnborough",
+  "postcode": "GU14 6UU",
+  "tests": 8041
+ },
+ {
+  "name": "Featherstone",
+  "postcode": "WV10 7JD",
+  "tests": 14070
+ },
+ {
+  "name": "Folkestone",
+  "postcode": "CT20 2TS",
+  "tests": 4370
+ },
+ {
+  "name": "Forfar",
+  "postcode": "DD8 2AE",
+  "tests": 356
+ },
+ {
+  "name": "Fort William",
+  "postcode": "PH33 6AN",
+  "tests": 308
+ },
+ {
+  "name": "Fraserburgh",
+  "postcode": "AB43 9TN",
+  "tests": 496
+ },
+ {
+  "name": "Gairloch",
+  "postcode": "IV21 2BX",
+  "tests": 52
+ },
+ {
+  "name": "Galashiels",
+  "postcode": "TD1 3BH",
+  "tests": 2193
+ },
+ {
+  "name": "Gateshead",
+  "postcode": "NE11 9HU",
+  "tests": 8109
+ },
+ {
+  "name": "Gillingham",
+  "postcode": "ME8 0EZ",
+  "tests": 14761
+ },
+ {
+  "name": "Girvan",
+  "postcode": "KA26 9AL",
+  "tests": 249
+ },
+ {
+  "name": "Glasgow (Anniesland)",
+  "postcode": "G13 1XS",
+  "tests": 8560
+ },
+ {
+  "name": "Glasgow (Baillieston)",
+  "postcode": "G69 6GA",
+  "tests": 9478
+ },
+ {
+  "name": "Glasgow (Shieldhall)",
+  "postcode": "G51 4TH",
+  "tests": 6792
+ },
+ {
+  "name": "Gloucester",
+  "postcode": "GL2 4LY",
+  "tests": 6511
+ },
+ {
+  "name": "Golspie",
+  "postcode": "KW10 6SP",
+  "tests": 100
+ },
+ {
+  "name": "Goodmayes (London)",
+  "postcode": "IG3 9UZ",
+  "tests": 21961
+ },
+ {
+  "name": "Gosforth",
+  "postcode": "NE3 5HB",
+  "tests": 10234
+ },
+ {
+  "name": "Grangemouth",
+  "postcode": "FK3 8WJ",
+  "tests": 4615
+ },
+ {
+  "name": "Grantham (Somerby)",
+  "postcode": "NG31 7TX",
+  "tests": 5959
+ },
+ {
+  "name": "Grantown-On-Spey",
+  "postcode": "PH26 3JR",
+  "tests": 180
+ },
+ {
+  "name": "Greenford (Horsenden Lane)",
+  "postcode": "UB6 7QH",
+  "tests": 7106
+ },
+ {
+  "name": "Greenham",
+  "postcode": null,
+  "tests": 3566
+ }
+]

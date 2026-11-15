@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Malton",
+  "postcode": "YO17 7LB",
+  "tests": 562
+ },
+ {
+  "name": "Medway Ambely Road (Formally Gillingham LGV)",
+  "postcode": "ME8 0SJ",
+  "tests": 0
+ },
+ {
+  "name": "Melton Mowbray",
+  "postcode": "LE13 0UL",
+  "tests": 2486
+ },
+ {
+  "name": "Merthyr Tydfil",
+  "postcode": "CF48 4DR",
+  "tests": 3703
+ },
+ {
+  "name": "Middlesbrough",
+  "postcode": "TS3 8TE",
+  "tests": 8952
+ },
+ {
+  "name": "Mill Hill (London)",
+  "postcode": "NW7 2DQ",
+  "tests": 8688
+ },
+ {
+  "name": "Mitcham (London)",
+  "postcode": "CR0 3AQ",
+  "tests": 13825
+ },
+ {
+  "name": "Monmouth",
+  "postcode": "NP25 3DP",
+  "tests": 1407
+ },
+ {
+  "name": "Montrose",
+  "postcode": "DD10 8EE",
+  "tests": 633
+ },
+ {
+  "name": "Morden (London)",
+  "postcode": "SM4 4PE",
+  "tests": 16260
+ },
+ {
+  "name": "Nelson",
+  "postcode": "BB9 9BT",
+  "tests": 6366
+ },
+ {
+  "name": "Newport (Gwent)",
+  "postcode": "NP19 4XH",
+  "tests": 7106
+ },
+ {
+  "name": "Newport (Isle of Wight)",
+  "postcode": "PO30 5WB",
+  "tests": 3875
+ },
+ {
+  "name": "Newry",
+  "postcode": "BT34 1LD",
+  "tests": 0
+ },
+ {
+  "name": "Newton Abbot",
+  "postcode": "TQ12 4YQ",
+  "tests": 6263
+ },
+ {
+  "name": "Newton Stewart",
+  "postcode": "DG8 6JW",
+  "tests": 201
+ },
+ {
+  "name": "Newtown",
+  "postcode": "SY16 1JB",
+  "tests": 1740
+ },
+ {
+  "name": "Newtownards",
+  "postcode": "BT23 4XP",
+  "tests": 0
+ },
+ {
+  "name": "Norris Green (Liverpool)",
+  "postcode": "L11 5BR",
+  "tests": 13265
+ },
+ {
+  "name": "Northallerton",
+  "postcode": "DL6 1NU",
+  "tests": 2314
+ },
+ {
+  "name": "Northampton",
+  "postcode": "NN5 7QA",
+  "tests": 12825
+ },
+ {
+  "name": "Northwich",
+  "postcode": "CW8 4BU",
+  "tests": 3226
+ },
+ {
+  "name": "Norwich (Peachman Way)",
+  "postcode": "NR7 0WE",
+  "tests": 11012
+ },
+ {
+  "name": "Nottingham (Chilwell)",
+  "postcode": "NG9 6DZ",
+  "tests": 10561
+ },
+ {
+  "name": "Nottingham (Colwick)",
+  "postcode": "NG4 2JU",
+  "tests": 11849
+ }
+]

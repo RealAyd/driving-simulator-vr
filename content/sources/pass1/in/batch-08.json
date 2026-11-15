@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Inverurie",
+  "postcode": "AB51 4FR",
+  "tests": 1090
+ },
+ {
+  "name": "Ipswich",
+  "postcode": "IP3 9SW",
+  "tests": 10724
+ },
+ {
+  "name": "Irvine",
+  "postcode": "KA11 5DJ",
+  "tests": 5306
+ },
+ {
+  "name": "Islay Island",
+  "postcode": "PA43 7HL",
+  "tests": 0
+ },
+ {
+  "name": "Isle of Mull",
+  "postcode": "PA72 6JD",
+  "tests": 28
+ },
+ {
+  "name": "Isle of Skye (Broadford)",
+  "postcode": "IV49 9AQ",
+  "tests": 0
+ },
+ {
+  "name": "Isle of Skye (Portree)",
+  "postcode": "IV51 9BD",
+  "tests": 133
+ },
+ {
+  "name": "Isle of Tiree",
+  "postcode": "PA77 6UH",
+  "tests": 10
+ },
+ {
+  "name": "Isles of Scilly",
+  "postcode": "TR21 0LW",
+  "tests": 8
+ },
+ {
+  "name": "Isleworth (Fleming Way)",
+  "postcode": "TW7 6DB",
+  "tests": 12106
+ },
+ {
+  "name": "Kelso",
+  "postcode": "TD5 8DW",
+  "tests": 381
+ },
+ {
+  "name": "Kendal (Oxenholme Road)",
+  "postcode": "LA9 7RL",
+  "tests": 2149
+ },
+ {
+  "name": "Kettering",
+  "postcode": "NN15 6NL",
+  "tests": 8489
+ },
+ {
+  "name": "Kings Lynn",
+  "postcode": "PE30 4LS",
+  "tests": 7405
+ },
+ {
+  "name": "Kingussie",
+  "postcode": "PH21 1EN",
+  "tests": 131
+ },
+ {
+  "name": "Kirkcaldy",
+  "postcode": "KY1 2YX",
+  "tests": 5209
+ },
+ {
+  "name": "Knaresborough",
+  "postcode": "HG5 8QB",
+  "tests": 5305
+ },
+ {
+  "name": "Kyle of Lochalsh",
+  "postcode": "IV40 8BP",
+  "tests": 142
+ },
+ {
+  "name": "Lairg",
+  "postcode": "IV27 4DB",
+  "tests": 0
+ },
+ {
+  "name": "Lanark",
+  "postcode": "ML11 9AX",
+  "tests": 1845
+ },
+ {
+  "name": "Larne",
+  "postcode": "BT40 2SY",
+  "tests": 0
+ },
+ {
+  "name": "Launceston",
+  "postcode": "PL15 9NJ",
+  "tests": 2286
+ },
+ {
+  "name": "Lee On The Solent",
+  "postcode": "PO13 9JY",
+  "tests": 10409
+ },
+ {
+  "name": "Leeds",
+  "postcode": null,
+  "tests": 7346
+ },
+ {
+  "name": "Leeds (Colton Mill)",
+  "postcode": "LS15 9JN",
+  "tests": 0
+ }
+]

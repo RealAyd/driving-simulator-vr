@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Walton LGV",
+  "postcode": "LS23 7DU",
+  "tests": 2320
+ },
+ {
+  "name": "Wanstead (London)",
+  "postcode": "E11 2AW",
+  "tests": 8370
+ },
+ {
+  "name": "Warrington",
+  "postcode": "WA2 9EP",
+  "tests": 6124
+ },
+ {
+  "name": "Warwick (Wedgenock House)",
+  "postcode": "CV34 5AP",
+  "tests": 10900
+ },
+ {
+  "name": "Watford",
+  "postcode": "WD25 8HU",
+  "tests": 10896
+ },
+ {
+  "name": "Watnall",
+  "postcode": null,
+  "tests": 702
+ },
+ {
+  "name": "Wednesbury",
+  "postcode": "WS10 9HN",
+  "tests": 8335
+ },
+ {
+  "name": "Wellingborough",
+  "postcode": "NN8 3RU",
+  "tests": 1477
+ },
+ {
+  "name": "West Didsbury (Manchester)",
+  "postcode": "M21 7QY",
+  "tests": 17196
+ },
+ {
+  "name": "West Wickham (London)",
+  "postcode": "BR4 0RL",
+  "tests": 11147
+ },
+ {
+  "name": "Weston-super-Mare",
+  "postcode": "BS23 3PZ",
+  "tests": 5807
+ },
+ {
+  "name": "Whitby",
+  "postcode": "YO22 4ET",
+  "tests": 513
+ },
+ {
+  "name": "Wick",
+  "postcode": "KW1 4QS",
+  "tests": 225
+ },
+ {
+  "name": "Widnes",
+  "postcode": "WA8 8PT",
+  "tests": 5673
+ },
+ {
+  "name": "Winchester",
+  "postcode": "SO23 9SY",
+  "tests": 3839
+ },
+ {
+  "name": "Wolverhampton",
+  "postcode": "WV4 6JX",
+  "tests": 11719
+ },
+ {
+  "name": "Wood Green (London)",
+  "postcode": "N22 5LF",
+  "tests": 10797
+ },
+ {
+  "name": "Worcester",
+  "postcode": "WR4 9FE",
+  "tests": 10516
+ },
+ {
+  "name": "Workington",
+  "postcode": "CA14 3YT",
+  "tests": 3015
+ },
+ {
+  "name": "Worksop",
+  "postcode": "S81 8BW",
+  "tests": 6022
+ },
+ {
+  "name": "Worthing",
+  "postcode": "BN13 1NP",
+  "tests": 7766
+ },
+ {
+  "name": "Wrexham",
+  "postcode": "LL13 7YP",
+  "tests": 3942
+ },
+ {
+  "name": "Yeading (London)",
+  "postcode": "UB4 9BS",
+  "tests": 6289
+ },
+ {
+  "name": "Yeovil",
+  "postcode": "BA20 2EN",
+  "tests": 5754
+ },
+ {
+  "name": "York",
+  "postcode": "YO32 9GW",
+  "tests": 7121
+ }
+]

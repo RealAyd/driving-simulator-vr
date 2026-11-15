@@ -1,0 +1,127 @@
+[
+ {
+  "name": "Greenock",
+  "postcode": "PA16 8DD",
+  "tests": 2036
+ },
+ {
+  "name": "Grimsby Coldwater",
+  "postcode": "DN31 2TB",
+  "tests": 5754
+ },
+ {
+  "name": "Guildford",
+  "postcode": "GU1 1SA",
+  "tests": 5032
+ },
+ {
+  "name": "Haddington",
+  "postcode": "EH41 3NG",
+  "tests": 1890
+ },
+ {
+  "name": "Halifax",
+  "postcode": "HX2 0HA",
+  "tests": 4959
+ },
+ {
+  "name": "Hamilton",
+  "postcode": "ML3 6RQ",
+  "tests": 5608
+ },
+ {
+  "name": "Hartlepool",
+  "postcode": "TS25 1TZ",
+  "tests": 5725
+ },
+ {
+  "name": "Hastings (Ore)",
+  "postcode": "TN35 4NN",
+  "tests": 3065
+ },
+ {
+  "name": "Hawick",
+  "postcode": "TD9 8EJ",
+  "tests": 427
+ },
+ {
+  "name": "Heckmondwike",
+  "postcode": "WF16 0AS",
+  "tests": 5232
+ },
+ {
+  "name": "Hendon (London)",
+  "postcode": "NW9 5TZ",
+  "tests": 11608
+ },
+ {
+  "name": "Hereford",
+  "postcode": "HR4 9NS",
+  "tests": 3352
+ },
+ {
+  "name": "Herne Bay",
+  "postcode": "CT6 6GZ",
+  "tests": 7912
+ },
+ {
+  "name": "Hexham",
+  "postcode": "NE46 3EW",
+  "tests": 1213
+ },
+ {
+  "name": "Heysham",
+  "postcode": "LA3 2UZ",
+  "tests": 3735
+ },
+ {
+  "name": "High Wycombe",
+  "postcode": "HP11 1TL",
+  "tests": 3891
+ },
+ {
+  "name": "Hinckley",
+  "postcode": "LE10 2TG",
+  "tests": 3465
+ },
+ {
+  "name": "Hornchurch (London)",
+  "postcode": "RM12 6JX",
+  "tests": 6310
+ },
+ {
+  "name": "Horsforth",
+  "postcode": "LS18 5NY",
+  "tests": 11935
+ },
+ {
+  "name": "Huddersfield",
+  "postcode": "HD2 1HJ",
+  "tests": 9223
+ },
+ {
+  "name": "Hull",
+  "postcode": "HU6 7PY",
+  "tests": 9439
+ },
+ {
+  "name": "Huntly",
+  "postcode": "AB54 8JX",
+  "tests": 232
+ },
+ {
+  "name": "Hydebank",
+  "postcode": "BT8 8JL",
+  "tests": 0
+ },
+ {
+  "name": "Inveraray",
+  "postcode": "PA32 8UY",
+  "tests": 67
+ },
+ {
+  "name": "Inverness (Longman Drive)",
+  "postcode": "IV1 1SU",
+  "tests": 2933
+ }
+]
