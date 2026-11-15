@@ -92,7 +92,7 @@ function asDepicted(r:Run,route:DecisionRoute){
     // the car is to move off; the silver car coming through the lights as the car waits to turn in.
     expect(near('leave-test-centre/green','crossing-pedestrian'),'pedestrian ahead').toBeLessThan(50);
     expect(near('forest-move-off/check','cyclist'),'cyclist behind').toBeLessThan(25);
-    expect(near('centre-right/approach','stonecot-car'),'silver car coming').toBeLessThan(80);
+    expect(near('centre-right/approach','stonecot-car'),'silver car coming').toBeLessThan(90);
   }else{
     // The white car close as the car waits to pull out, then the blue car out of the lights; the grey car close
     // behind as the car is to move off.

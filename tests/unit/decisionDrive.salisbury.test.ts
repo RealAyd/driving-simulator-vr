@@ -21,7 +21,7 @@ const PAUSES:Record<string,string[]>={
     'denison-move-off/check','denison-move-off/clear',
     'barrington-lights/approach','barrington-lights/clear',
     'london-road-crossing/approach','london-road-crossing/clear',
-    'rougemont-right/approach','rougemont-right/clear'],
+    'kelsey-right/approach','kelsey-right/clear'],
   'salisbury-2':['leave-test-centre/approach','leave-test-centre/clear',
     'kelsey-pull-up/approach','kelsey-pull-up/stopped',
     'kelsey-move-off/check','kelsey-move-off/clear',
@@ -32,7 +32,7 @@ const PAUSES:Record<string,string[]>={
     'manor-right/approach','manor-right/clear']
 };
 /** Where each drive ends: back on Rougemont Close by the test centre (its own way in is a driveway, not built). */
-const END:Record<string,{x:number;z:number}>={'salisbury-1':{x:-285.4,z:608.7},'salisbury-2':{x:164.6,z:-170.6}};
+const END:Record<string,{x:number;z:number}>={'salisbury-1':{x:-285.4,z:608.7},'salisbury-2':{x:164.2,z:-171.3}};
 /** Challenges straight ahead (no turn to signal). */
 const AHEAD=new Set(['castle-street-lights','castle-street-mini']);
 

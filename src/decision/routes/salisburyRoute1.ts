@@ -3,13 +3,13 @@ import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
 import {withTurnButtons} from '../turnButtons';
 import {withBeforeAfter,type BeforeMerge} from '../beforeAfter';
-import {DENISON_CAR,FOLLOW_CAR,LONDON_CAR,MANOR_CAR,MANOR_CYCLIST} from './salisburyRoute1Paths';
+import {DENISON_CAR,FOLLOW_CAR,KELSEY_CYCLIST,LONDON_CAR,MANOR_CAR} from './salisburyRoute1Paths';
 
 /**
  * Salisbury route 1, St Mark's and Bishopdown: eight challenges from the test centre on Rougemont Close, left on to
- * Manor Road, Wain-a-long Road, St Mark's Roundabout, St Mark's Avenue and Bishopdown Road, Denison Rise, Barrington
- * Road, right at the lights on to London Road, back round St Mark's Roundabout, and home by Wain-a-long Road and Manor
- * Road. Chosen from the map and the roads public information names (content/packs/salisbury/ROUTES.md). Scene
+ * Manor Road, by Fairview Road, Kelsey Road and Bourne Avenue to St Mark's Roundabout, St Mark's Avenue and Bishopdown
+ * Road, Denison Rise, Barrington Road, right at the lights on to London Road, back round St Mark's Roundabout, and home
+ * by Wain-a-long Road, Kelsey Road and Manor Road. Chosen from the map and the roads public information names (content/packs/salisbury/ROUTES.md). Scene
  * salisbury-route-1 (OpenStreetMap). A practice route, not a confirmed test route.
  */
 const pts=(a:readonly (readonly number[])[]):Vec2[]=>a.map(([x,z])=>({x:x!,z:z!}));
@@ -40,8 +40,8 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'Approaching the London Road lights. They are red.'}},
   'london-road-crossing':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-144.4,286.2)},lights:'red',when:{actor:'crossing-pedestrian',at:p(-157,308.2)},panel:'right',frame:{yaw:0,pitch:44,shift:5},
     state:'On London Road, the crossing at St Mark\'s Roundabout just ahead. The lights are red.'}},
-  'rougemont-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(-224.8,591.3)},when:{actor:'manor-cyclist',at:p(-235.2,639.8)},frame:{yaw:0,pitch:44,shift:-4},
-    state:'On Manor Road, Rougemont Close just ahead on the right.'}}
+  'kelsey-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(-222.3,729.1)},when:{actor:'kelsey-cyclist',at:p(-283.7,740.1)},frame:{yaw:0,pitch:44,shift:-4},
+    state:'On Kelsey Road, Manor Road just ahead on the right.'}}
 };
 
 export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
@@ -52,16 +52,18 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   start:{x:-270.7,z:598.6,headingDeg:115},
   // Rougemont Close, Manor Road, Fairview Road, Kelsey Road, Bourne Avenue, St Mark's Roundabout, St Mark's Avenue,
   // Bishopdown Road, Denison Rise (pulling up and moving off), Barrington Road, London Road, St Mark's Roundabout,
-  // Wain-a-long Road, Manor Road and back into Rougemont Close. (St Mark's Roundabout is entered from Bourne Avenue: from
-  // Wain-a-long Road the turn into the entry is too tight for the car round the island in the map.)
+  // Wain-a-long Road, round the Bourne Avenue mini-roundabout, Kelsey Road, Manor Road and back into Rougemont Close.
+  // (St Mark's Roundabout is entered from Bourne Avenue: from Wain-a-long Road the turn into the entry is too tight for
+  // the car round the island in the map.)
   through:pts([[-214,500],[-164.6,600],[-120,715],[40,730],[88,650],[-39.5,399],[-110,345],[-199.8,166],[-295.8,-410],[-161.8,-623],[-19.8,-550],[129.2,-538],[135,-460],[175,-405],[50,-100],[-100,200],
-    [-153,400],[-215,490],[-262,601]]),
+    [-153,400],[-54.5,566.3],[40,664],[0,726],[-100,714],[-200,727],[-242,690],[-262,601]]),
   // Wide of the corner from Fairview Road into Kelsey Road; clear of the island nose in the entry to St Mark's
   // Roundabout, and of the corner leaving it for St Mark's Avenue; pulled in to the kerb on Denison Rise, past Linkway
   // (the cars parked there are on the far side).
   shifts:[{from:p(-166.2,714.7),to:p(-162.3,717.9),left:-.6},{from:p(-157.8,353.5),to:p(-161.6,354.8),left:.8},{from:p(-209,306),to:p(-205.2,304),left:-1.2},{from:p(-80.7,-511),to:p(-67.1,-513.6),left:.35},
-    // Waiting to turn right into Rougemont Close, just left of the middle of Manor Road.
-    {from:p(-228.4,610.1),to:p(-228.6,611.1),left:.6}],
+    // Wide of the island turning right out of Barrington Road on to London Road, of the lamp column in the narrow
+    // one-way piece of Kelsey Road by Bourne Avenue, and of the corner from Manor Road into Rougemont Close.
+    {from:p(205.1,-375.2),to:p(207.2,-367.7),left:.6},{from:p(15.1,729.1),to:p(11.2,730),left:-.35},{from:p(-231.8,620.6),to:p(-233.6,618.2),left:-.5}],
   actors:[
     // Along Kelsey Road and up Manor Road, past the end of Rougemont Close as the car comes out.
     {id:'manor-car',name:'white car',colour:'#e5e7eb',speed:10,path:pts(MANOR_CAR)},
@@ -71,8 +73,8 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     {id:'follow-car',name:'grey car',colour:'#8a9099',speed:10,yields:true,path:pts(FOLLOW_CAR)},
     // Waiting at the London Road crossing on the left, then across in front of the car.
     {id:'crossing-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-155.4,309.1],[-163,305.2]])},
-    // Up Manor Road, coming the other way as the car waits to turn into Rougemont Close.
-    {id:'manor-cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(MANOR_CYCLIST)}
+    // East along Kelsey Road, coming the other way as the car waits to turn into Manor Road.
+    {id:'kelsey-cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(KELSEY_CYCLIST)}
   ],
   challenges:[
     {
@@ -84,8 +86,10 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instructAt:p(-268,599.9),
       starts:[{actor:'manor-car',at:p(-270.7,598.6),delay:0}],
       endAt:p(-227.7,599),
-      // The junction, and Manor Road to the right, where the white car comes from.
-      quiet:[{x:-232,z:617,radius:24},{x:-240,z:670,radius:40}],
+      // (Kept quiet on along Bourne Avenue: with cars parked along one kerb there is no room to meet traffic in it.)
+      quietUntil:p(-21.4,429.5),
+      // The junction, Manor Road to the right, where the white car comes from, and Bourne Avenue.
+      quiet:[{x:-232,z:617,radius:24},{x:-240,z:670,radius:40},{x:90,z:640,radius:55},{x:91,z:715,radius:22},{x:50,z:510,radius:45}],
       place:{
         approach:{pause:{kind:'moving',at:p(-257,604.6)},frame:{yaw:0,pitch:22},state:'Leaving the test centre along Rougemont Close.'},
         line:{pause:{kind:'stop',at:p(-240.4,611.8)},when:{actor:'manor-car',at:p(-235.2,639.8)},frame:{yaw:-75,pitch:26},state:'At the give way line.'},
@@ -144,14 +148,18 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       turn:'right',
       title:'Roundabout, turning right',
       where:'Bourne Avenue at St Mark\'s Roundabout, fourth exit on to St Mark\'s Avenue',
-      instruction:'At the roundabout, take the fourth exit, please.',
+      instruction:'At the roundabout, take the fourth exit, that\'s to the right.',
       instructAt:p(-43,396),
       starts:[{actor:'london-car',at:p(16.6,475.4),delay:0}],
       // (The London Road entry, held green for the blue car; the car's own way round meets the same set's lights.)
       lights:p(-216.4,319.6),
       endAt:p(-196.3,289.9),
-      // The entry, the circulating carriageway to the right where the blue car comes round, and the London Road entry.
-      quiet:[{x:-166,z:354,radius:16},{x:-163,z:328,radius:22},{x:-150,z:288,radius:22}],
+      // (Kept quiet on along St Mark's Avenue: with cars parked along one kerb there is no room to meet traffic in it.)
+      quietUntil:p(-263.3,-203.2),
+      // The entry, the circulating carriageway to the right where the blue car comes round, the London Road entry, and St
+      // Mark's Avenue.
+      quiet:[{x:-166,z:354,radius:16},{x:-163,z:328,radius:22},{x:-150,z:288,radius:22},
+        {x:-206,z:205,radius:42},{x:-213,z:130,radius:45},{x:-234,z:44,radius:52},{x:-257,z:-53,radius:52},{x:-261,z:-153,radius:52}],
       place:{
         approach:{pause:{kind:'moving',at:p(-109.7,345)},frame:{yaw:0,pitch:22},state:'On Bourne Avenue, St Mark\'s Roundabout ahead.'},
         line:{pause:{kind:'stop',at:p(-161.5,354.7)},when:{actor:'london-car',at:p(-162.5,321.5)},frame:{yaw:-60,pitch:30},state:'At the give way line.'},
@@ -333,7 +341,10 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Also here, for practising this challenge on its own.)
       starts:[{actor:'follow-car',at:p(-151.6,-605.1),delay:0}],
       endAt:p(-1.8,-543.3),
-      quiet:[{x:-67,z:-514,radius:50}],
+      // (Kept quiet on to Barrington Road, while the grey car drives on ahead along Denison Rise: with cars parked along
+      // one kerb there is no room for it to meet traffic.)
+      quietUntil:p(129.2,-538),
+      quiet:[{x:-67,z:-514,radius:50},{x:30,z:-548,radius:45},{x:100,z:-548,radius:35}],
       place:{
         check:{pause:{kind:'stop',at:p(-67.1,-513.6)},when:{actor:'follow-car',at:p(-91.1,-510.8)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb, handbrake on.'},
@@ -505,21 +516,21 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       ]
     },
     {
-      id:'rougemont-right',
+      id:'kelsey-right',
       turn:'right',
       title:'Turning right into a side road',
-      where:'Manor Road, right into Rougemont Close',
-      instruction:'Take the next road on the right, please.',
-      instructAt:p(-214.9,537.3),
-      starts:[{actor:'manor-cyclist',at:p(-152,354),delay:0}],
-      endAt:p(-258.5,607.2),
-      // The junction, and Manor Road ahead, where the cyclist comes from.
-      quiet:[{x:-232,z:615,radius:22},{x:-238,z:660,radius:40}],
+      where:'Kelsey Road, right into Manor Road',
+      instruction:'Take the next road on the right.',
+      instructAt:p(-178.1,721.4),
+      starts:[{actor:'kelsey-cyclist',at:p(67.2,690.5),delay:0}],
+      endAt:p(-250.7,721.8),
+      // The junction, and Kelsey Road ahead, where the cyclist comes from.
+      quiet:[{x:-248,z:732,radius:22},{x:-285,z:740,radius:40}],
       place:{
-        approach:{pause:{kind:'moving',at:p(-220.7,566.7)},frame:{yaw:0,pitch:20},state:'On Manor Road, Rougemont Close ahead on the right.'},
-        centre:{pause:{kind:'stop',at:p(-228.4,610)},when:{actor:'manor-cyclist',at:p(-233.7,632)},frame:{yaw:0,pitch:32},
-          state:'Waiting to turn right into Rougemont Close.'},
-        clear:{pause:{kind:'stop',at:p(-228.4,610)},when:{actor:'manor-cyclist',at:p(-225.6,587.4)},frame:{yaw:20,pitch:32},
+        approach:{pause:{kind:'moving',at:p(-192.7,724.5)},frame:{yaw:0,pitch:20},state:'On Kelsey Road, Manor Road ahead on the right.'},
+        centre:{pause:{kind:'stop',at:p(-241.5,734.1)},when:{actor:'kelsey-cyclist',at:p(-264,737)},frame:{yaw:0,pitch:32},
+          state:'Waiting to turn right into Manor Road.'},
+        clear:{pause:{kind:'stop',at:p(-241.5,734.1)},when:{actor:'kelsey-cyclist',at:p(-219.8,727.5)},frame:{yaw:20,pitch:32},
           state:'Still waiting to turn right.'}
       },
       stages:[
@@ -547,27 +558,27 @@ export const SALISBURY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
           neutral:['look-right','look-left','mirror-right'],
           rules:[
             {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming cyclist',
-              message:'The cyclist coming up Manor Road was going ahead, and has priority over you turning right. Turning across a cyclist is one of the commonest causes of collisions. The examiner had to stop the car.'}},
+              message:'The cyclist coming along Kelsey Road was going ahead, and has priority over you turning right. Turning across a cyclist is one of the commonest causes of collisions. The examiner had to stop the car.'}},
             {kind:'distractor',id:'flash',action:'flash-lights',fault:{level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
               message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'}}
           ],
           accepted:[['give-way'],['look-right','give-way'],['mirror-right','give-way']],
           next:{wait:'clear',go:'clear'},
-          explain:'Wait: the cyclist coming up Manor Road was going ahead, and has priority over you turning right.'
+          explain:'Wait: the cyclist coming along Kelsey Road was going ahead, and has priority over you turning right.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
           buttons:['look-left','look-right','mirror-right','give-way','go'],
           neutral:['look-left','mirror-right'],
           rules:[
-            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into Rougemont Close',
-              message:'Before you turn, look into the road you are turning into (on your right) for anyone crossing it or coming out of the test centre.'}},
+            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into Manor Road',
+              message:'Before you turn, look into the road you are turning into (on your right) for anyone crossing it.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'Nothing more was coming up Manor Road: this was the time to turn.'}}
+              message:'Nothing more was coming along Kelsey Road: this was the time to turn.'}}
           ],
           accepted:[['look-right','go'],['look-left','look-right','go']],
           next:{go:'done'},
-          explain:'Check Rougemont Close is clear to turn into, then go: nothing more was coming the other way.'
+          explain:'Check Manor Road is clear to turn into, then go: nothing more was coming the other way.'
         }
       ]
     }

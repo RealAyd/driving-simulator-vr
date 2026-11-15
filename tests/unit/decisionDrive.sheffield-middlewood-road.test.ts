@@ -20,13 +20,13 @@ const PAUSES:Record<string,string[]>={
     'catch-bar-lights/approach','catch-bar-lights/clear',
     'winn-gardens-right/approach','winn-gardens-right/clear'],
   'sheffield-middlewood-road-2':['leave-test-centre/approach','leave-test-centre/clear',
-    'leppings-lights/approach','leppings-lights/green','leppings-lights/clear',
+    'parkside-lights/approach','parkside-lights/green','parkside-lights/clear',
     'southey-green-right/approach','southey-green-right/clear',
     'southey-green-roundabout/approach','southey-green-roundabout/clear',
     'wordsworth-pull-up/approach','wordsworth-pull-up/stopped',
     'wordsworth-move-off/check','wordsworth-move-off/clear',
-    'herries-lights/approach','herries-lights/clear',
-    'bradfield-roundabout/approach','bradfield-roundabout/clear']
+    'wordsworth-emerge/approach','wordsworth-emerge/clear',
+    'herries-lights/approach','herries-lights/clear']
 };
 /** Where each drive ends: back in the test centre's car park off Winn Gardens. */
 const END:Record<string,{x:number;z:number}>={
@@ -53,8 +53,8 @@ function asDepicted(r:Run,route:DecisionRoute){
     expect(near('leave-test-centre/footway','tc-pedestrian'),'pedestrian in front').toBeLessThan(9);
     expect(near('wadsley-move-off/check','wadsley-car'),'grey car behind').toBeLessThan(30);
   }else if(route===SHEFFIELD_MIDDLEWOOD_ROUTE_2){
-    // Crossing the end of Leppings Lane as the lights turn green; the cyclist close behind as the car is to move off.
-    expect(near('leppings-lights/green','leppings-pedestrian'),'pedestrian ahead').toBeLessThan(25);
+    // Still on the crossing as the lights turn green; the cyclist close behind as the car is to move off.
+    expect(near('parkside-lights/green','parkside-pedestrian'),'pedestrian ahead').toBeLessThan(12);
     expect(near('wordsworth-move-off/check','cyclist'),'cyclist behind').toBeLessThan(30);
   }
 }
@@ -63,8 +63,8 @@ function asDepicted(r:Run,route:DecisionRoute){
 describe('Sheffield (Middlewood Road) decision challenges as authored',()=>{
   // (Two hazards at one place: someone on the footway then a car (leaving the car park); red lights then someone
   // crossing on green (Leppings Lane).)
-  const third=new Set(['leave-test-centre','leppings-lights']);
-  const ahead=new Set(['middlewood-crossing','catch-bar-lights','bradfield-roundabout']);
+  const third=new Set(['leave-test-centre','parkside-lights']);
+  const ahead=new Set(['middlewood-crossing','catch-bar-lights']);
   for(const route of ROUTES)for(const c of route.challenges){
     it(`${route.id} ${c.id}: accepted orders fault-free, every button known, every button pressed fails, turns show both signals and all mirrors`,()=>{
       for(const st of c.stages)for(const seq of st.accepted)expect(assessStage(c,st.id,seq).faults,`${st.id}: ${seq.join(', ')}`).toEqual([]);

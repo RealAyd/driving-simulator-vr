@@ -31,8 +31,9 @@ const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a ped
 const BEFORE:Record<string,BeforeMerge>={
   'tudor-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(164.4,262.2)},when:{actor:'zebra-pedestrian',at:p(139.3,250.9)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
     state:'On Tudor Drive, the zebra crossing just ahead.'}},
-  'beverley-roundabout':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-270.3,35.9)},when:{actor:'bev-car',at:p(-233.3,9.5)},frame:{yaw:-45,pitch:30},
-    state:'Approaching the Beverley roundabout.'}},
+  // (At the line, as North Avenue in Chelmsford: the black car is in view coming round only from there.)
+  'beverley-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-278,25.5)},when:{actor:'bev-car',at:p(-255.3,8.5)},frame:{yaw:-60,pitch:40,shift:-4},
+    state:'At the give way line of the Beverley roundabout.'}},
   'cannon-hill-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(-474.7,-410.9)},when:{actor:'grand-car',at:p(-534.8,-502.9)},frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the Cannon Hill Lane lights on green.'}},
   'churston-mini':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-216.4,-548.8)},when:{actor:'camborne-car',at:p(-180.8,-534.5)},frame:{yaw:-45,pitch:30},
@@ -209,7 +210,8 @@ export const MORDEN_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Tudor Drive at the Beverley roundabout, second exit on to Grand Drive',
       instruction:'At the roundabout, take the second exit, please.',
       instructAt:p(-253.6,54.5),
-      starts:[{actor:'bev-car',at:p(-233.1,76.3),delay:0}],
+      // (Set going once the car is at the line, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'bev-car',at:p(-276.3,28),delay:0}],
       endAt:p(-296.2,-68.8),
       // The roundabout's entry, and its east side, where the black car comes round from Lower Morden Lane.
       quiet:[{x:-280,z:20,radius:22},{x:-245,z:5,radius:30},{x:-300,z:-30,radius:24}],

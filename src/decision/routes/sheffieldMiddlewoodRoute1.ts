@@ -56,7 +56,8 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
   // and back into the car park.
   through:pts([[-17,-447],[-70,-317],[-444,-104],[-522,74],[-46,266],[251,332],[439,651],[502,500],[469,220],[-47,-492],[-69,-612.5]]),
   // Pulled in to the kerb on Wadsley Lane, past Braemore Road (no cars parked along this stretch).
-  shifts:[{from:p(-4.7,270.5),to:p(8.3,271.5),left:.35}],
+  // (And a little wide of the corner turning back into the car park, not over its footway.)
+  shifts:[{from:p(-4.7,270.5),to:p(8.3,271.5),left:.35},{from:p(-63,-578),to:p(-57,-591),left:-.7}],
   actors:[
     // Along the Winn Gardens footway from the left, across the car park's way out.
     {id:'tc-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-46.9,-593.5],[-59.1,-584.9]])},
@@ -460,8 +461,8 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_1:DecisionRoute=withTurnButtons(withBefo
       quiet:[{x:440,z:150,radius:34}],
       place:{
         approach:{pause:{kind:'moving',at:p(459.6,188.7)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 30 mph.'},
-        line:{pause:{kind:'stop',at:p(446.1,158)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
-        clear:{pause:{kind:'stop',at:p(446.1,158)},lights:'red',frame:{yaw:0,pitch:28},state:'At the stop line. The lights have turned green.'}
+        line:{pause:{kind:'stop',at:p(446.8,159.5)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},
+        clear:{pause:{kind:'stop',at:p(446.8,159.5)},lights:'red',frame:{yaw:0,pitch:28},state:'At the stop line. The lights have turned green.'}
       },
       stages:[
         {

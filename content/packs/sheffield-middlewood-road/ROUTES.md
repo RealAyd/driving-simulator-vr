@@ -34,43 +34,51 @@ No roundabout lies in this route's area (Wadsley and Hillsborough's west side): 
 (challenge 8) stands in for it, and route 2 has two roundabouts. The Dixon Road lights (left on to Middlewood Road) and
 the Wadsley Lane lights are driven through, not challenges.
 
-## Route 2: Leppings Lane and Southey Green (scene `sheffield-middlewood-road-route-2`, 8.1 km)
+## Route 2: Parkside and Southey Green (scene `sheffield-middlewood-road-route-2`, 8.7 km)
 
-Car park, Winn Gardens, left on to Middlewood Road, Catch Bar Lane, left at the lights into Leppings Lane, the slip on
-to Penistone Road North, Halifax Road, right into Southey Green Road, right at the Southey Green Road roundabout on to
-Wordsworth Avenue (pulling up and moving off), right on to Herries Road, left at the Herries Road lights on to Penistone
-Road North, right into Owlerton Green, ahead at the Bradfield Road roundabout, Bradfield Road, right on to Middlewood
-Road at Hillsborough, and home up Middlewood Road, right into Winn Gardens and left into the car park.
+Car park, Winn Gardens, left on to Middlewood Road, Catch Bar Lane, Parkside Road, left at the lights on to Penistone
+Road, Penistone Road North (ahead through the Leppings Lane / Herries Road junction) and Halifax Road, right into
+Southey Green Road, right at the Southey Green Road roundabout on to Wordsworth Avenue (pulling up and moving off), right
+on to Herries Road, left at the Herries Road lights on to Penistone Road North; then home with no more challenges (the
+lights on the way held green, as on every route's way back): right into Owlerton Green, ahead at the small Bradfield
+Road roundabout, Bradfield Road, right on to Middlewood Road at Hillsborough, up Middlewood Road, right into Winn
+Gardens and left into the car park.
 
 | # | Challenge | Road users | Right answer |
 |---|---|---|---|
 | 1 | Leaving: end of Winn Gardens, left on to Middlewood Road (known junction) | A silver car coming down Middlewood Road from the right | Mirrors, signal left; look right, give way; look right and left, go |
-| 2 | Catch Bar Lane, left at the lights into Leppings Lane (known junction) | Red light; someone crossing the end of Leppings Lane as it turns green | Mirrors, signal left, stop; on green, look into Leppings Lane, give way; left mirror, go |
-| 3 | Halifax Road, right into Southey Green Road | A blue car coming down Halifax Road | Mirrors, signal right, position; wait; look into Southey Green Road, go |
+| 2 | Parkside Road, left at the lights on to Penistone Road | Red light; someone still on the crossing over the slip as it turns green | Mirrors, signal left, stop; on green, look along the crossing, give way; left mirror, go |
+| 3 | Halifax Road, right into Southey Green Road | A blue car coming down Halifax Road (the far carriageway) | Mirrors, signal right, position; wait; look into Southey Green Road, go |
 | 4 | Southey Green Road roundabout, turn right (third exit) on to Wordsworth Avenue (known junction) | A white car coming round from Wordsworth Avenue, on the right | Mirrors, signal right, position; look right, give way; look right again, go |
 | 5 | Pull up on Wordsworth Avenue, past Avisford Road | | Choose well past Avisford Road, mirrors, signal; handbrake, neutral, cancel signal |
 | 6 | Move off | A cyclist coming down Wordsworth Avenue behind | Mirror and blind spot, wait; again, go |
-| 7 | Herries Road lights, left on to Penistone Road North (known junction) | Red as you approach | Mirrors, signal left, stop; on green, left mirror and look, go |
-| 8 | Bradfield Road roundabout (small), ahead | A black car coming round from Hawksley Road, on the right | Interior mirror, slow down; look right, give way; look right again, go |
+| 7 | End of Wordsworth Avenue, right on to Herries Road | A black car coming along Herries Road from the right | Mirrors, signal right; look right, give way; look right and left, go |
+| 8 | Herries Road lights, left on to Penistone Road North (known junction) | Red as you approach | Mirrors, signal left, stop; on green, left mirror and a look into Penistone Road North, go |
 
-The small Bradfield Road roundabout at Owlerton (the map's ring is about 11 m across) stands in for a mini-roundabout:
-there is none on these roads (the only one mapped nearby is inside a retail park off Saw Works Way).
+No mini-roundabout lies on these roads: the only one mapped nearby is inside a retail park, and the Southey Green Road
+/ Southey Hill pair is mapped as short unnamed links the route planner cannot drive. Route 2's eight are the mix
+without it: emerging left and right, a left turn at lights with someone on the crossing, a right turn across traffic,
+a roundabout, red lights, and the pull-up and move-off pair. Home comes after the last challenge, round by Owlerton
+(the small Bradfield Road roundabout is driven, not judged): Penistone Road has five sets of lights between Herries Road
+and Owlerton with long cycles, and only the way back to the centre is held green throughout.
 
 ## Overlap with the test area (ROUTE_TEMPLATE_RULES section 3)
 
 | | Route 1 | Route 2 |
 |---|---|---|
-| Length | 4.0 km | 8.1 km |
-| On confirmed or likely roads | 3.88 km, 96% (Middlewood Road 1.65, Langsett Avenue 0.71, Wadsley Lane 0.54, Worrall Road 0.46, Dixon Road 0.42, Winn Gardens 0.10) | 6.70 km, 83% (Middlewood Road 2.77, Penistone Road North 0.97, Herries Road 0.90, Wordsworth Avenue 0.59, Leppings Lane 0.48, Southey Green Road 0.41, Halifax Road 0.38, Catch Bar Lane 0.09, Winn Gardens 0.10) |
-| Not named by any source | the car park road (0.08 km) | Penistone Road south of Herries Road (0.59), Bradfield Road (0.29), Owlerton Green (0.14), roundabout and link pieces |
-| Challenges at known junctions | 3 of 8: Langsett Avenue right turn (confirmed), Catch Bar Lane lights, Winn Gardens / Middlewood Road | 4 of 8: Winn Gardens / Middlewood Road, the Catch Bar Lane / Leppings Lane lights, the Southey Green Road roundabout, the Herries Road / Penistone Road North junction |
-| Leaves | West (Langsett Avenue, Wadsley) | South-east, then north-east (Leppings Lane, Parson Cross) |
+| Length | 4.0 km | 8.7 km |
+| On confirmed or likely roads | 3.88 km, 96% (Middlewood Road 1.65, Langsett Avenue 0.71, Wadsley Lane 0.54, Worrall Road 0.46, Dixon Road 0.42, Winn Gardens 0.10) | 7.15 km, 82% (Middlewood Road 2.77, Penistone Road North 1.44, Herries Road 0.90, Wordsworth Avenue 0.59, Southey Green Road 0.41, Halifax Road 0.38, Parkside Road 0.28, Catch Bar Lane 0.26, Winn Gardens 0.10) |
+| Not named by any source | the car park road (0.08 km) | Penistone Road south of Herries Road (0.73), Bradfield Road (0.29), Owlerton Green (0.14), the car park road, roundabout and link pieces |
+| Challenges at known junctions | 3 of 8: Langsett Avenue right turn (confirmed), Catch Bar Lane lights, Winn Gardens / Middlewood Road | 3 of 8: Winn Gardens / Middlewood Road, the Southey Green Road roundabout, the Herries Road / Penistone Road North junction |
+| Leaves | West (Langsett Avenue, Wadsley) | South-east, then north-east (Parkside, Parson Cross) |
 
-Known junctions (evidence file): 8. Used by the two routes together: 5 (Langsett Avenue, Winn Gardens, Catch Bar Lane /
-Leppings Lane, Herries Road / Penistone Road North, Southey Green Road roundabout). Not used: the Herries Road /
-Moonshine Lane roundabout and the Wordsworth Avenue / Deerlands Avenue / Chaucer Road roundabouts (2.5 and 2 km east,
-outside a scene that also holds the centre: a third route could take them), and the "Halifax Road / Penistone Road
-North roundabout" (no roundabout there on the map). So 5 of the 7 that exist on the map, most of them.
+Known junctions (evidence file): 8. Used by the two routes together: 5 (Langsett Avenue, Winn Gardens, the Middlewood
+Road / Catch Bar Lane lights, the Herries Road / Penistone Road North junction, the Southey Green Road roundabout); route
+2 also drives through the Catch Bar Lane / Leppings Lane lights and, ahead, the Leppings Lane / Herries Road junction.
+Not used: the Herries Road / Moonshine Lane roundabout and the Wordsworth Avenue / Deerlands Avenue / Chaucer Road
+roundabouts (2 to 2.5 km east: a scene that also holds the centre cannot reach them with the rest of a route; a third
+route could take them), and the "Halifax Road / Penistone Road North roundabout" (no roundabout there on the map). So 5
+of the 7 that exist on the map: most of them.
 
 The likely roads all come from one compiled list published on two sites (counted once); only Middlewood Road, Langsett
 Avenue and their junction are confirmed (a local instructor's page as well).
@@ -79,7 +87,9 @@ Avenue and their junction are confirmed (a local instructor's page as well).
 
 - The centre's own way in and out (see Start and finish), and its address against gov.uk.
 - Signal phases, give way markings and crossing positions are taken from the map, not surveyed.
-- Route 2 comes home the long way, by Owlerton and Hillsborough: the map's short links across Penistone Road North at
-  Leppings Lane cannot be planned westbound by the route planner (unnamed links under 40 m are not taken), so a return
-  by Herries Road and Leppings Lane is not possible without a change to the planner (`src/test/route.ts`).
+- Route 2 joins Penistone Road from Parkside Road and comes home the long way, by Owlerton and Hillsborough: the map's
+  short links across Penistone Road North at Leppings Lane (unnamed, 11 to 32 m) are not taken by the route planner
+  (`src/test/route.ts` takes no unnamed road under 40 m), and the turn it does find from Leppings Lane on to Penistone
+  Road North cuts across the corner's footway. Published routes use Leppings Lane there; that needs the planner to take
+  short links that continue a named road (a shared change), or the map's links named.
 - Not yet played in the app, screenshotted and checked by eye; not yet in `DECISION_ROUTES` or on the home screen.

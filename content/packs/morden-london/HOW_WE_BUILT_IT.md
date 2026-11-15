@@ -82,6 +82,8 @@ background road users in two patterns (4 and 14), and with Skip ahead pressed wh
 | The black car on Epsom Road was past its point when the car stopped at the line | Start it later |
 | Route 2's "before" decisions came with the car already stopped (the road user late) | Start each road user nearer its point (paths cut), as the car comes |
 | The car cut the service road's corner on to the footway | Start route 2 past the corner, at the end of the way out |
+| With traffic, the black car at the Beverley roundabout came round early (the car held up behind traffic on the way) | The decision at the line, and the black car set going once the car is there |
+| The ridge car, gone round into Morden Way, met a background car where its path ended | End its path just round the first bend |
 
 ## Still to do
 

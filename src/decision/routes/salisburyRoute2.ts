@@ -54,8 +54,9 @@ export const SALISBURY_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
   // Wain-a-long Road, Manor Road and back into Rougemont Close.
   through:pts([[205,-100],[120,-30],[52,120],[-50,238],[-300,243],[-445,170],[-447,0],[-440,-200],[-460,-480],[-350,-700],[-150,-640],
     [296.8,-380.2],[234.8,-290.2],[187.8,-179.2]]),
-  // Pulled in to the kerb on Kelsey Road, short of Elm Grove Road (the cars parked there are on the far side).
-  shifts:[{from:p(132,-31.3),to:p(118.3,-28.6),left:.35}],
+  // Pulled in to the kerb on Kelsey Road, short of Elm Grove Road (the cars parked there are on the far side); wide of
+  // the inside corners from High Street into Silver Street and from Silver Street into Minster Street.
+  shifts:[{from:p(132,-31.3),to:p(118.3,-28.6),left:.35},{from:p(-496,230.5),to:p(-495.7,226.6),left:.6},{from:p(-436.4,217.1),to:p(-432,213.2),left:-.6}],
   actors:[
     // Down Manor Road from the left as the car comes out of Rougemont Close, in the lane it joins.
     {id:'manor-down',name:'white car',colour:'#e5e7eb',speed:10,path:pts(MANOR_DOWN)},
@@ -141,7 +142,8 @@ export const SALISBURY_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       starts:[{actor:'pass-car',at:p(210.3,-108.3),delay:0}],
       endAt:p(118.3,-28.6),
       selfCancel:false,
-      quiet:[{x:118,z:-29,radius:34}],
+      // The car's pull-up, and the end of Manor Road, where the grey car turns in behind it.
+      quiet:[{x:118,z:-29,radius:34},{x:200,z:-45,radius:22}],
       place:{
         approach:{pause:{kind:'moving',at:p(158.5,-36.3)},frame:{yaw:15,pitch:28},state:'On Kelsey Road, Elm Grove Road ahead on the left.'},
         stopped:{pause:{kind:'stop',at:p(118.3,-28.6)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
@@ -199,7 +201,7 @@ export const SALISBURY_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Also here, for practising this challenge on its own.)
       starts:[{actor:'pass-car',at:p(210.3,-108.3),delay:0}],
       endAt:p(69.2,-19.3),
-      quiet:[{x:118,z:-29,radius:50}],
+      quiet:[{x:118,z:-29,radius:50},{x:200,z:-45,radius:22}],
       place:{
         check:{pause:{kind:'stop',at:p(118.3,-28.6)},when:{actor:'pass-car',at:p(143,-34.7)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb, handbrake on.'},
@@ -248,7 +250,7 @@ export const SALISBURY_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Rampart Road at the Milford Hill lights, right into Milford Street',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(41.6,150.6),
-      starts:[{actor:'rampart-car',at:p(44.4,95.6),delay:0}],
+      starts:[{actor:'rampart-car',at:p(44.9,70.6),delay:0}],
       lights:p(47,239.4),
       endAt:p(4.7,246.8),
       // The junction, and Rampart Road ahead, where the oncoming blue car comes from.
@@ -444,7 +446,7 @@ export const SALISBURY_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       turn:'right',
       title:'Roundabout with traffic lights',
       where:'Castle Street at Castle Roundabout, third exit on to Churchill Way North',
-      instruction:'At the roundabout, take the third exit, please.',
+      instruction:'At the roundabout, take the third exit, that\'s to the right.',
       instructAt:p(-477.4,-487.9),
       starts:[],
       lights:p(-494.4,-564.1),
@@ -506,9 +508,11 @@ export const SALISBURY_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       turn:'right',
       title:'Turning right into a side road',
       where:'Wain-a-long Road, right into Manor Road',
-      instruction:'Take the next road on the right, please.',
+      instruction:'Take the next road on the right.',
       instructAt:p(294.4,-432),
       starts:[{actor:'wain-car',at:p(284.2,-448.5),delay:0}],
+      // (St Mark's Roundabout's lights on the way, held green: the car is not kept standing at them behind a queue.)
+      lights:p(230.7,-470.9),lightsAll:true,
       endAt:p(266.7,-347.7),
       // The junction, and Wain-a-long Road ahead, where the green car comes from.
       quiet:[{x:296,z:-356,radius:22},{x:312,z:-318,radius:40}],
