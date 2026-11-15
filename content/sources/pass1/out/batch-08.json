@@ -976,5 +976,93 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Kyle of Lochalsh",
+  "postcode": "IV40 8BP",
+  "tests": 142,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Highlands/Kyle-of-Lochalsh"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/kyle-of-localsh-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/kyle-of-lochalsh"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/kyle"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=5453"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Lairg",
+  "postcode": "IV27 4DB",
+  "tests": 0,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Sutherland/Lairg"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/lairg-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/highland/lairg"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/lairg"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=5460"
+   }
+  ],
+  "moved": "intensivelessons.co.uk says the centre (Lairg Fire Station, Main Street) is closing or closed; passrates.uk still lists it as current; one source gives postcode IV27 4AY.",
+  "searched": "2026-11-15"
  }
 ]

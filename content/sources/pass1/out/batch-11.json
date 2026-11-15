@@ -1332,5 +1332,138 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Redditch",
+  "postcode": "B97 6HJ",
+  "tests": 4660,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 6,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/redditch-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Worcestershire/Redditch"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/redditch"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/redditch/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/redditch/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/worcestershire/redditch"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/redditch"
+   },
+   {
+    "kind": "news",
+    "site": "redditchstandard.co.uk",
+    "url": "https://redditchstandard.co.uk/news/its-an-l-of-a-danger-redditch-driving-instructor-hits-out-over-roundabout/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/XzfpG"
+   }
+  ],
+  "moved": "Most results give Elm Road (B97 6HJ); one gives Bromsgrove Road (B97 4RU)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Redhill Aerodrome",
+  "postcode": "RH1 5JZ",
+  "tests": 4619,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 7,
+   "news": 2,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/redhill-aerodrome"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/surrey/redhill-aerodrome"
+   },
+   {
+    "kind": "template",
+    "site": "bsm.co.uk",
+    "url": "https://bsm.co.uk/locations/redhill"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/redhill"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Surrey/Redhill-Aerodrome"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/centres/redhill-aerodrome"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://www.rateddriving.com/driving-instructors/surrey/reigate/redhill/"
+   },
+   {
+    "kind": "news",
+    "site": "content.govdelivery.com",
+    "url": "https://content.govdelivery.com/accounts/UKDVSA/bulletins/39e448e"
+   },
+   {
+    "kind": "news",
+    "site": "getsurrey.co.uk",
+    "url": "https://www.getsurrey.co.uk/news/surrey-news/roads-junctions-surrey-nightmare-learner-14069079"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/mOKQg"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

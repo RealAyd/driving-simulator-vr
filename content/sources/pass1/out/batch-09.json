@@ -879,5 +879,108 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Ludlow",
+  "postcode": "SY8 1FD",
+  "tests": 3529,
+  "score": 5,
+  "counts": {
+   "instructor-page": 1,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 1,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Herefordshire/Ludlow"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/ludlow-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/OcM1x"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/areas/shropshire/ludlow"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "advanced-driving.co.uk",
+    "url": "https://advanced-driving.co.uk/?p=13342"
+   }
+  ],
+  "moved": "Possible: one source gives Ludlow Racecourse, Bromfield, SY8 2BT; most give Unit 1, The Business Quarter, SY8 1FD (input)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Luton",
+  "postcode": "LU1 5BT",
+  "tests": 8304,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 5,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Bedfordshire/Luton"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/luton-driving-test-routes.html"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/RKnBD"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/test-centres/practical/bedfordshire-driving-test-centres/luton/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/bedfordshire/luton"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/luton/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "passrates.uk",
+    "url": "https://passrates.uk/guide/luton-driving-test-centre"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/luton"
+   }
+  ],
+  "moved": "Possible: drivingtestpass.pages.dev refers to a Dunstable Road centre; others give 6-10 Adelaide Street, LU1 5BT",
+  "searched": "2026-11-15"
  }
 ]

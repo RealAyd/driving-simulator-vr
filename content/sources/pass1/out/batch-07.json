@@ -1093,5 +1093,83 @@
   ],
   "moved": "Hydebank is described as a new DVA test centre (DfI FOI 2023-0170); no older address seen",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Inveraray",
+  "postcode": "PA32 8UY",
+  "tests": 67,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/inveraray-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Argyll-and-Bute/Inveraray"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/argyll-and-bute/inveraray"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/inveraray/"
+   }
+  ],
+  "moved": "Sources give different addresses (The Pier PA32 8; Community Centre, Front Street PA32 8TL; PA32 8TT) vs the PA32 8UY given",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Inverness (Longman Drive)",
+  "postcode": "IV1 1SU",
+  "tests": 2933,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/inverness-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/inverness-longman-drive/"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/inverness/mock-driving-test"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/gI1mP"
+   }
+  ],
+  "moved": "Many route pages are for the separate Seafield Road centre (dropped); drivingtesttips.biz lists Longman Drive as motorcycle-only with cars at Cradlehall Business Park, so the car centre may have moved or the listing is dated",
+  "searched": "2026-11-15"
  }
 ]

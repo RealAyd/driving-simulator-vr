@@ -1078,5 +1078,78 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Coleraine",
+  "postcode": "BT52 2NJ",
+  "tests": 0,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 3,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/coleraine"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/coleraine-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Londonderry/Coleraine"
+   },
+   {
+    "kind": "news",
+    "site": "infrastructure-ni.gov.uk",
+    "url": "https://www.infrastructure-ni.gov.uk/news/resurfacing-scheme-a29-dunhill-road-roundabout-coleraine"
+   }
+  ],
+  "moved": "One page gives Portstewart Road (BT52 1RD), likely an older site; others give Loughan Hill Industrial Estate, Gateside Road (BT52 2NJ)",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Cookstown",
+  "postcode": "BT80 9AR",
+  "tests": 0,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/cookstown-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Tyrone/Cookstown"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/cookstown"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

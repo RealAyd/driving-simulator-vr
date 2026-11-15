@@ -1133,5 +1133,108 @@
   ],
   "moved": "drivingtesttips.biz route sheets start via Slack Walk / Westgate in the town centre, which suggests an older centre; the current centre is Unit 4, The Point, Coach Road, Shireoaks (S81 8BW)",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Worthing",
+  "postcode": "BN13 1NP",
+  "tests": 7766,
+  "score": 3,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 2,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/worthing-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/worthing/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/worthing"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/PMFvs"
+   }
+  ],
+  "moved": "Sources disagree on the address: Goring Road (BN13 1JZ), Broadwater Street West (BN14 8AZ) and Strand Parade, Goring by Sea (BN12 6EA) all appear, against BN13 1NP; some pages may describe an older centre",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Wrexham",
+  "postcode": "LL13 7YP",
+  "tests": 3942,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 8,
+   "news": 0,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/wrexham/wrexham"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/wrexham/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=2286"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22550"
+   },
+   {
+    "kind": "template",
+    "site": "billplant.co.uk",
+    "url": "https://billplant.co.uk/driving-lessons/wrexham/"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/wrexham-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/wrexham"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://www.theaa.com/driving-school/locations/location/wrexham"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/5wSQj"
+   }
+  ],
+  "moved": "One source gives Rhosnesni Lane (LL13 9TT); most give Birchall House, Wrexham Technology Park (LL13 7YP); possible older address",
+  "searched": "2026-11-15"
  }
 ]

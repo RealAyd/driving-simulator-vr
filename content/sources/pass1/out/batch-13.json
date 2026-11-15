@@ -923,5 +923,108 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Ullapool",
+  "postcode": "IV26 2UW",
+  "tests": 59,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Highlands/Ullapool"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/ullapool-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/highland/ullapool"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/ullapool/"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=5461"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Upton",
+  "postcode": "CH49 0UF",
+  "tests": 10893,
+  "score": 7,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 1,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Merseyside/Upton"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/upton-driving-test-routes.html"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/merseyside/upton"
+   },
+   {
+    "kind": "template",
+    "site": "veygo.com",
+    "url": "https://www.veygo.com/driving-test-centres/upton/"
+   },
+   {
+    "kind": "template",
+    "site": "just-drive.co.uk",
+    "url": "https://just-drive.co.uk/?p=22324"
+   },
+   {
+    "kind": "learner",
+    "site": "redlib.astrial.org",
+    "url": "https://redlib.astrial.org/r/Liverpool/comments/1kknj4f/advise_upton_driving_test_centre_test_in_2_days"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/4dc5P"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/upton-driving-test-routes"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

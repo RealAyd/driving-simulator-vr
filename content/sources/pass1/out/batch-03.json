@@ -1175,5 +1175,98 @@
   ],
   "moved": "One source gives Trevenson Road, Camborne TR14 0PT; others give Wilson Way, Redruth TR15 3RP. Some route sheets start on Trevenson Rd, so they may describe an older address.",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Cambridge (Brookmount Court)",
+  "postcode": "CB4 2QH",
+  "tests": 13610,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 0,
+   "template": 4,
+   "news": 1,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/cambridgeshire/cambridge-brookmount-court"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-centres/cambridge-brookmount-court-driving-test-centre.html"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Cambridgeshire/Cambridge-Brookmount-Court"
+   },
+   {
+    "kind": "template",
+    "site": "rateddriving.com",
+    "url": "https://rateddriving.com/driving-lessons/cambridgeshire/cambridge/"
+   },
+   {
+    "kind": "news",
+    "site": "content.govdelivery.com",
+    "url": "https://content.govdelivery.com/accounts/UKDVSA/bulletins/207b77e"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/ZRbu3"
+   }
+  ],
+  "moved": "A DVSA bulletin covers the relocation of the Chesterton Road and Cowley Road centres. drivingtesttips.biz still has pages for those old Cambridge centres.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Campbeltown",
+  "postcode": "PA28 6BU",
+  "tests": 115,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/campbeltown-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Argyll-and-Bute/Campbeltown"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/argyll-and-bute/campbeltown"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/campbeltown/"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/campbeltown-driving-test-centre.html"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]

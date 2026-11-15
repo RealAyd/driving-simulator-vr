@@ -1022,5 +1022,133 @@
   ],
   "moved": null,
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Grangemouth",
+  "postcode": "FK3 8WJ",
+  "tests": 4615,
+  "score": 6.5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 5,
+   "news": 1,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/falkirk-driving-test-routes.html"
+   },
+   {
+    "kind": "news",
+    "site": "gov.uk",
+    "url": "https://www.gov.uk/government/publications/relocation-of-falkirk-driving-test-centre-to-grangemouth"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/grangemouth/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/falkirk/grangemouth"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Stirlingshire/Grangemouth"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/grangemouth/"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtesttips.biz",
+    "url": "https://drivingtesttips.biz/grangemouth-driving-test-centre.html"
+   }
+  ],
+  "moved": "Falkirk centre relocated to Grangemouth in Nov 2012; the only route sheets (drivingtesttips) are filed under Falkirk and scored as old address. Results also give two Grangemouth addresses: Grangemouth Business Centre FK3 8WJ and Evans Easyspace, Earls Road FK3 8UU. Check.",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Grantham (Somerby)",
+  "postcode": "NG31 7TX",
+  "tests": 5959,
+  "score": 10,
+  "counts": {
+   "instructor-page": 2,
+   "video": 0,
+   "learner": 0,
+   "route-list": 1,
+   "template": 5,
+   "news": 2,
+   "paid": 1
+  },
+  "sources": [
+   {
+    "kind": "instructor-page",
+    "site": "bigtomdrivingschool.blogspot.com",
+    "url": "https://bigtomdrivingschool.blogspot.com/2014/01/where-is-grantham-driving-test-centre.html"
+   },
+   {
+    "kind": "instructor-page",
+    "site": "jaminedriving.blogspot.com",
+    "url": "https://jaminedriving.blogspot.com/2014/01/where-is-grantham-driving-test-centre.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/grantham-driving-test-routes.html"
+   },
+   {
+    "kind": "news",
+    "site": "lincolnshire.gov.uk",
+    "url": "https://www.lincolnshire.gov.uk/news/article/1179/upgraded-a52-somerby-hill-roundabout-complete"
+   },
+   {
+    "kind": "news",
+    "site": "granthammatters.co.uk",
+    "url": "https://granthammatters.co.uk/upgraded-a52-somerby-hill-roundabout-complete/"
+   },
+   {
+    "kind": "template",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Lincolnshire/Grantham-Somerby"
+   },
+   {
+    "kind": "template",
+    "site": "drivingdata-uk.pages.dev",
+    "url": "https://drivingdata-uk.pages.dev/test-centres/grantham/"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/lincolnshire/grantham-somerby"
+   },
+   {
+    "kind": "template",
+    "site": "totaldrive.co.uk",
+    "url": "https://totaldrive.co.uk/?p=2626"
+   },
+   {
+    "kind": "template",
+    "site": "drivingtestpass.pages.dev",
+    "url": "https://drivingtestpass.pages.dev/centres/grantham"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/WCPK5"
+   }
+  ],
+  "moved": "Centre now at Spitalgate Airfield NG31 7TX; the 2014 instructor blog posts (two near-identical blogs) describe the older Grantham centre and are scored at half; one result gives St Peters Hill.",
+  "searched": "2026-11-15"
  }
 ]

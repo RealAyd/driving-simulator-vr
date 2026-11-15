@@ -1076,5 +1076,113 @@
   ],
   "moved": "One aggregator places the centre on Wellington Street (BT43 6AD), likely an older address; others give Pennybridge Ind Estate (BT42 3ER)",
   "searched": "2026-11-15"
+ },
+ {
+  "name": "Banbury",
+  "postcode": "OX16 9PA",
+  "tests": 8241,
+  "score": 5,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 3,
+   "news": 0,
+   "paid": 2
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/banbury-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/banbury-driving-test-routes-6-9.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/driving-test-routes/banbury-driving-test-routes-10-12.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/banbury-extended-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Oxfordshire/Banbury"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://www.passmefast.co.uk/test-centres/practical/oxfordshire/banbury"
+   },
+   {
+    "kind": "template",
+    "site": "myfourwheels.co.uk",
+    "url": "https://www.myfourwheels.co.uk/locations/banbury/mock-driving-test"
+   },
+   {
+    "kind": "template",
+    "site": "drivejohnsons.co.uk",
+    "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/banbury/"
+   },
+   {
+    "kind": "paid",
+    "site": "payhip.com",
+    "url": "https://payhip.com/b/RWh0i"
+   },
+   {
+    "kind": "paid",
+    "site": "rhubarb-whale-39k8.squarespace.com",
+    "url": "https://rhubarb-whale-39k8.squarespace.com/banbury-driving-test-routes"
+   }
+  ],
+  "moved": "Sources disagree on address: West Bar Street (where free route sheets start) vs Unit 4 Beaumont Road (OX16 1RH); input postcode is OX16 9PA",
+  "searched": "2026-11-15"
+ },
+ {
+  "name": "Banff",
+  "postcode": "AB45 1DL",
+  "tests": 253,
+  "score": 4,
+  "counts": {
+   "instructor-page": 0,
+   "video": 0,
+   "learner": 0,
+   "route-list": 2,
+   "template": 2,
+   "news": 0,
+   "paid": 0
+  },
+  "sources": [
+   {
+    "kind": "route-list",
+    "site": "drivingtesttips.biz",
+    "url": "https://www.drivingtesttips.biz/banff-driving-test-routes.html"
+   },
+   {
+    "kind": "route-list",
+    "site": "intensivelessons.co.uk",
+    "url": "https://intensivelessons.co.uk/driving-test-routes/Banffshire/Banff"
+   },
+   {
+    "kind": "template",
+    "site": "passmefast.co.uk",
+    "url": "https://passmefast.co.uk/test-centres/practical/aberdeenshire/banff"
+   },
+   {
+    "kind": "template",
+    "site": "theaa.com",
+    "url": "https://theaa.com/driving-school/locations/location/banff"
+   }
+  ],
+  "moved": null,
+  "searched": "2026-11-15"
  }
 ]
