@@ -4,6 +4,11 @@ Do `content/packs/EVIDENCE_PLAN.md` section 3 properly for one centre (sections 
 check is done (section 8): public pages may be read; only road and junction names are recorded, in our own words;
 nothing is copied; paid routes are never used. Judgement comes first (section 7): sources inform, they never decide.
 
+## Fetching pages
+
+WebFetch cannot reach most sites from this machine: read pages with `curl -sL -m 30 -A "Mozilla/5.0" <url>` in Bash
+(and strip the HTML), working in your own scratch folder. Do not save page text in the repo.
+
 ## Steps
 
 1. **Address.** Confirm the centre's current address on gov.uk ("<name> driving test centre" on gov.uk, or
@@ -13,9 +18,9 @@ nothing is copied; paid routes are never used. Judgement comes first (section 7)
    few searches if useful (at most 6). Open each usable free source (WebFetch) and pull out only the **road names and
    junctions/features** it says tests use. Skip paid pages, pages behind logins, and sites whose terms or robots
    forbid automated reading.
-3. **Match to the map.** Check each name exists near the centre (within about 6 km) on OpenStreetMap, using the
-   Overpass API (`https://overpass-api.de/api/interpreter`, query `way["highway"]["name"="<Road>"](around:6000,LAT,LON);out center 1;`)
-   or Nominatim. Matched: record lat/lon (and OSM way/node id). Not found: put the name in `unmatched`.
+3. **Match to the map.** Check each name exists near the centre (within about 6 km) on OpenStreetMap with Nominatim
+   (Overpass is not reachable from this machine): `curl -s -A "route-evidence-check" "https://nominatim.openstreetmap.org/search?q=<Road>&format=json&limit=3&viewbox=<lon-0.08>,<lat+0.05>,<lon+0.08>,<lat-0.05>&bounded=1"`,
+   at most one request a second. Matched: record lat/lon (and OSM way/node id). Not found: put the name in `unmatched`.
 4. **Judge.** Same author or copied text counts once. First-hand = instructor's own page, instructor video
    (title/description only), learner's own account. A source about an older address counts only for roads further
    out, never for leaving and returning. A road or junction named by two separate sources is **confirmed**, by one
