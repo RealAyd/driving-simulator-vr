@@ -1,0 +1,536 @@
+{
+  "centre": "Salisbury",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.07219,
+    "lon": -1.78728
+  },
+  "address_checked": "2026-11-15",
+  "address": "Rougemont Close, Salisbury SP1 1LY. gov.uk find-driving-test-centre page is a dynamic form and returned no listing by curl; gov.uk search shows only the 2014 relocation of the centre to the Salisbury goods vehicle testing station, and a current instructor page gives Rougemont Close SP1 1LY. OSM has Rougemont Close at 51.07220,-1.78761, about 25 m from the given position: matches. The Southampton Road and Churchfields Road addresses from pass 1 are taken as pre-2014.",
+  "searches": [
+    "pass 1 searches (2026-11-15) reused; no new searches run"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "instructor-page",
+      "author": "2nd2None Driving School",
+      "url": "https://www.2nd2nonedrivingschool.co.uk/salisbury-driving-test-centre.html",
+      "published": "undated (site shows 2025-2026 passes)",
+      "read_on": "2026-11-15",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "Wain-a-Long Road",
+        "Churchill Way",
+        "St Mark's Road",
+        "St Mark's Avenue",
+        "St Mark's roundabout",
+        "London Road",
+        "Castle roundabout",
+        "Estcourt Road",
+        "Bourne Hill",
+        "Devizes Road",
+        "St Thomas Bridge roundabout",
+        "Ford village"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz and intensivelessons.co.uk (pages repeat each other, counted once)",
+      "url": "https://www.drivingtesttips.biz/salisbury-driving-test-routes.html",
+      "also": "https://intensivelessons.co.uk/driving-test-routes/Wiltshire/Salisbury",
+      "published": "undated; routes start and end at Rougemont Close",
+      "read_on": "2026-11-15",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Rougemont Close",
+        "Manor Road",
+        "Wain-a-Long Road roundabout",
+        "St Mark's Road",
+        "Estcourt Road",
+        "Bourne Hill",
+        "Churchill Way",
+        "Castle Road",
+        "Castle Street",
+        "Devizes Road",
+        "Wilton Road",
+        "The Avenue",
+        "London Road",
+        "Kelsey Road",
+        "Scots Lane",
+        "Salt Lane",
+        "Exeter Street",
+        "New Harnham Road",
+        "New Bridge Road",
+        "Cherry Orchard Lane",
+        "Mill Road",
+        "St Francis Road",
+        "Churchfields Road",
+        "Phillips Lane",
+        "Pauls Dene Crescent",
+        "Riverside Road",
+        "Milford Hill",
+        "Camp Hill",
+        "Highbury Avenue",
+        "Fowler's Hill",
+        "Ford Lane",
+        "Denison Rise",
+        "Guilders Lane",
+        "Swayles Close"
+      ]
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://reddit.sudovanilla.org/r/LearnerDriverUK/comments/1j9wap5/salisbury",
+      "why": "mirror returned 404; reddit.com blocks automated reading (403)"
+    },
+    {
+      "url": "https://payhip.com/b/iAGaJ",
+      "why": "paid"
+    },
+    {
+      "url": "passmefast / myfourwheels / drivingtestpass.pages.dev",
+      "why": "template pages, no test-specific roads"
+    }
+  ],
+  "places": [
+    {
+      "name": "Rougemont Close (centre exit and return)",
+      "kind": "road",
+      "map": {
+        "lat": 51.0722,
+        "lon": -1.78761,
+        "osm": "way/98673128"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Wain-a-Long Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.07234,
+        "lon": -1.78426,
+        "osm": "way/4675456"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Churchill Way ring road (dual carriageway)",
+      "kind": "road",
+      "map": {
+        "lat": 51.07566,
+        "lon": -1.78973,
+        "osm": "way/168366333"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "St Mark's Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.07494,
+        "lon": -1.7893,
+        "osm": "way/4675411"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "St Mark's roundabout / St Mark's Avenue",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.07762,
+        "lon": -1.78723,
+        "osm": "way/25837282"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "London Road (A30) roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.07967,
+        "lon": -1.782,
+        "osm": "way/239847661"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Castle roundabout (Castle Road / ring road)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.08371,
+        "lon": -1.79737,
+        "osm": "way/274786446"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Estcourt Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.07234,
+        "lon": -1.78868,
+        "osm": "way/134119439"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Bourne Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.07196,
+        "lon": -1.79015,
+        "osm": "way/5011021"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Devizes Road roundabouts",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.07701,
+        "lon": -1.8112,
+        "osm": "way/42741748"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Ford Lane (Ford village, off A338)",
+      "kind": "road",
+      "map": {
+        "lat": 51.09379,
+        "lon": -1.76974,
+        "osm": "way/104151017"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Manor Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.07273,
+        "lon": -1.78679,
+        "osm": "way/25839826"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kelsey Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.07089,
+        "lon": -1.78261,
+        "osm": "way/172884959"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Castle Street mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.07021,
+        "lon": -1.79645,
+        "osm": "way/149296120"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wilton Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.07978,
+        "lon": -1.83914,
+        "osm": "way/239938148"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Avenue roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.09295,
+        "lon": -1.84549,
+        "osm": "way/765231251"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Scots Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.07123,
+        "lon": -1.79549,
+        "osm": "way/145237290"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Salt Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.07086,
+        "lon": -1.79214,
+        "osm": "way/172402871"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Exeter Street roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.06392,
+        "lon": -1.79404,
+        "osm": "way/151485612"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "New Harnham Road / New Bridge Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.05854,
+        "lon": -1.79457,
+        "osm": "way/4060285"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cherry Orchard Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.07385,
+        "lon": -1.81727,
+        "osm": "way/23217835"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mill Road mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.06835,
+        "lon": -1.80231,
+        "osm": "way/125424969"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Francis Road mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.08518,
+        "lon": -1.79559,
+        "osm": "way/1565506770"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Churchfields Road mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.07043,
+        "lon": -1.80936,
+        "osm": "way/62344018"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Phillips Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.09481,
+        "lon": -1.80984,
+        "osm": "way/110311738"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pauls Dene Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.08855,
+        "lon": -1.79377,
+        "osm": "node/12110632358"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Riverside Road mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.07281,
+        "lon": -1.77695,
+        "osm": "way/172302058"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Milford Hill mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.06832,
+        "lon": -1.7879,
+        "osm": "way/150957655"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Camp Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.10164,
+        "lon": -1.84379,
+        "osm": "node/10021307396"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highbury Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.07545,
+        "lon": -1.81262,
+        "osm": "way/149289853"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fowler's Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.06664,
+        "lon": -1.7864,
+        "osm": "way/772996912"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Denison Rise mini roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.08233,
+        "lon": -1.7842,
+        "osm": "way/28197748"
+      },
+      "sources": [
+        "s2"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [
+    "Guilders Lane",
+    "Swayles Close",
+    "St Thomas Bridge roundabout (not checked by name; on A338 north)"
+  ],
+  "judgement": "The route-list pages are not first-hand; their roads count as likely unless the instructor page also names them. Note: St Mark's roundabout is not first-hand in s2 by that name, matched via St Mark's Road/Avenue.",
+  "summary": "11 confirmed and 21 likely roads and junctions (only two independent sources: one instructor page and one route list repeated on two sites). Two routes meeting the overlap rule look possible: the confirmed ring road, Wain-a-Long and St Mark's roundabouts, Castle and London Road roundabouts plus many likely mini roundabouts give ample known junctions within the test area."
+}
