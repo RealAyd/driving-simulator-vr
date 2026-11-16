@@ -66,7 +66,7 @@ export const ENFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   shifts:[{from:p(-489.8,273.5),to:p(-459.8,275),left:.35},{from:p(550.2,24.4),to:p(549,36.3),left:.5},{from:p(558.8,46.5),to:p(561.4,49.5),left:-.8},
     // And clear of the kerbs on the inside of the right turns at the Hertford Road lights (the planned line runs along
     // the left kerb into Hertford Road) and the Bullsmoor Lane lights (along the right kerb into Mollison Avenue).
-    {from:p(-737.8,366.2),to:p(-735.4,363),left:-1.4},{from:p(-338.5,-502.5),to:p(-334.5,-505.1),left:1.2},
+    {from:p(-737.8,366.2),to:p(-735.4,363),left:-1},{from:p(-338.5,-502.5),to:p(-334.5,-505.1),left:1.2},
     // And wide of the corner coming back off Solar Way into the test centre's way in (a sharp left turn).
     {from:p(581.8,-274),to:p(586,-271.3),left:-.8}],
   actors:[
@@ -295,7 +295,11 @@ export const ENFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Set going as the car comes up to the crossing, so they step on as it comes, whatever held it up.)
       starts:[{actor:'zebra-pedestrian',at:p(262.1,486.5),delay:0}],
       endAt:p(182.2,482.7),
-      quiet:[{x:201,z:482,radius:26}],
+      // (And the Hertford Road lights at the end of Ordnance Road kept quiet until the car has turned right through
+      // them: in traffic, a car turning out of Hertford Road into Ordnance Road met it there, and a queue held it.)
+      quietUntil:p(-731.2,355.1),
+      // The crossing; the Hertford Road lights, Hertford Road on from them and the arm opposite.
+      quiet:[{x:201,z:482,radius:26},{x:-738,z:390,radius:22},{x:-730,z:362,radius:20},{x:-756,z:416,radius:20}],
       place:{
         approach:{pause:{kind:'moving',at:p(247.1,485.8)},frame:{yaw:0,pitch:22},state:'On Ordnance Road at 30 mph, the zebra crossing ahead.'},
         zebra:{pause:{kind:'stop',at:p(208.2,483.9)},when:{actor:'zebra-pedestrian',at:p(201.45,483.4)},frame:{yaw:0,pitch:30},
