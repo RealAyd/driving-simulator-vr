@@ -74,7 +74,12 @@ junctions, spacing met, nothing missing from the mix).
 
 ## Drives
 
-DRIVES
+`ROUTES=isleworth-fleming-way-1 npx vitest run tests/unit/decisionDrive.centre.test.ts` (on the engine with the
+lights-cycle and pacing fixes): 6 of 6 pass in 28 minutes: the authoring rules; the planned line clear of parked cars;
+the right answers to a pass, every pause as depicted (17 pauses), nothing hit, nothing off the road, no red light run,
+back on Fleming Way; with 30 background road users in patterns 4 and 14 (closest traffic about 0.8 to 1.0 m, longest
+stand about 25 s, nothing met, every junction in hand quiet); and with Skip ahead (4 skips). The closest scripted road
+user is the cyclist passing the car pulled up, 3.15 m.
 
 ## Open items
 
