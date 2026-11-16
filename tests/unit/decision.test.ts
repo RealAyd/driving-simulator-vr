@@ -71,6 +71,7 @@ describe('turn buttons',()=>{
       'birmingham-garretts-green-1:radleys-crossing',
       'grantham-somerby-1:harrowby-zebra',
       'chesterfield-1:highfield-crossing',
+      'pembroke-dock-1:leave-test-centre',
       'enfield-innova-1:ordnance-zebra']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)
       if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();
