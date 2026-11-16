@@ -6,5 +6,13 @@
   "k": "name",
   "v": "Aerodrome Road",
   "why": "The Aerodrome Road / Watford Way lights: the short unnamed link across the central reservation, from Aerodrome Road to Greyhound Hill; the route planner will not route through short unnamed ways, so ahead over Watford Way was not possible."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 570687978,
+  "k": "lanes",
+  "v": "2",
+  "why": "Bristol Avenue's short one-way link down on to Grahame Park Way (westbound) has a contraflow bus lane beside it (busway:right=opposite_lane): mapped as one lane, the scene drew it 3.2 m wide, too narrow to turn out of on to Grahame Park Way without cutting the kerb."
  }
 ]

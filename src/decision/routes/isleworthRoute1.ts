@@ -50,9 +50,10 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   start:{x:241.81,z:-436.47,headingDeg:352.06},
   // Fleming Way, Worton Road, Twickenham Road, Mogden Lane, the Mogden Lane roundabout, Whitton Dene, Hall Road, Worton
   // Road and back into Fleming Way.
-  through:pts([[485,-485],[585,-125],[285,345],[-401,498],[-629,193],[-383,-407],[-115,-450],[246,-418]]),
+  through:pts([[485,-485],[585,-125],[285,345],[-401,498],[-629,193],[-383,-407],[-115,-450],[246,-418],[165,-325]]),
   // Pulled in to the kerb on Whitton Dene, past the bend (no cars parked along it: room for the cyclist to pass).
-  shifts:[{from:p(-339.5,498.5),to:p(-369.5,500.1),left:.35}],
+  // And kept left into the Mogden Lane roundabout, clear of the bollard on the splitter island's nose.
+  shifts:[{from:p(25.6,390.6),to:p(7.3,402.6),left:.9},{from:p(-339.5,498.5),to:p(-369.5,500.1),left:.35}],
   actors:[
     {id:'worton-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(WORTON_CAR)},
     {id:'blue-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(BLUE_CAR)},
@@ -215,7 +216,8 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Twickenham Road at the Mogden Lane lights, right into Mogden Lane',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(558.4,168.9),
-      starts:[{actor:'silver-car',at:p(558.4,168.9),delay:0}],
+      // (Set going earlier, so it is coming the other way as the car comes up to the lights.)
+      starts:[{actor:'silver-car',at:p(558.6,69),delay:0}],
       lights:p(572.1,250.1),lightsAll:true,
       endAt:p(533.1,282.1),
       // The junction, and Twickenham Road ahead, where the oncoming silver car comes from.

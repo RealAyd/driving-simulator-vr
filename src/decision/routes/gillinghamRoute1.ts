@@ -57,14 +57,15 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // Bowaters roundabout, Courteney Road and back into the way out.
   through:pts([[332,757],[382,566],[45,310],[-392,-40],[70,-838],[49,-715],[-100,-221],[-106,52],[332,757],[365,824]]),
   // Pulled in to the kerb on Featherby Road, past Chilham Road (no cars parked for 30 m behind and 70 m ahead).
-  shifts:[{from:p(-89.5,-295.2),to:p(-91.8,-268.4),left:.35}],
+  // And kept out from the inside of the tight corners at the Tesco roundabout, on to it and off it (its lamp posts).
+  shifts:[{from:p(-89.5,-295.2),to:p(-91.8,-268.4),left:.35},{from:p(354.9,643.4),to:p(361.2,633.8),left:-.4},{from:p(367.9,647.6),to:p(359.3,644.1),left:-1}],
   actors:[
     {id:'courteney-van',name:'white van',colour:'#f5f5f4',speed:9,path:pts(COURTENEY_VAN)},
     {id:'courteney-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(COURTENEY_CAR)},
     // Waiting at the pedestrian lights on the left, then across the westbound carriageway in front of the car.
     {id:'sovereign-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[171.4,347.4],[172.9,338.9]])},
     {id:'ito-car',name:'black car',colour:'#1f2328',speed:10,path:pts(ITO_CAR)},
-    {id:'beechings-car',name:'silver car',colour:'#c3c7cf',speed:11,path:pts(BEECHINGS_CAR)},
+    {id:'beechings-car',name:'silver car',colour:'#c3c7cf',speed:13,path:pts(BEECHINGS_CAR)},
     // Behind the car along Featherby Road, to its pull-up, past it, and left into Elmfield.
     {id:'featherby-van',name:'white van',colour:'#e5e7eb',speed:9,yields:true,path:pts(FEATHERBY_VAN)},
     {id:'sovereign-car',name:'red car',colour:'#b91c1c',speed:13,path:pts(SOVEREIGN_CAR)}
@@ -343,7 +344,7 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Beechings Way, right through the central reservation into Featherby Road',
       instruction:'Take the next road on the right, please.',
       instructAt:p(24.6,-867.7),
-      starts:[{actor:'beechings-car',at:p(-61.5,-758),delay:0}],
+      starts:[{actor:'beechings-car',at:p(-18.3,-856.8),delay:0}],
       endAt:p(86.5,-781.3),
       // The gap and Featherby Road's end, and Beechings Way's westbound carriageway to the east, where the silver car comes from.
       quiet:[{x:101,z:-821,radius:14},{x:128,z:-806,radius:24}],

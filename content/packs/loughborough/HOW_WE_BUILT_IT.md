@@ -36,8 +36,13 @@ What the map and the evidence gave:
   Meadow Lane lights.
 - **Bishop Meadow roundabout** (route 2's way to Bishop Meadow Road) has traffic lights on its ring: it is driven
   through, not used as a challenge; the mini-roundabout 250 m on is the challenge there.
-- **Route 1's way back** first ran through Pinfold Gate and Aumberry Gap on to Jubilee Way, a hairpin the car cut on
-  to the footway; it now comes back by Leicester Road and Barrow Street.
+- **Route 1's way back** first ran through Pinfold Gate and Aumberry Gap on to Jubilee Way (a hairpin the car cut on
+  to the footway), then by Barrow Street and Jubilee Way to Baxter Gate (whose short link across Jubilee Way's central
+  reservation the planned line cut through). It now comes back the way it went out, by Leicester Road, King Street and
+  Queen's Road.
+- **The one-way square at the North Road lights** (route 2 in and out) and the Woodgate corner (route 1's way back):
+  the planned line ran within half a metre of the kerb, and the car went over it; the line is moved over there
+  (`shifts`), measured with a margin check of each point's distance to the kerb either side.
 
 ## 3. Build the scenes
 
@@ -71,7 +76,9 @@ well before, so pacing can hold it back but never needs to hurry it.
 | Found | Fix |
 |---|---|
 | Leaving (route 1), the blue car out of the lights went by before the white car from the right had passed: only the stage in hand's road user is paced | Set the blue car going as the car comes to the line |
-| Route 1's way back cut the Aumberry Gap hairpin on to the footway | Back by Leicester Road and Barrow Street on to Jubilee Way |
+| Route 1's way back cut the Aumberry Gap hairpin on to the footway | Back by Leicester Road, King Street and Queen's Road |
+| Route 2 went over the kerb in the one-way square at the North Road lights | The line moved 0.4 to 0.6 m off the kerb there |
+| Route 2's last challenge: held 45 s at red at the North Road lights, the blue car from the station had already passed | The blue car set going once the car is through the lights, from nearer |
 | The cyclist on Park Road planned its way by Charnwood Road | A point on Park Road before Herrick Road |
 | The first pull-up spot on Park Road was opposite Charnwood Road | Moved 70 m on |
 

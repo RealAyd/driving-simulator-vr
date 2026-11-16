@@ -10,8 +10,8 @@ import {BEACON_CAR,BEACON_CYCLIST,BOULEVARD_CAR,FOREST_CAR,LIGHTS_CAR,PARK_CYCLI
  * Centre, Gordon Road (by the station), right out of Gordon Road on to Station Boulevard, right at the station lights
  * into Nottingham Road, Queen's Road, Leicester Road and Southfield Road, left at the Park Road mini-roundabout,
  * pulling up and moving off on Park Road, right at the Park Road roundabout on to Epinal Way, ahead at the Beacon Road
- * roundabout, right at the Forest Road roundabout, and back by Forest Road, the town centre and Nottingham Road to
- * Gordon Road. Chosen from the map and the published evidence (content/packs/loughborough/ROUTES.md). Scene
+ * roundabout, right at the Forest Road roundabout, and back by Forest Road, Woodgate, Leicester Road, Queen's Road and
+ * Nottingham Road to Gordon Road. Chosen from the map and the published evidence (content/packs/loughborough/ROUTES.md). Scene
  * loughborough-route-1 (OpenStreetMap). A practice route, not a confirmed test route.
  */
 const pts=(a:readonly (readonly number[])[]):Vec2[]=>a.map(([x,z])=>({x:x!,z:z!}));
@@ -53,12 +53,14 @@ export const LOUGHBOROUGH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
   briefing:'Loughborough route 1: decisions only\n\nThe car drives itself. At each challenge the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nPractice route built from OpenStreetMap data; not a confirmed test route. The app\'s assessment, not a DVSA result.',
   start:{x:427.9,z:-1187.9,headingDeg:184},
   // The test centre's car park, Gordon Road, Station Boulevard, Nottingham Road, Queen's Road, Leicester Road,
-  // Southfield Road, Park Road, Epinal Way, Forest Road, Woodgate, Leicester Road, Barrow Street, Jubilee Way, Nottingham Road, Station Boulevard and
-  // back into Gordon Road.
+  // Southfield Road, Park Road, Epinal Way, Forest Road, Woodgate, Leicester Road, King Street, Queen's Road, Nottingham
+  // Road, Station Boulevard and back into Gordon Road.
   through:pts([[560.6,-1180.7],[700.7,-950.4],[683.3,-756.9],[689.5,-300.1],[377.1,132.1],[159.9,104.9],[-82,433.2],[101,802],
-    [-110.1,1062.5],[-401.4,852.2],[-287.9,419.4],[110.9,60.1],[310,-34],[286.2,-273],[433.2,-526.5],[622.3,-1111.4],[495.6,-1194.6]]),
+    [-110.1,1062.5],[-401.4,852.2],[-287.9,419.4],[110.9,60.1],[420,190],[484.5,204.9],[689.5,-300.1],[683.3,-756.9],[622.3,-1111.4],
+    [495.6,-1194.6]]),
   // Pulled in to the kerb on Park Road, between Charnwood Road and Herrick Road (no cars parked along it).
-  shifts:[{from:p(107.3,863.4),to:p(108.9,883.4),left:.35}],
+  // And kept off the kerb's corner turning right out of Woodgate on to Leicester Road, on the way back.
+  shifts:[{from:p(107.3,863.4),to:p(108.9,883.4),left:.35},{from:p(209.2,-74.8),to:p(213.8,-80.8),left:.6}],
   actors:[
     {id:'boulevard-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(BOULEVARD_CAR)},
     {id:'lights-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(LIGHTS_CAR)},

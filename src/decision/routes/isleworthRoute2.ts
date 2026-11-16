@@ -50,9 +50,10 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
   start:{x:456.73,z:438.51,headingDeg:352.06},
   // Fleming Way, Worton Road, Bridge Road, London Road, St John's Road, Twickenham Road, Worton Road and back into
   // Fleming Way.
-  through:pts([[200,425],[-295,236],[-344,-170],[-62,-401],[328,-350],[604,-107],[1007,84],[700,390],[461,455]]),
+  through:pts([[200,425],[-295,236],[-344,-170],[-62,-401],[328,-350],[604,-107],[1007,84],[700,390],[461,455],[380,550]]),
   // Pulled in to the kerb on St John's Road, short of Nottingham Road (no cars parked along it: room for the grey car).
-  shifts:[{from:p(426.1,-216.7),to:p(439.8,-202.1),left:.35}],
+  // And kept out from the kerb turning left into Fleming Way at the end (the corner is tight).
+  shifts:[{from:p(426.1,-216.7),to:p(439.8,-202.1),left:.35},{from:p(466,401.4),to:p(456.1,414),left:-.7}],
   actors:[
     {id:'worton-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(WORTON_CAR)},
     {id:'bridge-car',name:'black car',colour:'#1f2328',speed:10,path:pts(BRIDGE_CAR)},

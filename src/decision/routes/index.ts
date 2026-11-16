@@ -10,12 +10,15 @@ import {MORDEN_ROUTE_2} from './mordenRoute2';
 import {SHEFFIELD_MIDDLEWOOD_ROUTE_1} from './sheffieldMiddlewoodRoute1';
 import {SHEFFIELD_MIDDLEWOOD_ROUTE_2} from './sheffieldMiddlewoodRoute2';
 import {HENDON_ROUTE_1} from './hendonRoute1';
+import {HENDON_ROUTE_2} from './hendonRoute2';
 import {ISLEWORTH_ROUTE_1} from './isleworthRoute1';
 import {ISLEWORTH_ROUTE_2} from './isleworthRoute2';
 import {LOUGHBOROUGH_ROUTE_1} from './loughboroughRoute1';
 import {LOUGHBOROUGH_ROUTE_2} from './loughboroughRoute2';
 import {GILLINGHAM_ROUTE_1} from './gillinghamRoute1';
 import {GILLINGHAM_ROUTE_2} from './gillinghamRoute2';
+import {GRANTHAM_ROUTE_1} from './granthamRoute1';
+import {GRANTHAM_ROUTE_2} from './granthamRoute2';
 
 /** The decision mock test routes, as offered on the home screen. */
 export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2,CHELMSFORD_ROUTE_1,CHELMSFORD_ROUTE_2,
@@ -23,4 +26,5 @@ export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWO
   SHEFFIELD_MIDDLEWOOD_ROUTE_1,SHEFFIELD_MIDDLEWOOD_ROUTE_2,
   LOUGHBOROUGH_ROUTE_1,LOUGHBOROUGH_ROUTE_2,ISLEWORTH_ROUTE_1,
   GILLINGHAM_ROUTE_1,GILLINGHAM_ROUTE_2,
-  HENDON_ROUTE_1,ISLEWORTH_ROUTE_2];
+  HENDON_ROUTE_1,HENDON_ROUTE_2,ISLEWORTH_ROUTE_2,
+  GRANTHAM_ROUTE_1,GRANTHAM_ROUTE_2];

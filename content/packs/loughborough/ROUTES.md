@@ -12,12 +12,12 @@ Gordon Road at the way in. Gordon Road meets Station Boulevard (the A6004 betwee
 station) at a plain T junction. Route 1 turns right out of it, towards the station; route 2 turns left, towards the
 Meadow Lane lights. *To confirm: how examiners leave and come back; the evidence predates the move to Gordon Road.*
 
-## Route 1: the station, Park Road and Epinal Way (scene `loughborough-route-1`, 7.6 km)
+## Route 1: the station, Park Road and Epinal Way (scene `loughborough-route-1`, 8.1 km)
 
 Out of the centre, right on to Station Boulevard, right at the station lights into Nottingham Road, Queen's Road,
 King Street, Leicester Road, Southfield Road and Royland Road, left at the Park Road mini-roundabout, Park Road
 (pulling up and moving off), right at the Park Road roundabout on to Epinal Way, ahead at the Beacon Road roundabout,
-right at the Forest Road roundabout, and back by Forest Road, Woodgate, Leicester Road, Barrow Street, Jubilee Way,
+right at the Forest Road roundabout, and back by Forest Road, Woodgate, Leicester Road, King Street, Queen's Road,
 Nottingham Road and Station Boulevard to Gordon Road.
 
 | # | Challenge | Road users | Right answer |
@@ -37,11 +37,11 @@ has them. Three large roundabouts in a row is deliberate: they are the only know
 each is a different decision (right with a car coming round, ahead at 40 mph with a cyclist, right with a car just
 joining from the arm before).
 
-**Overlap** (rule 3): 74% of 7.6 km on roads the evidence names (Epinal Way 0.9 km, Park Road 0.9, Nottingham Road
-0.8, Forest Road 0.8, Queen's Road 0.4, Southfield Road 0.4, Woodgate 0.35, Leicester Road 0.3, Barrow Street; the
+**Overlap** (rule 3): 73% of 8.1 km on roads the evidence names (Epinal Way 0.9 km, Park Road 0.9, Queen's Road 0.85,
+Forest Road 0.8, Nottingham Road 0.6, Leicester Road 0.6, Southfield Road 0.4, Woodgate 0.35, King Street; the
 roundabouts themselves too). Not named: Station Boulevard (0.9 km; built after the route lists), Gordon Road, the
-A6004 between Queen's Road and King Street (New King Street, Wharncliffe Road on the map), Jubilee Way, Royland Road,
-The Coneries and Baxter Gate. **3 of 8 challenges at known junctions** (the checker): the Park Road roundabout (6),
+A6004 between Queen's Road and King Street (New King Street and Wharncliffe Road on the map, 0.8 km out and back) and
+Royland Road. **3 of 8 challenges at known junctions** (the checker): the Park Road roundabout (6),
 the Beacon Road roundabout (7) and the Forest Road roundabout (8, the evidence's "Epinal Way roundabouts").
 
 ## Route 2: Belton Road, Derby Road and Belton Road West (scene `loughborough-route-2`, 5.0 km)
@@ -83,8 +83,8 @@ reach are three, all used by route 1.
 `node tools/centres/check_route.mjs loughborough-1 loughborough-2`:
 
 ```
-loughborough-1 (Loughborough route 1): 7.6 km
-  On confirmed or likely roads: 74%
+loughborough-1 (Loughborough route 1): 8.1 km
+  On confirmed or likely roads: 73%
   1. leave-test-centre   emerging-right        0 m
   2. station-lights      lights+right-turn   440 m (+440)
   3. park-road-mini      mini-roundabout    2680 m (+2240)
@@ -98,7 +98,7 @@ loughborough-2 (Loughborough route 2): 5.0 km
   On confirmed or likely roads: 64%
   1. leave-test-centre   emerging-left         0 m
   2. belton-road-lights  lights+right-turn   322 m (+322)
-  3. belton-pull-up      pull-up             640 m
+  3. belton-pull-up      pull-up             640 m (+318)
   4. belton-move-off     move-off            705 m (+65)
   5. derby-road-lights   lights+right-turn  1450 m (+745)
   6. bishop-meadow-mini  mini-roundabout    2650 m (+1200)
