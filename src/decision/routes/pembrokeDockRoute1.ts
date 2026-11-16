@@ -59,8 +59,9 @@ export const PEMBROKE_DOCK_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter
   // Ferry Lane, London Road (the Waterloo roundabout), the Pier Road roundabout, Water Street, Dimond Street, Queen
   // Street, Commercial Row, Market Place, Meyrick Owen Way and back up Admiralty Way.
   through:pts([[-955,-60],[-900,52],[-735,60],[-600,55],[-250,124],[200,192],[860,285],[850,120],[720,-100],[250,-215],[-40,-260],[-150,-87],[-450,-110],[-640,-60],[-850,-65],[-910,-240]]),
-  // Pulled in to the kerb on Bush Street (no cars parked along it: room for the cyclist to pass).
-  shifts:[{from:p(255.9,198),to:p(295.4,204),left:.35}],
+  // Kept off the near corner turning left out of Melville Terrace into Melville Street (a tight corner: the line touched
+  // the pavement). And pulled in to the kerb on Bush Street (no cars parked along it: room for the cyclist to pass).
+  shifts:[{from:p(-973.8,14.8),to:p(-971.3,30.4),left:-1},{from:p(255.9,198),to:p(295.4,204),left:.35}],
   actors:[
     {id:'whites-car',name:'red car',colour:'#b91c1c',speed:9,waits:true,path:pts(WHITES_CAR)},
     {id:'market-car',name:'white car',colour:'#e5e7eb',speed:9,waits:true,path:pts(MARKET_CAR)},

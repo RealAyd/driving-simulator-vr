@@ -1163,6 +1163,32 @@
    ],
    "confidence": "likely",
    "note": "The lists go from Ferry Lane on to Bush Hill; about 2.4 km away."
+  },
+  {
+   "name": "Market Street end of road (Market Place and Meyrick Owen Way, towards Commercial Row)",
+   "kind": "junction",
+   "map": {
+    "lat": 51.69267,
+    "lon": -4.94939
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists come out of Market Street at the end of the road towards Commercial Row; Meyrick Owen Way now meets it there."
+  },
+  {
+   "name": "Queen Street / Commercial Row end of road",
+   "kind": "junction",
+   "map": {
+    "lat": 51.69403,
+    "lon": -4.948
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists come along Dimond Street and Queen Street to the end of the road at Commercial Row."
   }
  ],
  "unmatched": [
@@ -1173,5 +1199,5 @@
   "Pier Street (taken as a slip for Pier Road)",
   "East Llanion roundabout (no named match)"
  ],
- "summary": "0 confirmed and 65 likely roads plus 13 likely junctions, all from one route-list author (drivingtesttips.biz; intensivelessons.co.uk copies it), whose routes start on Pier Road, 0.9 km from the current address in the Royal Dockyard, so leaving and returning rest on the map. One route meeting the overlap rule looks possible: the Pembroke Dock grid, Western Way, London Road and Ferry Lane are all named, with three or more named junctions in reach (the Admiralty Way mini-roundabout, the Pier Road roundabout, the London Road / Ferry Lane lights, the Laws Street mini-roundabout); no first-hand source was found."
+ "summary": "0 confirmed and 65 likely roads plus 15 likely junctions, all from one route-list author (drivingtesttips.biz; intensivelessons.co.uk copies it), whose routes start on Pier Road, 0.9 km from the current address in the Royal Dockyard, so leaving and returning rest on the map. One route meeting the overlap rule looks possible: the Pembroke Dock grid, Western Way, London Road and Ferry Lane are all named, with three or more named junctions in reach (the Admiralty Way mini-roundabout, the Pier Road roundabout, the London Road / Ferry Lane lights, the Laws Street mini-roundabout); no first-hand source was found."
 }

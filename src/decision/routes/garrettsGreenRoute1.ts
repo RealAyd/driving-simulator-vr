@@ -61,9 +61,12 @@ export const GARRETTS_GREEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfte
   // Mickleton Avenue, Garretts Green Lane, Granby Avenue and back into the test centre. (The last point is just off the
   // way in, on the side away from the unnamed road beside it, so the plan takes the way in.)
   through:pts([[-54,-224],[-334,-475],[-314,-790],[230,-823],[427,-361],[520,84],[343,558],[34,815],[-161,752],[-146,574],[-89,353],[-253,158],[-301,-54],[-2,-181],[274,-66]]),
-  // Pulled in to the kerb on Mackadown Lane, south of the low bridge (no cars parked along it here: room for the
-  // cyclist to pass).
-  shifts:[{from:p(516.4,-10.9),to:p(517.1,19),left:.5}],
+  // Kept left into the Meadway roundabout and into the Church Road roundabout from The Radleys, clear of the bollards on
+  // the splitter islands' noses. Pulled in to the kerb on Mackadown Lane, south of the low bridge (no cars parked along
+  // it here: room for the cyclist to pass). And kept off the inside corner turning from Granby Avenue into the test
+  // centre.
+  shifts:[{from:p(-416.2,-649.9),to:p(-429,-662.4),left:.8},{from:p(516.4,-10.9),to:p(517.1,19),left:.5},
+    {from:p(-47.2,877.6),to:p(-59.2,886.5),left:.8},{from:p(206.1,-11.5),to:p(212.4,-12.1),left:-.8}],
   actors:[
     {id:'granby-e-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(GRANBY_E_CAR)},
     {id:'granby-w-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(GRANBY_W_CAR)},
