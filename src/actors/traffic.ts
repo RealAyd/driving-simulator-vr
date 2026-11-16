@@ -840,11 +840,13 @@ export class Traffic implements SimModule{
         return {room:learnerAcross-.9-edge,edge};
       })();
       const canGoRound=(spare:number)=>!this.learnerQueued&&d.leg.road!==null&&learnerAcross>.05&&roundRight().room>=2*car.halfWidth+spare;
-      // Room kept between this car's side and the learner's going by it (metres): no less than the checks below that
-      // stop it short of the learner allow (careful: 0.7 m round it; otherwise its front 0.35 m clear beside it). With
-      // less, it came up beside the learner, was stopped there with its nose at the learner's back, and backing or
-      // pulling in from there ran into it (the owner's reports: traffic touching the back of the learner standing).
-      const roundClear=this.options.careful?.8:.4;
+      // Room kept between this car's side and the learner's going by it (metres). Careful: no less than the 0.7 m the
+      // careful check (above) keeps round a learner standing, which stopped one going by with less beside the learner,
+      // its nose at the learner's back; backing or pulling in from there, it ran into it (the owner's reports: traffic
+      // touching the back of the learner standing). Otherwise next to nothing, as before: stopped beside it, it creeps
+      // by (below), and on a narrow street lined with parked cars it is passed at all.
+      const roundClear=this.options.careful?.8:.05;
+      let passCap=Infinity,learnerGap=Infinity;
       // (Out at the far edge: its own width and that room, and a little more. Facing it, getting nowhere, it is crept by
       // as before, with next to nothing to spare.)
       const roundSpare=aligned?roundClear+.05:.1;
@@ -892,11 +894,30 @@ export class Traffic implements SimModule{
       // (Standing with room to go round it: not stopped for from afar, but come up to it and gone round, as a parked car
       // is, from PASS_AHEAD.)
       // Not until it is out far enough to clear it, measured across the road (on a bend, or with the learner a little
-      // out from the kerb, the straight box ahead can lose the learner while this car is still behind it).
-      else if(!(learnerStopped&&(learnerAlong>PASS_AHEAD-2||learnerLeft>PASS_SIDE&&learnerAcross-d.lat-car.halfWidth-.9>=roundClear-.05))){
-        ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
-        if(aligned&&Math.abs(learner.speed)<.5&&learnerAlong>0&&learnerAlong<40&&Math.abs(learnerAcross-d.lat)<car.halfWidth+.9+roundClear-.05
-          &&learnerAlong-2.2-car.halfLength<gap){gap=learnerAlong-2.2-car.halfLength;why='learner';leadSpeed=0;following=false}
+      // out from the kerb, the straight box ahead can lose the learner while this car is still behind it). Coming up to
+      // it from afar, no faster than it can still stop short of it, should there be no way round when it gets there
+      // (traffic coming): at speed it was braking hard from PASS_AHEAD and stopping a metre from the learner's back.
+      else{
+        const out=learnerLeft>PASS_SIDE&&(!aligned||learnerAcross-d.lat-car.halfWidth-.9>=roundClear-.05);
+        if(learnerStopped&&out){/* going by it */}
+        else if(learnerStopped&&learnerAlong>PASS_AHEAD-2){if(aligned)passCap=Math.sqrt(2*2.5*Math.max(0,learnerAlong-2.2-car.halfLength-GAP))}
+        else{
+          ahead(learner.pose.position.x,learner.pose.position.z,2.2,'learner');
+          // (Along its way, as it will go: round a bend the learner standing just past it is not straight ahead. Within
+          // `clear` of the learner's middle: where its own middle first comes that close, its front is no nearer the
+          // learner's back than this.)
+          const clear=car.halfWidth+.9+roundClear-.05;
+          if(Math.abs(learner.speed)<.5&&learnerAlong>0&&learnerAlong<30&&Math.cos(learner.pose.heading-car.pose.heading)>.7){
+            const k=this.alongWay(d,lp,30,clear),g=k+clear-car.halfLength-2.15;
+            learnerGap=g;
+            // (Out in the road with no way round it (following one going round, or past parked cars): it pulls back in
+            // to its lane behind the learner, so it stops for it now, not once back in, too late.)
+            const lane=laneAt(d.leg,d.s);
+            if(!learnerStopped&&lane-d.lat>.3&&Math.abs(learnerAcross-lane)<car.halfWidth+.9+.05)learnerGap=Math.min(learnerGap,learnerAlong-2.2-car.halfLength);
+            // (Stopped short of it even following a car nearer, going round it: that one gets by, this one may not.)
+            if(learnerGap<gap){gap=learnerGap;why='learner';leadSpeed=0;following=false}
+          }
+        }
       }
       // Traffic lights ahead in this lane: stop about 1.5 m short of the line at red (and red and amber), and at
       // amber unless too close to stop comfortably (3 m/s²). Seen from far enough off to stop for them, braking
@@ -913,7 +934,7 @@ export class Traffic implements SimModule{
         if(front-1.5+GAP<gap){gap=front-1.5+GAP;why='lights';leadSpeed=0;following=false}
         lightStop=Math.min(lightStop,front-1.5);
       }
-      let target=d.leg.cruise;
+      let target=Math.min(d.leg.cruise,passCap);
       if(byOnLeft&&learnerAlong<car.halfLength+12){target=Math.min(target,1.5);why='learner (creeping past)'}
       // Round a bigger roundabout, about to move out a lane: not across a vehicle already in it, beside or just behind
       // (it goes by first; the move out begins once it has).
@@ -938,6 +959,7 @@ export class Traffic implements SimModule{
       // Anything ahead but a vehicle followed (the learner, a line, a car to wait for): stop GAP short of it, as before.
       // A vehicle followed: the Intelligent Driver Model keeps the gap (below).
       if(gap<Infinity&&!following)target=Math.min(target,Math.max(0,(gap-GAP)*.55));
+      if(learnerGap<Infinity)target=Math.min(target,Math.max(0,(learnerGap-GAP)*.55));
       // About to touch the learner's car (turning in beside it, squeezing past it): stop, whatever else applies.
       {
         const lx=learner.pose.position.x-pos.x,lz=learner.pose.position.z-pos.z;
@@ -1191,8 +1213,9 @@ export class Traffic implements SimModule{
       // middle of its lane alongside it, into it.
       // (Alongside it only: behind it, it can still pull back in behind it.)
       // (Standing or moving off: either way, not back into the lane beside it.)
-      // (Nor, just behind it, its front close to the learner's back: not pulled in across behind it from there.)
-      if(d.leg.road&&learnerAlong>-(car.halfLength+2.15+.5)&&learnerAlong<car.halfLength+2.15+2&&Math.cos(learner.pose.heading-car.pose.heading)>.5){
+      // (Nor, just behind it, its front within a metre of the learner's back: pulled in across behind it from there, its
+      // front corner would catch the learner's.)
+      if(d.leg.road&&learnerAlong>-(car.halfLength+2.15+.5)&&learnerAlong<car.halfLength+2.15+1&&Math.cos(learner.pose.heading-car.pose.heading)>.5){
         const clear=car.halfWidth+.9+.45;
         if(learnerAcross<d.lat&&d.lat-learnerAcross>clear-.6)want=Math.max(want,Math.min(tuckIn,learnerAcross+clear));
         else if(learnerAcross>d.lat&&learnerAcross-d.lat>clear-.6)want=Math.min(want,learnerAcross-clear);
@@ -1305,10 +1328,7 @@ export class Traffic implements SimModule{
         // (Turning through a junction: only if the learner is on the curve it drives, not just straight ahead of it.)
         const noseToNose=Math.cos(learner.pose.heading-car.pose.heading)<-.5&&along>0&&along<25&&side<car.halfWidth+1.3&&
           (d.leg.road!==null||this.alongWay(d,learner.pose.position,25,car.halfWidth+.9+.5)<Infinity);
-        // (Not behind the learner going its way: backing does not make way for it, and tucked in to the kerb as it backs,
-        // its front swings across the learner's back.)
-        const behindIt=Math.cos(learner.pose.heading-car.pose.heading)>.85&&along>0;
-        const heldUp=d.why?.startsWith('learner')&&Math.hypot(lx,lz)<car.halfLength+2.15+2&&!behindIt;
+        const heldUp=d.why?.startsWith('learner')&&Math.hypot(lx,lz)<car.halfLength+2.15+2;
         // (The learner edging to and fro, getting nowhere, counts as standing.)
         const learnerStands=Math.abs(learner.speed)<.5||this.learnerIdle>3;
         d.faceOff=(noseToNose||heldUp)&&car.speed<1&&learnerStands?(d.faceOff??0)+dt:noseToNose||heldUp?d.faceOff??0:0;
@@ -1408,7 +1428,10 @@ export class Traffic implements SimModule{
       const back=Math.min(d.s,BACK_SPEED*dt);
       d.s-=back;b.moved+=back;car.speed=0;
     }
-    if(d.leg.road){
+    // (Straight back from the learner going its way, its back to this car: tucked in to the kerb as it backs, its front
+    // swung across the learner's back corner, there beside it.)
+    const behindLearner=b.for==='learner'&&Math.cos(learner.pose.heading-car.pose.heading)>.85;
+    if(d.leg.road&&!behindLearner){
       const tuck=Math.min(d.leg.lane+.55,d.leg.road.lanes.width*d.leg.road.lanes.count/2-car.halfWidth-.1);
       d.lat+=Math.max(-SIDEWAYS*dt,Math.min(SIDEWAYS*dt,tuck-d.lat));
     }
