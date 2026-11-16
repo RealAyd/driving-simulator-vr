@@ -83,10 +83,11 @@ Two choices keep the paused pictures right however long the car takes to get the
 
 | Found | Fix |
 |---|---|
-| Leaving, the blue car out of the lights had gone by before its moment: only the road user of the stage in hand is paced | Set going as the car comes to the line |
+| Leaving, the blue car out of the lights had gone by before its moment: only the road user of the stage in hand is paced | The white car started 110 m from its moment (there as the car comes to the line); the blue car set going only as the car stops at the line |
 | Still past its mark, by about 17 m: at 9 m/s, slowed to its least, a paced road user cannot stop within the 4 m it is held short | The cars a pause waits for at 8 m/s, not 9 |
 | The way back cut the Aumberry Gap hairpin on to the footway | Back by Leicester Road, King Street and Queen's Road |
 | With traffic (pattern 4) the car stood for good behind the red car on Park Road, by Burton Street, where that car was turning off | The red car's path ends short of Burton Street |
+| With traffic, the blue car (leaving) met a car turning out of Thomas Cook Place, and the black car (Forest Road roundabout) one coming in from Forest Road south-west, both well after their moments | Their paths end before those junctions |
 | The cyclist on Park Road planned its way by Charnwood Road | A point on Park Road before Herrick Road |
 | The first pull-up spot on Park Road was opposite Charnwood Road | Moved 70 m on |
 
