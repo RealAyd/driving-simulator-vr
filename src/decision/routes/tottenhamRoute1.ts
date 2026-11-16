@@ -64,6 +64,7 @@ export const TOTTENHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // splitter islands' noses at the two Weir Hall Avenue roundabouts (lanes about 2.3 m wide beside them).
   shifts:[{from:p(-53.8,-196.4),to:p(-31.2,-185.8),left:.35},{from:p(89.3,537.1),to:p(84.4,539.3),left:-1},
     {from:p(72.8,140.2),to:p(72.3,150.2),left:1},
+    {from:p(63.27,173.92),to:p(61.05,171.89),left:-.8},{from:p(56.77,166.44),to:p(50,166.4),left:.35},
     {from:p(-57.5,166.6),to:p(-67.5,166.7),left:.7},{from:p(-95.1,172.4),to:p(-104.2,173.1),left:.5}],
   actors:[
     {id:'selby-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(SELBY_CAR)},
