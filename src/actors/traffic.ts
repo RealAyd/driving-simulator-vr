@@ -845,8 +845,10 @@ export class Traffic implements SimModule{
       // less, it came up beside the learner, was stopped there with its nose at the learner's back, and backing or
       // pulling in from there ran into it (the owner's reports: traffic touching the back of the learner standing).
       const roundClear=this.options.careful?.8:.4;
-      // (Out at the far edge: its own width and that room, and a little more.)
-      const learnerStopped=(Math.abs(learner.speed)<.5||this.learnerIdle>5)&&(aligned||facingIdle)&&canGoRound(roundClear+.05);
+      // (Out at the far edge: its own width and that room, and a little more. Facing it, getting nowhere, it is crept by
+      // as before, with next to nothing to spare.)
+      const roundSpare=aligned?roundClear+.05:.1;
+      const learnerStopped=(Math.abs(learner.speed)<.5||this.learnerIdle>5)&&(aligned||facingIdle)&&canGoRound(roundSpare);
       // Coming the other way (moving, or waiting out in the road): parked cars on this side are passed after it.
       // Counted 15 m nearer than it is: a learner can be slow through a narrow gap, so traffic waits in good time.
       // (Not a learner getting nowhere, waiting for traffic to come by.)
@@ -1126,7 +1128,7 @@ export class Traffic implements SimModule{
         // (Alongside one on its side, measured from its lane: out round the learner it is further to the left.)
         if(!isLearner&&Math.abs(along)<qHalfLength+car.halfLength+.5&&left>.4&&d.lat+left-d.leg.lane<3.2)alongside=true;
         // Behind it once the two cars no longer overlap along the road (and a little more).
-        if(along<-(qHalfLength+car.halfLength+.5)||along>=PASS_AHEAD||(isLearner?!canGoRound(roundClear+.05):left<=.4)||left>=3.2)continue;
+        if(along<-(qHalfLength+car.halfLength+.5)||along>=PASS_AHEAD||(isLearner?!canGoRound(roundSpare):left<=.4)||left>=3.2)continue;
         if(!pass||along<pass.along)pass={q,along,left,isLearner,qHalfLength};
         if(isLearner)learnerToPass={along,left};
       }
