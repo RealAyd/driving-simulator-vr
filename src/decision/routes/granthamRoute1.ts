@@ -330,7 +330,10 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       quietUntil:p(-413.7,-1202),
       // The mini-roundabout, and Harrowby Lane to the east (where the white car comes from) and west (where it goes);
       // Uplands Drive, Tennyson Avenue and Shelley Avenue.
+      // (And all of Harrowby Lane the white car comes along, from where it sets off: a background car standing in its
+      // way would keep it, and so the car at the line, waiting for good.)
       quiet:[{x:-717,z:-1289,radius:24},{x:-650,z:-1300,radius:40},{x:-790,z:-1294,radius:30},
+        {x:-380,z:-1347,radius:30},{x:-470,z:-1338,radius:40},{x:-560,z:-1320,radius:40},
         {x:-660,z:-1235,radius:45},{x:-628,z:-1145,radius:50},{x:-560,z:-1045,radius:45},{x:-470,z:-1065,radius:45},{x:-400,z:-1140,radius:45}],
       place:{
         approach:{pause:{kind:'moving',at:p(-786.6,-1205.6)},frame:{yaw:0,pitch:22},state:'Approaching the mini-roundabout.'},
@@ -527,8 +530,10 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Set going once the car is at the line, so it is there whatever traffic held the car up on the way.)
       starts:[{actor:'ring-car',at:p(1321.3,1291.8),delay:0}],
       endAt:p(1308.8,1304.3),
-      // The roundabout, and the Grantham Southern Relief Road, where the blue car comes from.
-      quiet:[{x:1356,z:1323,radius:50},{x:1290,z:1361,radius:35}],
+      // The roundabout, the Grantham Southern Relief Road, where the blue car comes from, and High Dike north, where it
+      // goes (both carriageways: traffic queuing in to the roundabout there would meet it).
+      quiet:[{x:1356,z:1323,radius:50},{x:1290,z:1361,radius:35},{x:1230,z:1395,radius:40},{x:1395,z:1258,radius:35},
+        {x:1415,z:1205,radius:40}],
       place:{
         approach:{pause:{kind:'moving',at:p(1262.1,1275)},frame:{yaw:0,pitch:22},state:'Approaching the Somerby Hill roundabout.'},
         line:{pause:{kind:'stop',at:p(1325.3,1292.4)},when:{actor:'ring-car',at:p(1322.1,1317.3)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},

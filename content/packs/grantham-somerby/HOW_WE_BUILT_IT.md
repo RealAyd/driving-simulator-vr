@@ -81,6 +81,8 @@ Tuning on the way (the first build's two routes included, where it applies):
 | A road user turned into a close ahead of the car on a narrow estate road and met background traffic there: all stood for good | Road users keep off the car's way on narrow roads; the estate roads kept clear of traffic while the car is on them |
 | The oncoming car at the Sandon Road lights passed 2.2 m from the car waiting in the junction | The car waits 3 m further back |
 | With traffic (pattern 4), on the way back down New Beacon Road a background car met the car at the Beacon Lane junction and a bus held it there for minutes | New Beacon Road and Beacon Lane kept clear of traffic from Shelley Avenue until the car is nearly at the lights |
+| With traffic (pattern 14), the car stood at the mini-roundabout's line for good: the white car it waits for never came (most likely a background car standing in its way along Harrowby Lane: not seen in the log) | Harrowby Lane kept clear from where the white car sets off to the mini-roundabout |
+| With Skip ahead, a bus queuing into the Somerby Hill roundabout on High Dike met the blue car going out | High Dike north and the relief road approach kept clear while the roundabout is in hand |
 
 ## Still to do
 
