@@ -96,6 +96,12 @@ Avenue and their junction are confirmed (a local instructor's page as well).
   (`src/test/route.ts` takes no unnamed road under 40 m), and the turn it does find from Leppings Lane on to Penistone
   Road North cuts across the corner's footway. Published routes use Leppings Lane there; that needs the planner to take
   short links that continue a named road (a shared change), or the map's links named.
+- `node tools/centres/check_route.mjs` (spacing measured between the directions): route 1's challenges 1 and 2 are
+  240 m apart (the Langsett Avenue right turn is the first road on the right after Winn Gardens and Middlewood Drive)
+  and 6 and 7 are 170 m apart (above); route 2's 6 and 7 are 241 m apart (moving off on Wordsworth Avenue, then its end
+  at Herries Road). Its count of challenges at known junctions reads 0 of 8: the evidence file's junction positions
+  are approximate (Langsett Avenue's is 280 m from the junction), so none falls within its 60 m; by name they are the
+  3 and 3 above. The evidence file's positions want correcting to the map.
 - Driven headless (`tests/unit/decisionDrive.sheffield-middlewood-road.test.ts`): both routes pass with the right
   answers, every pause as depicted, without traffic, with traffic (patterns 4 and 14) and with Skip ahead. Route 2's
   longest stand with traffic is 45.1 s, queued behind a car at a long red on Penistone Road until the runner turns it off
