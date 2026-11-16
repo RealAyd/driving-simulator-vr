@@ -39,10 +39,12 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'At the end of Winn Gardens.'}},
   'parkside-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(88.3,251.4)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the Penistone Road lights on Parkside Road. They are red.'}},
-  'southey-green-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(371.8,-991)},when:{actor:'halifax-car',at:p(437.1,-1022.7)},frame:{yaw:0,pitch:44,shift:-4},
-    state:'On Halifax Road, Southey Green Road just ahead on the right.'}},
-  'southey-green-roundabout':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(771.7,-905.4)},when:{actor:'rbt-car',at:p(809.5,-883.9)},frame:{yaw:-50,pitch:30},
-    state:'Approaching the Southey Green Road roundabout.'}},
+  // (Stopped in position, and at the give way line: with the lights on Halifax Road and traffic about, the blue and
+  // white cars cannot be timed to a moment on the move; they come as the car waits.)
+  'southey-green-right':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(400.5,-1004.9)},when:{actor:'halifax-car',at:p(437.1,-1022.7)},frame:{yaw:0,pitch:44,shift:-4},
+    state:'In position to turn right into Southey Green Road.'}},
+  'southey-green-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(797.2,-901.9)},when:{actor:'rbt-car',at:p(809.5,-883.9)},frame:{yaw:-60,pitch:44,shift:-4},
+    state:'At the give way line of the Southey Green Road roundabout.'}},
   // (At the line: the houses on the corner hide Herries Road until there.)
   'wordsworth-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(707.4,-301)},when:{actor:'herries-car',at:p(688.3,-286)},frame:{yaw:-60,pitch:44,shift:-4},
     state:'At the end of Wordsworth Avenue.'}},
@@ -227,8 +229,7 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBefo
       where:'Halifax Road, right into Southey Green Road',
       instruction:'Take the next road on the right, please.',
       instructAt:p(327.2,-968.3),
-      // (Set going well before: it has 240 m to come down Halifax Road to be in view as the car comes up to the turn.)
-      starts:[{actor:'halifax-car',at:p(135.4,-843.6),delay:0}],
+      starts:[{actor:'halifax-car',at:p(327.2,-968.3),delay:0}],
       endAt:p(437.2,-987.8),
       // The junction, Halifax Road ahead, where the blue car comes from, and the mouth of Southey Green Road.
       quiet:[{x:405,z:-1003,radius:30},{x:445,z:-1030,radius:40},{x:430,z:-992,radius:20}],
@@ -295,8 +296,7 @@ export const SHEFFIELD_MIDDLEWOOD_ROUTE_2:DecisionRoute=withTurnButtons(withBefo
       where:'Southey Green Road at its roundabout, right (third exit) on to Wordsworth Avenue',
       instruction:'At the roundabout, turn right, the third exit, please.',
       instructAt:p(702.9,-918.2),
-      // (Set going well before: it has 180 m to come up Wordsworth Avenue and round to be in view as the car comes up.)
-      starts:[{actor:'rbt-car',at:p(501.6,-967.2),delay:0}],
+      starts:[{actor:'rbt-car',at:p(702.9,-918.2),delay:0}],
       endAt:p(824.2,-842.4),
       // The entry, and the circulating carriageway to the right, where the white car comes round.
       quiet:[{x:812,z:-900,radius:30},{x:810,z:-860,radius:30}],

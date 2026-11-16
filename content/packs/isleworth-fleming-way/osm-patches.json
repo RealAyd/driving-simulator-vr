@@ -1,0 +1,16 @@
+[
+ {
+  "op": "move-node",
+  "id": 5984476842,
+  "lat": 51.4592905,
+  "lon": -0.3406254,
+  "why": "Whitton Dene at the Mogden Lane roundabout: the way between the ring and this node was 6.5 m long, too short for the lane path, so the car's line cut straight across the island. The node (an unmarked footway crossing) moved 8.5 m west along Whitton Dene, with the next one (below), so that piece is 15 m."
+ },
+ {
+  "op": "move-node",
+  "id": 25471045,
+  "lat": 51.4592896,
+  "lon": -0.3406441,
+  "why": "Whitton Dene at the Mogden Lane roundabout: moved 3 m west, to stay west of the node moved above (see there)."
+ }
+]

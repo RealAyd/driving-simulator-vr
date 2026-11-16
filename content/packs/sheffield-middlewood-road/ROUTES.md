@@ -50,7 +50,7 @@ Gardens and left into the car park.
 |---|---|---|---|
 | 1 | Leaving: end of Winn Gardens, left on to Middlewood Road (known junction) | A silver car coming down Middlewood Road from the right | Mirrors, signal left; look right, give way; look right and left, go |
 | 2 | Parkside Road, left at the lights on to Penistone Road | Red light; someone still on the crossing over the slip as it turns green | Mirrors, signal left, stop; on green, look along the crossing, give way; left mirror, go |
-| 3 | Halifax Road, right into Southey Green Road | A blue car coming down Halifax Road (the far carriageway) | Mirrors, signal right, position; wait; look into Southey Green Road, go |
+| 3 | Halifax Road, right into Southey Green Road | A blue car coming down Halifax Road (the far carriageway) | In position: mirrors, signal right; wait; look into Southey Green Road, go |
 | 4 | Southey Green Road roundabout, turn right (third exit) on to Wordsworth Avenue (known junction) | A white car coming round from Wordsworth Avenue, on the right | Mirrors, signal right, position; look right, give way; look right again, go |
 | 5 | Pull up on Wordsworth Avenue, past Avisford Road | | Choose well past Avisford Road, mirrors, signal; handbrake, neutral, cancel signal |
 | 6 | Move off | A cyclist coming down Wordsworth Avenue behind | Mirror and blind spot, wait; again, go |

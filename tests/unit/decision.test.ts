@@ -63,7 +63,8 @@ describe('turn buttons',()=>{
       'salisbury-2:castle-street-lights','salisbury-2:castle-street-mini',
       'morden-london-1:leave-test-centre','morden-london-1:sutton-zebra',
       'morden-london-2:tudor-zebra','morden-london-2:beverley-roundabout','morden-london-2:churston-mini',
-      'sheffield-middlewood-road-1:middlewood-crossing','sheffield-middlewood-road-1:leppings-lights']);
+      'sheffield-middlewood-road-1:middlewood-crossing','sheffield-middlewood-road-1:leppings-lights',
+      'isleworth-fleming-way-1:mogden-roundabout']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)
       if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();
   });

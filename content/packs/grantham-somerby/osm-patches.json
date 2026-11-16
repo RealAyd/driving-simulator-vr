@@ -1,0 +1,17 @@
+[
+ {
+  "op": "move-node",
+  "id": 8356323647,
+  "lat": 52.9183953,
+  "lon": -0.5775516,
+  "why": "High Dike (B6403) at Harrowby Lane: the way's next node out of route 1's scene is 1.5 km on, so in the scene it stops 8 m past the junction, and the junction is not found (side roads count from 8 m in) and traffic would vanish there. Its first node moved 150 m further on along the same straight line (the farm track that ends there, not built, with it)."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 1390010340,
+  "k": "name",
+  "v": "Driving Test Centre",
+  "why": "The test centre's way in off High Dike (A52): unnamed and 35 m long, so the route planner takes it for a link it will not turn into (unnamed roads under 40 m), and route 1 cannot come back in. Named for the sign at its mouth."
+ }
+]

@@ -102,6 +102,7 @@ carriageway throughout and back in the car park. Tuning on the way, for any rout
 | Long waits at lights with long cycles (70 to 91 s) on Penistone Road and at the Leppings Lane lights | The waits that can be avoided are inside challenges (lights held for the car) or on the way home (held green); queued behind a car at a long red, the car stands until the runner turns that car off (45 s) |
 | Background cars meeting the car face to face at narrow places (Langsett Avenue, the end of Dixon Road, Marlcliffe Road) or oncoming in a paused picture | Wider `quiet` circles, and `quietUntil` up Langsett Avenue and past Marlcliffe Road |
 | The oncoming car for the right turn into Winn Gardens arrived early when traffic held the car up | Its pause is stopped in position, and the car is set going late, as the car slows to stop |
+| Route 2's right turn into Southey Green Road and the Southey Green Road roundabout, paused on the move, came with the car already stopped (the blue and white cars set going too late), or, set going earlier, with them gone by after the lights on Halifax Road held the car | Both decided stopped: in position for the turn, and at the roundabout's give way line, the cars coming as the car waits |
 
 ## Still to do
 
