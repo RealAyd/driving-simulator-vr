@@ -393,8 +393,14 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instructAt:p(-413.7,-1202),
       starts:[{actor:'shelley-car',at:p(-413.7,-1202),delay:0}],
       endAt:p(-514.5,-1325.3),
-      // The junction, Harrowby Lane to the right (east), where the black car comes from, and the zebra to the west.
-      quiet:[{x:-449,z:-1343,radius:26},{x:-380,z:-1350,radius:45},{x:-500,z:-1333,radius:30}],
+      // (New Beacon Road and Beacon Lane, driven back to the Sandon Road lights, have cars parked along them and little
+      // room to meet traffic at their junction: kept clear until the car is nearly at the lights.)
+      quietUntil:p(-1328.1,-484.4),
+      // The junction, Harrowby Lane to the right (east), where the black car comes from, and the zebra to the west;
+      // New Beacon Road and Beacon Lane on the way back.
+      quiet:[{x:-449,z:-1343,radius:26},{x:-380,z:-1350,radius:45},{x:-500,z:-1333,radius:30},
+        {x:-960,z:-930,radius:45},{x:-1030,z:-800,radius:45},{x:-1060,z:-680,radius:45},{x:-1090,z:-570,radius:40},
+        {x:-1115,z:-504,radius:30},{x:-1180,z:-494,radius:40},{x:-1260,z:-490,radius:40},{x:-1318,z:-486,radius:25}],
       place:{
         approach:{pause:{kind:'moving',at:p(-442.8,-1297.3)},frame:{yaw:0,pitch:22},state:'Approaching the end of Shelley Avenue.'},
         line:{pause:{kind:'stop',at:p(-449,-1335.7)},when:{actor:'shelley-car',at:p(-413.7,-1346.9)},frame:{yaw:-70,pitch:26},state:'At the give way line.'},

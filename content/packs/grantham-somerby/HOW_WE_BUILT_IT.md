@@ -80,6 +80,7 @@ Tuning on the way (the first build's two routes included, where it applies):
 | A road user at a mini-roundabout, held by a signal crossing just before its point, came late, so an "on the move" decision came with the car stopped | Decisions at junctions with a signal crossing just before them taken at the line, stopped |
 | A road user turned into a close ahead of the car on a narrow estate road and met background traffic there: all stood for good | Road users keep off the car's way on narrow roads; the estate roads kept clear of traffic while the car is on them |
 | The oncoming car at the Sandon Road lights passed 2.2 m from the car waiting in the junction | The car waits 3 m further back |
+| With traffic (pattern 4), on the way back down New Beacon Road a background car met the car at the Beacon Lane junction and a bus held it there for minutes | New Beacon Road and Beacon Lane kept clear of traffic from Shelley Avenue until the car is nearly at the lights |
 
 ## Still to do
 
