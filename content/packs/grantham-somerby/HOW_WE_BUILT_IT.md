@@ -87,6 +87,7 @@ offered. Tuning on the way:
 | The grey car (route 1) drove through the car pulled up on Harrowby Lane | Its path re-planned round the car where it really stops (the first was planned round a point 2 m into the kerb) |
 | The white car at the mini-roundabout came late, held at the New Beacon Road signal crossing just before its point, so the "on the move" decision came with the car stopped at the line | It waits, seen, just past the crossing, and edges out to meet the car |
 | Ending in the yard (round the loop) took the car's corner over the footway | The route ends on the way in, as first planned |
+| With traffic (pattern 4), the white car, gone into Uplands Drive ahead of the car and turning into Ermine Close, met a background car coming out: the three stood for good | The white car goes out along Harrowby Lane instead, off the car's way |
 
 ## Still to do
 

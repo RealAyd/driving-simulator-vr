@@ -129,8 +129,8 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Worton Road at the Bridge Road mini-roundabout, right into Bridge Road',
       instruction:'At the mini-roundabout, turn right into Bridge Road, please.',
       instructAt:p(-29.3,435.5),
-      // (Set going earlier, so it is on its way down Bridge Road as the car comes up to the mini-roundabout.)
-      starts:[{actor:'bridge-car',at:p(89.9,446),delay:0}],
+      // (Set going as the direction is given, from close in, so traffic holding the car up cannot leave it gone by.)
+      starts:[{actor:'bridge-car',at:p(-29.3,435.5),delay:0}],
       endAt:p(-130.2,384.6),
       // The mini-roundabout, and Bridge Road to the right, where the black car comes from.
       quiet:[{x:-95,z:411,radius:22},{x:-118,z:392,radius:24},{x:-120,z:438,radius:20}],
@@ -329,8 +329,8 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'London Road at the St John\'s Road lights, right into St John\'s Road',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(195.1,-467.6),
-      // (Set going earlier, so it is coming the other way as the car comes up to the lights.)
-      starts:[{actor:'stjohns-car',at:p(95.4,-459.9),delay:0}],
+      // (Set going late, from close in, so traffic holding the car up on London Road cannot leave it gone by.)
+      starts:[{actor:'stjohns-car',at:p(224.9,-470.6),delay:0}],
       lights:p(283,-476.5),lightsAll:true,
       endAt:p(308.2,-431.5),
       // The junction, and London Road ahead, where the oncoming silver car comes from.

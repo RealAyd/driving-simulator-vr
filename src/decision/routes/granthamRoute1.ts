@@ -62,7 +62,7 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
     // Behind the car along Harrowby Lane, past it at the kerb, and left into Keats Avenue.
     {id:'grey-car',name:'grey car',colour:'#6b7280',speed:11,path:pts(GREY_CAR)},
-    // Seen waiting just past the New Beacon Road signal crossing, then round the mini-roundabout into Uplands Drive.
+    // Seen waiting just past the New Beacon Road signal crossing, then round the mini-roundabout and out along Harrowby Lane.
     {id:'white-car',name:'white car',colour:'#e5e7eb',speed:8,waits:true,path:pts(WHITE_CAR)},
     {id:'black-car',name:'black car',colour:'#1f2328',speed:11,path:pts(BLACK_CAR)},
     {id:'b6403-car',name:'blue car',colour:'#2563eb',speed:18,path:pts(B6403_CAR)},
@@ -308,7 +308,7 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       place:{
         approach:{pause:{kind:'moving',at:p(-1470,-1046)},frame:{yaw:0,pitch:22},state:'Approaching the mini-roundabout at 25 mph.'},
         line:{pause:{kind:'stop',at:p(-1504.7,-1043.5)},when:{actor:'white-car',at:p(-1530.7,-1027.8)},frame:{yaw:-40,pitch:28},state:'At the give way line.'},
-        clear:{pause:{kind:'stop',at:p(-1504.7,-1043.5)},when:{actor:'white-car',at:p(-1478.7,-1002.6)},frame:{yaw:30,pitch:28},state:'Still at the give way line.'}
+        clear:{pause:{kind:'stop',at:p(-1504.7,-1043.5)},when:{actor:'white-car',at:p(-1487.6,-1048.5)},frame:{yaw:30,pitch:28},state:'Still at the give way line.'}
       },
       stages:[
         {
@@ -333,13 +333,13 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
             {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
               message:'Look right first: at a mini-roundabout you give way to traffic coming from the right.'}},
             {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the white car',
-              message:'The white car from New Beacon Road was coming round the mini-roundabout in front of you, into Uplands Drive, the road you were turning into. The examiner had to stop the car.'}},
+              message:'The white car from New Beacon Road was coming round the mini-roundabout from your right, across your way on to it. The examiner had to stop the car.'}},
             {kind:'distractor',id:'creep',action:'creep',fault:{level:'serious',heading:'Junctions - observation',title:'Crept out into the white car\'s way',
               message:'The view right was already clear: creeping forward only puts the front of the car into the white car\'s way.'}}
           ],
           accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
           next:{wait:'clear',go:'clear'},
-          explain:'Give way: the white car from New Beacon Road was coming round the mini-roundabout from the right, going into Uplands Drive.'
+          explain:'Give way: the white car from New Beacon Road was coming round the mini-roundabout from the right. Until it has gone past your exit, you cannot tell where it is going.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
@@ -347,13 +347,13 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
           neutral:['look-left'],
           rules:[
             {kind:'required',id:'fresh-look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
-              message:'Your last look right was before the white car went round. Look right again just before you go.'}},
+              message:'Your last look right was before the white car came round. Look right again just before you go.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'The white car had gone into Uplands Drive and nothing more was coming: this was the time to go.'}}
+              message:'The white car had gone out along Harrowby Lane and nothing more was coming: this was the time to go.'}}
           ],
           accepted:[['look-right','go'],['look-right','mirror-left','go'],['look-left','look-right','go']],
           next:{go:'done'},
-          explain:'Look right again, then go: the white car had gone and nothing more was coming.'
+          explain:'Look right again, then go: the white car had gone out along Harrowby Lane and nothing more was coming.'
         }
       ]
     },

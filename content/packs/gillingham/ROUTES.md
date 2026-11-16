@@ -99,6 +99,10 @@ Adding these two to the evidence file would give each route one or two challenge
 - **The gap in Beechings Way's central reservation into Featherby Road**: its way leaves the eastbound carriageway 5 m
   east of where it reaches Featherby Road, so the car's rounded right turn crossed the reservation (pavement in the
   scene). Its east end was moved 5 m west along the carriageway in the downloaded data (`osm-patches.json`).
+- **Courteney Road between the roundabout by Tesco and the Bowaters roundabout** is mapped unclassified, which the
+  engine reads as a residential street and parks cars along. It is the busy link (and bus route) every test drives out
+  and back on: it was read as a main road (`osm-patches.json`: no kerb parking, a centre line). *To confirm on the
+  ground.*
 - **The roundabout by Tesco** is small (a single-lane ring, widened by the engine to 6 m) with a splitter island and lamp
   posts close to the line round it: the car's way is moved out from the inside of its tight corners (the route files'
   `shifts`).

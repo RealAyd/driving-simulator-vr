@@ -216,12 +216,12 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Twickenham Road at the Mogden Lane lights, right into Mogden Lane',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(558.4,168.9),
-      // (Set going earlier, so it is coming the other way as the car comes up to the lights.)
-      starts:[{actor:'silver-car',at:p(558.6,69),delay:0}],
+      // (Set going late, from close in, so traffic holding the car up on Twickenham Road cannot leave it gone by.)
+      starts:[{actor:'silver-car',at:p(564.2,213.5),delay:0}],
       lights:p(572.1,250.1),lightsAll:true,
       endAt:p(533.1,282.1),
       // The junction, and Twickenham Road ahead, where the oncoming silver car comes from.
-      quiet:[{x:572,z:268,radius:26},{x:586,z:305,radius:30}],
+      quiet:[{x:572,z:268,radius:26},{x:586,z:305,radius:30},{x:565,z:232,radius:20}],
       place:{
         approach:{pause:{kind:'moving',at:p(558.4,168.9)},frame:{yaw:0,pitch:20},state:'Approaching the Mogden Lane lights on green.'},
         centre:{pause:{kind:'stop',at:p(575.8,265.2)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:32},
@@ -525,8 +525,9 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Worton Road, right into Fleming Way',
       instruction:'Turn right into the test centre, please.',
       instructAt:p(174.9,-464.6),
-      // (Set going before the Ruskin Road mini-roundabout, so it is coming the other way as the car reaches the way in.)
-      starts:[{actor:'worton-oncoming',at:p(23.8,-455.4),delay:0}],
+      // (Set going once the car is past the Ruskin Road mini-roundabout, from close in, so traffic holding the car up
+      // there cannot leave it gone by.)
+      starts:[{actor:'worton-oncoming',at:p(174.9,-464.6),delay:0}],
       endAt:p(243.8,-440.3),
       // The way in, and Worton Road ahead, where the oncoming red car comes from.
       quiet:[{x:238,z:-470,radius:20},{x:270,z:-482,radius:30}],

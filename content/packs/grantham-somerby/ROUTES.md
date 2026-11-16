@@ -29,7 +29,7 @@ Avenue and Keats Avenue, right on to Harrowby Lane, back to the B6403, right on 
 | 2 | High Dike (B6403), left into Harrowby Lane | A cyclist just ahead, going on past the turning | Mirrors, signal left, slow down and stay behind (no overtaking before a left turn); left mirror, turn once the cyclist is past |
 | 3 | Pull up on Harrowby Lane, past Tennyson Avenue | | Choose past Tennyson Avenue, mirrors, signal; handbrake, neutral, cancel signal |
 | 4 | Move off | A grey car coming along Harrowby Lane behind, turning into Keats Avenue | Mirror and blind spot, wait; again, go |
-| 5 | New Beacon Road mini-roundabout, left into Uplands Drive | A white car from New Beacon Road coming round in front, into Uplands Drive | Mirrors, signal left; look right, give way; look right again, go |
+| 5 | New Beacon Road mini-roundabout, left into Uplands Drive | A white car from New Beacon Road coming round from the right and out along Harrowby Lane | Mirrors, signal left; look right, give way; look right again, go |
 | 6 | Keats Avenue, right on to Harrowby Lane | A black car coming along Harrowby Lane from the right, turning into Byron Avenue | Mirrors, signal right; look right, give way; look right, left and right, go |
 | 7 | Harrowby Lane, right on to High Dike (B6403, 60 mph) | A blue car coming up High Dike from the right at speed | Mirrors, signal right; look right, give way; look right, left and right, go |
 | 8 | High Dike (A52), right into the test centre | A silver car coming up from the Somerby Hill roundabout | Mirrors, signal right, position; wait for it; look into the way in, go |
