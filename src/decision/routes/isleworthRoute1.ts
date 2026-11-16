@@ -470,7 +470,7 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instruction:'At the mini-roundabout, turn right, please.',
       instructAt:p(-672.9,515),
       // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
-      starts:[{actor:'hall-car',at:p(-709.7,524.4),delay:0}],
+      starts:[{actor:'hall-car',at:p(-683.2,517.6),delay:0}],
       endAt:p(-735.9,507.7),
       // (And the narrow loop by Eaton Road, Ellerdine Road and Tudor Road, and the side roads on the way home, kept quiet
       // until the car is past them: in traffic, cars met the car face to face at the mouth of Eaton Road, and pulling
