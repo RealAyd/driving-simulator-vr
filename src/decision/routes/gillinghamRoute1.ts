@@ -475,7 +475,7 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       endAt:p(-98.2,-220.9),
       quiet:[{x:-92,z:-268,radius:50}],
       place:{
-        check:{pause:{kind:'stop',at:p(-91.8,-268.4)},when:{actor:'featherby-van',at:p(-93.1,-279)},frame:{yaw:-155,pitch:26},
+        check:{pause:{kind:'stop',at:p(-91.8,-268.4)},when:{actor:'featherby-van',at:p(-94,-274.5)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb, handbrake on.'},
         clear:{pause:{kind:'stop',at:p(-91.8,-268.4)},when:{actor:'featherby-van',at:p(-79.2,-230.9)},frame:{yaw:-170,pitch:26},
           state:'Still at the kerb.'}

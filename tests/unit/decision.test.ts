@@ -67,7 +67,7 @@ describe('turn buttons',()=>{
       'sheffield-middlewood-road-1:middlewood-crossing','sheffield-middlewood-road-1:leppings-lights',
       'gillingham-1:bowater-roundabout','gillingham-1:sovereign-lights',
       'loughborough-1:beacon-roundabout',
-      'isleworth-fleming-way-1:mogden-roundabout','isleworth-fleming-way-2:thornbury-zebra',
+      'isleworth-fleming-way-1:mogden-roundabout',
       'grantham-somerby-2:sandon-lights','grantham-somerby-2:harrowby-zebra']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)
       if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();

@@ -1,15 +1,15 @@
-# How the Gillingham routes were built
+# How the Gillingham route was built
 
 From the template rules (`../ROUTE_TEMPLATE_RULES.md`) and the evidence plan (`../EVIDENCE_PLAN.md`), by the steps in
 `tools/centres/README.md`, as the Morden pilot (`../morden-london/HOW_WE_BUILT_IT.md`). Judgement first: the evidence
-pointed to roads; the routes were chosen for what they teach and for what the engine can drive as depicted.
+pointed to roads; the route was chosen for what they teach and for what the engine can drive as depicted.
 
 ## 1. Find the centre as it is now
 
 Unit 1, Astra Park, Courteney Road, ME8 0EZ (the owner confirmed the postcode on 15 November 2026; gov.uk could not be
 reached). OpenStreetMap has no "test centre" point, but a building with postcode ME8 0EZ sits at the evidence file's
 position, with a motorcycle training area (`amenity=driver_training`) beside it, and a service road (way 31241841)
-from Courteney Road along its north side. That way was added to both scenes by its id; both routes start on it,
+from Courteney Road along its north side. That way was added to the scene by its id; the route starts on it,
 facing Courteney Road.
 
 ## 2. Read the evidence, then choose
@@ -23,10 +23,14 @@ What the map and the engine changed:
 
 - **The roads round the centre.** Courteney Road is the only way out: north to the roundabout by Tesco and the Bowaters
   roundabout (signal-controlled, five arms), or south to Hoath Lane. Everything the evidence names near the centre is
-  beyond Bowaters, so both routes go through it, and come back the same way.
+  beyond Bowaters, so the route goes through it, and comes back the same way.
 - **Two directions from Bowaters.** West: Sovereign Boulevard (the A2), Ito Way (the A289) and Featherby Road, all on
-  the lists. North and east: Twydall Lane, Beechings Way, Pump Lane and London Road, all on the lists. Each route takes
-  one, so they leave in different directions.
+  the lists. North and east: Twydall Lane, Beechings Way, Pump Lane and London Road, all on the lists. Two routes were
+  built and driven, one each way. With the owner's decision of one route per centre (from batch 2 on), the west one
+  was kept: it has seven of the nine kinds in the mix (all but the mini-roundabout, there being none on its roads),
+  where the north-east one (two mini-roundabouts, a zebra, the roundabout by Tesco, emerging right on to London Road)
+  had no emerging left and no right turn across oncoming traffic; and 78% of it is on evidence roads (the other 69%).
+  The north-east route's scene, route and paths were deleted; its design is in this file's history.
 - **Left out on judgement:** Hoath Way (confirmed), a 50 mph dual carriageway with no junction to decide at between
   Bowaters and Hoath Lane; the Hempstead Valley roundabouts (confirmed) 2.7 km south and Gillingham town (Canterbury
   Street, the Nelson Road junction, confirmed) 3 km north-west, each too far to share a scene with the centre and still
@@ -34,13 +38,12 @@ What the map and the engine changed:
 - **Featherby Road from the north.** From the A2 westbound it is a right turn across the eastbound carriageway with no
   gap; from Beechings Way it is a right turn through the central reservation (a real right turn across oncoming
   traffic), and at its south end a left turn on to the A2 at 40 mph (emerging left). Route 1 takes it that way.
-- **Emerging, which way.** Pump Lane on to London Road is a right turn and Featherby Road on to Sovereign Boulevard a
-  left turn (checked by heading along the planned line).
+- **Emerging, which way.** Featherby Road on to Sovereign Boulevard is a left turn and the test centre's way out on to
+  Courteney Road a right turn (checked by heading along the planned line).
 
 ## 3. Build the scenes
 
-One scene per route: `gillingham-route-1` 2.4 km square, north-west of the centre (51.372446, 0.574838);
-`gillingham-route-2` 2.3 km square, north-east (51.370200, 0.585913). The OpenStreetMap download: 16 tiles, merged,
+The scene `gillingham-route-1`: 2.4 km square, north-west of the centre (51.372446, 0.574838). The OpenStreetMap download: 16 tiles, merged,
 then four fixes (`osm-patches.json`, explained in `ROUTES.md`): the Beechings Way central reservation gap's east
 end moved 5 m west, Courteney Road (two ways) read as a main road, and the ring of the roundabout by Tesco read as
 four lanes wide.
@@ -48,7 +51,6 @@ four lanes wide.
 ```
 python3 -I tools/centres/fetch_osm.py gillingham.osm 51.37110 0.57872 1600 4 --patches content/packs/gillingham/osm-patches.json
 node tools/scenes/build_scene.mjs gillingham-route-1 "Gillingham" 51.372446 0.574838 1200 gillingham.osm 51.365064,0.579944 51.365088,0.579513 31241841
-node tools/scenes/build_scene.mjs gillingham-route-2 "Gillingham" 51.370200 0.585913 1150 gillingham.osm 51.365064,0.579944 51.365088,0.579513 31241841
 ```
 
 ## 4. Plan the line, probe it, script the road users
@@ -57,12 +59,11 @@ As Morden: the car's way planned through points on the scene's roads, a probe li
 mini-roundabouts, give way ends and the parked cars along it by metres, and each road user's path generated on the
 scene's roads. Where the planner turned a road user off before the point it had to reach (into the test centre's way
 out, into Featherby Road), its path is the road's centreline offset into the left lane instead. The pull-ups are where no car is parked
-on either kerb for 30 m behind and 40 m ahead (Featherby Road between Chilham Road and Elmfield; Pump Lane, with none
-parked).
+on either kerb for 30 m behind and 40 m ahead (Featherby Road between Chilham Road and Elmfield).
 
 ## 5. Drive it headless
 
-`CENTRE=gillingham npx vitest run tests/unit/decisionDrive.centre.test.ts`: both routes with the right answers,
+`ROUTES=gillingham-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: the route with the right answers,
 without traffic, with 30 background road users in two patterns (4 and 14), and with Skip ahead. Tuning on the way:
 
 | Found | Fix |
@@ -70,7 +71,7 @@ without traffic, with 30 background road users in two patterns (4 and 14), and w
 | A road user's planned path turned into the test centre's way out, or into Featherby Road | The road's centreline, offset into the lane |
 | The silver car on Beechings Way was past its point when the car came to the moving pause (the car slowed round the Cornwallis Roundabout) | Started later (as the car leaves the roundabout), and faster |
 | Waiting to turn into Featherby Road, the car stood on the central reservation | The gap's way moved in the map data (step 3) |
-| Off the carriageway, and touching a lamp post or the splitter island's bollard, at the roundabout by Tesco | The ring read as four lanes wide (step 3): the way on drives cleanly. The way off towards the centre does not, with any shift tried: both routes end just short of the roundabout (a shared engine change, in the build report) |
+| Off the carriageway, and touching a lamp post or the splitter island's bollard, at the roundabout by Tesco | The ring read as four lanes wide (step 3): the way on drives cleanly. The way off towards the centre does not, with any shift tried: the route ends just short of the roundabout (a shared engine change, in the build report) |
 | With traffic, a car queued at the Will Adams Roundabout kept the car short of its line while the black car went by | The black car set going once the car is at the line, its path cut to start near |
 | With traffic, a car waiting to come out of The Chase on to Featherby Road and the car each waited for the other | The ends of The Chase and Hanway kept clear while the emerge on to the A2 is in hand |
 | With traffic, the car easing round a car parked on Courteney Road on the way back met a car coming the other way | Courteney Road read as a main road (step 3): no kerb parking |
@@ -80,6 +81,6 @@ Results are in the build report.
 ## Still to do
 
 Played in the app and every paused picture screenshotted and checked (camera angles are first choices), then staging
-and the owner's drive. Shared changes before the routes go in the app: a button for each in `sim/index.html`, and the
+and the owner's drive. Shared changes before the route goes in the app: a button in `sim/index.html`, and the
 sources (s1 to s6) listed in `public/legal/credits.html`. Every direction is one the pilots already use, so no new voice
 clips are needed.

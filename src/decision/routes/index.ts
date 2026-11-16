@@ -11,7 +11,6 @@ import {SHEFFIELD_MIDDLEWOOD_ROUTE_1} from './sheffieldMiddlewoodRoute1';
 import {SHEFFIELD_MIDDLEWOOD_ROUTE_2} from './sheffieldMiddlewoodRoute2';
 import {HENDON_ROUTE_1} from './hendonRoute1';
 import {ISLEWORTH_ROUTE_1} from './isleworthRoute1';
-import {ISLEWORTH_ROUTE_2} from './isleworthRoute2';
 import {LOUGHBOROUGH_ROUTE_1} from './loughboroughRoute1';
 import {GILLINGHAM_ROUTE_1} from './gillinghamRoute1';
 import {GRANTHAM_ROUTE_1} from './granthamRoute1';
@@ -23,5 +22,5 @@ export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWO
   SHEFFIELD_MIDDLEWOOD_ROUTE_1,SHEFFIELD_MIDDLEWOOD_ROUTE_2,
   LOUGHBOROUGH_ROUTE_1,ISLEWORTH_ROUTE_1,
   GILLINGHAM_ROUTE_1,
-  HENDON_ROUTE_1,ISLEWORTH_ROUTE_2,
+  HENDON_ROUTE_1,
   GRANTHAM_ROUTE_1,GRANTHAM_ROUTE_2];
