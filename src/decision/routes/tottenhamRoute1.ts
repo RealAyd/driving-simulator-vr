@@ -62,6 +62,8 @@ export const TOTTENHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // Pulled in to the kerb on Wilbury Way (no cars parked along it: room for the cyclist to pass). Wide of the inside
   // corner turning out of Oak Avenue into Weir Hall Road (square in the map). And clear of the bollards on the
   // splitter islands' noses at the two Weir Hall Avenue roundabouts (lanes about 2.3 m wide beside them).
+  // Leaving the first west, kept in towards the island round the ring and left past the bollard just along: the car
+  // cut the exit's inside kerb corner.
   shifts:[{from:p(-53.8,-196.4),to:p(-31.2,-185.8),left:.35},{from:p(89.3,537.1),to:p(84.4,539.3),left:-1},
     {from:p(72.8,140.2),to:p(72.3,150.2),left:1},
     {from:p(65.5,174.9),to:p(61.05,171.89),left:-2},{from:p(56.77,166.44),to:p(48,166.4),left:.9},

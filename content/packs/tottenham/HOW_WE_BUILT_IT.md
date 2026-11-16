@@ -63,9 +63,10 @@ both Weir Hall Avenue roundabouts (lanes about 2.3 m wide beside them) and put a
 | Stopped at the first roundabout's line, the car touched the bollard on the splitter island's nose | Its line kept 1 m to the left on the way in (a `shift`) |
 | At the second roundabout, the bollards at the entry and the exit | Kept 0.7 m and 0.5 m to the left |
 | Turning out of Oak Avenue into Weir Hall Road (a square corner in the scene), the car crossed the inside corner | Its line kept 1 m wide of the corner |
-| Leaving the first roundabout west, the car crossed the inside kerb by about 0.2 m | Not shifted: a bollard 6 m on leaves no room; to check in the next drive (possibly the knock on the entry bollard) |
+| Leaving the first roundabout west, the car crossed the inside kerb corner (all four drives of the full run) | The line kept 2 m in towards the island round the ring before the exit and 0.9 m to the left past the bollard 6 m on: the corner 1.55 m off the line (from 0.98), the bollard 1.15 m (from 1.05) |
+| In traffic (pattern 4), a background car met the car face to face at the second roundabout's entry, beside its splitter island | Weir Hall Avenue and that roundabout's arms kept quiet from the first roundabout until the car is past (`quietUntil` on the roundabout challenge) |
 
-The drives with traffic (patterns 4 and 14) and with Skip ahead are still to run.
+After these, a drive without traffic: every pause as depicted, a pass, nothing off the road or hit. The drives with traffic (patterns 4 and 14) and with Skip ahead are to run again.
 
 ## Still to do
 

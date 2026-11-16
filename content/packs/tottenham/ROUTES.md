@@ -77,14 +77,23 @@ lights) is driven without a challenge: it is under 300 m from challenge 2.
   of it.
 - **The Weir Hall Avenue roundabouts' arms have splitter islands with bollards on their noses**, leaving lanes about
   2.3 m wide beside them; the first drive touched three. The car's line is kept 0.5 to 1 m to the left past each.
+- **Leaving the first roundabout west**, the exit's inside kerb corner and a bollard 6 m on (in the middle of Weir
+  Hall Avenue) leave little room: the car cut the corner. Its line is kept 2 m in towards the island round the ring
+  before the exit and 0.9 m to the left past the bollard, so it passes the corner 1.55 m off (from 0.98) and the
+  bollard 1.15 m off (from 1.05).
 
 ## Drives
 
-One drive without traffic (as authored, before the shifts above): 16 of 16 pauses as depicted, each road user at its
-point, passed with no faults, no red light run, the closest scripted road user the oncoming car at challenge 1, 2.9 m.
-It touched the splitter bollards at the two roundabouts and cut two corners (the Oak Avenue turn; leaving the first
-roundabout west), and finished 11.4 m short of the line's end. The shifts above answer the bollards and the Oak Avenue
-corner; the drives with traffic, and a drive without traffic after the shifts, are still to run
+First drive without traffic (as authored): 16 of 16 pauses as depicted, a pass, but it touched the splitter bollards at
+both roundabouts and crossed two kerb corners. The main session's full run (after the first shifts) failed all four
+drives at the first roundabout's west exit (the corner, 9 samples), and pattern 4 had a background car face to face
+with the car at the second roundabout's entry on Weir Hall Avenue (both waiting). Fixed with the exit shifts above, and
+Weir Hall Avenue and the second roundabout's arms kept quiet from the first roundabout until the car is past
+(`quietUntil` on challenge 6).
+
+After the fixes, one drive without traffic: 16 of 16 pauses as depicted, passed with no faults, nothing off the road,
+nothing hit, no red light run, closest scripted road user 2.9 m (the oncoming car at challenge 1), finished 11.4 m
+short of the line's end. The drives with traffic and with Skip ahead are still to run
 (`ROUTES=tottenham-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`).
 
 ## Open items
