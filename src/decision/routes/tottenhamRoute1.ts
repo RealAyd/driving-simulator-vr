@@ -59,8 +59,13 @@ export const TOTTENHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // Selby Road, Oak Avenue, Weir Hall Road, White Hart Lane, the A10 north, Wilbury Way, Weir Hall Road, Weir Hall
   // Avenue, the A10 south, White Hart Lane, and back up Selby Road.
   through:pts([[200,538],[80,600],[-100,676],[-195,120],[-120,-205],[75,-30],[-10,166],[-130,176],[-170,330],[-176,590],[-120,672],[150,697],[332,520],[330.5,440]]),
-  // Pulled in to the kerb on Wilbury Way (no cars parked along it: room for the cyclist to pass).
-  shifts:[{from:p(-53.8,-196.4),to:p(-31.2,-185.8),left:.35}],
+  // Pulled in to the kerb on Wilbury Way (no cars parked along it: room for the cyclist to pass). Wide of the inside
+  // corner turning out of Oak Avenue into Weir Hall Road (square in the map). And clear of the bollards on the
+  // splitter islands' noses at the two Weir Hall Avenue roundabouts (lanes 2.3 m wide beside them), the car's line
+  // kept off the kerb where it leaves the first.
+  shifts:[{from:p(-53.8,-196.4),to:p(-31.2,-185.8),left:.35},{from:p(89.3,537.1),to:p(84.4,539.3),left:-1},
+    {from:p(72.8,140.2),to:p(72.3,150.2),left:1},{from:p(68.3,175.8),to:p(60.3,170.5),left:-.5},
+    {from:p(-57.5,166.6),to:p(-67.5,166.7),left:.7},{from:p(-91.5,173.8),to:p(-100.3,172.2),left:.6}],
   actors:[
     {id:'selby-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(SELBY_CAR)},
     {id:'whl-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(WHL_EAST_CAR)},

@@ -70,7 +70,7 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     // Behind the car down Somerby Hill, past it at the kerb, and left into Bridge End Grove.
     {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
     {id:'sandon-car',name:'silver car',colour:'#c3c7cf',speed:10,path:pts(SANDON_CAR)},
-    {id:'mini-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(MINI_CAR)},
+    {id:'mini-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(MINI_CAR.slice(102))},
     {id:'shelley-car',name:'black car',colour:'#1f2328',speed:10,path:pts(SHELLEY_CAR)},
     // Waiting at the Harrowby Road zebra on the left, then across in front of the car.
     {id:'zebra-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-1240.3,192.8],[-1249.5,193.8]])},
