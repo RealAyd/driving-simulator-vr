@@ -191,6 +191,8 @@ export class DecisionRunner{
   private released=false;
   private said=-1;
   private started=new Set<string>();
+  /** Seconds a road user's start has been blocked by background traffic standing on it. */
+  private readonly startBlocked=new Map<string,number>();
   private last:StageRecord|null=null;
   private only:number|null=null;
   private ending=false;
@@ -261,7 +263,7 @@ export class DecisionRunner{
   /** From the start (the whole test), or practising one challenge. The car must already be at `startPose`. */
   begin(only:number|null=null):void{
     this.only=only;this.challenge=only??0;this.stage=this.route.challenges[this.challenge]!.stages[0]!.id;
-    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.started.clear();this.actorStand.clear();this.records.length=0;this.last=null;this.ending=false;
+    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.started.clear();this.actorStand.clear();this.startBlocked.clear();this.records.length=0;this.last=null;this.ending=false;
     for(const a of this.route.actors){const x=this.scene.actor(a.id);if(x){x.setTiming(1e9);x.reset()}}
     this.assist.setPath(this.path);
     if(only)this.assist.placedAt(this.startS(only));
@@ -552,7 +554,14 @@ export class DecisionRunner{
         if([...this.started].some(k=>k.endsWith(`/${st.actor}`))){this.started.add(key);continue}
         // (Not on top of background traffic at the start of its way: it sets off once the spot is clear.)
         const from=this.route.actors.find(a=>a.id===st.actor)?.path[0];
-        if(from&&!this.route.actors.find(a=>a.id===st.actor)?.waits&&(this.scene.traffic?.()??[]).some(q=>Math.hypot(q.x-from.x,q.z-from.z)<ACTOR_START_CLEAR+Math.max(0,(q.halfLength??CAR_HALF)-CAR_HALF)))continue;
+        const onStart=from&&!this.route.actors.find(a=>a.id===st.actor)?.waits?(this.scene.traffic?.()??[]).filter(q=>Math.hypot(q.x-from.x,q.z-from.z)<ACTOR_START_CLEAR+Math.max(0,(q.halfLength??CAR_HALF)-CAR_HALF)):[];
+        if(onStart.length){
+          // (Traffic standing there a while, parked or queued, so it would never set off: that traffic turns off.)
+          const t=(this.startBlocked.get(key)??0)+1/60;this.startBlocked.set(key,t);
+          if(t<ACTOR_KNOT)continue;
+          for(const q of onStart)this.scene.retire?.(q.id);
+        }
+        this.startBlocked.delete(key);
         this.started.add(key);
         const x=this.scene.actor(st.actor);
         if(x){x.setTiming(st.delay);x.reset()}
