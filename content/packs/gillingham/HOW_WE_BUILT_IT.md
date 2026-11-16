@@ -43,8 +43,8 @@ What the map and the engine changed:
 
 ## 3. Build the scenes
 
-The scene `gillingham-route-1`: 2.4 km square, north-west of the centre (51.372446, 0.574838). The OpenStreetMap download: 16 tiles, merged,
-then four fixes (`osm-patches.json`, explained in `ROUTES.md`): the Beechings Way central reservation gap's east
+The scene `gillingham-route-1`: 2.4 km square, north-west of the centre (51.372446, 0.574838). The OpenStreetMap
+download: 16 tiles, merged, then four fixes (`osm-patches.json`, explained in `ROUTES.md`): the Beechings Way central reservation gap's east
 end moved 5 m west, Courteney Road (two ways) read as a main road, and the ring of the roundabout by Tesco read as
 four lanes wide.
 
@@ -58,7 +58,7 @@ node tools/scenes/build_scene.mjs gillingham-route-1 "Gillingham" 51.372446 0.57
 As Morden: the car's way planned through points on the scene's roads, a probe listing stop lines, crossings,
 mini-roundabouts, give way ends and the parked cars along it by metres, and each road user's path generated on the
 scene's roads. Where the planner turned a road user off before the point it had to reach (into the test centre's way
-out, into Featherby Road), its path is the road's centreline offset into the left lane instead. The pull-ups are where no car is parked
+out, into Featherby Road), its path is the road's centreline offset into the left lane instead. The pull-up is where no car is parked
 on either kerb for 30 m behind and 40 m ahead (Featherby Road between Chilham Road and Elmfield).
 
 ## 5. Drive it headless
@@ -74,6 +74,9 @@ without traffic, with 30 background road users in two patterns (4 and 14), and w
 | Off the carriageway, and touching a lamp post or the splitter island's bollard, at the roundabout by Tesco | The ring read as four lanes wide (step 3): the way on drives cleanly. The way off towards the centre does not, with any shift tried: the route ends just short of the roundabout (a shared engine change, in the build report) |
 | With traffic, a car queued at the Will Adams Roundabout kept the car short of its line while the black car went by | The black car set going once the car is at the line, its path cut to start near |
 | With traffic, a car waiting to come out of The Chase on to Featherby Road and the car each waited for the other | The ends of The Chase and Hanway kept clear while the emerge on to the A2 is in hand |
+| With traffic, the blue car of challenge 1, gone on round the roundabout by Tesco, met a car at the Tesco way in | Its path ended at the roundabout |
+| With traffic (pattern 14), a car turning into The Chase touched the car on Featherby Road | The emerge's direction given earlier (220 m before the end of the road), so the ends of The Chase and Hanway are kept clear from further back |
+| With traffic, the white van following the car to its pull-up was already past its point when the car stopped | Its point moved 4 m on (still behind the car, about to pass) |
 | With traffic, the car easing round a car parked on Courteney Road on the way back met a car coming the other way | Courteney Road read as a main road (step 3): no kerb parking |
 
 Results are in the build report.

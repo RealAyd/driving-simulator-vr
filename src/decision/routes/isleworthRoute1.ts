@@ -147,90 +147,17 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Worton Road at the Twickenham Road lights, right into Twickenham Road',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(635.1,-512),
-      starts:[{actor:'twickenham-pedestrian',at:p(635.1,-512),delay:0}],
+      // (Set going as the car comes to wait, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'vangogh-car',at:p(698.3,-526.4),delay:0}],
       lights:p(701.6,-527.2),lightsAll:true,
       endAt:p(720.9,-495.6),
-      // The junction, and the mouth of Twickenham Road, where the pedestrian crosses.
-      quiet:[{x:716,z:-527,radius:26},{x:721,z:-505,radius:22}],
+      // The junction, Van Gogh Close opposite, where the oncoming car comes from, and the mouth of Twickenham Road.
+      quiet:[{x:716,z:-527,radius:26},{x:750,z:-540,radius:22},{x:721,z:-505,radius:18}],
       place:{
-        approach:{pause:{kind:'moving',at:p(674.1,-520.1)},frame:{yaw:0,pitch:20},state:'Approaching the lights on green.'},
-        turn:{pause:{kind:'stop',at:p(723.1,-517.4)},when:{actor:'twickenham-pedestrian',at:p(722.6,-508.6)},panel:'right',frame:{yaw:0,pitch:32},
-          state:'Turning right into Twickenham Road. The lights are green.'},
-        clear:{pause:{kind:'stop',at:p(723.1,-517.4)},when:{actor:'twickenham-pedestrian',at:p(718.5,-508.5)},frame:{yaw:0,pitch:32},
-          state:'Waiting at the mouth of Twickenham Road.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-right','mirror-left','signal-right','signal-left','position-right','speed-up'],
-          neutral:['mirror-left'],
-          rules:[
-            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:MIRRORS_FIRST},
-            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
-              message:'Signal right in good time so the drivers behind and the people waiting to cross know you are turning.'}},
-            {kind:'required',id:'no-position',anyOf:['position-right'],fault:{level:'minor',heading:'Positioning - normal driving',title:'Not in the lane for the right turn',
-              message:'Move into the right-hand lane for the right turn: the other lane is for going ahead and turning left.'}},
-            {kind:'before',id:'signal-before-position',action:'position-right',needs:['signal-right'],fault:{level:'minor',heading:'Signals - timed',title:'Moved over before signalling',
-              message:'Mirrors, signal, then position: signal before you move over.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:WRONG_RIGHT},
-            {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'serious',heading:'Junctions - approach speed',title:'Sped up into a turn',
-              message:'Green means go if it is safe: turning, you need a speed you can stop from for anyone crossing the road you turn into.'}}
-          ],
-          accepted:[['mirror-interior','mirror-right','signal-right','position-right'],['mirror-right','mirror-interior','signal-right','position-right']],
-          next:{then:'turn'},
-          explain:'Interior and right mirrors, signal right, then into the right-hand lane.'
-        },
-        {
-          id:'turn',safe:'wait',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-interior','give-way','go','horn'],
-          neutral:['look-left','mirror-interior'],
-          rules:[
-            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
-              message:'Look into the road you are turning into first, so you know who you are waiting for.'}},
-            {kind:'unsafe',id:'pedestrian',action:'go',fault:{level:'dangerous',heading:'Pedestrians',title:'Turned into someone crossing',
-              message:'Someone was crossing the mouth of Twickenham Road, the road you were turning into: they have priority. Green lights do not change that. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:PED_HORN}
-          ],
-          accepted:[['look-right','give-way'],['mirror-interior','look-right','give-way']],
-          next:{wait:'clear',go:'clear'},
-          explain:'Give way: someone was crossing the road you were turning into, and they have priority.'
-        },
-        {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-right','give-way','go'],
-          neutral:['look-left','mirror-right'],
-          rules:[
-            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check before turning',
-              message:'Before you go, look again along the crossing place: is anyone else about to step out?'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Waited with the way clear',
-              message:'The pedestrian was past your side of Twickenham Road: this was the time to go.'}}
-          ],
-          accepted:[['look-right','go'],['look-left','look-right','go']],
-          next:{go:'done'},
-          explain:'Check the mouth of Twickenham Road again, then go: the pedestrian was past your side.'
-        }
-      ]
-    },
-    {
-      id:'mogden-lights',
-      turn:'right',
-      title:'Traffic lights, right turn',
-      where:'Twickenham Road at the Mogden Lane lights, right into Mogden Lane',
-      instruction:'At the traffic lights, turn right, please.',
-      instructAt:p(558.4,168.9),
-      // (Set going as the car comes to wait, so it is there whatever traffic held the car up on the way.)
-      starts:[{actor:'silver-car',at:p(573.1,253.6),delay:0}],
-      lights:p(572.1,250.1),lightsAll:true,
-      endAt:p(533.1,282.1),
-      // (And Briar Close, just along Mogden Lane, kept quiet until the car is past it.)
-      quietUntil:p(474.5,295),
-      // The junction, and Twickenham Road ahead, where the oncoming silver car comes from.
-      quiet:[{x:572,z:268,radius:26},{x:586,z:305,radius:30},{x:600,z:345,radius:30},{x:612,z:395,radius:25},{x:565,z:232,radius:20},{x:503,z:284,radius:14}],
-      place:{
-        approach:{pause:{kind:'moving',at:p(558.4,168.9)},frame:{yaw:0,pitch:20},state:'Approaching the Mogden Lane lights on green.'},
-        centre:{pause:{kind:'stop',at:p(575.8,265.2)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:32},
+        approach:{pause:{kind:'moving',at:p(674.1,-520.1)},frame:{yaw:0,pitch:20},state:'Approaching the Twickenham Road lights on green.'},
+        centre:{pause:{kind:'stop',at:p(705.2,-527.6)},when:{actor:'vangogh-car',at:p(750.5,-534.5)},frame:{yaw:0,pitch:32},
           state:'Waiting in the junction to turn right. The lights are green.'},
-        clear:{pause:{kind:'stop',at:p(575.8,265.2)},when:{actor:'silver-car',at:p(564.6,234.6)},frame:{yaw:30,pitch:32},
+        clear:{pause:{kind:'stop',at:p(705.2,-527.6)},when:{actor:'vangogh-car',at:p(690.8,-521.1)},frame:{yaw:30,pitch:32},
           state:'Still waiting in the junction.'}
       },
       stages:[
@@ -257,28 +184,101 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
           buttons:['look-right','look-left','mirror-right','give-way','go','flash-lights'],
           neutral:['look-right','look-left','mirror-right'],
           rules:[
-            {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming silver car',
-              message:'Green does not give you priority over oncoming traffic going ahead. The silver car coming up Twickenham Road was a few seconds away. The examiner had to stop the car.'}},
+            {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming car',
+              message:'Green does not give you priority over oncoming traffic going ahead. The grey car coming out of Van Gogh Close opposite, going ahead along Worton Road, was a few seconds away. The examiner had to stop the car.'}},
             {kind:'distractor',id:'flash',action:'flash-lights',fault:{level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
               message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'}}
           ],
           accepted:[['give-way'],['look-right','give-way'],['mirror-right','give-way']],
           next:{wait:'clear',go:'clear'},
-          explain:'Wait in the junction: the silver car coming up Twickenham Road was going ahead, and it has priority over you turning right.'
+          explain:'Wait in the junction: the grey car coming out of Van Gogh Close opposite was going ahead, and it has priority over you turning right.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
           buttons:['look-left','look-right','mirror-right','give-way','go'],
           neutral:['look-left','mirror-right'],
           rules:[
-            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into Mogden Lane',
-              message:'Before you turn, look into the road you are turning into (on your right): its crossing may have people on it.'}},
+            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into Twickenham Road',
+              message:'Before you turn, look into the road you are turning into (on your right): someone may be crossing it.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
               message:'Nothing more was coming the other way: this was the time to turn.'}}
           ],
           accepted:[['look-right','go'],['look-left','look-right','go']],
           next:{go:'done'},
-          explain:'Check Mogden Lane is clear to turn into, then go: nothing more was coming the other way.'
+          explain:'Check Twickenham Road is clear to turn into, then go: nothing more was coming the other way.'
+        }
+      ]
+    },
+    {
+      id:'mogden-crossing',
+      turn:'right',
+      title:'Pedestrian crossing at the lights, right turn',
+      where:'Twickenham Road at the Mogden Lane lights, right into Mogden Lane over its crossing',
+      instruction:'At the traffic lights, turn right, please.',
+      instructAt:p(558.4,168.9),
+      starts:[{actor:'mogden-pedestrian',at:p(558.4,168.9),delay:0}],
+      lights:p(572.1,250.1),lightsAll:true,
+      endAt:p(533.1,282.1),
+      // (And Briar Close, just along Mogden Lane, kept quiet until the car is past it.)
+      quietUntil:p(474.5,295),
+      // The junction, the crossing on Mogden Lane, and Briar Close just along it.
+      quiet:[{x:572,z:268,radius:26},{x:559,z:279,radius:16},{x:503,z:284,radius:14}],
+      place:{
+        approach:{pause:{kind:'moving',at:p(558.4,168.9)},frame:{yaw:0,pitch:20},state:'Approaching the Mogden Lane lights on green.'},
+        turn:{pause:{kind:'stop',at:p(567.6,277.1)},when:{actor:'mogden-pedestrian',at:p(559.35,279.8)},frame:{yaw:0,pitch:32},
+          state:'Turning right into Mogden Lane. The lights are green.'},
+        clear:{pause:{kind:'stop',at:p(567.6,277.1)},when:{actor:'mogden-pedestrian',at:p(558.4,275.6)},frame:{yaw:0,pitch:32},
+          state:'Waiting short of the crossing on Mogden Lane.'}
+      },
+      stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-right','mirror-left','signal-right','signal-left','position-right','speed-up'],
+          neutral:['mirror-left'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:MIRRORS_FIRST},
+            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
+              message:'Signal right in good time so the drivers behind and the people at the crossing know you are turning.'}},
+            {kind:'required',id:'no-position',anyOf:['position-right'],fault:{level:'minor',heading:'Positioning - normal driving',title:'Not positioned for the right turn',
+              message:'Move to the right-hand side of your lane to turn right: traffic behind can pass on your left.'}},
+            {kind:'before',id:'signal-before-position',action:'position-right',needs:['signal-right'],fault:{level:'minor',heading:'Signals - timed',title:'Moved over before signalling',
+              message:'Mirrors, signal, then position: signal before you move over.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:WRONG_RIGHT},
+            {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'serious',heading:'Junctions - approach speed',title:'Sped up into a turn',
+              message:'Green means go if it is safe: turning, you need a speed you can stop from for anyone still on the crossing in the road you turn into.'}}
+          ],
+          accepted:[['mirror-interior','mirror-right','signal-right','position-right'],['mirror-right','mirror-interior','signal-right','position-right']],
+          next:{then:'turn'},
+          explain:'Interior and right mirrors, signal right, then position to the right of your lane.'
+        },
+        {
+          id:'turn',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-interior','give-way','go','horn'],
+          neutral:['look-left','mirror-interior'],
+          rules:[
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking',
+              message:'Look into Mogden Lane, the way you are turning, first, so you know who you are waiting for.'}},
+            {kind:'unsafe',id:'pedestrian',action:'go',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Drove at someone still crossing',
+              message:'Someone was still on the crossing just round the corner in Mogden Lane, in your lane. Your green does not make them vanish: wait until they are clear. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'horn',action:'horn',fault:PED_HORN}
+          ],
+          accepted:[['look-right','give-way'],['mirror-interior','look-right','give-way']],
+          next:{wait:'clear',go:'clear'},
+          explain:'Give way: someone was still on the crossing just round the corner, in your lane.'
+        },
+        {
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-right','give-way','go'],
+          neutral:['look-left','mirror-right'],
+          rules:[
+            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check before turning',
+              message:'Before you go, look again along the crossing: is anyone else stepping out?'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Waited with the way clear',
+              message:'The pedestrian was on the island, past your lane: this was the time to go.'}}
+          ],
+          accepted:[['look-right','go'],['look-left','look-right','go']],
+          next:{go:'done'},
+          explain:'Check the crossing again, then go: the pedestrian was past your lane.'
         }
       ]
     },
@@ -528,71 +528,67 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       ]
     },
     {
-      id:'centre-right',
-      turn:'right',
-      title:'Right turn into the test centre',
-      where:'Worton Road, right into Fleming Way',
-      instruction:'Turn right into the test centre, please.',
-      instructAt:p(174.9,-464.6),
-      // (Set going once the car is past the Ruskin Road mini-roundabout, from close in, so traffic holding the car up
-      // there cannot leave it gone by.)
-      starts:[{actor:'worton-oncoming',at:p(174.9,-464.6),delay:0}],
-      endAt:p(243.8,-440.3),
-      // The way in, and Worton Road ahead, where the oncoming red car comes from.
-      quiet:[{x:238,z:-470,radius:20},{x:270,z:-482,radius:30}],
+      id:'heath-emerge',
+      turn:'left',
+      title:'Emerging, left turn',
+      where:'Heath Road, left on to Worton Road',
+      instruction:'At the end of the road, turn left, please.',
+      instructAt:p(-594,-277.1),
+      // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'heath-car',at:p(-539.1,-276),delay:0}],
+      endAt:p(-486.9,-304.6),
+      // The junction, Hall Road to the right, where the white car comes from, and County Gardens just along Worton Road.
+      quiet:[{x:-514,z:-274,radius:22},{x:-522,z:-235,radius:30},{x:-505,z:-285,radius:16}],
       place:{
-        approach:{pause:{kind:'moving',at:p(189.9,-465.2)},frame:{yaw:0,pitch:20},state:'On Worton Road at 20 mph, the test centre\'s way in ahead on the right.'},
-        centre:{pause:{kind:'stop',at:p(230.4,-471.4)},when:{actor:'worton-oncoming',at:p(257.3,-475.8)},frame:{yaw:0,pitch:32},
-          state:'Waiting to turn right into the test centre.'},
-        clear:{pause:{kind:'stop',at:p(230.4,-471.4)},when:{actor:'worton-oncoming',at:p(216.4,-465.6)},frame:{yaw:-30,pitch:32},
-          state:'Still waiting to turn right.'}
+        approach:{pause:{kind:'moving',at:p(-574,-276.8)},frame:{yaw:0,pitch:22},state:'Approaching the end of Heath Road at 20 mph.'},
+        line:{pause:{kind:'stop',at:p(-525.1,-275.7)},when:{actor:'heath-car',at:p(-522.1,-239.7)},frame:{yaw:-70,pitch:26},state:'At the end of Heath Road.'},
+        clear:{pause:{kind:'stop',at:p(-525.1,-275.7)},when:{actor:'heath-car',at:p(-492.8,-299.1)},frame:{yaw:-30,pitch:26},state:'Still at the end of Heath Road.'}
       },
       stages:[
         {
           id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-right','mirror-left','signal-right','signal-left','position-right'],
-          neutral:['mirror-left'],
+          buttons:['mirror-interior','mirror-left','mirror-right','signal-left','signal-right'],
+          neutral:['mirror-right'],
           rules:[
-            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:MIRRORS_FIRST},
-            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
-              message:'Signal right in good time so the drivers behind and coming the other way know you are turning.'}},
-            {kind:'required',id:'no-position',anyOf:['position-right'],fault:{level:'minor',heading:'Positioning - normal driving',title:'Not positioned for the right turn',
-              message:'Move to just left of the middle of the road to turn right: traffic behind can pass on your left.'}},
-            {kind:'before',id:'signal-before-position',action:'position-right',needs:['signal-right'],fault:{level:'minor',heading:'Signals - timed',title:'Moved over before signalling',
-              message:'Mirrors, signal, then position: signal before you move towards the middle of the road.'}},
-            {kind:'distractor',id:'signal-left',action:'signal-left',fault:WRONG_RIGHT}
+            {kind:'before',id:'mirrors-before-signal',action:'signal-left',needs:['mirror-interior','mirror-left'],fault:MIRRORS_FIRST},
+            {kind:'required',id:'no-signal',anyOf:['signal-left'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the left turn',
+              message:'Signal left on the approach, so the traffic on Worton Road knows where you are going.'}},
+            {kind:'distractor',id:'signal-right',action:'signal-right',fault:WRONG_LEFT}
           ],
-          accepted:[['mirror-interior','mirror-right','signal-right','position-right'],['mirror-right','mirror-interior','signal-right','position-right']],
-          next:{then:'centre'},
-          explain:'Interior and right mirrors, signal right, then position just left of the middle of the road.'
+          accepted:[['mirror-interior','mirror-left','signal-left'],['mirror-left','mirror-interior','signal-left']],
+          next:{then:'line'},
+          explain:'Interior and left mirrors, then signal left.'
         },
         {
-          id:'centre',safe:'wait',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-right','give-way','go','flash-lights'],
-          neutral:['look-right','look-left','mirror-right'],
+          id:'line',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','creep','give-way','go'],
+          neutral:['look-left'],
           rules:[
-            {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming red car',
-              message:'The red car coming along Worton Road from the Twickenham Road lights was going ahead, and it has priority over you turning right. It was a few seconds away. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'flash',action:'flash-lights',fault:{level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
-              message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'}}
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
+              message:'Look right first: the traffic in the lane you join comes from the right, up Hall Road.'}},
+            {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the white car',
+              message:'The white car coming up Hall Road from the right was close, in the lane you were joining. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'creep',action:'creep',fault:{level:'serious',heading:'Junctions - observation',title:'Crept out into the white car\'s way',
+              message:'The view right was already clear: creeping forward only puts the front of the car into the white car\'s way.'}}
           ],
-          accepted:[['give-way'],['look-right','give-way'],['mirror-right','give-way']],
+          accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
           next:{wait:'clear',go:'clear'},
-          explain:'Wait: the red car coming the other way was going ahead, and it has priority over you turning right.'
+          explain:'Give way: the white car coming up Hall Road from the right was close.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-left','look-right','mirror-right','give-way','go'],
-          neutral:['look-left','mirror-right'],
+          buttons:['look-right','look-left','give-way','go'],
           rules:[
-            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into the way in',
-              message:'Before you turn, look into Fleming Way (on your right) for anyone walking across it or a car coming out.'}},
+            {kind:'required',id:'fresh-look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
+              message:'Your last look right was before the white car went by. Look right again just before you go.'}},
+            {kind:'required',id:'look-left',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No look left',
+              message:'Look left too before you go: something may be coming out of County Gardens or overtaking towards you.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
-              message:'Nothing more was coming the other way: this was the time to turn.'}}
+              message:'The white car had gone by and Worton Road was clear: this was the time to go.'}}
           ],
-          accepted:[['look-right','go'],['look-left','look-right','go']],
+          accepted:[['look-right','look-left','go'],['look-left','look-right','go'],['look-right','look-left','look-right','go']],
           next:{go:'done'},
-          explain:'Check the way in is clear, then turn: nothing more was coming the other way.'
+          explain:'Look right and left again, then go: the white car had gone by and Worton Road was clear.'
         }
       ]
     }

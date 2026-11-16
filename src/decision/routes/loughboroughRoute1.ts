@@ -62,16 +62,16 @@ export const LOUGHBOROUGH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
   // And kept off the kerb's corner turning right out of Woodgate on to Leicester Road, on the way back.
   shifts:[{from:p(107.3,863.4),to:p(108.9,883.4),left:.35},{from:p(209.2,-74.8),to:p(213.8,-80.8),left:.6}],
   actors:[
-    {id:'boulevard-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(BOULEVARD_CAR)},
-    {id:'lights-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(LIGHTS_CAR)},
+    {id:'boulevard-car',name:'white car',colour:'#e5e7eb',speed:8,path:pts(BOULEVARD_CAR)},
+    {id:'lights-car',name:'blue car',colour:'#2563eb',speed:8,path:pts(LIGHTS_CAR)},
     // Crossing Station Boulevard at the lights, right to left in front of the car, still crossing as they turn green.
     {id:'station-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[752.3,-885.6],[758.1,-893.6]])},
-    {id:'beacon-car',name:'red car',colour:'#b91c1c',speed:9,path:pts(BEACON_CAR)},
+    {id:'beacon-car',name:'red car',colour:'#b91c1c',speed:8,path:pts(BEACON_CAR)},
     // Behind the car along Park Road, past it at the kerb, and right into Herrick Road.
     {id:'park-cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(PARK_CYCLIST)},
-    {id:'park-rbt-car',name:'silver car',colour:'#c3c7cf',speed:9,path:pts(PARK_RBT_CAR)},
+    {id:'park-rbt-car',name:'silver car',colour:'#c3c7cf',speed:8,path:pts(PARK_RBT_CAR)},
     {id:'beacon-cyclist',name:'cyclist',colour:'#ca8a04',speed:6,kind:'cyclist',path:pts(BEACON_CYCLIST)},
-    {id:'forest-car',name:'black car',colour:'#1f2328',speed:9,path:pts(FOREST_CAR)}
+    {id:'forest-car',name:'black car',colour:'#1f2328',speed:8,path:pts(FOREST_CAR)}
   ],
   challenges:[
     {

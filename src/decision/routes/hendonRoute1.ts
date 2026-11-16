@@ -3,14 +3,14 @@ import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
 import {withTurnButtons} from '../turnButtons';
 import {withBeforeAfter,type BeforeMerge} from '../beforeAfter';
-import {AERO_CAR,BURROUGHS_VAN,CYCLIST,GPW_CAR} from './hendonRoute1Paths';
+import {AERO_CAR,BURROUGHS_VAN,CYCLIST,GPW_CAR,GPW_ONCOMING} from './hendonRoute1Paths';
 
 /**
  * Hendon route 1, Greyhound Hill, The Burroughs and Watford Way: eight challenges from the test centre at 3 Aviation
  * Drive, Beaufort Park, down Caversham Road and left on to Aerodrome Road, ahead at the Watford Way lights into
- * Greyhound Hill, over its zebra crossing, Church End, right on to The Burroughs, pulling up and moving off, Watford
- * Way back north, left at the lights into Aerodrome Road, right at the Grahame Park Way roundabout, and home by
- * Heritage Avenue and Boulevard Drive. Chosen from the map and the published evidence
+ * Greyhound Hill, Church End, right on to The Burroughs, pulling up and moving off, Watford Way back north, left at
+ * the lights into Aerodrome Road over its pedestrian crossing, right at the Grahame Park Way roundabout, right into
+ * Heritage Avenue, and home by Boulevard Drive. Chosen from the map and the published evidence
  * (content/packs/hendon-london/ROUTES.md). Scene hendon-london-route-1 (OpenStreetMap). A practice route, not a
  * confirmed test route.
  */
@@ -36,8 +36,6 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'At the end of Caversham Road.'}},
   'aerodrome-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-188.3,-132.3)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the Watford Way lights. They are red.'}},
-  'greyhound-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(-9.8,-29.9)},when:{actor:'zebra-pedestrian',at:p(20.3,-17.2)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
-    state:'On Greyhound Hill, the zebra crossing just ahead.'}},
   // (At the line: the buildings on the corner hide Church Road to the left until there.)
   'church-end-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(404.9,223.2)},frame:{yaw:60,pitch:40,shift:4},
     state:'At the end of Church End.'}},
@@ -45,7 +43,9 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'Approaching the Aerodrome Road lights on green, in the left lane.'}},
   // (At the line, as the Beverley roundabout at Morden: the car coming round is in view only from there.)
   'gpw-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-1014.9,-466.2)},when:{actor:'gpw-car',at:p(-1003,-492.5)},frame:{yaw:-60,pitch:40,shift:-4},
-    state:'At the give way line of the Grahame Park Way roundabout.'}}
+    state:'At the give way line of the Grahame Park Way roundabout.'}},
+  'heritage-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(-762.3,-537.7)},when:{actor:'gpw-oncoming',at:p(-707.9,-544)},frame:{yaw:0,pitch:40,shift:-4},
+    state:'On Grahame Park Way, Heritage Avenue just ahead on the right.'}}
 };
 
 export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
@@ -63,14 +63,13 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   shifts:[{from:p(211.9,467.1),to:p(194.2,491.4),left:.35},{from:p(-718.6,-474.3),to:p(-720,-462.9),left:.4}],
   actors:[
     {id:'aero-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(AERO_CAR)},
-    // Waiting at the Greyhound Hill zebra on the left, then across in front of the car.
-    {id:'zebra-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[21.2,-19.2],[17.4,-10.6]])},
     {id:'burroughs-van',name:'white van',colour:'#f5f5f4',speed:10,path:pts(BURROUGHS_VAN)},
     // Behind the car along The Burroughs, past it at the kerb, and right into Burroughs Gardens.
     {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',yields:true,path:pts(CYCLIST)},
     // Crossing the mouth of Aerodrome Road, from the far side, as the car comes to turn in.
     {id:'aerodrome-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-157.1,-123.1],[-160.3,-114.3]])},
-    {id:'gpw-car',name:'black car',colour:'#1f2328',speed:9,path:pts(GPW_CAR)}
+    {id:'gpw-car',name:'black car',colour:'#1f2328',speed:9,path:pts(GPW_CAR)},
+    {id:'gpw-oncoming',name:'silver car',colour:'#c3c7cf',speed:9,path:pts(GPW_ONCOMING)}
   ],
   challenges:[
     {
@@ -199,69 +198,6 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
           accepted:[['look-right','look-left','go'],['look-left','look-right','go']],
           next:{go:'done'},
           explain:'Look along both carriageways of Watford Way, then go: the lights were green and the way was clear.'
-        }
-      ]
-    },
-    {
-      id:'greyhound-zebra',
-      title:'Zebra crossing',
-      where:'Greyhound Hill, the zebra crossing by Sunny Hill',
-      instruction:'Follow the road ahead, please.',
-      instructAt:p(-59.8,-52.8),
-      starts:[{actor:'zebra-pedestrian',at:p(-30.8,-39.3),delay:0}],
-      endAt:p(58.4,1.2),
-      quiet:[{x:19,z:-15,radius:24}],
-      place:{
-        approach:{pause:{kind:'moving',at:p(-9.8,-29.9)},frame:{yaw:0,pitch:22},state:'On Greyhound Hill at 25 mph, the zebra crossing ahead.'},
-        zebra:{pause:{kind:'stop',at:p(11.1,-20.3)},when:{actor:'zebra-pedestrian',at:p(19.3,-14.9)},frame:{yaw:0,pitch:30},
-          state:'Stopped at the zebra crossing.'},
-        clear:{pause:{kind:'stop',at:p(11.1,-20.3)},when:{actor:'zebra-pedestrian',at:p(17.6,-11.1)},frame:{yaw:0,pitch:30},
-          state:'Still at the zebra crossing.'}
-      },
-      stages:[
-        {
-          id:'approach',safe:'approach',
-          buttons:['mirror-interior','mirror-left','mirror-right','slow-down','speed-up','horn'],
-          neutral:['mirror-left','mirror-right'],
-          rules:[
-            {kind:'before',id:'mirror-before-slowing',action:'slow-down',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
-              message:'Check the interior mirror before you slow down: you need to know how close the traffic behind is.'}},
-            {kind:'required',id:'no-slowing',anyOf:['slow-down','give-way'],fault:{level:'serious',heading:'Pedestrian crossings',title:'Did not slow for the crossing',
-              message:'Someone was stepping on to the zebra crossing. Slow down in good time to stop for them.'}},
-            {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Sped up at a zebra crossing',
-              message:'The pedestrian was stepping on to the zebra. Speeding up to get over first puts them at risk.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:PED_HORN}
-          ],
-          accepted:[['mirror-interior','slow-down'],['mirror-interior','mirror-left','slow-down']],
-          next:{then:'zebra'},
-          explain:'Interior mirror, then slow down: the pedestrian was stepping on to the zebra crossing.'
-        },
-        {
-          id:'zebra',safe:'wait',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','give-way','go','horn'],
-          neutral:['look-right','look-left'],
-          rules:[
-            {kind:'unsafe',id:'zebra',action:'go',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Drove on to the zebra with someone crossing',
-              message:'The pedestrian was on the zebra crossing in front of you. Give way to anyone on a zebra. The examiner had to stop the car.'}},
-            {kind:'distractor',id:'horn',action:'horn',fault:PED_HORN}
-          ],
-          accepted:[['give-way'],['look-left','give-way'],['look-right','give-way']],
-          next:{wait:'clear',go:'clear'},
-          explain:'Wait: the pedestrian was on the zebra crossing in front of you.'
-        },
-        {
-          id:'clear',safe:'go',go:'go',wait:'give-way',
-          buttons:['look-right','look-left','mirror-interior','give-way','go'],
-          neutral:['mirror-interior'],
-          rules:[
-            {kind:'required',id:'check-crossing',anyOf:['look-right','look-left'],when:'go',fault:{level:'minor',heading:'Pedestrian crossings',title:'No check before going',
-              message:'Before you drive over the crossing, look both ways along it for anyone else about to step on.'}},
-            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Waited at a clear crossing',
-              message:'The pedestrian was across and no one else was waiting: this was the time to go.'}}
-          ],
-          accepted:[['look-right','look-left','go'],['look-left','look-right','go']],
-          next:{go:'done'},
-          explain:'Look both ways along the crossing, then go: the pedestrian was across.'
         }
       ]
     },
@@ -439,8 +375,8 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     {
       id:'aerodrome-left',
       turn:'left',
-      title:'Traffic lights, left turn',
-      where:'Watford Way at the Aerodrome Road lights, left into Aerodrome Road',
+      title:'Traffic lights and pedestrian crossing, left turn',
+      where:'Watford Way at the Aerodrome Road lights, left into Aerodrome Road over its pedestrian crossing',
       instruction:'At the traffic lights, turn left, please.',
       instructAt:p(-185.2,62.3),
       starts:[{actor:'aerodrome-pedestrian',at:p(-161.5,-45),delay:0}],
@@ -566,6 +502,74 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
           accepted:[['look-right','go'],['look-left','look-right','go']],
           next:{go:'done'},
           explain:'Look right again, then go: the black car had gone off into Colindale Avenue.'
+        }
+      ]
+    },
+    {
+      id:'heritage-right',
+      turn:'right',
+      title:'Right turn',
+      where:'Grahame Park Way, right into Heritage Avenue',
+      instruction:'Take the next road on the right, please.',
+      instructAt:p(-840.3,-536.6),
+      // (Set going late, so it comes down Grahame Park Way as the car comes to wait, not before.)
+      starts:[{actor:'gpw-oncoming',at:p(-780.3,-536.6),delay:1}],
+      endAt:p(-718.9,-469.1),
+      // The junction, Grahame Park Way ahead, where the oncoming silver car comes from, and the mouth of Heritage Avenue.
+      quiet:[{x:-722,z:-540,radius:20},{x:-690,z:-553,radius:26},{x:-718,z:-522,radius:14}],
+      place:{
+        approach:{pause:{kind:'moving',at:p(-800,-536.4)},frame:{yaw:0,pitch:20},state:'On Grahame Park Way at 30 mph, Heritage Avenue ahead on the right.'},
+        centre:{pause:{kind:'moving',at:p(-762.3,-537.7)},when:{actor:'gpw-oncoming',at:p(-707.9,-544)},frame:{yaw:0,pitch:32},
+          state:'Coming to turn right into Heritage Avenue.'},
+        clear:{pause:{kind:'stop',at:p(-736.5,-540.6)},when:{actor:'gpw-oncoming',at:p(-766.3,-534.4)},frame:{yaw:-30,pitch:32},
+          state:'Waiting to turn right.'}
+      },
+      stages:[
+        {
+          id:'approach',safe:'approach',
+          buttons:['mirror-interior','mirror-right','mirror-left','signal-right','signal-left','position-right'],
+          neutral:['mirror-left'],
+          rules:[
+            {kind:'before',id:'mirrors-before-signal',action:'signal-right',needs:['mirror-interior','mirror-right'],fault:MIRRORS_FIRST},
+            {kind:'required',id:'no-signal',anyOf:['signal-right'],fault:{level:'minor',heading:'Signals - necessary',title:'No signal for the right turn',
+              message:'Signal right in good time so the drivers behind and coming the other way know you are turning.'}},
+            {kind:'required',id:'no-position',anyOf:['position-right'],fault:{level:'minor',heading:'Positioning - normal driving',title:'Not positioned for the right turn',
+              message:'Move to just left of the middle of the road to turn right: traffic behind can pass on your left.'}},
+            {kind:'before',id:'signal-before-position',action:'position-right',needs:['signal-right'],fault:{level:'minor',heading:'Signals - timed',title:'Moved over before signalling',
+              message:'Mirrors, signal, then position: signal before you move towards the middle of the road.'}},
+            {kind:'distractor',id:'signal-left',action:'signal-left',fault:WRONG_RIGHT}
+          ],
+          accepted:[['mirror-interior','mirror-right','signal-right','position-right'],['mirror-right','mirror-interior','signal-right','position-right']],
+          next:{then:'centre'},
+          explain:'Interior and right mirrors, signal right, then position just left of the middle of the road.'
+        },
+        {
+          id:'centre',safe:'wait',go:'go',wait:'give-way',
+          buttons:['look-right','look-left','mirror-right','give-way','go','flash-lights'],
+          neutral:['look-right','look-left','mirror-right'],
+          rules:[
+            {kind:'unsafe',id:'turned-across',action:'go',fault:{level:'dangerous',heading:'Judgement - crossing',title:'Turned across the oncoming silver car',
+              message:'The silver car coming down Grahame Park Way was going on past Heritage Avenue, and it has priority over you turning right. It was a few seconds away. The examiner had to stop the car.'}},
+            {kind:'distractor',id:'flash',action:'flash-lights',fault:{level:'minor',heading:'Response to signals - other road users',title:'Flashing headlights',
+              message:'Flashing your headlights means only "I am here". Others may read it as an invitation, and nobody should act on it.'}}
+          ],
+          accepted:[['give-way'],['look-right','give-way'],['mirror-right','give-way']],
+          next:{wait:'clear',go:'clear'},
+          explain:'Wait: the silver car coming the other way was going on past Heritage Avenue, and it has priority over you turning right.'
+        },
+        {
+          id:'clear',safe:'go',go:'go',wait:'give-way',
+          buttons:['look-left','look-right','mirror-right','give-way','go'],
+          neutral:['look-left','mirror-right'],
+          rules:[
+            {kind:'required',id:'check-turn',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No check into Heritage Avenue',
+              message:'Before you turn, look into Heritage Avenue (on your right) for anyone crossing its mouth or a car coming out.'}},
+            {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
+              message:'Nothing more was coming the other way: this was the time to turn.'}}
+          ],
+          accepted:[['look-right','go'],['look-left','look-right','go']],
+          next:{go:'done'},
+          explain:'Check Heritage Avenue is clear, then turn: nothing more was coming the other way.'
         }
       ]
     }
