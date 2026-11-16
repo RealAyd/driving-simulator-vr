@@ -508,13 +508,15 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       title:'Roundabout, right (third exit)',
       where:'Aerodrome Road at the Grahame Park Way roundabout, third exit on to Grahame Park Way',
       instruction:'At the roundabout, take the third exit, that\'s to the right.',
-      instructAt:p(-899.4,-417.1),
+      // (Said close in, as Beverley at Morden: the roundabout is kept clear of traffic from 150 m before this point, and
+      // traffic queuing to enter it ahead of the car would hold the car back.)
+      instructAt:p(-974.2,-445.1),
       starts:[{actor:'gpw-car',at:p(-974.2,-445.1),delay:0}],
       endAt:p(-1008.6,-527.3),
       // The roundabout, and Grahame Park Way's way in, where the black car comes from.
-      quiet:[{x:-1022,z:-498,radius:34},{x:-960,z:-515,radius:38}],
+      quiet:[{x:-1022,z:-498,radius:30},{x:-965,z:-515,radius:34}],
       place:{
-        approach:{pause:{kind:'moving',at:p(-983.1,-449.7)},frame:{yaw:0,pitch:22},state:'Approaching the roundabout at 20 mph.'},
+        approach:{pause:{kind:'moving',at:p(-1001.2,-458)},frame:{yaw:0,pitch:22},state:'Approaching the roundabout at 20 mph.'},
         line:{pause:{kind:'stop',at:p(-1014.9,-466.2)},when:{actor:'gpw-car',at:p(-1003,-492.5)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},
         clear:{pause:{kind:'stop',at:p(-1014.9,-466.2)},when:{actor:'gpw-car',at:p(-1075.6,-475.6)},frame:{yaw:-20,pitch:28},state:'Still at the give way line.'}
       },

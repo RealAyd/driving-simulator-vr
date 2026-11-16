@@ -150,11 +150,11 @@ export const HENDON_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       title:'Roundabout, left (first exit)',
       where:'Aerodrome Road at the Grahame Park Way roundabout, first exit into Colindale Avenue',
       instruction:'At the roundabout, take the first exit, that\'s to the left.',
-      instructAt:p(201.4,333.3),
-      starts:[{actor:'ring-car',at:p(154.1,317.1),delay:0}],
+      instructAt:p(152.2,316.5),
+      starts:[{actor:'ring-car',at:p(152.2,316.5),delay:0}],
       endAt:p(28.5,271.8),
       // The roundabout, and Grahame Park Way's way in, where the silver car comes from.
-      quiet:[{x:78,z:252,radius:34},{x:140,z:228,radius:38}],
+      quiet:[{x:78,z:252,radius:30},{x:140,z:228,radius:38}],
       place:{
         approach:{pause:{kind:'moving',at:p(117.8,300.6)},frame:{yaw:0,pitch:22},state:'Approaching the roundabout at 20 mph.'},
         line:{pause:{kind:'stop',at:p(85.2,283.4)},when:{actor:'ring-car',at:p(94.2,265.1)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},
@@ -213,13 +213,13 @@ export const HENDON_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       title:'Pulling up on the left',
       where:'Booth Road, past Colindale Avenue',
       instruction:'Pull up on the left at a convenient place, please.',
-      instructAt:p(-58.3,216.6),
-      starts:[{actor:'booth-car',at:p(-58.3,216.6),delay:0}],
+      instructAt:p(-77.6,191.1),
+      starts:[{actor:'booth-car',at:p(-77.6,191.1),delay:0}],
       endAt:p(-106.8,153),
       selfCancel:false,
       quiet:[{x:-107,z:153,radius:34}],
       place:{
-        approach:{pause:{kind:'moving',at:p(-82.4,184.7)},frame:{yaw:-15,pitch:28},state:'On Booth Road at 25 mph.'},
+        approach:{pause:{kind:'moving',at:p(-93.3,170.4)},frame:{yaw:-15,pitch:28},state:'On Booth Road at 25 mph.'},
         stopped:{pause:{kind:'stop',at:p(-106.8,153)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
       },
       stages:[
@@ -271,7 +271,7 @@ export const HENDON_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       instruction:'Move off when you\'re ready, please.',
       instructAt:p(-106.8,153),
       // (Along Booth Road behind the car as it comes to pull up.)
-      starts:[{actor:'booth-car',at:p(-58.3,216.6),delay:0}],
+      starts:[{actor:'booth-car',at:p(-77.6,191.1),delay:0}],
       endAt:p(-164.7,103.3),
       quiet:[{x:-107,z:153,radius:50}],
       place:{

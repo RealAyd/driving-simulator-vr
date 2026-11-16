@@ -25,7 +25,8 @@ const {roundaboutRings}=await vite.ssrLoadModule('/src/world/roundabouts.ts');
 
 const SPACING=300,KNOWN_NEAR=60,FEATURE_NEAR=35,SNAP=250;
 const MIX=['lights','roundabout','mini-roundabout','emerging-left','emerging-right','right-turn','crossing','pull-up','move-off'];
-const norm=s=>s.toLowerCase().replace(/\(.*?\)/g,'').replace(/[’']/g,'').replace(/\b(the|road|rd|avenue|ave|street|st|lane|ln|drive|dr|close|way|hill|gardens|crescent)\b/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+// (Road numbers dropped, A52 Somerby Hill is the map's Somerby Hill; and spellings that vary, Dyke and Dike.)
+const norm=s=>s.toLowerCase().replace(/\(.*?\)/g,'').replace(/\b[abm]\d+[a-z]?\b/g,'').replace(/\bdyke\b/g,'dike').replace(/[’']/g,'').replace(/\b(the|road|rd|avenue|ave|street|st|lane|ln|drive|dr|close|way|hill|gardens|crescent)\b/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 
 /** Distance along a path of the point closest to p, and how far off it is. */

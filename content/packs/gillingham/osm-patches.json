@@ -13,5 +13,13 @@
   "k": "highway",
   "v": "tertiary",
   "why": "Courteney Road between the roundabout by Tesco and the Bowaters roundabout: the busy link (and bus route) every test drives out and back on, mapped unclassified, so the engine parked cars along one kerb as on a residential street, and the car easing round one on the way back met traffic coming the other way. Read as a main road (a centre line, no kerb parking). To confirm on the ground."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 4824279,
+  "k": "highway",
+  "v": "tertiary",
+  "why": "Courteney Road from the test centre to the roundabout by Tesco: the business park's through road, built to take lorries, mapped unclassified, so the engine built it 6 m wide, and the way on to the roundabout between its splitter island and the kerb was narrower than a car turning on to it. Read as a main road (6.4 m, a centre line, no kerb parking). To confirm on the ground."
  }
 ]

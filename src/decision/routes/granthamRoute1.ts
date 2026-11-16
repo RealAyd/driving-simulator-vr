@@ -303,8 +303,14 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instructAt:p(-1323.8,-1072.8),
       starts:[{actor:'white-car',at:p(-1226.4,-1095.1),delay:0}],
       endAt:p(-1462.9,-982.3),
-      // The mini-roundabout, New Beacon Road (the white car's way in) and Harrowby Lane to the west.
-      quiet:[{x:-1516,z:-1039,radius:24},{x:-1565,z:-980,radius:40},{x:-1585,z:-1045,radius:30}],
+      // (Uplands Drive and Tennyson Avenue have cars parked both sides, with no room to meet traffic: kept clear until
+      // Keats Avenue.)
+      quietUntil:p(-944.3,-938.8),
+      // The mini-roundabout, New Beacon Road (the white car's way in) and Harrowby Lane to the west; Uplands Drive and
+      // Tennyson Avenue.
+      quiet:[{x:-1516,z:-1039,radius:24},{x:-1565,z:-980,radius:40},{x:-1585,z:-1045,radius:30},
+        {x:-1450,z:-950,radius:45},{x:-1405,z:-835,radius:50},{x:-1320,z:-795,radius:40},{x:-1250,z:-835,radius:40},
+        {x:-1160,z:-836,radius:45},{x:-1070,z:-842,radius:45},{x:-985,z:-882,radius:45}],
       place:{
         approach:{pause:{kind:'moving',at:p(-1470,-1046)},frame:{yaw:0,pitch:22},state:'Approaching the mini-roundabout at 25 mph.'},
         line:{pause:{kind:'stop',at:p(-1504.7,-1043.5)},when:{actor:'white-car',at:p(-1530.7,-1027.8)},frame:{yaw:-40,pitch:28},state:'At the give way line.'},

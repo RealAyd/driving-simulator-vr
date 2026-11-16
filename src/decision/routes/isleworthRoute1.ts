@@ -31,13 +31,15 @@ const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a ped
 const BEFORE:Record<string,BeforeMerge>={
   'twickenham-lights':{first:'approach',second:'turn',place:{pause:{kind:'moving',at:p(683.8,-522.6)},when:{actor:'twickenham-pedestrian',at:p(722.6,-508.6)},frame:{yaw:-10,pitch:44,shift:4},
     state:'Approaching the Twickenham Road lights on green.'}},
-  'mogden-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(568.9,236)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:44,shift:-4},
-    state:'Approaching the Mogden Lane lights on green.'}},
+  // (In the junction: the queue at these lights, not the map, sets when the car gets there.)
+  'mogden-lights':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(575.8,265.2)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:40,shift:-4},
+    state:'Waiting in the junction to turn right into Mogden Lane. The lights are green.'}},
   // (At the line: the roundabout's island hides the car coming round until there.)
   'mogden-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(9.8,401)},when:{actor:'ring-car',at:p(-15.1,395.8)},frame:{yaw:-60,pitch:40,shift:-4},
     state:'At the give way line of the Mogden Lane roundabout.'}},
-  'hall-road-mini':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-703.9,522.9)},when:{actor:'hall-car',at:p(-732.7,505.9)},frame:{yaw:-40,pitch:30},
-    state:'Approaching the mini-roundabout.'}},
+  // (At the line: the corner hides Hall Road until there.)
+  'hall-road-mini':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-719.6,526)},when:{actor:'hall-car',at:p(-732.7,505.9)},frame:{yaw:-60,pitch:40,shift:-4},
+    state:'At the give way line of the mini-roundabout.'}},
   'centre-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(204.7,-467.1)},when:{actor:'worton-oncoming',at:p(301.5,-494.4)},frame:{yaw:0,pitch:40,shift:-4},
     state:'On Worton Road, the test centre\'s way in just ahead on the right.'}}
 };
@@ -217,11 +219,13 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(558.4,168.9),
       // (Set going late, from close in, so traffic holding the car up on Twickenham Road cannot leave it gone by.)
-      starts:[{actor:'silver-car',at:p(564.2,213.5),delay:0}],
+      starts:[{actor:'silver-car',at:p(561.6,198.7),delay:0}],
       lights:p(572.1,250.1),lightsAll:true,
       endAt:p(533.1,282.1),
+      // (And Briar Close, just along Mogden Lane, kept quiet until the car is past it.)
+      quietUntil:p(474.5,295),
       // The junction, and Twickenham Road ahead, where the oncoming silver car comes from.
-      quiet:[{x:572,z:268,radius:26},{x:586,z:305,radius:30},{x:565,z:232,radius:20}],
+      quiet:[{x:572,z:268,radius:26},{x:586,z:305,radius:30},{x:600,z:345,radius:30},{x:612,z:395,radius:25},{x:565,z:232,radius:20},{x:503,z:284,radius:14}],
       place:{
         approach:{pause:{kind:'moving',at:p(558.4,168.9)},frame:{yaw:0,pitch:20},state:'Approaching the Mogden Lane lights on green.'},
         centre:{pause:{kind:'stop',at:p(575.8,265.2)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:32},
@@ -459,8 +463,8 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Whitton Dene at the Hall Road mini-roundabout, right into Hall Road',
       instruction:'At the mini-roundabout, turn right, please.',
       instructAt:p(-672.9,515),
-      // (Set going earlier, so it is on its way down Hall Road as the car comes up to the mini-roundabout.)
-      starts:[{actor:'hall-car',at:p(-593.9,502.6),delay:0}],
+      // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'hall-car',at:p(-709.7,524.4),delay:0}],
       endAt:p(-735.9,507.7),
       // The mini-roundabout, and Hall Road to the right, where the green car comes from.
       quiet:[{x:-732,z:525,radius:22},{x:-731,z:495,radius:26},{x:-765,z:537,radius:20}],

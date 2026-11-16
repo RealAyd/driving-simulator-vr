@@ -57,8 +57,8 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // Bowaters roundabout, Courteney Road and back into the way out.
   through:pts([[332,757],[382,566],[45,310],[-392,-40],[70,-838],[49,-715],[-100,-221],[-106,52],[332,757],[365,824]]),
   // Pulled in to the kerb on Featherby Road, past Chilham Road (no cars parked for 30 m behind and 70 m ahead).
-  // And kept out from the inside of the tight corners at the Tesco roundabout, on to it and off it (its lamp posts).
-  shifts:[{from:p(-89.5,-295.2),to:p(-91.8,-268.4),left:.35},{from:p(354.9,643.4),to:p(361.2,633.8),left:-.4},{from:p(367.9,647.6),to:p(359.3,644.1),left:-1}],
+  // And kept between the splitter island's bollard and the kerbs on to and off the Tesco roundabout.
+  shifts:[{from:p(-89.5,-295.2),to:p(-91.8,-268.4),left:.35},{from:p(354.9,643.4),to:p(358.7,640),left:.15},{from:p(367.9,647.6),to:p(359.3,644.1),left:-.3}],
   actors:[
     {id:'courteney-van',name:'white van',colour:'#f5f5f4',speed:9,path:pts(COURTENEY_VAN)},
     {id:'courteney-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(COURTENEY_CAR)},
@@ -85,9 +85,9 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       place:{
         line:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-van',at:p(332.2,798)},frame:{yaw:-70,pitch:32},
           state:'At the end of the way out, at the edge of Courteney Road.'},
-        left:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(329.2,845)},frame:{yaw:60,pitch:32},
+        left:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(327.3,844.9)},frame:{yaw:60,pitch:32},
           state:'Still at the edge of Courteney Road.'},
-        clear:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(330.1,790.1)},frame:{yaw:-30,pitch:32},
+        clear:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(329.5,790.1)},frame:{yaw:-30,pitch:32},
           state:'Still at the edge of Courteney Road.'}
       },
       stages:[
