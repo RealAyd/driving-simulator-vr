@@ -1,6 +1,6 @@
-# Building a centre's two decision routes (batch 2 on)
+# Building a centre's decision route (batch 2 on)
 
-One helper per centre. As the pilots (Salisbury, Sheffield (Middlewood Road), Morden) were built, with the tools that
+One helper per centre, **one route per centre** (the owner's decision), carrying the whole mix (ROUTE_TEMPLATE_RULES section 4). As the pilots (Salisbury, Sheffield (Middlewood Road), Morden) were built, with the tools that
 came out of them. Read first, in this order:
 
 1. `content/packs/ROUTE_TEMPLATE_RULES.md` (the rules) and `EVIDENCE_PLAN.md` section 7 (**judgement comes first**:
@@ -14,7 +14,7 @@ came out of them. Read first, in this order:
 ## What to make (your files only)
 
 - `content/packs/<slug>/osm-patches.json` (if the map needs fixes), the scenes `public/scenes/<slug>-route-N.json.gz`,
-  the routes `src/decision/routes/<camel>RouteN.ts` and `<camel>RouteN.Paths.ts` (ids `<slug>-1`, `<slug>-2`),
+  the routes `src/decision/routes/<camel>RouteN.ts` and `<camel>RouteN.Paths.ts` (id `<slug>-1`),
   `content/packs/<slug>/ROUTES.md` and `HOW_WE_BUILT_IT.md`.
 - To try your routes in the checker and the shared drive test, add them to `src/decision/routes/index.ts` (two
   imports and the list). That is the one shared file you may touch; nothing else outside your centre.
@@ -22,7 +22,7 @@ came out of them. Read first, in this order:
 
 ## Done means
 
-- `node tools/centres/check_route.mjs <slug>-1 <slug>-2` passes, or each rule it reports is one the area cannot meet,
+- `node tools/centres/check_route.mjs <slug>-1` passes, or each rule it reports is one the area cannot meet,
   explained in ROUTES.md.
 - `npx vitest run tests/unit/decision.test.ts` passes (add your straight-ahead challenges, keyed `<route-id>:<id>`,
   to its lists if needed; that file may be edited for this only).

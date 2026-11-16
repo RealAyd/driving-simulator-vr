@@ -20,7 +20,7 @@ The steps the pilot centres (Salisbury, Sheffield (Middlewood Road), Morden) too
    `src/decision/routes/index.ts`, with a button in `sim/index.html` and the directions recorded
    (`node tools/voice/make_voice.mjs`).
 
-4. **Rules.** `node tools/centres/check_route.mjs <slug>-1 <slug>-2`: length, the share on confirmed and likely roads,
+4. **Rules.** `node tools/centres/check_route.mjs <slug>-1`: length, the share on confirmed and likely roads,
    each challenge's kind and the known junction it is at, spacing, and the mix, against
    `content/sources/pass2/<slug>-evidence.json`. Exits 1 when a rule is not met; a rule the area cannot meet is
    explained in `ROUTES.md`.

@@ -40,7 +40,7 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'At the end of Booth Road.'}},
   'heywood-mini':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-294.2,-280.9)},when:{actor:'lanacre-car',at:p(-280.5,-283.6)},frame:{yaw:10,pitch:40},
     state:'At the give way line of the mini-roundabout.'}},
-  'bristol-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(192.2,-31.2)},when:{actor:'zebra-pedestrian',at:p(194.9,-8.3)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
+  'bristol-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(186.2,-44.6)},when:{actor:'zebra-pedestrian',at:p(194.9,-8.3)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
     state:'On Bristol Avenue, the zebra crossing just ahead.'}},
   'aerodrome-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(103.2,246.8)},when:{actor:'ring-aero',at:p(80.2,231.4)},frame:{yaw:-60,pitch:40,shift:-4},
     state:'At the give way line of the Grahame Park Way roundabout.'}}
@@ -447,11 +447,11 @@ export const HENDON_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Bristol Avenue, the zebra crossing past Lanacre Avenue',
       instruction:'Follow the road ahead, please.',
       instructAt:p(172.5,-59.1),
-      starts:[{actor:'zebra-pedestrian',at:p(182.1,-50.3),delay:0}],
+      starts:[{actor:'zebra-pedestrian',at:p(181.3,-51),delay:0}],
       endAt:p(192.6,63.6),
       quiet:[{x:192,z:-8,radius:24}],
       place:{
-        approach:{pause:{kind:'moving',at:p(192.2,-31.2)},frame:{yaw:0,pitch:22},state:'On Bristol Avenue at 20 mph, the zebra crossing ahead.'},
+        approach:{pause:{kind:'moving',at:p(186.2,-44.6)},frame:{yaw:0,pitch:22},state:'On Bristol Avenue at 20 mph, the zebra crossing ahead.'},
         zebra:{pause:{kind:'stop',at:p(193.9,-19.3)},when:{actor:'zebra-pedestrian',at:p(192.4,-8.3)},frame:{yaw:0,pitch:30},
           state:'Stopped at the zebra crossing.'},
         clear:{pause:{kind:'stop',at:p(193.9,-19.3)},when:{actor:'zebra-pedestrian',at:p(188.3,-8.3)},frame:{yaw:0,pitch:30},
@@ -511,7 +511,8 @@ export const HENDON_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Grahame Park Way at the roundabout, first exit on to Aerodrome Road',
       instruction:'At the roundabout, take the first exit, that\'s to the left.',
       instructAt:p(162.8,224.5),
-      starts:[{actor:'ring-aero',at:p(182.4,202.8),delay:0}],
+      // (Set going as the car comes to the line, so the green car comes round as it stops, not before.)
+      starts:[{actor:'ring-aero',at:p(144.4,227.1),delay:0}],
       endAt:p(116.9,298.8),
       // The roundabout, and Colindale Avenue's way in, where the green car comes from.
       quiet:[{x:78,z:252,radius:34},{x:30,z:275,radius:34}],

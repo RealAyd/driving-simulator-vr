@@ -43,7 +43,7 @@ describe('decision challenges as authored',()=>{
 describe('before and after',()=>{
   it('one decision before and one after at each challenge, more only where two hazards meet at one place',()=>{
     const overlap=new Set(['leave-test-centre','brook-street-lights','primrose-emerge','sheffield-middlewood-road-2:parkside-lights',
-      'loughborough-1:station-lights','loughborough-2:belton-road-lights']);
+      'loughborough-1:station-lights']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)expect(c.stages.length,c.id).toBeLessThanOrEqual(overlap.has(c.id)||overlap.has(`${route.id}:${c.id}`)?3:2);
   });
 });
@@ -66,7 +66,7 @@ describe('turn buttons',()=>{
       'morden-london-2:tudor-zebra','morden-london-2:beverley-roundabout','morden-london-2:churston-mini',
       'sheffield-middlewood-road-1:middlewood-crossing','sheffield-middlewood-road-1:leppings-lights',
       'gillingham-1:bowater-roundabout','gillingham-1:sovereign-lights','gillingham-2:twydall-zebra','gillingham-2:london-road-lights',
-      'loughborough-1:beacon-roundabout','loughborough-2:belton-zebra',
+      'loughborough-1:beacon-roundabout',
       'isleworth-fleming-way-1:mogden-roundabout','isleworth-fleming-way-2:thornbury-zebra',
       'grantham-somerby-2:sandon-lights','grantham-somerby-2:harrowby-zebra']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)

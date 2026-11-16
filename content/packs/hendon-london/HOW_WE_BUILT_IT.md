@@ -87,6 +87,7 @@ Tuning on the way:
 | With traffic, a car on Watford Way's southbound carriageway went through the Aerodrome Road junction on the same green while the car turned left (route 1) | That carriageway left out of the challenge's quiet circles: it is not the car's hazard |
 | With traffic, the car touched the bollard on the Heritage Avenue roundabout's splitter island (its line 0.9 m from it) | The line kept 0.4 m further left down Heritage Avenue |
 | (Skip ahead) a background cyclist crossed the white van's path at Church Road's junction east of Church End, where the van started | The van starts past that junction |
+| With traffic (route 2), the green car at the roundabout off Grahame Park Way came round before the car reached the line, and the car stopped for the Bristol Avenue zebra's pedestrian short of the point the picture waits for | The green car set going later, from nearer; the zebra's picture taken further back, the pedestrian set going later |
 | The roundabout instructions were given 125 m out: traffic kept off the roundabout from 150 m before that | Said 45 to 75 m out, as Beverley at Morden; the pull-up on Booth Road moved on to keep 300 m between directions |
 
 ## Still to do

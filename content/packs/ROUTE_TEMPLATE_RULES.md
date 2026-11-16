@@ -53,7 +53,7 @@ tests use.**
    - it stays inside the test area;
    - **more than half of its length** is on roads that are confirmed or likely;
    - **at least 3 of its 8 scenarios** are at known junctions;
-   - and the centre's two routes together use **most of the known junctions that suit a scenario**.
+   - and the centre's route (or routes) use **most of the known junctions that suit a scenario**.
 4. **A centre with no public information** is built from the map alone, marked *map-only* in its file, and reviewed
    by a person before release. It is rebuilt when information arrives.
 
@@ -74,12 +74,12 @@ As Brentwood and Chelmsford (`ROUTE_FORMAT.md` has the format and the rules ever
 
 ## 5. A centre's set of routes
 
-- **2 routes per centre to start**, as Brentwood. More are added the same way later.
-- The two routes leave the area in **different directions** where the roads allow, and **no scenario is repeated**:
-  16 different scenarios per centre. They may share the stretch every route needs to leave and return.
-- Between them the two routes cover the mix in section 4 twice over, with different hazards, so the second is not a
-  repeat of the first.
-- Each route is named by where it goes ("Route 2: Broomfield and North Avenue"), not numbered alone.
+- **1 route per centre** *(the owner's decision, from batch 2 on)*. The first centres (Brentwood, Chelmsford, Salisbury,
+  Morden, Sheffield (Middlewood Road)) keep the two they have. More are added later the same way.
+- The one route covers **the whole mix in section 4** itself, where the area has each kind.
+- Where a centre has a second route, it leaves in a **different direction** where the roads allow, and **no scenario is
+  repeated**; the two may share the stretch every route needs to leave and return.
+- Each route is named by where it goes ("Broomfield and North Avenue").
 - The app's levels apply to every route the same way: **Easy** has light traffic; **Standard** normal traffic;
   **Test day** busy traffic and less time to decide.
 
@@ -104,7 +104,7 @@ One file per centre holds everything; the scenes, routes and scenarios are gener
 
 - the centre: name, current address, entrance position, the date it was last checked;
 - the test area and the known junctions, each with its sources, dates and confidence;
-- the two routes: the roads in order, and the 8 scenarios by kind, place and hazard, with the check results;
+- the route (or routes): the roads in order, and the 8 scenarios by kind, place and hazard, with the check results;
 - who signed it off, and when.
 
 Brentwood and Chelmsford are converted to this file first, to prove it can reproduce them.

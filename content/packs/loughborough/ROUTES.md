@@ -132,3 +132,7 @@ Road mini-roundabout; that is for the next review.
   roundabout" and "Forest Road roundabout" can be matched; record Station Boulevard if a post-move source names it.
 - Signal phases, give way markings and crossing positions are taken from the map, not surveyed.
 - Played in the app and every paused picture screenshotted and checked; then staging and the owner's drive.
+
+## One route
+
+The owner settled on one route per centre (ROUTE_TEMPLATE_RULES section 5). Route 1 is kept: it meets the known-junction rule (3 of 8) where route 2 could not (0 of 8). Route 2 is in the history (commit 5a0eaa1) if a second route is wanted later.

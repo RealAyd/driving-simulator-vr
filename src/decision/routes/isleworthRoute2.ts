@@ -267,7 +267,7 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'London Road, the zebra crossing by Thornbury Road',
       instruction:'Follow the road ahead, please.',
       instructAt:p(-190.2,-281.5),
-      starts:[{actor:'zebra-pedestrian',at:p(-160.5,-305.3),delay:0}],
+      starts:[{actor:'zebra-pedestrian',at:p(-155.9,-309.1),delay:0}],
       endAt:p(-116.3,-348.6),
       // The crossing, and London Road just before it (traffic ahead of the car kept clear, so it comes on at its speed).
       quiet:[{x:-135,z:-327,radius:30},{x:-165,z:-301,radius:24}],
@@ -337,7 +337,8 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       lights:p(283,-476.5),lightsAll:true,
       endAt:p(308.2,-431.5),
       // The junction, and London Road ahead, where the oncoming silver car comes from.
-      quiet:[{x:299,z:-474,radius:24},{x:330,z:-478,radius:30},{x:305,z:-445,radius:18}],
+      // (And Harvard Road's mouth, on the way: in traffic a car pulling out of it met the car.)
+      quiet:[{x:299,z:-474,radius:24},{x:330,z:-478,radius:30},{x:305,z:-445,radius:18},{x:149,z:-466,radius:12}],
       place:{
         approach:{pause:{kind:'moving',at:p(224.9,-470.6)},frame:{yaw:0,pitch:20},state:'Approaching the St John\'s Road lights on green.'},
         centre:{pause:{kind:'stop',at:p(291.6,-477)},when:{actor:'stjohns-car',at:p(330.2,-478)},frame:{yaw:0,pitch:32},
