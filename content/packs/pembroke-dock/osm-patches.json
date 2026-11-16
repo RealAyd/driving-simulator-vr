@@ -5,5 +5,20 @@
   "id": 1240337251,
   "k": "building",
   "why": "Pier Road roundabout (Western Way, London Road, Water Street, Pier Road): a small structure mapped on its island stops the roundabout being found, so the scene had a loop of one-way roads the route planner would not drive."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 59176652,
+  "k": "name",
+  "v": "London Road",
+  "why": "Waterloo roundabout: London Road's way in from the east is a short unnamed piece (32 m), which the route planner will not turn on to, so the roundabout could not be driven westbound. Named as the road it carries."
+ },
+ {
+  "op": "move-node",
+  "id": 535188289,
+  "lat": 51.6958564,
+  "lon": -4.9392659,
+  "why": "Water Street at the Pier Road roundabout: the way between the ring and this node (an unmarked crossing) was 9.6 m long, too short for the lane path, so the car's line cut the corner on to the pavement leaving the roundabout. The node moved 8.5 m south along Water Street (no change of shape), so that piece is 18 m."
  }
 ]

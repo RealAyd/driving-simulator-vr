@@ -75,7 +75,7 @@ function drivenRight(r:Run,route:DecisionRoute,end:{x:number;z:number}){
   expect(r.offRoad,r.offAt.join('; ')).toBe(0);
   expect(r.redRun,r.redAt.join('; ')).toBe(0);
   expect(r.fixedHits).toEqual([]);
-  expect(Math.hypot(r.car.position.x-end.x,r.car.position.z-end.z),'at the end of the route').toBeLessThan(12);
+  expect(Math.hypot(r.car.position.x-end.x,r.car.position.z-end.z),'at the end of the route').toBeLessThan(8);
 }
 /** With traffic: none of it in a junction in hand when the scene stops, nothing touching, never stuck (a queue is
  * cleared after JAM_AFTER seconds, so a stand can reach that and no more). */
@@ -85,9 +85,18 @@ function trafficRight(r:Run){
   expect(r.closestTraffic,r.closestTrafficWho).toBeGreaterThan(.25);
   expect(r.longestStand,r.standAt).toBeLessThan(JAM_AFTER+2);
 }
+/** Where the drive ends: the runner brings the car to a stop END_SHORT path metres before the planned way's end. */
+const END_SHORT=12;
 async function endOf(route:DecisionRoute){
   const {place,keepClear}=await loadScene(route);
-  return decisionPath(place,route,keepClear)!.at(-1)!;
+  const path=decisionPath(place,route,keepClear)!;
+  let left=END_SHORT;
+  for(let i=path.length-1;i>0;i--){
+    const a=path[i-1]!,b=path[i]!,l=Math.hypot(b.x-a.x,b.z-a.z);
+    if(l>=left){const t=left/l;return {x:b.x+(a.x-b.x)*t,z:b.z+(a.z-b.z)*t}}
+    left-=l;
+  }
+  return path[0]!;
 }
 
 (ROUTES.length?describe:describe.skip)(`decision routes${centre?` for ${centre}`:''}: driven`,()=>{

@@ -68,7 +68,10 @@ describe('turn buttons',()=>{
       'gillingham-1:bowater-roundabout','gillingham-1:sovereign-lights',
       'loughborough-1:beacon-roundabout',
       'isleworth-fleming-way-1:mogden-roundabout',
-      'grantham-somerby-1:harrowby-zebra']);
+      'birmingham-garretts-green-1:radleys-crossing',
+      'grantham-somerby-1:harrowby-zebra',
+      'chesterfield-1:highfield-crossing',
+      'enfield-innova-1:ordnance-zebra']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)
       if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();
   });

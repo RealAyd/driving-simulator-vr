@@ -1,0 +1,1615 @@
+{
+  "centre": "Birmingham (Garretts Green)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 52.47262,
+    "lon": -1.7713
+  },
+  "address_checked": "2026-11-16",
+  "address": "DVSA Driving Test Centre, Granby Avenue, Garretts Green, Birmingham B33 0SD",
+  "address_note": "gov.uk 'Check which driving test centres you can move your test to' (updated 15 October 2026) lists Birmingham (Garretts Green) as a current West Midlands centre (South Yardley about 3 miles away); the find-driving-test-centre service could not be reached from this machine. OSM has the DVSA Driving Test Centre building (way/60819373) on Granby Avenue, B33 0SD, at 52.47262,-1.77130: the given position, so it matches. No move is known: the route list's leaving and returning roads (Granby Avenue, Garretts Green Lane) fit the current address.",
+  "searches": [
+    "\"Garretts Green\" driving test centre route roundabout tips instructor",
+    "\"Garretts Green\" mock test route video driving test",
+    "\"Garretts Green\" driving test reddit OR forum passed roads",
+    "gov.uk search: garretts green driving test centre"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/driving-test-routes/birmingham-garretts-green-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/driving-test-routes/birmingham-garretts-green-driving-test-routes-6-10.html"
+      ],
+      "published": "undated (says the routes may have changed since DVSA stopped publishing them)",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Granby Avenue",
+        "Garretts Green Lane",
+        "Meadway",
+        "Kitts Green Road",
+        "St Giles Road",
+        "Shirestone Road",
+        "Tile Cross Road",
+        "Cooks Lane",
+        "Forth Drive",
+        "Chester Road (A452)",
+        "Birmingham Road",
+        "Collector Road",
+        "Newport Road",
+        "Coleshill Road (Hodge Hill)",
+        "Stechford Road",
+        "Stechford Lane",
+        "Station Road (Stechford)",
+        "Flaxley Road",
+        "Church Road (Stechford)",
+        "Deepmoor Road",
+        "Bradford Road",
+        "Heathland Avenue",
+        "Cole Hall Lane",
+        "Middle Leaford",
+        "Crossfield Road",
+        "Lea Hall Road",
+        "East Meadway",
+        "Lanchester Way",
+        "Green Lane (Castle Bromwich)",
+        "Hurst Lane North",
+        "Hurst Lane",
+        "Packington Avenue",
+        "Pithall Road",
+        "Fordfield Road",
+        "Wychbold Crescent",
+        "Gressel Lane",
+        "Mirfield Road",
+        "Lea Village",
+        "Lea Ford Road",
+        "Freasley Road",
+        "Manor Park Road",
+        "Marlborough Road (Castle Bromwich)",
+        "Clifton Road",
+        "Springfield Road (Castle Bromwich)",
+        "Bucklands End Lane",
+        "Sheldon Heath Road",
+        "Common Lane",
+        "Sheaf Lane",
+        "Church Road (Sheldon)",
+        "Cranes Park Road",
+        "Whitecroft Road",
+        "Shepheard Road",
+        "Olorenshaw Road",
+        "Arden Oak Road",
+        "Coventry Road (A45)",
+        "Blakenhale Road",
+        "Outmore Road",
+        "Longmeadow Crescent",
+        "Rowington Road",
+        "Over Green Drive",
+        "Clopton Crescent",
+        "Auckland Drive",
+        "Arran Way",
+        "Windward Way",
+        "Queens Road",
+        "Sedgemere Road",
+        "Averill Road",
+        "Billingsley Road",
+        "Hengham Road",
+        "Ollerton Road",
+        "Hobs Moat Road",
+        "Old Lode Lane",
+        "Valley Road (Solihull)",
+        "Glencroft Road",
+        "Mickleton Avenue",
+        "Admington Road",
+        "Kenmure Road",
+        "The Radleys",
+        "Elmstead Avenue",
+        "Willaston Road",
+        "Hazeldene Road",
+        "Bell Lane",
+        "Holly Lane (Marston Green)",
+        "Station Road (Marston Green)",
+        "Coleshill Road (Marston Green)",
+        "Coleshill Heath Road",
+        "Stonebridge Road (A446)",
+        "Mackadown Lane",
+        "Warmington Road",
+        "Rectory Park Road",
+        "Coalway Avenue",
+        "Damson Parkway",
+        "Damson Lane",
+        "Cornyx Lane",
+        "Lode Lane"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/West-Midlands/Birmingham-Garretts-Green",
+      "published": "undated",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": null,
+      "copy_of": "s1",
+      "note": "Its routes repeat s1 word for word, so it counts once with s1 and confirms nothing.",
+      "names": []
+    },
+    {
+      "id": "s3",
+      "kind": "template",
+      "author": "passrates.uk",
+      "url": "https://passrates.uk/guide/garretts-green-driving-test-centre",
+      "published": "2026-05-18 (updated)",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "A pass-rate guide in general terms: says tests here meet the A45 Coventry Road and multi-lane roundabouts. Not first-hand and not a route, so it confirms nothing; kept as context.",
+      "names": [
+        "Coventry Road (A45)"
+      ]
+    },
+    {
+      "id": "s4",
+      "kind": "official",
+      "author": "DVSA (gov.uk)",
+      "url": "https://www.gov.uk/government/publications/check-which-driving-test-centres-you-can-move-your-test-to/check-which-driving-test-centres-you-can-move-your-test-to",
+      "published": "2026-10-15 (updated)",
+      "read_on": "2026-11-16",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "The centre is current; silent on routes."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/west-midlands/birmingham-garretts-green",
+      "why": "template page; names no roads (pass 1)"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/garretts-green/mock-driving-test",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://www.billplant.co.uk/blog/practical-driving-test-centres-in-birmingham-where-can-you-take-your-test/",
+      "why": "list of Birmingham centres, no roads (pass 1)"
+    },
+    {
+      "url": "https://passrates.uk/guide/passing-driving-test-birmingham",
+      "why": "city-wide guide; its roads are about other centres"
+    },
+    {
+      "url": "https://www.veygo.com/driving-test-centres/birmingham-garretts-green/",
+      "why": "refused automated reading (403); left alone"
+    },
+    {
+      "url": "https://payhip.com/b/4wjtG",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/birmingham-garretts-green-driving-test-routes",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/garretts-green/",
+      "why": "lesson sales page (pass 1: paid); not used"
+    }
+  ],
+  "places": [
+    {
+      "name": "Granby Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.47422,
+        "lon": -1.77579,
+        "osm": "way/15124982"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Leaving and returning roads: the test centre has been on Granby Avenue throughout, so the source counts for them; still one author."
+    },
+    {
+      "name": "Garretts Green Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.47349,
+        "lon": -1.77998,
+        "osm": "way/49195597"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Leaving and returning roads: the test centre has been on Granby Avenue throughout, so the source counts for them; still one author."
+    },
+    {
+      "name": "Meadway",
+      "kind": "road",
+      "map": {
+        "lat": 52.47833,
+        "lon": -1.78244,
+        "osm": "way/14448610"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kitts Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.4805,
+        "lon": -1.77381,
+        "osm": "way/431181880"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Giles Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47758,
+        "lon": -1.76636,
+        "osm": "way/17183506"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shirestone Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47964,
+        "lon": -1.7643,
+        "osm": "way/24149734"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tile Cross Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47331,
+        "lon": -1.76627,
+        "osm": "way/16229567"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cooks Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.48276,
+        "lon": -1.76031,
+        "osm": "way/48275827"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Forth Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.48732,
+        "lon": -1.74251,
+        "osm": "way/77214251"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chester Road (A452)",
+      "kind": "road",
+      "map": {
+        "lat": 52.48604,
+        "lon": -1.73587,
+        "osm": "way/431184348"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Birmingham Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.4906,
+        "lon": -1.73874,
+        "osm": "way/17177563"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Collector Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.51394,
+        "lon": -1.76002,
+        "osm": "way/340950022"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newport Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.50247,
+        "lon": -1.7976,
+        "osm": "way/8127814"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coleshill Road (Hodge Hill)",
+      "kind": "road",
+      "map": {
+        "lat": 52.50089,
+        "lon": -1.79931,
+        "osm": "way/128869853"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stechford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.49248,
+        "lon": -1.80963,
+        "osm": "way/29373488"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stechford Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.48981,
+        "lon": -1.81551,
+        "osm": "way/77904169"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road (Stechford)",
+      "kind": "road",
+      "map": {
+        "lat": 52.48077,
+        "lon": -1.80867,
+        "osm": "way/74187695"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Flaxley Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.48279,
+        "lon": -1.79214,
+        "osm": "way/1247821379"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Road (Stechford)",
+      "kind": "road",
+      "map": {
+        "lat": 52.48262,
+        "lon": -1.79619,
+        "osm": "way/141806283"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Deepmoor Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.48098,
+        "lon": -1.79603,
+        "osm": "way/24518032"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bradford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.50241,
+        "lon": -1.79618,
+        "osm": "way/331321595"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Heathland Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.50097,
+        "lon": -1.79231,
+        "osm": "way/4257352"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cole Hall Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.48772,
+        "lon": -1.78788,
+        "osm": "way/24629625"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Middle Leaford",
+      "kind": "road",
+      "map": {
+        "lat": 52.49098,
+        "lon": -1.78939,
+        "osm": "way/24627805"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Crossfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.48182,
+        "lon": -1.79176,
+        "osm": "way/997971609"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lea Hall Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47919,
+        "lon": -1.78323,
+        "osm": "way/77208658"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "East Meadway",
+      "kind": "road",
+      "map": {
+        "lat": 52.48056,
+        "lon": -1.7729,
+        "osm": "way/431181879"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lanchester Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.5074,
+        "lon": -1.75849,
+        "osm": "way/26525679"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Green Lane (Castle Bromwich)",
+      "kind": "road",
+      "map": {
+        "lat": 52.50685,
+        "lon": -1.76866,
+        "osm": "way/26381461"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hurst Lane North",
+      "kind": "road",
+      "map": {
+        "lat": 52.49946,
+        "lon": -1.76448,
+        "osm": "way/24277149"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hurst Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.49678,
+        "lon": -1.76677,
+        "osm": "way/24407570"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Packington Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.49056,
+        "lon": -1.777,
+        "osm": "way/74187634"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pithall Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.49308,
+        "lon": -1.77036,
+        "osm": "way/24288866"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fordfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.4858,
+        "lon": -1.77762,
+        "osm": "way/24765906"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wychbold Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 52.48511,
+        "lon": -1.77464,
+        "osm": "way/24765961"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gressel Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.4824,
+        "lon": -1.7716,
+        "osm": "way/24278103"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mirfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47991,
+        "lon": -1.78183,
+        "osm": "way/121880208"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lea Village",
+      "kind": "road",
+      "map": {
+        "lat": 52.47969,
+        "lon": -1.78432,
+        "osm": "way/24768398"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lea Ford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.48399,
+        "lon": -1.77734,
+        "osm": "way/128806445"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Freasley Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.49386,
+        "lon": -1.76743,
+        "osm": "way/131677271"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Manor Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.50369,
+        "lon": -1.77067,
+        "osm": "way/26381455"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Marlborough Road (Castle Bromwich)",
+      "kind": "road",
+      "map": {
+        "lat": 52.5038,
+        "lon": -1.76823,
+        "osm": "way/26526424"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Clifton Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.50481,
+        "lon": -1.76433,
+        "osm": "way/26526629"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Springfield Road (Castle Bromwich)",
+      "kind": "road",
+      "map": {
+        "lat": 52.50495,
+        "lon": -1.77186,
+        "osm": "way/26381457"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bucklands End Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.49638,
+        "lon": -1.79505,
+        "osm": "way/16960263"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sheldon Heath Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46854,
+        "lon": -1.78074,
+        "osm": "way/24595327"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Common Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.4582,
+        "lon": -1.78099,
+        "osm": "way/13775033"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sheaf Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.45405,
+        "lon": -1.78194,
+        "osm": "way/373299546"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Road (Sheldon)",
+      "kind": "road",
+      "map": {
+        "lat": 52.46247,
+        "lon": -1.77639,
+        "osm": "way/77214249"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cranes Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45788,
+        "lon": -1.7669,
+        "osm": "way/14813484"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whitecroft Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45659,
+        "lon": -1.76787,
+        "osm": "way/14815867"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shepheard Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45568,
+        "lon": -1.76972,
+        "osm": "way/14816750"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Olorenshaw Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45482,
+        "lon": -1.7701,
+        "osm": "way/132375652"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Arden Oak Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45339,
+        "lon": -1.77033,
+        "osm": "way/14817401"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coventry Road (A45)",
+      "kind": "road",
+      "map": {
+        "lat": 52.45136,
+        "lon": -1.7675,
+        "osm": "way/1104646706"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Blakenhale Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47444,
+        "lon": -1.78076,
+        "osm": "way/15126173"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Outmore Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47243,
+        "lon": -1.78161,
+        "osm": "way/15126169"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Longmeadow Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 52.49511,
+        "lon": -1.76203,
+        "osm": "way/24272489"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rowington Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.49589,
+        "lon": -1.75906,
+        "osm": "way/24272485"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Over Green Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.49378,
+        "lon": -1.7535,
+        "osm": "way/24319467"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Clopton Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 52.48866,
+        "lon": -1.73759,
+        "osm": "way/229418724"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Auckland Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.49209,
+        "lon": -1.73718,
+        "osm": "way/131901389"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Arran Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.50038,
+        "lon": -1.74333,
+        "osm": "way/27794439"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windward Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.49297,
+        "lon": -1.7411,
+        "osm": "way/49776810"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queens Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47746,
+        "lon": -1.7969,
+        "osm": "way/95017825"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sedgemere Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47327,
+        "lon": -1.7957,
+        "osm": "way/4257884"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Averill Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47251,
+        "lon": -1.79147,
+        "osm": "way/24520353"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Billingsley Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46966,
+        "lon": -1.78908,
+        "osm": "way/24595422"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hengham Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.47197,
+        "lon": -1.78801,
+        "osm": "way/15126432"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ollerton Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.4639,
+        "lon": -1.79819,
+        "osm": "way/13777695"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hobs Moat Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45183,
+        "lon": -1.78208,
+        "osm": "way/1383261849"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Old Lode Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.44966,
+        "lon": -1.78055,
+        "osm": "way/11500054"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Valley Road (Solihull)",
+      "kind": "road",
+      "map": {
+        "lat": 52.45048,
+        "lon": -1.76821,
+        "osm": "way/1244269101"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Glencroft Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45091,
+        "lon": -1.76655,
+        "osm": "way/13772526"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mickleton Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.47082,
+        "lon": -1.77865,
+        "osm": "way/19111831"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Admington Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46921,
+        "lon": -1.77665,
+        "osm": "way/19111088"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kenmure Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46714,
+        "lon": -1.77654,
+        "osm": "way/19111087"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Radleys",
+      "kind": "road",
+      "map": {
+        "lat": 52.46987,
+        "lon": -1.76496,
+        "osm": "way/34954338"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Elmstead Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.46504,
+        "lon": -1.77143,
+        "osm": "way/19107606"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Willaston Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46663,
+        "lon": -1.76958,
+        "osm": "way/19107605"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hazeldene Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46621,
+        "lon": -1.76731,
+        "osm": "way/16230372"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bell Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.47315,
+        "lon": -1.76096,
+        "osm": "way/37282898"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holly Lane (Marston Green)",
+      "kind": "road",
+      "map": {
+        "lat": 52.47045,
+        "lon": -1.75575,
+        "osm": "way/16229565"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road (Marston Green)",
+      "kind": "road",
+      "map": {
+        "lat": 52.46754,
+        "lon": -1.75351,
+        "osm": "way/25292287"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coleshill Road (Marston Green)",
+      "kind": "road",
+      "map": {
+        "lat": 52.46688,
+        "lon": -1.74466,
+        "osm": "way/25812959"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coleshill Heath Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.46343,
+        "lon": -1.73033,
+        "osm": "way/23117579"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stonebridge Road (A446)",
+      "kind": "road",
+      "map": {
+        "lat": 52.47526,
+        "lon": -1.70731,
+        "osm": "way/192604288"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mackadown Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.47084,
+        "lon": -1.76759,
+        "osm": "way/15122087"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Warmington Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.4556,
+        "lon": -1.7759,
+        "osm": "way/14819211"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rectory Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.45409,
+        "lon": -1.77815,
+        "osm": "way/14814983"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coalway Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.45285,
+        "lon": -1.77883,
+        "osm": "way/14814529"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Damson Parkway",
+      "kind": "road",
+      "map": {
+        "lat": 52.44689,
+        "lon": -1.75331,
+        "osm": "way/49683985"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Damson Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.4365,
+        "lon": -1.75836,
+        "osm": "way/1247804217"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cornyx Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.42279,
+        "lon": -1.76903,
+        "osm": "way/23329205"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Further out (about 5.5 km from the centre)."
+    },
+    {
+      "name": "Lode Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.43796,
+        "lon": -1.78279,
+        "osm": "way/4722852"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Test centre way out on Granby Avenue",
+      "kind": "junction",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Source: out of the test centre, right at the end of its road on to Granby Avenue; back in as a left turn from Granby Avenue. The DVSA car park's gated way in (OSM way/849430648).",
+      "map": {
+        "lat": 52.47245,
+        "lon": -1.77226,
+        "osm": "way/849430648"
+      }
+    },
+    {
+      "name": "Granby Avenue / Garretts Green Lane junction",
+      "kind": "junction",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Every listed route leaves by it (right or left at the end of Granby Avenue) and most return by it.",
+      "map": {
+        "lat": 52.47593,
+        "lon": -1.78024
+      }
+    },
+    {
+      "name": "Garretts Green Lane / Meadway / Lea Hall Road roundabout",
+      "kind": "roundabout",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Right (third exit) on to Meadway from Garretts Green Lane, and left back on to Garretts Green Lane, in most routes.",
+      "map": {
+        "lat": 52.47852,
+        "lon": -1.78197
+      }
+    },
+    {
+      "name": "Meadway / Kitts Green Road / East Meadway / Mackadown Lane lights",
+      "kind": "traffic-lights",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lights met from Meadway (right, or ahead into East Meadway) and from East Meadway.",
+      "map": {
+        "lat": 52.48038,
+        "lon": -1.77348
+      }
+    },
+    {
+      "name": "East Meadway / Tile Cross Road / Cooks Lane / Gressel Lane lights",
+      "kind": "traffic-lights",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Tile Cross Road lights right into Cooks Lane; Gressel Lane lights right on to East Meadway.",
+      "map": {
+        "lat": 52.48236,
+        "lon": -1.76089
+      }
+    },
+    {
+      "name": "Garretts Green Lane / Mickleton Avenue mini-roundabout",
+      "kind": "mini-roundabout",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Left into Mickleton Avenue, and right out of it on to Garretts Green Lane.",
+      "map": {
+        "lat": 52.47155,
+        "lon": -1.78028,
+        "osm": "node/149433645"
+      }
+    },
+    {
+      "name": "Sheldon Heath Road / Garretts Green Lane / Hengham Road roundabout",
+      "kind": "roundabout",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The six-arm roundabout: Sheldon Heath Road to Garretts Green Lane (sixth exit) and ahead.",
+      "map": {
+        "lat": 52.47025,
+        "lon": -1.7836
+      }
+    },
+    {
+      "name": "Church Road / Sheldon Heath Road / The Radleys / Brays Road roundabout",
+      "kind": "roundabout",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Ahead from Church Road to Sheldon Heath Road; right out of The Radleys.",
+      "map": {
+        "lat": 52.46431,
+        "lon": -1.77651
+      }
+    },
+    {
+      "name": "Kenmure Road / Admington Road junction",
+      "kind": "junction",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Out of Kenmure Road left on to Admington Road (and in from Admington Road as a right turn).",
+      "map": {
+        "lat": 52.46803,
+        "lon": -1.77565
+      }
+    },
+    {
+      "name": "Kenmure Road / Sheldon Heath Road junction",
+      "kind": "junction",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Right into Kenmure Road from Sheldon Heath Road; left out of it.",
+      "map": {
+        "lat": 52.46656,
+        "lon": -1.77884
+      }
+    },
+    {
+      "name": "Lea Village / Mirfield Road roundabout",
+      "kind": "roundabout",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Mirfield Road roundabout right into Lea Village.",
+      "map": {
+        "lat": 52.48037,
+        "lon": -1.78329
+      }
+    },
+    {
+      "name": "Bell Lane / Holly Lane / Station Road roundabouts (Marston Green)",
+      "kind": "roundabout",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Bell Lane and Holly Lane, left into Station Road.",
+      "map": {
+        "lat": 52.46759,
+        "lon": -1.75468
+      }
+    },
+    {
+      "name": "Coventry Road (A45) / Hobs Moat Road and Sheaf Lane lights",
+      "kind": "traffic-lights",
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lights on the A45 right into Hobs Moat Road, and right into Sheaf Lane / Church Road. Beyond the area downloaded for the scene (about 2.4 km south); not placed.",
+      "map": null
+    }
+  ],
+  "unmatched": [
+    "Bucklands End (a roundabout named only as a place; Bucklands End Lane matched)",
+    "A452 (the source's name for Chester Road at Chelmsley Wood; recorded as Chester Road)"
+  ],
+  "summary": "0 confirmed and 95 likely roads plus 13 likely junctions, all from one undated route-list author (drivingtesttips.biz, ten routes; intensivelessons.co.uk copies it word for word); the centre has not moved, so its leaving and returning roads count. Two routes meeting the overlap rule look possible: the lists cover every road round the centre (Meadway, Mackadown Lane, The Radleys, Sheldon Heath Road, Garretts Green Lane) with lights, large and mini-roundabouts, but nothing is confirmed by a second separate source."
+}

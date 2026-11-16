@@ -1833,6 +1833,20 @@
         "s3"
       ],
       "confidence": "likely"
+    },
+    {
+      "name": "Tapton View Road on to Sheffield Road",
+      "kind": "junction",
+      "map": {
+        "lat": 53.24821,
+        "lon": -1.42689,
+        "osm": "node/289930665"
+      },
+      "sources": [
+        "s3"
+      ],
+      "confidence": "likely",
+      "note": "Named by the motorcycle routes (out of the centre, left from Sheffield Road into Tapton View Road)."
     }
   ],
   "unmatched": [
@@ -1841,5 +1855,5 @@
     "Church Street (the listed one follows Devonshire Street, Brimington; the only match is in Poolsbrook, 5.7 km)",
     "Hasland bypass / A617 (named as \"A617 / M1 Hasland By Pass\"; road number only, not a road name)"
   ],
-  "summary": "0 confirmed and 112 likely roads plus 9 likely junctions, all from one route-list publisher (drivingtesttips.biz, copied by intensivelessons.co.uk; its motorcycle sister site counted with it), whose routes fit the current Approach Road site (routes 11-14 dated 2019). Two routes meeting the overlap rule look possible: Sheffield Road, Peveril Road, Highfield Lane, Newbold Road and Gloucester Road all lie within 1.5 km, with three roundabouts and four mini-roundabouts named; nothing is confirmed by a second separate source, so judgement and the map carry the weight."
+  "summary": "0 confirmed and 112 likely roads plus 10 likely junctions, all from one route-list publisher (drivingtesttips.biz, copied by intensivelessons.co.uk; its motorcycle sister site counted with it), whose routes fit the current Approach Road site (routes 11-14 dated 2019). Two routes meeting the overlap rule look possible: Sheffield Road, Peveril Road, Highfield Lane, Newbold Road and Gloucester Road all lie within 1.5 km, with three roundabouts and four mini-roundabouts named; nothing is confirmed by a second separate source, so judgement and the map carry the weight."
 }
