@@ -156,7 +156,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
     runner.update();
   }
   // (Where each road user ended up, and what held the car last: diagnostics for a drive that did not finish.)
-  const final=Object.fromEntries([...actors].map(([id,a])=>[id,`(${a.pose.position.x.toFixed(1)}, ${a.pose.position.z.toFixed(1)}) ${a.started?'started':'waiting'} ${a.speed.toFixed(1)} m/s`]));
+  const final=Object.fromEntries([...actors].map(([id,a])=>[id,`(${a.pose.position.x.toFixed(1)}, ${a.pose.position.z.toFixed(1)}) ${a.started?'started':'waiting'} ${a.speed.toFixed(1)} m/s, pace ${a.pace===null?'-':a.pace.toFixed(2)}, travelled ${a.travelled.toFixed(1)}`]));
   const near=others().filter(c=>Math.hypot(c.pose.position.x-car.position.x,c.pose.position.z-car.position.z)<60).map(c=>`${c.id} (${c.pose.position.x.toFixed(0)}, ${c.pose.position.z.toFixed(0)}) ${c.speed.toFixed(1)} ${background!.reasons().find(x=>x.id===c.id)?.why}`);
   return {skips,driven,final,near,heldBy:runner.heldBy,result:result as DecisionRunResult|null,pauses,said,signals,closest,closestWho,offRoad,offAt,car,closestTraffic,closestTrafficWho,met,metWho,redRun,redAt,fixedHits,retired,longestStand,standAt,nearby:nearSum/Math.max(1,nearSteps),ahead:aheadSum/Math.max(1,nearSteps)};
 }
