@@ -67,7 +67,13 @@ again:
 | The car touched the bollard on the splitter island at the Meadway roundabout's way in from Garretts Green Lane, and at the Church Road roundabout's way in from The Radleys | Its line kept 0.8 m left on the way in (a `shift`): 1.87 and 1.86 m from the bollards, from 1.36 and 1.26 |
 | Turning left from Granby Avenue into the test centre, a wheel went on the footway at the inside corner | Its line swings 0.8 m wider there (a `shift` to the right) |
 
-The full drive test, with traffic (patterns 4 and 14) and with Skip ahead, is run by the main session.
+The full drive test (main session), first run: as authored and without traffic passed; then fixed, not driven again:
+
+| Found | Fix |
+|---|---|
+| Pattern 4: a car coming the other way up Mackadown Lane squeezed past the car (0.08 m) as it stood beside a parked car | Mackadown Lane from Meadway to the low bridge kept quiet (`quietUntil` on the Meadway roundabout challenge, which has no lights, so the Mackadown Lane lights are not held all that while) |
+| Pattern 14: the car stood for good at the Meadway roundabout's line: traffic queued on the black car's start, so it never set off | Its path starts 100 m back along Meadway, off the queue at the way in, set going as the direction is given (paced to come round as the car stops); and the engine now retires traffic standing 8 s on a road user's start |
+| Skip ahead: traffic waiting on the ring's east side stood in the challenge's quiet circles | The circles at the way in and the ring's north-east side trimmed to 12 m |
 
 ## Still to do
 

@@ -83,12 +83,14 @@ One drive without traffic, on the first version (`decisionDrive.ts`'s `drive`, 3
 pass, all 17 pauses as depicted (each road user within 0.1 m of its point), no red light run, closest scripted road
 user the cyclist passing the car pulled up, 3.22 m. It touched the two splitter bollards and put a wheel on the footway
 turning into the test centre (fixed as above, checked against the planned line, not driven again). The full drive test
-(`ROUTES=birmingham-garretts-green-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`, with traffic and Skip
-ahead) is left to the main session.
+(`ROUTES=birmingham-garretts-green-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`), first run: 3 of 6 passed
+(as authored, without traffic); traffic squeezing past on Mackadown Lane (pattern 4), the black car blocked at its
+start (pattern 14) and traffic in the roundabout's quiet circles (Skip ahead) were fixed (`HOW_WE_BUILT_IT.md`
+section 5), to drive again.
 
 ## Open items
 
-- The full drive test with traffic (patterns 4 and 14) and with Skip ahead.
+- The full drive test again, with traffic (patterns 4 and 14) and with Skip ahead, after the fixes.
 - Where tests start and finish within the site; a first-hand source (instructor video, learner account) to confirm any
   road; the route lists' dates.
 - Signal phases, give way markings and crossing positions are taken from the map, not surveyed.

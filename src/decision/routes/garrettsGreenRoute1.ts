@@ -161,12 +161,19 @@ export const GARRETTS_GREEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfte
       where:'Garretts Green Lane at the Meadway roundabout, right (third exit) on to Meadway',
       instruction:'At the roundabout, turn right, the third exit, please.',
       instructAt:p(-381.3,-606.2),
-      // (Set going as the car comes to the line, so it is there whatever traffic held the car up on the way.)
-      starts:[{actor:'ring-car',at:p(-420.4,-654.2),delay:0}],
+      // (Set going as the direction is given, from 100 m back along Meadway, off the queue at the way in: paced to come
+      // round as the car stops at the line, whatever traffic held the car up on the way.)
+      starts:[{actor:'ring-car',at:p(-381.3,-606.2),delay:0}],
       endAt:p(-423.1,-711.6),
+      // (And the narrow part of Mackadown Lane, cars parked along the car's side, kept quiet until the car is past it:
+      // in traffic, one coming the other way squeezed past the car as it stood beside a parked car. On this challenge,
+      // not the lights', so those lights are not held for the car all that while.)
+      quietUntil:p(524.2,-152.1),
       // The entry, the roundabout to the right, where the black car comes round from Meadway, its far side, and the way
-      // out on to Meadway.
-      quiet:[{x:-430,z:-663,radius:16},{x:-428,z:-690,radius:18},{x:-462,z:-680,radius:20},{x:-428,z:-708,radius:16}],
+      // out on to Meadway (kept tight: traffic waits on the ring's east side to come round); then Mackadown Lane.
+      quiet:[{x:-428,z:-660,radius:12},{x:-428,z:-695,radius:12},{x:-462,z:-680,radius:20},{x:-428,z:-708,radius:14},
+        {x:316,z:-744,radius:40},{x:328,z:-677,radius:40},{x:351,z:-612,radius:40},{x:374,z:-547,radius:40},{x:398,z:-479,radius:40},
+        {x:411,z:-411,radius:40},{x:432,z:-346,radius:40},{x:457,z:-278,radius:40},{x:484,z:-215,radius:40},{x:521,z:-157,radius:40}],
       place:{
         approach:{pause:{kind:'moving',at:p(-404.9,-640.1)},frame:{yaw:0,pitch:22},state:'Approaching the Meadway roundabout at 30 mph.'},
         line:{pause:{kind:'stop',at:p(-429,-662.4)},when:{actor:'ring-car',at:p(-431.9,-683.7)},frame:{yaw:-70,pitch:28},state:'At the give way line.'},
