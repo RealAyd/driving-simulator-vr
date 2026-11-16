@@ -272,6 +272,11 @@ export class PassingVehicle implements SimModule{
     this.pose=this.sample(this.s);
   }
 
+  /** Put it this far along its path (metres), standing: a decision test's last resort for one held up for good. */
+  placeAt(travelled:number):void{
+    this.s=Math.max(0,Math.min(this.length,travelled));this.speed=0;this.pose=this.sample(this.s);
+  }
+
   reset():void{
     this.s=0;
     this.pace=null;

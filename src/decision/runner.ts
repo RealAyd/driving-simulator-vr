@@ -23,6 +23,8 @@ export interface RunnerActor{
   readonly path:readonly Vec2[];
   setTiming(delaySeconds:number,speed?:number):void;
   reset():void;
+  /** Put it this far along its path (metres), at a standstill. */
+  placeAt?(travelled:number):void;
   /** Its speed held to at most this now (m/s), or null: paced to meet the car at the moment depicted. */
   pace?:number|null;
   /** Seen waiting at the start of its path before it moves (set while its challenge is in hand). */
@@ -88,6 +90,8 @@ const STANDING_WAITS=4;
 const WAVE_AFTER=8;
 /** A background road user stood this long (seconds) blocked by a route's road user turns off. */
 const ACTOR_KNOT=8;
+/** The car stood at its line this long (seconds) for a road user stood still short of its point: that road user is put there. */
+const WAIT_GIVE_UP=16;
 /** Held by one standing background road user this long (seconds), whatever it waits for, it turns off. */
 export const JAM_AFTER=45;
 /** Driving back to the centre: lights this far ahead (metres) are held green for the car. */
@@ -576,8 +580,15 @@ export class DecisionRunner{
     // (Stopped at red lights: the decision comes once they change.)
     if(pause.kind==='stop'&&this.redNow(c))return;
     if(place.when){
-      const x=this.scene.actor(place.when.actor);
-      if(x&&!(x.started&&x.travelled>=this.actorAt(place.when.actor,place.when.at)))return;
+      const x=this.scene.actor(place.when.actor),mark=this.actorAt(place.when.actor,place.when.at);
+      if(x&&!(x.started&&x.travelled>=mark)){
+        // (The car waits at its line for a road user stood still on its way, whatever holds it: after WAIT_GIVE_UP
+        // it is put at its point, so the moment comes as depicted rather than the test standing for good.)
+        if(pause.kind==='stop'&&x.started&&x.pace!==0&&(this.actorStand.get(place.when.actor)??0)>WAIT_GIVE_UP&&x.placeAt){
+          x.placeAt(mark);this.actorStand.delete(place.when.actor);
+        }
+        return;
+      }
     }
     // Stopped at a line: background traffic ahead in the junction (a car the learner followed in, going on through)
     // is let clear first, for a few seconds at most. (Not where the moment is set by a road user's position.)
