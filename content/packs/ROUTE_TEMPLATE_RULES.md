@@ -54,6 +54,8 @@ tests use.**
    - **more than half of its length** is on roads that are confirmed or likely;
    - **at least 3 of its 8 scenarios** are at known junctions;
    - and the centre's route (or routes) use **most of the known junctions that suit a scenario**.
+   - *(The owner's decision)* A route the area cannot bring to 3 known junctions (the evidence is about an old site,
+     or names junctions out of reach) is **published**, with the reason in its private `ROUTES.md` (never shown in the app).
 4. **A centre with no public information** is built from the map alone, marked *map-only* in its file, and reviewed
    by a person before release. It is rebuilt when information arrives.
 

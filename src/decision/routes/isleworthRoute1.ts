@@ -3,14 +3,15 @@ import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
 import {withTurnButtons} from '../turnButtons';
 import {withBeforeAfter,type BeforeMerge} from '../beforeAfter';
-import {BLUE_CAR,CYCLIST,HALL_CAR,RING_CAR,SILVER_CAR,WORTON_CAR,WORTON_ONCOMING} from './isleworthRoute1Paths';
+import {BLUE_CAR,CYCLIST,HALL_CAR,HEATH_CAR,RING_CAR,VANGOGH_CAR,WORTON_CAR} from './isleworthRoute1Paths';
 
 /**
- * Isleworth (Fleming Way) route 1, Twickenham Road, Mogden Lane and Whitton Dene: eight challenges from the test
- * centre at Unit 8, The Wireless Factory, Fleming Way, right out of Fleming Way on to Worton Road, right at the
- * Twickenham Road lights, right at the Mogden Lane lights, ahead at the Mogden Lane roundabout on to Whitton Dene,
- * pulling up and moving off, right at the Hall Road mini-roundabout, and home by Hall Road and Worton Road, right into
- * the test centre. Chosen from the map and the published evidence (content/packs/isleworth-fleming-way/ROUTES.md).
+ * Isleworth (Fleming Way), Twickenham Road and Whitton Dene: eight challenges from the test centre at Unit 8, The
+ * Wireless Factory, Fleming Way, right out of Fleming Way on to Worton Road, right at the Twickenham Road lights, right
+ * at the Mogden Lane lights over the crossing into Mogden Lane, ahead at the Mogden Lane roundabout on to Whitton Dene,
+ * pulling up and moving off, right at the Hall Road mini-roundabout, round by Eaton Road and Tudor Road, left out of
+ * Heath Road on to Worton Road, and home along Worton Road, right into the test centre. Chosen from the map and the
+ * published evidence (content/packs/isleworth-fleming-way/ROUTES.md).
  * Scene isleworth-fleming-way-route-1 (OpenStreetMap). A practice route, not a confirmed test route.
  */
 const pts=(a:readonly (readonly number[])[]):Vec2[]=>a.map(([x,z])=>({x:x!,z:z!}));
@@ -20,6 +21,8 @@ const MIRRORS_FIRST:Fault={level:'minor',heading:'Use of mirrors - signalling',t
   message:'Mirrors first, then signal: you need to know who your signal is for.'};
 const HORN:Fault={level:'feedback',heading:'Use of horn',title:'Horn not needed',
   message:'Use the horn only to warn others of your presence when they may not have seen you.'};
+const WRONG_LEFT:Fault={level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
+  message:'You are turning left: a right signal tells everyone you are going the other way.'};
 const WRONG_RIGHT:Fault={level:'serious',heading:'Signals - correctly',title:'Signal for the wrong way',
   message:'You are turning right: a left signal tells everyone you are going the other way.'};
 const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a pedestrian',
@@ -29,44 +32,45 @@ const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a ped
  * the hazard is in view only at the line; leaving the test centre keeps a third: a car from the right, then one from
  * the left, are two hazards at one place. */
 const BEFORE:Record<string,BeforeMerge>={
-  'twickenham-lights':{first:'approach',second:'turn',place:{pause:{kind:'moving',at:p(683.8,-522.6)},when:{actor:'twickenham-pedestrian',at:p(722.6,-508.6)},frame:{yaw:-10,pitch:44,shift:4},
-    state:'Approaching the Twickenham Road lights on green.'}},
   // (In the junction: the queue at these lights, not the map, sets when the car gets there.)
-  'mogden-lights':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(575.8,265.2)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:40,shift:-4},
-    state:'Waiting in the junction to turn right into Mogden Lane. The lights are green.'}},
+  'twickenham-lights':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(705.2,-527.6)},when:{actor:'vangogh-car',at:p(750.5,-534.5)},frame:{yaw:0,pitch:40,shift:-4},
+    state:'Waiting in the junction to turn right into Twickenham Road. The lights are green.'}},
+  'mogden-crossing':{first:'approach',second:'turn',place:{pause:{kind:'moving',at:p(568.9,236)},when:{actor:'mogden-pedestrian',at:p(559.35,279.8)},frame:{yaw:-10,pitch:44,shift:-4},
+    state:'Approaching the Mogden Lane lights on green.'}},
   // (At the line: the roundabout's island hides the car coming round until there.)
   'mogden-roundabout':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(9.8,401)},when:{actor:'ring-car',at:p(-15.1,395.8)},frame:{yaw:-60,pitch:40,shift:-4},
     state:'At the give way line of the Mogden Lane roundabout.'}},
   // (At the line: the corner hides Hall Road until there.)
   'hall-road-mini':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-719.6,526)},when:{actor:'hall-car',at:p(-732.7,505.9)},frame:{yaw:-60,pitch:40,shift:-4},
     state:'At the give way line of the mini-roundabout.'}},
-  'centre-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(204.7,-467.1)},when:{actor:'worton-oncoming',at:p(301.5,-494.4)},frame:{yaw:0,pitch:40,shift:-4},
-    state:'On Worton Road, the test centre\'s way in just ahead on the right.'}}
+  // (At the line: the corner hides Hall Road until there.)
+  'heath-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-525.1,-275.7)},when:{actor:'heath-car',at:p(-522.1,-239.7)},frame:{yaw:-70,pitch:40,shift:-4},
+    state:'At the end of Heath Road.'}}
 };
 
 export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   id:'isleworth-fleming-way-1',
-  title:'Isleworth route 1',
+  title:'Isleworth: Twickenham Road and Whitton Dene',
   scene:'isleworth-fleming-way-route-1',
-  briefing:'Isleworth route 1: decisions only\n\nThe car drives itself. At each challenge the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nPractice route built from OpenStreetMap data; not a confirmed test route. The app\'s assessment, not a DVSA result.',
+  briefing:'Isleworth, Twickenham Road and Whitton Dene: decisions only\n\nThe car drives itself. At each challenge the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nPractice route built from OpenStreetMap data; not a confirmed test route. The app\'s assessment, not a DVSA result.',
   start:{x:241.81,z:-436.47,headingDeg:352.06},
-  // Fleming Way, Worton Road, Twickenham Road, Mogden Lane, the Mogden Lane roundabout, Whitton Dene, Hall Road, Worton
-  // Road and back into Fleming Way.
-  through:pts([[485,-485],[585,-125],[285,345],[-401,498],[-629,193],[-383,-407],[-115,-450],[246,-418],[165,-325]]),
+  // Fleming Way, Worton Road, Twickenham Road, Mogden Lane, the Mogden Lane roundabout, Whitton Dene, Hall Road, Eaton
+  // Road, Ellerdine Road, Tudor Road, Heath Road, Worton Road and back into Fleming Way.
+  through:pts([[485,-485],[585,-125],[285,345],[-401,498],[-629,193],[-590,-30],[-670,-230],[-590,-275],[-383,-407],[-115,-450],[246,-418],[165,-325]]),
   // Pulled in to the kerb on Whitton Dene, past the bend (no cars parked along it: room for the cyclist to pass).
   // And kept left into the Mogden Lane roundabout, clear of the bollard on the splitter island's nose.
   shifts:[{from:p(25.6,390.6),to:p(7.3,402.6),left:.9},{from:p(-339.5,498.5),to:p(-369.5,500.1),left:.35}],
   actors:[
     {id:'worton-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(WORTON_CAR)},
     {id:'blue-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(BLUE_CAR)},
-    // Crossing the mouth of Twickenham Road, left to right as the car turns in, on the near side of the junction.
-    {id:'twickenham-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[726,-508.6],[715,-508.5]])},
-    {id:'silver-car',name:'silver car',colour:'#c3c7cf',speed:11,path:pts(SILVER_CAR)},
+    {id:'vangogh-car',name:'grey car',colour:'#8a9099',speed:9,path:pts(VANGOGH_CAR)},
+    // On the crossing just round the corner in Mogden Lane, from the far kerb to the island, late on the lights.
+    {id:'mogden-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[560.1,283.3],[558.4,275.6]])},
     {id:'ring-car',name:'black car',colour:'#1f2328',speed:9,path:pts(RING_CAR)},
     // Behind the car along Whitton Dene, past it at the kerb, and left into Queensbridge Park.
     {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
     {id:'hall-car',name:'green car',colour:'#15803d',speed:9,path:pts(HALL_CAR)},
-    {id:'worton-oncoming',name:'red car',colour:'#b91c1c',speed:10,path:pts(WORTON_ONCOMING)}
+    {id:'heath-car',name:'white car',colour:'#f5f5f4',speed:9,path:pts(HEATH_CAR)}
   ],
   challenges:[
     {

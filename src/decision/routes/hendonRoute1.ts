@@ -513,7 +513,7 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instruction:'Take the next road on the right, please.',
       instructAt:p(-840.3,-536.6),
       // (Set going late, so it comes down Grahame Park Way as the car comes to wait, not before.)
-      starts:[{actor:'gpw-oncoming',at:p(-780.3,-536.6),delay:1}],
+      starts:[{actor:'gpw-oncoming',at:p(-805.3,-536.4),delay:0}],
       endAt:p(-718.9,-469.1),
       // The junction, Grahame Park Way ahead, where the oncoming silver car comes from, and the mouth of Heritage Avenue.
       quiet:[{x:-722,z:-540,radius:20},{x:-690,z:-553,radius:26},{x:-718,z:-522,radius:14}],
