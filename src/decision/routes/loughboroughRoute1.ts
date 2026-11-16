@@ -81,8 +81,9 @@ export const LOUGHBOROUGH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
       where:'Gordon Road, right on to Station Boulevard',
       instruction:'When you\'re ready, drive out to the end of Gordon Road and turn right, please.',
       instructAt:p(427.9,-1187.9),
-      // (The blue car set going as the car comes to the line: it comes out of the lights just after the white car passes.)
-      starts:[{actor:'boulevard-car',at:p(427.9,-1187.9),delay:0},{actor:'lights-car',at:p(495.5,-1196.1),delay:0}],
+      // (The white car near enough to be there as the car comes to the line; the blue car set going only once the car is
+      // stopping there, so it comes out of the lights after the white car has passed, not before.)
+      starts:[{actor:'boulevard-car',at:p(427.9,-1187.9),delay:0},{actor:'lights-car',at:p(500.8,-1205.7),delay:0}],
       endAt:p(534.8,-1205.1),
       // The end of Gordon Road, Station Boulevard to the right (the station), where the white car comes from, and to the
       // left (the Meadow Lane lights), where the blue car comes from.
