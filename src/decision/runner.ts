@@ -242,7 +242,7 @@ export class DecisionRunner{
     if(this.skipAt!==null)this.assist.placedAt(this.skipAt);
     this.skipAt=null;
     this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.clearing=0;
-    this.standing.clear();this.standAt.clear();
+    this.standing.clear();this.standAt.clear();this.actorStand.clear();
   }
 
   /** Where the car starts: the route's start, or a little before the challenge practised. */
@@ -257,7 +257,7 @@ export class DecisionRunner{
   /** From the start (the whole test), or practising one challenge. The car must already be at `startPose`. */
   begin(only:number|null=null):void{
     this.only=only;this.challenge=only??0;this.stage=this.route.challenges[this.challenge]!.stages[0]!.id;
-    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.started.clear();this.records.length=0;this.last=null;this.ending=false;
+    this.phase='drive';this.released=false;this.said=-1;this.clearing=0;this.handAt=null;this.backTo=null;this.heldFor=0;this.waved=false;this.stuckTime=0;this.stuckWho='';this.endWait=0;this.backStand=0;this.started.clear();this.actorStand.clear();this.records.length=0;this.last=null;this.ending=false;
     for(const a of this.route.actors){const x=this.scene.actor(a.id);if(x){x.setTiming(1e9);x.reset()}}
     this.assist.setPath(this.path);
     if(only)this.assist.placedAt(this.startS(only));
@@ -417,6 +417,8 @@ export class DecisionRunner{
   private readonly amberGo=new Map<string,boolean>();
   private heldWho='';
   private actorStuck=0;
+  /** Seconds each of the route's road users has stood (started, not held, not at its path's end). */
+  private readonly actorStand=new Map<string,number>();
   private jamTime=0;
   private jamWho='';
   /** Seconds the car has stood held by background traffic (STREAM_CLEAR). */
@@ -494,6 +496,20 @@ export class DecisionRunner{
     for(const q of this.scene.traffic?.()??[]){
       const m=q.why?.match(/^(?:blocked by|facing|crossing) (\S+)/);
       if(m&&this.route.actors.some(a=>a.id===m[1])&&(this.standing.get(q.id)??0)>ACTOR_KNOT){this.scene.retire?.(q.id);this.standing.set(q.id,0)}
+    }
+    // And the other way about: one of the route's own stood a while behind a background road user standing just ahead
+    // on its way (that one waiting for the car, the car for it): the background one turns off, so the moment comes
+    // rather than the test standing for good. (Not one the runner holds short of its point, nor one at its path's end.)
+    for(const a of this.route.actors){
+      const x=this.scene.actor(a.id);
+      if(!x?.started||x.present===false||x.pace===0||(x.speed??1)>.1||x.travelled>=along(x.path,x.path.at(-1)!)-1){this.actorStand.delete(a.id);continue}
+      const t=(this.actorStand.get(a.id)??0)+1/60;this.actorStand.set(a.id,t);
+      if(t<ACTOR_KNOT)continue;
+      const p=x.pose.position,i=Math.max(1,x.path.findIndex((_,k)=>k>0&&along(x.path,x.path[k]!)>x.travelled)),u=x.path[i]!,v=x.path[i-1]!;
+      const dl=Math.hypot(u.x-v.x,u.z-v.z)||1,dx=(u.x-v.x)/dl,dz=(u.z-v.z)/dl;
+      const ahead=(this.scene.traffic?.()??[]).filter(q=>q.speed<.5&&Math.hypot(q.x-p.x,q.z-p.z)<12&&(q.x-p.x)*dx+(q.z-p.z)*dz>0);
+      for(const q of ahead)this.scene.retire?.(q.id);
+      if(ahead.length)this.actorStand.set(a.id,0);
     }
     const car=this.scene.car(),s=this.carS();
     // Paced: the road user the stage in hand waits for, and that of the next challenge's first stage (already on its
