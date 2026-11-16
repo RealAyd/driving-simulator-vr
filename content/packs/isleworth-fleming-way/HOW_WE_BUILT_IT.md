@@ -78,6 +78,7 @@ traffic, 15 with):
 | In traffic, cars pulling out of Briar Close, Harlequin Close, Heath Road and Riverside Walk met the car or held it up for 50 s | Those side roads kept quiet while the challenges round them are in hand (`quietUntil` on the Mogden Lane lights and the Hall Road mini-roundabout) |
 | In traffic, a car met the car face to face at the mouth of Eaton Road and stood there (8 minutes) | The loop by Eaton Road, Ellerdine Road and Tudor Road kept quiet while the car drives it |
 | In traffic, the pedestrian on the Mogden Lane crossing was across before the car came (held up at the lights) | Set going as the car comes up to the lights |
+| With Skip ahead, the green car at the Hall Road mini-roundabout came past its point while the car crept up to the line | It is paced as a car easing up to a junction (`waits`), so it can slow as much as the car needs |
 
 
 ## Still to do

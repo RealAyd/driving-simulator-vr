@@ -69,7 +69,8 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     {id:'ring-car',name:'black car',colour:'#1f2328',speed:9,path:pts(RING_CAR)},
     // Behind the car along Whitton Dene, past it at the kerb, and left into Queensbridge Park.
     {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
-    {id:'hall-car',name:'green car',colour:'#15803d',speed:9,path:pts(HALL_CAR)},
+    // (Paced to come down to the mini-roundabout as the car stops at the line, as a driver easing up to it would.)
+    {id:'hall-car',name:'green car',colour:'#15803d',speed:9,waits:true,path:pts(HALL_CAR)},
     {id:'heath-car',name:'white car',colour:'#f5f5f4',speed:9,path:pts(HEATH_CAR)}
   ],
   challenges:[
