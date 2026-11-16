@@ -1,0 +1,1177 @@
+{
+ "centre": "Pembroke Dock",
+ "status": "ok",
+ "centre_position": {
+  "lat": 51.69433,
+  "lon": -4.95262
+ },
+ "address_checked": "2026-11-16",
+ "address": "The Captain Superintendent's Building, Royal Dockyard, Pembroke Dock SA72 6TD",
+ "address_matches_position": true,
+ "address_note": "gov.uk could not be read from this machine (the centre page by URL is not found; gov.uk search lists no centre page). Address from the Driving Test Tips centre page; DVSA pass-rate data for 2025-26 (via DrivingData UK) shows the centre still testing (about 1,770 tests a year), so it has not closed. The given position is the SA72 6TD postcode point on Admiralty Way inside the old Royal Dockyard (Nominatim reverse: Admiralty Way, SA72 6TD), beside the dockyard officers' terrace: matches. The published route lists all start and finish on Pier Road, about 0.9 km east, so they probably describe an earlier site; they are used for roads further out, not for leaving and returning. Recheck the address and the way in on gov.uk when reachable.",
+ "searches": [
+  "\"Pembroke Dock driving test centre\" gov.uk address SA72 6TD (gov.uk search API)",
+  "\"Pembroke Dock driving test route\" (DuckDuckGo: bot check, no results)",
+  "\"Pembroke Dock driving test centre\" mock test video (DuckDuckGo: bot check)",
+  "\"Pembroke Dock driving test tips roundabout instructor\" (DuckDuckGo: bot check)",
+  "\"Pembroke Dock\" driving test route roads (Bing: unrelated results)",
+  "\"Pembroke Dock\" driving test youtube (Bing: unrelated results)"
+ ],
+ "sources": [
+  {
+   "id": "s1",
+   "kind": "route-list",
+   "author": "drivingtesttips.biz",
+   "url": "https://www.drivingtesttips.biz/pembroke-dock-driving-test-routes.html",
+   "also": [
+    "https://www.drivingtesttips.biz/pembroke-dock-driving-test-routes-6-10.html",
+    "https://www.drivingtesttips.biz/pembroke-dock-driving-test-centre.html"
+   ],
+   "published": "undated (routes 1-10; written when DVSA still published routes)",
+   "read_on": "2026-11-16",
+   "first_hand": false,
+   "before_centre_moved": true,
+   "note": "Every route starts and finishes on Pier Road, not at the current address in the Royal Dockyard: taken as describing an earlier site. Road and junction names only.",
+   "names": [
+    "Pier Road",
+    "London Road",
+    "Ferry Lane",
+    "Buttermilk Lane",
+    "Myletts Hill",
+    "Holyland Road",
+    "Well Hill",
+    "Orange Way",
+    "Commons Road",
+    "Westgate Hill",
+    "Northgate Street",
+    "The Green",
+    "Bush Hill",
+    "Pembroke Road",
+    "Imble Lane",
+    "Arthur Morris Drive",
+    "Britannia Road",
+    "North Street",
+    "Bufferland Terrace",
+    "High Street",
+    "Bellevue Terrace",
+    "Pembroke Street",
+    "Market Street",
+    "Commercial Row",
+    "Albion Square",
+    "Bush Street",
+    "Laws Street",
+    "Water Street",
+    "Treowen Road",
+    "Military Road",
+    "Main Street",
+    "St John's Road",
+    "Hawkstone Road",
+    "Dimond Street",
+    "Western Way",
+    "Melville Street",
+    "Melville Terrace",
+    "Victoria Road",
+    "Charlton Place",
+    "Prospect Place",
+    "Albany Street",
+    "Imble Street",
+    "Woodside Avenue",
+    "Coldwell Terrace",
+    "Golden Hill Road",
+    "St Anne's Crescent",
+    "St Daniel's Hill",
+    "South Road",
+    "Back Terrace",
+    "St Martin's Road",
+    "Long Mains",
+    "Bridgend Terrace",
+    "Maiden Wells",
+    "Angle Road",
+    "Monkton Road",
+    "Queen Street",
+    "Tremeyrick Street",
+    "Essex Road",
+    "Ferry Road",
+    "Waterloo Road",
+    "Devon Drive",
+    "Windsor Road",
+    "Golden Lane",
+    "Admiralty Way",
+    "Church Street",
+    "Warrior Way",
+    "Upper Lamphey Road",
+    "St Michael's Road",
+    "Pier Street"
+   ]
+  },
+  {
+   "id": "s2",
+   "kind": "route-list",
+   "author": "intensivelessons.co.uk",
+   "url": "https://intensivelessons.co.uk/driving-test-routes/Dyfed/Pembroke-Dock",
+   "published": "undated",
+   "read_on": "2026-11-16",
+   "first_hand": false,
+   "before_centre_moved": true,
+   "copy_of": "s1",
+   "note": "Routes 1-10 repeat s1 word for word, so it counts once with s1 and confirms nothing.",
+   "names": []
+  },
+  {
+   "id": "s3",
+   "kind": "statistics",
+   "author": "DrivingData UK (DVSA data, Open Government Licence)",
+   "url": "https://drivingdata-uk.pages.dev/test-centres/pembroke-dock/",
+   "published": "2025-26 data",
+   "read_on": "2026-11-16",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "names": [],
+   "note": "Shows the centre testing in 2025-26: open. Silent on routes."
+  }
+ ],
+ "not_used": [
+  {
+   "url": "https://www.veygo.com/driving-test-centres/pembroke-dock/",
+   "why": "403 to automated reading; template content per pass 1"
+  },
+  {
+   "url": "https://bsm.co.uk/locations/pembroke-dock",
+   "why": "no response; template content per pass 1"
+  },
+  {
+   "url": "https://theaa.com/driving-school/locations/location/pembroke-dock",
+   "why": "lesson-booking template per pass 1; names no test roads"
+  },
+  {
+   "url": "https://www.passmefast.co.uk/test-centres/practical/pembrokeshire/pembroke-dock",
+   "why": "template per pass 1 (bot check on other centres); not read"
+  },
+  {
+   "url": "https://rhubarb-whale-39k8.squarespace.com/pembroke-dock-driving-test-routes",
+   "why": "paid route list: never used"
+  }
+ ],
+ "places": [
+  {
+   "name": "Pier Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69803,
+    "lon": -4.94115,
+    "osm": "way/8253764"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "Where the lists' routes start and finish (about 0.9 km east of the current address): the lists probably describe an earlier site, so this is not used for leaving and returning."
+  },
+  {
+   "name": "London Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69512,
+    "lon": -4.93637,
+    "osm": "way/102289309"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Ferry Lane",
+   "kind": "road",
+   "map": {
+    "lat": 51.69177,
+    "lon": -4.92669,
+    "osm": "way/4641853"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Buttermilk Lane",
+   "kind": "road",
+   "map": {
+    "lat": 51.68585,
+    "lon": -4.9212,
+    "osm": "way/1196825745"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Mylett's Hill",
+   "kind": "road",
+   "map": {
+    "lat": 51.68744,
+    "lon": -4.9047,
+    "osm": "way/790964143"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Holyland Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.6743,
+    "lon": -4.9083,
+    "osm": "way/547073907"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Well Hill",
+   "kind": "road",
+   "map": {
+    "lat": 51.67385,
+    "lon": -4.90848,
+    "osm": "way/4641914"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Orange Way",
+   "kind": "road",
+   "map": {
+    "lat": 51.67386,
+    "lon": -4.91422,
+    "osm": "way/1252488555"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Commons",
+   "kind": "road",
+   "map": {
+    "lat": 51.67456,
+    "lon": -4.91561,
+    "osm": "way/475613019"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Westgate Hill",
+   "kind": "road",
+   "map": {
+    "lat": 51.67631,
+    "lon": -4.9195,
+    "osm": "way/102494316"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Northgate Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.67726,
+    "lon": -4.91817,
+    "osm": "way/23075998"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "The Green",
+   "kind": "road",
+   "map": {
+    "lat": 51.67933,
+    "lon": -4.9179,
+    "osm": "node/14296343358"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bush Hill",
+   "kind": "road",
+   "map": {
+    "lat": 51.6861,
+    "lon": -4.92165,
+    "osm": "way/4641913"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Pembroke Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.68812,
+    "lon": -4.93805,
+    "osm": "way/42798363"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Imble Lane",
+   "kind": "road",
+   "map": {
+    "lat": 51.68558,
+    "lon": -4.93699,
+    "osm": "way/100100958"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Arthur Morris Drive",
+   "kind": "road",
+   "map": {
+    "lat": 51.68704,
+    "lon": -4.93977,
+    "osm": "way/55422843"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Britannia Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.68737,
+    "lon": -4.94201,
+    "osm": "way/55422664"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "North Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.68739,
+    "lon": -4.94708,
+    "osm": "way/102289290"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bufferland Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.68805,
+    "lon": -4.94738,
+    "osm": "way/100820988"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "High Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.68815,
+    "lon": -4.94419,
+    "osm": "way/3985016"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bellevue Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.68943,
+    "lon": -4.94759,
+    "osm": "way/46650607"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Pembroke Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69228,
+    "lon": -4.94853,
+    "osm": "way/668712530"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Market Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69241,
+    "lon": -4.94951,
+    "osm": "way/1462668332"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Commercial Row",
+   "kind": "road",
+   "map": {
+    "lat": 51.69384,
+    "lon": -4.94804,
+    "osm": "way/102264353"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Albion Square",
+   "kind": "road",
+   "map": {
+    "lat": 51.69254,
+    "lon": -4.94744,
+    "osm": "node/14296343362"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bush Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69156,
+    "lon": -4.93918,
+    "osm": "way/462401615"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Laws Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69267,
+    "lon": -4.94018,
+    "osm": "node/502457345"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Water Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69449,
+    "lon": -4.93963,
+    "osm": "way/1569418794"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Treowen Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.68763,
+    "lon": -4.94823,
+    "osm": "way/102289306"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Military Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.68682,
+    "lon": -4.96324,
+    "osm": "way/3985018"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Main Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.675,
+    "lon": -4.91371,
+    "osm": "way/102494304"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St. John's Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69182,
+    "lon": -4.93282,
+    "osm": "way/37895180"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hawkstone Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69294,
+    "lon": -4.93442,
+    "osm": "way/100805578"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Dimond Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69375,
+    "lon": -4.94126,
+    "osm": "way/100805548"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Western Way",
+   "kind": "road",
+   "map": {
+    "lat": 51.6948,
+    "lon": -4.94496,
+    "osm": "way/102289291"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Melville Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69261,
+    "lon": -4.95244,
+    "osm": "way/55422453"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Melville Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.69362,
+    "lon": -4.95267,
+    "osm": "way/1101185247"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Victoria Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69156,
+    "lon": -4.95563,
+    "osm": "way/1569418816"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Charlton Place",
+   "kind": "road",
+   "map": {
+    "lat": 51.69111,
+    "lon": -4.9467,
+    "osm": "way/55422458"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Prospect Place",
+   "kind": "road",
+   "map": {
+    "lat": 51.68978,
+    "lon": -4.94221,
+    "osm": "way/31321761"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Albany Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.68625,
+    "lon": -4.94363,
+    "osm": "way/100101039"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Imble Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.68646,
+    "lon": -4.94557,
+    "osm": "way/100100967"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Woodside Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 51.68028,
+    "lon": -4.91749,
+    "osm": "way/102675173"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Coldwell Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.68041,
+    "lon": -4.91598,
+    "osm": "way/102675178"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Golden Hill Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.68053,
+    "lon": -4.91344,
+    "osm": "way/100805582"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St. Daniel's Hill",
+   "kind": "road",
+   "map": {
+    "lat": 51.67221,
+    "lon": -4.91363,
+    "osm": "way/1344834372"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "South Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.67281,
+    "lon": -4.91765,
+    "osm": "way/64180468"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Back Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.67469,
+    "lon": -4.92867,
+    "osm": "way/66067644"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St. Martin's Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.6753,
+    "lon": -4.9298,
+    "osm": "way/66067643"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Long Mains",
+   "kind": "road",
+   "map": {
+    "lat": 51.67629,
+    "lon": -4.9322,
+    "osm": "way/66067681"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bridgend Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.67621,
+    "lon": -4.92094,
+    "osm": "way/4641918"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Angle Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.67309,
+    "lon": -4.93326,
+    "osm": "way/102289296"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Queen Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69403,
+    "lon": -4.94534,
+    "osm": "way/37895179"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Tremeyrick Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69698,
+    "lon": -4.93795,
+    "osm": "way/1030673809"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Essex Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69814,
+    "lon": -4.93661,
+    "osm": "way/1057912850"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Ferry Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.68297,
+    "lon": -4.94958,
+    "osm": "way/46650610"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists' \"Ferry Rd\" roundabout is by Pembroke Ferry and Waterloo Road, north-east; the map's Ferry Road matched here is in the south of the town and may not be the one meant."
+  },
+  {
+   "name": "Waterloo Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.69719,
+    "lon": -4.9298,
+    "osm": "way/688628180"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Devon Drive",
+   "kind": "road",
+   "map": {
+    "lat": 51.68213,
+    "lon": -4.91534,
+    "osm": "way/66070614"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Windsor Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.67897,
+    "lon": -4.91351,
+    "osm": "way/102675187"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Golden Lane",
+   "kind": "road",
+   "map": {
+    "lat": 51.67819,
+    "lon": -4.91172,
+    "osm": "way/66070127"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Admiralty Way",
+   "kind": "road",
+   "map": {
+    "lat": 51.69431,
+    "lon": -4.95239,
+    "osm": "way/1101185249"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The test centre's own road. The lists name it once, further out; how the route leaves and returns rests on the map."
+  },
+  {
+   "name": "Church Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.69091,
+    "lon": -4.94191,
+    "osm": "way/51260527"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Warrior Way",
+   "kind": "road",
+   "map": {
+    "lat": 51.69718,
+    "lon": -4.92622,
+    "osm": "way/55423127"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Upper Lamphey Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.67248,
+    "lon": -4.89678,
+    "osm": "way/452156455"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St. Michael's Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.67449,
+    "lon": -4.89966,
+    "osm": "way/306658233"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Admiralty Way / Melville Terrace / Meyrick Owen Way / Whites Farm Way mini-roundabout",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 51.69381,
+    "lon": -4.95259
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists call it a crossroads (ahead from Admiralty Way into Melville Terrace); mapped as a mini-roundabout, the junction at the test centre's way out."
+  },
+  {
+   "name": "Pier Road / Western Way / London Road / Water Street roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 51.69615,
+    "lon": -4.93925
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "Where every listed route starts and finishes; mapped as a small roundabout of short one-way pieces."
+  },
+  {
+   "name": "Laws Street / Bush Street / Albion Road mini-roundabout",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 51.69168,
+    "lon": -4.9404
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Melville Street / Pembroke Street mini-roundabout",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 51.69199,
+    "lon": -4.9486
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Market Street / Melville Street mini-roundabout",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 51.69215,
+    "lon": -4.94962
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "London Road / Waterloo Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 51.69432,
+    "lon": -4.9297
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "London Road / Ferry Lane lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 51.6936,
+    "lon": -4.9272
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists turn left and right here between London Road and Ferry Lane; the map has signals on its arms."
+  },
+  {
+   "name": "Ferry Lane / Bush Street junction",
+   "kind": "junction",
+   "map": {
+    "lat": 51.69323,
+    "lon": -4.92531
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "Mapped with islands and give way lines on Bush Street."
+  },
+  {
+   "name": "Water Street / Dimond Street crossroads",
+   "kind": "junction",
+   "map": {
+    "lat": 51.69365,
+    "lon": -4.93988
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Essex Road / Tremeyrick Street mini-roundabout",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 51.69793,
+    "lon": -4.93717
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Pembroke Ferry / Waterloo Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 51.70109,
+    "lon": -4.93088
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists' \"Ferry Rd roundabout\": approximate."
+  },
+  {
+   "name": "Holyland Road / Well Hill / Station Road mini-roundabout (Pembroke)",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 51.67406,
+    "lon": -4.90853
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "Pembroke town, about 3.8 km away."
+  },
+  {
+   "name": "Bush Hill / Ferry Lane / Pembroke Road lights (Pembroke)",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 51.686,
+    "lon": -4.9216
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists go from Ferry Lane on to Bush Hill; about 2.4 km away."
+  }
+ ],
+ "unmatched": [
+  "St Anne's Crescent",
+  "Monkton Road (the map's nearest match is Pembroke Road, Monkton)",
+  "Maiden Wells Road (Nominatim finds only the hamlet)",
+  "Eleventh Close (no such road found near the centre)",
+  "Pier Street (taken as a slip for Pier Road)",
+  "East Llanion roundabout (no named match)"
+ ],
+ "summary": "0 confirmed and 65 likely roads plus 13 likely junctions, all from one route-list author (drivingtesttips.biz; intensivelessons.co.uk copies it), whose routes start on Pier Road, 0.9 km from the current address in the Royal Dockyard, so leaving and returning rest on the map. One route meeting the overlap rule looks possible: the Pembroke Dock grid, Western Way, London Road and Ferry Lane are all named, with three or more named junctions in reach (the Admiralty Way mini-roundabout, the Pier Road roundabout, the London Road / Ferry Lane lights, the Laws Street mini-roundabout); no first-hand source was found."
+}

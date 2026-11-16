@@ -1,0 +1,1845 @@
+{
+  "centre": "Chesterfield",
+  "status": "ok",
+  "centre_position": {
+    "lat": 53.24456,
+    "lon": -1.42578
+  },
+  "address_checked": "2026-11-16",
+  "address": "Bus Garage, Approach Road, Stonegravels, Chesterfield S41 7LT",
+  "address_note": "gov.uk find-driving-test-centre, searched by postcode S41 7LT on 2026-11-16, lists Chesterfield at this address (car, motorcycle module 2, ADI part 2 and 3 tests). Its map pin, 53.24436,-1.42605, is about 30 m from the given position, at the mouth of Approach Road (an unnamed service road in OSM, way/98830428, off Sheffield Road); OSM has a point for the centre on it (node/8743052517, mislabelled \"DVLA Test Centre\"). Matches. Pass 1's Saltergate address (S40 1SN) is not the current one; no move date was found.",
+  "searches": [
+    "gov.uk find-driving-test-centre, postcode S41 7LT",
+    "Chesterfield driving test centre Approach Road test route roundabout tips instructor",
+    "\"Chesterfield\" mock driving test route video Whittington Moor roundabout",
+    "\"Chesterfield driving test\" reddit OR forum roads Sheffield Road Lockoford Lane"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/chesterfield-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/chesterfield-driving-test-routes-6-10.html",
+        "https://www.drivingtesttips.biz/driving-test-routes/chesterfield-driving-test-routes-new.html"
+      ],
+      "published": "routes 1-10 undated; routes 11-14 \"added 2019\"",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "Every route leaves and returns by Sheffield Road at Stonegravels, which fits the current Approach Road site.",
+      "names": [
+        "Sheffield Road",
+        "Lockoford Lane",
+        "Dunston Road",
+        "Racecourse Road",
+        "Coniston Road",
+        "Dunston Lane",
+        "Cobnar Drive",
+        "Cordwell Avenue",
+        "Kirkstone Road",
+        "Newby Road",
+        "Keswick Drive",
+        "Newbold Road",
+        "Ladywood Drive",
+        "Holme Park Avenue",
+        "Sheepbridge Lane",
+        "Broombank Road",
+        "Peveril Road",
+        "Highfield Lane",
+        "Strand Road",
+        "Salisbury Avenue",
+        "Birmingham Road",
+        "Coronation Road",
+        "Devonshire Street",
+        "Church Street",
+        "Brimington Road",
+        "Malkin Street",
+        "Lordsmill Street",
+        "St Mary's Gate",
+        "Holywell Cross",
+        "Holywell Street",
+        "Loundsley Green Road",
+        "Ashgate Road",
+        "Green Bank Drive",
+        "Old Hall Road",
+        "Chatsworth Road",
+        "West Bars",
+        "New Beetwell Street",
+        "Markham Road",
+        "Hady Hill",
+        "Manfeldt",
+        "Lucas Road",
+        "Highfield Avenue",
+        "Lansdowne Avenue",
+        "Station Road",
+        "Holland Road",
+        "Whittington Hill",
+        "Newbridge Lane",
+        "Gipsy Lane",
+        "Station Lane",
+        "Ashcroft Drive",
+        "Oak Bank Avenue",
+        "High Street, Old Whittington",
+        "Broomhill Road",
+        "Cromwell Road",
+        "Hawkley Avenue",
+        "Newbold Back Lane",
+        "Brockwell Lane",
+        "Pennine Way",
+        "Foljambe Road",
+        "Hollis Lane",
+        "Hady Lane",
+        "Old Sheffield Road",
+        "Devonshire Road North",
+        "Devonshire Avenue North",
+        "Whittington Road",
+        "Stone Lane",
+        "Handley Road",
+        "Derby Road",
+        "St Augustines Road",
+        "Boythorpe Road",
+        "Boythorpe Crescent",
+        "Hunloke Avenue",
+        "Walton Road",
+        "Cuttholme Road",
+        "Wenlock Crescent",
+        "Purbeck Avenue",
+        "West Street",
+        "Cross Street",
+        "Queen Street",
+        "Rother Way",
+        "Chesterfield Road, Brimington",
+        "Lansdowne Road, Brimington",
+        "Neale Bank",
+        "Wikeley Way",
+        "Brimington Road North",
+        "Kendal Road",
+        "Racecourse Mount",
+        "Chantry Avenue",
+        "Malson Way",
+        "Gloucester Road",
+        "Highfield View Road",
+        "Tapton View Road",
+        "Highfield Road",
+        "Spital Lane",
+        "Mansfield Road",
+        "Hassocky Lane",
+        "Storforth Lane",
+        "St Philips Drive",
+        "The Green, Hasland",
+        "Broomfield Avenue",
+        "Hillcrest Road",
+        "Gorse Valley Road",
+        "Edmund Street",
+        "St Johns Road",
+        "Levens Way",
+        "Littlemoor",
+        "Linacre Road",
+        "Wardgate Way",
+        "Chester Street",
+        "Rutland Road",
+        "Saltergate",
+        "Edinburgh Road",
+        "Deepsick Lane",
+        "Ulverston Road",
+        "Windermere Road",
+        "Wythburn Road",
+        "Hasland bypass"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Derbyshire/Chesterfield",
+      "published": "undated",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "copy_of": "s1",
+      "note": "Routes 1-14 repeat s1 word for word, so it counts once with s1.",
+      "names": []
+    },
+    {
+      "id": "s3",
+      "kind": "route-list",
+      "author": "motorcycletesttips.uk",
+      "url": "https://www.motorcycletesttips.uk/riding-test/motorcycle-test-routes/chesterfield-motorcycle-test-routes/",
+      "published": "undated",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "same_author_as": "s1",
+      "note": "Motorcycle module 2 routes from the same centre, in the same format and glossary as s1 (taken as the same publisher, so it confirms nothing on its own).",
+      "names": [
+        "Sheffield Road",
+        "Gloucester Road",
+        "Malson Way",
+        "Chantrey Avenue",
+        "Outram Road",
+        "Highfield Lane",
+        "Lansdowne Avenue",
+        "Dukes Drive",
+        "Littlemoor",
+        "Newbold Road",
+        "Loundsley Green Road",
+        "Ashgate Road",
+        "Chester Street",
+        "Chatsworth Road",
+        "West Bars",
+        "Rutland Road",
+        "Saltergate",
+        "Tapton View Road"
+      ]
+    },
+    {
+      "id": "s4",
+      "kind": "official",
+      "author": "gov.uk (DVSA): find a driving test centre",
+      "url": "https://www.gov.uk/find-driving-test-centre",
+      "published": "live service",
+      "read_on": "2026-11-16",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Address only; silent on routes."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://payhip.com/b/LB8No",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://www.belpernews.co.uk/news/transport/chesterfield-driving-instructor-calls-for-action-as-whittington-moor-roundabout-remains-dangerous-and-congested-and-toby-perkins-mp-slams-completely-unacceptable-wait-for-permanent-signs-4601586",
+      "why": "news site whose robots notice forbids automated extraction (and it returned 403); left alone. Its headline is about an instructor and the Whittington Moor roundabout; nothing taken from the page."
+    },
+    {
+      "url": "https://www.matlockmercury.co.uk/news/transport/watch-as-we-drive-around-busy-chesterfield-roundabout-with-driving-instructor-to-explain-dangerous-changes-4238172",
+      "why": "same publisher and terms as above; 403; left alone"
+    },
+    {
+      "url": "https://drivingdata-uk.pages.dev/test-centres/chesterfield/",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/chesterfield/mock-driving-test",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://drivingtestpass.pages.dev/centres/chesterfield",
+      "why": "template page, names no roads"
+    }
+  ],
+  "places": [
+    {
+      "name": "Sheffield Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24445,
+        "lon": -1.42612,
+        "osm": "way/141079307"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely",
+      "note": "The road the test centre's way out (Approach Road) joins; every listed route leaves and returns by it. Nominatim's first hit is the same road at Whittington Moor (way/836205417); the way past the centre is from the OSM download."
+    },
+    {
+      "name": "Queen Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23986,
+        "lon": -1.43318,
+        "osm": "way/26935256"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Nominatim's first hit is a Queen Street in Barrow Hill, 3 km off; the listed one (between Cross Street and Newbold Road) is in the OSM download about 720 m south-west of the centre."
+    },
+    {
+      "name": "Lockoford Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.25113,
+        "lon": -1.42477,
+        "osm": "way/659152095"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Dunston Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.26372,
+        "lon": -1.43546,
+        "osm": "way/35877592"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Racecourse Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2581,
+        "lon": -1.43528,
+        "osm": "way/143496755"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coniston Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.26087,
+        "lon": -1.44588,
+        "osm": "way/24988825"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Dunston Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.25728,
+        "lon": -1.4473,
+        "osm": "way/1861436"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cobnar Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.26112,
+        "lon": -1.45064,
+        "osm": "way/25047098"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cordwell Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.26025,
+        "lon": -1.45579,
+        "osm": "way/25047075"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kirkstone Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25873,
+        "lon": -1.45488,
+        "osm": "way/44525352"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newby Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25825,
+        "lon": -1.45823,
+        "osm": "way/25046995"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Keswick Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.25803,
+        "lon": -1.45263,
+        "osm": "way/24989742"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newbold Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2516,
+        "lon": -1.44738,
+        "osm": "way/5170124"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ladywood Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.25415,
+        "lon": -1.46153,
+        "osm": "way/28785061"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holme Park Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.25316,
+        "lon": -1.46086,
+        "osm": "way/28785060"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sheepbridge Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.26746,
+        "lon": -1.44452,
+        "osm": "way/25047623"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broombank Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.27206,
+        "lon": -1.45078,
+        "osm": "way/409571695"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Peveril Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25155,
+        "lon": -1.43134,
+        "osm": "way/141479191"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highfield Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.25131,
+        "lon": -1.43864,
+        "osm": "way/44660202"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stand Road (given as \"Strand Rd\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.25655,
+        "lon": -1.43098,
+        "osm": "way/141492134"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Salisbury Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.25435,
+        "lon": -1.43777,
+        "osm": "way/141487218"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brimington Road North (given as \"Birmingham Rd North\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.25825,
+        "lon": -1.42056,
+        "osm": "way/103480101"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coronation Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25922,
+        "lon": -1.39842,
+        "osm": "way/156258610"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Devonshire Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.25706,
+        "lon": -1.39756,
+        "osm": "way/142797508"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brimington Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24395,
+        "lon": -1.41891,
+        "osm": "way/100444131"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Malkin Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23808,
+        "lon": -1.42206,
+        "osm": "way/4371387"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lordsmill Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23212,
+        "lon": -1.42269,
+        "osm": "way/527315412"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Mary's Gate",
+      "kind": "road",
+      "map": {
+        "lat": 53.23613,
+        "lon": -1.42396,
+        "osm": "way/448052407"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holywell Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23787,
+        "lon": -1.42593,
+        "osm": "way/409880034"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Loundsley Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24779,
+        "lon": -1.4568,
+        "osm": "way/25969499"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ashgate Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.23857,
+        "lon": -1.43819,
+        "osm": "way/138929469"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Greenbank Drive (given as \"Greeb Bank Drive\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.24143,
+        "lon": -1.45841,
+        "osm": "way/25940059"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Old Hall Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.23499,
+        "lon": -1.45308,
+        "osm": "way/44807641"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chatsworth Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.23341,
+        "lon": -1.44858,
+        "osm": "way/5170099"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "West Bars",
+      "kind": "road",
+      "map": {
+        "lat": 53.23537,
+        "lon": -1.4375,
+        "osm": "way/141247346"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "New Beetwell Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23497,
+        "lon": -1.43143,
+        "osm": "way/141249152"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Markham Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.23459,
+        "lon": -1.43429,
+        "osm": "way/4849208"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hady Hill",
+      "kind": "road",
+      "map": {
+        "lat": 53.23363,
+        "lon": -1.41059,
+        "osm": "way/242488125"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mansfeldt Road (given as \"Manfeldt\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.24959,
+        "lon": -1.4414,
+        "osm": "way/29142374"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lucas Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24828,
+        "lon": -1.44047,
+        "osm": "way/38212718"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.24843,
+        "lon": -1.44214,
+        "osm": "way/25445509"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lansdowne Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.25239,
+        "lon": -1.44294,
+        "osm": "way/25211924"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25887,
+        "lon": -1.40864,
+        "osm": "way/142061944"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holland Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2676,
+        "lon": -1.43171,
+        "osm": "way/240301350"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whittington Hill",
+      "kind": "road",
+      "map": {
+        "lat": 53.26578,
+        "lon": -1.4273,
+        "osm": "way/143499925"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newbridge Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.26056,
+        "lon": -1.40941,
+        "osm": "way/37284530"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gypsy Lane (given as \"Gipsy Lane\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.26603,
+        "lon": -1.42125,
+        "osm": "way/141534937"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.26833,
+        "lon": -1.42289,
+        "osm": "way/143499618"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ashcroft Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.271,
+        "lon": -1.41831,
+        "osm": "way/43968055"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Oak Bank Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.26991,
+        "lon": -1.41985,
+        "osm": "way/43968064"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "High Street (Old Whittington)",
+      "kind": "road",
+      "map": {
+        "lat": 53.27038,
+        "lon": -1.42345,
+        "osm": "way/43968014"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broomhill Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.26923,
+        "lon": -1.43147,
+        "osm": "way/240307432"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cromwell Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24271,
+        "lon": -1.43773,
+        "osm": "way/26935257"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hawksley Avenue (given as \"Hawkley Ave\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.24252,
+        "lon": -1.43916,
+        "osm": "way/44634517"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newbold Back Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.24502,
+        "lon": -1.44598,
+        "osm": "way/25445504"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brockwell Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.24284,
+        "lon": -1.44613,
+        "osm": "way/44677336"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pennine Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.24434,
+        "lon": -1.45813,
+        "osm": "way/5215238"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Foljambe Road (given as \"Foliambe Rd\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.23789,
+        "lon": -1.43683,
+        "osm": "way/42256986"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hollis Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.23397,
+        "lon": -1.42233,
+        "osm": "way/62202778"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hady Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.22957,
+        "lon": -1.40121,
+        "osm": "way/140789349"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Devonshire Road North",
+      "kind": "road",
+      "map": {
+        "lat": 53.27242,
+        "lon": -1.40213,
+        "osm": "way/24912169"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Devonshire Avenue North",
+      "kind": "road",
+      "map": {
+        "lat": 53.2744,
+        "lon": -1.4017,
+        "osm": "way/43968101"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whittington Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.27694,
+        "lon": -1.39627,
+        "osm": "way/253874204"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Further out (4.1 km): roads beyond a short practice route."
+    },
+    {
+      "name": "Stone Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.27679,
+        "lon": -1.404,
+        "osm": "way/5034387"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Handley Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.27584,
+        "lon": -1.40613,
+        "osm": "way/143496447"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Derby Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.22521,
+        "lon": -1.42626,
+        "osm": "way/29014319"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Augustines Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2234,
+        "lon": -1.42971,
+        "osm": "way/44677672"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Boythorpe Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.22566,
+        "lon": -1.43431,
+        "osm": "way/44677650"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Boythorpe Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 53.22867,
+        "lon": -1.43695,
+        "osm": "way/840221874"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hunloke Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.22807,
+        "lon": -1.44542,
+        "osm": "way/44634366"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Walton Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.22299,
+        "lon": -1.44953,
+        "osm": "way/44634348"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cuttholme Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24304,
+        "lon": -1.4614,
+        "osm": "way/44677403"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wenlock Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 53.24154,
+        "lon": -1.45419,
+        "osm": "way/25471461"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Purbeck Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.24317,
+        "lon": -1.45108,
+        "osm": "way/25471462"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "West Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23981,
+        "lon": -1.43734,
+        "osm": "way/141247654"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cross Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.24003,
+        "lon": -1.43477,
+        "osm": "way/29334651"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rother Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.25173,
+        "lon": -1.42013,
+        "osm": "way/126627844"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chesterfield Road (Brimington)",
+      "kind": "road",
+      "map": {
+        "lat": 53.25331,
+        "lon": -1.40705,
+        "osm": "way/44525828"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lansdowne Road (Brimington)",
+      "kind": "road",
+      "map": {
+        "lat": 53.25477,
+        "lon": -1.40852,
+        "osm": "way/408441033"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Neale Bank",
+      "kind": "road",
+      "map": {
+        "lat": 53.2559,
+        "lon": -1.40647,
+        "osm": "way/28302872"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wikeley Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.25518,
+        "lon": -1.40474,
+        "osm": "way/44527245"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kendal Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25959,
+        "lon": -1.44299,
+        "osm": "way/25112033"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Racecourse Mount",
+      "kind": "road",
+      "map": {
+        "lat": 53.25965,
+        "lon": -1.43752,
+        "osm": "way/34143929"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chantrey Avenue (given as \"Chantry Ave\")",
+      "kind": "road",
+      "map": {
+        "lat": 53.24939,
+        "lon": -1.43056,
+        "osm": "way/44660213"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Malson Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.24966,
+        "lon": -1.43333,
+        "osm": "way/36801109"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gloucester Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24817,
+        "lon": -1.43284,
+        "osm": "way/26456141"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highfield View Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24584,
+        "lon": -1.43278,
+        "osm": "way/38350500"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tapton View Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24631,
+        "lon": -1.4389,
+        "osm": "way/141237425"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24421,
+        "lon": -1.43472,
+        "osm": "way/26979662"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Spital Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.22751,
+        "lon": -1.40665,
+        "osm": "way/141270306"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mansfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.22026,
+        "lon": -1.40667,
+        "osm": "way/1232752578"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hassocky Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.208,
+        "lon": -1.37873,
+        "osm": "way/104944490"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Matched 5.4 km south-east (Temple Normanton); on the M1 side of Hasland, beyond a short practice route."
+    },
+    {
+      "name": "Storforth Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.22059,
+        "lon": -1.41652,
+        "osm": "way/41242297"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Philips Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.22235,
+        "lon": -1.41745,
+        "osm": "way/140187324"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Green (Hasland)",
+      "kind": "road",
+      "map": {
+        "lat": 53.22048,
+        "lon": -1.4083,
+        "osm": "way/142436065"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broomfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.21713,
+        "lon": -1.40708,
+        "osm": "way/26342609"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hillcrest Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.21755,
+        "lon": -1.40405,
+        "osm": "way/26342608"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gorse Valley Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.21993,
+        "lon": -1.39966,
+        "osm": "way/34116418"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Edmund Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.26088,
+        "lon": -1.4349,
+        "osm": "way/38047160"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Johns Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25821,
+        "lon": -1.43698,
+        "osm": "way/44660198"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Levens Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.25835,
+        "lon": -1.44277,
+        "osm": "way/25112055"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Littlemoor",
+      "kind": "road",
+      "map": {
+        "lat": 53.25674,
+        "lon": -1.4458,
+        "osm": "way/44660135"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Linacre Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2488,
+        "lon": -1.46395,
+        "osm": "way/44677315"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wardgate Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.24543,
+        "lon": -1.47054,
+        "osm": "way/503278266"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chester Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.23684,
+        "lon": -1.44142,
+        "osm": "way/37655008"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rutland Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2368,
+        "lon": -1.43603,
+        "osm": "way/141247347"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Saltergate",
+      "kind": "road",
+      "map": {
+        "lat": 53.23781,
+        "lon": -1.43363,
+        "osm": "way/44088308"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Edinburgh Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.24463,
+        "lon": -1.4372,
+        "osm": "way/27667860"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ulverston Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25433,
+        "lon": -1.44927,
+        "osm": "way/24990535"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windermere Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25632,
+        "lon": -1.45094,
+        "osm": "way/24990510"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wythburn Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.25595,
+        "lon": -1.45748,
+        "osm": "way/24990404"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Outram Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.2498,
+        "lon": -1.4321,
+        "osm": "way/38212710"
+      },
+      "sources": [
+        "s3"
+      ],
+      "confidence": "likely",
+      "note": "Named by the motorcycle routes only; placed from the OSM download."
+    },
+    {
+      "name": "Approach Road on to Sheffield Road (the way out of and into the test centre)",
+      "kind": "junction",
+      "map": {
+        "lat": 53.24445,
+        "lon": -1.42611,
+        "osm": "node/1143264884"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely",
+      "note": "Approach Road is an unnamed service road in OSM (way/98830428); gov.uk gives the centre as the bus garage on it."
+    },
+    {
+      "name": "Hazlehurst Lane mini-roundabout on Sheffield Road, just north of the centre",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 53.24563,
+        "lon": -1.4257,
+        "osm": "node/1544421716"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The \"mini roundabout ahead\" straight after leaving left in most listed routes."
+    },
+    {
+      "name": "Sheffield Road / Peveril Road / Lockoford Lane roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.25064,
+        "lon": -1.42848,
+        "osm": "way/141479189"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Peveril Road / Highfield Lane mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 53.25255,
+        "lon": -1.43335,
+        "osm": "node/277306189"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lockoford Lane / A61 roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.25161,
+        "lon": -1.42293,
+        "osm": null
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Signal-controlled roundabout on the A61 (trunk) by the retail park."
+    },
+    {
+      "name": "Whittington Moor roundabout (A61 / Sheffield Road / Dunston Road / Station Road / Brimington Road North)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.26037,
+        "lon": -1.42878,
+        "osm": "way/1861435"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holywell Cross mini-roundabout (Sheffield Road / Newbold Road / Holywell Street)",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 53.23901,
+        "lon": -1.42712,
+        "osm": "node/1544365651"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highfield Lane / Newbold Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 53.25107,
+        "lon": -1.44647,
+        "osm": "node/35898906"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gloucester Road on to Sheffield Road",
+      "kind": "junction",
+      "map": {
+        "lat": 53.24884,
+        "lon": -1.42727,
+        "osm": "node/1544421748"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [
+    "Old Sheffield Road (Nominatim finds only Sheffield Road, Old Whittington)",
+    "Deepsick Lane (not found near the centre)",
+    "Church Street (the listed one follows Devonshire Street, Brimington; the only match is in Poolsbrook, 5.7 km)",
+    "Hasland bypass / A617 (named as \"A617 / M1 Hasland By Pass\"; road number only, not a road name)"
+  ],
+  "summary": "0 confirmed and 112 likely roads plus 9 likely junctions, all from one route-list publisher (drivingtesttips.biz, copied by intensivelessons.co.uk; its motorcycle sister site counted with it), whose routes fit the current Approach Road site (routes 11-14 dated 2019). Two routes meeting the overlap rule look possible: Sheffield Road, Peveril Road, Highfield Lane, Newbold Road and Gloucester Road all lie within 1.5 km, with three roundabouts and four mini-roundabouts named; nothing is confirmed by a second separate source, so judgement and the map carry the weight."
+}

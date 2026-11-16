@@ -1,0 +1,9 @@
+[
+ {
+  "op": "drop-tag",
+  "type": "way",
+  "id": 1240337251,
+  "k": "building",
+  "why": "Pier Road roundabout (Western Way, London Road, Water Street, Pier Road): a small structure mapped on its island stops the roundabout being found, so the scene had a loop of one-way roads the route planner would not drive."
+ }
+]

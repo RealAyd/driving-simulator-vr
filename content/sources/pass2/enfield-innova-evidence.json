@@ -1,0 +1,1282 @@
+{
+  "centre": "Enfield (Innova Business Park)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.67686,
+    "lon": -0.02135
+  },
+  "address_checked": "2026-11-16",
+  "address": "Solar Way, Innova Park, Enfield EN3 7XY",
+  "address_note": "gov.uk's list of test centres a test can be moved to (updated 15 Oct 2026) lists Enfield (Innova Business Park) as open, beside Enfield (Brancroft Way); the address itself is from the driving school and test-centre listings (Solar Way, Innova Park, EN3 7XY), not read on gov.uk's centre finder (not reachable by URL from this machine). OpenStreetMap has the Driving Test Centre building (DVSA, way 308739086) on the east side of Solar Way at its north end, about 210 m north-east of the position given, reached by a service road (way 37760028) off Solar Way; the position given is on Solar Way, so it matches the site. Recheck on the gov.uk centre finder when reachable. One aggregator in pass 1 put the centre in Lancashire: a data error, not a move.",
+  "searches": [
+    "\"Enfield\" Innova Business Park driving test centre Solar Way gov.uk",
+    "Enfield Innova driving test route Mollison Avenue roundabout tips instructor",
+    "Enfield driving test centre mock test route video Bullsmoor Lane Hertford Road"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/enfield-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/enfield-driving-test-routes-4-6.html",
+        "https://www.drivingtesttips.biz/enfield-driving-test-routes-7-8.html"
+      ],
+      "published": "undated",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "Eight routes for 'Enfield'; every one leaves and returns by Mollison Avenue, so they fit the Innova Business Park site (Brancroft Way is off Brimsdown, further south). Credible on the map round the current address.",
+      "names": [
+        "Mollison Avenue (A1055)",
+        "Lea Valley Road",
+        "Kings Head Hill",
+        "The Green (Chingford)",
+        "King’s Road (Chingford)",
+        "Whitehall Road (Chingford)",
+        "Forest Side (Chingford)",
+        "Victoria Road (Chingford)",
+        "Crescent Road (Chingford)",
+        "Forest Avenue (Chingford)",
+        "Station Road (Chingford)",
+        "Sewardstone Road",
+        "Maida Avenue",
+        "College Gardens",
+        "Nevin Drive",
+        "The Ridgeway (Chingford)",
+        "Connaught Avenue (Chingford)",
+        "Eglington Road",
+        "Mornington Road (Chingford)",
+        "Mount View Road (Chingford)",
+        "Parkhill Road (Chingford)",
+        "Drysdale Avenue",
+        "Markfield Gardens",
+        "Amesbury Drive",
+        "Hawkwood Crescent",
+        "Yardley Lane",
+        "Boardman Avenue",
+        "Sun Street (Waltham Abbey)",
+        "Quaker Lane",
+        "Church Street (Waltham Abbey)",
+        "Highbridge Street",
+        "Station Road (Waltham Abbey)",
+        "Eleanor Cross Road",
+        "Monarchs Way (A121)",
+        "Hertford Road (A1010)",
+        "Bilton Way",
+        "Newbury Avenue",
+        "Preston Gardens",
+        "Ordnance Road",
+        "Winston Churchill Way",
+        "Great Cambridge Road (A10)",
+        "Bullsmoor Lane",
+        "Bullsmoor Ride",
+        "Kingsfield Way",
+        "Turkey Street",
+        "Winnington Road",
+        "Longfield Avenue",
+        "The Ride",
+        "Alexandra Road",
+        "Suez Road",
+        "Mandeville Road",
+        "Totteridge Road",
+        "Hoe Lane",
+        "Durants Park Avenue",
+        "Scotland Green Road",
+        "Curzon Avenue",
+        "Napier Road",
+        "Alma Road",
+        "Green Street",
+        "Westmoor Road",
+        "Carterhatch Road",
+        "The Sunny Road",
+        "Addison Road",
+        "Park Road (Freezywater)",
+        "Forest Road (Freezywater)",
+        "Chestnut Road",
+        "Meridian Way",
+        "Picketts Lock Lane",
+        "Montagu Road",
+        "Charlton Road",
+        "Sandhurst Road",
+        "Boundary Road",
+        "Nightingale Road",
+        "Durants Road"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Enfield-Innova-Business-Park",
+      "published": "undated",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "copy_of": "s1",
+      "note": "Routes 1-8 repeat s1 word for word under the Innova Business Park name: counts once with s1 and adds no confirmation.",
+      "names": []
+    },
+    {
+      "id": "s3",
+      "kind": "instructor-page",
+      "author": "driveJohnson's (Enfield page, its local instructors' test tips)",
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/london/enfield/",
+      "published": "undated (pass rates to 2025-26)",
+      "read_on": "2026-11-16",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "note": "Names the double mini-roundabout on Hertford Road as a usual part of the test; also warns that the view is poor turning right on to the main road from the centre, and that moving off from the kerb into traffic is tricky here (no road named). The quiet estate it names is for first lessons, not tests.",
+      "names": [
+        "Hertford Road",
+        "Hertford Road double mini-roundabout"
+      ]
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/enfield-innova-business-park-driving-test-routes",
+      "why": "a route app's sales page (Route-Led): its free routes are a preview of paid routes ('complete route available on the app'); never used"
+    },
+    {
+      "url": "https://payhip.com/b/mcGp6",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/test-centres/practical/greater-london-driving-test-centres/enfield-innova-business-park",
+      "why": "redirects to a general page that names no roads"
+    },
+    {
+      "url": "https://enfielddrivingtestcentreuk.blogspot.com/2025/11/understanding-enfield-driving-test.html",
+      "why": "generic text naming no roads"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/enfield-innova-business-park",
+      "why": "template content per pass 1; names no roads"
+    },
+    {
+      "url": "https://www.drivingtesttips.biz/enfield-driving-test-centre.html",
+      "why": "centre details only"
+    }
+  ],
+  "places": [
+    {
+      "name": "Mollison Avenue (A1055)",
+      "kind": "road",
+      "map": {
+        "lat": 51.67415,
+        "lon": -0.01842,
+        "osm": "way/336455801"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lea Valley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.63861,
+        "lon": -0.0208,
+        "osm": "way/23089135"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kings Head Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.63249,
+        "lon": -0.0065,
+        "osm": "way/9380107"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Green (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63132,
+        "lon": -0.0002,
+        "osm": "way/4965558"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "King’s Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.62895,
+        "lon": 0.00245,
+        "osm": "way/261803922"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whitehall Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.62704,
+        "lon": 0.01865,
+        "osm": "way/39357920"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Forest Side (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.62931,
+        "lon": 0.01681,
+        "osm": "way/21396739"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Forrest Side in the source"
+    },
+    {
+      "name": "Victoria Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63078,
+        "lon": 0.01287,
+        "osm": "way/21396792"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Crescent Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63228,
+        "lon": 0.0142,
+        "osm": "way/21397580"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Forest Avenue (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63396,
+        "lon": 0.01298,
+        "osm": "way/21397520"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Forrest Ave in the source"
+    },
+    {
+      "name": "Station Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63253,
+        "lon": 0.00947,
+        "osm": "node/6997675368"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sewardstone Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.64392,
+        "lon": -0.01111,
+        "osm": "way/536730445"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "also spelt Stewardstone in the source"
+    },
+    {
+      "name": "Maida Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.63349,
+        "lon": -0.01079,
+        "osm": "way/9380860"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "College Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.63084,
+        "lon": -0.00673,
+        "osm": "way/9381028"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Nevin Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.62855,
+        "lon": -0.00806,
+        "osm": "way/9380972"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Ridgeway (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.6272,
+        "lon": -0.00752,
+        "osm": "way/4968779"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Connaught Avenue (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63486,
+        "lon": 0.00506,
+        "osm": "way/9381577"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eglington Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.63496,
+        "lon": 0.00364,
+        "osm": "way/9381376"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mornington Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63418,
+        "lon": 0.00184,
+        "osm": "way/23209384"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mount View Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63281,
+        "lon": 0.00101,
+        "osm": "way/9381240"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Parkhill Road (Chingford)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63235,
+        "lon": -0.00078,
+        "osm": "way/1442119793"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Park Hill Rd in the source"
+    },
+    {
+      "name": "Drysdale Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.63778,
+        "lon": -0.00913,
+        "osm": "way/4968086"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Markfield Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.63606,
+        "lon": -0.01115,
+        "osm": "way/4968093"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Amesbury Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.63793,
+        "lon": -0.01147,
+        "osm": "way/4968096"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hawkwood Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.64054,
+        "lon": -0.00665,
+        "osm": "way/536730446"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Yardley Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.64191,
+        "lon": -0.00815,
+        "osm": "way/15804411"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Yeardley Lane in the source"
+    },
+    {
+      "name": "Boardman Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.64381,
+        "lon": -0.00994,
+        "osm": "way/10309489"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sun Street (Waltham Abbey)",
+      "kind": "road",
+      "map": {
+        "lat": 51.68682,
+        "lon": -0.00104,
+        "osm": "way/4496215"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Quaker Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.68602,
+        "lon": -0.00065,
+        "osm": "way/1550358942"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Street (Waltham Abbey)",
+      "kind": "road",
+      "map": {
+        "lat": 51.6871,
+        "lon": -0.00353,
+        "osm": "way/4495964"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Highbridge Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.68691,
+        "lon": -0.01024,
+        "osm": "way/23130405"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road (Waltham Abbey)",
+      "kind": "road",
+      "map": {
+        "lat": 51.68674,
+        "lon": -0.01163,
+        "osm": "way/143129175"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eleanor Cross Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6857,
+        "lon": -0.02965,
+        "osm": "way/37794645"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Eleanor Gross Rd in the source"
+    },
+    {
+      "name": "Monarchs Way (A121)",
+      "kind": "road",
+      "map": {
+        "lat": 51.6871,
+        "lon": -0.03191,
+        "osm": "way/3630093"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hertford Road (A1010)",
+      "kind": "road",
+      "map": {
+        "lat": 51.66799,
+        "lon": -0.0417,
+        "osm": "way/621794566"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Bilton Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.66526,
+        "lon": -0.02747,
+        "osm": "way/608456995"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newbury Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.66948,
+        "lon": -0.02676,
+        "osm": "way/608456996"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Preston Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.66889,
+        "lon": -0.02677,
+        "osm": "node/469778526"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "the source’s Preston Ave; the map has Preston Gardens off Newbury Avenue"
+    },
+    {
+      "name": "Ordnance Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.67149,
+        "lon": -0.03468,
+        "osm": "way/8787563"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Winston Churchill Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.68953,
+        "lon": -0.03928,
+        "osm": "way/3630096"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Great Cambridge Road (A10)",
+      "kind": "road",
+      "map": {
+        "lat": 51.66023,
+        "lon": -0.05912,
+        "osm": "way/320826806"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "the source’s A10"
+    },
+    {
+      "name": "Bullsmoor Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.67855,
+        "lon": -0.0564,
+        "osm": "way/4045182"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bullsmoor Ride",
+      "kind": "road",
+      "map": {
+        "lat": 51.68109,
+        "lon": -0.04783,
+        "osm": "way/4210417"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsfield Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.68031,
+        "lon": -0.03818,
+        "osm": "way/4211988"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Turkey Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.67323,
+        "lon": -0.04697,
+        "osm": "node/6135938647"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Winnington Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.67021,
+        "lon": -0.04707,
+        "osm": "way/247190709"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Longfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.66897,
+        "lon": -0.04443,
+        "osm": "way/4209610"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Ride",
+      "kind": "road",
+      "map": {
+        "lat": 51.65099,
+        "lon": -0.04019,
+        "osm": "way/2847638"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Alexandra Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6486,
+        "lon": -0.03751,
+        "osm": "way/2847604"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Suez Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.65078,
+        "lon": -0.02973,
+        "osm": "way/23088684"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mandeville Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6763,
+        "lon": -0.03419,
+        "osm": "way/691546307"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Totteridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.67295,
+        "lon": -0.03622,
+        "osm": "way/4213591"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hoe Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.66561,
+        "lon": -0.05269,
+        "osm": "way/4208591"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Hoc Lane in the source"
+    },
+    {
+      "name": "Durants Park Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.65006,
+        "lon": -0.042,
+        "osm": "way/1746505"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Scotland Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.64594,
+        "lon": -0.03907,
+        "osm": "way/658979902"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Curzon Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.64498,
+        "lon": -0.0369,
+        "osm": "way/2847600"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Napier Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.64367,
+        "lon": -0.03711,
+        "osm": "way/2847601"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Alma Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.64536,
+        "lon": -0.03482,
+        "osm": "way/369690412"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Green Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.65511,
+        "lon": -0.03201,
+        "osm": "way/8128709"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Westmoor Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.65728,
+        "lon": -0.03987,
+        "osm": "way/299274905"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Carterhatch Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.65991,
+        "lon": -0.03852,
+        "osm": "way/3727530"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Sunny Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.66101,
+        "lon": -0.03676,
+        "osm": "way/3987610"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Addison Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6622,
+        "lon": -0.04072,
+        "osm": "way/4209960"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Park Road (Freezywater)",
+      "kind": "road",
+      "map": {
+        "lat": 51.67488,
+        "lon": -0.029,
+        "osm": "way/4212045"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Forest Road (Freezywater)",
+      "kind": "road",
+      "map": {
+        "lat": 51.67543,
+        "lon": -0.0313,
+        "osm": "way/4212047"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chestnut Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6761,
+        "lon": -0.03146,
+        "osm": "way/4212046"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Meridian Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.6364,
+        "lon": -0.03733,
+        "osm": "way/262419161"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Picketts Lock Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.62731,
+        "lon": -0.0344,
+        "osm": "way/32625351"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Montagu Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.62851,
+        "lon": -0.0446,
+        "osm": "way/401113117"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "spelt Montague Rd in the source"
+    },
+    {
+      "name": "Charlton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.63284,
+        "lon": -0.04064,
+        "osm": "way/8129334"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sandhurst Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.63877,
+        "lon": -0.04218,
+        "osm": "way/3755024"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Boundary Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.63919,
+        "lon": -0.04654,
+        "osm": "way/3755023"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Nightingale Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.63489,
+        "lon": -0.04475,
+        "osm": "way/3625310"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Durants Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.64851,
+        "lon": -0.04053,
+        "osm": "way/83154828"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mollison Avenue / Solar Way roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.67926,
+        "lon": -0.01985
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Met going ahead on Mollison Avenue on the way back from Bullsmoor Lane in the lists; the business park’s way out to the north and west."
+    },
+    {
+      "name": "Hertford Road / Bullsmoor Lane / Mollison Avenue lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.67995,
+        "lon": -0.03405
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ordnance Road / Mollison Avenue lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.67081,
+        "lon": -0.01945
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hertford Road / Ordnance Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.6719,
+        "lon": -0.03995
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Passed ahead on Hertford Road in the lists."
+    },
+    {
+      "name": "Mandeville Road / Hertford Road junction (end of Mandeville Road)",
+      "kind": "junction",
+      "map": {
+        "lat": 51.67687,
+        "lon": -0.03515
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Out of Mandeville Road on to Hertford Road, at its north end by Holly Road."
+    },
+    {
+      "name": "Hertford Road double mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.65988,
+        "lon": -0.04673
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "confirmed",
+      "note": "Placed at the Carterhatch Lane mini-roundabout on Hertford Road, the northern of the pair the lists drive through between Longfield Avenue and The Ride (approximate); about 2.5 km south-west of the centre."
+    },
+    {
+      "name": "Napier Road / Alma Road / Green Street mini-roundabouts",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.65489,
+        "lon": -0.03435
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate: placed at the Alma Road / Green Street mini-roundabout"
+    },
+    {
+      "name": "Monarchs Way roundabout (Waltham Cross)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.68351,
+        "lon": -0.03295
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate"
+    },
+    {
+      "name": "Lea Valley Road / Mollison Avenue roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.64554,
+        "lon": -0.03418
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate: placed on Lea Valley Road near Mollison Avenue"
+    },
+    {
+      "name": "Kings Head Hill / The Green lights (Chingford)",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.63249,
+        "lon": -0.0065
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate"
+    },
+    {
+      "name": "King’s Road mini-roundabout (Chingford)",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.62895,
+        "lon": 0.00245
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "approximate"
+    }
+  ],
+  "unmatched": [],
+  "summary": "1 confirmed and 73 likely roads, 1 confirmed and 10 likely junctions: one route-list author (drivingtesttips.biz, copied word for word by intensivelessons.co.uk) whose eight routes all leave and return by Mollison Avenue, confirmed for Hertford Road and its double mini-roundabout by a driving school's instructor tips (driveJohnson's). A route meeting the overlap rule looks possible (Mollison Avenue, Ordnance Road, Hertford Road, Totteridge and Mandeville Roads within 1.5 km, with the Mollison Avenue roundabout and three sets of known lights); the nearest mini-roundabouts, the Hertford Road pair, are about 2.5 km away."
+}

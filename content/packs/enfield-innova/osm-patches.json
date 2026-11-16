@@ -1,0 +1,9 @@
+[
+ {
+  "op": "move-node",
+  "id": 442919702,
+  "lat": 51.6778122,
+  "lon": -0.0207561,
+  "why": "The test centre's way in (service road way 37760028, access=destination) stops at the cycle path beside Solar Way, 17 m short of the road, so the scene had no way out of the centre. Its first node moved west to the edge of Solar Way, where the way in meets it."
+ }
+]

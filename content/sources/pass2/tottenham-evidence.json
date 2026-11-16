@@ -1,0 +1,125 @@
+{
+  "centre": "Tottenham",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.60746,
+    "lon": -0.079
+  },
+  "address_checked": "2026-11-16",
+  "address": "Annex Building, Selby Centre, Selby Road, Tottenham, London N17 8JL",
+  "address_note": "gov.uk's centre finder could not be opened from this machine (find-driving-test-centre service did not answer; gov.uk site search does not list centre pages). Address taken from DVSA's own bulletin of 2 Dec 2016 (new centre on Selby Road from 9 Jan 2017, first said to be temporary) and matched by a page quoting DVSA's find-a-centre data captured 2026-05-12 (passrates.uk) and by 2023-24 pass-rate listings; pass 1 records 12,178 tests in 2024-25, so the centre is open at this address. OSM places Selby Road way/5739684 about 100 m from the given position, so it matches. Recheck on gov.uk find-driving-test-centre when reachable.",
+  "searches": [
+    "\"Tottenham driving test centre\" Selby Centre N17 8JL",
+    "Tottenham driving test route Selby Centre roads roundabout mock test video",
+    "Tottenham driving test reddit \"Great Cambridge\" OR \"White Hart Lane\" OR \"Selby\" test route passed failed"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (editorial text on its centre page)",
+      "url": "https://drivingtesttips.biz/driving-test-centres/tottenham-driving-test-centre.html",
+      "published": "2017 (images dated 2017-07); page updated since",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": ["Selby Road", "A10", "North Circular"],
+      "note": "General description only (quiet residential start, then multi-lane roundabouts, busy junctions, crossroads, likely A10 or North Circular dual carriageway). No turn-by-turn routes on the free page."
+    },
+    {
+      "id": "s2",
+      "kind": "learner",
+      "author": "a learner's review on drivingtesttips.biz (2023-05)",
+      "url": "https://drivingtesttips.biz/driving-test-centres/tottenham-driving-test-centre.html",
+      "published": "2023-05",
+      "read_on": "2026-11-16",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": ["Great Cambridge roundabout", "North Circular towards Edmonton (east)"],
+      "note": "Own test: during independent driving was sent to the Great Cambridge roundabout towards Edmonton on the North Circular and took the wrong lane on the roundabout's marked lanes; had a manoeuvre and an emergency stop."
+    },
+    {
+      "id": "s3",
+      "kind": "learner",
+      "author": "a second learner's review on drivingtesttips.biz (about 2022-10)",
+      "url": "https://drivingtesttips.biz/driving-test-centres/tottenham-driving-test-centre.html",
+      "published": "about 2022-10",
+      "read_on": "2026-11-16",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": ["Great Cambridge roundabout"],
+      "note": "A different learner from s2 (separate review); passed at the second attempt and names the Great Cambridge roundabout as part of the test."
+    },
+    {
+      "id": "s4",
+      "kind": "learner",
+      "author": "a learner's review on a driving school's Tottenham page (driveJohnson's)",
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/london/tottenham/",
+      "published": "undated",
+      "read_on": "2026-11-16",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": ["Cambridge roundabout"],
+      "note": "Says the learner struggled with the Cambridge roundabout in lessons; about lessons, not the test, so weaker support only."
+    },
+    {
+      "id": "s5",
+      "kind": "official",
+      "author": "DVSA (govdelivery bulletin)",
+      "url": "https://content.govdelivery.com/accounts/UKDVSA/bulletins/1761bc7",
+      "published": "2016-12-02",
+      "read_on": "2026-11-16",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Address and opening date only; silent on routes."
+    }
+  ],
+  "not_used": [
+    {"url": "https://harringayonline.com/xn/detail/844301:Comment:1176821", "why": "forum thread about the Wood Green centre (Lordship Lane), not Tottenham"},
+    {"url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/tottenham", "why": "403 / bot challenge; left alone (template content per pass 1)"},
+    {"url": "https://www.myfourwheels.co.uk/locations/tottenham/mock-driving-test", "why": "template page, names no roads"},
+    {"url": "https://just-drive.co.uk/?p=22173", "why": "404"},
+    {"url": "https://intensivelessons.co.uk/Practical-Test-Centres/Greater-London/Tottenham", "why": "address and pass rate only; its routes page lists no Tottenham roads"},
+    {"url": "https://passrates.uk/centres/tottenham", "why": "address (from DVSA data) and pass rates only; used for the address check"},
+    {"url": "https://drivingdata-uk.pages.dev/test-centres/tottenham", "why": "pass rates only"},
+    {"url": "https://payhip.com/b/CLx43", "why": "paid route pack; never used"},
+    {"url": "https://rhubarb-whale-39k8.squarespace.com/tottenham-london-driving-test-routes", "why": "preview of paid routes (pass 1: paid); never used"}
+  ],
+  "places": [
+    {
+      "name": "Selby Road",
+      "kind": "road",
+      "map": {"lat": 51.60665, "lon": -0.07825, "osm": "way/5739684"},
+      "sources": ["s1", "s5"],
+      "confidence": "likely",
+      "note": "The centre's own road, so every test leaves and returns by it; known from the address, not from route sources."
+    },
+    {
+      "name": "Great Cambridge Road (A10)",
+      "kind": "road",
+      "map": {"lat": 51.61730, "lon": -0.08619, "osm": "way/873112857"},
+      "sources": ["s1"],
+      "confidence": "likely",
+      "note": "Dual carriageway about 500 m west of the centre; named as likely by s1's editorial text, and implied by s2 and s3 (the roundabout is on it)."
+    },
+    {
+      "name": "North Circular Road (A406)",
+      "kind": "road",
+      "map": {"lat": 51.6167, "lon": -0.0866, "osm": "way/203933717 (at the Great Cambridge roundabout)"},
+      "sources": ["s1", "s2"],
+      "confidence": "likely",
+      "note": "s1 is editorial, not first-hand, so only s2 counts as first-hand: likely."
+    },
+    {
+      "name": "Great Cambridge roundabout (A10 / A406)",
+      "kind": "roundabout",
+      "map": {"lat": 51.61673, "lon": -0.08662, "osm": "way/203933717"},
+      "sources": ["s2", "s3", "s4"],
+      "confidence": "confirmed",
+      "note": "Large multi-lane roundabout with lane markings by destination, about 1.1 km north of the centre; two separate learners' own test accounts name it."
+    }
+  ],
+  "unmatched": [],
+  "summary": "1 confirmed junction (the Great Cambridge roundabout, A10/A406, from two separate learners' own test accounts) and 3 likely roads (Selby Road, Great Cambridge Road A10, North Circular A406); no free source gives turn-by-turn roads, so the residential streets round the Selby Centre rest on the map and judgement. Two routes meeting the overlap rule look possible from the map (quiet streets both sides of the A10, the A10 and A406 dual carriageways, the roundabout), but the evidence supports only the roundabout and the two main roads."
+}

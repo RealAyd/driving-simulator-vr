@@ -1,0 +1,25 @@
+[
+ {
+  "op": "drop-tag",
+  "type": "way",
+  "id": 849430648,
+  "k": "access",
+  "why": "The test centre's own way in from Granby Avenue, past its gate to the DVSA car park: private to the public, so the scene builder leaves it out, but every test leaves and returns by it. The access tag dropped in our copy so the way can be added to the scene by its id."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 58709944,
+  "k": "name",
+  "v": "Mackadown Lane",
+  "why": "Mackadown Lane under the low bridge by Tile Cross Road: two short unnamed ways (11 m and 43 m) join its two named parts; the route planner will not route through short unnamed ways, so Mackadown Lane could not be driven through."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 15122090,
+  "k": "name",
+  "v": "Mackadown Lane",
+  "why": "Mackadown Lane under the low bridge by Tile Cross Road: two short unnamed ways (11 m and 43 m) join its two named parts; the route planner will not route through short unnamed ways, so Mackadown Lane could not be driven through."
+ }
+]

@@ -1,0 +1,18 @@
+[
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 4273866,
+  "k": "name",
+  "v": "Weir Hall Avenue",
+  "why": "Weir Hall Avenue's last stretch to the A10 (west of the Amersham Avenue roundabout) is unnamed on the map, in two pieces. Named so the route planner takes it (it will not turn on to a short unnamed road) and the directions can name it."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 1160951861,
+  "k": "name",
+  "v": "Weir Hall Avenue",
+  "why": "The 23 m piece of the same stretch where it meets the A10 southbound (see the fix above): too short to be taken unnamed."
+ }
+]
