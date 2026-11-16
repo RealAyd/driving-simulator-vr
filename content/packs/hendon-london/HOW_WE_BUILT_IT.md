@@ -89,6 +89,7 @@ without traffic, with 30 background road users (patterns 4 and 14), and with Ski
 | With traffic, a car on Watford Way's southbound carriageway went through the Aerodrome Road junction on the same green while the car turned left | That carriageway left out of the challenge's quiet circles: it is not the car's hazard |
 | With traffic, the car touched the bollard on the Heritage Avenue roundabout's splitter island (its line 0.9 m from it) | The line kept 0.4 m further left down Heritage Avenue |
 | The roundabout instruction was given 125 m out: traffic kept off the roundabout from 150 m before that | Said 45 m out, as Beverley at Morden |
+| With traffic, a car turning into Egerton Gardens crossed the cyclist coming up behind the pulled-up car | The mouth of Egerton Gardens kept clear of traffic while the pull-up and move-off are in hand |
 | The oncoming silver car (Heritage Avenue) reached its point with the car already stopped to wait | Set going earlier |
 
 ## Still to do

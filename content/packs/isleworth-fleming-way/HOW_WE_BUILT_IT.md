@@ -76,6 +76,8 @@ traffic, 15 with):
 | The drive stopped more than 12 m short of the planned line's end (the runner stops 12 m short; the test allows 12) | The route ends on Fleming Way's branch past its bend, by the units |
 | Road users meant to meet the car at the lights, the Hall Road mini-roundabout and the way into the test centre came too early or too late once traffic held the car up (pacing could not hold them: a road user is never slowed below 40% of its speed) | Set going from close in, as the car reaches the junction; at the Twickenham Road lights, the Hall Road mini-roundabout and Heath Road the first decision is taken where the car waits (in the junction, at the line) |
 | In traffic, cars pulling out of Briar Close, Harlequin Close, Heath Road and Riverside Walk met the car or held it up for 50 s | Those side roads kept quiet while the challenges round them are in hand (`quietUntil` on the Mogden Lane lights and the Hall Road mini-roundabout) |
+| In traffic, a car met the car face to face at the mouth of Eaton Road and stood there (8 minutes) | The loop by Eaton Road, Ellerdine Road and Tudor Road kept quiet while the car drives it |
+| In traffic, the pedestrian on the Mogden Lane crossing was across before the car came (held up at the lights) | Set going as the car comes up to the lights |
 
 
 ## Still to do

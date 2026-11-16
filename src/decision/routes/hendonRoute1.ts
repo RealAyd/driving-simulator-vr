@@ -274,7 +274,8 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       starts:[{actor:'cyclist',at:p(260.4,380.2),delay:0}],
       endAt:p(194.2,491.4),
       selfCancel:false,
-      quiet:[{x:194,z:491,radius:34}],
+      // The pull-up, and the mouth of Egerton Gardens, which the cyclist passes coming up behind.
+      quiet:[{x:194,z:491,radius:34},{x:233,z:436,radius:14}],
       place:{
         approach:{pause:{kind:'moving',at:p(223.7,451)},frame:{yaw:-15,pitch:28},state:'On The Burroughs at 20 mph, Egerton Gardens just on the left.'},
         stopped:{pause:{kind:'stop',at:p(194.2,491.4)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
@@ -330,7 +331,7 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Along The Burroughs behind the car as it comes to pull up.)
       starts:[{actor:'cyclist',at:p(260.4,380.2),delay:0}],
       endAt:p(163.1,542.3),
-      quiet:[{x:194,z:491,radius:50}],
+      quiet:[{x:194,z:491,radius:50},{x:233,z:436,radius:14}],
       place:{
         check:{pause:{kind:'stop',at:p(194.2,491.4)},when:{actor:'cyclist',at:p(200.3,479.3)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb, handbrake on.'},
