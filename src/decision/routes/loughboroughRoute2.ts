@@ -59,8 +59,9 @@ export const LOUGHBOROUGH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter(
   through:pts([[1114.1,-98.7],[1025.1,-0.2],[596.8,136.2],[-322.7,-26.5],[-596.3,-176.6],[-623,-321.8],[-259.4,-338.7],[170.7,31.9],
     [696.7,149.4],[1025.1,-0.2],[1114.1,-98.7],[1135.5,-59.6]]),
   // Pulled in to the kerb on Belton Road, past Bottleacre Lane and short of Stanford Hill (no cars parked along it).
-  // And kept off the island's corners in the one-way square at the North Road lights, out and back.
-  shifts:[{from:p(765.9,146.2),to:p(746.5,150.9),left:.35},{from:p(1039.8,-87.8),to:p(1036.8,-74.2),left:.6},{from:p(1032.9,-97.4),to:p(1040,-110.3),left:.9}],
+  // And kept off the kerb going out of the one-way square at the North Road lights, and coming back, off the crossing
+  // island on the left as it threads the gap between two islands into Station Boulevard.
+  shifts:[{from:p(765.9,146.2),to:p(746.5,150.9),left:.35},{from:p(1039.8,-87.8),to:p(1036.8,-74.2),left:.6},{from:p(1032.9,-97.4),to:p(1040,-110.3),left:-.4}],
   actors:[
     {id:'leave-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(LEAVE_CAR)},
     // Crossing Belton Road at the lights, from the far side into the lane the car turns into, still crossing on green.

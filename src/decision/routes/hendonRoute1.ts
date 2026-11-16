@@ -66,7 +66,7 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     {id:'zebra-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[21.2,-19.2],[17.4,-10.6]])},
     {id:'burroughs-van',name:'white van',colour:'#f5f5f4',speed:10,path:pts(BURROUGHS_VAN)},
     // Behind the car along The Burroughs, past it at the kerb, and right into Burroughs Gardens.
-    {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',path:pts(CYCLIST)},
+    {id:'cyclist',name:'cyclist',colour:'#15803d',speed:6.5,kind:'cyclist',yields:true,path:pts(CYCLIST)},
     // Crossing the mouth of Aerodrome Road, from the far side, as the car comes to turn in.
     {id:'aerodrome-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-157.1,-123.1],[-160.3,-114.3]])},
     {id:'gpw-car',name:'black car',colour:'#1f2328',speed:9,path:pts(GPW_CAR)}
