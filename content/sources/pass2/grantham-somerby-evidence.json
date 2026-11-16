@@ -9,7 +9,8 @@
  "owner_check": {
   "date": "2026-11-16",
   "by": "owner",
-  "note": "The owner confirmed the centre is at Spitalgate Airfield, Blue Harbour, NG31 7TX, off the B1174 near the A52 Somerby Hill / Cold Harbour area. On OpenStreetMap the airfield site's mapped ways in all join the A52 Somerby Hill; no B1174 runs by it (the B1174 is South Parade and London Road, 1.5 km west), so the site's main way in off Somerby Hill was used. Blue Harbour is not on the map (probably a new road on the airfield development)."
+  "note": "The owner confirmed the centre is at Spitalgate Airfield, Blue Harbour, NG31 7TX, off the B1174 near the A52 Somerby Hill / Cold Harbour area. On OpenStreetMap the airfield site's mapped ways in all join the A52 Somerby Hill; no B1174 runs by it (the B1174 is South Parade and London Road, 1.5 km west), so the site's main way in off Somerby Hill was used. Blue Harbour is not on the map (probably a new road on the airfield development).",
+  "way_in": "Confirmed by the owner (2026-11-16): the old main gate off the A52 Somerby Hill (OSM ways 183635670 in, 183635688 out)."
  },
  "address": "Grantham (Somerby), Spitalgate Airfield, Blue Harbour, Grantham, Lincolnshire NG31 7TX",
  "address_checked": "2026-11-15",

@@ -5,13 +5,13 @@ centre at Spitalgate Airfield, Blue Harbour, Grantham NG31 7TX. Built from OpenS
 evidence in `content/sources/pass2/grantham-somerby-evidence.json`, November 2026. A practice route, not a confirmed
 test route. How it was chosen and built: `HOW_WE_BUILT_IT.md`. The format: `../ROUTE_FORMAT.md`.
 
-**Start and finish (to be confirmed).** The owner confirmed (16 November 2026) that the centre is on Spitalgate Airfield,
+**Start and finish (confirmed by the owner).** The owner confirmed (16 November 2026) that the centre is on Spitalgate Airfield,
 off the B1174 near the A52 Somerby Hill / Cold Harbour area. On the map the airfield is the former Prince William of
 Gloucester Barracks, north of Somerby Hill. "Blue Harbour" is not on the map (probably a new road on the airfield
 development), and no B1174 runs by the site: the B1174 is South Parade and London Road, 1.5 km west. Every mapped way
 into the site joins Somerby Hill. The route uses the main one, a one-way pair through the old main gate (ways 183635670
 in, 183635688 out) off Somerby Hill, and starts and ends on the site road behind it (way
-183635698). *To confirm: the centre's own entrance on the airfield development, and how tests leave and return.*
+183635698). *The owner confirmed (16 November 2026) that tests use the old main gate off Somerby Hill.*
 
 ## Route 1: Somerby Hill, Harrowby Road and Harrowby Lane (scene `grantham-somerby-route-1`, 11.3 km)
 
