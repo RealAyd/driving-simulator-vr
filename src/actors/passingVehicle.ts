@@ -241,7 +241,8 @@ export class PassingVehicle implements SimModule{
     for(const o of this.traffic?.()??[]){
       const gap=this.gapTo(o);
       if(gap===Infinity)continue;
-      const lead=Math.max(0,o.speed??0),want=Math.max(0,Math.min(this.cruise,lead+.6*(gap-STOP_GAP-1.2*lead)));
+      // (Its speed along this one's way only: one crossing the path, however fast, is no lead to follow at speed.)
+      const lead=Math.max(0,(o.speed??0)*Math.cos(o.pose.heading-this.pose.heading)),want=Math.max(0,Math.min(this.cruise,lead+.6*(gap-STOP_GAP-1.2*lead)));
       if(want<target){
         target=want;
         if(this.speed>target)this.speed=Math.max(target,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(1.5,(this.speed-target)*2))*dt);

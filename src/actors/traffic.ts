@@ -799,6 +799,25 @@ export class Traffic implements SimModule{
         if(facing>.3)ahead(op.x,op.z,o.halfLength,`behind ${o.id}`,o.speed*facing);
         else ahead(op.x,op.z,o.halfLength+1,`crossing ${o.id}`);
       }
+      // A scenario's own road user on the move, its way across this car's ahead (at a junction or not, as mapped): where
+      // the two would meet within a few seconds, this car stops short of its way. (They keep to their paths and give way
+      // to no one but the learner; this car gives way to them, as to the learner.)
+      for(const o of this.options.others?.()??[]){
+        if(o.speed<.3)continue;
+        const op=o.pose.position,gx=Math.sin(o.pose.heading),gz=-Math.cos(o.pose.heading);
+        const cross=fwd.x*gz-fwd.z*gx;
+        if(Math.abs(cross)<.35||Math.hypot(op.x-pos.x,op.z-pos.z)>70)continue;
+        // Where the two straight ways meet: t along this car's, u along the other's.
+        const rx=op.x-pos.x,rz=op.z-pos.z,t=(rx*gz-rz*gx)/cross,u=(rx*fwd.z-rz*fwd.x)/cross;
+        const clear=o.halfLength+car.halfWidth+1;
+        if(t<car.halfLength||t>50||u<-clear||u>60)continue;
+        const mine=(t-car.halfLength)/Math.max(car.speed,1),theirs=(u-clear)/o.speed,gone=(u+clear)/o.speed;
+        // (Through well before it comes, or it gone by before this car gets there: no matter.)
+        if(theirs>mine+2.5||gone<mine-.5)continue;
+        // (Its nose a metre and more short of the other's side, however the ways cross.)
+        const at=t-car.halfLength-Math.min(6,((o.halfLength>1?.9:.3)+1.2)/Math.abs(cross));
+        if(at<gap){gap=Math.max(0,at);why=`crossing ${o.id}`;leadSpeed=0;following=false}
+      }
       // Careful: never closing in on the learner at an angle (merging alongside it at a junction): stopped short where
       // this car, a little further on, would come within a hand's width of it.
       const wavedOn=(d.wavedByLearner??0)>0;
@@ -983,6 +1002,16 @@ export class Traffic implements SimModule{
         const m=this.mouths.get(`${d.leg.road.id}|${d.leg.dir>0?1:0}`);
         if(m){const toLine=remaining-Math.abs((d.leg.endAlong??0)-m.lineAlong)-car.halfLength;target=Math.min(target,Math.sqrt(2*LINE_DECEL*Math.max(0,toLine-.3))+1)}
       }
+      // A scenario's own road users coming up to a junction ahead, or in it, on the move (as at a mouth with lines:
+      // mainRoadComing). (Not one following this car in, behind it.)
+      const othersComing=(point:Vec2,reach:number)=>(this.options.others?.()??[]).some(o=>{
+        if(o.speed<.3)return false;
+        const op=o.pose.position,dx=point.x-op.x,dz=point.z-op.z,r=Math.hypot(dx,dz);
+        const ofx=Math.sin(o.pose.heading),ofz=-Math.cos(o.pose.heading);
+        if(Math.cos(o.pose.heading-car.pose.heading)>.7&&(op.x-pos.x)*fwd.x+(op.z-pos.z)*fwd.z<0)return false;
+        if(r<reach+o.halfLength)return true;
+        return (ofx*dx+ofz*dz)/(r||1)>.5&&r<80&&(r-reach-o.halfLength)/o.speed<SAFE_GAP;
+      });
       if(d.leg.road&&remaining<20){
         const node=d.leg.endNode>=0?this.nodes[d.leg.endNode]!:null;
         const point=node?.junction?{x:node.x,z:node.z}:d.leg.points.at(-1)!;
@@ -1028,7 +1057,7 @@ export class Traffic implements SimModule{
             if(ox*-fwd.z+oz*fwd.x>1)return true;
           }
           return r<reach&&r<mine-.5&&(o.car.speed>.3||d.waited<2||this.drivers.indexOf(o)<i||d.waited<8);
-        })||(()=>{
+        })||othersComing(point,reach)||(()=>{
           // The learner holds the junction while moving through it or standing in it, not when parked near it; nor
           // once it has stood a while, letting this car go (each waiting for the other: this one goes first).
           const r=Math.hypot(learner.pose.position.x-point.x,learner.pose.position.z-point.z);
