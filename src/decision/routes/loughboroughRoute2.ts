@@ -72,7 +72,7 @@ export const LOUGHBOROUGH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter(
     {id:'brw-car',name:'green car',colour:'#15803d',speed:8,path:pts(BRW_CAR)},
     // Waiting at the Belton Road zebra on the left, then across in front of the car.
     {id:'zebra-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[848.1,79.1],[855.3,87.5]])},
-    {id:'return-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(LEAVE_CAR)}
+    {id:'return-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(LEAVE_CAR.slice(41))}
   ],
   challenges:[
     {
@@ -523,7 +523,9 @@ export const LOUGHBOROUGH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter(
       instruction:'Turn right into Gordon Road, back to the test centre, please.',
       instructAt:p(1037,-106.3),
       // (Set going at the direction: it has 200 m to come from the station, and arrives while the car waits to turn.)
-      starts:[{actor:'return-car',at:p(1037,-106.3),delay:0}],
+      // (Set going as the car comes to its stop, from about 67 m off its point: it comes at its own speed while the car
+      // waits, never early and held, whatever held the car up at the North Road lights.)
+      starts:[{actor:'return-car',at:p(1126.8,-95.4),delay:0}],
       endAt:p(1131,-50.9),
       // Gordon Road, and Station Boulevard ahead, where the oncoming blue car comes from.
       quiet:[{x:1150,z:-84,radius:20},{x:1175,z:-62,radius:34}],
