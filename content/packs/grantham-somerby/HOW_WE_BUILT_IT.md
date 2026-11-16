@@ -87,6 +87,7 @@ Tuning on the way (the first build's two routes included, where it applies):
 | With traffic, a car coming the other way, queued south of the Harrowby Road zebra for the pedestrian, was inside the zebra's quiet circle when the scene stopped | The circle covers the zebra and the car's approach only |
 | With traffic (pattern 14), a car coming out of Bridge End Grove met the move-off's cyclist turning in | Bridge End Grove's mouth kept clear until the cyclist is in; its path ends 30 m in |
 | With traffic (pattern 14), a background cyclist already on Beacon Lane met the car at the New Beacon Road junction on the way back | Beacon Lane and New Beacon Road kept clear from the Sandon Road lights challenge on, out and back |
+| With traffic, the Harrowby Road zebra's pedestrian, set going 115 m out, had walked 2 to 3 m past its point by the time the car (held up on the way) came to the zebra | Set going 24 m before the decision, as the car comes to the zebra |
 
 ## Still to do
 

@@ -471,7 +471,9 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Harrowby Road, the zebra crossing by Stuart Street',
       instruction:'Follow the road ahead, please.',
       instructAt:p(-1269.4,62.4),
-      starts:[{actor:'zebra-pedestrian',at:p(-1269.4,62.4),delay:0}],
+      // (Set going from close in, as the car comes to the zebra: on foot, someone set going early walks on past the moment
+      // depicted if traffic holds the car up.)
+      starts:[{actor:'zebra-pedestrian',at:p(-1249.6,139.6),delay:0}],
       endAt:p(-1239.2,229),
       // (The zebra and the approach the car comes along: not Harrowby Road beyond it, where traffic coming the other way
       // queues for the pedestrian.)
