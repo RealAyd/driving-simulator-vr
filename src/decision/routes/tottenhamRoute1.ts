@@ -64,7 +64,7 @@ export const TOTTENHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // splitter islands' noses at the two Weir Hall Avenue roundabouts (lanes about 2.3 m wide beside them).
   shifts:[{from:p(-53.8,-196.4),to:p(-31.2,-185.8),left:.35},{from:p(89.3,537.1),to:p(84.4,539.3),left:-1},
     {from:p(72.8,140.2),to:p(72.3,150.2),left:1},
-    {from:p(63.27,173.92),to:p(61.05,171.89),left:-.8},{from:p(56.77,166.44),to:p(50,166.4),left:.35},
+    {from:p(65.5,174.9),to:p(61.05,171.89),left:-2},{from:p(56.77,166.44),to:p(48,166.4),left:.9},
     {from:p(-57.5,166.6),to:p(-67.5,166.7),left:.7},{from:p(-95.1,172.4),to:p(-104.2,173.1),left:.5}],
   actors:[
     {id:'selby-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(SELBY_CAR)},
@@ -405,8 +405,13 @@ export const TOTTENHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
       starts:[{actor:'ring-car',at:p(73.3,124.2),delay:0}],
       endAt:p(54.4,166.4),
-      // The roundabout's entry, its west side, where the black car comes round from Weir Hall Road south, and that road.
-      quiet:[{x:72,z:150,radius:20},{x:62,z:165,radius:22},{x:71,z:190,radius:22},{x:90,z:165,radius:16}],
+      // (And Weir Hall Avenue on to the next roundabout and through it, narrow beside the splitter islands, kept quiet
+      // until the car is past it: in traffic, a car coming the other way met the car face to face at its entry.)
+      quietUntil:p(-100.3,172.2),
+      // The roundabout's entry, its west side, where the black car comes round from Weir Hall Road south, and that road;
+      // Weir Hall Avenue and the next roundabout's arms.
+      quiet:[{x:72,z:150,radius:20},{x:62,z:165,radius:22},{x:71,z:190,radius:22},{x:90,z:165,radius:16},
+        {x:25,z:166,radius:32},{x:-30,z:166,radius:32},{x:-81,z:167,radius:24},{x:-82,z:138,radius:18},{x:-82,z:196,radius:18}],
       place:{
         approach:{pause:{kind:'moving',at:p(73.3,124.2)},frame:{yaw:0,pitch:22},state:'Approaching the Weir Hall Avenue roundabout at 20 mph.'},
         line:{pause:{kind:'stop',at:p(72.4,148.2)},when:{actor:'ring-car',at:p(64.1,159.7)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},
