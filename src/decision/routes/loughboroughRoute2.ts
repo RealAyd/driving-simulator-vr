@@ -3,7 +3,7 @@ import type {Fault} from '../assess';
 import type {DecisionRoute} from '../route';
 import {withTurnButtons} from '../turnButtons';
 import {withBeforeAfter,type BeforeMerge} from '../beforeAfter';
-import {ALAN_MOSS_CAR,BELTON_VAN,BRW_CAR,LEAVE_CAR,RETURN_CAR} from './loughboroughRoute2Paths';
+import {ALAN_MOSS_CAR,BELTON_VAN,BRW_CAR,LEAVE_CAR} from './loughboroughRoute2Paths';
 
 /**
  * Loughborough route 2, Belton Road, Derby Road and Belton Road West: eight challenges from the test centre at the Ark
@@ -41,8 +41,10 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'At the give way line of the mini-roundabout.'}},
   'belton-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(825.2,104.4)},when:{actor:'zebra-pedestrian',at:p(849.8,81.1)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
     state:'On Belton Road, the zebra crossing just ahead.'}},
-  'gordon-road-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(1092.4,-105.5)},when:{actor:'return-car',at:p(1190,-52.5)},frame:{yaw:0,pitch:40,shift:-4},
-    state:'On Station Boulevard, Gordon Road just ahead on the right.'}}
+  // (In position at the turn: the car comes there through the North Road lights, held at red for a time no one can
+  // know, so the blue car is timed to the car waiting rather than to the car on the move.)
+  'gordon-road-right':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(1136.4,-92.6)},when:{actor:'return-car',at:p(1159.4,-76)},frame:{yaw:0,pitch:40,shift:-4},
+    state:'In position to turn right into Gordon Road.'}}
 };
 
 export const LOUGHBOROUGH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
@@ -69,7 +71,7 @@ export const LOUGHBOROUGH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter(
     {id:'brw-car',name:'green car',colour:'#15803d',speed:8,path:pts(BRW_CAR)},
     // Waiting at the Belton Road zebra on the left, then across in front of the car.
     {id:'zebra-pedestrian',name:'pedestrian',colour:'#4b5563',speed:1.3,kind:'pedestrian',waits:true,path:pts([[848.1,79.1],[855.3,87.5]])},
-    {id:'return-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(RETURN_CAR)}
+    {id:'return-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(LEAVE_CAR)}
   ],
   challenges:[
     {
@@ -519,8 +521,8 @@ export const LOUGHBOROUGH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter(
       where:'Station Boulevard, right into Gordon Road',
       instruction:'Turn right into Gordon Road, back to the test centre, please.',
       instructAt:p(1037,-106.3),
-      // (Set going once the car is through the North Road lights: held at red there, it would otherwise come too soon.)
-      starts:[{actor:'return-car',at:p(1061.5,-112.3),delay:0}],
+      // (Set going at the direction: it has 200 m to come from the station, and arrives while the car waits to turn.)
+      starts:[{actor:'return-car',at:p(1037,-106.3),delay:0}],
       endAt:p(1131,-50.9),
       // Gordon Road, and Station Boulevard ahead, where the oncoming blue car comes from.
       quiet:[{x:1150,z:-84,radius:20},{x:1175,z:-62,radius:34}],

@@ -279,7 +279,8 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Sovereign Boulevard at the Will Adams Roundabout, right (third exit) on to Ito Way',
       instruction:'At the roundabout, turn right, the third exit, please.',
       instructAt:p(-324.1,204.5),
-      starts:[{actor:'ito-car',at:p(-237.7,229.9),delay:0}],
+      // (Set going once the car is at the line, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'ito-car',at:p(-377.5,186.1),delay:0}],
       endAt:p(-409,144),
       // The entry, the circulating carriageway to the right, where the black car comes round, and Ito Way's way on.
       quiet:[{x:-383,z:187,radius:16},{x:-387,z:170,radius:16},{x:-393,z:140,radius:22}],
@@ -527,7 +528,8 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       lights:p(-138.7,245.8),
       endAt:p(-99.3,259.1),
       // The junction, and Sovereign Boulevard to the right (west), where the red car comes from.
-      quiet:[{x:-120,z:248,radius:16},{x:-150,z:240,radius:30}],
+      // (And the ends of The Chase and Hanway on the way down Featherby Road: a car waiting to come out there met the car.)
+      quiet:[{x:-120,z:248,radius:16},{x:-150,z:240,radius:30},{x:-101,z:80,radius:16}],
       place:{
         approach:{pause:{kind:'moving',at:p(-113.3,219.6)},frame:{yaw:0,pitch:22},state:'Approaching the end of Featherby Road at 15 mph.'},
         line:{pause:{kind:'stop',at:p(-119.5,242.8)},when:{actor:'sovereign-car',at:p(-137.9,244.3)},frame:{yaw:-70,pitch:26},state:'At the give way line.'},

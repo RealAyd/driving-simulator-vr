@@ -5,5 +5,13 @@
   "lat": 51.3798799,
   "lon": 0.5762865,
   "why": "Beechings Way, the gap in the central reservation into Featherby Road: its way leaves the eastbound carriageway 5 m east of where it reaches Featherby Road, so the car's rounded right turn crossed the reservation (pavement in the scene). Its east end moved 5 m west along the carriageway, so the gap lines up with Featherby Road."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 695798615,
+  "k": "highway",
+  "v": "tertiary",
+  "why": "Courteney Road between the roundabout by Tesco and the Bowaters roundabout: the busy link (and bus route) every test drives out and back on, mapped unclassified, so the engine parked cars along one kerb as on a residential street, and the car easing round one on the way back met traffic coming the other way. Read as a main road (a centre line, no kerb parking). To confirm on the ground."
  }
 ]
