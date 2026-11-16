@@ -39,11 +39,13 @@ Judged against the map:
 ## 3. Build the scenes
 
 One scene per route, 2.4 km square: `hendon-london-route-1` centred south-east of the centre (51.59195, -0.23218),
-`hendon-london-route-2` north-west (51.59869, -0.24810). The map data comes in 9 tiles (`fetch_osm.py`) with two fixes
+`hendon-london-route-2` north-west (51.59869, -0.24810). The map data comes in 9 tiles (`fetch_osm.py`) with three fixes
 (`osm-patches.json`): the 24 m link across Watford Way's central reservation between Aerodrome Road and Greyhound
 Hill is unnamed, and the planner will not route through short unnamed ways, so it was named Aerodrome Road; and
 Bristol Avenue's 12 m one-way link down on to Grahame Park Way, mapped as one lane beside a contraflow bus lane, was
-drawn 3.2 m wide, too narrow to turn out of without the car's line crossing the kerb, so it was given its two lanes.
+drawn 3.2 m wide, too narrow to turn out of without the car's line crossing the kerb, so it was given its two lanes. A third came out of the drives with traffic (below): Lismore Boulevard's 10 m stub off Aerodrome Road leads only
+to a private road (left out of the scene), so background cars turned into it and stood parked across its mouth, in
+the car's lane; the stub was dropped.
 
 ```
 python3 -I tools/centres/fetch_osm.py <scratch>/r1.osm 51.59195 -0.23218 1200 3 --patches content/packs/hendon-london/osm-patches.json
@@ -73,6 +75,15 @@ the scene's roads. Things to know:
 
 `CENTRE=hendon-london npx vitest run tests/unit/decisionDrive.centre.test.ts`: both routes with the right answers,
 without traffic, with 30 background road users (patterns 4 and 14), and with Skip ahead. Results in `ROUTES.md`.
+Tuning on the way:
+
+| Found | Fix |
+|---|---|
+| Route 2's car crossed the kerb turning out of Bristol Avenue's link on to Grahame Park Way | The link given its two lanes (map fix), and the line eased 1.2 m left round the corner |
+| With traffic, the cyclist on The Burroughs ran into the back of the car still coming to pull up (held up by traffic) | The cyclist brakes for the car (`yields`) |
+| The blue car leaving the centre (route 1), turning right into Rowan Drive, was clipped by a bus coming the other way, and met a background car where its path ended | It turns left into Canberra Close instead, its path ending just inside |
+| With traffic, the car stood 45 to 90 s on Aerodrome Road west of Heritage Avenue behind a background car parked across the mouth of Lismore Boulevard's dead-end stub | The stub dropped (map fix) |
+| The roundabout instructions were given 125 m out: traffic kept off the roundabout from 150 m before that | Said 45 to 75 m out, as Beverley at Morden; the pull-up on Booth Road moved on to keep 300 m between directions |
 
 ## Still to do
 

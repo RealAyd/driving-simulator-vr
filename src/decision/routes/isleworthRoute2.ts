@@ -34,12 +34,14 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'Approaching the mini-roundabout.'}},
   'london-lights':{first:'approach',second:'turn',place:{pause:{kind:'moving',at:p(-450.4,-53.7)},when:{actor:'london-pedestrian',at:p(-469.1,-111.3)},frame:{yaw:10,pitch:44,shift:4},
     state:'Approaching the London Road lights on green.'}},
-  'thornbury-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(-155.9,-309.1)},when:{actor:'zebra-pedestrian',at:p(-135.75,-327.5)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
-    state:'On London Road, the zebra crossing just ahead.'}},
+  // (Someone waiting at the kerb as the car comes: set going here, so traffic ahead of the car does not stop for them first.)
+  'thornbury-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(-155.9,-309.1)},when:{actor:'zebra-pedestrian',at:p(-138.2,-329.9)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
+    state:'On London Road, the zebra crossing just ahead, someone waiting at it.'}},
   'stjohns-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(244.7,-473.2)},when:{actor:'stjohns-car',at:p(330.2,-478)},frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the St John\'s Road lights on green.'}},
-  'worton-right':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(939.9,307.5)},when:{actor:'van',at:p(931.3,385.1)},frame:{yaw:0,pitch:40,shift:-4},
-    state:'On Twickenham Road, the turn into Worton Road just ahead.'}}
+  // (In the junction: traffic on Twickenham Road, not the map, sets when the car gets there.)
+  'worton-right':{first:'approach',second:'centre',place:{pause:{kind:'stop',at:p(938.5,337.5)},when:{actor:'van',at:p(931.3,385.1)},frame:{yaw:0,pitch:40,shift:-4},
+    state:'Waiting to turn right into Worton Road. The lights are green.'}}
 };
 
 export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
@@ -265,9 +267,10 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'London Road, the zebra crossing by Thornbury Road',
       instruction:'Follow the road ahead, please.',
       instructAt:p(-190.2,-281.5),
-      starts:[{actor:'zebra-pedestrian',at:p(-190.2,-281.5),delay:0}],
+      starts:[{actor:'zebra-pedestrian',at:p(-160.5,-305.3),delay:0}],
       endAt:p(-116.3,-348.6),
-      quiet:[{x:-135,z:-327,radius:26}],
+      // The crossing, and London Road just before it (traffic ahead of the car kept clear, so it comes on at its speed).
+      quiet:[{x:-135,z:-327,radius:30},{x:-165,z:-301,radius:24}],
       place:{
         approach:{pause:{kind:'moving',at:p(-174.5,-293.9)},frame:{yaw:0,pitch:22},state:'On London Road at 30 mph, the zebra crossing ahead.'},
         zebra:{pause:{kind:'stop',at:p(-140.4,-323.2)},when:{actor:'zebra-pedestrian',at:p(-135.75,-327.5)},frame:{yaw:0,pitch:30},
@@ -284,14 +287,14 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
             {kind:'before',id:'mirror-before-slowing',action:'slow-down',needs:['mirror-interior'],fault:{level:'minor',heading:'Use of mirrors - change speed',title:'Slowed before the mirror',
               message:'Check the interior mirror before you slow down: you need to know how close the traffic behind is.'}},
             {kind:'required',id:'no-slowing',anyOf:['slow-down','give-way'],fault:{level:'serious',heading:'Pedestrian crossings',title:'Did not slow for the crossing',
-              message:'Someone was stepping on to the zebra crossing. Slow down in good time to stop for them.'}},
+              message:'Someone was waiting at the zebra crossing. Slow down in good time to stop for them.'}},
             {kind:'distractor',id:'speed-up',action:'speed-up',fault:{level:'dangerous',heading:'Pedestrian crossings',title:'Sped up at a zebra crossing',
-              message:'The pedestrian was stepping on to the zebra. Speeding up to get over first puts them at risk.'}},
+              message:'The pedestrian was about to step on to the zebra. Speeding up to get over first puts them at risk.'}},
             {kind:'distractor',id:'horn',action:'horn',fault:PED_HORN}
           ],
           accepted:[['mirror-interior','slow-down'],['mirror-interior','mirror-left','slow-down']],
           next:{then:'zebra'},
-          explain:'Interior mirror, then slow down: the pedestrian was stepping on to the zebra crossing.'
+          explain:'Interior mirror, then slow down: someone was waiting at the zebra crossing.'
         },
         {
           id:'zebra',safe:'wait',go:'go',wait:'give-way',
@@ -328,13 +331,13 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       title:'Traffic lights, right turn',
       where:'London Road at the St John\'s Road lights, right into St John\'s Road',
       instruction:'At the traffic lights, turn right, please.',
-      instructAt:p(195.1,-467.6),
+      instructAt:p(165.2,-464.7),
       // (Set going late, from close in, so traffic holding the car up on London Road cannot leave it gone by.)
       starts:[{actor:'stjohns-car',at:p(224.9,-470.6),delay:0}],
       lights:p(283,-476.5),lightsAll:true,
       endAt:p(308.2,-431.5),
       // The junction, and London Road ahead, where the oncoming silver car comes from.
-      quiet:[{x:299,z:-474,radius:24},{x:330,z:-478,radius:30}],
+      quiet:[{x:299,z:-474,radius:24},{x:330,z:-478,radius:30},{x:305,z:-445,radius:18}],
       place:{
         approach:{pause:{kind:'moving',at:p(224.9,-470.6)},frame:{yaw:0,pitch:20},state:'Approaching the St John\'s Road lights on green.'},
         centre:{pause:{kind:'stop',at:p(291.6,-477)},when:{actor:'stjohns-car',at:p(330.2,-478)},frame:{yaw:0,pitch:32},
@@ -507,7 +510,8 @@ export const ISLEWORTH_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Twickenham Road at the Worton Road lights, right into Worton Road',
       instruction:'At the traffic lights, turn right into Worton Road, please.',
       instructAt:p(945.2,267.9),
-      starts:[{actor:'van',at:p(945.2,267.9),delay:0}],
+      // (Set going as the car comes to wait, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'van',at:p(938.7,327.5),delay:0}],
       endAt:p(907.5,353.4),
       // The junction, and Twickenham Road ahead, where the oncoming white van comes from.
       quiet:[{x:936,z:348,radius:24},{x:932,z:385,radius:30}],

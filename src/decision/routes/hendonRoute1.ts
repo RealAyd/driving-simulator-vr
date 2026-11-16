@@ -32,7 +32,7 @@ const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a ped
  * the hazard is in view only at the line. */
 const BEFORE:Record<string,BeforeMerge>={
   // (At the line: the flats on the corner hide Aerodrome Road to the right until there.)
-  'leave-test-centre':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-541.5,-262.1)},when:{actor:'aero-car',at:p(-553.8,-259.6)},frame:{yaw:-65,pitch:40,shift:-4},
+  'leave-test-centre':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(-541.5,-262.1)},when:{actor:'aero-car',at:p(-553.5,-259.5)},frame:{yaw:-65,pitch:40,shift:-4},
     state:'At the end of Caversham Road.'}},
   'aerodrome-lights':{first:'approach',second:'line',place:{pause:{kind:'moving',at:p(-188.3,-132.3)},lights:'red',frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the Watford Way lights. They are red.'}},
@@ -85,8 +85,8 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       quiet:[{x:-541,z:-255,radius:24},{x:-600,z:-285,radius:40},{x:-490,z:-226,radius:26}],
       place:{
         approach:{pause:{kind:'moving',at:p(-538.3,-291.7)},frame:{yaw:0,pitch:22},state:'Approaching the end of Caversham Road at 15 mph.'},
-        line:{pause:{kind:'stop',at:p(-541.5,-262.1)},when:{actor:'aero-car',at:p(-553.8,-259.6)},frame:{yaw:-65,pitch:26},state:'At the give way line.'},
-        clear:{pause:{kind:'stop',at:p(-541.5,-262.1)},when:{actor:'aero-car',at:p(-490.6,-226.7)},frame:{yaw:-30,pitch:26},state:'Still at the give way line.'}
+        line:{pause:{kind:'stop',at:p(-541.5,-262.1)},when:{actor:'aero-car',at:p(-553.5,-259.5)},frame:{yaw:-65,pitch:26},state:'At the give way line.'},
+        clear:{pause:{kind:'stop',at:p(-541.5,-262.1)},when:{actor:'aero-car',at:p(-490.3,-226.5)},frame:{yaw:-30,pitch:26},state:'Still at the give way line.'}
       },
       stages:[
         {

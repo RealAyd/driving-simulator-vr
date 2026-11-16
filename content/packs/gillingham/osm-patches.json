@@ -21,5 +21,13 @@
   "k": "highway",
   "v": "tertiary",
   "why": "Courteney Road from the test centre to the roundabout by Tesco: the business park's through road, built to take lorries, mapped unclassified, so the engine built it 6 m wide, and the way on to the roundabout between its splitter island and the kerb was narrower than a car turning on to it. Read as a main road (6.4 m, a centre line, no kerb parking). To confirm on the ground."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 4373753,
+  "k": "lanes",
+  "v": "4",
+  "why": "The roundabout by Tesco on Courteney Road: its ring has no lanes given, so the engine built it 6 m wide, and the car turning on to it and off it between the splitter islands' bollards and the kerb corners left the carriageway. Its circulating carriageway, used by delivery lorries, read as 9 m. To confirm on the ground."
  }
 ]

@@ -102,11 +102,12 @@ Adding these two to the evidence file would give each route one or two challenge
 - **Courteney Road** is mapped unclassified, which the engine reads as a residential street: 6 m wide, cars parked
   along one kerb. It is the business park's through road and the busy link (and bus route) every test drives out and
   back on. Read as a main road (`osm-patches.json`: 6.4 m, a centre line, no kerb parking) from the test centre to the
-  Bowaters roundabout, after the car met traffic easing round a parked car on the way back, and the way on to the
-  roundabout by Tesco, between its splitter island and the kerb, was narrower than a car turning on to it. *To confirm
-  on the ground.*
-- **The roundabout by Tesco** is small (a single-lane ring, widened by the engine to 6 m): the car's way on to it and
-  off it is set between the splitter island's bollard and the kerb (the route files' `shifts`).
+  Bowaters roundabout, after the car met traffic easing round a parked car on the way back. *To confirm on the
+  ground.*
+- **The roundabout by Tesco** is small, and its ring has no lanes given, so the engine built it 6 m wide; turning on to
+  it and off it the car left the carriageway at the kerb corners or touched the splitter islands' bollards. Its
+  circulating carriageway, used by delivery lorries, is read as 9 m (`osm-patches.json`), and the car's way on and off
+  is set clear of the bollards (the route files' `shifts`). *To confirm on the ground.*
 - **Hoath Way** (A278, confirmed) runs beside Courteney Road but has no junction with it short of the Bowaters
   roundabout and the Hoath Lane roundabout 650 m south: a stretch of 50 mph dual carriageway with no decision on it, so
   neither route uses it. (The evidence file's name for it, "Hoath Way (A278) dual carriageway and its end roundabouts",

@@ -14,5 +14,12 @@
   "k": "lanes",
   "v": "2",
   "why": "Bristol Avenue's short one-way link down on to Grahame Park Way (westbound) has a contraflow bus lane beside it (busway:right=opposite_lane): mapped as one lane, the scene drew it 3.2 m wide, too narrow to turn out of on to Grahame Park Way without cutting the kerb."
+ },
+ {
+  "op": "drop-tag",
+  "type": "way",
+  "id": 1557782158,
+  "k": "highway",
+  "why": "Lismore Boulevard's 10 m stub off Aerodrome Road, west of Heritage Avenue: beyond it the road is private (access=private, left out of the scene), so the stub led nowhere and background cars turned into it and stood parked across its mouth, in the car's lane on Aerodrome Road."
  }
 ]

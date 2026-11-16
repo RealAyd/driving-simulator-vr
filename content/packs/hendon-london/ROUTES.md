@@ -114,6 +114,8 @@ hendon-london-2 (Hendon route 2): 4.1 km
   named Aerodrome Road in the downloaded data (`osm-patches.json`) so the planner can go ahead into Greyhound Hill.
 - **Bristol Avenue's link on to Grahame Park Way** is mapped as one lane beside a contraflow bus lane; drawn 3.2 m
   wide, the turn out of it crossed the kerb. Given its two lanes in the downloaded data.
+- **Lismore Boulevard's stub** off Aerodrome Road west of Heritage Avenue is 10 m long and leads only to a private road;
+  background traffic turned into it and stood across its mouth. Dropped in the downloaded data.
 - **The evidence file's junction positions** were the middle of a named road; the two this centre's routes use were
   set to the junctions themselves.
 - **Church End / The Burroughs**: whether Church End gives way to The Burroughs is taken from the map's layout (a side

@@ -218,8 +218,8 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Twickenham Road at the Mogden Lane lights, right into Mogden Lane',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(558.4,168.9),
-      // (Set going late, from close in, so traffic holding the car up on Twickenham Road cannot leave it gone by.)
-      starts:[{actor:'silver-car',at:p(561.6,198.7),delay:0}],
+      // (Set going as the car comes to wait, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'silver-car',at:p(573.1,253.6),delay:0}],
       lights:p(572.1,250.1),lightsAll:true,
       endAt:p(533.1,282.1),
       // (And Briar Close, just along Mogden Lane, kept quiet until the car is past it.)
