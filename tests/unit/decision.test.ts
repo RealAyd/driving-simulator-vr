@@ -61,7 +61,7 @@ describe('turn buttons',()=>{
   it('every challenge that turns or pulls out says which way',()=>{
     const ahead=new Set(['station-crossing','the-drive-mini','westway-lights','moulsham-zebra','melbourne-zebra',
       'salisbury-2:castle-street-lights','salisbury-2:castle-street-mini',
-      'morden-london-1:leave-test-centre','morden-london-1:sutton-zebra',
+      'morden-london-1:leave-test-centre','hendon-london-1:aerodrome-lights','hendon-london-1:greyhound-zebra','morden-london-1:sutton-zebra',
       'morden-london-2:tudor-zebra','morden-london-2:beverley-roundabout','morden-london-2:churston-mini',
       'sheffield-middlewood-road-1:middlewood-crossing','sheffield-middlewood-road-1:leppings-lights',
       'isleworth-fleming-way-1:mogden-roundabout']);

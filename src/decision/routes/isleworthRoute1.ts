@@ -29,7 +29,7 @@ const PED_HORN:Fault={level:'serious',heading:'Use of horn',title:'Horn at a ped
  * the hazard is in view only at the line; leaving the test centre keeps a third: a car from the right, then one from
  * the left, are two hazards at one place. */
 const BEFORE:Record<string,BeforeMerge>={
-  'twickenham-lights':{first:'approach',second:'turn',place:{pause:{kind:'moving',at:p(683.8,-522.6)},when:{actor:'twickenham-pedestrian',at:p(725.5,-508.6)},frame:{yaw:-10,pitch:44,shift:4},
+  'twickenham-lights':{first:'approach',second:'turn',place:{pause:{kind:'moving',at:p(683.8,-522.6)},when:{actor:'twickenham-pedestrian',at:p(722.6,-508.6)},frame:{yaw:-10,pitch:44,shift:4},
     state:'Approaching the Twickenham Road lights on green.'}},
   'mogden-lights':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(568.9,236)},when:{actor:'silver-car',at:p(590.2,318)},frame:{yaw:0,pitch:44,shift:-4},
     state:'Approaching the Mogden Lane lights on green.'}},
@@ -57,7 +57,7 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
     {id:'worton-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(WORTON_CAR)},
     {id:'blue-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(BLUE_CAR)},
     // Crossing the mouth of Twickenham Road, left to right as the car turns in, on the near side of the junction.
-    {id:'twickenham-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[729.5,-508.6],[712.5,-508.4]])},
+    {id:'twickenham-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[726,-508.6],[715,-508.5]])},
     {id:'silver-car',name:'silver car',colour:'#c3c7cf',speed:11,path:pts(SILVER_CAR)},
     {id:'ring-car',name:'black car',colour:'#1f2328',speed:9,path:pts(RING_CAR)},
     // Behind the car along Whitton Dene, past it at the kerb, and left into Queensbridge Park.
@@ -151,9 +151,9 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       quiet:[{x:716,z:-527,radius:26},{x:721,z:-505,radius:22}],
       place:{
         approach:{pause:{kind:'moving',at:p(674.1,-520.1)},frame:{yaw:0,pitch:20},state:'Approaching the lights on green.'},
-        turn:{pause:{kind:'stop',at:p(723.1,-517.4)},when:{actor:'twickenham-pedestrian',at:p(725.5,-508.6)},panel:'right',frame:{yaw:0,pitch:32},
+        turn:{pause:{kind:'stop',at:p(723.1,-517.4)},when:{actor:'twickenham-pedestrian',at:p(722.6,-508.6)},panel:'right',frame:{yaw:0,pitch:32},
           state:'Turning right into Twickenham Road. The lights are green.'},
-        clear:{pause:{kind:'stop',at:p(723.1,-517.4)},when:{actor:'twickenham-pedestrian',at:p(716.3,-508.5)},frame:{yaw:0,pitch:32},
+        clear:{pause:{kind:'stop',at:p(723.1,-517.4)},when:{actor:'twickenham-pedestrian',at:p(718.5,-508.5)},frame:{yaw:0,pitch:32},
           state:'Waiting at the mouth of Twickenham Road.'}
       },
       stages:[

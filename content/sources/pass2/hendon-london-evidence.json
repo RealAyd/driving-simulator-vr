@@ -1130,29 +1130,29 @@
       "name": "Aerodrome Road and Grahame Park Way roundabout",
       "kind": "roundabout",
       "map": {
-        "lat": 51.59478,
-        "lon": -0.24161,
+        "lat": 51.59642,
+        "lon": -0.24696,
         "osm": "way/22633658"
       },
       "sources": [
         "s1"
       ],
       "confidence": "likely",
-      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+      "map_note": "set when the route was built (2026-11-16): the middle of the roundabout (Aerodrome Road, Colindale Avenue, Grahame Park Way, Raven Close)"
     },
     {
       "name": "Aerodrome Road and Watford Way lights",
       "kind": "traffic-lights",
       "map": {
-        "lat": 51.59478,
-        "lon": -0.24161,
-        "osm": "way/22633658"
+        "lat": 51.59285,
+        "lon": -0.2342,
+        "osm": "node/1678369345"
       },
       "sources": [
         "s1"
       ],
       "confidence": "likely",
-      "map_note": "position is the named road's centre; exact junction node to be set when the route is built"
+      "map_note": "set when the route was built (2026-11-16): the junction of Aerodrome Road, Watford Way and Greyhound Hill"
     },
     {
       "name": "Hale Lane mini-roundabouts",

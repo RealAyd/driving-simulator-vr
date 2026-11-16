@@ -53,10 +53,10 @@ export const LOUGHBOROUGH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
   briefing:'Loughborough route 1: decisions only\n\nThe car drives itself. At each challenge the scene stops: choose your observations and actions, in order, then confirm. Faults are marked as you go; the result and coaching come at the end.\n\nPractice route built from OpenStreetMap data; not a confirmed test route. The app\'s assessment, not a DVSA result.',
   start:{x:427.9,z:-1187.9,headingDeg:184},
   // The test centre's car park, Gordon Road, Station Boulevard, Nottingham Road, Queen's Road, Leicester Road,
-  // Southfield Road, Park Road, Epinal Way, Forest Road, Woodgate, Jubilee Way, Nottingham Road, Station Boulevard and
+  // Southfield Road, Park Road, Epinal Way, Forest Road, Woodgate, Leicester Road, Barrow Street, Jubilee Way, Nottingham Road, Station Boulevard and
   // back into Gordon Road.
   through:pts([[560.6,-1180.7],[700.7,-950.4],[683.3,-756.9],[689.5,-300.1],[377.1,132.1],[159.9,104.9],[-82,433.2],[101,802],
-    [-110.1,1062.5],[-401.4,852.2],[-287.9,419.4],[110.9,60.1],[286.2,-273],[433.2,-526.5],[622.3,-1111.4],[495.6,-1194.6]]),
+    [-110.1,1062.5],[-401.4,852.2],[-287.9,419.4],[110.9,60.1],[310,-34],[286.2,-273],[433.2,-526.5],[622.3,-1111.4],[495.6,-1194.6]]),
   // Pulled in to the kerb on Park Road, between Charnwood Road and Herrick Road (no cars parked along it).
   shifts:[{from:p(107.3,863.4),to:p(108.9,883.4),left:.35}],
   actors:[
@@ -79,7 +79,8 @@ export const LOUGHBOROUGH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
       where:'Gordon Road, right on to Station Boulevard',
       instruction:'When you\'re ready, drive out to the end of Gordon Road and turn right, please.',
       instructAt:p(427.9,-1187.9),
-      starts:[{actor:'boulevard-car',at:p(427.9,-1187.9),delay:0},{actor:'lights-car',at:p(427.9,-1187.9),delay:0}],
+      // (The blue car set going as the car comes to the line: it comes out of the lights just after the white car passes.)
+      starts:[{actor:'boulevard-car',at:p(427.9,-1187.9),delay:0},{actor:'lights-car',at:p(495.5,-1196.1),delay:0}],
       endAt:p(534.8,-1205.1),
       // The end of Gordon Road, Station Boulevard to the right (the station), where the white car comes from, and to the
       // left (the Meadow Lane lights), where the blue car comes from.
