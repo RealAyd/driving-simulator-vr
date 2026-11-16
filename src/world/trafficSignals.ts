@@ -28,6 +28,9 @@ export interface LiveStop{
 }
 
 const GREEN={junction:14,crossing:22},AMBER=3,ALL_RED=2,RED_AMBER=2,PEOPLE={junction:7,crossing:9};
+/** A junction with more than two stages shares out the time of a two-stage one (with people crossing: 49 s), each
+ * green no shorter than MIN_GREEN: a red there lasts no longer than at any other lights, not a minute and more. */
+const CYCLE_MOST=2*(RED_AMBER+GREEN.junction+AMBER+ALL_RED)+PEOPLE.junction,MIN_GREEN=5;
 
 /** A held set's every stop green. */
 const ALL_GREEN=-2;
@@ -66,8 +69,10 @@ export class TrafficSignals implements SimModule{
       const segments:Segment[]=[];
       let t=0;
       const push=(dur:number,stage:number,aspect:Aspect)=>{t+=dur;segments.push({until:t,stage,aspect})};
+      const people=group.kind==='crossing'||group.crossings.length>0?PEOPLE[group.kind]:0;
+      const green=axes.length>2?Math.max(MIN_GREEN,(CYCLE_MOST-people)/axes.length-(RED_AMBER+AMBER+ALL_RED)):GREEN[group.kind];
       for(let k=0;k<axes.length;k++){
-        push(RED_AMBER,k,'red-amber');push(GREEN[group.kind],k,'green');push(AMBER,k,'amber');push(ALL_RED,-1,'red');
+        push(RED_AMBER,k,'red-amber');push(green,k,'green');push(AMBER,k,'amber');push(ALL_RED,-1,'red');
       }
       // People crossing: everyone waits.
       if(group.kind==='crossing'||group.crossings.length>0)push(PEOPLE[group.kind],-1,'red');

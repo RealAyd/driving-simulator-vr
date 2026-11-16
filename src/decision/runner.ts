@@ -136,6 +136,8 @@ const END_WAIT=30;
 const PACE_LEAST=.4,PACE_MARGIN=.6;
 /** The road user a stage waits for stands this far (metres) short of its point until the car is there. */
 const HOLD_SHORT=4;
+/** The fastest a road user eased to meet the car still stops within HOLD_SHORT (slowing at 1.5 m/s², with half a metre spare). */
+const PACE_HOLDABLE=Math.sqrt(2*1.5*(HOLD_SHORT-.5));
 /** A pedestrian may be paced down further: people dawdle (a share of their speed). */
 const PACE_LEAST_ON_FOOT=.15;
 /** Within this far of the start of their path (metres) someone on foot may stand and wait. */
@@ -406,7 +408,9 @@ export class DecisionRunner{
     // (Someone on foot not yet stepped off the kerb waits there, as people do, rather than crossing early.)
     // (A car shown waiting at a junction edges out as slowly as it needs to, as drivers do, rather than early.)
     const least=def.kind==='pedestrian'?(x.travelled<KERB_WAIT?0:PACE_LEAST_ON_FOOT):def.waits?0:PACE_LEAST;
-    x.pace=Math.max(def.speed*least,Math.min(def.speed,left/(eta+PACE_MARGIN)));
+    // (No faster than it can stop from within HOLD_SHORT, should it be held there: a fast road user eased to its
+    // least would slide past its point, and the moment would be lost.)
+    x.pace=Math.max(Math.min(def.speed*least,PACE_HOLDABLE),Math.min(def.speed,left/(eta+PACE_MARGIN)));
   }
 
   /** At each stop line now at amber: whether the car was too close to stop when it changed (on through). */
