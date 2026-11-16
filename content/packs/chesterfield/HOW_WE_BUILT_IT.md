@@ -66,7 +66,12 @@ turns left into Highfield View Road.
 
 `ROUTES=chesterfield-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: the authoring rules ("as authored")
 pass; one drive without traffic was made while building (`decisionDrive.ts`'s `drive`), results in `ROUTES.md`. The
-drives with traffic (patterns 4 and 14) and with Skip ahead are run by the main session.
+drives with traffic (patterns 4 and 14) and with Skip ahead are run by the main session. Tuning from its first run:
+
+| Found | Fix |
+|---|---|
+| Pattern 4: a car waiting to come out of Tapton View Road was 0.18 m from the car turning in | The mouth of Tapton View Road kept quiet from the Newbold Road mini-roundabout until the car has turned in (`quietUntil`) |
+| Pattern 14: a car waiting at Peveril Road's own entry to the roundabout sat in the roundabout's quiet circle | The circle moved east and trimmed to the ring, clear of that entry (the car waiting there is no part of the decision) |
 
 ## Still to do
 

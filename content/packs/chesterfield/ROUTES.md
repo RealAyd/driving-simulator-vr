@@ -80,7 +80,10 @@ spacing met, nothing missing from the mix).
 One drive without traffic while building (`decisionDrive.ts`'s `drive`): passed with no faults, every pause as depicted
 (16 pauses, each road user within 0.1 m of its point), nothing hit, nothing off the road, no red light run, the closest
 scripted road user the cyclist passing the car pulled up (3.21 m), the drive stopping 11.7 m short of the planned end.
-The full drives (with 30 background road users in patterns 4 and 14, and with Skip ahead) are run by the main session:
+The first full run passed as authored, without traffic and with Skip ahead; with traffic, pattern 4 had a car waiting
+in the mouth of Tapton View Road 0.18 m from the car turning in, and pattern 14 a car waiting at Peveril Road's entry
+inside the roundabout's quiet circle. Fixed (that mouth kept quiet until the car has turned in; the circle trimmed to the
+ring), to be driven again by the main session:
 `ROUTES=chesterfield-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`.
 
 ## Open items
