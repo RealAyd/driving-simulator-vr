@@ -220,7 +220,8 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Twickenham Road at the Mogden Lane lights, right into Mogden Lane over its crossing',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(558.4,168.9),
-      starts:[{actor:'mogden-pedestrian',at:p(558.4,168.9),delay:0}],
+      // (Set going as the car comes up to the lights, so they are on the crossing as it turns in, whatever traffic held it up.)
+      starts:[{actor:'mogden-pedestrian',at:p(565.2,218.4),delay:0}],
       lights:p(572.1,250.1),lightsAll:true,
       endAt:p(533.1,282.1),
       // (And Briar Close, just along Mogden Lane, kept quiet until the car is past it.)
@@ -471,12 +472,14 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
       starts:[{actor:'hall-car',at:p(-709.7,524.4),delay:0}],
       endAt:p(-735.9,507.7),
-      // (And the side roads on the way home kept quiet until the car is past them: in traffic, a car pulling out of
-      // Heath Road or Riverside Walk met the car.)
+      // (And the narrow loop by Eaton Road, Ellerdine Road and Tudor Road, and the side roads on the way home, kept quiet
+      // until the car is past them: in traffic, cars met the car face to face at the mouth of Eaton Road, and pulling
+      // out of Riverside Walk.)
       quietUntil:p(-79.5,-438),
       // The mini-roundabout, and Hall Road to the right, where the green car comes from; Heath Road, Clayton Road and
       // Riverside Walk.
-      quiet:[{x:-732,z:525,radius:22},{x:-731,z:495,radius:26},{x:-765,z:537,radius:20},{x:-515,z:-276,radius:14},{x:-170,z:-433,radius:12},{x:-97,z:-435,radius:14}],
+      quiet:[{x:-732,z:525,radius:22},{x:-731,z:495,radius:26},{x:-765,z:537,radius:20},{x:-515,z:-276,radius:14},{x:-170,z:-433,radius:12},{x:-97,z:-435,radius:14},
+        {x:-588,z:-31,radius:45},{x:-620,z:-115,radius:60},{x:-650,z:-195,radius:40},{x:-670,z:-245,radius:35}],
       place:{
         approach:{pause:{kind:'moving',at:p(-692.3,519.9)},frame:{yaw:0,pitch:22},state:'Approaching the mini-roundabout at 30 mph.'},
         line:{pause:{kind:'stop',at:p(-719.6,526)},when:{actor:'hall-car',at:p(-732.7,505.9)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},

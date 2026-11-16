@@ -2,8 +2,14 @@
  "centre": "Grantham (Somerby)",
  "status": "ok",
  "centre_position": {
-  "lat": 52.90194,
-  "lon": -0.58734
+  "lat": 52.900233,
+  "lon": -0.611836
+ },
+ "centre_position_note": "Moved 16 November 2026 from 52.90194, -0.58734 (the NG31 7TX postcode point, at the A52 / B6403 junction at Cold Harbour) to the Spitalgate Airfield site (the former Prince William of Gloucester Barracks), on its road 150 m in from its way out on to Somerby Hill (the A52, OSM ways 183635688 out and 183635670 in). Which entrance the centre uses is to be confirmed.",
+ "owner_check": {
+  "date": "2026-11-16",
+  "by": "owner",
+  "note": "The owner confirmed the centre is at Spitalgate Airfield, Blue Harbour, NG31 7TX, off the B1174 near the A52 Somerby Hill / Cold Harbour area. On OpenStreetMap the airfield site's mapped ways in all join the A52 Somerby Hill; no B1174 runs by it (the B1174 is South Parade and London Road, 1.5 km west), so the site's main way in off Somerby Hill was used. Blue Harbour is not on the map (probably a new road on the airfield development)."
  },
  "address": "Grantham (Somerby), Spitalgate Airfield, Blue Harbour, Grantham, Lincolnshire NG31 7TX",
  "address_checked": "2026-11-15",
