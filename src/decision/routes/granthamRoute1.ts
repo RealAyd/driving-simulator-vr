@@ -255,7 +255,8 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       where:'Harrowby Road at the Sandon Road, Stonebridge Road and Beacon Lane lights, right into Beacon Lane',
       instruction:'At the traffic lights, turn right, please.',
       instructAt:p(-1384.8,-324.8),
-      starts:[{actor:'sandon-car',at:p(-1384.8,-324.8),delay:0}],
+      // (Set going once the car is in the junction, so it is there whatever traffic held the car up on the way.)
+      starts:[{actor:'sandon-car',at:p(-1363.5,-475.1),delay:0}],
       lights:p(-1363.6,-473.7),lightsAll:true,
       endAt:p(-1307.7,-488.9),
       // The junction, and Sandon Road ahead, where the oncoming silver car comes from.
