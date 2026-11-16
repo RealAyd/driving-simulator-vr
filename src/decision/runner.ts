@@ -398,7 +398,7 @@ export class DecisionRunner{
     // (Past its point, or the car already waiting at its line: the moment has come, so the road user comes on at its
     // own speed, released from any hold set while the car was still coming. Paced to the time left, it would ease ever
     // slower towards its point and never reach it; held, it would stand for good.)
-    if(left<=0||place.pause.kind==='stop'&&d<1.5&&speed<.5){x.pace=null;return}
+    if(left<=0||place.pause.kind==='stop'&&d<1.5&&speed<.05){x.pace=null;return}
     // (A car nearly at its point with the learner's not yet there, held up behind traffic: it stands and waits, rather than passing
     // the moment depicted before the car arrives.)
     if(def.kind!=='pedestrian'&&left<HOLD_SHORT&&d>3){x.pace=0;return}
