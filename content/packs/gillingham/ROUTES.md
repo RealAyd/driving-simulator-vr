@@ -46,7 +46,8 @@ and back, which the evidence rightly excludes), and the Will Adams and Cornwalli
 
 ## The rule the area cannot meet: challenges at known junctions
 
-`check_route.mjs` reports **0 of 8 at known junctions** (the rule asks for 3). The evidence file places
+`check_route.mjs` reports **0 of 8 at known junctions** (the rule asks for 3; a route the area cannot bring to 3 is
+published with the reason kept here, the owner's decision in `../ROUTE_TEMPLATE_RULES.md` section 3). The evidence file places
 only three junctions, far apart:
 
 - **Will Adams Way roundabouts by Tesco** (s1, s5, s6): recorded at a point on Will Adams Way between its two small
