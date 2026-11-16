@@ -84,6 +84,9 @@ Tuning on the way (the first build's two routes included, where it applies):
 | With traffic (pattern 14), the car stood at the mini-roundabout's line for good: the white car it waits for never came (most likely a background car standing in its way along Harrowby Lane: not seen in the log) | Harrowby Lane kept clear from where the white car sets off to the mini-roundabout |
 | With Skip ahead, a bus queuing into the Somerby Hill roundabout on High Dike met the blue car going out | High Dike north and the relief road approach kept clear while the roundabout is in hand |
 | With traffic (pattern 14), the silver car at the Sandon Road lights was 2.2 m past its point when the car, held up on the way, came to a stand in the junction | It is set going once the car is in the junction, 50 m short of its point |
+| With traffic, a car coming the other way, queued south of the Harrowby Road zebra for the pedestrian, was inside the zebra's quiet circle when the scene stopped | The circle covers the zebra and the car's approach only |
+| With traffic (pattern 14), a car coming out of Bridge End Grove met the move-off's cyclist turning in | Bridge End Grove's mouth kept clear until the cyclist is in; its path ends 30 m in |
+| With traffic (pattern 14), a background cyclist already on Beacon Lane met the car at the New Beacon Road junction on the way back | Beacon Lane and New Beacon Road kept clear from the Sandon Road lights challenge on, out and back |
 
 ## Still to do
 

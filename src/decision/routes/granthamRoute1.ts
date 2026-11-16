@@ -206,7 +206,9 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Down Somerby Hill behind the car as it comes to pull up.)
       starts:[{actor:'cyclist',at:p(-807.2,642.1),delay:0}],
       endAt:p(-885.9,602.8),
-      quiet:[{x:-828,z:633,radius:50}],
+      // (Kept clear until the cyclist is well into Bridge End Grove: traffic coming out of it would meet the cyclist.)
+      quietUntil:p(-926.8,579.5),
+      quiet:[{x:-828,z:633,radius:50},{x:-898,z:622,radius:28}],
       place:{
         check:{pause:{kind:'stop',at:p(-828.2,632.7)},when:{actor:'cyclist',at:p(-816.8,635.9)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb on the hill, handbrake on.'},
@@ -260,7 +262,12 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       lights:p(-1363.6,-473.7),lightsAll:true,
       endAt:p(-1307.7,-488.9),
       // The junction, and Sandon Road ahead, where the oncoming silver car comes from.
-      quiet:[{x:-1362,z:-484,radius:30},{x:-1366,z:-540,radius:40}],
+      // (And Beacon Lane and New Beacon Road, driven out and back, with cars parked along them and little room to meet
+      // traffic at their junction: kept clear from here until the car is back on Beacon Lane nearly at the lights.)
+      quietUntil:p(-1328.1,-484.4),
+      quiet:[{x:-1362,z:-484,radius:30},{x:-1366,z:-540,radius:40},
+        {x:-960,z:-930,radius:45},{x:-1030,z:-800,radius:45},{x:-1060,z:-680,radius:45},{x:-1090,z:-570,radius:40},
+        {x:-1115,z:-504,radius:30},{x:-1180,z:-494,radius:40},{x:-1260,z:-490,radius:40}],
       place:{
         approach:{pause:{kind:'moving',at:p(-1377.1,-420.3)},frame:{yaw:0,pitch:20},state:'Approaching the lights on green.'},
         centre:{pause:{kind:'stop',at:p(-1363.3,-478)},when:{actor:'sandon-car',at:p(-1361.7,-519)},frame:{yaw:0,pitch:32},
@@ -466,7 +473,9 @@ export const GRANTHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instructAt:p(-1269.4,62.4),
       starts:[{actor:'zebra-pedestrian',at:p(-1269.4,62.4),delay:0}],
       endAt:p(-1239.2,229),
-      quiet:[{x:-1245,z:193,radius:26}],
+      // (The zebra and the approach the car comes along: not Harrowby Road beyond it, where traffic coming the other way
+      // queues for the pedestrian.)
+      quiet:[{x:-1246,z:180,radius:20}],
       place:{
         approach:{pause:{kind:'moving',at:p(-1246.8,163.4)},frame:{yaw:0,pitch:22},state:'On Harrowby Road at 25 mph, the zebra crossing ahead.'},
         zebra:{pause:{kind:'stop',at:p(-1244.2,185.3)},when:{actor:'zebra-pedestrian',at:p(-1242.6,193)},frame:{yaw:0,pitch:30},
