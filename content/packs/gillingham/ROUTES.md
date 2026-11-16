@@ -8,16 +8,18 @@ Road 190 m south of the small roundabout by Tesco. Built from OpenStreetMap data
 were chosen and built: `HOW_WE_BUILT_IT.md`. The format: `../ROUTE_FORMAT.md`.
 
 **Start and finish.** Both routes start in the way out, facing Courteney Road, turn right towards the roundabout by
-Tesco and the Bowaters roundabout, and come back down Courteney Road into the way out (a left turn). *To confirm: which
-way tests leave, and whether examiners use this way out or the one 15 m north.*
+Tesco and the Bowaters roundabout, and come back from Bowaters down Courteney Road. **The drive ends on Courteney Road
+just short of the roundabout by Tesco, 200 m from the centre**: the engine cannot yet drive the ring's tight exit
+towards the centre (below). *To confirm: which way tests leave, and whether examiners use this way out or the one 15 m
+north.*
 
-## Route 1: Sovereign Boulevard, Ito Way and Featherby Road (scene `gillingham-route-1`, 4.8 km)
+## Route 1: Sovereign Boulevard, Ito Way and Featherby Road (scene `gillingham-route-1`, 4.5 km)
 
 Out of the test centre, right on to Courteney Road, ahead at the roundabout by Tesco, second exit at the Bowaters
 roundabout (traffic lights) on to Sovereign Boulevard (the A2) westbound, its pedestrian lights by Eastcourt Lane, right
 at the Will Adams Roundabout on to Ito Way (the A289, 50 mph), round the Cornwallis Roundabout on to Beechings Way, right
 through the central reservation into Featherby Road (pulling up and moving off), left on to Sovereign Boulevard
-eastbound, and back by the Bowaters roundabout and Courteney Road.
+eastbound, and back by the Bowaters roundabout and Courteney Road to the roundabout by Tesco.
 
 | # | Challenge | Road users | Right answer |
 |---|---|---|---|
@@ -34,16 +36,16 @@ The mix: traffic lights (2, 3), a large roundabout (2 and 4), emerging right (1)
 oncoming traffic (5), a pedestrian crossing (3), and the pull-up and move-off pair. **No mini-roundabout on this route**:
 there is none on its roads (route 2 has two).
 
-**Overlap** (rule 3, `check_route.mjs`): 3.5 km of 4.8 km (73%) on roads in the evidence file (Sovereign Boulevard 1.2
-km, Featherby Road 1.1, Ito Way 1.1, Beechings Way). Not in it: Courteney Road and the Bowaters ring (0.9 km, the way out
+**Overlap** (rule 3, `check_route.mjs`): 3.5 km of 4.5 km (78%) on roads in the evidence file (Sovereign Boulevard 1.2
+km, Featherby Road 1.1, Ito Way 1.1, Beechings Way). Not in it: Courteney Road and the Bowaters ring (0.75 km, the way out
 and back, which the evidence rightly excludes), and the Will Adams and Cornwallis roundabouts.
 
-## Route 2: Twydall, Beechings Way and Pump Lane (scene `gillingham-route-2`, 4.3 km)
+## Route 2: Twydall, Beechings Way and Pump Lane (scene `gillingham-route-2`, 4.0 km)
 
 Out of the test centre, right on to Courteney Road, first exit at the roundabout by Tesco, third exit at the Bowaters
 roundabout on to Twydall Lane, over its zebra crossing, Twydall Green and Goudhurst Road, right at the Goudhurst Road
 mini-roundabout on to Beechings Way, right at the Pump Lane mini-roundabout, Pump Lane (pulling up and moving off), right
-on to London Road (the A2), its pedestrian lights, and back by the slip road to Courteney Road.
+on to London Road (the A2), its pedestrian lights, and back by the slip road to Courteney Road and the roundabout by Tesco.
 
 | # | Challenge | Road users | Right answer |
 |---|---|---|---|
@@ -61,8 +63,8 @@ crossing (8), and the pull-up and move-off pair. **No emerging left and no right
 route** (route 1 has both): its side-road junctions are left turns off the main roads, and the only right turns are at
 the mini-roundabouts and on to London Road.
 
-**Overlap**: 2.8 km of 4.3 km (65%) on roads in the evidence file (Pump Lane 0.84 km, Beechings Way 0.66, Twydall Lane
-0.65, London Road 0.64). Not in it: Courteney Road and the Bowaters ring (0.9 km, the way out and back), Goudhurst Road
+**Overlap**: 2.8 km of 4.0 km (69%) on roads in the evidence file (Pump Lane 0.84 km, Beechings Way 0.66, Twydall Lane
+0.65, London Road 0.64). Not in it: Courteney Road and the Bowaters ring (0.75 km, the way out and back), Goudhurst Road
 and Twydall Green (0.38 km, the link from Twydall Lane to Beechings Way).
 
 **The two routes together**: they leave in different directions (route 1 west along the A2 and north up the A289,
@@ -102,12 +104,15 @@ Adding these two to the evidence file would give each route one or two challenge
 - **Courteney Road** is mapped unclassified, which the engine reads as a residential street: 6 m wide, cars parked
   along one kerb. It is the business park's through road and the busy link (and bus route) every test drives out and
   back on. Read as a main road (`osm-patches.json`: 6.4 m, a centre line, no kerb parking) from the test centre to the
-  Bowaters roundabout, after the car met traffic easing round a parked car on the way back. *To confirm on the
-  ground.*
-- **The roundabout by Tesco** is small, and its ring has no lanes given, so the engine built it 6 m wide; turning on to
-  it and off it the car left the carriageway at the kerb corners or touched the splitter islands' bollards. Its
-  circulating carriageway, used by delivery lorries, is read as 9 m (`osm-patches.json`), and the car's way on and off
-  is set clear of the bollards (the route files' `shifts`). *To confirm on the ground.*
+  Bowaters roundabout, after the car met traffic easing round a parked car on the way back, and was squeezed between
+  the kerb and the splitter island turning on to the roundabout by Tesco. *To confirm on the ground.*
+- **The roundabout by Tesco** is small, and its ring has no lanes given, so the engine built it 6 m wide; turning on
+  to it the car left the carriageway at the kerb corner or touched the splitter island's bollard. Its circulating
+  carriageway is read as four lanes (`osm-patches.json`), and the way on to it now drives cleanly. The way off it
+  towards the centre (three-quarters round, then a sharp left between the kerb corner and the splitter's bollard)
+  still does not: the car's planned line there turns tighter than a car can, and every adjustment tried put it on the
+  pavement or into the bollard. Both routes therefore end on Courteney Road just short of the roundabout. **Shared
+  engine change needed** (build report): a smoother way off small roundabouts, or splitters set back from the exit.
 - **Hoath Way** (A278, confirmed) runs beside Courteney Road but has no junction with it short of the Bowaters
   roundabout and the Hoath Lane roundabout 650 m south: a stretch of 50 mph dual carriageway with no decision on it, so
   neither route uses it. (The evidence file's name for it, "Hoath Way (A278) dual carriageway and its end roundabouts",
@@ -115,7 +120,8 @@ Adding these two to the evidence file would give each route one or two challenge
 
 ## Open items
 
-- Which way out examiners use, and the way back in.
+- Which way out examiners use, and the way back in; the last 200 m back to the centre, once the engine can drive the
+  roundabout by Tesco's exit.
 - Signal phases, give way markings and crossing positions are taken from the map, not surveyed.
 - The evidence file: add the Bowaters roundabout (s4, s5) and the Courteney Road roundabout by Tesco (s6, to confirm).
 - Played in the app and every paused picture screenshotted and checked; then staging and the owner's drive.

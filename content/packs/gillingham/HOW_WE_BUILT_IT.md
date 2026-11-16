@@ -43,7 +43,7 @@ One scene per route: `gillingham-route-1` 2.4 km square, north-west of the centr
 `gillingham-route-2` 2.3 km square, north-east (51.370200, 0.585913). The OpenStreetMap download: 16 tiles, merged,
 then four fixes (`osm-patches.json`, explained in `ROUTES.md`): the Beechings Way central reservation gap's east
 end moved 5 m west, Courteney Road (two ways) read as a main road, and the ring of the roundabout by Tesco read as
-9 m wide.
+four lanes wide.
 
 ```
 python3 -I tools/centres/fetch_osm.py gillingham.osm 51.37110 0.57872 1600 4 --patches content/packs/gillingham/osm-patches.json
@@ -70,7 +70,7 @@ without traffic, with 30 background road users in two patterns (4 and 14), and w
 | A road user's planned path turned into the test centre's way out, or into Featherby Road | The road's centreline, offset into the lane |
 | The silver car on Beechings Way was past its point when the car came to the moving pause (the car slowed round the Cornwallis Roundabout) | Started later (as the car leaves the roundabout), and faster |
 | Waiting to turn into Featherby Road, the car stood on the central reservation | The gap's way moved in the map data (step 3) |
-| Off the carriageway, and touching a lamp post or the splitter island's bollard, at the roundabout by Tesco | The ring read as 9 m wide, not 6 (step 3), and the car's way set clear of the bollards (`shifts`) |
+| Off the carriageway, and touching a lamp post or the splitter island's bollard, at the roundabout by Tesco | The ring read as four lanes wide (step 3): the way on drives cleanly. The way off towards the centre does not, with any shift tried: both routes end just short of the roundabout (a shared engine change, in the build report) |
 | With traffic, a car queued at the Will Adams Roundabout kept the car short of its line while the black car went by | The black car set going once the car is at the line, its path cut to start near |
 | With traffic, a car waiting to come out of The Chase on to Featherby Road and the car each waited for the other | The ends of The Chase and Hanway kept clear while the emerge on to the A2 is in hand |
 | With traffic, the car easing round a car parked on Courteney Road on the way back met a car coming the other way | Courteney Road read as a main road (step 3): no kerb parking |

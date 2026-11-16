@@ -83,6 +83,10 @@ Tuning on the way:
 | With traffic, the cyclist on The Burroughs ran into the back of the car still coming to pull up (held up by traffic) | The cyclist brakes for the car (`yields`) |
 | The blue car leaving the centre (route 1), turning right into Rowan Drive, was clipped by a bus coming the other way, and met a background car where its path ended | It turns left into Canberra Close instead, its path ending just inside |
 | With traffic, the car stood 45 to 90 s on Aerodrome Road west of Heritage Avenue behind a background car parked across the mouth of Lismore Boulevard's dead-end stub | The stub dropped (map fix) |
+| With traffic, a bus coming down The Burroughs swung wide on the bend into the white van coming up it (route 1, Church End) | The van comes along Church Road from the left instead, the way the bus goes |
+| With traffic, a car on Watford Way's southbound carriageway went through the Aerodrome Road junction on the same green while the car turned left (route 1) | That carriageway left out of the challenge's quiet circles: it is not the car's hazard |
+| With traffic, the car touched the bollard on the Heritage Avenue roundabout's splitter island (its line 0.9 m from it) | The line kept 0.4 m further left down Heritage Avenue |
+| (Skip ahead) a background cyclist crossed the white van's path at Church Road's junction east of Church End, where the van started | The van starts past that junction |
 | The roundabout instructions were given 125 m out: traffic kept off the roundabout from 150 m before that | Said 45 to 75 m out, as Beverley at Morden; the pull-up on Booth Road moved on to keep 300 m between directions |
 
 ## Still to do

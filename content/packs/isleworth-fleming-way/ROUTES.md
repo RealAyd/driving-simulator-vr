@@ -15,7 +15,7 @@ comes back from the east (a left turn in). *To confirm: where tests start and fi
 lists probably predate the 2018 move from Worton Hall, so how the routes leave and return rests on the map. The
 overlap numbers below count those likely roads.
 
-## Route 1: Twickenham Road, Mogden Lane and Whitton Dene (scene `isleworth-fleming-way-route-1`, 4.5 km)
+## Route 1: Twickenham Road, Mogden Lane and Whitton Dene (scene `isleworth-fleming-way-route-1`, 4.6 km)
 
 Out of Fleming Way, right on to Worton Road, right at the Twickenham Road lights, Twickenham Road, right at the Mogden
 Lane lights, Mogden Lane, ahead at the Mogden Lane roundabout on to Whitton Dene (pulling up and moving off), right at
@@ -40,10 +40,10 @@ route's only side-road exit is the test centre's. Known junctions used (3 of 8):
 lights (2), the Mogden Lane roundabout (the evidence's "Whitton Dene / Rugby Road roundabout", 4) and the Hall Road /
 Whitton Dene mini-roundabout (7).
 
-**Overlap** (rule 3): 4.3 km of 4.5 km (95%) on likely roads (Worton Road 1.3 km, Hall Road 0.84, Twickenham Road 0.81,
-Whitton Dene 0.72, Mogden Lane 0.58). Not named: Fleming Way and the roundabout's ring.
+**Overlap** (rule 3): 4.25 km of 4.6 km (93%) on likely roads (Worton Road 1.3 km, Hall Road 0.84, Twickenham Road 0.81,
+Whitton Dene 0.72, Mogden Lane 0.58). Not named: Fleming Way (0.17 km) and the roundabout's ring.
 
-## Route 2: Bridge Road, London Road and St John's Road (scene `isleworth-fleming-way-route-2`, 4.0 km)
+## Route 2: Bridge Road, London Road and St John's Road (scene `isleworth-fleming-way-route-2`, 4.1 km)
 
 Out of Fleming Way, left on to Worton Road, through the Ruskin Road mini-roundabout, right at the Bridge Road
 mini-roundabout, Bridge Road, right at the London Road lights, London Road over the zebra by Thornbury Road, right at
@@ -55,7 +55,7 @@ Twickenham Road, right at the Worton Road lights, Worton Road, left into Fleming
 | 1 | Leaving the test centre, left on to Worton Road | A white car coming along Worton Road from the right | Look right, signal left, give way; look right and left, go |
 | 2 | Worton Road at the Bridge Road mini-roundabout, right into Bridge Road | A black car coming down Bridge Road, from the right, going round towards Worton Road | Mirrors, signal right; look right, give way; look right again, go |
 | 3 | Bridge Road at the London Road lights, turn right | Green; a pedestrian still on the crossing just round the corner on London Road | Mirrors, signal right, position; look along London Road, give way; look again, go |
-| 4 | London Road zebra crossing by Thornbury Road | A pedestrian stepping on from the left | Interior mirror, slow down; stop and give way; look both ways, go |
+| 4 | London Road zebra crossing by Thornbury Road | A pedestrian waiting on the left, then crossing | Interior mirror, slow down; stop and give way; look both ways, go |
 | 5 | London Road at the St John's Road lights, turn right | Green; a silver car coming along London Road | Mirrors, signal right, position; wait in the junction; look into St John's Road, go |
 | 6 | Pull up on St John's Road, past St John's Court | A grey car behind | Choose short of Nottingham Road, mirrors, signal; handbrake, neutral, cancel signal |
 | 7 | Move off | The grey car coming past, turning into Nottingham Road | Mirrors, wait; mirror and blind spot, go |
@@ -68,8 +68,8 @@ and the turns out of side roads on the way are at lights. Known junctions used (
 mini-roundabout (2), the London Road / Bridge Road lights (3) and the Worton Road / Twickenham Road lights (8, from the
 Twickenham Road arm: route 1 takes it from Worton Road, a different decision).
 
-**Overlap**: 2.95 km of 4.0 km (74%) on likely roads (Worton Road 1.05 km, London Road 0.88, Bridge Road 0.65,
-Twickenham Road 0.36). Not named: St John's Road (0.91 km) and Fleming Way.
+**Overlap**: 2.95 km of 4.1 km (72%) on likely roads (Worton Road 1.05 km, London Road 0.88, Bridge Road 0.65,
+Twickenham Road 0.36). Not named: St John's Road (0.91 km) and Fleming Way (0.17 km).
 
 **The two routes together**: they leave in different directions (route 1 right and east, route 2 left and west) and
 share Worton Road between the test centre and the Twickenham Road lights, which every route needs. 16 different
@@ -79,8 +79,8 @@ dual carriageway trunk road.
 
 ## Checker
 
-`node tools/centres/check_route.mjs isleworth-fleming-way-1 isleworth-fleming-way-2`: both pass (lengths 4.5 and 4.0
-km, 95% and 74% on likely roads, 3 of 8 at known junctions each, spacing met). The checker reports the mix items each
+`node tools/centres/check_route.mjs isleworth-fleming-way-1 isleworth-fleming-way-2`: both pass (lengths 4.6 and 4.1
+km, 93% and 72% on likely roads, 3 of 8 at known junctions each, spacing met). The checker reports the mix items each
 route lacks, explained above.
 
 ## Found on the map

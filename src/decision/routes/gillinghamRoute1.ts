@@ -55,9 +55,8 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // The test centre's way out, Courteney Road, the Tesco roundabout, the Bowaters roundabout, Sovereign Boulevard, the
   // Will Adams Roundabout, Ito Way, the Cornwallis Roundabout, Beechings Way, Featherby Road, Sovereign Boulevard, the
   // Bowaters roundabout, Courteney Road and back into the way out.
-  through:pts([[332,757],[382,566],[45,310],[-392,-40],[70,-838],[49,-715],[-100,-221],[-106,52],[332,757],[365,824]]),
+  through:pts([[332,757],[382,566],[45,310],[-392,-40],[70,-838],[49,-715],[-100,-221],[-106,52],[381,617]]),
   // Pulled in to the kerb on Featherby Road, past Chilham Road (no cars parked for 30 m behind and 70 m ahead).
-  // And kept clear of the splitter islands' bollards on to and off the roundabout by Tesco.
   shifts:[{from:p(-89.5,-295.2),to:p(-91.8,-268.4),left:.35}],
   actors:[
     {id:'courteney-van',name:'white van',colour:'#f5f5f4',speed:9,path:pts(COURTENEY_VAN)},
@@ -522,14 +521,15 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       title:'Emerging, left turn',
       where:'Featherby Road, left on to Sovereign Boulevard (A2)',
       instruction:'At the end of the road, turn left, please.',
-      instructAt:p(-103.4,170.6),
+      // (In good time: from here the ends of The Chase and Hanway, on the way down, are kept clear of traffic.)
+      instructAt:p(-108.9,32.4),
       starts:[{actor:'sovereign-car',at:p(-100.3,91),delay:0}],
       // (The Hotel Road pedestrian lights, just to the right, held green: the red car comes through them.)
       lights:p(-138.7,245.8),
       endAt:p(-99.3,259.1),
       // The junction, and Sovereign Boulevard to the right (west), where the red car comes from.
       // (And the ends of The Chase and Hanway on the way down Featherby Road: a car waiting to come out there met the car.)
-      quiet:[{x:-120,z:248,radius:16},{x:-150,z:240,radius:30},{x:-101,z:80,radius:16}],
+      quiet:[{x:-120,z:248,radius:16},{x:-150,z:240,radius:30},{x:-103,z:78,radius:22}],
       place:{
         approach:{pause:{kind:'moving',at:p(-113.3,219.6)},frame:{yaw:0,pitch:22},state:'Approaching the end of Featherby Road at 15 mph.'},
         line:{pause:{kind:'stop',at:p(-119.5,242.8)},when:{actor:'sovereign-car',at:p(-137.9,244.3)},frame:{yaw:-70,pitch:26},state:'At the give way line.'},

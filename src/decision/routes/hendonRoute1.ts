@@ -38,8 +38,8 @@ const BEFORE:Record<string,BeforeMerge>={
     state:'Approaching the Watford Way lights. They are red.'}},
   'greyhound-zebra':{first:'approach',second:'zebra',place:{pause:{kind:'moving',at:p(-9.8,-29.9)},when:{actor:'zebra-pedestrian',at:p(20.3,-17.2)},panel:'right',frame:{yaw:0,pitch:44,shift:4},
     state:'On Greyhound Hill, the zebra crossing just ahead.'}},
-  // (At the line: the church wall on the corner hides The Burroughs to the right until there.)
-  'church-end-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(349,223.2)},frame:{yaw:-70,pitch:40,shift:-4},
+  // (At the line: the buildings on the corner hide Church Road to the left until there.)
+  'church-end-emerge':{first:'approach',second:'line',place:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(404.9,223.2)},frame:{yaw:60,pitch:40,shift:4},
     state:'At the end of Church End.'}},
   'aerodrome-left':{first:'approach',second:'centre',place:{pause:{kind:'moving',at:p(-153.7,-74)},when:{actor:'aerodrome-pedestrian',at:p(-158.1,-120.4)},frame:{yaw:10,pitch:40,shift:4},
     state:'Approaching the Aerodrome Road lights on green, in the left lane.'}},
@@ -59,7 +59,8 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   through:pts([[-540,-330],[-300,-165],[100,20],[350,150],[250,410],[-199,145],[-300,-165],[-650,-310],[-970,-445],[-850,-540],
     [-740,-536],[-721,-500],[-620,-440],[-531,-473]]),
   // Pulled in to the kerb on The Burroughs, past Egerton Gardens (no cars parked along it: room for the cyclist to pass).
-  shifts:[{from:p(211.9,467.1),to:p(194.2,491.4),left:.35}],
+  // And kept a little left coming down Heritage Avenue to its roundabout, clear of the bollard on the splitter island.
+  shifts:[{from:p(211.9,467.1),to:p(194.2,491.4),left:.35},{from:p(-718.6,-474.3),to:p(-720,-462.9),left:.4}],
   actors:[
     {id:'aero-car',name:'blue car',colour:'#2563eb',speed:9,path:pts(AERO_CAR)},
     // Waiting at the Greyhound Hill zebra on the left, then across in front of the car.
@@ -273,12 +274,12 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instructAt:p(356.4,119.5),
       starts:[{actor:'burroughs-van',at:p(364.4,148.3),delay:0}],
       endAt:p(321.6,234.7),
-      // The junction, The Burroughs to the right (south-west), where the white van comes from, and Church Road, where it goes.
-      quiet:[{x:374,z:222,radius:22},{x:318,z:245,radius:36},{x:430,z:220,radius:26}],
+      // The junction, Church Road to the left (east), where the white van comes from, and The Burroughs, where it goes.
+      quiet:[{x:374,z:222,radius:22},{x:318,z:245,radius:36},{x:430,z:220,radius:30}],
       place:{
         approach:{pause:{kind:'moving',at:p(370.3,177.7)},frame:{yaw:0,pitch:22},state:'Approaching the end of Church End at 15 mph.'},
-        line:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(349,223.2)},frame:{yaw:-70,pitch:26},state:'At the give way line.'},
-        clear:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(431.1,219.1)},frame:{yaw:-40,pitch:26},state:'Still at the give way line.'}
+        line:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(404.9,223.2)},frame:{yaw:60,pitch:26},state:'At the give way line.'},
+        clear:{pause:{kind:'stop',at:p(375.3,209.3)},when:{actor:'burroughs-van',at:p(311.1,244.4)},frame:{yaw:-30,pitch:26},state:'Still at the give way line.'}
       },
       stages:[
         {
@@ -299,16 +300,16 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
           id:'line',safe:'wait',go:'go',wait:'give-way',
           buttons:['look-right','look-left','creep','give-way','go'],
           rules:[
-            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-right'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking right',
-              message:'Look right first: the traffic in the near lane comes up The Burroughs from the right, round the bend.'}},
+            {kind:'before',id:'look-before-waiting',action:'give-way',needs:['look-left'],fault:{level:'minor',heading:'Junctions - observation',title:'Waited without looking left',
+              message:'Look left too: turning right, you join the far lane, and its traffic comes along Church Road from the left.'}},
             {kind:'unsafe',id:'pulled-out',action:'go',fault:{level:'dangerous',heading:'Junctions - observation',title:'Pulled out in front of the white van',
-              message:'The white van coming up The Burroughs from the right was close, in the lane you were crossing. The examiner had to stop the car.'}},
+              message:'The right was clear, but the white van coming along Church Road from the left was close, going on down The Burroughs in the lane you were joining. The examiner had to stop the car.'}},
             {kind:'distractor',id:'creep',action:'creep',fault:{level:'serious',heading:'Junctions - observation',title:'Crept out into the white van\'s way',
-              message:'The view right was already clear: creeping forward only puts the front of the car into the white van\'s lane.'}}
+              message:'The view was already clear: creeping forward only puts the front of the car into the near lane, in the way of anything coming up The Burroughs, while you wait for the van.'}}
           ],
-          accepted:[['look-right','give-way'],['look-right','look-left','give-way'],['look-left','look-right','give-way']],
+          accepted:[['look-right','look-left','give-way'],['look-left','look-right','give-way'],['look-left','give-way']],
           next:{wait:'clear',go:'clear'},
-          explain:'Give way: the white van coming up The Burroughs from the right was close, in the lane you were crossing.'
+          explain:'Give way: the right was clear, but the white van coming along Church Road from the left was close, in the lane you were joining.'
         },
         {
           id:'clear',safe:'go',go:'go',wait:'give-way',
@@ -317,7 +318,7 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
             {kind:'required',id:'look-left',anyOf:['look-left'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'No look left',
               message:'Turning right, you join the far lane: look left along Church Road for traffic coming towards it before you go.'}},
             {kind:'required',id:'fresh-look-right',anyOf:['look-right'],when:'go',fault:{level:'minor',heading:'Junctions - observation',title:'Out-of-date look right',
-              message:'Your last look right was before the white van passed. Look right again just before you go.'}},
+              message:'Your last look right was before you waited for the white van. Look right again just before you go.'}},
             {kind:'hesitation',id:'hesitation',fault:{level:'minor',heading:'Progress - undue hesitation',title:'Missed a safe gap',
               message:'The Burroughs and Church Road were clear both ways: this was the time to go.'}}
           ],
@@ -445,8 +446,9 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       starts:[{actor:'aerodrome-pedestrian',at:p(-161.5,-45),delay:0}],
       lights:p(-147.6,-87.4),
       endAt:p(-208.9,-135.7),
-      // The junction, and the mouth of Aerodrome Road the pedestrian crosses.
-      quiet:[{x:-148,z:-105,radius:30},{x:-175,z:-124,radius:20}],
+      // The car's side of the junction (Watford Way's northbound carriageway and the mouth of Aerodrome Road the
+      // pedestrian crosses); not the southbound carriageway, whose traffic goes on through on the same green.
+      quiet:[{x:-158,z:-113,radius:16},{x:-150,z:-92,radius:9},{x:-178,z:-125,radius:14}],
       place:{
         approach:{pause:{kind:'moving',at:p(-163.7,-35.3)},frame:{yaw:0,pitch:22},state:'On Watford Way, the Aerodrome Road lights ahead on green.'},
         centre:{pause:{kind:'moving',at:p(-153.7,-74)},when:{actor:'aerodrome-pedestrian',at:p(-158.1,-120.4)},frame:{yaw:10,pitch:30},

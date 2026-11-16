@@ -66,8 +66,20 @@ Dene past its bend (the cyclist then turns into Queensbridge Park), route 2 on S
 ## 5. Drive it headless
 
 `CENTRE=isleworth-fleming-way npx vitest run tests/unit/decisionDrive.centre.test.ts`: both routes with the right
-answers, without traffic, with 30 background road users in two patterns (4 and 14), and with Skip ahead. Results and
-tuning: `ROUTES.md`.
+answers, without traffic, with 30 background road users in two patterns (4 and 14), and with Skip ahead (results in
+`ROUTES.md`). Tuning on the way, each found with a single drive (`decisionDrive.ts`'s `drive`, about 2 minutes without
+traffic, 15 with):
+
+| Found | Fix |
+|---|---|
+| Route 1's line cut across the Mogden Lane roundabout's island | The short Whitton Dene piece lengthened (`osm-patches.json`) |
+| Route 1's car touched the bollard on the Mogden Lane splitter island at the give way line | Its line kept 0.9 m left on the way in (a `shift`) |
+| Route 2's car ran over the footway turning left into Fleming Way at the end | Its line kept 0.7 m out (a `shift`) |
+| Both drives stopped more than 12 m short of the planned line's end (the runner stops 12 m short; the test allows 12) | The routes end on Fleming Way's branch past its bend, by the units |
+| Road users meant to meet the car at the Mogden Lane lights, the Hall Road mini-roundabout, the Worton Road lights from Twickenham Road and the way into the test centre came too early or too late once traffic held the car up (pacing could not hold them: a road user is never slowed below 40% of its speed) | Set going from close in, as the car reaches the junction; at the Mogden Lane lights, the Hall Road mini-roundabout and the Worton Road lights the first decision is taken where the car waits (in the junction, at the line) |
+| In traffic, the car crawled up to the London Road zebra behind cars stopping for the pedestrian | The pedestrian waits at the kerb until the car is close, and the first decision shows them waiting |
+| In traffic, cars pulling out of Briar Close, Harlequin Close, Heath Road and Riverside Walk met the car or held it up for 50 s | Those side roads kept quiet while the challenges round them are in hand (`quietUntil` on the Mogden Lane lights and the Hall Road mini-roundabout) |
+| A bus turning into St John's Road ahead of the car met the silver car | St John's Road's mouth added to that challenge's quiet circles, from further back |
 
 ## Still to do
 

@@ -55,10 +55,10 @@ export const GILLINGHAM_ROUTE_2:DecisionRoute=withTurnButtons(withBeforeAfter({
   start:{x:-415.03,z:573.11,headingDeg:278.66},
   // The test centre's way out, Courteney Road, the Tesco roundabout, the Bowaters roundabout, Twydall Lane, Twydall
   // Green, Goudhurst Road, Beechings Way, Pump Lane, London Road, the slip road to Courteney Road, and back into the way out.
-  through:pts([[-438,507],[-388,316],[-376,37],[-327,-275],[-100,-578],[372,-513],[630,-280],[305,150],[-100,225],[-438,507],[-405,574]]),
+  through:pts([[-438,507],[-388,316],[-376,37],[-327,-275],[-100,-578],[372,-513],[630,-280],[305,150],[-100,225],[-389,367]]),
   // Pulled in to the kerb on Pump Lane, past Aylward Way (no cars parked along it).
-  // And kept clear of the splitter islands' bollards on to and off the roundabout by Tesco.
-  shifts:[{from:p(522.4,-119.6),to:p(505.6,-101),left:.35},{from:p(-412.4,391.4),to:p(-410.1,388.3),left:.75},{from:p(-407.7,392.7),to:p(-411,392.8),left:1.1}],
+  // And kept off the inside corner turning into Twydall Green.
+  shifts:[{from:p(522.4,-119.6),to:p(505.6,-101),left:.35},{from:p(-198,-467.7),to:p(-194.6,-469.5),left:-.5}],
   actors:[
     {id:'tesco-car',name:'green car',colour:'#15803d',speed:8,path:pts(TESCO_CAR)},
     // Waiting at the Twydall Lane zebra on the right, then across in front of the car.

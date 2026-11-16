@@ -358,7 +358,8 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       starts:[{actor:'cyclist',at:p(-294.3,469.9),delay:0}],
       endAt:p(-369.5,500.1),
       selfCancel:false,
-      quiet:[{x:-370,z:500,radius:34}],
+      // The pull-up, and Harlequin Close on the way to it.
+      quiet:[{x:-370,z:500,radius:34},{x:-276,z:454,radius:12}],
       place:{
         approach:{pause:{kind:'moving',at:p(-329.8,496.3)},frame:{yaw:-15,pitch:28},state:'On Whitton Dene at 30 mph, round the bend.'},
         stopped:{pause:{kind:'stop',at:p(-369.5,500.1)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
@@ -466,8 +467,12 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
       starts:[{actor:'hall-car',at:p(-709.7,524.4),delay:0}],
       endAt:p(-735.9,507.7),
-      // The mini-roundabout, and Hall Road to the right, where the green car comes from.
-      quiet:[{x:-732,z:525,radius:22},{x:-731,z:495,radius:26},{x:-765,z:537,radius:20}],
+      // (And the side roads on the way home kept quiet until the car is past them: in traffic, a car pulling out of
+      // Heath Road or Riverside Walk met the car.)
+      quietUntil:p(-79.5,-438),
+      // The mini-roundabout, and Hall Road to the right, where the green car comes from; Heath Road, Clayton Road and
+      // Riverside Walk.
+      quiet:[{x:-732,z:525,radius:22},{x:-731,z:495,radius:26},{x:-765,z:537,radius:20},{x:-515,z:-276,radius:14},{x:-170,z:-433,radius:12},{x:-97,z:-435,radius:14}],
       place:{
         approach:{pause:{kind:'moving',at:p(-692.3,519.9)},frame:{yaw:0,pitch:22},state:'Approaching the mini-roundabout at 30 mph.'},
         line:{pause:{kind:'stop',at:p(-719.6,526)},when:{actor:'hall-car',at:p(-732.7,505.9)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},

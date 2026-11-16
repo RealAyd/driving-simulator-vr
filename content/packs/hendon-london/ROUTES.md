@@ -23,7 +23,7 @@ Heritage Avenue, Boulevard Drive and back up Aviation Drive.
 | 1 | Leaving the test centre: Caversham Road, left on to Aerodrome Road | A blue car coming along Aerodrome Road from the right | Mirrors, signal left; look right, give way; look right and left, go |
 | 2 | Aerodrome Road at the Watford Way lights, ahead into Greyhound Hill | Red light | Interior mirror, slow down, no signal, wait at the line; on green, look along both carriageways, go |
 | 3 | Greyhound Hill zebra crossing by Sunny Hill | A pedestrian stepping on from the left | Interior mirror, slow down; stop and give way; look both ways, go |
-| 4 | Church End, right on to The Burroughs | A white van coming up The Burroughs from the right | Mirrors, signal right; look right, give way; look right, left and right, go |
+| 4 | Church End, right on to The Burroughs | A white van coming along Church Road from the left, going on down The Burroughs | Mirrors, signal right; look right and left, give way; look right, left and right, go |
 | 5 | Pull up on The Burroughs, past Egerton Gardens | A cyclist behind | Choose past Egerton Gardens, mirrors, signal; handbrake, neutral, cancel signal |
 | 6 | Move off | The cyclist coming past, turning into Burroughs Gardens | Mirror and blind spot, wait; again, go |
 | 7 | Watford Way at the Aerodrome Road lights, left turn | Green; a pedestrian crossing the mouth of Aerodrome Road | Mirrors, signal left; give way to the pedestrian; left mirror, look, go |
