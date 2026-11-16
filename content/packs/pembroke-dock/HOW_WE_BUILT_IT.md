@@ -75,6 +75,7 @@ end. One thing found and fixed without a second drive:
 | Found | Fix |
 |---|---|
 | The car's left side touched the pavement turning left out of Melville Terrace into Melville Street (a tight corner) | Its line kept 1 m right through the corner (a `shift`; the line checked on the carriageway with the car's width) |
+| In traffic (pattern 4, and with Skip ahead), the white car for the Market Street challenge met a car turning out of Commercial Row where its path began, at the mouth of Commercial Row and Pembroke Street | Its path starts just past that junction, on Market Place (30 m short of its point) |
 
 The drives with traffic (patterns 4 and 14) and with Skip ahead are the main session's to run.
 
