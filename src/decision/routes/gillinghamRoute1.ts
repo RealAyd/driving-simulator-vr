@@ -84,9 +84,9 @@ export const GILLINGHAM_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       place:{
         line:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-van',at:p(332.2,798)},frame:{yaw:-70,pitch:32},
           state:'At the end of the way out, at the edge of Courteney Road.'},
-        left:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(327.5,845)},frame:{yaw:60,pitch:32},
+        left:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(329.2,845)},frame:{yaw:60,pitch:32},
           state:'Still at the edge of Courteney Road.'},
-        clear:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(329.5,790)},frame:{yaw:-30,pitch:32},
+        clear:{pause:{kind:'stop',at:p(337.5,820.6)},when:{actor:'courteney-car',at:p(330.1,790.1)},frame:{yaw:-30,pitch:32},
           state:'Still at the edge of Courteney Road.'}
       },
       stages:[
