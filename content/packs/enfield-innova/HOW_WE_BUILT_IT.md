@@ -72,7 +72,10 @@ session. Tuning on the way:
 |---|---|
 | The test centre's way in did not meet Solar Way in the scene | Its first node moved to the edge of Solar Way (`osm-patches.json`) |
 | The white car's path along Innova Way passed a car parked at the kerb | Its path starts past the parked car |
-| The car touched the bollard on Solar Way's splitter island going into the Innova Way roundabout, and cut the corner on to the footway coming out into Innova Way | Its line kept 0.5 m left on the way in and 0.8 m right round the island (two `shifts`); not yet driven again |
+| The car touched the bollard on Solar Way's splitter island going into the Innova Way roundabout, and cut the corner on to the footway coming out into Innova Way | Its line kept 0.5 m left on the way in and 0.8 m right round the island (two `shifts`) |
+| In the main session's drives: the car on to the footway turning right at the Hertford Road lights (the planned line ran along the left kerb into Hertford Road) and at the Bullsmoor Lane lights (along the right kerb into Mollison Avenue) | The line moved 1.4 m right and 1.2 m left there (`shifts`); a drive without traffic then had both clear, and the Innova Way roundabout clear of the bollard and the footway |
+| In traffic (pattern 4), a car coming north on Mollison Avenue met the car as it turned right out of Innova Way across the northbound carriageway | The end of Innova Way and the northbound carriageway coming up to it kept quiet until the car is on its way south (`quietUntil` on the Innova Way roundabout) |
+| That drive's last off-road moment: the sharp left turn from Solar Way back into the test centre's way in, cut on to the footway | The line taken 0.8 m wide of the corner (`shifts`; at least 1.8 m to the kerb); not yet driven again |
 | Lessons from the last batch, applied before driving | Each road user a pause waits for set going from close in (as the car comes to its line or the crossing); the first decision at each give way taken stopped at the line; paths ended soon after their moment; Totteridge Road and Mandeville Road (cars parked on both sides in places) kept quiet from the move-off until the car is near the end of Mandeville Road (`quietUntil`) |
 
 ## Still to do

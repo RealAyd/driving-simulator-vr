@@ -77,13 +77,13 @@ known junctions, spacing met; the mix lacks only the mini-roundabout, above).
 
 ## Drives
 
-One drive without traffic (`decisionDrive.ts`'s `drive`, 2 minutes): the right answers to a pass, every pause as
-depicted (16 pauses, each road user within 0.1 m of its point), no red light run, closest scripted road user the
-cyclist passing the car pulled up (3.2 m), back on the test centre's way in. It found two things at the small Innova
-Way roundabout, since fixed by `shifts` and not yet driven again: the car touched the bollard on Solar Way's splitter
-island going in, and cut the corner on to the footway going out into Innova Way. The drives with background traffic
-(patterns 4 and 14) and with Skip ahead are run by the main session:
-`ROUTES=enfield-innova-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`.
+The main session's first full run failed on the car going on to the footway at the Hertford Road and Bullsmoor Lane
+lights and, in pattern 4, a car coming north on Mollison Avenue meeting the car as it turned right out of Innova Way.
+After the fixes (`HOW_WE_BUILT_IT.md` section 5), one drive without traffic: the right answers to a pass, every pause
+as depicted (16 pauses, each road user within 0.1 m of its point), nothing hit, no red light run, closest scripted road
+user the cyclist passing the car pulled up (3.2 m). Its only fault was the car briefly on the footway turning back
+into the test centre's way in, since widened and not yet driven again. The drives with traffic and Skip ahead are
+rerun by the main session: `ROUTES=enfield-innova-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`.
 
 ## Open items
 

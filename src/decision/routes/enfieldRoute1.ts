@@ -66,7 +66,9 @@ export const ENFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   shifts:[{from:p(-489.8,273.5),to:p(-459.8,275),left:.35},{from:p(550.2,24.4),to:p(549,36.3),left:.5},{from:p(558.8,46.5),to:p(561.4,49.5),left:-.8},
     // And clear of the kerbs on the inside of the right turns at the Hertford Road lights (the planned line runs along
     // the left kerb into Hertford Road) and the Bullsmoor Lane lights (along the right kerb into Mollison Avenue).
-    {from:p(-737.8,366.2),to:p(-735.4,363),left:-1.4},{from:p(-338.5,-502.5),to:p(-334.5,-505.1),left:1.2}],
+    {from:p(-737.8,366.2),to:p(-735.4,363),left:-1.4},{from:p(-338.5,-502.5),to:p(-334.5,-505.1),left:1.2},
+    // And wide of the corner coming back off Solar Way into the test centre's way in (a sharp left turn).
+    {from:p(581.8,-274),to:p(586,-271.3),left:-.8}],
   actors:[
     {id:'solar-car',name:'silver car',colour:'#c3c7cf',speed:9,path:pts(SOLAR_CAR)},
     {id:'innova-car',name:'white car',colour:'#e5e7eb',speed:7,path:pts(INNOVA_CAR)},
