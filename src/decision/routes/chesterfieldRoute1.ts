@@ -134,9 +134,9 @@ export const CHESTERFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
       // (Set going as the car comes to the line, so it is there whatever traffic held the car up on the way.)
       starts:[{actor:'ring-car',at:p(337.4,-189.5),delay:0}],
       endAt:p(298.9,-226.5),
-      // The roundabout's entry, its east side and Lockoford Lane, where the black car comes from, and its north side,
-      // where it leaves.
-      quiet:[{x:340,z:-225,radius:24},{x:378,z:-235,radius:22},{x:340,z:-262,radius:18}],
+      // The roundabout's ring (clear of Peveril Road's own entry, where a car waiting its turn is no part of this),
+      // Lockoford Lane, where the black car comes from, and Sheffield Road north, where it leaves.
+      quiet:[{x:348,z:-226,radius:16},{x:378,z:-235,radius:22},{x:340,z:-262,radius:18}],
       place:{
         approach:{pause:{kind:'moving',at:p(343,-177.8)},frame:{yaw:0,pitch:22},state:'Approaching the Sheffield Road roundabout.'},
         line:{pause:{kind:'stop',at:p(333.6,-203.8)},when:{actor:'ring-car',at:p(351.1,-216.4)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},
@@ -269,9 +269,12 @@ export const CHESTERFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter(
       // (Set going as the car comes up to the line, so it is there whatever traffic held the car up on the way.)
       starts:[{actor:'newbold-car',at:p(-827.7,-279.7),delay:0}],
       endAt:p(-850.5,-239.4),
+      // (And the mouth of Tapton View Road kept quiet until the car has turned into it: in traffic, a car waiting there
+      // to come out was 0.2 m from the car turning in.)
+      quietUntil:p(-415.4,395.1),
       // The mini-roundabout, Newbold Road to the right, where the green car comes from, and Newbold Road to the left,
-      // where it goes.
-      quiet:[{x:-858,z:-275,radius:22},{x:-885,z:-305,radius:28},{x:-850,z:-240,radius:22}],
+      // where it goes; the mouth of Tapton View Road.
+      quiet:[{x:-858,z:-275,radius:22},{x:-885,z:-305,radius:28},{x:-850,z:-240,radius:22},{x:-428,z:418,radius:16}],
       place:{
         approach:{pause:{kind:'moving',at:p(-813.2,-277.7)},frame:{yaw:0,pitch:22},state:'Approaching the mini-roundabout at 30 mph.'},
         line:{pause:{kind:'stop',at:p(-844.6,-278.1)},when:{actor:'newbold-car',at:p(-867.6,-287)},frame:{yaw:-60,pitch:28},state:'At the give way line.'},

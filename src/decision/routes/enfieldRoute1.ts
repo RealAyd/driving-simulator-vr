@@ -63,7 +63,10 @@ export const ENFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // Pulled in to the kerb on Totteridge Road, with no car parked opposite (room for the cyclist to pass). And through
   // the small Innova Way roundabout: kept left on the way in, clear of the bollard on Solar Way's splitter island, then
   // right round the island, so the car does not cut the corner on to the footway on the way out into Innova Way.
-  shifts:[{from:p(-489.8,273.5),to:p(-459.8,275),left:.35},{from:p(550.2,24.4),to:p(549,36.3),left:.5},{from:p(558.8,46.5),to:p(561.4,49.5),left:-.8}],
+  shifts:[{from:p(-489.8,273.5),to:p(-459.8,275),left:.35},{from:p(550.2,24.4),to:p(549,36.3),left:.5},{from:p(558.8,46.5),to:p(561.4,49.5),left:-.8},
+    // And clear of the kerbs on the inside of the right turns at the Hertford Road lights (the planned line runs along
+    // the left kerb into Hertford Road) and the Bullsmoor Lane lights (along the right kerb into Mollison Avenue).
+    {from:p(-737.8,366.2),to:p(-735.4,363),left:-1.4},{from:p(-338.5,-502.5),to:p(-334.5,-505.1),left:1.2}],
   actors:[
     {id:'solar-car',name:'silver car',colour:'#c3c7cf',speed:9,path:pts(SOLAR_CAR)},
     {id:'innova-car',name:'white car',colour:'#e5e7eb',speed:7,path:pts(INNOVA_CAR)},
@@ -151,8 +154,12 @@ export const ENFIELD_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Set going as the car comes up to the line, so it is there whatever held the car up.)
       starts:[{actor:'innova-car',at:p(555.1,6),delay:0}],
       endAt:p(592.2,57.2),
-      // The roundabout, Innova Way to the right, where the white car comes from, and Electric Avenue.
-      quiet:[{x:549,z:45,radius:22},{x:505,z:54,radius:30},{x:550,z:88,radius:16}],
+      // (And the Innova Way end at Mollison Avenue, where the car turns right across the northbound carriageway, kept
+      // quiet until the car is on its way south: in traffic, a car coming north met it there.)
+      quietUntil:p(747.5,124),
+      // The roundabout, Innova Way to the right, where the white car comes from, and Electric Avenue; the end of Innova
+      // Way and Mollison Avenue's northbound carriageway coming up to it.
+      quiet:[{x:549,z:45,radius:22},{x:505,z:54,radius:30},{x:550,z:88,radius:16},{x:745,z:76,radius:24},{x:741,z:115,radius:30}],
       place:{
         approach:{pause:{kind:'moving',at:p(555.1,6)},frame:{yaw:0,pitch:22},state:'Approaching the Innova Way roundabout at 20 mph.'},
         line:{pause:{kind:'stop',at:p(549.6,29.4)},when:{actor:'innova-car',at:p(537.6,49)},frame:{yaw:-55,pitch:28},state:'At the give way line.'},
