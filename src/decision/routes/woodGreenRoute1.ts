@@ -285,7 +285,10 @@ export const WOOD_GREEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       // (Also here, for practising this challenge on its own.)
       starts:[{actor:'cyclist',at:p(184.4,94.4),delay:0}],
       endAt:p(343.9,106.9),
-      quiet:[{x:264,z:101,radius:50},{x:330,z:106,radius:20}],
+      // (And the Tower Gardens Road mini-roundabout and Awlfield Avenue, kept quiet from here until the car is at the
+      // mini-roundabout's line: in traffic, a car waiting at its far entry was still there when the challenge began.)
+      quietUntil:p(754.4,53.6),
+      quiet:[{x:264,z:101,radius:50},{x:330,z:106,radius:20},{x:756,z:42,radius:16},{x:757,z:5,radius:28},{x:754,z:80,radius:20}],
       place:{
         check:{pause:{kind:'stop',at:p(264.1,100.6)},when:{actor:'cyclist',at:p(248.6,101.2)},frame:{yaw:-155,pitch:26},
           state:'Stopped at the kerb, handbrake on.'},
