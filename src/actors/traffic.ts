@@ -1306,6 +1306,8 @@ export class Traffic implements SimModule{
       // (Waiting at a red light is not being stuck.)
       d.waited=car.speed<.2&&d.dwell<=0&&why!=='lights'?d.waited+dt:0;
       d.why=why;
+      // (As it was before this step, to take it back below.)
+      const was={...d,lat:lat0},wasPose=car.pose,edging=why.includes('creeping past');
       d.s+=car.speed*dt;
       // On to the next leg (through the junction), or away if there is none.
       while(d.s>=d.leg.lengths.at(-1)!){
@@ -1330,6 +1332,9 @@ export class Traffic implements SimModule{
       }
       if(!car.visible)continue;
       this.place(d);
+      // The step as taken, on through a junction too, where its heading turns at once on to the next leg's: taken back
+      // if that brought it into touch after all (the check above looks along this leg only).
+      if(this.intoTouch(car,wasPose,car.pose,learner,edging)){Object.assign(d,was);car.pose=wasPose;car.speed=0;d.why=`kept off${why?` (${why})`:''}`}
       // Signalling: for the turn coming up, in good time (the way on chosen now), round a roundabout and off it.
       {
         const remaining=d.leg.lengths.at(-1)!-d.s;
@@ -1395,7 +1400,7 @@ export class Traffic implements SimModule{
   /**
    * Holds this step back where it would bring the car's body nearer the learner's, or a scenario road user's, than
    * KEEP_OFF (and nearer than before it): the car stands and keeps to the line across the road it had (`lat0`). True
-   * if it was held. (Not checked past the end of its leg, a step from a junction: the rules above keep it there.)
+   * if it was held. (Not past the end of its leg: that step is checked as taken, below its move.)
    */
   private keepOff(d:Driver,lat0:number,learner:{pose:Pose},dt:Seconds,edging:boolean):boolean{
     const car=d.car,s1=d.s+car.speed*dt;
@@ -1404,15 +1409,32 @@ export class Traffic implements SimModule{
       const q=this.at(d.leg,s);
       return {id:car.id,cx:q.x+q.dir.z*lat,cz:q.z-q.dir.x*lat,heading:headingFromDirection(q.dir),halfW:car.halfWidth+pad,halfD:car.halfLength+pad};
     };
-    const pos=car.pose.position;
-    const near=[{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[]},
-      ...(this.options.others?.()??[]).map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]}))]
-      .filter(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)<car.halfLength+o.halfLength+car.speed*dt+2);
-    for(const o of near){
+    for(const o of this.bodiesNear(car,learner,edging,car.speed*dt)){
       const them={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength};
       if(o.pads.some(pad=>boxesOverlap(body(s1,d.lat,pad),them)&&!boxesOverlap(body(d.s,lat0,pad),them))){car.speed=0;d.lat=lat0;return true}
     }
     return false;
+  }
+
+  /**
+   * Whether moving this car's body from one pose to another brings it nearer the learner's, or a scenario road user's,
+   * than KEEP_OFF, and nearer than it was.
+   */
+  private intoTouch(car:TrafficCar,from:Pose,to:Pose,learner:{pose:Pose},edging:boolean):boolean{
+    const body=(p:Pose,pad:number)=>({id:car.id,cx:p.position.x,cz:p.position.z,heading:p.heading,halfW:car.halfWidth+pad,halfD:car.halfLength+pad});
+    for(const o of this.bodiesNear(car,learner,edging,1)){
+      const them={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength};
+      if(o.pads.some(pad=>boxesOverlap(body(to,pad),them)&&!boxesOverlap(body(from,pad),them)))return true;
+    }
+    return false;
+  }
+
+  /** The learner and a scenario's own road users within reach of this car, each with the room kept from it (KEEP_OFF). */
+  private bodiesNear(car:TrafficCar,learner:{pose:Pose},edging:boolean,reach:number){
+    const pos=car.pose.position;
+    return [{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[]},
+      ...(this.options.others?.()??[]).map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]}))]
+      .filter(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)<car.halfLength+o.halfLength+reach+2);
   }
 
   /**
