@@ -61,8 +61,10 @@ export const CARDIFF_LLANISHEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeA
   through:pts([[160,-414],[80,-600],[-266,-873],[-400,-724],[-436,-532],[-405,-360],[-385,-140],[-340,200],[-300,560],[-262,800],[0,694],[200,572],[420,436],[560,222],[300,290],[145,200],[152,-25],[-150,-35],[-385,-140],[-418,-380],[-455,-620],[-400,-724],[-250,-748],[-140,-721],[-60,-470],[-37,-420],[18,-386],[200,-415],[234,-352]]),
   // Pulled in to the kerb on Heathwood Road (no cars parked along it: room for the cyclist to pass). And out wide round
   // the turn from Caerphilly Road into Heathwood Road at the Birchgrove lights (an island between the two: the line
-  // turned before its tip, over the pavement).
-  shifts:[{from:p(38,670.1),to:p(72.1,649.1),left:.35},{from:p(-261.1,849),to:p(-256,853),left:-3.2}],
+  // turned before its tip, over the pavement). And clear of the bollards on the Morrisons roundabout's splitter islands,
+  // coming in from Tŷ Glas Road and from Caerphilly Road (the line cut the noses).
+  shifts:[{from:p(38,670.1),to:p(72.1,649.1),left:.35},{from:p(-261.1,849),to:p(-256,853),left:-3.2},
+    {from:p(-447.8,-693.2),to:p(-452.5,-690.3),left:-1.5},{from:p(-469.6,-684.6),to:p(-470.8,-691.1),left:-1.4}],
   actors:[
     {id:'ring-car',name:'black car',colour:'#1f2328',speed:9,path:pts(RING_CAR)},
     // On the crossing over Caerphilly Road at the Birchgrove lights, from the left-hand kerb across the car's lane, late on the lights.
@@ -142,12 +144,14 @@ export const CARDIFF_LLANISHEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeA
       title:'Roundabout, first exit',
       where:'Tŷ Glas Road at the Morrisons roundabout, first exit on to Caerphilly Road',
       instruction:'At the roundabout, take the first exit, please.',
-      instructAt:p(-382.6,-732.7),
+      // (Early, so the roundabout is clear of background traffic by the time the car comes up to it.)
+      instructAt:p(-332.6,-782.1),
       // (Set going as the car comes up to the line, so it comes round as the car gets there, whatever held it up.)
       starts:[{actor:'ring-car',at:p(-429.6,-706.4),delay:0}],
       endAt:p(-455.6,-663.3),
-      // The roundabout, Thornhill Road, where the black car comes from, Caerphilly Road south and Beulah Road.
-      quiet:[{x:-463,z:-689,radius:24},{x:-469,z:-728,radius:26},{x:-455,z:-660,radius:20},{x:-487,z:-677,radius:18}],
+      // The roundabout, Thornhill Road, where the black car comes from, Caerphilly Road both ways and Beulah Road.
+      quiet:[{x:-463,z:-689,radius:24},{x:-469,z:-728,radius:26},{x:-460,z:-662,radius:24},{x:-466,z:-640,radius:20},{x:-487,z:-677,radius:18},
+        {x:-508,z:-666,radius:18}],
       place:{
         approach:{pause:{kind:'moving',at:p(-421.5,-710.1)},frame:{yaw:0,pitch:22},state:'Approaching the Morrisons roundabout at 20 mph.'},
         line:{pause:{kind:'stop',at:p(-447.3,-693.5)},when:{actor:'ring-car',at:p(-460,-702.9)},frame:{yaw:-55,pitch:28},state:'At the give way line.'},

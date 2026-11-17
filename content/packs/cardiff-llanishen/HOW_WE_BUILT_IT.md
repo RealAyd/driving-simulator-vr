@@ -54,8 +54,16 @@ from Cefn Carnau Road to the end of Heathway.
 
 ## 5. Drive it headless
 
-The authoring rules (`-t "as authored"`) pass. The drives (without traffic, patterns 4 and 14, Skip ahead) are the main
-session's to run: the builder's machine was busy with a long drive run.
+`ROUTES=cardiff-llanishen-1 npx vitest run tests/unit/decisionDrive.centre.test.ts` (the main session's first run, then
+the builder's). Found and fixed:
+
+| Found | Fix |
+|---|---|
+| The car ran on the pavement turning left from Caerphilly Road into Heathwood Road at the Birchgrove lights: the slip leaves past a narrow island, and the line turned before its tip | Its line kept 3.2 m right round the turn (a `shift`; the whole car checked on the carriageway along it) |
+| The car touched the bollards on the Morrisons roundabout's splitter noses, at the Tŷ Glas Road entry (the first exit leaves 3 m from it) and at the Caerphilly Road entry on the way back | Its line kept 1.5 m and 1.4 m right there (`shift`s; at least 0.6 m clear of each bollard) |
+| In traffic (pattern 4), a background car was on the roundabout when the car paused at its line | The direction given 70 m earlier, and the Caerphilly Road and Beulah Road approaches kept quiet |
+
+All six pass: the authoring rules (2), and the drives without traffic, with traffic in patterns 4 and 14, and with Skip ahead.
 
 ## Still to do
 

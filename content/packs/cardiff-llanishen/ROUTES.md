@@ -79,9 +79,18 @@ Fixes in `osm-patches.json`:
 
 ## Drives
 
-Not run by the builder (the machine was busy with a long drive run): the authoring rules (`-t "as authored"`) pass. The
-drives without and with traffic (patterns 4 and 14) and with Skip ahead are for the main session
-(`ROUTES=cardiff-llanishen-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`).
+`ROUTES=cardiff-llanishen-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: all six pass (the authoring rules, the drive with the right answers, patterns 4 and 14, and Skip ahead).
+
+Fixes after the first drives, all `shifts` on the car's line (no change to the scene):
+
+- **Birchgrove lights, left into Heathwood Road**: the slip into Heathwood Road leaves past a narrow island beside
+  Caerphilly Road, and the line turned before the island's tip, over the pavement (49 steps off the carriageway). Kept
+  3.2 m out (right) round the turn, so the car goes down past the tip before turning.
+- **Morrisons roundabout**: the line clipped the bollards on the splitter islands' noses, coming in from Tŷ Glas Road
+  (the first exit leaves 3 m from that entry) and on the way back from Caerphilly Road. Kept 1.5 m and 1.4 m right there.
+- **In traffic (pattern 4)**, a background car was still on the roundabout when the car paused there: the direction is
+  now given 70 m earlier, so the roundabout is kept clear sooner, and the Caerphilly Road and Beulah Road approaches
+  are kept quiet too.
 
 ## Open items
 
