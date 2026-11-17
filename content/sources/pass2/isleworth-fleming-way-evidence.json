@@ -1075,5 +1075,10 @@
   "unmatched": [
     "No Name Rd (unnamed link road off the A4 in the source)"
   ],
-  "summary": "0 confirmed and 59 likely roads plus 13 likely junctions, all from one route-list author (drivingtesttips.biz, copied by intensivelessons.co.uk) that probably predates the 2018 move to Fleming Way 250 m along Worton Road. Two routes meeting the overlap rule look possible on length and known junctions, but nothing is confirmed by a second separate source, so judgement and the map carry the weight; a first-hand source (instructor video description or learner account) would firm it up."
+  "summary": "0 confirmed and 59 likely roads plus 13 likely junctions, all from one route-list author (drivingtesttips.biz, copied by intensivelessons.co.uk) that probably predates the 2018 move to Fleming Way 250 m along Worton Road. Two routes meeting the overlap rule look possible on length and known junctions, but nothing is confirmed by a second separate source, so judgement and the map carry the weight; a first-hand source (instructor video description or learner account) would firm it up.",
+  "owner_check": {
+    "date": "2026-11-17",
+    "address": "Unit 8, The Wireless Factory, Fleming Way, Isleworth TW7 6DB",
+    "result": "Confirmed by the owner as the current DVSA practical test centre address (checked against 2026 venue data); matches the address and position the route uses."
+  }
 }

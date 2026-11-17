@@ -1199,5 +1199,10 @@
   "Pier Street (taken as a slip for Pier Road)",
   "East Llanion roundabout (no named match)"
  ],
- "summary": "0 confirmed and 65 likely roads plus 15 likely junctions, all from one route-list author (drivingtesttips.biz; intensivelessons.co.uk copies it), whose routes start on Pier Road, 0.9 km from the current address in the Royal Dockyard, so leaving and returning rest on the map. One route meeting the overlap rule looks possible: the Pembroke Dock grid, Western Way, London Road and Ferry Lane are all named, with three or more named junctions in reach (the Admiralty Way mini-roundabout, the Pier Road roundabout, the London Road / Ferry Lane lights, the Laws Street mini-roundabout); no first-hand source was found."
+ "summary": "0 confirmed and 65 likely roads plus 15 likely junctions, all from one route-list author (drivingtesttips.biz; intensivelessons.co.uk copies it), whose routes start on Pier Road, 0.9 km from the current address in the Royal Dockyard, so leaving and returning rest on the map. One route meeting the overlap rule looks possible: the Pembroke Dock grid, Western Way, London Road and Ferry Lane are all named, with three or more named junctions in reach (the Admiralty Way mini-roundabout, the Pier Road roundabout, the London Road / Ferry Lane lights, the Laws Street mini-roundabout); no first-hand source was found.",
+ "owner_check": {
+  "date": "2026-11-17",
+  "address": "The Captain Superintendent's Building, Royal Dockyard, Pembroke Dock SA72 6TD",
+  "result": "Confirmed by the owner as the current DVSA practical test centre address (checked against 2026 venue data); matches the address and position the route uses."
+ }
 }
