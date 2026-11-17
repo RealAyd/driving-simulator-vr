@@ -140,6 +140,8 @@ const END_WAIT=30;
 const PACE_LEAST=.4,PACE_MARGIN=.6;
 /** The road user a stage waits for stands this far (metres) short of its point until the car is there. */
 const HOLD_SHORT=4;
+/** Someone on foot the stage waits for stands this far (metres) short of their point until the car is there. */
+const HOLD_ON_FOOT=.8;
 /** The fastest a road user eased to meet the car still stops within HOLD_SHORT (slowing at 1.5 m/s², with half a metre spare). */
 const PACE_HOLDABLE=Math.sqrt(2*1.5*(HOLD_SHORT-.5));
 /** A pedestrian may be paced down further: people dawdle (a share of their speed). */
@@ -400,10 +402,15 @@ export class DecisionRunner{
     // (Past its point, or the car already waiting at its line: the moment has come, so the road user comes on at its
     // own speed, released from any hold set while the car was still coming. Paced to the time left, it would ease ever
     // slower towards its point and never reach it; held, it would stand for good.)
-    if(left<=0||place.pause.kind==='stop'&&d<1.5&&speed<.05){x.pace=null;return}
+    // (As the pause has it (`there`): stopped within 1.2 m of the line. Stopped a little further back, in a queue, it
+    // creeps up the last of it first.)
+    const arrived=place.pause.kind==='stop'&&d<=1.2&&speed<.05;
     // (A car nearly at its point with the learner's not yet there, held up behind traffic: it stands and waits, rather than passing
-    // the moment depicted before the car arrives.)
-    if(def.kind!=='pedestrian'&&left<HOLD_SHORT&&d>3){x.pace=0;return}
+    // the moment depicted before the car arrives. At a line, until the car has stopped there: braking its last metres to
+    // the line, it is not yet there, and a road user let on would be past its point by the time it is.)
+    // (Someone on foot stops in a step: held at the point itself.)
+    if(left<(def.kind==='pedestrian'?HOLD_ON_FOOT:HOLD_SHORT)&&(place.pause.kind==='stop'?!arrived:d>3&&left>0)){x.pace=0;return}
+    if(left<=0||arrived){x.pace=null;return}
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
     const eta=place.pause.kind==='moving'?d/v:d<=brake?2*d/v:(d-brake)/v+v/BRAKING;

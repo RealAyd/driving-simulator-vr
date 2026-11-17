@@ -796,7 +796,14 @@ export class Traffic implements SimModule{
         // (Nor, after a while, one standing at a junction's mouth, waiting for the learner to come: it is gone by, as a
         // parked car is, kept from touching it below.)
         if(o.speed<.1&&d.waited>OTHER_STANDING&&facing<=.3)continue;
-        if(facing>.3)ahead(op.x,op.z,o.halfLength,`behind ${o.id}`,o.speed*facing);
+        if(facing>.3){
+          ahead(op.x,op.z,o.halfLength,`behind ${o.id}`,o.speed*facing);
+          // (And along this car's way as it will go, wide enough to take in one keeping to its own line a little off this
+          // car's, on a bend or out from the kerb: the straight box ahead loses it, and the two close up where the
+          // lines meet again.)
+          const k=this.alongWay(d,op,40,car.halfWidth+(o.halfLength>1?.9:.3)+.5);
+          if(k<Infinity&&k-o.halfLength-car.halfLength<gap){gap=k-o.halfLength-car.halfLength;why=`behind ${o.id}`;leadSpeed=Math.max(0,o.speed*facing);following=true}
+        }
         else ahead(op.x,op.z,o.halfLength+1,`crossing ${o.id}`);
       }
       // A scenario's own road user on the move, its way across this car's ahead (at a junction or not, as mapped): where
@@ -1244,7 +1251,10 @@ export class Traffic implements SimModule{
       // (Standing or moving off: either way, not back into the lane beside it.)
       // (Nor, just behind it, its front within a metre of the learner's back: pulled in across behind it from there, its
       // front corner would catch the learner's.)
-      if(d.leg.road&&learnerAlong>-(car.halfLength+2.15+.5)&&learnerAlong<car.halfLength+2.15+1&&Math.cos(learner.pose.heading-car.pose.heading)>.5){
+      // (And one coming the other way, alongside: not pulled out across into it, round something on its
+      // side, as it comes by.)
+      const comingBy=Math.cos(learner.pose.heading-car.pose.heading)<-.5;
+      if(d.leg.road&&learnerAlong>-(car.halfLength+2.15+.5)&&learnerAlong<car.halfLength+2.15+(comingBy?2:1)&&(comingBy||Math.cos(learner.pose.heading-car.pose.heading)>.5)){
         const clear=car.halfWidth+.9+.45;
         if(learnerAcross<d.lat&&d.lat-learnerAcross>clear-.6)want=Math.max(want,Math.min(tuckIn,learnerAcross+clear));
         else if(learnerAcross>d.lat&&learnerAcross-d.lat>clear-.6)want=Math.min(want,learnerAcross-clear);
