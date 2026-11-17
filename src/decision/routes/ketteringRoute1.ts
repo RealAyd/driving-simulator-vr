@@ -207,9 +207,9 @@ export const KETTERING_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       quiet:[{x:408,z:-89,radius:22},{x:406,z:-62,radius:18},{x:415,z:-125,radius:16}],
       place:{
         approach:{pause:{kind:'moving',at:p(405.4,-62.4)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the crossing at 30 mph.'},
-        line:{pause:{kind:'stop',at:p(407.4,-83.4)},lights:'red',when:{actor:'pytchley-pedestrian',at:p(412.6,-89.75)},frame:{yaw:0,pitch:30},
+        line:{pause:{kind:'stop',at:p(407.2,-81.8)},lights:'red',when:{actor:'pytchley-pedestrian',at:p(412.6,-89.75)},frame:{yaw:0,pitch:30},
           state:'Stopped at the crossing.'},
-        clear:{pause:{kind:'stop',at:p(407.4,-83.4)},lights:'red',when:{actor:'pytchley-pedestrian',at:p(405.1,-89.4)},frame:{yaw:0,pitch:30},
+        clear:{pause:{kind:'stop',at:p(407.2,-81.8)},lights:'red',when:{actor:'pytchley-pedestrian',at:p(405.1,-89.4)},frame:{yaw:0,pitch:30},
           state:'Still at the crossing.'}
       },
       stages:[

@@ -61,14 +61,16 @@ Road and Patrick Road until the car is back on Pytchley Road (`quietUntil`).
 
 ## 5. Drive it headless
 
-The authoring rules ("as authored") pass:
-`ROUTES=kettering-1 npx vitest run tests/unit/decisionDrive.centre.test.ts -t "as authored"`. The drives (without
-traffic, patterns 4 and 14, Skip ahead) are run by the main session; none has been run yet, so the stop points and road
-users' points are first choices from the planned line.
+`ROUTES=kettering-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: all 6 pass (results in `ROUTES.md`).
+Tuning from the first run:
+
+| Found | Fix |
+|---|---|
+| The drive never finished: at the Pytchley Road crossing the red light stopped the car 1.6 m short of the pause point, and the pedestrian is held at the kerb until the car has arrived (within 1.2 m), so each waited for the other | The crossing's stop moved to where the car stops for the red, (407.2, -81.8) |
 
 ## Still to do
 
-The drives, then played in the app and every paused picture checked (camera angles are first choices), then staging
+Played in the app and every paused picture checked (camera angles are first choices), then staging
 and the owner's drive. Shared changes for the app (a button in `sim/index.html`, the sources in
 `public/legal/credits.html`) are listed in the build report; every direction used already has a voice clip on another
 route.

@@ -88,11 +88,16 @@ counts them, spacing met, mini-roundabout not on the route, as above).
 
 ## Drives
 
-Not driven yet: the drives (without traffic, with traffic patterns 4 and 14, and with Skip ahead) are to be run by the
-main session: `ROUTES=kettering-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`. The authoring rules ("as
-authored") pass. Each paused moment's car position and road user point were set from the planned line and the road
-users' planned paths (distances checked), not from a drive, so the first drive may need tuning as the other centres
-did (stop points, `shifts` at splitter islands, `quietUntil` for the estate).
+`ROUTES=kettering-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: all 6 pass (the authoring rules, the way
+clear of parked cars, and the drives without traffic, with traffic patterns 4 and 14, and with Skip ahead). Without
+traffic: a pass with no faults, every pause as depicted (16 pauses, each road user within 0.1 m of its point, the
+pedestrian at the crossing's first moment 0.8 m, on the move), nothing hit, nothing off the road, no red light run, the
+closest scripted road user the cyclist passing the car pulled up (3.41 m).
+
+The first full run never finished: at the Pytchley Road crossing the red light held the car at its stop line, 1.6 m
+short of the pause point set from the planned line, and the pedestrian the pause waits for is held at the kerb until
+the car has arrived (within 1.2 m), so both waited for ever. The crossing's stop is now where the car stops for the
+red, (407.2, -81.8).
 
 ## Open items
 
