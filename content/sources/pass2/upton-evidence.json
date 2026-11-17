@@ -1,0 +1,442 @@
+{
+  "centre": "Upton",
+  "status": "ok",
+  "centre_position": {
+    "lat": 53.37939,
+    "lon": -3.09857
+  },
+  "address_checked": "2026-11-17",
+  "address": "Arrowe Park Road, Upton, Wirral CH49 0UF",
+  "address_note": "gov.uk's find-driving-test-centre service could not be reached from this machine (no connection). gov.uk search still lists the centre (a 2014 DVSA FOI release for Upton and Wallasey centres). Address taken from a page quoting DVSA's centre data updated November 2026 (passrates.uk: Arrowe Park Rd, Upton, CH49 0UF, 10.9K tests in 2024-25) and matched by drivingtesttips.biz's centre page. The postcode centroid (53.37934, -3.09776) is about 55 m from the given position, and OSM places Arrowe Park Road (A551) way/670885918 beside it, so it matches. The old route lists all start by turning left onto Arrowe Park Road, so the centre has not moved since they were written. Recheck on gov.uk when reachable.",
+  "searches": [
+    "Upton Wirral driving test centre Arrowe Park Road test route roundabout tips",
+    "\"Upton\" driving test Wirral reddit passed failed roundabout"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk (Smart Bookings Ltd)",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Merseyside/Upton",
+      "published": "undated (reproduces the routes DVSA published before it stopped publishing them)",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Arrowe Park Road",
+        "Upton Bypass",
+        "Greasby Road",
+        "Old Greasby Road",
+        "Arrowe Brook Road",
+        "Arrowe Brook Lane",
+        "Upton Road",
+        "Ford Road",
+        "Salacre Lane",
+        "Moreton Road",
+        "Cortsway",
+        "Wood Lane",
+        "Pump Lane",
+        "Frankby Road",
+        "Montgomery Hill",
+        "Hill Bark Road",
+        "Telegraph Road",
+        "Mill Hill Road",
+        "Thingwall Road",
+        "Pensby Road",
+        "Woodchurch Road",
+        "Hoylake Road",
+        "Fender Lane",
+        "Prenton Lane",
+        "Storeton Road",
+        "Caldy Road"
+      ],
+      "note": "Turn-by-turn lists for several routes; every one leaves left onto Arrowe Park Road and most use the Upton Bypass roundabouts. Old, not first-hand; names only taken, no route order copied."
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (routes 1-5 page)",
+      "url": "https://www.drivingtesttips.biz/upton-driving-test-routes.html",
+      "published": "undated (says the routes may have altered since DVSA stopped publishing them)",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Arrowe Park Road",
+        "Upton Bypass",
+        "Greasby Road",
+        "Pump Lane",
+        "Frankby Road",
+        "Montgomery Hill"
+      ],
+      "note": "Same route lists as s1, word for word in places: counts once with s1."
+    },
+    {
+      "id": "s3",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (editorial text on its centre page)",
+      "url": "https://www.drivingtesttips.biz/upton-driving-test-centre.html",
+      "published": "undated; page carries reviews to 2024",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "A5027 dual carriageway (Upton Bypass)",
+        "Birkenhead"
+      ],
+      "note": "General description: a high speed A road (the A5027 dual carriageway) is likely, tests may go into Birkenhead, rural roads near the outskirts; manoeuvres in residential streets with parked cars. Same site as s2 but separate text."
+    },
+    {
+      "id": "s4",
+      "kind": "learner",
+      "author": "learners' and a parent's reviews on drivingtesttips.biz's centre page (2023-09, 2024-04)",
+      "url": "https://www.drivingtesttips.biz/upton-driving-test-centre.html",
+      "published": "2023-09 to 2024-09",
+      "read_on": "2026-11-17",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "a 50 mph road",
+        "the test centre car park (reverse into a bay)"
+      ],
+      "note": "One own-test account mentions driving 35 in a 50 limit and a reverse into a parking bay at the centre at the start; another mentions roadworks with 20 mph limits near the centre. No road names."
+    },
+    {
+      "id": "s5",
+      "kind": "instructor-page",
+      "author": "a Wirral driving instructor's blog of pupils' test fails (howtofailyourdrivingtest.blogspot.com)",
+      "url": "https://howtofailyourdrivingtest.blogspot.com/2011",
+      "published": "2010-04 to 2011-08",
+      "read_on": "2026-11-17",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "Sainsbury's roundabout (Upton)",
+        "a busy roundabout between Greasby and Upton",
+        "a set of two-lane traffic lights"
+      ],
+      "note": "Instructor's own accounts of pupils' Upton tests: a right turn at the Sainsbury's roundabout (late-turning traffic, stall), going ahead at a busy roundabout between Greasby and Upton on the way back during independent driving, a lane fault after two-lane traffic lights, a turn in the road. Old (2010-11) but the centre is at the same address."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://redlib.astrial.org/r/Liverpool/comments/1kknj4f/advise_upton_driving_test_centre_test_in_2_days",
+      "why": "mirror returned 404 and reddit blocks automated reading; left alone"
+    },
+    {
+      "url": "https://passmefast.co.uk/test-centres/practical/merseyside/upton",
+      "why": "403 / bot challenge; left alone (template content per pass 1)"
+    },
+    {
+      "url": "https://www.veygo.com/driving-test-centres/upton/",
+      "why": "403 / bot challenge; left alone (template content per pass 1)"
+    },
+    {
+      "url": "https://just-drive.co.uk/?p=22324",
+      "why": "404"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/upton/mock-driving-test",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://passrates.uk/centres/upton",
+      "why": "address (from DVSA data) and pass rates only; used for the address check"
+    },
+    {
+      "url": "https://payhip.com/b/4dc5P",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/upton-driving-test-routes",
+      "why": "preview of paid routes (pass 1: paid); never used"
+    }
+  ],
+  "places": [
+    {
+      "name": "Arrowe Park Road (A551)",
+      "kind": "road",
+      "map": {
+        "lat": 53.37827,
+        "lon": -3.09752,
+        "osm": "way/670885918"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely",
+      "note": "The centre's own road (40 mph primary); every old route leaves and returns by it. Known from the address as much as from the route lists."
+    },
+    {
+      "name": "Upton Bypass (A5027) and its roundabouts",
+      "kind": "road",
+      "map": {
+        "lat": 53.38532,
+        "lon": -3.10739,
+        "osm": "way/4225081"
+      },
+      "sources": [
+        "s1",
+        "s3"
+      ],
+      "confidence": "likely",
+      "note": "40 mph dual carriageway just north-west of the centre; most old routes use it and s3 names the A5027 dual carriageway. Neither source is first-hand."
+    },
+    {
+      "name": "Sainsbury's roundabout (the Upton roundabout: Arrowe Park Road / Upton Bypass / Upton Road)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.380845,
+        "lon": -3.098645,
+        "osm": "ring of junction=roundabout ways round 53.38085,-3.09865; Sainsbury's petrol station node/2447565195 and the store's access road on its south-west arm"
+      },
+      "sources": [
+        "s5",
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "One instructor's first-hand account (a right turn there on test). The Sainsbury's store and petrol station sit on its south-west arm, about 160 m north of the centre, so it is taken to be this roundabout (our judgement); every old route list also uses it straight out of the centre (s1)."
+    },
+    {
+      "name": "Greasby Road roundabout (Upton Bypass / Greasby Road / Old Greasby Road), the roundabout between Greasby and Upton",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.383576,
+        "lon": -3.105421,
+        "osm": "ring of junction=roundabout ways; Greasby Road way/563078218 on its west arm"
+      },
+      "sources": [
+        "s5",
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "s5 does not name it; the Greasby Road roundabout on the bypass fits the description and is on the old routes (s1). Location is our judgement."
+    },
+    {
+      "name": "Test centre way out on to Arrowe Park Road",
+      "kind": "junction",
+      "map": {
+        "lat": 53.379255,
+        "lon": -3.098103,
+        "osm": "service way/888517464 at Arrowe Park Road way/670885918"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Every listed route leaves left on to Arrowe Park Road, and several come back up Arrowe Park Road and turn in left; known from the address as much as the lists."
+    },
+    {
+      "name": "Arrowe Park Road / Ford Road / Moreton Road / Old Greasby Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.385049,
+        "lon": -3.099037,
+        "osm": "traffic signals on way/25898733 (Arrowe Park Road) at Old Greasby Road way/39227993"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The lists go ahead here from Old Greasby Road into Ford Road and right into Moreton Road."
+    },
+    {
+      "name": "Greasby Road (B5139)",
+      "kind": "road",
+      "map": {
+        "lat": 53.38343,
+        "lon": -3.10713,
+        "osm": "way/563078218"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Old Greasby Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.38464,
+        "lon": -3.10187,
+        "osm": "way/39227993"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Arrowe Brook Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.37515,
+        "lon": -3.10157,
+        "osm": "way/248687383"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Upton Road (A5027)",
+      "kind": "road",
+      "map": {
+        "lat": 53.38689,
+        "lon": -3.08443,
+        "osm": "way/114250062"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ford Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.38429,
+        "lon": -3.09423,
+        "osm": "way/1225299843"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Salacre Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.38381,
+        "lon": -3.09525,
+        "osm": "way/39225752"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Moreton Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.38856,
+        "lon": -3.10185,
+        "osm": "way/153703654"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cortsway",
+      "kind": "road",
+      "map": {
+        "lat": 53.38446,
+        "lon": -3.11049,
+        "osm": "way/39227799"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wood Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.38285,
+        "lon": -3.11597,
+        "osm": "way/39227830"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pump Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.3819,
+        "lon": -3.13026,
+        "osm": "way/39230081"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Frankby Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.37079,
+        "lon": -3.14383,
+        "osm": "way/1225299867"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Montgomery Hill",
+      "kind": "road",
+      "map": {
+        "lat": 53.36505,
+        "lon": -3.14236,
+        "osm": "way/155018733"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woodchurch Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.36965,
+        "lon": -3.07121,
+        "osm": "way/47404176"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Thingwall Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.3562,
+        "lon": -3.10268,
+        "osm": "way/42110634"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hoylake Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.4036,
+        "lon": -3.06926,
+        "osm": "way/733438041"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [],
+  "summary": "0 confirmed and 21 likely places (17 roads, 4 junctions): the old route lists (s1, s2 counted once) name many roads and junctions round the centre, and one instructor's first-hand accounts name the Sainsbury's roundabout and a roundabout between Greasby and Upton. Two routes meeting the overlap rule look possible from the map (the A5027 Upton Bypass and its roundabouts, Old Greasby Road and the Arrowe Park Road lights, Upton Road and Ford Road, the estates both sides of Arrowe Park Road), though no road reaches confirmed."
+}

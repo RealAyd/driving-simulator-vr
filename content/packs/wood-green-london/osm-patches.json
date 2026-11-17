@@ -1,0 +1,18 @@
+[
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 1285784813,
+  "k": "name",
+  "v": "Driving Test Centre",
+  "why": "The test centre's own way in from Lordship Lane to its car park beside Woodall House: unnamed and 16 m long, so the route planner will not turn into it (a short unnamed road is a link or a stub to it) and the route could not come back into the centre. Named for the place it leads to, as the sign at its mouth would; every test leaves and returns by it."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 1285784815,
+  "k": "name",
+  "v": "Driving Test Centre",
+  "why": "The car park aisle beside the test centre at the end of its way in (see the fix above), 14 m: named the same so the way in and the aisle read as one road to the planner."
+ }
+]

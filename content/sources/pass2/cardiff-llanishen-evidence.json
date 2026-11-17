@@ -1,0 +1,1516 @@
+{
+ "centre": "Cardiff (Llanishen)",
+ "status": "ok",
+ "centre_position": {
+  "lat": 51.52283,
+  "lon": -3.19232
+ },
+ "address_checked": "2026-11-17",
+ "address": "Cardiff (Llanishen), Cardiff Business Park, Cardiff CF14 5GF",
+ "address_matches_position": true,
+ "address_note": "gov.uk's find-a-driving-test-centre, searched by postcode CF14 5GF on 2026-11-17, lists Cardiff (Llanishen) at Cardiff Business Park, CF14 5GF (car, ADI part 2 and part 3 tests; no wheelchair access). Its map pin, 51.52269,-3.19137, is about 70 m east of the given position. The given position is OpenStreetMap's DVSA test centre point (node/12141931941) on Lambourne Crescent in the business park, off Tŷ Glas Avenue: matches. Driving Test Tips' centre page gives Thornbury House, Unit 11 Lambourne Crescent, Cardiff Business Park, CF14 5GF. gov.uk lists no other car test centre in Cardiff: the route lists below, which all start on Norbury Road in Fairwater, 5 km south-west, describe the earlier Cardiff centre, so they are used for roads further out only, never for leaving and returning.",
+ "searches": [
+  "gov.uk find-driving-test-centre, postcode CF14 5GF",
+  "\"Llanishen\" (gov.uk search API: no centre page)",
+  "\"Llanishen driving test route roads\" (Bing: no results returned to this machine)",
+  "\"Llanishen driving test centre roundabout tips\" (Bing: no results returned)",
+  "\"Cardiff Llanishen mock test route youtube\" (Bing: no results returned; DuckDuckGo: bot check)",
+  "\"llanishen driving test route\" (YouTube search: titles, descriptions and chapter lists read)"
+ ],
+ "sources": [
+  {
+   "id": "s0",
+   "kind": "official",
+   "author": "gov.uk (DVSA)",
+   "url": "https://www.gov.uk/find-driving-test-centre",
+   "published": "live service",
+   "read_on": "2026-11-17",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "names": [],
+   "note": "The centre's address. Silent on routes."
+  },
+  {
+   "id": "s1",
+   "kind": "route-list",
+   "author": "drivingtesttips.biz",
+   "url": "https://www.drivingtesttips.biz/cardiff-driving-test-routes.html",
+   "also": [
+    "https://www.drivingtesttips.biz/cardiff-driving-test-routes-6-10.html",
+    "https://www.drivingtesttips.biz/cardiff-driving-test-routes-11-14.html",
+    "https://www.drivingtesttips.biz/cardiff-driving-test-centre.html"
+   ],
+   "published": "undated (routes 1-14; written when DVSA still published routes)",
+   "read_on": "2026-11-17",
+   "first_hand": false,
+   "before_centre_moved": true,
+   "note": "Every route starts and finishes on Norbury Road, Fairwater (the earlier Cardiff centre), 5 km south-west of Llanishen; most of its roads are round there. The same site's centre page now gives the Llanishen address and says the A469 and A470 are near; it is the same author, so it counts once with the lists. Road and junction names only.",
+   "names": [
+    "Norbury Road",
+    "St Fagans Road",
+    "Fairwater Road",
+    "Pwllmelin Road",
+    "Fairwood Road",
+    "Cardiff Road",
+    "Bridge Street",
+    "Llantrisant Road",
+    "Gillian Road",
+    "Highfields",
+    "Greenwood Road",
+    "Danescourt Way",
+    "Crofft-y-Genau Road",
+    "Llandetty Road",
+    "Llanbedr Road",
+    "Llangattock Road",
+    "Finchley Road",
+    "Waungron Road",
+    "Western Avenue",
+    "Gabalfa Interchange",
+    "North Road",
+    "Merthyr Road",
+    "The Philog",
+    "Heol Penyfai",
+    "Westfield Road",
+    "St David's Road",
+    "Tynewydd Road",
+    "Bishops Road",
+    "Bishops Place",
+    "Church Road",
+    "Heol Don",
+    "Station Road",
+    "Bridge Road",
+    "Waterhall Road",
+    "Plasmawr Road",
+    "Pentrebane Road",
+    "Ashcroft Crescent",
+    "Beechley Drive",
+    "Maple Road",
+    "Fairways Crescent",
+    "Bwlch Road",
+    "Heol Isaf",
+    "Windsor Road",
+    "Kings Road",
+    "Taff Terrace",
+    "Ely Road",
+    "St Michael's Road",
+    "Palace Road",
+    "Pencisely Road",
+    "Greenwich Road",
+    "Ovington Terrace",
+    "Clive Road",
+    "Grosvenor Road",
+    "Broad Street",
+    "Leckwith Road",
+    "Cowbridge Road West",
+    "West Orchard Crescent",
+    "Windway Road",
+    "Colin Way",
+    "Arles Road",
+    "Vincent Road",
+    "Lansdowne Road",
+    "Cowbridge Road East",
+    "Caewal Road",
+    "Romilly Road",
+    "Llandaff Road",
+    "Riverside Terrace",
+    "Dyfrig Road",
+    "Littlecroft Avenue",
+    "Atlas Road",
+    "Windway Avenue",
+    "Whitchurch Road",
+    "Allensbank Road",
+    "Heathwood Road",
+    "Cefn Carnau Road",
+    "St Isan Road",
+    "Heathway",
+    "St Brigid Road",
+    "Caerphilly Road",
+    "Gorse Place",
+    "Orange Grove",
+    "Firs Avenue",
+    "Old St Fagans Road",
+    "Gabalfa Road",
+    "River View",
+    "Colwill Road",
+    "Llanidloes Road",
+    "Cathedral View",
+    "Aberporth Road",
+    "A469",
+    "A470"
+   ]
+  },
+  {
+   "id": "s2",
+   "kind": "route-list",
+   "author": "intensivelessons.co.uk",
+   "url": "https://intensivelessons.co.uk/driving-test-routes/South-Glamorgan/Cardiff-Llanishen",
+   "published": "undated",
+   "read_on": "2026-11-17",
+   "first_hand": false,
+   "before_centre_moved": true,
+   "copy_of": "s1",
+   "note": "Headed Cardiff (Llanishen), but routes 1-14 repeat s1 word for word, all from Norbury Road: counts once with s1 and confirms nothing.",
+   "names": []
+  },
+  {
+   "id": "s3",
+   "kind": "guide",
+   "author": "passrates.uk",
+   "url": "https://passrates.uk/guide/passing-driving-test-cardiff",
+   "published": "undated (quotes 2025-26 data)",
+   "read_on": "2026-11-17",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "note": "A general guide to Cardiff tests: says Llanishen routes run through the streets of Heath, Cyncoed and Lakeside, with the A48 or the eastern arterial roads, and that the Coryton and Gabalfa roundabouts are the ones to prepare. Weaker than first-hand; a separate author from s1.",
+   "names": [
+    "Heath",
+    "Cyncoed",
+    "Lakeside",
+    "A48",
+    "Gabalfa Interchange",
+    "Coryton roundabout (M4 junction 32)",
+    "Newport Road"
+   ]
+  },
+  {
+   "id": "s5",
+   "kind": "video",
+   "author": "Roads & Eyes (YouTube channel)",
+   "url": "https://www.youtube.com/watch?v=b4E2cYl3fnc",
+   "also": [
+    "https://www.youtube.com/watch?v=2IE41ip2zEo",
+    "https://www.youtube.com/watch?v=DBsoCOnYMSE"
+   ],
+   "published": "2023-08",
+   "read_on": "2026-11-17",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "note": "\"Driving Test Routes Cardiff (Llanishen) 1 of 8, with sat nav\": title and chapter list only. A drive of a route; whose route is not said, so not counted first-hand. Route 2's video has no chapter list.",
+   "names": [
+    "Heathway",
+    "A48",
+    "Western Avenue",
+    "Ely Road"
+   ]
+  },
+  {
+   "id": "s6",
+   "kind": "video",
+   "author": "Navigator Driver Training (Cardiff instructor, YouTube)",
+   "url": "https://www.youtube.com/watch?v=f21nu92KADg",
+   "also": [
+    "https://www.youtube.com/watch?v=z72HnOtmFM4",
+    "https://www.youtube.com/watch?v=rtu4SIY1RT4",
+    "https://www.youtube.com/watch?v=B7J0M54kOe0"
+   ],
+   "published": "2026-06 (the others 2025)",
+   "read_on": "2026-11-17",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "note": "An instructor's sat nav test-route video: title, description and chapters only (left at Morrisons roundabout, on to Gabalfa Interchange). The same channel's Llanishen mock tests name no roads in their chapters: leaving the centre, left at traffic lights, a roundabout, a mini-roundabout, a dual carriageway.",
+   "names": [
+    "Morrisons roundabout",
+    "Gabalfa Interchange"
+   ]
+  },
+  {
+   "id": "s7",
+   "kind": "statistics",
+   "author": "DrivingData UK (DVSA data, Open Government Licence)",
+   "url": "https://drivingdata-uk.pages.dev/test-centres/cardiff-llanishen/",
+   "published": "2025-26 data",
+   "read_on": "2026-11-17",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "names": [],
+   "note": "Shows the centre testing in 2025-26 (about 16,400 tests a year): open. Silent on routes."
+  }
+ ],
+ "not_used": [
+  {
+   "url": "https://payhip.com/b/3p7Hw",
+   "why": "paid route list: never used"
+  },
+  {
+   "url": "https://www.myfourwheels.co.uk/locations/cardiff/mock-driving-test",
+   "why": "template content per pass 1; not read"
+  },
+  {
+   "url": "https://drivingtestpass.pages.dev/centres/cardiff",
+   "why": "template content per pass 1; not read"
+  },
+  {
+   "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/cardiff/",
+   "why": "lesson-area template per pass 1; names no test roads"
+  },
+  {
+   "url": "https://www.youtube.com/watch?v=monwwjC6luo",
+   "why": "\"Cardiff test route 2\" (another school): its chapters name no roads"
+  }
+ ],
+ "places": [
+  {
+   "name": "Norbury Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.4877,
+    "lon": -3.23398,
+    "osm": "way/22896449"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "St Fagans Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48931,
+    "lon": -3.24788,
+    "osm": "way/525407176"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.4 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Fairwater Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49172,
+    "lon": -3.23696,
+    "osm": "way/102677849"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Pwllmelin Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49579,
+    "lon": -3.24237,
+    "osm": "way/1447217109"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Fairwood Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49662,
+    "lon": -3.2363,
+    "osm": "way/22930258"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.2 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Bridge Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.4959,
+    "lon": -3.22133,
+    "osm": "way/23951095"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Llantrisant Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50946,
+    "lon": -3.26179,
+    "osm": "way/1262992504"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Gillian Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49843,
+    "lon": -3.22917,
+    "osm": "way/24298149"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.7 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Highfields",
+   "kind": "road",
+   "map": {
+    "lat": 51.49998,
+    "lon": -3.23072,
+    "osm": "way/54936930"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.7 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Greenwood Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.499,
+    "lon": -3.23096,
+    "osm": "way/24298151"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.8 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Danescourt Way",
+   "kind": "road",
+   "map": {
+    "lat": 51.5038,
+    "lon": -3.23801,
+    "osm": "way/102658354"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.8 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Llandetty Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48856,
+    "lon": -3.23923,
+    "osm": "way/22958119"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Llanbedr Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48772,
+    "lon": -3.23798,
+    "osm": "way/22896462"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Llangattock Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48787,
+    "lon": -3.23654,
+    "osm": "way/22896453"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Finchley Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48672,
+    "lon": -3.23439,
+    "osm": "way/22922362"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Waungron Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48856,
+    "lon": -3.2263,
+    "osm": "way/225410957"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.5 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Western Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 51.50369,
+    "lon": -3.20056,
+    "osm": "way/26435469"
+   },
+   "sources": [
+    "s1",
+    "s3",
+    "s5"
+   ],
+   "confidence": "confirmed",
+   "note": "The A48 (s3 and s5 name the A48; s5 names Western Avenue)."
+  },
+  {
+   "name": "Gabalfa Interchange",
+   "kind": "roundabout",
+   "map": {
+    "lat": 51.50513,
+    "lon": -3.19751,
+    "osm": "way/68325022"
+   },
+   "sources": [
+    "s1",
+    "s3",
+    "s6"
+   ],
+   "confidence": "confirmed",
+   "note": "The A48 / A469 interchange, about 2 km south of the centre."
+  },
+  {
+   "name": "North Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50066,
+    "lon": -3.19528,
+    "osm": "way/24298794"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 2.5 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Merthyr Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50842,
+    "lon": -3.20145,
+    "osm": "way/122868921"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 1.7 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "The Philog",
+   "kind": "road",
+   "map": {
+    "lat": 51.50921,
+    "lon": -3.20375,
+    "osm": "way/105804109"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 1.7 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Heol Penyfai",
+   "kind": "road",
+   "map": {
+    "lat": 51.51079,
+    "lon": -3.20857,
+    "osm": "way/108314634"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 1.7 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Westfield Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51213,
+    "lon": -3.2083,
+    "osm": "way/828098260"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 1.6 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "St David's Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51051,
+    "lon": -3.21839,
+    "osm": "way/26286843"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Bishops Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51177,
+    "lon": -3.2191,
+    "osm": "way/1308523692"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.2 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Bishops Place",
+   "kind": "road",
+   "map": {
+    "lat": 51.51086,
+    "lon": -3.22373,
+    "osm": "way/26287023"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.5 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Heol Don",
+   "kind": "road",
+   "map": {
+    "lat": 51.51113,
+    "lon": -3.2281,
+    "osm": "way/25349371"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.8 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Bridge Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.4983,
+    "lon": -3.22557,
+    "osm": "way/828211135"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Waterhall Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50108,
+    "lon": -3.24499,
+    "osm": "way/54936800"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.4 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Plasmawr Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49583,
+    "lon": -3.24477,
+    "osm": "node/1040498493"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.7 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Pentrebane Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49464,
+    "lon": -3.26701,
+    "osm": "way/203581254"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 6.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Ashcroft Crescent",
+   "kind": "road",
+   "map": {
+    "lat": 51.49857,
+    "lon": -3.25226,
+    "osm": "way/22939742"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Beechley Drive",
+   "kind": "road",
+   "map": {
+    "lat": 51.49449,
+    "lon": -3.25588,
+    "osm": "way/405192055"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.4 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Maple Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49571,
+    "lon": -3.25494,
+    "osm": "way/22919233"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Fairways Crescent",
+   "kind": "road",
+   "map": {
+    "lat": 51.48806,
+    "lon": -3.24837,
+    "osm": "way/22896478"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.5 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Bwlch Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48674,
+    "lon": -3.24399,
+    "osm": "way/22896460"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.4 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Heol Isaf",
+   "kind": "road",
+   "map": {
+    "lat": 51.50901,
+    "lon": -3.25016,
+    "osm": "way/504532637"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Windsor Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51505,
+    "lon": -3.25322,
+    "osm": "way/1203447746"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Kings Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51484,
+    "lon": -3.25136,
+    "osm": "node/13296383457"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.2 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Taff Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.51375,
+    "lon": -3.2496,
+    "osm": "way/28216486"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.1 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Ely Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48963,
+    "lon": -3.22364,
+    "osm": "way/525690127"
+   },
+   "sources": [
+    "s1",
+    "s5"
+   ],
+   "confidence": "confirmed",
+   "note": "West Cardiff, about 4.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "St Michael's Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49025,
+    "lon": -3.21753,
+    "osm": "way/19830003"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Palace Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49048,
+    "lon": -3.2153,
+    "osm": "way/19830017"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Pencisely Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48883,
+    "lon": -3.22118,
+    "osm": "way/19829014"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Greenwich Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48783,
+    "lon": -3.21591,
+    "osm": "way/19829978"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.2 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Ovington Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.48841,
+    "lon": -3.21491,
+    "osm": "way/23126319"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.1 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Clive Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48554,
+    "lon": -3.21239,
+    "osm": "way/19828908"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.4 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Broad Street",
+   "kind": "road",
+   "map": {
+    "lat": 51.47767,
+    "lon": -3.20729,
+    "osm": "way/4882534"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.1 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Leckwith Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.47563,
+    "lon": -3.20408,
+    "osm": "way/318935108"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Cowbridge Road West",
+   "kind": "road",
+   "map": {
+    "lat": 51.48465,
+    "lon": -3.23041,
+    "osm": "way/1314024499"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "West Orchard Crescent",
+   "kind": "road",
+   "map": {
+    "lat": 51.48705,
+    "lon": -3.22401,
+    "osm": "way/19829823"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.5 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Windway Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48646,
+    "lon": -3.22541,
+    "osm": "way/19829624"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Colin Way",
+   "kind": "road",
+   "map": {
+    "lat": 51.48164,
+    "lon": -3.23207,
+    "osm": "way/22675649"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Arles Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48092,
+    "lon": -3.23366,
+    "osm": "way/22675917"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.5 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Vincent Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.4801,
+    "lon": -3.23509,
+    "osm": "way/52116828"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Lansdowne Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.4816,
+    "lon": -3.21539,
+    "osm": "way/43358435"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Cowbridge Road East",
+   "kind": "road",
+   "map": {
+    "lat": 51.48256,
+    "lon": -3.21093,
+    "osm": "way/45569525"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.7 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Caewal Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.49171,
+    "lon": -3.22014,
+    "osm": "way/19829039"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Romilly Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48526,
+    "lon": -3.20873,
+    "osm": "way/27621017"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Llandaff Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48757,
+    "lon": -3.20675,
+    "osm": "way/4998212"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Riverside Terrace",
+   "kind": "road",
+   "map": {
+    "lat": 51.48396,
+    "lon": -3.23021,
+    "osm": "way/22675624"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.1 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Dyfrig Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.48238,
+    "lon": -3.22944,
+    "osm": "way/188484263"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.2 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Littlecroft Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 51.4818,
+    "lon": -3.23046,
+    "osm": "way/22675643"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Atlas Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.47862,
+    "lon": -3.20278,
+    "osm": "way/102878874"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Windway Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 51.48564,
+    "lon": -3.22274,
+    "osm": "way/19829652"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 4.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Whitchurch Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50248,
+    "lon": -3.19026,
+    "osm": "way/419720586"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 2.3 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Allensbank Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50932,
+    "lon": -3.18272,
+    "osm": "way/4983785"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 1.6 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Heathwood Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51427,
+    "lon": -3.1926,
+    "osm": "way/4968823"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 1.0 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Cefn Carnau Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51716,
+    "lon": -3.18775,
+    "osm": "way/4983313"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 0.7 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "St Isan Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51703,
+    "lon": -3.19064,
+    "osm": "way/24415887"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 0.7 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Heathway",
+   "kind": "road",
+   "map": {
+    "lat": 51.51672,
+    "lon": -3.19385,
+    "osm": "way/5016061"
+   },
+   "sources": [
+    "s1",
+    "s5"
+   ],
+   "confidence": "confirmed",
+   "note": "About 0.7 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "St Brigid Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51828,
+    "lon": -3.19516,
+    "osm": "way/24352271"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "About 0.5 km from the centre: in reach of a route from Llanishen."
+  },
+  {
+   "name": "Caerphilly Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.51281,
+    "lon": -3.19992,
+    "osm": "way/45735585"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The A469. Also named by number on s1's own centre page (same author, so it counts once)."
+  },
+  {
+   "name": "Gorse Place",
+   "kind": "road",
+   "map": {
+    "lat": 51.49223,
+    "lon": -3.24663,
+    "osm": "way/22919185"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.1 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Orange Grove",
+   "kind": "road",
+   "map": {
+    "lat": 51.49627,
+    "lon": -3.25064,
+    "osm": "way/22919277"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.0 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Firs Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 51.49028,
+    "lon": -3.25453,
+    "osm": "way/22919166"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 5.6 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Gabalfa Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50058,
+    "lon": -3.22432,
+    "osm": "way/256992193"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.3 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "River View",
+   "kind": "road",
+   "map": {
+    "lat": 51.49787,
+    "lon": -3.21169,
+    "osm": "way/24319326"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 3.1 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Colwill Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50125,
+    "lon": -3.2168,
+    "osm": "way/828210102"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Llanidloes Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50048,
+    "lon": -3.21277,
+    "osm": "way/24298280"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.9 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Cathedral View",
+   "kind": "road",
+   "map": {
+    "lat": 51.50241,
+    "lon": -3.21315,
+    "osm": "way/24319293"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.7 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Aberporth Road",
+   "kind": "road",
+   "map": {
+    "lat": 51.50272,
+    "lon": -3.20979,
+    "osm": "way/24298481"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "West Cardiff, about 2.5 km away, round the lists' old Fairwater centre: not in reach of a route from Llanishen."
+  },
+  {
+   "name": "Morrisons roundabout (Caerphilly Road / Thornhill Road / Tŷ Glas Road / Beulah Road)",
+   "kind": "roundabout",
+   "map": {
+    "lat": 51.52542,
+    "lon": -3.20263,
+    "osm": "way/1095233048"
+   },
+   "sources": [
+    "s6"
+   ],
+   "confidence": "likely",
+   "note": "An instructor's video names it as one of Cardiff's most feared roundabouts and turns left there on to Caerphilly Road; Morrisons Llanishen is beside it on Ashbourn Way. About 0.8 km west of the centre."
+  },
+  {
+   "name": "Heathwood Road / Caerphilly Road / Birchgrove Road / North Road lights (Birchgrove)",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 51.51152,
+    "lon": -3.19972,
+    "osm": "node/11873271764"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists come down Heathwood Road to the lights and on to Caerphilly Road and North Road. Signal crossings on every arm."
+  },
+  {
+   "name": "Heathway / Heathwood Road junction",
+   "kind": "junction",
+   "map": {
+    "lat": 51.51391,
+    "lon": -3.19354,
+    "osm": "node/33410164"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists come out of Heathway at the end of the road on to Heathwood Road."
+  },
+  {
+   "name": "Cefn Carnau Road / Heathwood Road junction",
+   "kind": "junction",
+   "map": {
+    "lat": 51.51642,
+    "lon": -3.18702,
+    "osm": "node/33048304"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists turn from Heathwood Road into Cefn Carnau Road."
+  },
+  {
+   "name": "Cefn Carnau Road / St Isan Road end of road",
+   "kind": "junction",
+   "map": {
+    "lat": 51.5179,
+    "lon": -3.18848,
+    "osm": "node/33048278"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists turn left at the end of Cefn Carnau Road into St Isan Road."
+  },
+  {
+   "name": "St Isan Road / Heathway end of road",
+   "kind": "junction",
+   "map": {
+    "lat": 51.51607,
+    "lon": -3.19389,
+    "osm": "node/33048284"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely",
+   "note": "The lists turn right at the end of St Isan Road on to Heathway."
+  },
+  {
+   "name": "Heathway / St Brigid Road junction",
+   "kind": "junction",
+   "map": {
+    "lat": 51.51826,
+    "lon": -3.19378,
+    "osm": "node/264168251"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  }
+ ],
+ "unmatched": [
+  "Tynewydd Road (no road of the name found near the centre)",
+  "Grosvenor Road (no road of the name found near the centre)",
+  "Church Road (the lists' is in Whitchurch by Heol Don; the nearest match is in Old St Mellons, 5 km east, a different road)",
+  "Cardiff Road (the lists' is the Llandaff road by Bridge Street; the nearest match is in Tongwynlais, a different road)",
+  "Station Road (the lists' is by Heol Don, Whitchurch; the nearest match is Llanishen's Station Road, a different road)",
+  "Crofft-y-Genau Road (St Fagans, 6.5 km away: outside the area)",
+  "Old St Fagans Road (not found; St Fagans, about 6.5 km away)",
+  "Coryton roundabout (M4 junction 32; no named match, about 3 km north-west)",
+  "Newport Road (s3; 4.6 km south-east, beyond the area a Llanishen route reaches)"
+ ],
+ "summary": "3 confirmed and 78 likely roads plus 1 confirmed and 7 likely junctions. The route lists (drivingtesttips.biz, copied by intensivelessons.co.uk) all start on Norbury Road, the earlier Fairwater centre 5 km away, so most of their roads are out of reach; the ones near Llanishen are in Heath (Caerphilly Road, Heathwood Road, Cefn Carnau Road, St Isan Road, Heathway, St Brigid Road) with five named junctions there, and a 2023 Llanishen route video and an instructor's 2026 video add Heathway, the A48, Gabalfa and the Morrisons roundabout. One route meeting the overlap rule looks possible (Caerphilly Road, Heath and the Morrisons roundabout); a second leaving the other way would rest mostly on the map."
+}

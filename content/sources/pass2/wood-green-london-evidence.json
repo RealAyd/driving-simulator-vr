@@ -1,0 +1,1280 @@
+{
+  "centre": "Wood Green (London)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.59859,
+    "lon": -0.1044
+  },
+  "address_checked": "2026-11-17",
+  "address": "Wood Green Crown Court, Woodhall House, Lordship Lane, Wood Green, London N22 5LF",
+  "address_note": "gov.uk 'Check which driving test centres you can move your test to' (updated 15 October 2026) lists Wood Green (London) as a current centre (Tottenham about 2 miles away); the find-driving-test-centre service could not be reached from this machine. The address is DVSA's centre data as quoted by passrates.uk (captured 2026-05-12), and drivingtesttips.biz gives the same (The Gatehouse, Woodhall House, Lordship Lane, N22 5LF). OSM has the 'Wood Green Driving Test Centre' building (way/1033446259) at 51.59860,-0.10442 on the north side of Lordship Lane beside the Crown Court: the given position, so it matches. One guide page gives Coburg Road, N22 6UB (pass 1's note): no other source does, and it disagrees with DVSA's data, so not used. Recheck on the gov.uk centre finder when reachable.",
+  "searches": [
+    "\"Wood Green driving test\" route roads (pass 1)",
+    "\"Wood Green test centre\" roundabout OR junction tips (pass 1)",
+    "\"Wood Green\" mock test route (pass 1)",
+    "\"Wood Green driving test\" reddit OR forum (pass 1)",
+    "Wood Green driving test centre Lordship Lane test route roundabout tips instructor",
+    "\"Wood Green\" driving test reddit Lordship Lane failed passed roundabout",
+    "gov.uk: check which driving test centres you can move your test to"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/wood-green-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/wood-green-driving-test-routes-5-8.html",
+        "https://www.drivingtesttips.biz/wood-green-driving-test-centre.html"
+      ],
+      "published": "2014-05 (page dated 2014-05-28, modified 2021-08-05)",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Lordship Lane (A109)",
+        "Perth Road",
+        "White Hart Lane",
+        "Rowland Hill Avenue",
+        "Devonshire Hill Lane",
+        "Great Cambridge Road (A10)",
+        "North Circular Road (A406)",
+        "Silver Street",
+        "Windmill Road",
+        "Westerham Avenue",
+        "Haselbury Road",
+        "Sheldon Road",
+        "Sterling Way",
+        "Melville Gardens",
+        "Wolves Lane",
+        "Medesenge Way",
+        "Green Lanes",
+        "The Crossway",
+        "Gospatrick Road",
+        "Rivulet Road",
+        "Reynardson Road",
+        "Compton Crescent",
+        "Daubeney Road",
+        "Stockton Road",
+        "Paisley Road",
+        "Eldon Road",
+        "Granville Road",
+        "Dunbar Road",
+        "Norfolk Avenue",
+        "Tottenhall Road",
+        "Pasteur Gardens",
+        "Petersfield Close",
+        "Princes Avenue",
+        "Fenton Road",
+        "Norman Avenue",
+        "Sandford Avenue",
+        "Downhills Way",
+        "Downhills Park Road",
+        "Higham Road",
+        "Hastings Road",
+        "The Roundway",
+        "Turnant Road",
+        "Teynton Terrace",
+        "Risley Avenue",
+        "De Quincey Road",
+        "Awlfield Avenue",
+        "Bennington Road",
+        "Church Street (Edmonton)",
+        "Orpington Gardens",
+        "Maryland Road",
+        "Station Road (Wood Green)",
+        "Park Avenue (Wood Green)",
+        "Bounds Green Road",
+        "Brownlow Road",
+        "Powys Lane",
+        "Ashridge Gardens",
+        "Hawthorn Avenue",
+        "Elmwood Avenue",
+        "Broomfield Avenue",
+        "Broomfield Lane",
+        "Park Lane",
+        "Woodside Gardens"
+      ],
+      "note": "Eight free turn-by-turn route lists for the centre, every one leaving from and returning to Lordship Lane, so they fit the current address. Read for road and junction names only; the route is not copied. intensivelessons.co.uk repeats the same lists word for word (counted once). The centre page by the same author adds only a general description (roundabouts of various types, crossroads, narrow residential streets with parked cars)."
+    },
+    {
+      "id": "s2",
+      "kind": "forum",
+      "author": "a local forum thread on harringayonline.com (several residents' comments)",
+      "url": "https://harringayonline.com/xn/detail/844301:Comment:1176816",
+      "published": "2019-06",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Great Cambridge Roundabout",
+        "Lordship Lane (the way out of the test centre)"
+      ],
+      "note": "A thread about the centre's low pass rate. One resident names the Great Cambridge Roundabout as a reason tests here are hard; another notes the marked bus stop right where cars leave the test centre on to Lordship Lane. Neither is an account of a test, so they support the places, not routes."
+    },
+    {
+      "id": "s3",
+      "kind": "official",
+      "author": "DVSA centre data, as quoted by passrates.uk",
+      "url": "https://passrates.uk/centres/wood-green-london",
+      "published": "captured 2026-05-12",
+      "read_on": "2026-11-17",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Address only (Wood Green Crown Court, Woodhall House, Lordship Lane, N22 5LF); silent on routes."
+    },
+    {
+      "id": "s4",
+      "kind": "official",
+      "author": "DVSA (gov.uk)",
+      "url": "https://www.gov.uk/government/publications/check-which-driving-test-centres-you-can-move-your-test-to/check-which-driving-test-centres-you-can-move-your-test-to",
+      "published": "2026-10-15",
+      "read_on": "2026-11-17",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Lists Wood Green (London) as a current centre; silent on routes."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Greater-London/Wood-Green-London",
+      "why": "repeats s1's route lists word for word; counted once, as s1"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/wood-green-london",
+      "why": "403 / bot challenge; left alone (template content per pass 1)"
+    },
+    {
+      "url": "https://www.rateddriving.com/driving-lessons/london/haringey/wood-green/",
+      "why": "403; left alone"
+    },
+    {
+      "url": "https://www.veygo.com/driving-test-centres/wood-green-london/",
+      "why": "refused automated reading (403); left alone"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/wood-green/mock-driving-test",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://woodgreendrivingtestcentre.blogspot.com/2025/11/how-to-pass-at-wood-green-driving-test.html",
+      "why": "generic template text (areas such as Alexandra Palace, Bounds Green and Green Lanes, no roads or junctions of tests); not credible as evidence"
+    },
+    {
+      "url": "https://northlondondrivingguide.vercel.app/test-centres",
+      "why": "gives an old or wrong address (Coburg Road, N22 6UB) and generic tips only"
+    },
+    {
+      "url": "https://drivingtestpass.pages.dev/centres/wood-green",
+      "why": "pass rates and address only"
+    },
+    {
+      "url": "https://www.theaa.com/driving-school/locations/location/wood-green",
+      "why": "lessons page, names no test roads"
+    },
+    {
+      "url": "https://just-drive.co.uk/?p=22185",
+      "why": "404"
+    },
+    {
+      "url": "https://payhip.com/b/4oUvG",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/wood-green-london-driving-test-routes",
+      "why": "preview of paid routes (pass 1: paid); never used"
+    }
+  ],
+  "places": [
+    {
+      "name": "Lordship Lane (A109)",
+      "kind": "road",
+      "map": {
+        "lat": 51.59849,
+        "lon": -0.1042,
+        "osm": "way/387376014"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely",
+      "note": "The test centre's road: every listed route leaves by it (left or right out of the car park) and returns along it. Named also by the forum thread (s2), about the bus stop at the way out; s2 is not a test account and s1 is not first-hand, so likely."
+    },
+    {
+      "name": "Perth Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59968,
+        "lon": -0.10088,
+        "osm": "way/387376029"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Third left from the centre heading east; in most of the lists, out and back."
+    },
+    {
+      "name": "White Hart Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.60165,
+        "lon": -0.10525,
+        "osm": "way/1325260808"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rowland Hill Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.60683,
+        "lon": -0.08799,
+        "osm": "way/5368733"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Devonshire Hill Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.60825,
+        "lon": -0.09123,
+        "osm": "way/5368722"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Great Cambridge Road (A10)",
+      "kind": "road",
+      "map": {
+        "lat": 51.60313,
+        "lon": -0.08708,
+        "osm": "way/1058231793"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "North Circular Road (A406)",
+      "kind": "road",
+      "map": {
+        "lat": 51.61209,
+        "lon": -0.1094,
+        "osm": "way/404260487"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Silver Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.61528,
+        "lon": -0.0669,
+        "osm": "node/6993506571"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Edmonton, about 3.5 km north-east (route 1)."
+    },
+    {
+      "name": "Windmill Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.61838,
+        "lon": -0.08057,
+        "osm": "way/756494380"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Edmonton (route 1)."
+    },
+    {
+      "name": "Westerham Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.62149,
+        "lon": -0.07902,
+        "osm": "way/4281345"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Edmonton (routes 1 and 7)."
+    },
+    {
+      "name": "Haselbury Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.61926,
+        "lon": -0.0756,
+        "osm": "way/4281053"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Edmonton (routes 1 and 7)."
+    },
+    {
+      "name": "Sheldon Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.61794,
+        "lon": -0.07379,
+        "osm": "way/4288074"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Edmonton (route 1)."
+    },
+    {
+      "name": "Sterling Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.61558,
+        "lon": -0.09843,
+        "osm": "way/403703930"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The A406 slip road at Silver Street (route 1)."
+    },
+    {
+      "name": "Melville Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.61221,
+        "lon": -0.10218,
+        "osm": "way/4273935"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Also written Melville Road and Mellville Gardens in the lists."
+    },
+    {
+      "name": "Wolves Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.60319,
+        "lon": -0.10408,
+        "osm": "way/5365170"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Medesenge Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.60984,
+        "lon": -0.10116,
+        "osm": "way/4273983"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Green Lanes",
+      "kind": "road",
+      "map": {
+        "lat": 51.59016,
+        "lon": -0.10304,
+        "osm": "way/856077074"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Also written Greens Lane and Green Lane in the lists; the A105 north of Wood Green."
+    },
+    {
+      "name": "The Crossway",
+      "kind": "road",
+      "map": {
+        "lat": 51.60371,
+        "lon": -0.09595,
+        "osm": "way/5368541"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Written Crossway and Cross Way in the lists; off Perth Road."
+    },
+    {
+      "name": "Gospatrick Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6029,
+        "lon": -0.09339,
+        "osm": "way/5368469"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rivulet Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60497,
+        "lon": -0.09552,
+        "osm": "way/1348635725"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Reynardson Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60441,
+        "lon": -0.08905,
+        "osm": "way/5368699"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Compton Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.60535,
+        "lon": -0.08902,
+        "osm": "way/5368691"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Daubeney Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60545,
+        "lon": -0.0903,
+        "osm": "way/5368702"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stockton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60332,
+        "lon": -0.09243,
+        "osm": "way/5368470"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Paisley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60172,
+        "lon": -0.09709,
+        "osm": "way/5368525"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eldon Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59915,
+        "lon": -0.09702,
+        "osm": "way/5368497"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "One way north from Lordship Lane to Granville Road, two-way beyond."
+    },
+    {
+      "name": "Granville Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59968,
+        "lon": -0.0986,
+        "osm": "way/6231848"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "One way west to Lordship Lane: most lists come home by it."
+    },
+    {
+      "name": "Dunbar Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59971,
+        "lon": -0.10109,
+        "osm": "way/1347327990"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Norfolk Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.60894,
+        "lon": -0.1003,
+        "osm": "way/4274284"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tottenhall Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.6112,
+        "lon": -0.10552,
+        "osm": "way/4274274"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pasteur Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.61238,
+        "lon": -0.09154,
+        "osm": "way/4273897"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Petersfield Close",
+      "kind": "road",
+      "map": {
+        "lat": 51.61288,
+        "lon": -0.09235,
+        "osm": "way/4273926"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Princes Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.61182,
+        "lon": -0.10401,
+        "osm": "way/231236249"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fenton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60562,
+        "lon": -0.09124,
+        "osm": "way/5368701"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Norman Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.60113,
+        "lon": -0.09379,
+        "osm": "way/5368486"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sandford Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.6024,
+        "lon": -0.09573,
+        "osm": "way/1304067167"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Downhills Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.59805,
+        "lon": -0.09218,
+        "osm": "way/1320804975"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Downhills Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59036,
+        "lon": -0.0969,
+        "osm": "way/1115614497"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Higham Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59172,
+        "lon": -0.08724,
+        "osm": "way/5404742"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hastings Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59185,
+        "lon": -0.08564,
+        "osm": "way/5404756"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Roundway",
+      "kind": "road",
+      "map": {
+        "lat": 51.59811,
+        "lon": -0.09219,
+        "osm": "way/1320804963"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Turnant Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59837,
+        "lon": -0.09115,
+        "osm": "way/78184171"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Teynton Terrace",
+      "kind": "road",
+      "map": {
+        "lat": 51.59926,
+        "lon": -0.09095,
+        "osm": "way/5368142"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Risley Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.59987,
+        "lon": -0.08993,
+        "osm": "way/815737178"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "De Quincey Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60127,
+        "lon": -0.0852,
+        "osm": "way/5368421"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Awlfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.59822,
+        "lon": -0.08264,
+        "osm": "way/1287936964"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Written Awfield Avenue in the lists; the map's spelling used."
+    },
+    {
+      "name": "Bennington Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59902,
+        "lon": -0.08008,
+        "osm": "way/262166404"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Street (Edmonton)",
+      "kind": "road",
+      "map": {
+        "lat": 51.63311,
+        "lon": -0.08049,
+        "osm": "way/304057377"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Off the A10 north of the A406 (route 7), about 3.9 km away."
+    },
+    {
+      "name": "Orpington Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.62064,
+        "lon": -0.07792,
+        "osm": "way/4281346"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Edmonton (route 7)."
+    },
+    {
+      "name": "Maryland Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60734,
+        "lon": -0.10695,
+        "osm": "way/5365175"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road (Wood Green)",
+      "kind": "road",
+      "map": {
+        "lat": 51.59716,
+        "lon": -0.11011,
+        "osm": "way/1329927045"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Park Avenue (Wood Green)",
+      "kind": "road",
+      "map": {
+        "lat": 51.60057,
+        "lon": -0.11564,
+        "osm": "way/1461807101"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bounds Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.59898,
+        "lon": -0.11097,
+        "osm": "way/1567545344"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brownlow Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.60687,
+        "lon": -0.12407,
+        "osm": "way/1578179671"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Powys Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61298,
+        "lon": -0.12143,
+        "osm": "way/226588856"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ashridge Gardens",
+      "kind": "road",
+      "map": {
+        "lat": 51.61564,
+        "lon": -0.12253,
+        "osm": "way/4278734"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hawthorn Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.61524,
+        "lon": -0.11762,
+        "osm": "way/4278762"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Written Hawthorne Avenue once in the lists."
+    },
+    {
+      "name": "Elmwood Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.61591,
+        "lon": -0.11767,
+        "osm": "way/4278763"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broomfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.61472,
+        "lon": -0.11564,
+        "osm": "way/4278761"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broomfield Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.61568,
+        "lon": -0.10968,
+        "osm": "way/836252717"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Test centre way out on Lordship Lane",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59855,
+        "lon": -0.10399,
+        "osm": "way/1285784813"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely",
+      "note": "The car park's way in, beside Woodall House: every listed route leaves it (left, or right in one) on to Lordship Lane and comes back in from Lordship Lane. s2 notes the bus stop just beside it."
+    },
+    {
+      "name": "Lordship Lane / Perth Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59948,
+        "lon": -0.10086
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Left into Perth Road from Lordship Lane, in most of the lists."
+    },
+    {
+      "name": "Granville Road / Lordship Lane junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59955,
+        "lon": -0.09951
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Out of Granville Road right on to Lordship Lane, then right into the test centre: the way home in most of the lists."
+    },
+    {
+      "name": "Eldon Road / Granville Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59963,
+        "lon": -0.09681
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Paisley Road / Eldon Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.60155,
+        "lon": -0.09611
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Perth Road / White Hart Lane junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.60499,
+        "lon": -0.09679
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "End of Perth Road, right or left on to White Hart Lane."
+    },
+    {
+      "name": "White Hart Lane / Wolves Lane junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.60308,
+        "lon": -0.10375
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wolves Lane / Tottenhall Road / Melville Gardens junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.6112,
+        "lon": -0.10232
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Called a roundabout in the lists; on the map today a crossroads (no roundabout), so recorded as a junction."
+    },
+    {
+      "name": "Wolves Lane / Medesenge Way junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.60994,
+        "lon": -0.10242
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Great Cambridge roundabout (A10 / A406)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.61673,
+        "lon": -0.08662,
+        "osm": "way/203933717"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely",
+      "note": "The A10 roundabout with the A406 in most lists (right, third exit, on to the A406; left; ahead). Also named by the forum thread (s2) as a hard part of tests here, from a local, not a test account: likely. A signal-controlled gyratory over the A406, about 2.2 km north-east."
+    },
+    {
+      "name": "A10 / White Hart Lane lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.60546,
+        "lon": -0.08603
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lordship Lane / The Roundway / Downhills Way lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.59807,
+        "lon": -0.09208
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Ahead into Downhills Way (route 4), and the second of 'two sets of lights ahead' along Lordship Lane before Turnant Road (route 6)."
+    },
+    {
+      "name": "Lordship Lane / Turnant Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59801,
+        "lon": -0.09124
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Turnant Road / Teynton Terrace / Tower Gardens Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59862,
+        "lon": -0.09099
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Teynton Terrace / Risley Avenue junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.59989,
+        "lon": -0.09091
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Risley Avenue / Waltheof Avenue roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.59981,
+        "lon": -0.08719,
+        "osm": "way/1023971832"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Called a mini-roundabout in the list (route 6); on the map a small roundabout with an island about 10 m across."
+    },
+    {
+      "name": "Risley Avenue / Awlfield Avenue roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.59969,
+        "lon": -0.08255,
+        "osm": "way/815739955"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Called a mini-roundabout in the list (route 6); on the map a very small roundabout ring."
+    },
+    {
+      "name": "Awlfield Avenue / Tower Gardens Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.59848,
+        "lon": -0.08262,
+        "osm": "node/38455410"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Ahead over it along Awlfield Avenue (route 6)."
+    },
+    {
+      "name": "Lordship Lane / The Roundway mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.59838,
+        "lon": -0.07679
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Left on to The Roundway from Lordship Lane (route 6)."
+    },
+    {
+      "name": "Downhills Way / Downhills Park Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.5907,
+        "lon": -0.09257
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Route 4, both ways; on the map two small roundabouts where Belmont Road joins."
+    },
+    {
+      "name": "High Road / Lordship Lane lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.59719,
+        "lon": -0.10937
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Green Lanes (High Road) at the lights, left on to Lordship Lane (routes 1 and 7)."
+    },
+    {
+      "name": "Station Road mini-roundabouts (Mayes Road, Park Avenue)",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.5975,
+        "lon": -0.11882
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "'Two roundabouts' along Station Road to Park Avenue (route 8): on the map mini-roundabouts at Mayes Road and at Park Avenue."
+    }
+  ],
+  "unmatched": [
+    "Park Lane (route 1, between Haselbury Road and Sheldon Road in Edmonton: no Park Lane there; the only one near is in Tottenham, 3 km away)",
+    "Woodside Gardens (route 7, off Wolves Lane: the map has Woodside Road there; the only Woodside Gardens is at Tottenham Hale)"
+  ],
+  "summary": "0 confirmed; 60 likely roads and 22 likely junctions and features, all but two from one route-list author (drivingtesttips.biz, eight routes, all leaving and returning by Lordship Lane; intensivelessons.co.uk copies it), with a local forum thread also naming the Lordship Lane way out and the Great Cambridge roundabout (not test accounts). Two routes meeting the overlap rule look possible: the lists cover Lordship Lane and the streets both sides of it (Perth Road and the Scotch Estate to the north-west, Tower Gardens to the east, Downhills to the south) with lights, small roundabouts and mini-roundabouts, though nothing is confirmed by a second first-hand source."
+}

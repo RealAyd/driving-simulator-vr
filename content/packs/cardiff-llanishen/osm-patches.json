@@ -1,0 +1,37 @@
+[
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 983959198,
+  "k": "name",
+  "v": "Caerphilly Road",
+  "why": "Caerphilly Road southbound at the Ffordd Mograig / Waun-y-Groes Road lights is mapped as three short unnamed one-way pieces (57, 29 and 73 m) beside the named northbound carriageway. The route planner will not drive short unnamed ways, so the scene had no way south down Caerphilly Road there. Named as the road it carries (1 of 3)."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 1253209877,
+  "k": "name",
+  "v": "Caerphilly Road",
+  "why": "Caerphilly Road southbound at the Ffordd Mograig / Waun-y-Groes Road lights (2 of 3; see the first)."
+ },
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 983959203,
+  "k": "name",
+  "v": "Caerphilly Road",
+  "why": "Caerphilly Road southbound at the Ffordd Mograig / Waun-y-Groes Road lights (3 of 3; see the first)."
+ },
+ {
+  "op": "move-tags",
+  "from": 10056540729,
+  "to": 10056540728,
+  "keys": [
+   "highway",
+   "traffic_signals",
+   "traffic_signals:direction"
+  ],
+  "why": "Maes-y-coed Road at the Caerphilly Road lights: the westbound signal is mapped on the end node of a way (where the 4 m piece carrying the crossing begins), so the scene had no stop line on Maes-y-coed Road and the lights did not stop that approach. Moved 2 m east on to the next node, the advanced stop line for cycles."
+ }
+]

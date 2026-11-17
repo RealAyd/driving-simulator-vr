@@ -1,0 +1,1560 @@
+{
+  "centre": "Kettering",
+  "status": "ok",
+  "centre_position": {
+    "lat": 52.37793,
+    "lon": -0.72522
+  },
+  "address_checked": "2026-11-17",
+  "address": "Orion Way, Kettering Business Park, Kettering NN15 6NL",
+  "address_note": "gov.uk's centre finder could not be opened from this machine (find-driving-test-centre did not answer). Address taken from DVSA's centre data as quoted on passrates.uk (DVSA find a driving test centre, captured 2026-05-12, OGL) and matched by drivingtesttips.biz's centre page, intensivelessons.co.uk and driveJohnson's centre page; pass 1 records 8,489 tests in 2024-25, so the centre is open here. OSM has the building itself (way/171272698, \"Kettering Driving Test Centre\", Orion Way, NN15 6NL) 2 m from the given position: matches. Its car park and way in are a service road (way/674957827) off Orion Way's south-west end. Pass 1's other address (Pegasus Court off Rockingham Road) is not borne out: Pegasus Court is the retail road on the other side of the A509 from Orion Way. Recheck on gov.uk when reachable.",
+  "moved_note": "Every free route list (s1) starts and ends at a centre on Station Road, Kettering (about 1.9 km north, by the railway station), not at Orion Way: the lists predate the move to Kettering Business Park (date not found). By the rules they are used for roads further out only, never for how a route leaves and returns.",
+  "searches": [
+    "\"Kettering driving test centre\" Orion Way Kettering Business Park moved",
+    "Kettering driving test route roundabout tips Pytchley Road A509 instructor",
+    "duckduckgo/bing: Kettering driving test centre moved Orion Way; Station Road; reddit test route (no usable results)"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/kettering-driving-test-routes.html",
+      "also": [
+        "https://drivingtesttips.biz/driving-test-routes/kettering-driving-test-routes-11-12.html",
+        "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/kettering-extended-driving-test-routes.html",
+        "https://intensivelessons.co.uk/driving-test-routes/Northamptonshire/Kettering (routes 1 to 12, the same text: counted once)"
+      ],
+      "published": "undated (routes 1-10; 11-12 marked new); extended routes 1-2 undated",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": true,
+      "note": "Turn-by-turn lists from a DTC on Station Road (the old site). Read for road and junction names only; no route copied. Near the current site they name Orion Way, Pytchley Lane, Pytchley Road (A509), the Orion Way and A509 roundabouts, and the Patrick Road, Sussex Road and Northumberland Road estate.",
+      "names": [
+        "Argyll Street",
+        "Barton Road",
+        "Barton Road / Windmill Avenue traffic lights",
+        "Blandford Avenue",
+        "Bowhill",
+        "Bowling Green Road",
+        "Bridle Road",
+        "Britannia Road",
+        "Broadway",
+        "Bryant Road",
+        "Cheyne Walk",
+        "Church Street",
+        "Churchill Way",
+        "Commercial Road",
+        "Cowper Street",
+        "Cranford Road",
+        "Deeble Road",
+        "Edith Road",
+        "Elizabeth Road",
+        "Eskdaill Street",
+        "Finedon Road",
+        "Garfield Street",
+        "Gipsy Lane",
+        "Glebe Avenue",
+        "Glebe Road",
+        "Grafton Street",
+        "Greenfield Avenue",
+        "Greenhill Road",
+        "Hallwood Road",
+        "Hawthorn Road",
+        "Headlands",
+        "Henson Way",
+        "Hertford Road",
+        "High Street",
+        "Higham Road",
+        "Hillcrest Avenue",
+        "Isham Road",
+        "Jutland Way",
+        "Kettering Road (A509)",
+        "King Street",
+        "Kingsley Avenue",
+        "Lake Avenue",
+        "Linden Avenue",
+        "Linnell Way",
+        "Linnet Drive",
+        "London Road",
+        "Lower Street",
+        "Margaret Road",
+        "Market Street",
+        "Martin Road",
+        "Meadow Road",
+        "Mitchell Street",
+        "Montagu Street",
+        "Neale Avenue",
+        "Northall Street",
+        "Northampton Road",
+        "Northfield Avenue",
+        "Northumberland Road",
+        "Northumberland Road / Sussex Road junction",
+        "Orion Way",
+        "Orion Way / Pytchley Lane roundabout",
+        "Park Road",
+        "Patrick Road",
+        "Patrick Road / Pytchley Road junction",
+        "Patrick Road / Sussex Road / Northumberland Road junction",
+        "Pebbleford Road",
+        "Pioneer Avenue",
+        "Piper's Hill Road",
+        "Polwell Lane",
+        "Pytchley Lane",
+        "Pytchley Lane on to Pytchley Road",
+        "Pytchley Road (A509)",
+        "Pytchley Road / Barton Road / London Road mini-roundabout",
+        "Pytchley Road / Bryant Road junction",
+        "Pytchley Road / Orion Way / Kettering Road roundabout (A509)",
+        "Queensberry Road",
+        "Queensway",
+        "Regent Road",
+        "Reservoir Road",
+        "Rockingham Road",
+        "Rothwell Road",
+        "Roundhill Road",
+        "Shakespeare Road",
+        "Shannon Way",
+        "Sheep Street",
+        "Silver Street",
+        "St Botolph's Road",
+        "St Johns Road (opp)",
+        "St Mary's Road",
+        "St Michael's Road",
+        "Stamford Road",
+        "Station Road",
+        "Sussex Road",
+        "Telford Way",
+        "The Crescent",
+        "Trafalgar Road",
+        "Victoria Street",
+        "Warkton Lane",
+        "Wellington Street",
+        "Westhill Drive",
+        "William Street",
+        "Windmill Avenue"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "instructor-page",
+      "author": "driveJohnson's (Kettering test centre page)",
+      "url": "https://www.drivejohnsons.co.uk/test-centres/practical/northamptonshire-driving-test-centres/kettering",
+      "published": "undated (pass rates to 2025-26)",
+      "read_on": "2026-11-17",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "About lessons round the town, not the test: names Stamford Road and Northfield Avenue as busier roads, the A4300 / Rockingham Road junction, a double roundabout on Northampton Road, a spiral roundabout on Northfield Avenue, and Kettering Business Park (bay parking practice). Weaker support only; it also sells a route PDF (not used).",
+      "names": [
+        "Stamford Road",
+        "Northfield Avenue",
+        "Rockingham Road",
+        "Northampton Road",
+        "Kettering Business Park"
+      ]
+    },
+    {
+      "id": "s3",
+      "kind": "official",
+      "author": "DVSA centre data, as quoted by passrates.uk",
+      "url": "https://passrates.uk/centres/kettering",
+      "published": "captured 2026-05-12",
+      "read_on": "2026-11-17",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Address only; silent on routes."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://drivingtesttips.biz/kettering-driving-test-centre.html",
+      "why": "centre page: address and general text (A14 dual carriageway likely; roundabouts); its learner reviews are about examiners and name no roads"
+    },
+    {
+      "url": "https://www.motorcycletesttips.uk/riding-test/motorcycle-test-routes/kettering-motorcycle-test-routes/",
+      "why": "same publisher as s1, motorcycle routes; not read"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/kettering-driving-test-routes",
+      "why": "preview of paid routes (pass 1: paid); never used"
+    },
+    {
+      "url": "https://payhip.com/b/IKj3q",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://www.theaa.com/driving-school/locations/location/kettering",
+      "why": "template page (pass 1)"
+    },
+    {
+      "url": "https://www.bsm.co.uk/locations/kettering",
+      "why": "template page (pass 1)"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/kettering/mock-driving-test",
+      "why": "template page (pass 1)"
+    },
+    {
+      "url": "https://drivingtestpass.pages.dev/centres/kettering",
+      "why": "template page (pass 1)"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/kettering/",
+      "why": "lessons sales page; names no roads"
+    },
+    {
+      "url": "https://intensivelessons.co.uk/Practical-Test-Centres/Northamptonshire/Kettering",
+      "why": "address and facilities only; used for the address check"
+    }
+  ],
+  "places": [
+    {
+      "name": "Station Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39507,
+        "lon": -0.7295,
+        "osm": "way/8230595"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Northfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.40259,
+        "lon": -0.73528,
+        "osm": "way/941536871"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Meadow Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39817,
+        "lon": -0.73108,
+        "osm": "way/943497018"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Commercial Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39905,
+        "lon": -0.73003,
+        "osm": "way/89149383"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Trafalgar Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39944,
+        "lon": -0.7319,
+        "osm": "way/34510765"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lower Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40146,
+        "lon": -0.7327,
+        "osm": "way/943258959"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Northall Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40189,
+        "lon": -0.73036,
+        "osm": "way/943258955"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rockingham Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.40875,
+        "lon": -0.7285,
+        "osm": "way/943556286"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Neale Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.41401,
+        "lon": -0.72448,
+        "osm": "way/92216904"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hallwood Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.41408,
+        "lon": -0.72128,
+        "osm": "way/92217015"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsley Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.41335,
+        "lon": -0.72422,
+        "osm": "way/92216952"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mitchell Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.41543,
+        "lon": -0.71905,
+        "osm": "way/92216895"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Blandford Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.41468,
+        "lon": -0.72474,
+        "osm": "way/92216944"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pytchley Road (A509)",
+      "kind": "road",
+      "map": {
+        "lat": 52.38448,
+        "lon": -0.71531,
+        "osm": "way/1364108201"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "London Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38919,
+        "lon": -0.71639,
+        "osm": "way/4163817"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bowling Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39548,
+        "lon": -0.72644,
+        "osm": "way/4163819"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sheep Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.39634,
+        "lon": -0.72786,
+        "osm": "way/8230215"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Northampton Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39571,
+        "lon": -0.73412,
+        "osm": "way/122146170"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queensberry Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39312,
+        "lon": -0.72877,
+        "osm": "way/8230206"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 52.39183,
+        "lon": -0.72973,
+        "osm": "way/92087750"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hawthorn Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39166,
+        "lon": -0.72456,
+        "osm": "way/8230203"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Argyll Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.3916,
+        "lon": -0.72386,
+        "osm": "way/92087759"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Michael's Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39054,
+        "lon": -0.72208,
+        "osm": "way/1416972686"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Roundhill Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.3913,
+        "lon": -0.72169,
+        "osm": "way/92087754"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Barton Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38787,
+        "lon": -0.71369,
+        "osm": "way/1365946848"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Linnet Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.38103,
+        "lon": -0.68878,
+        "osm": "way/19910357"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cranford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.37494,
+        "lon": -0.66612,
+        "osm": "way/32071265"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.36605,
+        "lon": -0.67656,
+        "osm": "way/25005780"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "High Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.3983,
+        "lon": -0.72814,
+        "osm": "way/35783591"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Churchill Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.3965,
+        "lon": -0.69835,
+        "osm": "way/1435846478"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.40962,
+        "lon": -0.72133,
+        "osm": "way/24452434"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shannon Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.3616,
+        "lon": -0.68671,
+        "osm": "way/92309220"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queensway",
+      "kind": "road",
+      "map": {
+        "lat": 52.35759,
+        "lon": -0.68325,
+        "osm": "way/1364108333"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bridle Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.36452,
+        "lon": -0.69061,
+        "osm": "way/95854843"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Regent Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.36439,
+        "lon": -0.68686,
+        "osm": "way/92309232"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Glebe Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.36478,
+        "lon": -0.68852,
+        "osm": "way/92309223"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Orion Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.37796,
+        "lon": -0.72417,
+        "osm": "way/97223370"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The centre's own road (the current site is on it), so every test now leaves and returns by it; the route lists name it only as a road passed on the way out from the old site."
+    },
+    {
+      "name": "Pytchley Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.37653,
+        "lon": -0.72293,
+        "osm": "way/111787472"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Greenhill Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.3926,
+        "lon": -0.73708,
+        "osm": "way/88599605"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Greenfield Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.39403,
+        "lon": -0.73785,
+        "osm": "way/88599592"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lake Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.39494,
+        "lon": -0.73453,
+        "osm": "way/1292671854"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Margaret Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.40494,
+        "lon": -0.70462,
+        "osm": "way/1005408150"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Elizabeth Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.40453,
+        "lon": -0.70724,
+        "osm": "way/89479916"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stamford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.40549,
+        "lon": -0.70986,
+        "osm": "way/1005241670"
+      },
+      "sources": [
+        "s1",
+        "s2"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windmill Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.3987,
+        "lon": -0.71141,
+        "osm": "way/92207215"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Silver Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40056,
+        "lon": -0.7258,
+        "osm": "way/35907507"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Montagu Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40114,
+        "lon": -0.72472,
+        "osm": "way/4163810"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Edith Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.41013,
+        "lon": -0.70401,
+        "osm": "way/1005234684"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bryant Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38458,
+        "lon": -0.71706,
+        "osm": "way/92084230"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Martin Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38549,
+        "lon": -0.71793,
+        "osm": "way/96316683"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broadway",
+      "kind": "road",
+      "map": {
+        "lat": 52.39306,
+        "lon": -0.72351,
+        "osm": "way/92087765"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Headlands",
+      "kind": "road",
+      "map": {
+        "lat": 52.39388,
+        "lon": -0.72774,
+        "osm": "way/1364108305"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Mary's Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39612,
+        "lon": -0.71799,
+        "osm": "way/4163807"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Botolph's Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38478,
+        "lon": -0.69769,
+        "osm": "way/1545506826"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Polwell Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.37472,
+        "lon": -0.69463,
+        "osm": "way/23388840"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "William Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40778,
+        "lon": -0.72567,
+        "osm": "way/24452867"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pioneer Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.3649,
+        "lon": -0.68163,
+        "osm": "way/92309208"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Higham Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.35914,
+        "lon": -0.67611,
+        "osm": "way/1546131056"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Westhill Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.39588,
+        "lon": -0.74265,
+        "osm": "way/88679310"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Isham Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.3672,
+        "lon": -0.72989,
+        "osm": "way/96318354"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Finedon Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.35763,
+        "lon": -0.6814,
+        "osm": "way/158427908"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hillcrest Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.39363,
+        "lon": -0.71349,
+        "osm": "way/92097286"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Gipsy Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.40051,
+        "lon": -0.74592,
+        "osm": "way/88747403"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Warkton Lane",
+      "kind": "road",
+      "map": {
+        "lat": 52.39749,
+        "lon": -0.68459,
+        "osm": "way/121840923"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Deeble Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.3969,
+        "lon": -0.6996,
+        "osm": "way/1363165412"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Johns Road (opp)",
+      "kind": "road",
+      "map": {
+        "lat": 52.39713,
+        "lon": -0.7017,
+        "osm": "node/9552275505"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wellington Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40342,
+        "lon": -0.72182,
+        "osm": "way/24329811"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "King Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40555,
+        "lon": -0.72043,
+        "osm": "way/24329807"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eskdaill Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.4025,
+        "lon": -0.72364,
+        "osm": "way/943232682"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Victoria Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.40097,
+        "lon": -0.72302,
+        "osm": "way/1013519442"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Grafton Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.4074,
+        "lon": -0.72937,
+        "osm": "way/24470484"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Britannia Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.41121,
+        "lon": -0.72556,
+        "osm": "way/24452870"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cowper Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.41084,
+        "lon": -0.727,
+        "osm": "way/24452871"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Reservoir Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.4106,
+        "lon": -0.72422,
+        "osm": "way/24452872"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shakespeare Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.41251,
+        "lon": -0.72496,
+        "osm": "way/24452874"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Henson Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.40888,
+        "lon": -0.74482,
+        "osm": "way/89670102"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Linnell Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.40993,
+        "lon": -0.74009,
+        "osm": "way/95850692"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Telford Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.40829,
+        "lon": -0.74206,
+        "osm": "way/1303260783"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rothwell Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.40296,
+        "lon": -0.73966,
+        "osm": "way/943505933"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Patrick Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38185,
+        "lon": -0.71761,
+        "osm": "way/92111554"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sussex Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.37989,
+        "lon": -0.71645,
+        "osm": "way/92111536"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Northumberland Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38231,
+        "lon": -0.71475,
+        "osm": "way/92111557"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hertford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.38075,
+        "lon": -0.71603,
+        "osm": "way/92111525"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Jutland Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.39849,
+        "lon": -0.73289,
+        "osm": "way/34510764"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bowhill",
+      "kind": "road",
+      "map": {
+        "lat": 52.39744,
+        "lon": -0.7374,
+        "osm": "way/88679329"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kettering Road (A509)",
+      "kind": "road",
+      "map": {
+        "lat": 52.37578,
+        "lon": -0.7181,
+        "osm": "way/4163812"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Piper's Hill Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39277,
+        "lon": -0.71661,
+        "osm": "way/92097343"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Linden Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.39473,
+        "lon": -0.71554,
+        "osm": "way/1024349914"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Market Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.39811,
+        "lon": -0.7273,
+        "osm": "way/171051906"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Garfield Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.3911,
+        "lon": -0.72552,
+        "osm": "way/92084252"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Glebe Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.38991,
+        "lon": -0.72708,
+        "osm": "way/1416972681"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pebbleford Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.39013,
+        "lon": -0.70905,
+        "osm": "way/92111879"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cheyne Walk",
+      "kind": "road",
+      "map": {
+        "lat": 52.39273,
+        "lon": -0.70756,
+        "osm": "way/92111877"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Orion Way / Pytchley Lane roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 52.37749,
+        "lon": -0.72132,
+        "osm": "way/921518106 (ring)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Small roundabout 250 m east of the current centre; the lists take it from Orion Way into Pytchley Lane."
+    },
+    {
+      "name": "Pytchley Road / Orion Way / Kettering Road roundabout (A509)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 52.37665,
+        "lon": -0.71904,
+        "osm": "way/4163800 (ring)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Large five-arm roundabout on the A509 400 m east of the centre; the lists go round it to and from Orion Way."
+    },
+    {
+      "name": "Pytchley Lane on to Pytchley Road",
+      "kind": "junction",
+      "map": {
+        "lat": 52.37907,
+        "lon": -0.71916,
+        "osm": "way/9844370 (give way)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Pytchley Lane's one-way arm joins Pytchley Road northbound at a give way."
+    },
+    {
+      "name": "Patrick Road / Pytchley Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 52.38199,
+        "lon": -0.71822,
+        "osm": "way/92111554"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "T-junction on the east side of Pytchley Road; one list turns in and comes back out here."
+    },
+    {
+      "name": "Patrick Road / Sussex Road / Northumberland Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 52.38171,
+        "lon": -0.71701,
+        "osm": "way/92111554"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Patrick Road ends at a give way where Sussex Road and Northumberland Road meet."
+    },
+    {
+      "name": "Northumberland Road / Sussex Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 52.37932,
+        "lon": -0.71505,
+        "osm": "way/92111557"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The south end of Northumberland Road's loop, at a give way on to Sussex Road."
+    },
+    {
+      "name": "Pytchley Road / Bryant Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 52.38573,
+        "lon": -0.71451,
+        "osm": "way/1365954158"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "T-junction on the west side of Pytchley Road, 1 km north of the centre."
+    },
+    {
+      "name": "Pytchley Road / Barton Road / London Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 52.38799,
+        "lon": -0.71468,
+        "osm": "node/1030113855"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Mini-roundabout at the north end of Pytchley Road, 1.3 km north of the centre."
+    },
+    {
+      "name": "Barton Road / Windmill Avenue traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 52.38746,
+        "lon": -0.71009,
+        "osm": "node (Windmill Avenue signals)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Signal junction 1.5 km north-east of the centre, the nearest set of junction lights."
+    }
+  ],
+  "unmatched": [
+    "Editch Road (s1, as written; no such road found near Kettering)",
+    "Warkton Road (s1; not found near the centre)",
+    "Service Road (s1's name for the A43 / Stamford Road service roads; not a road name)",
+    "Northern Way, Stewards Way, Nest Lane, Cross Street (s1 extended route 1, Wellingborough and Burton Latimer; outside or ambiguous)"
+  ],
+  "summary": "0 confirmed and 93 likely roads plus 9 likely junctions, almost all from one route-list publisher whose lists start from the old centre on Station Road (pre-move), with one weaker lessons page; nothing first-hand. Near the current Orion Way site the lists name Orion Way, Pytchley Lane, Pytchley Road and the Patrick Road estate, so a route meeting the overlap rule (most of its length on named roads, 3 known junctions) looks possible; a second route would need the town roads 1.5 km north."
+}

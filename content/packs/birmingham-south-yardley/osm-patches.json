@@ -1,0 +1,9 @@
+[
+ {
+  "op": "drop-tag",
+  "type": "way",
+  "id": 921257196,
+  "k": "access",
+  "why": "The test centre's own way in from Clay Lane, past its gate to the DVSA car park: private to the public, so the scene builder leaves it out, but every test leaves and returns by it. The access tag dropped in our copy so the way can be added to the scene by its id."
+ }
+]
