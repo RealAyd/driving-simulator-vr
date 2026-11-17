@@ -60,7 +60,10 @@ The planned line checked on its own (not driven): the car's corners on the carri
 over the footway at the mouth of the way in as it turns in; street furniture: a post on the splitter island leaving the
 Waltheof Avenue roundabout west came 0.15 m from the car's side, so the line is kept 0.5 m left there (`shifts`).
 
-No drive was run here (the machine was busy); the full drive test is the next step.
+The full drive test (main session, then here), first run: all four drives failed on the cyclist at the pull-up, 2.07 m
+from the car centre to centre (the test asks over 2.2): the car pulled in 0.6 m and the cyclist 1.9 m out round it.
+Second run: all four drives put a wheel over the kerbed footway corner on the inside of the turn from the way in into
+the car park aisle, at the very end: the line kept 1.6 m wide of it there (`shifts`).
 
 ## Still to do
 

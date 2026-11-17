@@ -88,7 +88,11 @@ way in.
 - **Every point of the car park is within 20 m of Lordship Lane**, so the last through points are placed off the way in
   and the aisle on the side away from Lordship Lane.
 - **The Waltheof Avenue roundabout's west exit** passes a post on the splitter island's nose about 0.15 m from the car's
-  side on the planned line: the line is kept 0.5 m left there (about 0.65 m clear). Checked on the planned line only.
+  side on the planned line: the line is kept 0.5 m left there (about 0.65 m clear).
+- **Where the way in turns into the car park aisle** a kerbed corner of footway sits on the inside of the bend: the
+  drives put a wheel over it as the car turned in, so the line is kept 1.6 m wide of it.
+- **The cyclist at the pull-up** came 2.07 m from the car centre to centre (the drive test asks over 2.2): the car pulls
+  in 0.6 m (from 0.5) and the cyclist goes 1.9 m out round it (from 1.6), 2.4 m.
 
 ## Drives
 

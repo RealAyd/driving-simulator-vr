@@ -59,8 +59,10 @@ export const WOOD_GREEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // away from Lordship Lane, so the plan takes the way in: every point of the car park is within 20 m of Lordship Lane.)
   through:pts([[-150,71],[500,110],[755,60],[758,-40],[600,-100],[380,-108],[331,-30],[329,80],[0,93],[-400,-75],[-733,14],[-753,30]]),
   // Pulled in to the kerb on Lordship Lane past Walpole Road (no cars parked along it: room for the cyclist to pass).
-  // And kept left leaving the Waltheof Avenue roundabout west, clear of the post on the splitter island's nose.
-  shifts:[{from:p(234.3,98.4),to:p(264.1,101.1),left:.6},{from:p(436,-104),to:p(425,-105),left:.5}],
+  // And kept left leaving the Waltheof Avenue roundabout west, clear of the post on the splitter island's nose. And kept
+  // 1.6 m wide of the inside kerb corner where the way in turns into the car park aisle (a wheel went over it).
+  shifts:[{from:p(234.3,98.4),to:p(264.1,101.1),left:.6},{from:p(436,-104),to:p(425,-105),left:.5},
+    {from:p(-726.1,26.6),to:p(-733.9,24.1),left:-1.6}],
   actors:[
     // Along the footway from the bus stop just east of the way out, across its mouth in front of the car.
     {id:'exit-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-716.96,26.98],[-729.64,32.92]])},
