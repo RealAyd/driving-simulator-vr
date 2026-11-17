@@ -57,18 +57,23 @@ As Tottenham and Chesterfield: the car's way planned through points on the scene
 crossings, roundabouts and parked cars by metres along it, and each road user's path planned on the scene's roads. The
 blue car on Upton Road, which only goes along it, is Upton Road's centreline offset into its left lane
 (`tools/scenes/lane_path.py`). Every road user a pause waits for is set going from close in, as the car comes to its
-stop, and each path starts about 45 m short of its moment. The line is kept 0.6 m right past a car parked on Houghton
-Road (1.7 m from it otherwise) and pulled 0.5 m in to the kerb for the stop on Leeswood Road, where the cyclist passes
-3 m off the car's middle.
+stop, and each path starts about 45 m short of its moment. The line is pulled 0.5 m in to the kerb for the stop on Leeswood
+Road, where the cyclist passes 3 m off the car's middle.
 
 ## 5. Drive it headless
 
-Not driven while building (the machine was busy with another long run). The authoring rules pass:
-`ROUTES=upton-1 npx vitest run tests/unit/decisionDrive.centre.test.ts -t "as authored"`. The drives without traffic,
-with traffic (patterns 4 and 14) and with Skip ahead are to be run by the main session.
+`ROUTES=upton-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: the authoring rules, and the route driven
+with the right answers, with traffic (patterns 4 and 14) and with Skip ahead. Tuning, each step checked with a single
+drive without traffic (`decisionDrive.ts`'s `drive`, under a minute):
+
+| Found | Fix |
+|---|---|
+| All four drives: the car on the pavement leaving the small Leeswood Road roundabout west (its exit swings north, then sharply west into a lane about 3 m wide) | The line kept 1.6 m right round the corner, 1.4 m left past the splitter bollard, 0.8 m right again along the lane (`shifts`, chosen by measuring the planned line's room to the kerb corner, the bollard and both kerbs) |
+| The car touched the splitter bollard at the roundabout's Houghton Road entry (the entry lane about 2.5 m wide, a car parked at the kerb 20 m before it) | The line kept 0.65 m right past the parked car, then 0.8 m left past the bollard |
+
 
 ## Still to do
 
-The drives and tuning from them; played in the app and every paused picture checked (camera angles are first choices),
+After the tuning all six checks pass. Still to do: played in the app and every paused picture checked (camera angles are first choices),
 then staging and the owner's drive. Shared changes for the app (a button in `sim/index.html`, the voice clip check for
 the directions, the sources in `public/legal/credits.html`) are listed in the build report.

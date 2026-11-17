@@ -80,23 +80,29 @@ met; not on the route: a mini-roundabout, above).
 
 - **The test centre's service road** (way 888517464) is added to the scene by its id; it is only 48 m long, so the
   way back enters it from the east and ends at its west end, the car stopping 12 m short (9 m east of the start).
-- **Houghton Road** has cars parked along its west kerb in the scene; one, 20 m short of the Leeswood Road roundabout,
-  was 1.7 m from the planned line: the line is kept 0.6 m to the right there (a `shift`).
-- **The Leeswood Road roundabout's west exit** swings north and then sharply west on to Leeswood Road: in the first
-  drives the car cut the inside corner on to the pavement. The line is kept 1.2 m to the right there (a `shift`).
+- **Houghton Road's entry to the Leeswood Road roundabout** is narrow: a car parked at the west kerb 20 m short of it
+  (1.7 m from the planned line otherwise), then a splitter island with a bollard on its nose, the entry lane beside it
+  about 2.5 m wide. The line is kept 0.65 m right past the parked car, then 0.8 m left past the bollard (in the first
+  drives the car touched it).
+- **The roundabout's Leeswood Road exit** swings north and then sharply west into a lane about 3 m wide between a
+  splitter bollard and the kerb: in the first drives the car cut the inside corner on to the pavement. The line is
+  kept 1.6 m right round the corner, then 1.4 m left past the bollard and 0.8 m right again along the lane (`shifts`).
 - **The Upton roundabout's Arrowe Park Road entry** is a one-way curve joining the ring at its north-east, next to the
   Upton Road exit: the first exit is a short sweep, and the silver car coming round from the bypass crosses both.
 - No map fixes were needed (no `osm-patches.json`).
 
 ## Drives
 
-Not driven yet (the machine was busy with another long run): the authoring rules ("as authored" in
-`decisionDrive.centre.test.ts`) pass, including the planned way clear of the cars parked at the kerbs. To be driven by
-the main session: `ROUTES=upton-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`.
+`ROUTES=upton-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`. The first run failed all four drives on the
+Leeswood Road roundabout (the car on the pavement at its exit, then touching the splitter bollards at its Houghton Road
+entry and Leeswood Road exit); fixed by the shifts above. After them all six pass (as authored, the plan clear of parked cars, the drive
+without traffic, patterns 4 and 14, Skip ahead; 408 s): a pass with no faults, every pause as depicted, nothing hit,
+nothing off the road. The closest scripted road user is the blue car passing the car waiting at the Houghton Road
+lights (3.09 m); the longest stand is 12 s at the pull-up, waiting for the cyclist.
 
 ## Open items
 
-- The drives without traffic, with traffic (patterns 4 and 14) and with Skip ahead; tuning from them.
+- The Leeswood Road roundabout's exit lane is narrow: the line has about 1.4 m to the kerb and the bollard.
 - Where tests start and finish at the centre; the address on gov.uk's centre finder.
 - A second first-hand source to confirm any road; the instructor blog is from 2010 to 2011.
 - Signal phases, give way markings and crossing positions are taken from the map, not surveyed.
