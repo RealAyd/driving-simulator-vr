@@ -62,7 +62,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
   const busStops=place.furniture.filter(f=>f.kind==='bus-stop').map(f=>f.position);
   const background=traffic>0?new Traffic(place,{count:traffic,buses:2,cycles:2,busStops,parked:[...kerb,...routeParking(route)],learner:()=>({pose:learner().pose,speed:car.speed}),signals:()=>lights.stops,...(seed===undefined?{}:{seed}),
     keepClear:()=>runner?.keepClear()??[],oncoming:true,careful:true,range:180,offLimits:startRoads(place,route),
-    others:()=>[...actors.values()].filter(a=>a.present).map(a=>({id:a.id,pose:a.pose,speed:a.started?a.speed:0,halfLength:a.size.halfLength}))}):null;
+    others:()=>[...actors.values()].filter(a=>a.present).map(a=>({id:a.id,pose:a.pose,speed:a.started?a.speed:0,halfLength:a.size.halfLength,halfWidth:a.size.halfWidth}))}):null;
   const others=()=>(background?.cars??[]).filter(c=>c.visible);
   for(const a of actors.values()){
     a.followsLearner=a.def.yieldsToLearner;a.goneAtEnd=!route.actors.find(x=>x.id===a.id)?.parks;

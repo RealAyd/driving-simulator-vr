@@ -111,6 +111,11 @@ const MINI_EDGE=.75;
 const KNOT_WAIT=20;
 /** A scenario's road user standing in the way this long (seconds) is gone by rather than waited for. */
 const OTHER_STANDING=12;
+/**
+ * Room never closed by a step of its own (metres, body to body): from the learner's car, and from a scenario's own road
+ * users. Checked at each of these in turn, so one already inside the outer is still kept from coming nearer.
+ */
+const KEEP_OFF={learner:[.3,.18,.08],other:[.15,.06]} as const;
 /** A way on turning more than this far back (about 150°, as cosine) is a U-turn: traffic never takes one. */
 const UTURN_COS=.87;
 /** The lane offset a car keeps at distance `s` along a leg (left of the road's centre, metres). */
@@ -184,7 +189,7 @@ export interface TrafficOptions{
   /** Roads kept to the learner (ids): a decision test's start road, the test centre's own. */
   offLimits?:ReadonlySet<string>;
   /** Other road users on the roads (a scenario's own): followed, or waited for when across the way, as traffic is. */
-  others?:()=>ReadonlyArray<{id:string;pose:Pose;speed:number;halfLength:number}>;
+  others?:()=>ReadonlyArray<{id:string;pose:Pose;speed:number;halfLength:number;halfWidth?:number}>;
 }
 
 export class Traffic implements SimModule{
@@ -1260,6 +1265,7 @@ export class Traffic implements SimModule{
         if(learnerAcross<d.lat&&d.lat-learnerAcross>clear-.6)want=Math.max(want,Math.min(tuckIn,learnerAcross+clear));
         else if(learnerAcross>d.lat&&learnerAcross-d.lat>clear-.6)want=Math.min(want,learnerAcross-clear);
       }
+      const lat0=d.lat;
       d.lat+=Math.max(-SIDEWAYS*dt,Math.min(SIDEWAYS*dt,want-d.lat));
       // Its whole body a little further on against every other vehicle's (a bus's corner sweeping round a turn, a car
       // waiting at a give way line beside the way in): hold where moving on would run into one it is not touching yet.
@@ -1291,6 +1297,12 @@ export class Traffic implements SimModule{
         car.speed=Math.max(0,v+Math.max(-BRAKE,Math.min(IDM.a,acc))*dt);
       }
       else car.speed=car.speed<target?Math.min(target,car.speed+ACCEL*dt):Math.max(target,car.speed-BRAKE*dt);
+      // Never into touch, whatever else it means to do: a step (on along its way, or across it) that would bring its body
+      // within KEEP_OFF of the learner's, or of a scenario's own road user, nearer than it is now, is not taken. It stands
+      // where it is; one closing in on it is no fault of this car's. (Every rule above keeps it off them in its own case;
+      // this is the last word where those cases meet.) Edging by the learner standing in its way, it may come nearer
+      // than that, as drivers squeeze by, but never into touch.
+      if((car.speed>0||d.lat!==lat0)&&this.keepOff(d,lat0,learner,dt,why.includes('creeping past')))why=`kept off${why?` (${why})`:''}`;
       // (Waiting at a red light is not being stuck.)
       d.waited=car.speed<.2&&d.dwell<=0&&why!=='lights'?d.waited+dt:0;
       d.why=why;
@@ -1378,6 +1390,29 @@ export class Traffic implements SimModule{
       // Too far from the learner: come back somewhere nearer, out of sight.
       if(Math.hypot(car.pose.position.x-learner.pose.position.x,car.pose.position.z-learner.pose.position.z)>(this.options.range??320))car.visible=false;
     }
+  }
+
+  /**
+   * Holds this step back where it would bring the car's body nearer the learner's, or a scenario road user's, than
+   * KEEP_OFF (and nearer than before it): the car stands and keeps to the line across the road it had (`lat0`). True
+   * if it was held. (Not checked past the end of its leg, a step from a junction: the rules above keep it there.)
+   */
+  private keepOff(d:Driver,lat0:number,learner:{pose:Pose},dt:Seconds,edging:boolean):boolean{
+    const car=d.car,s1=d.s+car.speed*dt;
+    if(s1>d.leg.lengths.at(-1)!)return false;
+    const body=(s:number,lat:number,pad:number)=>{
+      const q=this.at(d.leg,s);
+      return {id:car.id,cx:q.x+q.dir.z*lat,cz:q.z-q.dir.x*lat,heading:headingFromDirection(q.dir),halfW:car.halfWidth+pad,halfD:car.halfLength+pad};
+    };
+    const pos=car.pose.position;
+    const near=[{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[]},
+      ...(this.options.others?.()??[]).map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]}))]
+      .filter(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)<car.halfLength+o.halfLength+car.speed*dt+2);
+    for(const o of near){
+      const them={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength};
+      if(o.pads.some(pad=>boxesOverlap(body(s1,d.lat,pad),them)&&!boxesOverlap(body(d.s,lat0,pad),them))){car.speed=0;d.lat=lat0;return true}
+    }
+    return false;
   }
 
   /**
