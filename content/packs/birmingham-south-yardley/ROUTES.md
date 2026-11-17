@@ -96,13 +96,13 @@ known junctions, spacing met; not in the mix: roundabout, crossing, as above).
 
 ## Drives
 
-Not driven yet (the shared machine was busy with a long drive run). The authoring rules part of
-`decisionDrive.centre.test.ts` passes, and the planned line keeps all four corners of the car on the carriageway.
+`ROUTES=birmingham-south-yardley-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`: first run, Skip ahead
+passed; as authored and with traffic (patterns 4 and 14) the car hit the 20 mph sign's post at the start of Clay Lane
+(fixed as above). Second run, after the fix: all 6 pass (the authoring rules, the planned way clear of parked cars, as
+authored, patterns 4 and 14, Skip ahead), 868 s.
 
 ## Open items
 
-- The full drive test (as authored, with traffic patterns 4 and 14, and with Skip ahead):
-  `ROUTES=birmingham-south-yardley-1 npx vitest run tests/unit/decisionDrive.centre.test.ts`.
 - Where tests start and finish within the site; a first-hand source (instructor video, learner account) to confirm any
   road; the route lists' dates.
 - Signal phases, give way markings and crossing positions are taken from the map, not surveyed.

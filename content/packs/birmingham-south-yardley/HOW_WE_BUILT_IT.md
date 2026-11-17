@@ -65,10 +65,11 @@ on the carriageway.
 The full drive test (main session), first run: Skip ahead passed; as authored and with traffic (patterns 4 and 14) the
 car hit the 20 mph sign's post at the start of Clay Lane, coming back over the Woodcock Lane North mini-roundabout. Fix:
 the line kept 1 m in towards the middle from the mini-roundabout's far side to Clay Lane (a `shift` to the right),
-checked by sliding the car's box along the planned line against the fixed objects (none within 0.4 m of it).
+checked by sliding the car's box along the planned line against the fixed objects (none within 0.4 m of it). Second
+run: all 6 pass.
 
 ## Still to do
 
-The full drive test (main session); then played in the app and every paused picture checked (camera angles are first
+Played in the app and every paused picture checked (camera angles are first
 choices), then staging and the owner's drive. Shared changes for the app (a button in `sim/index.html`, the voice clips
 for new directions, the sources in `public/legal/credits.html`) are listed in the build report.
