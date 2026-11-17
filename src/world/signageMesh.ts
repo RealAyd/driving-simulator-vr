@@ -12,7 +12,13 @@ import {hex} from './streetscapeMesh';
  */
 
 const FONT='"Helvetica Neue",Helvetica,Arial,sans-serif';
-const SHEET_WIDTH=1024;
+const SHEET_WIDTH=2048;
+/**
+ * The tallest sheet drawn (pixels). Phones draw no canvas over about 16.7 million pixels, nor a texture over 4096 a
+ * side on older ones: past that the whole sheet, every sign on it, came out black (the owner's report, a long route
+ * with 900 signs on a 1024 by 32768 sheet). Where the faces do not fit, all are drawn smaller to fit.
+ */
+const SHEET_MAX_HEIGHT=4096;
 /** Pixels per metre for each kind of face. */
 const DENSITY={'street-name':240,'mini-roundabout':213,'bus-flag':280,fascia:110,'name-board':90,cross:200,hanging:220,stop:200,'give-way':200,'speed-limit':213,school:200,'roundabout-ahead':200,'keep-left':213,chevrons:160} as const;
 
@@ -23,15 +29,23 @@ class FaceSheet{
   private readonly entries=new Map<string,Entry>();
   width=SHEET_WIDTH;height=0;
   add(e:Entry):string{if(!this.entries.has(e.key))this.entries.set(e.key,e);return e.key}
+  /** How much smaller than drawn at full size the faces are (1: full size). */
+  scale=1;
   pack():void{
-    const list=[...this.entries.values()].sort((a,b)=>b.h-a.h);
-    let x=0,y=0,shelf=0;
-    for(const e of list){
-      if(x+e.w+2>this.width){x=0;y+=shelf+2;shelf=0}
-      e.x=x+1;e.y=y+1;x+=e.w+2;shelf=Math.max(shelf,e.h);
+    const full=[...this.entries.values()].map(e=>({e,w:e.w,h:e.h}));
+    for(;;){
+      for(const f of full){f.e.w=Math.max(4,Math.min(this.width-2,Math.round(f.w*this.scale)));f.e.h=Math.max(4,Math.round(f.h*this.scale))}
+      const list=[...this.entries.values()].sort((a,b)=>b.h-a.h);
+      let x=0,y=0,shelf=0;
+      for(const e of list){
+        if(x+e.w+2>this.width){x=0;y+=shelf+2;shelf=0}
+        e.x=x+1;e.y=y+1;x+=e.w+2;shelf=Math.max(shelf,e.h);
+      }
+      const needed=y+shelf+2;
+      if(needed<=SHEET_MAX_HEIGHT||this.scale<.05){this.height=2**Math.ceil(Math.log2(Math.max(64,Math.min(SHEET_MAX_HEIGHT,needed))));return}
+      // (Smaller by the share of area over, and a little more: shelves do not pack the area exactly.)
+      this.scale*=Math.min(.97,Math.sqrt(SHEET_MAX_HEIGHT/needed)*.97);
     }
-    const needed=y+shelf+2;
-    this.height=2**Math.ceil(Math.log2(Math.max(64,needed)));
   }
   region(key:string):Region{
     const e=this.entries.get(key)!;
@@ -388,7 +402,7 @@ function drawCanopy(g:Geometry,c:Canopy):void{
   }
 }
 
-export interface BuiltSignage{mesh:Mesh|null;faces:number;sheet:{width:number;height:number};dispose():void}
+export interface BuiltSignage{mesh:Mesh|null;faces:number;sheet:{width:number;height:number;scale?:number};dispose():void}
 
 export function buildSignage(scene:Scene,plan:SignPlan,parent:TransformNode):BuiltSignage{
   if(plan.panels.length===0&&plan.shelters.length===0&&plan.canopies.length===0)return {mesh:null,faces:0,sheet:{width:0,height:0},dispose(){}};
@@ -423,6 +437,6 @@ export function buildSignage(scene:Scene,plan:SignPlan,parent:TransformNode):Bui
   material.backFaceCulling=true;
   material.freeze();
   const mesh=g.mesh('signage',scene,material,parent);
-  return {mesh,faces:plan.panels.length,sheet:{width:sheet.width,height:sheet.height},dispose(){mesh?.dispose();material.diffuseTexture?.dispose();material.dispose()}};
+  return {mesh,faces:plan.panels.length,sheet:{width:sheet.width,height:sheet.height,scale:sheet.scale},dispose(){mesh?.dispose();material.diffuseTexture?.dispose();material.dispose()}};
 }
 

@@ -41,6 +41,10 @@ export class Soundscape{
   /** Starts audio (call from a tap). Safe to call again. */
   async unlock():Promise<void>{
     try{
+      // iPhone: play as media, so the ring/silent switch does not mute the car (Safari 16.4+). Asked for before the
+      // sound starts: Safari takes the kind of sound a page plays when it first plays one.
+      const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
+      if(session&&session.type!=='playback')session.type='playback';
       if(!this.ctx){
         const Context=(globalThis as unknown as {AudioContext?:typeof AudioContext;webkitAudioContext?:typeof AudioContext}).AudioContext
           ??(globalThis as unknown as {webkitAudioContext?:typeof AudioContext}).webkitAudioContext;
@@ -56,10 +60,7 @@ export class Soundscape{
           was=now;
         });
       }
-      // iPhone: play as media, so the ring/silent switch does not mute the car (Safari 16.4+), and a silent sound
-      // through an <audio> element in the same tap does the same on older versions.
-      const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
-      if(session&&session.type!=='playback')session.type='playback';
+      // (On older versions, a silent sound through an <audio> element in the same tap does the same.)
       if(!this.primed){
         this.primed=true;
         const silent=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
