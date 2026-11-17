@@ -408,8 +408,11 @@ export class DecisionRunner{
     // (A car nearly at its point with the learner's not yet there, held up behind traffic: it stands and waits, rather than passing
     // the moment depicted before the car arrives. At a line, until the car has stopped there: braking its last metres to
     // the line, it is not yet there, and a road user let on would be past its point by the time it is.)
-    // (Someone on foot stops in a step: held at the point itself.)
-    if(left<(def.kind==='pedestrian'?HOLD_ON_FOOT:HOLD_SHORT)&&(place.pause.kind==='stop'?!arrived:d>3&&left>0)){x.pace=0;return}
+    // (Someone on foot stops in a step: held at the point itself, and only for a car stopping at a line. For one on
+    // the move they are paced, not held: let go a moment before the car is there, from standing they would not cover
+    // the last of it in time, and the moment would come only once the car had reached the line.)
+    const hold=def.kind!=='pedestrian'?HOLD_SHORT:place.pause.kind==='stop'?HOLD_ON_FOOT:0;
+    if(left<hold&&(place.pause.kind==='stop'?!arrived:d>3&&left>0)){x.pace=0;return}
     if(left<=0||arrived){x.pace=null;return}
     // When the car is there: on the move, at its speed now; stopping at a line, braking gently (BRAKING) to it.
     const v=Math.max(speed,2),brake=v*v/(2*BRAKING);
