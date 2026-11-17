@@ -58,8 +58,9 @@ export const UPTON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   // centre's way in.
   through:pts([[-429.3,13.4],[-371.1,-334.1],[-164.1,-127.8],[163.4,78.2],[348.9,127.1],[115.2,249.8],[-160,266]]),
   // Wide of the car parked at the kerb on Houghton Road just short of the Leeswood Road roundabout, and pulled in to
-  // the kerb on Leeswood Road (room for the cyclist to pass).
-  shifts:[{from:p(354.4,187.6),to:p(356.1,204.5),left:-.6},{from:p(269.3,239.6),to:p(239.3,241.8),left:.5}],
+  // the kerb on Leeswood Road (room for the cyclist to pass). Wide of the inside kerb leaving the Leeswood Road
+  // roundabout west (its exit swings north then sharply west: the car cut the corner on to the pavement).
+  shifts:[{from:p(354.4,182.6),to:p(355,194.6),left:-.6},{from:p(356.5,212.5),to:p(359.7,219.4),left:1},{from:p(348,243.7),to:p(343.6,237.2),left:-.9},{from:p(339,234.2),to:p(329.1,235.4),left:.5},{from:p(269.3,239.6),to:p(239.3,241.8),left:.5}],
   actors:[
     {id:'leave-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(LEAVE_CAR)},
     {id:'ring-g-car',name:'black car',colour:'#1f2328',speed:9,path:pts(RING_G_CAR)},

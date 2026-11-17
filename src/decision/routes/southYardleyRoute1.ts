@@ -61,7 +61,10 @@ export const SOUTH_YARDLEY_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter
   // Clay Lane, so the plan takes the way in.)
   through:pts([[-175,-238],[285,-608],[200,-721],[-5,-865],[-297,-660],[-335,-80],[-245,220],[95,404],[381,720],[45,849],[-169,570],[-315,380],[-375,165],[-354,-208]]),
   // Pulled in to the kerb on Clay Lane, south of Coventry Road (no cars parked along it, and no side roads).
-  shifts:[{from:p(-295.4,-588.6),to:p(-297.1,-558.8),left:.5}],
+  shifts:[{from:p(-295.4,-588.6),to:p(-297.1,-558.8),left:.5},
+    // Coming back up Woodcock Lane North, ahead over the Clay Lane mini-roundabout: kept in towards the middle on the way
+    // out on to Clay Lane, clear of the 20 mph sign's post at the kerb (the line swung out to it).
+    {from:p(-341.61,-16.29),to:p(-338.06,-24.77),left:-1}],
   actors:[
     {id:'clay-car',name:'white car',colour:'#e5e7eb',speed:9,path:pts(CLAY_N_CAR)},
     // Across the mouth of Gilbertstone Avenue at the lights, from the kerb on the car's left, on the red.

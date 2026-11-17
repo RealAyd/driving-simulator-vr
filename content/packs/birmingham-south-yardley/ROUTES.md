@@ -86,6 +86,11 @@ known junctions, spacing met; not in the mix: roundabout, crossing, as above).
   than 20 m from Clay Lane, so the plan takes it.
 - **Gilbertstone Avenue**: without a point near the lights, the planner cut through Gotham Road and Steyning Road to the
   A45; a point is placed on Gilbertstone Avenue just before the lights.
+- **The 20 mph sign's post at the start of Clay Lane**, on the kerb just north of the Woodcock Lane North
+  mini-roundabout: going ahead over the mini-roundabout on the way back, the line swung out wide to pass the island and
+  the car, running a little wider still, hit the post (the first full drive test, as authored and with traffic). The
+  line is kept 1 m further in from the mini-roundabout's far side to Clay Lane (a `shift` to the right): the car's box
+  along the planned line now clears every fixed object.
 - **Cars parked at the kerb near the Gilbertstone Avenue lights** (the scene places them 10 m from the A45's
   carriageway): the car's line is eased round them, close to the middle of the road at the stop line.
 

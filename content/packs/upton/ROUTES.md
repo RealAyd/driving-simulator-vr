@@ -82,6 +82,8 @@ met; not on the route: a mini-roundabout, above).
   way back enters it from the east and ends at its west end, the car stopping 12 m short (9 m east of the start).
 - **Houghton Road** has cars parked along its west kerb in the scene; one, 20 m short of the Leeswood Road roundabout,
   was 1.7 m from the planned line: the line is kept 0.6 m to the right there (a `shift`).
+- **The Leeswood Road roundabout's west exit** swings north and then sharply west on to Leeswood Road: in the first
+  drives the car cut the inside corner on to the pavement. The line is kept 1.2 m to the right there (a `shift`).
 - **The Upton roundabout's Arrowe Park Road entry** is a one-way curve joining the ring at its north-east, next to the
   Upton Road exit: the first exit is a short sweep, and the silver car coming round from the bypass crosses both.
 - No map fixes were needed (no `osm-patches.json`).

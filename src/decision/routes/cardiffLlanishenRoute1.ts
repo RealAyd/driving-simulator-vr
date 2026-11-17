@@ -59,8 +59,10 @@ export const CARDIFF_LLANISHEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeA
   // Birchgrove lights, Heathwood Road, Cefn Carnau Road, St Isan Road, Heathway, Maes-y-coed Road, Caerphilly Road, the
   // Morrisons roundabout, Tŷ Glas Road, Ashbourn Way, Malvern Drive, Parc Tŷ Glas and back into Lambourne Crescent.
   through:pts([[160,-414],[80,-600],[-266,-873],[-400,-724],[-436,-532],[-405,-360],[-385,-140],[-340,200],[-300,560],[-262,800],[0,694],[200,572],[420,436],[560,222],[300,290],[145,200],[152,-25],[-150,-35],[-385,-140],[-418,-380],[-455,-620],[-400,-724],[-250,-748],[-140,-721],[-60,-470],[-37,-420],[18,-386],[200,-415],[234,-352]]),
-  // Pulled in to the kerb on Heathwood Road (no cars parked along it: room for the cyclist to pass).
-  shifts:[{from:p(38,670.1),to:p(72.1,649.1),left:.35}],
+  // Pulled in to the kerb on Heathwood Road (no cars parked along it: room for the cyclist to pass). And out wide round
+  // the turn from Caerphilly Road into Heathwood Road at the Birchgrove lights (an island between the two: the line
+  // turned before its tip, over the pavement).
+  shifts:[{from:p(38,670.1),to:p(72.1,649.1),left:.35},{from:p(-261.1,849),to:p(-256,853),left:-3.2}],
   actors:[
     {id:'ring-car',name:'black car',colour:'#1f2328',speed:9,path:pts(RING_CAR)},
     // On the crossing over Caerphilly Road at the Birchgrove lights, from the left-hand kerb across the car's lane, late on the lights.

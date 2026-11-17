@@ -60,7 +60,7 @@ export const WOOD_GREEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
   through:pts([[-150,71],[500,110],[755,60],[758,-40],[600,-100],[380,-108],[331,-30],[329,80],[0,93],[-400,-75],[-733,14],[-753,30]]),
   // Pulled in to the kerb on Lordship Lane past Walpole Road (no cars parked along it: room for the cyclist to pass).
   // And kept left leaving the Waltheof Avenue roundabout west, clear of the post on the splitter island's nose.
-  shifts:[{from:p(234.3,98.4),to:p(264.1,101.1),left:.5},{from:p(436,-104),to:p(425,-105),left:.5}],
+  shifts:[{from:p(234.3,98.4),to:p(264.1,101.1),left:.6},{from:p(436,-104),to:p(425,-105),left:.5}],
   actors:[
     // Along the footway from the bus stop just east of the way out, across its mouth in front of the car.
     {id:'exit-pedestrian',name:'pedestrian',colour:'#7c2d12',speed:1.3,kind:'pedestrian',waits:true,path:pts([[-716.96,26.98],[-729.64,32.92]])},
@@ -230,7 +230,7 @@ export const WOOD_GREEN_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       quiet:[{x:264,z:101,radius:34},{x:205,z:96,radius:22}],
       place:{
         approach:{pause:{kind:'moving',at:p(234.3,98.4)},frame:{yaw:-15,pitch:28},state:'On Lordship Lane at 20 mph, past Walpole Road.'},
-        stopped:{pause:{kind:'stop',at:p(264.1,100.6)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
+        stopped:{pause:{kind:'stop',at:p(264.1,100.5)},frame:{yaw:20,pitch:30},state:'Stopped at the kerb.'}
       },
       stages:[
         {

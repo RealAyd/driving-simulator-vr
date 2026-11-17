@@ -62,6 +62,11 @@ rules part of `decisionDrive.centre.test.ts` passes (the planned line clear of t
 clear of them), every pause point is on the planned line (within 0.1 m), and the car's footprint along the line stays
 on the carriageway.
 
+The full drive test (main session), first run: Skip ahead passed; as authored and with traffic (patterns 4 and 14) the
+car hit the 20 mph sign's post at the start of Clay Lane, coming back over the Woodcock Lane North mini-roundabout. Fix:
+the line kept 1 m in towards the middle from the mini-roundabout's far side to Clay Lane (a `shift` to the right),
+checked by sliding the car's box along the planned line against the fixed objects (none within 0.4 m of it).
+
 ## Still to do
 
 The full drive test (main session); then played in the app and every paused picture checked (camera angles are first

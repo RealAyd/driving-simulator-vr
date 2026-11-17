@@ -44,8 +44,8 @@ roads (parked cars eased round) the same way, from a start pose through points. 
 - **The Tower Gardens Road crossroads with Turnant Road and Teynton Terrace** is a T where Turnant Road runs straight on
   into Teynton Terrace: a right turn there would be into a side road, not emerging. The emerging right turn is taken at
   Kevelioc Road's end on Lordship Lane instead.
-- **The cyclist** passing the car at the kerb on Lordship Lane runs in its lane and 1.6 m out to the right round the car
-  (pulled 0.5 m in), about 1.1 m clear of it.
+- **The cyclist** passing the car at the kerb on Lordship Lane runs in its lane and 1.9 m out to the right round the car
+  (pulled 0.6 m in): 2.4 m centre to centre (the drive test asks over 2.2; 1.6 m out and 0.5 m in gave 2.07).
 - **The pedestrian at the way out** walks the footway 4.5 m from Lordship Lane's centre line; the car stops with its
   front about 1.4 m short of that line.
 
