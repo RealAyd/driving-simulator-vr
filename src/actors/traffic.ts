@@ -792,7 +792,8 @@ export class Traffic implements SimModule{
         if(Math.hypot(op.x-pos.x,op.z-pos.z)>45)continue;
         // (Not one standing beside its way, not in it: someone waiting at the kerb to cross, who goes when the learner
         // comes; waited for, it would be waiting for this car, and the learner behind it for both.)
-        if(o.speed<.1&&Math.abs((op.x-pos.x)*fwd.z-(op.z-pos.z)*fwd.x)>car.halfWidth+.6)continue;
+        // (Someone on foot dawdling there, eased to meet the learner, is as good as waiting.)
+        if(o.speed<(o.halfLength<.5?.5:.1)&&Math.abs((op.x-pos.x)*fwd.z-(op.z-pos.z)*fwd.x)>car.halfWidth+.6)continue;
         // (Nor, after a while, one standing at a junction's mouth, waiting for the learner to come: it is gone by, as a
         // parked car is, kept from touching it below.)
         if(o.speed<.1&&d.waited>OTHER_STANDING&&facing<=.3)continue;

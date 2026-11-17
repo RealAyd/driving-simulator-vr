@@ -142,6 +142,8 @@ const PACE_LEAST=.4,PACE_MARGIN=.6;
 const HOLD_SHORT=4;
 /** Someone on foot the stage waits for stands this far (metres) short of their point until the car is there. */
 const HOLD_ON_FOOT=.8;
+/** On the move, how far short of its point (metres) the road user a moment waits for may be when it comes. */
+const MARK_NEAR=1;
 /** The fastest a road user eased to meet the car still stops within HOLD_SHORT (slowing at 1.5 m/s², with half a metre spare). */
 const PACE_HOLDABLE=Math.sqrt(2*1.5*(HOLD_SHORT-.5));
 /** A pedestrian may be paced down further: people dawdle (a share of their speed). */
@@ -600,7 +602,9 @@ export class DecisionRunner{
     if(pause.kind==='stop'&&this.redNow(c))return;
     if(place.when){
       const x=this.scene.actor(place.when.actor),mark=this.actorAt(place.when.actor,place.when.at);
-      if(x&&!(x.started&&x.travelled>=mark)){
+      // (On the move, within MARK_NEAR of it will do: paced to meet the car, a road user eased to a walk may be a step
+      // behind it as the car reaches its point, and the moment would come late, the car already braking for the line.)
+      if(x&&!(x.started&&x.travelled>=mark-(pause.kind==='moving'?MARK_NEAR:0))){
         // (The car waits at its line for a road user stood still on its way, whatever holds it: after WAIT_GIVE_UP
         // it is put at its point, so the moment comes as depicted rather than the test standing for good.)
         if(pause.kind==='stop'&&x.started&&x.pace!==0&&(this.actorStand.get(place.when.actor)??0)>WAIT_GIVE_UP&&x.placeAt){
