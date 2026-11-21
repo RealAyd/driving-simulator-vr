@@ -115,7 +115,11 @@ const OTHER_STANDING=12;
  * Room never closed by a step of its own (metres, body to body): from the learner's car, and from a scenario's own road
  * users. Checked at each of these in turn, so one already inside the outer is still kept from coming nearer.
  */
-const KEEP_OFF={learner:[.3,.18,.08],other:[.15,.06]} as const;
+const KEEP_OFF={learner:[.3,.18,.08],other:[.15,.06],
+  /** From the way a scenario's road user is about to go: it keeps to its path and gives way to no one but the learner,
+   * so a car standing a hand's width off that path, or pulling into it just ahead, was run into (Isleworth's bus at
+   * Worton Road, Chesterfield, Brentwood, Enfield). */
+  way:[.3]} as const;
 /** A way on turning more than this far back (about 150°, as cosine) is a U-turn: traffic never takes one. */
 const UTURN_COS=.87;
 /** The lane offset a car keeps at distance `s` along a leg (left of the road's centre, metres). */
@@ -189,7 +193,9 @@ export interface TrafficOptions{
   /** Roads kept to the learner (ids): a decision test's start road, the test centre's own. */
   offLimits?:ReadonlySet<string>;
   /** Other road users on the roads (a scenario's own): followed, or waited for when across the way, as traffic is. */
-  others?:()=>ReadonlyArray<{id:string;pose:Pose;speed:number;halfLength:number;halfWidth?:number}>;
+  others?:()=>ReadonlyArray<{id:string;pose:Pose;speed:number;halfLength:number;halfWidth?:number;
+    /** Where it is about to drive (its path ahead): kept out of, as its body is. */
+    ahead?:()=>ReadonlyArray<Pose>}>;
 }
 
 export class Traffic implements SimModule{
@@ -1432,8 +1438,10 @@ export class Traffic implements SimModule{
   /** The learner and a scenario's own road users within reach of this car, each with the room kept from it (KEEP_OFF). */
   private bodiesNear(car:TrafficCar,learner:{pose:Pose},edging:boolean,reach:number){
     const pos=car.pose.position;
+    const others=this.options.others?.()??[];
     return [{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[]},
-      ...(this.options.others?.()??[]).map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]}))]
+      ...others.map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]})),
+      ...others.flatMap(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>60?[]:(o.ahead?.()??[]).map(q=>({id:o.id,pose:q,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.way as readonly number[]})))]
       .filter(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)<car.halfLength+o.halfLength+reach+2);
   }
 

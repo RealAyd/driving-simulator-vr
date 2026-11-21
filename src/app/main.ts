@@ -712,7 +712,9 @@ export async function boot():Promise<void>{
       keepClear:()=>decision&&runtime?.scenario.id===decision.scenarioId?decision.runner.keepClear():[],
       // (Oncoming traffic down the learner's road too: the car keeps to its lane.)
       oncoming:decisionStreets,careful:decisionStreets,...(decisionStreets?{range:DECISION_RANGE,offLimits:startRoads(place,decisionAsked!)}:{}),
-      others:()=>passers.filter(p=>p.present).map(p=>({id:p.id,pose:p.pose,speed:p.started?p.speed:0,halfLength:p.size.halfLength,halfWidth:p.size.halfWidth}))}):null;
+      others:()=>passers.filter(p=>p.present).map(p=>({id:p.id,pose:p.pose,speed:p.started?p.speed:0,halfLength:p.size.halfLength,halfWidth:p.size.halfWidth,
+      // (Its way ahead, for one on the move on wheels: about 5 s of it, at least 10 m: a bus pulling up at a mini-roundabout it is about to go round stops short of it.)
+      ahead:()=>p.def.body==='pedestrian'||!p.started?[]:p.pathAhead(Math.max(10,p.speed*5))}))}):null;
     boarding=traffic&&level.traffic.buses>0?new BusStopBoarding(busStops,crowd.filter(p=>p.kind==='stander')):null;
     for(const c of traffic?.cars??[])dynamicFootprints.push({id:c.id,shape:()=>({kind:'box',pose:c.pose,halfWidth:c.halfWidth,halfLength:c.halfLength}),active:()=>c.visible});
     // Background buses: solid road users that slow for the learner; never assessed.

@@ -176,6 +176,13 @@ export class PassingVehicle implements SimModule{
     return {position:{x:a.x+(b.x-a.x)*k,y:0,z:a.z+(b.z-a.z)*k},heading:headingFromDirection({x:b.x-a.x,z:b.z-a.z})};
   }
 
+  /** Where it will be along its path ahead, every `step` m up to `reach` m on: background traffic keeps out of it. */
+  pathAhead(reach:number,step=1.5):Pose[]{
+    const out:Pose[]=[];
+    for(let d=step;d<=reach&&this.s+d<=this.length;d+=step)out.push(this.sample(this.s+d));
+    return out;
+  }
+
   /** How far along its path ahead (metres, from its middle; up to 60 m) a stop line on its way is, or Infinity. */
   private lineAhead(p:{x:number;z:number}):number{
     if(Math.hypot(p.x-this.pose.position.x,p.z-this.pose.position.z)>62)return Infinity;
