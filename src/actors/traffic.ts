@@ -1441,7 +1441,9 @@ export class Traffic implements SimModule{
     const others=this.options.others?.()??[];
     return [{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[]},
       ...others.map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]})),
-      ...others.flatMap(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>60?[]:(o.ahead?.()??[]).map(q=>({id:o.id,pose:q,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.way as readonly number[]})))]
+      // (Not where its way runs this car's way: one ahead on it is followed by it, as it follows traffic, and held back
+      // it would be run into from behind.)
+      ...others.flatMap(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>60?[]:(o.ahead?.()??[]).filter(q=>Math.cos(q.heading-car.pose.heading)<.7).map(q=>({id:o.id,pose:q,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.way as readonly number[]})))]
       .filter(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)<car.halfLength+o.halfLength+reach+2);
   }
 

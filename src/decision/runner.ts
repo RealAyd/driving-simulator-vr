@@ -84,6 +84,8 @@ const HALF_LENGTH=2.15;
 /** Background traffic keeps out of a challenge's quiet circles from this far (path metres) before its direction is
  * given until the car is past it. */
 const QUIET_BEFORE=150;
+/** A challenge's lights are held for the car from this far (path metres) before them. */
+const LIGHTS_HOLD=90;
 /** A road user standing on a junction this long (seconds) is waiting for the car: the car goes. */
 const STANDING_WAITS=4;
 /** Stood this long (seconds) held by one background road user, the car waves it on. */
@@ -704,7 +706,13 @@ export class DecisionRunner{
   /** The lights of a challenge in hand held green for the car (or red, in a stage that shows people crossing),
    * released once it is past. */
   private holdLights():void{
-    const c=this.phase==='finished'?null:this.inHand().find(x=>x.lights)??null;
+    // (From LIGHTS_HOLD before them, not from when the challenge comes in hand: held for longer, the other ways' red
+    // kept a car already waiting there, in the junction kept clear, standing in view for the whole approach: Hendon's
+    // Aerodrome Road lights, Enfield's Ordnance Road lights. Until then they change as lights do, and it goes.)
+    const s=this.carS();
+    // (Or from a little before its first pause, where that is further back: Salisbury's Manor Road, 130 m off.)
+    const from=(x:ChallengeDef)=>Math.min(this.s(x.lights!)-LIGHTS_HOLD,...Object.values(x.place).map(pl=>this.s(pl.pause.at)-30));
+    const c=this.phase==='finished'?null:this.inHand().find(x=>x.lights&&s>=from(x))??null;
     // (Driving back to the centre, nothing left to decide: lights the car comes to are held green for it, rather than it
     // standing through a long cycle at a big junction.)
     const at=c?.lights??(this.ending&&this.phase!=='finished'?this.stopAhead(RETURN_LIGHTS):null);
