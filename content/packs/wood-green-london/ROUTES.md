@@ -84,7 +84,8 @@ way in.
 
 - **The way in and the car park aisle are unnamed and short** (16 m and 14 m): the planner will not turn into a short
   unnamed road, so the route could not come back in. Both named "Driving Test Centre" in `osm-patches.json` (our copy
-  only). A street name plate reading "Driving Test Centre" now stands at the mouth in the scene.
+  only). A street name plate reading "Driving Test Centre" now stands at the mouth in the scene. (The owner's decision, 21 November 2026: where a
+  centre's way in has no name on the map, the plate reads "Driving Test Centre"; a way with a name keeps it.)
 - **Every point of the car park is within 20 m of Lordship Lane**, so the last through points are placed off the way in
   and the aisle on the side away from Lordship Lane.
 - **The Waltheof Avenue roundabout's west exit** passes a post on the splitter island's nose about 0.15 m from the car's

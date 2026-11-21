@@ -438,5 +438,10 @@
     }
   ],
   "unmatched": [],
-  "summary": "0 confirmed and 21 likely places (17 roads, 4 junctions): the old route lists (s1, s2 counted once) name many roads and junctions round the centre, and one instructor's first-hand accounts name the Sainsbury's roundabout and a roundabout between Greasby and Upton. Two routes meeting the overlap rule look possible from the map (the A5027 Upton Bypass and its roundabouts, Old Greasby Road and the Arrowe Park Road lights, Upton Road and Ford Road, the estates both sides of Arrowe Park Road), though no road reaches confirmed."
+  "summary": "0 confirmed and 21 likely places (17 roads, 4 junctions): the old route lists (s1, s2 counted once) name many roads and junctions round the centre, and one instructor's first-hand accounts name the Sainsbury's roundabout and a roundabout between Greasby and Upton. Two routes meeting the overlap rule look possible from the map (the A5027 Upton Bypass and its roundabouts, Old Greasby Road and the Arrowe Park Road lights, Upton Road and Ford Road, the estates both sides of Arrowe Park Road), though no road reaches confirmed.",
+  "owner_check": {
+    "date": "2026-11-21",
+    "address": "53 Arrowe Park Road, Upton, Birkenhead, Wirral CH49 0UF",
+    "result": "Confirmed by the owner as the current DVSA practical test centre address; matches the address and position the route uses."
+  }
 }

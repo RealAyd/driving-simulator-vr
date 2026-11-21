@@ -20,6 +20,12 @@ came out of them. Read first, in this order:
   imports and the list). That is the one shared file you may touch; nothing else outside your centre.
 - Optional: `tests/unit/decisionDrive.<slug>.test.ts` for checks of your routes' own moments only.
 
+## Names
+
+- A centre's way in or car park with no name on the map may be named "Driving Test Centre" in `osm-patches.json`, so
+  the planner can turn into it; its street plate then reads that (the owner's decision, 21 November 2026). A road with
+  a name on the map keeps it.
+
 ## Done means
 
 - `node tools/centres/check_route.mjs <slug>-1` passes, or each rule it reports is one the area cannot meet,

@@ -1556,5 +1556,10 @@
     "Service Road (s1's name for the A43 / Stamford Road service roads; not a road name)",
     "Northern Way, Stewards Way, Nest Lane, Cross Street (s1 extended route 1, Wellingborough and Burton Latimer; outside or ambiguous)"
   ],
-  "summary": "0 confirmed and 93 likely roads plus 9 likely junctions, almost all from one route-list publisher whose lists start from the old centre on Station Road (pre-move), with one weaker lessons page; nothing first-hand. Near the current Orion Way site the lists name Orion Way, Pytchley Lane, Pytchley Road and the Patrick Road estate, so a route meeting the overlap rule (most of its length on named roads, 3 known junctions) looks possible; a second route would need the town roads 1.5 km north."
+  "summary": "0 confirmed and 93 likely roads plus 9 likely junctions, almost all from one route-list publisher whose lists start from the old centre on Station Road (pre-move), with one weaker lessons page; nothing first-hand. Near the current Orion Way site the lists name Orion Way, Pytchley Lane, Pytchley Road and the Patrick Road estate, so a route meeting the overlap rule (most of its length on named roads, 3 known junctions) looks possible; a second route would need the town roads 1.5 km north.",
+  "owner_check": {
+    "date": "2026-11-21",
+    "address": "5-6 Orion Way, Kettering Business Park, Kettering, Northamptonshire NN15 6NL",
+    "result": "Confirmed by the owner as the current DVSA practical test centre address; matches the address and position the route uses."
+  }
 }
