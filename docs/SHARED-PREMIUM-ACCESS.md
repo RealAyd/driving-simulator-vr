@@ -6,7 +6,7 @@
 
 > **Product decision:** A learner whose **Driving Practice mobile-app account has valid, active Premium** is entitled to **unlimited VR simulator sessions** without buying a separate VR pass, paying per drive, or using VR credits. The earlier version of this document incorrectly said mobile Premium could not unlock the simulator. That restriction is withdrawn.
 
-The simulator must still support its **separate Stripe VR passes for people without qualifying Premium**. **See [Shared accounts, progress sync and transferability](SHARED-ACCOUNTS-PROGRESS-TRANSFER.md)** for the agreed mobile/web/VR shared-account architecture. The Theory Ready app remains a separate product. This document is intentionally free of production credentials and customer records.
+The simulator must still support its **separate Stripe VR passes for people without qualifying Premium**. **See [Shared accounts and migration scope](SHARED-ACCOUNTS-PROGRESS-TRANSFER.md)** for the agreed mobile/web/VR shared-account architecture. The **Driving Practice Theory App** remains a separate product. Its paid upgrade is **Theory Premium**, which does not grant Practical learner Premium or VR access. This document is intentionally free of production credentials and customer records.
 
 ## 1. Access matrix
 
@@ -17,7 +17,7 @@ The simulator must still support its **separate Stripe VR passes for people with
 | Mobile Premium expired, revoked, refunded with no other valid grant, or never held | No Premium-based unlock | Use existing valid VR pass or the VR checkout |
 | No Premium, but valid purchased VR pass/credits | Allow according to the VR pass's remaining allowance | No duplicate purchase |
 | Neither Premium nor VR pass | No paid simulator session | Offer existing VR pass checkout |
-| Instructor subscription alone (`instructor_subscription`) | Does **not** count as learner Premium | Separate entitlement unless learner Premium is also active |
+| Instructor role, free instructor mobile-app access or instructor subscription (`instructor_subscription`) alone | **No free simulator access** | A separately purchased/verified learner Premium or VR pass is required |
 | Valid Practical Premium purchased on web but not yet synced to mobile | **Unlimited simulator sessions once verified against the same canonical account** | Repair missing web-to-mobile entitlement sync; never require a second payment |
 
 **Owner-confirmed usage policy:** Valid Driving Practice learner Premium (originally purchased on mobile or the Practical web app, or independently granted) unlocks **unlimited simulator access** while Premium remains active. There is **no drive-count cap, per-session VR charge, VR pass purchase requirement, or VR-credit decrement** for qualifying Premium use. This applies across simulator exercise modes available under the product, including lessons and mock tests; it does not promise availability of a feature that has not been built. If Premium expires and no other valid grant remains, future sessions require independent VR access. The simulator must re-check eligibility securely, rather than relying on a stale local Premium flag.
@@ -60,13 +60,14 @@ A learner must authenticate as their **existing Driving Practice account**. Pres
 - A refund or cancellation only changes the access provided by the affected purchase or subscription. If another valid Premium grant remains, simulator access remains.
 - A standalone VR pass remains subject to its own paid-drive consumption and refund rules. The system must use server-side idempotency for drive consumption and never double-decrement because of a network retry.
 - The simulator's separate checkout must still work for non-Premium members; **do not add a second Premium subscription or silently convert existing VR prepaid passes into subscriptions**.
-- Cross-app eligibility does **not** make Theory Ready Premium or an instructor subscription equivalent to learner Premium.
+- **Instructor users receive no free simulator access.** Their free Practical mobile instructor tools do not confer VR privileges; if they separately acquire valid learner Premium or a VR pass, evaluate that independent purchase. 
+- **Driving Practice Theory App / Theory Premium** and instructor subscriptions are separate from learner Practical Premium.
 
 ## 5. Tests required before release
 
 - [ ] A current mobile Premium learner signs in to the simulator with the same canonical account and starts **any number of sessions and retries** without a VR pass, per-drive fee, credit deduction, or second payment.
 - [ ] A learner with a valid manual Premium grant sees the same result, where their mobile account recognises the grant.
-- [ ] A learner with only `instructor_subscription` is not mistaken for learner Premium.
+- [ ] An instructor with only free mobile instructor access or `instructor_subscription` receives **no free simulator sessions or Premium-first challenges**; any independent paid entitlement is evaluated normally.
 - [ ] A non-Premium learner with available VR credits may start a drive and consumes only the agreed VR credit.
 - [ ] A non-Premium learner with no valid pass gets the normal VR checkout, not a free drive.
 - [ ] An account holding Premium **and** prepaid VR credits can repeat sessions indefinitely while Premium is active, without consuming purchased credits.
@@ -92,4 +93,8 @@ Reviewed on 22 November 2026:
 
 This document specifies the approved access relationship; it does **not** report a successful production implementation, live Stripe checkout verification, or deployed shared authentication.
 
-**Builder next action:** Review the existing VR access architecture, identify the smallest secure backend integration needed for the approved mobile-Premium unlock, and deliver a staging-tested implementation. Keep existing non-Premium VR passes and all production payments unchanged until validation.
+**Challenge rollout:** New simulator challenges open first to verified Practical learner Premium members. Instructor role/free mobile access does not qualify. Keep challenge prize/entry rules separate from training-session entitlement; transition to wider availability only on owner approval. See [release and migration contract](SHARED-ACCOUNTS-PROGRESS-TRANSFER.md).
+
+**Simulator results:** Leave assessments in the existing local device store; **cloud progress storage, cross-device simulator sync, sync-status UI and combined dashboards are deferred**. After a successful local save display exactly **“Saved on this device”**; if persistence fails or only volatile memory is available, show a truthful warning instead. Do not promise account-backed results.
+
+**Builder next action:** Follow the strict sequence: shared mobile/web migration only, then simulator identity/unlimited Premium/challenges and secure test-centre queue, then one real-device end-to-end validation. No public shared-access claim before tests pass. Keep existing non-Premium VR passes and production payments unchanged.
