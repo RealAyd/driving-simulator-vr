@@ -146,3 +146,19 @@ share one address). Signed in, an account's sessions are used first; with none l
 
 Sign-in first (`SIGN_IN_FIRST=1`; on by default when `APP_BASE_URL` is `https://staging.drivingpractice.live`, `0` turns it
 off): signed out, no drive starts (`/api/drives` answers 401) and no free try is offered; signed in, as above.
+
+## Account export (read-only)
+
+`npm run build:server`, then `MONGODB_URI=<read-only user's address> node server/dist/exportCli.js --out <empty folder>`.
+Writes `accounts.jsonl` (one row per account: identity, sessions, Starter allowances, unlimited pass and its source,
+grants by type and source, drives, lessons done), `ledger.jsonl` (every entry, with its source and label),
+`accounts.csv` and `manifest.json` (counts, totals, accounts whose balance differs from the ledger, each file's
+SHA-256), readable by their owner only. It prints the manifest, never an account.
+
+- It runs only as a database user that cannot write (MongoDB's `read` role on the simulator's database). The app's
+  own user, an administrator, or a database without access control is refused before anything is read.
+- The folder must be empty and outside any git repository.
+- Not exported: sign-in codes, tokens, trials, visits, support tickets, marketing choices, or any note an admin typed.
+- `premium` is always null: the simulator has no Premium.
+- Tests: `MONGO_TESTS=1 npx vitest run server/test/export.test.ts` (invented accounts; checks every account comes
+  out, the database is unchanged, and users that can write are refused).
