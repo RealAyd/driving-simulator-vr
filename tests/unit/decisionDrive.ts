@@ -95,8 +95,7 @@ export async function drive(answers:Record<string,string[]>,only:number|null=nul
       const fx=Math.sin(car.heading),fz=-Math.cos(car.heading);
       const inQuiet=others().filter(c=>{
         const dx=c.pose.position.x-car.position.x,dz=c.pose.position.z-car.position.z;
-        // (Towards it: not side on, going away round a roundabout it went on to ahead of the car: Cardiff's Morrisons.)
-        const towards=-(Math.sin(c.pose.heading)*dx-Math.cos(c.pose.heading)*dz)>.2*Math.hypot(dx,dz);
+        const towards=-(Math.sin(c.pose.heading)*dx-Math.cos(c.pose.heading)*dz)>0;
         // (Within 45 m: what is in the picture; one far up the road is not.)
         return dx*fx+dz*fz>-3&&Math.hypot(dx,dz)<45&&towards&&p.challenge.quiet.some(q=>Math.hypot(c.pose.position.x-q.x,c.pose.position.z-q.z)<q.radius);
       });
