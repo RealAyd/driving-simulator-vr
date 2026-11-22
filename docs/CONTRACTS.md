@@ -1,6 +1,6 @@
 # Shared contracts (owned by Agent A)
 
-**Membership and payments:** See [Practical Premium and separate VR pass handover](SHARED-PREMIUM-ACCESS.md). It describes current access boundaries and the checks required before adding billing integration.
+**Integration contracts:** [Shared accounts, migration-only release and simulator scope](SHARED-ACCOUNTS-PROGRESS-TRANSFER.md) · [Unlimited learner Premium and Premium-first challenges](SHARED-PREMIUM-ACCESS.md) · [Restricted test-centre builder demand queue](TEST-CENTRE-BUILDER-QUEUE.md). Simulator assessment results remain device-only, labelled **“Saved on this device”** after a successful persistent save. Driving Practice Theory App / Theory Premium are separate products.
 
 All agents build against `src/contracts/`. Propose changes to this file and the contracts in a pull request; do not change them silently.
 
