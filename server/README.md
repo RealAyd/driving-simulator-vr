@@ -152,8 +152,13 @@ off): signed out, no drive starts (`/api/drives` answers 401) and no free try is
 `npm run build:server`, then `MONGODB_URI=<read-only user's address> node server/dist/exportCli.js --out <empty folder>`.
 Writes `accounts.jsonl` (one row per account: identity, sessions, Starter allowances, unlimited pass and its source,
 grants by type and source, drives, lessons done), `ledger.jsonl` (every entry, with its source and label),
-`accounts.csv` and `manifest.json` (counts, totals, accounts whose balance differs from the ledger, each file's
-SHA-256), readable by their owner only. It prints the manifest, never an account.
+`accounts.csv`, `manifest.json` (private: counts, totals, the ids of accounts whose balance differs from the ledger,
+each file's SHA-256) and `summary.json` (counts and totals only, no ids: the one to share), readable by their owner
+only. It prints the summary, never an account.
+
+- One moment: on a replica set every read is in one snapshot. On a single server it exports what existed when it
+  began (`cutoff`), and an account with a ledger entry after that is listed in `changedDuringExport`, not as mismatched.
+  `consistency` in the summary says which.
 
 - It runs only as a database user that cannot write (MongoDB's `read` role on the simulator's database). The app's
   own user, an administrator, or a database without access control is refused before anything is read.
@@ -161,4 +166,5 @@ SHA-256), readable by their owner only. It prints the manifest, never an account
 - Not exported: sign-in codes, tokens, trials, visits, support tickets, marketing choices, or any note an admin typed.
 - `premium` is always null: the simulator has no Premium.
 - Tests: `MONGO_TESTS=1 npx vitest run server/test/export.test.ts` (invented accounts; checks every account comes
-  out, the database is unchanged, and users that can write are refused).
+  out, the database is unchanged, a payment or drive arriving mid-export is left out, the summary holds no ids, and
+  users that can write are refused).

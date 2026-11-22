@@ -2,17 +2,22 @@ import {mkdtempSync,readFileSync,readdirSync,statSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {MongoClient} from 'mongodb';
-import {MongoMemoryServer} from 'mongodb-memory-server-core';
+import {MongoMemoryReplSet,MongoMemoryServer} from 'mongodb-memory-server-core';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {Admin} from '../src/admin.js';
 import {loadConfig} from '../src/config.js';
-import {cell,entryLabel,entrySource,exportAccounts,unlimitedSource,type ExportedAccount,type ExportedLedgerEntry} from '../src/exportAccounts.js';
+import {cell,entryLabel,entrySource,exportAccounts,summarise,unlimitedSource,type ExportedAccount,type ExportedLedgerEntry} from '../src/exportAccounts.js';
 import {redact,runExport} from '../src/exportCli.js';
 import {MongoStore} from '../src/mongoStore.js';
 import {OutboxMailer,fakeIdentities,fakeStripe} from '../src/providers.js';
 import {Service,type StripeEvent} from '../src/service.js';
 
 const UNLIMITED=['Weekly Unlimited Pass','Monthly Unlimited Pass'];
+/** The export's files, kept in memory. */
+const collect=()=>{
+  const files=new Map<string,string>();
+  return {files,write:async(name:string,lines:AsyncIterable<string>|Iterable<string>)=>{let s='';for await(const l of lines)s+=l;files.set(name,s);return {bytes:Buffer.byteLength(s),sha256:'-'}}};
+};
 
 describe('account export: where each grant came from',()=>{
   it('names the source of every entry this service writes, and unknown for any other',()=>{
@@ -89,10 +94,6 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('account export against MongoD
     await raw.close();
     return {free,payer,monthly,adjusted,friend};
   }
-  const collect=()=>{
-    const files=new Map<string,string>();
-    return {files,write:async(name:string,lines:AsyncIterable<string>|Iterable<string>)=>{let s='';for await(const l of lines)s+=l;files.set(name,s);return {bytes:Buffer.byteLength(s),sha256:'-'}}};
-  };
 
   it('every account comes out, with its access, the source of each grant and its progress; nothing in the database changes',async()=>{
     const uri=mongo.getUri('dp_export_rows');
@@ -121,6 +122,14 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('account export against MongoD
     expect(by(ids.free.id)).toMatchObject({access:{sessions:4,sessionsFromLedger:0,sessionsMatch:false}});
     expect(m.mismatched).toEqual([ids.free.id]);
     expect(m.totals).toMatchObject({accounts:5,unlimitedActive:2,activeSubscription:1,unknownSourceEntries:1,accountsWithUnknownSource:1,mismatched:1});
+    expect(m.consistency).toBe('cutoff');
+
+    // What can be shared: counts and totals, no account ids, emails or keys.
+    const shared=JSON.stringify(summarise(m));
+    for(const a of Object.values(ids))expect(shared).not.toContain(a.id);
+    expect(shared).not.toMatch(/@|checkout:|cs_|pi_/);
+    expect(JSON.parse(shared)).toMatchObject({totals:{accounts:5},counts:{accounts:5}});
+    expect(Object.keys(JSON.parse(shared)).sort()).toEqual(['consistency','counts','database','exportedAt','files','tool','totals','version']);
 
     // The ledger, every entry once, joined by account, with its source and who recorded an admin's.
     const ledger=files.get('ledger.jsonl')!.trim().split('\n').map(l=>JSON.parse(l) as ExportedLedgerEntry);
@@ -134,6 +143,63 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('account export against MongoD
     for(const s of ['07700 900123','High St','tok-hash-secret','code-hash-secret','tokenHash','codeHash','marketing'])expect(everything).not.toContain(s);
     // The spreadsheet: a header and a row per account.
     expect(files.get('accounts.csv')!.trim().split('\n')).toHaveLength(6);
+  },120_000);
+
+  it('on a single server, what came after the export began is left out, and an account it touched is set apart, not called mismatched',async()=>{
+    const uri=mongo.getUri('dp_export_cutoff');
+    const ids=await seed(uri);
+    const cutoff=new Date();
+    await new Promise(r=>setTimeout(r,5));
+    // (A payment and a new account arriving while the export runs.)
+    const config=loadConfig({DP_DEV_FAKES:'1',APP_BASE_URL:'https://staging.example'});
+    const service=new Service(config,await MongoStore.connect(uri),new OutboxMailer(),fakeIdentities,fakeStripe(config));
+    await service.handleStripeEvent({id:'evt_late',type:'checkout.session.completed',data:{object:{id:'cs_late',payment_status:'paid',client_reference_id:ids.payer.id,
+      payment_link:'vr-15',amount_total:2499,currency:'gbp',payment_intent:'pi_late',customer_details:{email:null}}}});
+    await service.signIn('email',{sub:'late@example.com',email:'late@example.com',emailVerified:true});
+    const client=new MongoClient(uri);await client.connect();
+    const {files,write}=collect();
+    const m=await exportAccounts(client.db(),{unlimitedLabels:UNLIMITED,now:cutoff,write});
+    await client.close();
+    expect(m.accounts).toBe(5);
+    expect(files.get('accounts.jsonl')).not.toContain('late@example.com');
+    expect(files.get('ledger.jsonl')).not.toContain('cs_late');
+    expect(m.changedDuringExport).toEqual([ids.payer.id]);
+    expect(m.mismatched).toEqual([ids.free.id]);
+    expect(m.totals.changedDuringExport).toBe(1);
+  },120_000);
+});
+
+// A replica set keeps snapshots: every read sees the moment the export began, whatever arrives meanwhile.
+describe.skipIf(process.env['MONGO_TESTS']!=='1')('account export: one moment on a replica set',()=>{
+  let rs:MongoMemoryReplSet;
+  beforeAll(async()=>{rs=await MongoMemoryReplSet.create({binary:{version:'7.0.14'},replSet:{count:1,storageEngine:'wiredTiger'}})},120_000);
+  afterAll(async()=>{await rs?.stop()});
+  it('a payment and a drive arriving mid-export are not in it, and every balance still agrees with its ledger',async()=>{
+    const uri=rs.getUri('dp_export_snapshot');
+    const config=loadConfig({DP_DEV_FAKES:'1',APP_BASE_URL:'https://staging.example'});
+    const service=new Service(config,await MongoStore.connect(uri),new OutboxMailer(),fakeIdentities,fakeStripe(config));
+    const a=await service.signIn('email',{sub:'snap@example.com',email:'snap@example.com',emailVerified:true});
+    const pay=(n:number,link:string,amount:number)=>service.handleStripeEvent({id:`evt_s${n}`,type:'checkout.session.completed',data:{object:{id:`cs_s${n}`,payment_status:'paid',
+      client_reference_id:a.id,payment_link:link,amount_total:amount,currency:'gbp',payment_intent:`pi_s${n}`,customer_details:{email:null}}}});
+    await pay(1,'vr-5',999);
+    const client=new MongoClient(uri);await client.connect();
+    const session=client.startSession({snapshot:true});
+    // (The snapshot's moment is set by its first read.)
+    await client.db().collection('accounts').findOne({},{session});
+    const {files,write}=collect();
+    const m=await exportAccounts(client.db(),{unlimitedLabels:UNLIMITED,session,write,between:async()=>{
+      await pay(2,'vr-15',2499);
+      const d=await service.startDrive(a.id,'free','goodmayes-free-drive');
+      if(d.ok)await service.driveStatus(a.id,d.drive.id,'completed');
+    }});
+    await session.endSession();await client.close();
+    expect(m.consistency).toBe('snapshot');
+    const row=JSON.parse(files.get('accounts.jsonl')!.trim()) as ExportedAccount;
+    expect(row.access).toMatchObject({sessions:5,sessionsFromLedger:5,sessionsMatch:true});
+    expect(row.drives.total).toBe(0);
+    expect(files.get('ledger.jsonl')).not.toContain('cs_s2');
+    expect(m.mismatched).toEqual([]);
+    expect(m.changedDuringExport).toEqual([]);
   },120_000);
 });
 
@@ -159,8 +225,11 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('account export: only as a rea
   it('the read-only user exports, into files only its owner can read; it cannot write',async()=>{
     const dir=out();
     const r=await runExport(['--out',dir],{MONGODB_URI:userUri('dp_sim_export','reader-test-only')});
-    expect(r).toMatchObject({readOnlyUser:true,accounts:1,database:DB});
-    expect(readdirSync(dir).sort()).toEqual(['accounts.csv','accounts.jsonl','ledger.jsonl','manifest.json']);
+    expect(r).toMatchObject({readOnlyUser:true,totals:{accounts:1},database:DB});
+    expect(readdirSync(dir).sort()).toEqual(['accounts.csv','accounts.jsonl','ledger.jsonl','manifest.json','summary.json']);
+    expect(JSON.stringify(r)).not.toContain('acc-1');
+    expect(JSON.parse(readFileSync(join(dir,'summary.json'),'utf8'))).toMatchObject({totals:{accounts:1},consistency:'cutoff'});
+    expect(readFileSync(join(dir,'summary.json'),'utf8')).not.toMatch(/acc-1|@/);
     for(const f of readdirSync(dir))expect(statSync(join(dir,f)).mode&0o077).toBe(0);
     expect(readFileSync(join(dir,'accounts.jsonl'),'utf8')).toContain('one@example.com');
     const c=new MongoClient(userUri('dp_sim_export','reader-test-only'));await c.connect();
