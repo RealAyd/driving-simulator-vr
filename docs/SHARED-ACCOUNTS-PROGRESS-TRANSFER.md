@@ -4,7 +4,7 @@
 
 ## 1. Products, identity and the approved release order
 
-**Products:** Driving Practice practical mobile app (iOS/Android), Practical Driving Practice web app (`app.drivingpractice.live`), VR judgement simulator (`vr.drivingpractice.live`), and the separate **Driving Practice Theory App**. The paid upgrade in the theory product is always named **Theory Premium**. Do not use the retired product name “Theory Ready.”
+**Products:** Driving Practice practical mobile app (iOS/Android), Practical Driving Practice web app (`app.drivingpractice.live`), VR judgement simulator (`vr.drivingpractice.live`), and the separate **Driving Practice Theory App**. Its paid upgrade is named **Theory Premium** in all product documents.
 
 **Release sequence — strict:**
 
