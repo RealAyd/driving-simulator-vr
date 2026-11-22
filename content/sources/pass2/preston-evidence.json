@@ -1,0 +1,1420 @@
+{
+  "centre": "Preston",
+  "status": "ok",
+  "centre_position": {
+    "lat": 53.76038,
+    "lon": -2.75181
+  },
+  "address_checked": "2026-11-21",
+  "address": "Chain Caul Road, Preston PR2 2PD",
+  "address_note": "gov.uk's centre finder could not be searched from this machine (its search is a form on the booking service). Address taken from DVSA's centre data as quoted on passrates.uk (DVSA find a driving test centre, captured 2026-05-12, OGL: Chain Caul Road, Preston, PR2 2PD), matched by drivingtesttips.biz's centre page and totaldrive.co.uk; pass 1 records 11,380 tests, so the centre is open here. OSM has the building itself (way/252360143, \"Driving Test Centre\") 10 m from the given position, between Chain Caul Road (way/27050128, 25 m south-east) and Chain Caul Way, with a named service road, Hardy Close (ways 61604644 and 61604649), running from Chain Caul Way to its door: matches. The single pages giving Watling Street Road (Fulwood, about 4 km north-east) are a generic directory (drivingtestpass.pages.dev) not borne out by any other page; every route list starts on Chain Caul Road. Recheck on gov.uk when reachable.",
+  "searches": [
+    "\"Preston driving test\" route roads (pass 1)",
+    "duckduckgo/bing: Preston driving test Chain Caul Road route tips; Preston driving test centre Riversway roundabout reddit; Preston mock test route Chain Caul Way video (no results returned from this machine)"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/preston-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/preston-driving-test-routes-6-10.html",
+        "https://intensivelessons.co.uk/driving-test-routes/Lancashire/Preston (routes 1 to 10, the same text: counted once)"
+      ],
+      "published": "undated (routes 1-10, said to be the routes DVSA once published, \"may have altered\")",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "Turn-by-turn lists, every one leaving left on to Chain Caul Road and back by Chain Caul Way, so they match the current site. Read for road and junction names only; no route copied. Spellings as written include Peddars/Reddars Way and Peddars Lane (the map has Pedders), Flyde Road (Fylde Road), Junction Way (Junction Road), Greavestown Lane (Greaves Town Lane).",
+      "names": [
+        "Ainsdale Drive",
+        "Ainslie Road",
+        "Aqueduct Street",
+        "Beech Grove",
+        "Birch Avenue",
+        "Black Bull Lane",
+        "Blackpool Road",
+        "Brook Street",
+        "Cadley Causeway",
+        "Calder Street",
+        "Chain Caul Road",
+        "Chain Caul Way",
+        "Channel Way",
+        "Clifton Avenue",
+        "Cop Lane",
+        "Cottam Lane",
+        "Dodney Drive",
+        "Douglas Street",
+        "Egerton Road",
+        "Elm Avenue",
+        "Fishergate",
+        "Fylde Road",
+        "Golden Way",
+        "Greavestown Lane",
+        "Guild Way",
+        "Hardcastle Road",
+        "Hill Road South",
+        "Hollinhurst Avenue",
+        "Inkerman Street",
+        "Junction Way",
+        "Kingsway",
+        "Larches Avenue",
+        "Larches Lane",
+        "Lea Road",
+        "Leyland Road",
+        "Liverpool Road",
+        "Lodge Lane",
+        "Lytham Road",
+        "Mariners Way",
+        "Marsh Lane",
+        "Marshall's Brow",
+        "Mersey Street",
+        "Mill Lane",
+        "Millbrook Way",
+        "Navigation Way",
+        "Nelson Way",
+        "New Lane",
+        "Peddars Lane",
+        "Peddars Way",
+        "Penwortham Way",
+        "Plungington Road",
+        "Pope Lane",
+        "Portway",
+        "Powis Road",
+        "Preston Old Road",
+        "Priory Crescent",
+        "Priory Lane",
+        "Queens Road",
+        "Queensway",
+        "Riversway",
+        "Roebuck Street",
+        "Staining Avenue",
+        "Strand Road",
+        "Symonds Road",
+        "Tag Lane",
+        "Tanterton Hall Road",
+        "Tom Benson Way",
+        "Tudor Avenue",
+        "Tulketh Brow",
+        "Tulketh Road",
+        "Victoria Parade",
+        "Water Lane",
+        "Waterloo Road",
+        "Watery Lane",
+        "Wellfield Road",
+        "West Park Avenue",
+        "Whinfield Lane",
+        "Woodplumpton Road"
+      ]
+    },
+    {
+      "id": "s2",
+      "kind": "official",
+      "author": "DVSA centre data, as quoted by passrates.uk",
+      "url": "https://passrates.uk/centres/preston",
+      "published": "captured 2026-05-12",
+      "read_on": "2026-11-21",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [],
+      "note": "Address only; silent on routes."
+    },
+    {
+      "id": "s3",
+      "kind": "instructor-page",
+      "author": "drivingtesttips.biz (editorial text on its centre page)",
+      "url": "https://www.drivingtesttips.biz/preston-driving-test-centre.html",
+      "published": "undated",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "A583"
+      ],
+      "note": "General text: multi-lane and mini roundabouts, light-controlled junctions, residential streets, the A583 dual carriageway (Riversway and Watery Lane). Same site as s1 but separate text; adds no road beyond s1."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://totaldrive.co.uk/?p=3262",
+      "why": "instructor directory: the address (Chain Caul Road) and general text about the M6, M61, M65 and A59; no test roads"
+    },
+    {
+      "url": "https://drivingtestpass.pages.dev/centres/preston",
+      "why": "generic directory giving an address on Watling Street Road and advice about Leyland and Chorley roads: not borne out, not used"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/preston/mock-driving-test",
+      "why": "lesson advert; names no roads"
+    },
+    {
+      "url": "https://drivingdata-uk.pages.dev/test-centres/preston/",
+      "why": "pass-rate template; names no roads"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/lancashire/preston",
+      "why": "template page; names no roads"
+    },
+    {
+      "url": "https://payhip.com/b/SrAYT",
+      "why": "paid route pack: never used"
+    }
+  ],
+  "places": [
+    {
+      "name": "Chain Caul Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76019,
+        "lon": -2.75146,
+        "osm": "way/27050128"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chain Caul Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.76125,
+        "lon": -2.74975,
+        "osm": "way/27050093"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Navigation Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.7592,
+        "lon": -2.73525,
+        "osm": "way/859447999"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pedders Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.76228,
+        "lon": -2.74111,
+        "osm": "way/5730402"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Watery Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.76278,
+        "lon": -2.72725,
+        "osm": "way/461597325"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Powis Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76358,
+        "lon": -2.73425,
+        "osm": "way/39235034"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tulketh Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76483,
+        "lon": -2.72676,
+        "osm": "way/31058371"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Victoria Parade",
+      "kind": "road",
+      "map": {
+        "lat": 53.76749,
+        "lon": -2.73107,
+        "osm": "way/38859390"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Waterloo Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76745,
+        "lon": -2.72648,
+        "osm": "way/530998134"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tulketh Brow",
+      "kind": "road",
+      "map": {
+        "lat": 53.76528,
+        "lon": -2.72143,
+        "osm": "way/23342818"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woodplumpton Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77417,
+        "lon": -2.72929,
+        "osm": "way/366587892"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cadley Causeway",
+      "kind": "road",
+      "map": {
+        "lat": 53.77809,
+        "lon": -2.72735,
+        "osm": "way/37208695"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Black Bull Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.78673,
+        "lon": -2.71765,
+        "osm": "way/320447684"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lytham Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.774,
+        "lon": -2.72494,
+        "osm": "way/319559483"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ainslie Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77588,
+        "lon": -2.71428,
+        "osm": "way/39622581"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queens Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77612,
+        "lon": -2.71187,
+        "osm": "way/39622580"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hardcastle Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77611,
+        "lon": -2.71202,
+        "osm": "way/39622577"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Symonds Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77518,
+        "lon": -2.71134,
+        "osm": "way/39622575"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Plungington Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77268,
+        "lon": -2.71301,
+        "osm": "way/19716555"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Blackpool Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76305,
+        "lon": -2.78527,
+        "osm": "way/23321704"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Water Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.7645,
+        "lon": -2.72153,
+        "osm": "way/22293433"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Nelson Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.7605,
+        "lon": -2.75771,
+        "osm": "way/27050598"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Riversway",
+      "kind": "road",
+      "map": {
+        "lat": 53.76201,
+        "lon": -2.76845,
+        "osm": "way/27663907"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Roebuck Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.77037,
+        "lon": -2.72248,
+        "osm": "way/37887470"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Inkerman Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.77368,
+        "lon": -2.72196,
+        "osm": "way/37962757"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mill Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.77806,
+        "lon": -2.72297,
+        "osm": "way/37430031"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Aqueduct Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.76819,
+        "lon": -2.7111,
+        "osm": "way/22293424"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fylde Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76372,
+        "lon": -2.70897,
+        "osm": "way/530998130"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Egerton Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76482,
+        "lon": -2.73558,
+        "osm": "way/33211691"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pedders Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.76658,
+        "lon": -2.74037,
+        "osm": "way/434401202"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mariners Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.76263,
+        "lon": -2.73132,
+        "osm": "way/320034776"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Port Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.75789,
+        "lon": -2.72271,
+        "osm": "way/5730389"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tom Benson Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.77628,
+        "lon": -2.75021,
+        "osm": "way/38315935"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tanterton Hall Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.7883,
+        "lon": -2.74048,
+        "osm": "way/23006637"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tag Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.78681,
+        "lon": -2.7469,
+        "osm": "way/432372351"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brook Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.76809,
+        "lon": -2.71228,
+        "osm": "way/22293416"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Beech Grove",
+      "kind": "road",
+      "map": {
+        "lat": 53.76793,
+        "lon": -2.73196,
+        "osm": "way/38859391"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Strand Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.75492,
+        "lon": -2.71665,
+        "osm": "way/471947000"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fishergate",
+      "kind": "road",
+      "map": {
+        "lat": 53.75805,
+        "lon": -2.70128,
+        "osm": "way/411686025"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whinfield Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.76379,
+        "lon": -2.74347,
+        "osm": "way/166377729"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Larches Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.7645,
+        "lon": -2.75523,
+        "osm": "way/38657640"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Larches Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.7666,
+        "lon": -2.7515,
+        "osm": "way/29346337"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "West Park Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.77262,
+        "lon": -2.74605,
+        "osm": "way/142587508"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ainsdale Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.77178,
+        "lon": -2.75852,
+        "osm": "way/530982054"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lea Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.77375,
+        "lon": -2.76405,
+        "osm": "way/473639486"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tudor Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.76843,
+        "lon": -2.76784,
+        "osm": "way/433817311"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Dodney Drive",
+      "kind": "road",
+      "map": {
+        "lat": 53.76726,
+        "lon": -2.77247,
+        "osm": "way/37769822"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Preston Old Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76669,
+        "lon": -2.81419,
+        "osm": "way/8005540"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lodge Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.76439,
+        "lon": -2.80766,
+        "osm": "way/27663904"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Guild Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.75665,
+        "lon": -2.72093,
+        "osm": "way/27098579"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Leyland Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.75114,
+        "lon": -2.72111,
+        "osm": "way/510141794"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "New Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.73893,
+        "lon": -2.7083,
+        "osm": "way/434725430"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pope Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.73389,
+        "lon": -2.72445,
+        "osm": "way/434725431"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Penwortham Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.72729,
+        "lon": -2.71645,
+        "osm": "way/22949556"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Junction Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.75821,
+        "lon": -2.72034,
+        "osm": "way/512689921"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Marsh Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.7603,
+        "lon": -2.70878,
+        "osm": "way/489276246"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wellfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.76099,
+        "lon": -2.71618,
+        "osm": "way/27075077"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Liverpool Road",
+      "kind": "road",
+      "map": {
+        "lat": 53.75377,
+        "lon": -2.7177,
+        "osm": "way/4905991"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingsway",
+      "kind": "road",
+      "map": {
+        "lat": 53.77116,
+        "lon": -2.74684,
+        "osm": "way/38348910"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queensway",
+      "kind": "road",
+      "map": {
+        "lat": 53.77102,
+        "lon": -2.74799,
+        "osm": "way/38348909"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cop Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.74031,
+        "lon": -2.72665,
+        "osm": "way/4905980"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Millbrook Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.73836,
+        "lon": -2.72732,
+        "osm": "way/433240294"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Golden Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.74704,
+        "lon": -2.71911,
+        "osm": "way/319061482"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Channel Way",
+      "kind": "road",
+      "map": {
+        "lat": 53.76137,
+        "lon": -2.72584,
+        "osm": "way/27056875"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Priory Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.75274,
+        "lon": -2.72916,
+        "osm": "way/4905969"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Priory Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 53.75418,
+        "lon": -2.7263,
+        "osm": "way/39911941"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hollinhurst Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.75293,
+        "lon": -2.72559,
+        "osm": "way/39915926"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Marshalls Brow",
+      "kind": "road",
+      "map": {
+        "lat": 53.74006,
+        "lon": -2.7131,
+        "osm": "way/5369580"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cottam Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.77488,
+        "lon": -2.745,
+        "osm": "way/38068475"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Elm Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.77043,
+        "lon": -2.74433,
+        "osm": "way/38348904"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Birch Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.76953,
+        "lon": -2.74099,
+        "osm": "way/38348903"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Clifton Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.77123,
+        "lon": -2.74435,
+        "osm": "way/33678664"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Greaves Town Lane",
+      "kind": "road",
+      "map": {
+        "lat": 53.76631,
+        "lon": -2.75943,
+        "osm": "way/23494082"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Staining Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 53.76329,
+        "lon": -2.75008,
+        "osm": "way/33623061"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Douglas Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.76363,
+        "lon": -2.72658,
+        "osm": "way/463743152"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Calder Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.76418,
+        "lon": -2.72822,
+        "osm": "way/39235039"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mersey Street",
+      "kind": "road",
+      "map": {
+        "lat": 53.7635,
+        "lon": -2.72785,
+        "osm": "way/39235042"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hill Road South",
+      "kind": "road",
+      "map": {
+        "lat": 53.74103,
+        "lon": -2.71967,
+        "osm": "way/4905973"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Navigation Way / Pedders Way / Mariners Way roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.761476,
+        "lon": -2.741173,
+        "osm": "ring of junction=roundabout ways (way/5730401 and others)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Most lists go round it straight out of the centre, and back."
+    },
+    {
+      "name": "Chain Caul Way / Navigation Way junction",
+      "kind": "junction",
+      "map": {
+        "lat": 53.761359,
+        "lon": -2.74248,
+        "osm": "node at the end of Chain Caul Way way/27050093 (give way node/5377873840)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "The way out and back on most lists."
+    },
+    {
+      "name": "Pedders Way / Riversway / Watery Lane / Pedders Lane traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.762787,
+        "lon": -2.740748,
+        "osm": "signals round node/9880663888 (A583)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Named on most lists, both ways across the A583."
+    },
+    {
+      "name": "Chain Caul Way / Nelson Way roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.759823,
+        "lon": -2.757888,
+        "osm": "ring of junction=roundabout ways (way/27050593)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "West of the centre; lists 2, 9 and 10."
+    },
+    {
+      "name": "Nelson Way / Riversway traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.761368,
+        "lon": -2.757736,
+        "osm": "signals node/9880663906"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 2, 9 and 10."
+    },
+    {
+      "name": "Pedders Lane / Egerton Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 53.764943,
+        "lon": -2.740656,
+        "osm": "end of Egerton Road way/33211691"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Several lists come back by Egerton Road and Pedders Lane."
+    },
+    {
+      "name": "Egerton Road / Tulketh Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 53.76497,
+        "lon": -2.730551,
+        "osm": "Egerton Road way/33211691 at Tulketh Road"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 2, 3, 6 and 9."
+    },
+    {
+      "name": "Tulketh Road / Blackpool Road traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.769022,
+        "lon": -2.737253,
+        "osm": "signals node/13666116254"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "List 4 (and the A5085 lists generally)."
+    },
+    {
+      "name": "Pedders Lane / Blackpool Road / Cottam Lane traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.768653,
+        "lon": -2.739486,
+        "osm": "signals node/12552555068"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "List 9 (ahead into Cottam Lane)."
+    },
+    {
+      "name": "Whinfield Lane / Pedders Lane junction",
+      "kind": "junction",
+      "map": {
+        "lat": 53.763668,
+        "lon": -2.740565,
+        "osm": "Whinfield Lane way/120930900 at Pedders Lane"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 5 and 9."
+    },
+    {
+      "name": "Larches Avenue / Blackpool Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 53.768555,
+        "lon": -2.751172,
+        "osm": "Larches Avenue way/142587505 at Blackpool Road (give way node/14289136854)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "List 5."
+    },
+    {
+      "name": "Larches Lane / Larches Avenue junction",
+      "kind": "junction",
+      "map": {
+        "lat": 53.764845,
+        "lon": -2.751734,
+        "osm": "Larches Lane way/38657640 at Larches Avenue way/29346337"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "List 5."
+    },
+    {
+      "name": "Riversway / Port Way traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.762536,
+        "lon": -2.727998,
+        "osm": "signals node/12119139594"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 3, 4 and 7."
+    },
+    {
+      "name": "Port Way / Mariners Way roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 53.761368,
+        "lon": -2.727953,
+        "osm": "ring of junction=roundabout ways (way/5730390)"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 5, 7 and 10."
+    },
+    {
+      "name": "Watery Lane / Strand Road / West Strand traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.763704,
+        "lon": -2.72309,
+        "osm": "signals round node/4597170090"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 4, 6, 7, 9 and 10."
+    },
+    {
+      "name": "Watery Lane / Water Lane / Tulketh Road traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.764018,
+        "lon": -2.722938,
+        "osm": "signals node/4597170089"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 1 to 4."
+    },
+    {
+      "name": "Tulketh Brow / Water Lane / Fylde Road traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 53.765096,
+        "lon": -2.720659,
+        "osm": "signals round node/4129208877"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists 1 to 4."
+    }
+  ],
+  "unmatched": [],
+  "summary": "0 confirmed and 78 likely roads plus 17 likely junctions, all from one route-list publisher (drivingtesttips.biz, copied by intensivelessons.co.uk) whose lists start and end on Chain Caul Road, the current site; nothing first-hand. Round the centre they name Chain Caul Way, Navigation Way and its roundabout, the Pedders Way lights on the A583, Pedders Lane, Egerton Road, Tulketh Road, Blackpool Road and the Larches estate, so a route meeting the overlap rule (most of its length on named roads, 3 or more known junctions) looks possible, and a second one by Port Way and Strand Road or Penwortham."
+}

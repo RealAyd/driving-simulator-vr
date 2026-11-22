@@ -1,0 +1,1828 @@
+{
+  "centre": "Chertsey (London)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.38465,
+    "lon": -0.50943
+  },
+  "address_checked": "2026-11-21",
+  "address": "Unit 4, The Forum, Hanworth Lane, Chertsey KT16 9JX",
+  "address_note": "gov.uk 'Check which driving test centres you can move your test to' (updated 15 October 2026, read 2026-11-21) lists Chertsey (London) as a current centre (Guildford about 11 miles away); the find-driving-test-centre service could not be reached from this machine. The address is DVSA's centre data as quoted on passrates.uk (DVSA find a driving test centre, captured 2026-05-12, OGL), matched by driveJohnson's Chertsey page; pass 1 records 8,669 tests a year, so the centre is open here. OSM has the Hanworth Lane Business Park (way/249586559) at the given position, with a KT16 9JX building (way/249586562) 29 m from it; the units are not named on the map, so which building is Unit 4 is not shown. The park is reached from Hanworth Lane (the service road, way/162180630) by an unnamed way in (way/162180659) and from The Knoll; Hanworth Lane's residential part (way/162180626) runs north to Guildford Road but is cut off from the park at its south end. Matches. Recheck on the gov.uk centre finder when reachable.",
+  "moved_note": "No move found: every free route list leaves and returns by The Knoll and the A320 roundabout beside the business park, which fits the current address.",
+  "searches": [
+    "\"Chertsey driving test centre\" Hanworth Lane test route roundabout tips instructor",
+    "\"Chertsey\" mock driving test route video Guildford Road Pyrcroft Road"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz",
+      "url": "https://www.drivingtesttips.biz/chertsey-driving-test-routes.html",
+      "also": [
+        "https://www.drivingtesttips.biz/chertsey-driving-test-routes-5-8.html",
+        "https://www.drivingtesttips.biz/driving-test-routes/chertsey-driving-test-routes-new.html (routes 9 to 14)",
+        "https://www.drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/chertsey-extended-driving-test-routes.html",
+        "https://intensivelessons.co.uk/driving-test-routes/Surrey/Chertsey-London (routes 1 to 14, the same text: counted once)"
+      ],
+      "published": "undated (routes 1-8; 9-14 marked new); extended routes undated",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "note": "Turn-by-turn lists from the current centre (each starts and ends at the DTC by The Knoll). Read for road and junction names only; no route copied. Near the centre they name The Knoll, Bell Bridge Road, Pyrcroft Road and its lights, Guildford Street, Curfew Bell Road, Heriot Road, London Street and their mini-roundabouts, Abbey Road, Pound Road, Stepgates, Free Prae Road, Eastworth Road and Guildford Road; further out Addlestone, New Haw, Ottershaw, Lyne, Thorpe and Laleham.",
+      "names": [
+        "Abbey Road",
+        "Abbots Way",
+        "Addlestone Road",
+        "Almners Road",
+        "Ash Road",
+        "Bell Bridge Road",
+        "Bittams Lane",
+        "Braeside",
+        "Bridge Lane",
+        "Bridge Road",
+        "Bridge Street",
+        "Brighton Road",
+        "Broomfield Road",
+        "Byron Road",
+        "Canford Drive",
+        "Chapel Park Road",
+        "Chertsey Bridge Road",
+        "Chertsey Green Road",
+        "Chertsey Lane",
+        "Chertsey Road",
+        "Chilsey Green Road",
+        "Church Road",
+        "Coldharbour Lane",
+        "Corrie Road",
+        "Crockford Park Road",
+        "Curfew Bell Road",
+        "Eastworth Road",
+        "Ferndale Avenue",
+        "Fernlands Close",
+        "Fordwater Road",
+        "Free Prae Road",
+        "Garfield Road",
+        "Grange Road",
+        "Green Lane",
+        "Green Road",
+        "Guildford Road",
+        "Guildford Street",
+        "Hamm Moor Lane",
+        "Hamm Moor Road",
+        "Hardwick Lane",
+        "Hare Hill",
+        "Heriot Road",
+        "High Street",
+        "Holloway Hill",
+        "Home Road",
+        "Horne Road",
+        "Inglehurst",
+        "King Georges Drive",
+        "Kingston Rise",
+        "Kingston Road",
+        "Laleham Road",
+        "Liberty Hall Road",
+        "Liberty Lane",
+        "Liberty Rise",
+        "Link Road",
+        "Little Green Lane",
+        "Littleton Lane",
+        "London Road",
+        "London Street",
+        "Longcross Road",
+        "Lyne Lane",
+        "Lyne Road",
+        "Manygate Lane",
+        "Marsh Lane",
+        "Merrylands",
+        "Mill House Lane",
+        "Mill Lane",
+        "Murray Road",
+        "Nell Gwynn Avenue",
+        "New Haw Road",
+        "New Wickham Lane",
+        "Norlands Lane",
+        "Ongar Hill",
+        "Pinewood Grove",
+        "Pound Road",
+        "Pyrcroft Road",
+        "Queen Mary's Drive",
+        "Renfree Way",
+        "Roakes Avenue",
+        "Row Town",
+        "Russell Road",
+        "Russington Road",
+        "Ruxbury Road",
+        "Sandalwood Avenue",
+        "Sandhills Lane",
+        "School Lane",
+        "Scotland Bridge Road",
+        "Shakespeare Road",
+        "Sheep Walk",
+        "Simplemarsh Road",
+        "Squires Bridge Road",
+        "St Ann's Road",
+        "St Peter's Way",
+        "Staines Lane",
+        "Staines Road",
+        "Station Road",
+        "Stepgates",
+        "Stroude Road",
+        "Ten Acre Lane",
+        "The Broadway",
+        "The Grove",
+        "The Knoll",
+        "Thorpe Lea Road",
+        "Thorpe Road",
+        "Trumpsgreen Road",
+        "Village Road",
+        "Waverley Drive",
+        "Weir Road",
+        "Western Drive",
+        "Weybridge Road",
+        "Wheatash Road",
+        "Windsor Avenue",
+        "Windsor Street",
+        "Wingfield Gardens",
+        "Woburn Hill",
+        "Wood Road",
+        "Woodham Lane",
+        "Woodham Park Road",
+        "Wordsworth Road"
+      ]
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://payhip.com/b/3iKqz",
+      "why": "paid route list"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/chertsey-london-driving-test-routes",
+      "why": "route list sold for money"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/surrey/chertsey-london",
+      "why": "behind a bot check (not worked round)"
+    },
+    {
+      "url": "https://drivingdata-uk.pages.dev/test-centres/chertsey-london/",
+      "why": "pass-rate template, no roads named"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/chertsey/",
+      "why": "driving school template, address only; sells routes"
+    },
+    {
+      "url": "https://www.rateddriving.com/driving-lessons/surrey/chertsey/",
+      "why": "driving school template, no roads named"
+    },
+    {
+      "url": "https://just-drive.co.uk/?p=22424",
+      "why": "driving school template, no roads named"
+    },
+    {
+      "url": "https://www.theaa.com/driving-school/locations/location/chertsey",
+      "why": "driving school template, no roads named"
+    }
+  ],
+  "places": [
+    {
+      "name": "Abbey Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39037,
+        "lon": -0.49859,
+        "osm": "way/681700650"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Abbots Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.38828,
+        "lon": -0.50878,
+        "osm": "way/771026752"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Addlestone Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.3724,
+        "lon": -0.47501,
+        "osm": "way/329759468"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Almners Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38998,
+        "lon": -0.52866,
+        "osm": "way/157653162"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ash Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.40419,
+        "lon": -0.46326,
+        "osm": "node/565754860"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bell Bridge Road (A320)",
+      "kind": "road",
+      "map": {
+        "lat": 51.38632,
+        "lon": -0.51077,
+        "osm": "way/152977485"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bittams Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37698,
+        "lon": -0.51163,
+        "osm": "way/898217293"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Braeside",
+      "kind": "road",
+      "map": {
+        "lat": 51.34495,
+        "lon": -0.49851,
+        "osm": "way/160326054"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bridge Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.39437,
+        "lon": -0.55214,
+        "osm": "way/169077504"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39083,
+        "lon": -0.49798,
+        "osm": "way/156480961"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brighton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36923,
+        "lon": -0.49174,
+        "osm": "way/155414448"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Broomfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.34598,
+        "lon": -0.4948,
+        "osm": "way/984378965"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Byron Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37193,
+        "lon": -0.47791,
+        "osm": "way/329760027"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Canford Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.38083,
+        "lon": -0.4971,
+        "osm": "way/160566231"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chapel Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.3745,
+        "lon": -0.49681,
+        "osm": "node/565754522"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chertsey Bridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38885,
+        "lon": -0.48573,
+        "osm": "way/156889650"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chertsey Road (Addlestone)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37976,
+        "lon": -0.49228,
+        "osm": "way/155416173"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chilsey Green Road (listed once as Chertsey Green Rd)",
+      "kind": "road",
+      "map": {
+        "lat": 51.39207,
+        "lon": -0.51434,
+        "osm": "way/152994691"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Road (Addlestone)",
+      "kind": "road",
+      "map": {
+        "lat": 51.36838,
+        "lon": -0.50309,
+        "osm": "way/984092420"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Coldharbour Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.4083,
+        "lon": -0.52994,
+        "osm": "way/157654597"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Corrie Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37187,
+        "lon": -0.48506,
+        "osm": "way/306689350"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Crockford Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37182,
+        "lon": -0.48405,
+        "osm": "way/306689351"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Curfew Bell Road (listed as Curfew Rd)",
+      "kind": "road",
+      "map": {
+        "lat": 51.38929,
+        "lon": -0.50712,
+        "osm": "way/248267627"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eastworth Road (A317)",
+      "kind": "road",
+      "map": {
+        "lat": 51.38613,
+        "lon": -0.50325,
+        "osm": "way/155417613"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ferndale Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.37756,
+        "lon": -0.51747,
+        "osm": "node/565754554"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fernlands Close",
+      "kind": "road",
+      "map": {
+        "lat": 51.37617,
+        "lon": -0.5163,
+        "osm": "way/4865713"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fordwater Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38622,
+        "lon": -0.49468,
+        "osm": "way/156480965"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Free Prae Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38593,
+        "lon": -0.50152,
+        "osm": "way/156950057"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Garfield Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37115,
+        "lon": -0.48781,
+        "osm": "way/161908541"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Grange Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.35112,
+        "lon": -0.50027,
+        "osm": "way/160330520"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Green Lane (Chertsey South and Addlestone)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37832,
+        "lon": -0.51408,
+        "osm": "way/331307067"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.40586,
+        "lon": -0.53598,
+        "osm": "way/161535692"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Guildford Road (A320)",
+      "kind": "road",
+      "map": {
+        "lat": 51.38579,
+        "lon": -0.51328,
+        "osm": "way/179141500"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Guildford Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.38832,
+        "lon": -0.50758,
+        "osm": "way/331156506"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hamm Moor Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37156,
+        "lon": -0.47523,
+        "osm": "way/329760029"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hamm Moor Lane / Hamm Moor",
+      "kind": "road",
+      "map": {
+        "lat": 51.36973,
+        "lon": -0.47684,
+        "osm": "way/161957967"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hardwick Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.3803,
+        "lon": -0.52232,
+        "osm": "way/56216414"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hare Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.36288,
+        "lon": -0.51138,
+        "osm": "way/1328566848"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Heriot Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38966,
+        "lon": -0.5041,
+        "osm": "way/156484285"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "High Street (Addlestone)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37299,
+        "lon": -0.49335,
+        "osm": "node/565754389"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Holloway Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.38018,
+        "lon": -0.52168,
+        "osm": "way/984378971"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Horne Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.40302,
+        "lon": -0.46184,
+        "osm": "way/160590523"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Inglehurst",
+      "kind": "road",
+      "map": {
+        "lat": 51.3487,
+        "lon": -0.4973,
+        "osm": "way/160326068"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingston Rise",
+      "kind": "road",
+      "map": {
+        "lat": 51.34953,
+        "lon": -0.50389,
+        "osm": "way/160330541"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Laleham Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.40068,
+        "lon": -0.46089,
+        "osm": "way/154503526"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Liberty Hall Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36834,
+        "lon": -0.503,
+        "osm": "node/565754381"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Liberty Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.36734,
+        "lon": -0.49738,
+        "osm": "way/161884663"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Liberty Rise",
+      "kind": "road",
+      "map": {
+        "lat": 51.36448,
+        "lon": -0.50475,
+        "osm": "way/160375545"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Link Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37286,
+        "lon": -0.475,
+        "osm": "way/161957911"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Little Green Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37698,
+        "lon": -0.51654,
+        "osm": "way/682135766"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Littleton Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.39129,
+        "lon": -0.47917,
+        "osm": "way/306691378"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "London Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.39202,
+        "lon": -0.50321,
+        "osm": "way/156480963"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Longcross Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37788,
+        "lon": -0.5376,
+        "osm": "way/309998404"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lyne Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.398,
+        "lon": -0.5445,
+        "osm": "way/150735957"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lyne Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.3939,
+        "lon": -0.56265,
+        "osm": "way/40104416"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Manygate Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.39168,
+        "lon": -0.44285,
+        "osm": "way/770501482"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Marsh Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37315,
+        "lon": -0.49795,
+        "osm": "way/160582223"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Merrylands",
+      "kind": "road",
+      "map": {
+        "lat": 51.37624,
+        "lon": -0.51491,
+        "osm": "way/160414813"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mill House Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.40281,
+        "lon": -0.53485,
+        "osm": "way/152995277"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mill Lane (Thorpe)",
+      "kind": "road",
+      "map": {
+        "lat": 51.40593,
+        "lon": -0.53308,
+        "osm": "way/157654203"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Murray Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36586,
+        "lon": -0.52463,
+        "osm": "way/682771264"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Nell Gwynn Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.39515,
+        "lon": -0.4391,
+        "osm": "way/161779641"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "New Haw Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36696,
+        "lon": -0.49044,
+        "osm": "way/155411230"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "New Wickham Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.42361,
+        "lon": -0.54026,
+        "osm": "way/150801591"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Norlands Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.41086,
+        "lon": -0.51783,
+        "osm": "way/372317084"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ongar Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.36512,
+        "lon": -0.50638,
+        "osm": "way/160375561"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pinewood Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.34818,
+        "lon": -0.49754,
+        "osm": "way/984378964"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pound Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38953,
+        "lon": -0.49899,
+        "osm": "way/290616"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pyrcroft Road (A317 and A320)",
+      "kind": "road",
+      "map": {
+        "lat": 51.3892,
+        "lon": -0.51092,
+        "osm": "way/152993560"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queen Mary's Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.3499,
+        "lon": -0.50499,
+        "osm": "way/898217288"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Renfree Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.39021,
+        "lon": -0.46337,
+        "osm": "way/154766569"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Roakes Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.38263,
+        "lon": -0.49979,
+        "osm": "way/421838177"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Row Town",
+      "kind": "road",
+      "map": {
+        "lat": 51.36194,
+        "lon": -0.50874,
+        "osm": "way/329953364"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Russell Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39123,
+        "lon": -0.4387,
+        "osm": "way/552462476"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Russington Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39588,
+        "lon": -0.43728,
+        "osm": "way/161779633"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ruxbury Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39286,
+        "lon": -0.51905,
+        "osm": "way/371951572"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sandalwood Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.37734,
+        "lon": -0.52042,
+        "osm": "way/157510335"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sandhills Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.39996,
+        "lon": -0.55288,
+        "osm": "way/487204874"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "School Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37212,
+        "lon": -0.50249,
+        "osm": "way/160608644"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Scotland Bridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.34575,
+        "lon": -0.50112,
+        "osm": "way/160326091"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shakespeare Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37045,
+        "lon": -0.479,
+        "osm": "way/690814416"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sheep Walk",
+      "kind": "road",
+      "map": {
+        "lat": 51.39021,
+        "lon": -0.46549,
+        "osm": "way/162919127"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Simplemarsh Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37173,
+        "lon": -0.49793,
+        "osm": "way/160582239"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Squire's Bridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.40288,
+        "lon": -0.46375,
+        "osm": "way/155236822"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Ann's Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39486,
+        "lon": -0.51372,
+        "osm": "way/156950079"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Peter's Way (A317 and A320)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37995,
+        "lon": -0.49318,
+        "osm": "way/155416184"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Staines Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.39472,
+        "lon": -0.50515,
+        "osm": "way/371957064"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Staines Road (A320)",
+      "kind": "road",
+      "map": {
+        "lat": 51.41122,
+        "lon": -0.49075,
+        "osm": "way/421670804"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road (Addlestone)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37142,
+        "lon": -0.48962,
+        "osm": "way/690810358"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stepgates",
+      "kind": "road",
+      "map": {
+        "lat": 51.38838,
+        "lon": -0.49707,
+        "osm": "way/156950071"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stroude Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.41185,
+        "lon": -0.55451,
+        "osm": "way/487205211"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Ten Acre Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.41055,
+        "lon": -0.52938,
+        "osm": "way/157654360"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Broadway",
+      "kind": "road",
+      "map": {
+        "lat": 51.40944,
+        "lon": -0.48985,
+        "osm": "way/154508365"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.36817,
+        "lon": -0.49912,
+        "osm": "way/161884694"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "The Knoll",
+      "kind": "road",
+      "map": {
+        "lat": 51.38458,
+        "lon": -0.51147,
+        "osm": "way/224207"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Thorpe Lea Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.41641,
+        "lon": -0.53478,
+        "osm": "way/296944065"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Trumpsgreen Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.39672,
+        "lon": -0.56624,
+        "osm": "way/371951574"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Village Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.40889,
+        "lon": -0.53237,
+        "osm": "way/161535698"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Waverley Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.37621,
+        "lon": -0.52189,
+        "osm": "way/157510531"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Weir Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38925,
+        "lon": -0.49448,
+        "osm": "way/157510639"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Western Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.39584,
+        "lon": -0.43837,
+        "osm": "way/552667788"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Weybridge Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37488,
+        "lon": -0.47926,
+        "osm": "way/690941838"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wheatash Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38352,
+        "lon": -0.49879,
+        "osm": "way/160566269"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windsor Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.39253,
+        "lon": -0.50446,
+        "osm": "node/565754411"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woburn Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.38041,
+        "lon": -0.4886,
+        "osm": "way/690939269"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wood Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.4023,
+        "lon": -0.46033,
+        "osm": "way/160590528"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woodham Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.34914,
+        "lon": -0.49914,
+        "osm": "way/984378966"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woodham Park Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.3554,
+        "lon": -0.5139,
+        "osm": "way/161868873"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wordsworth Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37133,
+        "lon": -0.47876,
+        "osm": "way/161957920"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chertsey Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.41198,
+        "lon": -0.51008,
+        "osm": "way/162539362"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kingston Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.42772,
+        "lon": -0.48987,
+        "osm": "way/155061193"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Test centre way out (Hanworth Lane business park, to The Knoll)",
+      "kind": "junction",
+      "map": {
+        "lat": 51.383671,
+        "lon": -0.510265
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Every list starts and ends at the test centre and leaves by The Knoll"
+    },
+    {
+      "name": "The Knoll / Guildford Road / Bell Bridge Road roundabout (A320)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.385899,
+        "lon": -0.511302,
+        "osm": "way/248796922"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bell Bridge Road / Pyrcroft Road roundabout (A320 / A317)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.388926,
+        "lon": -0.510237,
+        "osm": "way/249103209"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pyrcroft Road traffic lights (Abbots Way, Fox Lane North, Guildford Street, Eastworth Road)",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.388261,
+        "lon": -0.508524,
+        "osm": "node/3396193081"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Abbots Way / Curfew Bell Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.389366,
+        "lon": -0.507487,
+        "osm": "node/1697387"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Guildford Street / Curfew Bell Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.389168,
+        "lon": -0.506767,
+        "osm": "node/1687315827"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Guildford Street / Heriot Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.389555,
+        "lon": -0.505904,
+        "osm": "node/1687315861"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Heriot Road / London Street mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.391863,
+        "lon": -0.502809,
+        "osm": "node/596663"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "London Street / Bridge Road / Pound Road / Abbey Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.390417,
+        "lon": -0.498749,
+        "osm": "way/681700654"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Named as \"Pound Rd crossroads\" and by its turns from Abbey Road and London Street"
+    },
+    {
+      "name": "Pound Road / Stepgates / Free Prae Road crossroads",
+      "kind": "junction",
+      "map": {
+        "lat": 51.388818,
+        "lon": -0.499081,
+        "osm": "way/156950071"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Free Prae Road / Eastworth Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.385701,
+        "lon": -0.501744,
+        "osm": "node/1323355874"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eastworth Road roundabout (A317, Victory Road)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.387075,
+        "lon": -0.504939,
+        "osm": "way/896022364"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bridge Road / Weir Road traffic lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.390309,
+        "lon": -0.493884,
+        "osm": "node/2534118762"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Ann's Road / Pyrcroft Road / Ruxbury Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.392735,
+        "lon": -0.518456,
+        "osm": "node/1699118462"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [
+    "Bridge Street (as \"Bridge St / Chertsey Bridge Rd\"; no Bridge Street near the bridge on the map: read as Bridge Road)",
+    "London Road (as \"London Rd / London Rd\" near Windsor Street; Chertsey has London Street and Staines Road there)",
+    "Thorpe Road (as \"Chertsey Green Rd / Thorpe Rd\"; the road north from the St Ann's Road roundabout is Staines Road, A320, on the map)",
+    "Windsor Avenue",
+    "Home Road (near Wood Road, Littleton)",
+    "King Georges Drive (as \"Woodham Marys Drive / Queen Marys Drive ... King Georges Drive\")",
+    "Wingfield (as \"Inglehurst / Wingfield\", New Haw)"
+  ],
+  "summary": "0 confirmed and 111 likely roads, 0 confirmed and 14 likely junctions, all from one publisher (drivingtesttips.biz, 14 routes plus extended routes; intensivelessons.co.uk copies them) whose lists start and end at the current centre. No first-hand source was found. One route per centre (from batch 2), so the overlap rule applies to one route: the town loop round Pyrcroft Road, Heriot Road, London Street, Pound Road, Free Prae Road and Eastworth Road can keep most of its length on listed roads with three or more challenges at listed junctions."
+}

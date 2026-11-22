@@ -1,0 +1,1408 @@
+{
+  "centre": "Bletchley",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.99382,
+    "lon": -0.74268
+  },
+  "address_checked": "2026-11-21",
+  "address": "Block 4, Government Buildings, Wilton Hostel, Wilton Avenue, Bletchley, Milton Keynes MK3 6DH",
+  "address_note": "gov.uk's centre finder could not be reached from this machine (no response) and gov.uk search lists no centre page. DVSA's centre data as quoted by passrates.uk (captured 2026-05-12) gives Block 4 Government Buildings, Wilton Hostel, Wilton Avenue, Bletchley MK3 6DH, matched by drivingtesttips.biz's centre page. The postcode centroid (51.99393, -0.74240) is about 20 m from the given position, and OpenStreetMap has a building named 'Driving test centre' (way 226765740, postcode MK3 6DH) beside Wilton Avenue at the given position, reached by a service road (way 226765734) off Wilton Avenue. A driving school's news page of 13 August 2026 (s5) describes new test programmes at the centre from 2026 into January 2027, so it is open and not moving. Recheck on gov.uk when reachable.",
+  "searches": [
+    "\"Bletchley driving test\" route roads (pass 1)",
+    "\"Bletchley test centre\" roundabout OR junction tips (pass 1)",
+    "\"Bletchley\" mock test route (pass 1)",
+    "\"Bletchley driving test\" reddit OR forum (pass 1)",
+    "Bletchley driving test centre Wilton Avenue test route tips roundabout",
+    "Bletchley driving test reddit Milton Keynes failed roundabout"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (Bletchley routes 1-5, 6-10, 11-15 and extended routes pages)",
+      "url": "https://www.drivingtesttips.biz/bletchley-driving-test-routes.html",
+      "published": "undated (says the routes may have altered since DVSA stopped publishing them)",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "also": [
+        "https://www.drivingtesttips.biz/bletchley-driving-test-routes-6-10.html",
+        "https://www.drivingtesttips.biz/driving-test-routes/bletchley-driving-test-routes-11-15.html",
+        "https://drivingtesttips.biz/extended-driving-test/extended-driving-test-routes/bletchley-extended-driving-test-routes.html"
+      ],
+      "names": [
+        "Wilton Avenue",
+        "Church Green Road",
+        "Rickley Lane",
+        "Whalley Drive",
+        "Sherwood Drive",
+        "Buckingham Road",
+        "Cottingham Grove",
+        "Burns Road",
+        "Water Eaton Road",
+        "Shenley Road",
+        "Whaddon Way",
+        "Westminster Drive",
+        "Duncombe Street",
+        "Saxon Street",
+        "Princes Way",
+        "Albert Street",
+        "Queensway",
+        "Brooklands Road",
+        "Findlay Way",
+        "Oliver Road",
+        "Osborne Street",
+        "Manor Road",
+        "Stoke Road",
+        "Victoria Road",
+        "Watling Street",
+        "Bletcham Way",
+        "Standing Way",
+        "Tattenhoe Lane",
+        "Muirfield Drive",
+        "Tweed Drive",
+        "Newton Road",
+        "Drayton Road",
+        "Lomond Drive",
+        "Chestnut Crescent",
+        "Willow Way",
+        "Mill Road",
+        "Larch Grove",
+        "Aylesbury Street",
+        "George Street",
+        "Vicarage Road",
+        "Bilton Road",
+        "Staplehall Road",
+        "Simpson Road",
+        "Bond Avenue",
+        "Denbigh Road",
+        "North Street",
+        "Tavistock Street",
+        "Western Road",
+        "Church Street",
+        "Regent Street",
+        "Oxford Street",
+        "Cambridge Street",
+        "Bedford Street",
+        "Lennox Road",
+        "Windsor Street",
+        "Sandringham Place",
+        "Warwick Road",
+        "Kenilworth Drive",
+        "Penina Close",
+        "Trent Road",
+        "Kennet Drive",
+        "St Clements Drive",
+        "Wincanton Hill",
+        "Shelley Drive",
+        "Milton Grove",
+        "Medale Road",
+        "Grafton Street",
+        "Denbigh Hall Drive",
+        "Groveway",
+        "Fern Grove",
+        "Oakwood Drive",
+        "Pinewood Drive",
+        "Sycamore Avenue",
+        "Laburnum Grove",
+        "Eaton Avenue",
+        "St Johns Road",
+        "Windmill Hill Drive",
+        "the Buckingham Road / Sherwood Drive (double) mini-roundabout",
+        "the Church Green Road / Rickley Lane junction"
+      ],
+      "note": "Turn-by-turn lists for 15 routes and two extended ones; every route leaves left on to Wilton Avenue and returns right into the centre from it, so they fit the current address. Old, not first-hand; names only taken, no route order copied."
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk (Smart Bookings Ltd)",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Buckinghamshire/Bletchley",
+      "published": "undated",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "the same as s1 routes 1-13"
+      ],
+      "note": "Routes 1-13 of s1, word for word: counts once with s1."
+    },
+    {
+      "id": "s3",
+      "kind": "route-list",
+      "author": "motorcycletesttips.uk (Bletchley motorcycle test routes)",
+      "url": "https://www.motorcycletesttips.uk/riding-test/motorcycle-test-routes/bletchley-motorcycle-test-routes/",
+      "published": "undated",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Wilton Avenue",
+        "Church Green Road",
+        "Rickley Lane",
+        "Whaddon Way",
+        "Shenley Road",
+        "Buckingham Road",
+        "Whalley Drive",
+        "Sherwood Drive",
+        "Water Eaton Road",
+        "Manor Road",
+        "Saxon Street",
+        "Princes Way",
+        "Watling Street",
+        "the Buckingham Road double mini-roundabout",
+        "the Church Green Road / Rickley Lane mini-roundabout"
+      ],
+      "note": "Motorcycle module 2 routes in the same format and glossary as s1, apparently the same publisher: counts once with s1."
+    },
+    {
+      "id": "s4",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (centre page)",
+      "url": "https://www.drivingtesttips.biz/bletchley-driving-test-centre.html",
+      "published": "undated; reviews to 2023",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "the narrow access to the test centre"
+      ],
+      "note": "Address and a note to arrive no earlier than 5 minutes before because of the narrow access. Learners' reviews on the page name no roads. Same site as s1."
+    },
+    {
+      "id": "s5",
+      "kind": "instructor-page",
+      "author": "driveJohnson's driving school (news post 'Driving Test Centre News - Bletchley')",
+      "url": "https://www.drivejohnsons.co.uk/2026/08/driving-test-centre-news-bletchley",
+      "published": "2026-08-13",
+      "read_on": "2026-11-21",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "Wilton Avenue",
+        "the narrow road into the test centre",
+        "the blind-spot mirror on the corner"
+      ],
+      "note": "Advice to its instructors at this centre: a turn in the road at the bottom of Wilton Avenue before a test, pulling up outside the centre, the narrow way in and the mirror on its corner; new test programmes from 2026 and January 2027."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/bletchley",
+      "why": "404 when read"
+    },
+    {
+      "url": "https://passmefast.co.uk/test-centres/practical/buckinghamshire/bletchley",
+      "why": "template page (pass 1); not opened"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/bletchley/mock-driving-test",
+      "why": "template page (pass 1); not opened"
+    },
+    {
+      "url": "https://just-drive.co.uk/?p=21987",
+      "why": "404 when read"
+    },
+    {
+      "url": "https://www.veygo.com/?p=37400",
+      "why": "template page; pass rates only"
+    },
+    {
+      "url": "https://passrates.uk/centres/bletchley",
+      "why": "address (from DVSA data) and pass rates only; used for the address check"
+    },
+    {
+      "url": "https://payhip.com/b/cpZ5n",
+      "why": "paid route pack; never used"
+    }
+  ],
+  "places": [
+    {
+      "name": "Wilton Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.99416,
+        "lon": -0.74286,
+        "osm": "way/37962720"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "The centre's own road: every list leaves and returns by it; the driving school's news page (s5) names it for the turn in the road at its bottom and the way in."
+    },
+    {
+      "name": "Church Green Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99386,
+        "lon": -0.74332,
+        "osm": "way/103508460"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Rickley Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.99487,
+        "lon": -0.7463,
+        "osm": "way/155202639"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whalley Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99655,
+        "lon": -0.74682,
+        "osm": "way/182958346"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sherwood Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99348,
+        "lon": -0.73844,
+        "osm": "way/1734327"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Several lists use it between Whalley Drive and the Buckingham Road roundabout."
+    },
+    {
+      "name": "Buckingham Road (A421)",
+      "kind": "road",
+      "map": {
+        "lat": 51.99257,
+        "lon": -0.74347,
+        "osm": "way/155155049"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cottingham Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.99031,
+        "lon": -0.74359,
+        "osm": "way/46615519"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "One list (s1 route 10) comes out of it right on to Buckingham Road."
+    },
+    {
+      "name": "Burns Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99138,
+        "lon": -0.74561,
+        "osm": "way/46615516"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Water Eaton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99315,
+        "lon": -0.73821,
+        "osm": "way/186075976"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shenley Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99431,
+        "lon": -0.75355,
+        "osm": "way/37340485"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Whaddon Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.00437,
+        "lon": -0.74979,
+        "osm": "way/41880404"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Westminster Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.00323,
+        "lon": -0.74761,
+        "osm": "way/36706269"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Duncombe Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99329,
+        "lon": -0.73484,
+        "osm": "way/38905917"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "V7 Saxon Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99618,
+        "lon": -0.73452,
+        "osm": "way/79686529"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Princes Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.99708,
+        "lon": -0.73351,
+        "osm": "way/45172872"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Albert Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99595,
+        "lon": -0.73278,
+        "osm": "way/38905935"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Queensway",
+      "kind": "road",
+      "map": {
+        "lat": 51.99451,
+        "lon": -0.73203,
+        "osm": "way/1065205203"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Brooklands Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.9946,
+        "lon": -0.73017,
+        "osm": "way/1065205206"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Findlay Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.99398,
+        "lon": -0.73186,
+        "osm": "way/38905919"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Oliver Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99383,
+        "lon": -0.73271,
+        "osm": "way/1065205209"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Osborne Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99232,
+        "lon": -0.7324,
+        "osm": "way/38905916"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Manor Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99085,
+        "lon": -0.72158,
+        "osm": "way/103510521"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Stoke Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.98769,
+        "lon": -0.72,
+        "osm": "way/45144918"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Victoria Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99789,
+        "lon": -0.71969,
+        "osm": "way/10441608"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Watling Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.00334,
+        "lon": -0.72806,
+        "osm": "way/44452323"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "H10 Bletcham Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.00481,
+        "lon": -0.73176,
+        "osm": "way/479912623"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "H8 Standing Way",
+      "kind": "road",
+      "map": {
+        "lat": 52.00314,
+        "lon": -0.7635,
+        "osm": "way/34703117"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tattenhoe Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.99035,
+        "lon": -0.75986,
+        "osm": "way/225428869"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Muirfield Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99864,
+        "lon": -0.76847,
+        "osm": "way/4273878"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tweed Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.00056,
+        "lon": -0.76448,
+        "osm": "way/105024201"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Newton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.98965,
+        "lon": -0.75495,
+        "osm": "way/1880470"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Drayton Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.98337,
+        "lon": -0.7317,
+        "osm": "way/1065115056"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lomond Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.97541,
+        "lon": -0.72387,
+        "osm": "way/44077518"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Chestnut Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.99103,
+        "lon": -0.72394,
+        "osm": "way/38910889"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Willow Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.9909,
+        "lon": -0.72747,
+        "osm": "way/38910894"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Mill Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.98855,
+        "lon": -0.72043,
+        "osm": "way/46615892"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Larch Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.99058,
+        "lon": -0.7214,
+        "osm": "way/59068301"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Aylesbury Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99517,
+        "lon": -0.71824,
+        "osm": "way/101789249"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "George Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99762,
+        "lon": -0.71749,
+        "osm": "way/38907638"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Vicarage Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99598,
+        "lon": -0.72057,
+        "osm": "way/101789257"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bilton Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.00232,
+        "lon": -0.72184,
+        "osm": "way/44061630"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Staplehall Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.00146,
+        "lon": -0.71932,
+        "osm": "way/44061625"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Simpson Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.00034,
+        "lon": -0.71562,
+        "osm": "way/31736260"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bond Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 52.0041,
+        "lon": -0.72039,
+        "osm": "way/204468879"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Denbigh Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.00479,
+        "lon": -0.7323,
+        "osm": "way/104977392"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "North Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.9975,
+        "lon": -0.72916,
+        "osm": "way/1149662516"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Tavistock Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.9995,
+        "lon": -0.72758,
+        "osm": "way/34844234"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Western Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99835,
+        "lon": -0.7252,
+        "osm": "way/38907645"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Church Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99851,
+        "lon": -0.71902,
+        "osm": "way/10441607"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Regent Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99598,
+        "lon": -0.73203,
+        "osm": "way/105781402"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Oxford Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99477,
+        "lon": -0.73074,
+        "osm": "way/38905925"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Cambridge Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99508,
+        "lon": -0.72844,
+        "osm": "way/38905931"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bedford Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99545,
+        "lon": -0.7298,
+        "osm": "way/79702014"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Lennox Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99349,
+        "lon": -0.72621,
+        "osm": "way/38910907"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windsor Street",
+      "kind": "road",
+      "map": {
+        "lat": 51.99189,
+        "lon": -0.73117,
+        "osm": "way/38905913"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sandringham Place",
+      "kind": "road",
+      "map": {
+        "lat": 51.99357,
+        "lon": -0.73149,
+        "osm": "way/44287128"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Warwick Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99251,
+        "lon": -0.75567,
+        "osm": "way/45338940"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kenilworth Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99418,
+        "lon": -0.75806,
+        "osm": "way/45338944"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Penina Close",
+      "kind": "road",
+      "map": {
+        "lat": 51.99808,
+        "lon": -0.76953,
+        "osm": "way/42930549"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Trent Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.99807,
+        "lon": -0.75794,
+        "osm": "way/675879152"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Kennet Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99727,
+        "lon": -0.75681,
+        "osm": "way/42930556"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Clements Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.98958,
+        "lon": -0.76458,
+        "osm": "way/93844608"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wincanton Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.98775,
+        "lon": -0.77208,
+        "osm": "way/44285621"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shelley Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.98929,
+        "lon": -0.75304,
+        "osm": "way/46615534"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Milton Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.98914,
+        "lon": -0.74962,
+        "osm": "way/46615536"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Medale Road",
+      "kind": "road",
+      "map": {
+        "lat": 52.01549,
+        "lon": -0.73814,
+        "osm": "way/641692776"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "V6 Grafton Street",
+      "kind": "road",
+      "map": {
+        "lat": 52.0068,
+        "lon": -0.73518,
+        "osm": "way/38975226"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Denbigh Hall Drive",
+      "kind": "road",
+      "map": {
+        "lat": 52.01026,
+        "lon": -0.75032,
+        "osm": "way/101407190"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Groveway",
+      "kind": "road",
+      "map": {
+        "lat": 52.0109,
+        "lon": -0.74588,
+        "osm": "way/186544888"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Fern Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.98133,
+        "lon": -0.72703,
+        "osm": "way/44077511"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Oakwood Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99199,
+        "lon": -0.71812,
+        "osm": "way/46616557"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Pinewood Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.99217,
+        "lon": -0.71639,
+        "osm": "way/101790554"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Sycamore Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.99417,
+        "lon": -0.71596,
+        "osm": "way/238965270"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Laburnum Grove",
+      "kind": "road",
+      "map": {
+        "lat": 51.99276,
+        "lon": -0.71699,
+        "osm": "way/46616547"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Eaton Avenue",
+      "kind": "road",
+      "map": {
+        "lat": 51.99258,
+        "lon": -0.72122,
+        "osm": "way/38910909"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "St Johns Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.98968,
+        "lon": -0.75781,
+        "osm": "way/38281922"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Windmill Hill Drive",
+      "kind": "road",
+      "map": {
+        "lat": 51.9905,
+        "lon": -0.76929,
+        "osm": "way/32017764"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Test centre way out on to Wilton Avenue (narrow, with a mirror on the corner)",
+      "kind": "junction",
+      "map": {
+        "lat": 51.994089,
+        "lon": -0.742884,
+        "osm": "service way/226765734 at Wilton Avenue way/37962720"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "Every list starts left on to Wilton Avenue and ends right into the centre (s1); the driving school (s5) describes the narrow road into the centre and the blind-spot mirror on its corner."
+    },
+    {
+      "name": "Wilton Avenue / Church Green Road",
+      "kind": "junction",
+      "map": {
+        "lat": 51.993748,
+        "lon": -0.743059,
+        "osm": "node at Wilton Avenue way/37962720 and Church Green Road way/103508460"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Every list comes to the end of Wilton Avenue and turns left or right on to Church Green Road, and comes back right into Wilton Avenue."
+    },
+    {
+      "name": "Church Green Road / Rickley Lane mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.994682,
+        "lon": -0.745875,
+        "osm": "node/21585897"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists going west along Church Green Road carry on into Rickley Lane here (written as Church Green Rd / Rickley Lane); one list (s3, same publisher) names a mini-roundabout here."
+    },
+    {
+      "name": "Rickley Lane / Whalley Drive",
+      "kind": "junction",
+      "map": {
+        "lat": 51.996102,
+        "lon": -0.747655,
+        "osm": "Rickley Lane way/23464633 at Whalley Drive way/182958346"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists turn right from Rickley Lane into Whalley Drive, or come to the end of Whalley Drive and turn left."
+    },
+    {
+      "name": "Whalley Drive / Sherwood Drive",
+      "kind": "junction",
+      "map": {
+        "lat": 52.003037,
+        "lon": -0.741673,
+        "osm": "Whalley Drive way/155202645 at Sherwood Drive way/627877550"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists turn right off Whalley Drive into Sherwood Drive (the third right), or come up Sherwood Drive and turn left on to Whalley Drive."
+    },
+    {
+      "name": "Buckingham Road / Sherwood Drive / Water Eaton Road roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.993317,
+        "lon": -0.738274,
+        "osm": "ring of junction=roundabout ways 225745462, 1529939092-1529939094"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "A small roundabout the lists call a mini or double mini-roundabout; they go round it to Water Eaton Road, Sherwood Drive or on along Buckingham Road."
+    },
+    {
+      "name": "Church Green Road / Buckingham Road",
+      "kind": "junction",
+      "map": {
+        "lat": 51.992679,
+        "lon": -0.741192,
+        "osm": "Church Green Road way/103508460 at Buckingham Road way/155155049"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists come to the end of Church Green Road and turn left on to Buckingham Road, and come back turning right off it into Church Green Road."
+    },
+    {
+      "name": "Cottingham Grove / Buckingham Road (east end)",
+      "kind": "junction",
+      "map": {
+        "lat": 51.99258,
+        "lon": -0.741761,
+        "osm": "Cottingham Grove way/46615519 at Buckingham Road"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "One list comes out of Cottingham Grove right on to Buckingham Road here."
+    },
+    {
+      "name": "Brunel Roundabout (Buckingham Road / V7 Saxon Street)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.994377,
+        "lon": -0.734729,
+        "osm": "ring of junction=roundabout ways 5209004, 898544182-898544184, 1530053876"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Many lists go through it to Saxon Street, Duncombe Street or Buckingham Road."
+    },
+    {
+      "name": "Princes Way Roundabout",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.997189,
+        "lon": -0.734335,
+        "osm": "ring of junction=roundabout ways 1880425, 1164011020-1164140569"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists turn between Saxon Street and Princes Way here."
+    },
+    {
+      "name": "Princes Way / Queensway / Findlay Way mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.995275,
+        "lon": -0.727245,
+        "osm": "node/1218040136"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists go ahead here between Princes Way and Findlay Way / Lennox Road."
+    },
+    {
+      "name": "Water Eaton Road / Brooklands Road mini-roundabout",
+      "kind": "mini-roundabout",
+      "map": {
+        "lat": 51.990272,
+        "lon": -0.729375,
+        "osm": "node/7386363"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Lists go ahead or turn here on Water Eaton Road."
+    }
+  ],
+  "unmatched": [
+    "St Davids Road",
+    "Brookfield Road",
+    "Westbrook End",
+    "Guildhall Road",
+    "Coddimoor Lane",
+    "St Andrews Road",
+    "St Georges Road",
+    "Shenley Drive",
+    "School Drive"
+  ],
+  "summary": "1 confirmed road (Wilton Avenue) and 1 confirmed junction (the centre's way out on to Wilton Avenue); 76 likely roads and 11 likely junctions, almost all from one route-list publisher (drivingtesttips.biz, copied by intensivelessons.co.uk) whose lists start and end at the current address. Two routes meeting the overlap rule look possible: one west and north (Church Green Road, Rickley Lane, Whalley Drive, Sherwood Drive) and one east into central Bletchley (Buckingham Road, Saxon Street, Princes Way, Queensway, Water Eaton Road)."
+}

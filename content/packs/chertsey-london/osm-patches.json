@@ -1,0 +1,10 @@
+[
+ {
+  "op": "set-tag",
+  "type": "way",
+  "id": 162180659,
+  "k": "name",
+  "v": "Driving Test Centre",
+  "why": "The way into the Hanworth Lane Business Park (The Forum) car park, where the test centre is, off the Hanworth Lane service road: unnamed and 61 m long, so the route planner will not turn into it (a short unnamed road is a link or a stub) and the route could not come back into the centre. Named for the place it leads to, as the owner's rule of 21 Nov 2026 asks; the route starts and ends on it."
+ }
+]

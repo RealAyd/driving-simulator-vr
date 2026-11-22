@@ -1,0 +1,9 @@
+[
+ {
+  "op": "move-node",
+  "id": 7179436732,
+  "lat": 51.9966941,
+  "lon": -0.7379527,
+  "why": "The signal-controlled crossing on Sherwood Drive by Jemima Way sits 5 m from the end of its way (the way is split at the next node), and the generator leaves out a crossing within 8 m of a way's end, so the lights would stand with no crossing. Moved 4.5 m back along Sherwood Drive's own line (and the cycleway crossing it): the crossing is then drawn where it is."
+ }
+]

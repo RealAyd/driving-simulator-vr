@@ -1,0 +1,587 @@
+{
+  "centre": "West Wickham (London)",
+  "status": "ok",
+  "centre_position": {
+    "lat": 51.37504,
+    "lon": -0.01093
+  },
+  "address_checked": "2026-11-21",
+  "address": "56 Glebe Way, West Wickham BR4 0RL",
+  "address_note": "gov.uk's find-driving-test-centre results could not be read from this machine (the form page loads, the results page returns nothing to a script). The address is taken from passrates.uk, which quotes DVSA's find a driving test centre data captured 2026-05-12 (56 Glebe Way, West Wickham BR4 0RL), and matched by drivingtesttips.biz's centre page and Drive Johnsons' centre list. OSM has Glebe Way (A232) way/166970749 and Rose Walk way/14756873 within about 100 m of the given position, which sits on the corner of the two. Every old route list leaves by Rose Walk, so the centre has not moved since they were written. Recheck on gov.uk when reachable.",
+  "searches": [
+    "West Wickham driving test centre Glebe Way test route roundabout tips instructor",
+    "\"West Wickham\" driving test reddit OR forum passed failed roundabout"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "kind": "route-list",
+      "author": "intensivelessons.co.uk (Smart Bookings Ltd)",
+      "url": "https://intensivelessons.co.uk/driving-test-routes/Kent/West-Wickham-London",
+      "published": "undated (reproduces the routes DVSA published before it stopped publishing them)",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Rose Walk",
+        "Wickham Court Road",
+        "Glebe Way",
+        "Silver Lane",
+        "Addington Road",
+        "Bourne Way",
+        "Station Approach (Hayes)",
+        "Pickhurst Lane",
+        "Bourne Vale",
+        "Mead Way",
+        "Hayes Lane",
+        "Croydon Road",
+        "High Street",
+        "Manor Park Road",
+        "Ravenswood Crescent",
+        "South Eden Park Road",
+        "Station Road",
+        "Red Lodge Road",
+        "Hayes Chase",
+        "Westmoreland Road",
+        "Woodland Way",
+        "Wickham Road",
+        "Bridle Road",
+        "Shirley Church Road",
+        "Spout Hill",
+        "Kent Gate Way",
+        "Corkscrew Hill",
+        "Coney Hill Road",
+        "Layhams Road",
+        "Baston Road",
+        "Wood Lodge Lane",
+        "Hayes Street",
+        "West Common Road",
+        "Hayes Hill Road",
+        "Tiepigs Lane"
+      ],
+      "note": "Turn-by-turn lists for eight routes; every one leaves by Rose Walk onto Wickham Court Road and most return by the Glebe Way / Croydon Road roundabout and Silver Lane. Old, not first-hand; names only taken, no route order copied."
+    },
+    {
+      "id": "s2",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (routes 1-4 and 5-8 pages)",
+      "url": "https://www.drivingtesttips.biz/west-wickham-driving-test-routes.html",
+      "published": "undated (says the routes may have altered since DVSA stopped publishing them)",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Rose Walk",
+        "Wickham Court Road",
+        "Glebe Way",
+        "Silver Lane",
+        "Addington Road",
+        "Pickhurst Lane"
+      ],
+      "note": "Same route lists as s1, word for word: counts once with s1. Its routes 5-8 page is https://drivingtesttips.biz/west-wickham-driving-test-routes-5-8.html."
+    },
+    {
+      "id": "s3",
+      "kind": "route-list",
+      "author": "drivingtesttips.biz (editorial text on its centre page)",
+      "url": "https://www.drivingtesttips.biz/west-wickham-driving-test-centre.html",
+      "published": "undated; page carries reviews to 2023",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "multi-lane and mini roundabouts",
+        "narrow residential roads with parked cars"
+      ],
+      "note": "General description only: fast traffic, many roundabouts from multi-lane to mini, busy or closed junctions and crossroads, manoeuvres in narrow residential streets with parked cars. Names no roads."
+    },
+    {
+      "id": "s4",
+      "kind": "learner",
+      "author": "a learner's review on drivingtesttips.biz's centre page (2019-08)",
+      "url": "https://www.drivingtesttips.biz/west-wickham-driving-test-centre.html",
+      "published": "2019-08",
+      "read_on": "2026-11-21",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "the one-way system by Langley Park girls' school",
+        "the 'mad mile'"
+      ],
+      "note": "Own-test accounts of two tests: a serious fault for the wrong position for a right turn out of the one-way system by the girls' school; the second test went down a stretch locals call the mad mile. Other reviews are about examiners and name no roads."
+    },
+    {
+      "id": "s5",
+      "kind": "instructor-page",
+      "author": "Bill Plant Driving School (West Wickham lessons page, an instructor's answers)",
+      "url": "https://www.billplant.co.uk/driving-lessons/where-to-find-us/london/south-london/west-wickham/",
+      "published": "undated (current site)",
+      "read_on": "2026-11-21",
+      "first_hand": false,
+      "before_centre_moved": false,
+      "names": [
+        "Glebe Way roundabout",
+        "Kent Gate Way roundabouts (the Addington roundabout)",
+        "Corkscrew Hill",
+        "Coney Hill Road / Croydon Road junction",
+        "High Street",
+        "Croydon Road",
+        "A232 roundabouts near Wickham Court Road"
+      ],
+      "note": "A lessons page, not about test routes as such (weaker, so likely at most on its own): names the Kent Gate Way roundabouts and lane choice there, Corkscrew Hill's steep bends, the uphill give way at Coney Hill Road onto Croydon Road, the busy High Street with parked cars, and the A232 roundabouts by Wickham Court Road as the hardest thing locally. Separate author from s1."
+    },
+    {
+      "id": "s6",
+      "kind": "official",
+      "author": "passrates.uk quoting DVSA's centre data (OGL v3.0)",
+      "url": "https://passrates.uk/centres/west-wickham-london",
+      "published": "2026-09",
+      "read_on": "2026-11-21",
+      "first_hand": true,
+      "before_centre_moved": false,
+      "names": [
+        "56 Glebe Way, West Wickham BR4 0RL"
+      ],
+      "note": "Address check only."
+    }
+  ],
+  "not_used": [
+    {
+      "url": "https://payhip.com/b/hTHo4",
+      "why": "paid route pack; never used"
+    },
+    {
+      "url": "https://rhubarb-whale-39k8.squarespace.com/bromley-london-driving-test-routes",
+      "why": "preview of paid routes, and another centre; never used"
+    },
+    {
+      "url": "https://www.passmefast.co.uk/test-centres/practical/greater-london/west-wickham-london",
+      "why": "returned no readable text (bot challenge); left alone"
+    },
+    {
+      "url": "https://www.veygo.com/driving-test-centres/west-wickham-london/",
+      "why": "refused automated reading (security block); left alone"
+    },
+    {
+      "url": "https://www.rateddriving.com/intensive-driving-course/west-wickham/",
+      "why": "returned no readable text; left alone"
+    },
+    {
+      "url": "https://www.myfourwheels.co.uk/locations/west-wickham/mock-driving-test",
+      "why": "template page, names no roads"
+    },
+    {
+      "url": "https://www.drivejohnsons.co.uk/learners/areas-we-cover/west-wickham/",
+      "why": "lessons sales page; address only, names no test roads"
+    },
+    {
+      "url": "https://business.google.com/v/formula-jon-driving-school/08762033540949860371/9b2a/_/lp/6382448477456588399",
+      "why": "a school's pass announcements; name no roads"
+    }
+  ],
+  "places": [
+    {
+      "name": "Glebe Way (A232)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37367,
+        "lon": -0.00716,
+        "osm": "way/166970749"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "The centre's own road, a busy A road from the High Street lights east to the Croydon Road and Addington Road roundabout; old routes leave and return by it."
+    },
+    {
+      "name": "Wickham Court Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37412,
+        "lon": -0.01354,
+        "osm": "way/3962556"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "Every old route turns on to it from Rose Walk."
+    },
+    {
+      "name": "Glebe Way roundabout (Glebe Way, Croydon Road and Addington Road)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.37112,
+        "lon": -0.001401,
+        "osm": "ring of junction=roundabout ways 607732329, 38553271, 38553270, 23706441"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "At the east end of Glebe Way; most old routes come back through it, and s5 names the Glebe Way roundabout."
+    },
+    {
+      "name": "Corkscrew Hill roundabout (Corkscrew Hill, Addington Road, Kent Gate Way and Layhams Road)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.368287,
+        "lon": -0.005918,
+        "osm": "ring of junction=roundabout ways 10242752, 239878939, 41722922"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "At the foot of Corkscrew Hill and the east end of Kent Gate Way; old routes turn there between Corkscrew Hill and Addington Road, and s5 names the Kent Gate Way roundabouts."
+    },
+    {
+      "name": "Rose Walk",
+      "kind": "road",
+      "map": {
+        "lat": 51.37386,
+        "lon": -0.01153,
+        "osm": "way/14756873"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Side road beside the centre; every old route leaves by it."
+    },
+    {
+      "name": "Silver Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37385,
+        "lon": -0.00869,
+        "osm": "way/14756934"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely",
+      "note": "Most old routes come back in by it."
+    },
+    {
+      "name": "Glebe Way, High Street, Station Road and Wickham Court Road lights",
+      "kind": "traffic-lights",
+      "map": {
+        "lat": 51.375769,
+        "lon": -0.01461,
+        "osm": "node/12630811"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "The signal junction at the west end of Glebe Way; every old route goes through it, and s5 names the A232 junctions by Wickham Court Road as the hardest local thing."
+    },
+    {
+      "name": "High Street (A232)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37669,
+        "lon": -0.01927,
+        "osm": "way/2954305"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "Busy shopping street with parked cars and pedestrians (s5)."
+    },
+    {
+      "name": "Croydon Road (A232, towards Hayes)",
+      "kind": "road",
+      "map": {
+        "lat": 51.36782,
+        "lon": 0.0156,
+        "osm": "way/184450260"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "Kent Gate Way roundabouts (Addington)",
+      "kind": "roundabout",
+      "map": {
+        "lat": 51.36074,
+        "lon": -0.02535,
+        "osm": "way/2954311"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "Multi-lane roundabouts south-west of the centre; s5 picks out lane choice there."
+    },
+    {
+      "name": "Corkscrew Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.371,
+        "lon": -0.00888,
+        "osm": "way/3962557"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "Steep bends between Wickham Court Road and the Addington Road roundabout (s5)."
+    },
+    {
+      "name": "Coney Hill Road / Croydon Road junction",
+      "kind": "junction",
+      "map": {
+        "lat": 51.37229,
+        "lon": 0.00285,
+        "osm": "way/8085460"
+      },
+      "sources": [
+        "s1",
+        "s5"
+      ],
+      "confidence": "confirmed",
+      "note": "Uphill give way onto the A232 (s5)."
+    },
+    {
+      "name": "Addington Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36927,
+        "lon": -0.00425,
+        "osm": "way/23706565"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Layhams Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.36188,
+        "lon": -0.00012,
+        "osm": "way/49229598"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Station Road and Red Lodge Road (with the Red Lodge Road mini roundabout)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37815,
+        "lon": -0.01405,
+        "osm": "way/3962555"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Manor Park Road and Ravenswood Crescent",
+      "kind": "road",
+      "map": {
+        "lat": 51.37951,
+        "lon": -0.01708,
+        "osm": "way/5835895"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "South Eden Park Road and its roundabouts",
+      "kind": "road",
+      "map": {
+        "lat": 51.38537,
+        "lon": -0.02257,
+        "osm": "way/55987277"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "One-way system by Langley Park School for Girls (Hawksbrook Lane)",
+      "kind": "junction",
+      "map": {
+        "lat": 51.38842,
+        "lon": -0.01758,
+        "osm": "way/193103490 (school); Hawksbrook Lane way/14387224"
+      },
+      "sources": [
+        "s4"
+      ],
+      "confidence": "likely",
+      "note": "Our reading of the learner's description: the school sits on Hawksbrook Lane off South Eden Park Road."
+    },
+    {
+      "name": "Pickhurst Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.38538,
+        "lon": 0.00268,
+        "osm": "way/61341379"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hayes Lane, Hayes Street and Baston Road (with the Hayes mini roundabouts)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37701,
+        "lon": 0.01742,
+        "osm": "way/23696079"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bourne Way and Station Approach (Hayes)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37572,
+        "lon": 0.00622,
+        "osm": "way/17674224"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hayes Hill Road and Tiepigs Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.37549,
+        "lon": 0.00283,
+        "osm": "way/375080682"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "West Common Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.37334,
+        "lon": 0.0162,
+        "osm": "way/25539136"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Woodland Way",
+      "kind": "road",
+      "map": {
+        "lat": 51.36893,
+        "lon": -0.01635,
+        "osm": "way/23136344"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wickham Road and Bridle Road (Shirley)",
+      "kind": "road",
+      "map": {
+        "lat": 51.37693,
+        "lon": -0.03388,
+        "osm": "way/307058761"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Shirley Church Road and Spout Hill",
+      "kind": "road",
+      "map": {
+        "lat": 51.36088,
+        "lon": -0.03139,
+        "osm": "way/10503969"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Bourne Vale and Mead Way (Hayes estates)",
+      "kind": "road",
+      "map": {
+        "lat": 51.38035,
+        "lon": 0.01063,
+        "osm": "way/38727676"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Hayes Chase and Westmoreland Road",
+      "kind": "road",
+      "map": {
+        "lat": 51.38891,
+        "lon": -0.00309,
+        "osm": "way/4076583"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    },
+    {
+      "name": "Wood Lodge Lane",
+      "kind": "road",
+      "map": {
+        "lat": 51.36693,
+        "lon": -0.00976,
+        "osm": "way/23194463"
+      },
+      "sources": [
+        "s1"
+      ],
+      "confidence": "likely"
+    }
+  ],
+  "unmatched": [
+    "the 'mad mile' (a local nickname; no road of that name near the centre on OSM)"
+  ],
+  "summary": "10 confirmed and 19 likely places (23 roads, 6 junctions): the old route lists (s1, s2 counted once) name many roads round the centre, and a separate instructor's lessons page confirms the Glebe Way roundabout, the Kent Gate Way roundabouts, Corkscrew Hill, the High Street and the A232 junctions by Wickham Court Road. Two routes meeting the overlap rule look possible from the map (east by Glebe Way and the Glebe Way roundabout, back by Addington Road and Corkscrew Hill; north by Station Road and Red Lodge Road)."
+}

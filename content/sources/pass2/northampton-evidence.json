@@ -1,0 +1,1423 @@
+{
+ "centre": "Northampton",
+ "status": "ok",
+ "centre_position": {
+  "lat": 52.25327,
+  "lon": -0.91594
+ },
+ "address_checked": "2026-11-21",
+ "address": "Gladstone Business Centre, Gladstone Road, Northampton NN5 7QA",
+ "address_note": "gov.uk's centre finder could not be opened from this machine (the find-driving-test-centre service did not answer). Address from DVSA's centre data as quoted on passrates.uk (DVSA find a driving test centre, captured 2026-05-12, OGL), matched by drivingtesttips.biz's centre page and driveJohnson's Northampton page; pass 1 records 12,825 tests in 2024-25, so the centre is open here. The position given (52.25327, -0.91594) is on Gladstone Road by the Kings Heath Industrial Estate, NN5 7QA: it matches the postcode. OSM has the Gladstone Business Centre (addr:housename, node 4570862590, Heathfield Way, NN5 7QA) about 290 m south-east of that point, among the units reached by a service road (way 8384691) off Heathfield Way 25 m from Gladstone Road: the centre's way in. Every free route list starts 'DTC left, Heathfield Way end of road', which fits that way in. Pass 1's other addresses (Riverside Retail Park, St James Mill Road NN5 5JW; and Crown Way, Moulton Park NN3 6TN on drivingtestpass.pages.dev) are not borne out by DVSA's data; the lists all start at Heathfield Way. Recheck on gov.uk when reachable.",
+ "searches": [
+  "\"Northampton driving test centre\" Gladstone Road test route tips roundabout instructor",
+  "Northampton driving test Kings Heath Spencer Bridge Road Mill Lane roundabout learner test"
+ ],
+ "sources": [
+  {
+   "id": "s1",
+   "kind": "route-list",
+   "author": "drivingtesttips.biz",
+   "url": "https://www.drivingtesttips.biz/northampton-driving-test-routes.html",
+   "also": [
+    "https://www.drivingtesttips.biz/northampton-driving-test-routes-6-10.html",
+    "https://www.drivingtesttips.biz/northampton-driving-test-centre.html (the same publisher's centre page: A45 and village roads, no route)",
+    "https://intensivelessons.co.uk/driving-test-routes/Northamptonshire/Northampton (routes 1 to 10, the same text: counted once)"
+   ],
+   "published": "undated (routes 1-10)",
+   "read_on": "2026-11-21",
+   "first_hand": false,
+   "before_centre_moved": false,
+   "note": "Turn-by-turn lists that start and end at the current centre (left out on to Heathfield Way, then Gladstone Road). Read for road and junction names only; no route copied. Near the centre they name Heathfield Way, Gladstone Road and its roundabouts (Mill Lane; Merthyr Road and Pembroke Road), Mill Lane to the Harlestone Road roundabout, Bants Lane, Harlestone Road, Warren Road, Dallington Road, Merthyr Road, Tintern Avenue and Spencer Bridge Road's lights; further out Duston, New Duston, Sixfields, Far Cotton and the town centre.",
+   "names": [
+    "Heathfield Way",
+    "Gladstone Road",
+    "Pembroke Road",
+    "St Francis Avenue",
+    "Spencer Bridge Road",
+    "St Andrew's Road",
+    "St Peter's Way",
+    "Towcester Road",
+    "Delapre Crescent Road",
+    "Pleydell Road",
+    "London Road",
+    "Bedford Road",
+    "Victoria Promenade",
+    "St Andrew's Street",
+    "Grafton Street",
+    "Merthyr Road",
+    "Swansea Road",
+    "Aberdare Road",
+    "Tintern Avenue",
+    "Weedon Road",
+    "Duston Road",
+    "Tollgate Way",
+    "Sandy Lane",
+    "Berrywood Road",
+    "Weggs Farm Road",
+    "Wrenbury Road",
+    "Ryeland Road",
+    "Main Road",
+    "Eldean Road",
+    "Firsview Drive",
+    "Harlestone Road",
+    "Hawksmoor Way",
+    "Montague Crescent",
+    "Mill Lane",
+    "Cotswold Avenue",
+    "Edgehill Road",
+    "Stoneleigh Chase",
+    "Lodge Way",
+    "Barn Way",
+    "Whites Lane",
+    "Port Road",
+    "Upton Way",
+    "Walter Tull Way",
+    "Baring Road",
+    "Dallington Road",
+    "Glebeland Road",
+    "Bants Lane",
+    "Chiltern Avenue",
+    "Longmynd Drive",
+    "Hardlands Road",
+    "Kerrfield Estate",
+    "Larkhall Lane",
+    "Carrs Way",
+    "Countess Road",
+    "Ellesmere Avenue",
+    "Malcolm Drive",
+    "Danes Camp Way",
+    "Hunsbury Hill Road",
+    "Hunslet Lane",
+    "Whaddon Close",
+    "Thirlestane Road",
+    "Melrose Avenue",
+    "Cameron Drive",
+    "Southfield Road",
+    "Orchard Way",
+    "Stanfield Road",
+    "Warren Road",
+    "Haines Road",
+    "St Leonard's Road",
+    "Broad Street",
+    "Lincoln Street",
+    "Garfield Street",
+    "Washington Street",
+    "Harborough Road",
+    "Welford Road",
+    "North Western Avenue",
+    "Leyland Drive",
+    "Grafton Way",
+    "Meadow Close",
+    "Eastfield Road",
+    "Southampton Road",
+    "Queen Eleanor Road",
+    "Vicarage Road",
+    "Mill Way",
+    "St Francis Road",
+    "Horseshoe Street",
+    "Horsemarket",
+    "Malpas Road",
+    "Brampton Road",
+    "Sixfields",
+    "A45",
+    "Nene Valley Way",
+    "Northampton Road"
+   ]
+  },
+  {
+   "id": "s2",
+   "kind": "instructor-page",
+   "author": "driveJohnson's (Northampton test centre page, tip by a named local instructor)",
+   "url": "https://www.drivejohnsons.co.uk/test-centres/practical/northamptonshire-driving-test-centres/northampton/",
+   "published": "undated (pass rates to 2025-26)",
+   "read_on": "2026-11-21",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "note": "A local instructor's tip about leaving the centre: right on to Gladstone Road, then at the next roundabout the road to the right signed Kingsthorpe, keeping off the hatching in the left lane (the Mill Lane roundabout). Another tip on pulling up on the right. The page also sells a route PDF (not used).",
+   "names": [
+    "Gladstone Road",
+    "the roundabout at the north end of Gladstone Road (Mill Lane roundabout), towards Kingsthorpe"
+   ]
+  },
+  {
+   "id": "s3",
+   "kind": "official",
+   "author": "DVSA centre data, as quoted by passrates.uk",
+   "url": "https://passrates.uk/centres/northampton",
+   "published": "captured 2026-05-12",
+   "read_on": "2026-11-21",
+   "first_hand": true,
+   "before_centre_moved": false,
+   "note": "Address only; silent on routes.",
+   "names": []
+  }
+ ],
+ "not_used": [
+  "https://www.passmefast.co.uk/test-centres/practical/northamptonshire/northampton (template page, no roads)",
+  "https://www.myfourwheels.co.uk/locations/northampton/mock-driving-test (template page, no roads)",
+  "https://drivingtestpass.pages.dev/centres/northampton (template page; gives an old Moulton Park address)",
+  "https://passrates.uk/guide/northampton-driving-test-centre (pass rates; no named roads)",
+  "https://www.drivingtesttips.biz/driving-instructor-training/adi-driving-test-routes/northampton-adi-driving-test-routes.html (instructors' (ADI) test routes, not learner tests)",
+  "https://payhip.com/b/kTYhS (paid route list: never used)"
+ ],
+ "places": [
+  {
+   "name": "Heathfield Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.25211,
+    "lon": -0.91376,
+    "osm": "way/8384688"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Gladstone Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25345,
+    "lon": -0.91524,
+    "osm": "way/56758295"
+   },
+   "sources": [
+    "s1",
+    "s2"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "name": "Pembroke Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.2508,
+    "lon": -0.91247,
+    "osm": "way/90180816"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St Francis Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.24886,
+    "lon": -0.91166,
+    "osm": "way/59180527"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Spencer Bridge Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24253,
+    "lon": -0.91368,
+    "osm": "way/1442595319"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St Andrew's Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.23948,
+    "lon": -0.90528,
+    "osm": "way/8351953"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St Peter's Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.23678,
+    "lon": -0.9046,
+    "osm": "way/4274692"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Towcester Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.23523,
+    "lon": -0.90189,
+    "osm": "way/1558363090"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Delapre Crescent Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22552,
+    "lon": -0.90122,
+    "osm": "way/54067675"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Pleydell Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22419,
+    "lon": -0.90155,
+    "osm": "way/54067665"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "London Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.21547,
+    "lon": -0.89575,
+    "osm": "way/4277966"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bedford Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.2354,
+    "lon": -0.88921,
+    "osm": "way/618538250"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Victoria Promenade",
+   "kind": "road",
+   "map": {
+    "lat": 52.2338,
+    "lon": -0.89738,
+    "osm": "way/4274697"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St Andrew's Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.24249,
+    "lon": -0.90057,
+    "osm": "way/59753121"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Grafton Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.24233,
+    "lon": -0.90453,
+    "osm": "way/5042062"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Merthyr Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25067,
+    "lon": -0.9129,
+    "osm": "way/58779283"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Swansea Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24757,
+    "lon": -0.91561,
+    "osm": "way/58989517"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Aberdare Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24823,
+    "lon": -0.91679,
+    "osm": "way/58989532"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Tintern Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.24665,
+    "lon": -0.91324,
+    "osm": "way/91331321"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Weedon Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24086,
+    "lon": -0.92013,
+    "osm": "way/730223877"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Duston Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24109,
+    "lon": -0.92729,
+    "osm": "way/58880154"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Tollgate Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.24319,
+    "lon": -0.93557,
+    "osm": "way/4288396"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Sandy Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.25925,
+    "lon": -0.96199,
+    "osm": "way/93087032"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Berrywood Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24551,
+    "lon": -0.94828,
+    "osm": "way/529924177"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Weggs Farm Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25041,
+    "lon": -0.96552,
+    "osm": "way/59538164"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Wrenbury Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25009,
+    "lon": -0.96412,
+    "osm": "way/59538913"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Ryeland Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25314,
+    "lon": -0.95161,
+    "osm": "way/58774148"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Main Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24314,
+    "lon": -0.93686,
+    "osm": "way/216933100"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Eldean Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25318,
+    "lon": -0.94828,
+    "osm": "way/59471279"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Firsview Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.25662,
+    "lon": -0.94403,
+    "osm": "way/41242684"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harlestone Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24782,
+    "lon": -0.92452,
+    "osm": "way/1238023060"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hawksmoor Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.25543,
+    "lon": -0.93353,
+    "osm": "way/58768908"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Montague Crescent",
+   "kind": "road",
+   "map": {
+    "lat": 52.25543,
+    "lon": -0.93353,
+    "osm": "way/58768909"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Mill Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.25435,
+    "lon": -0.91707,
+    "osm": "way/56758303"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Cotswold Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.25104,
+    "lon": -0.93203,
+    "osm": "way/41242680"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Edgehill Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25035,
+    "lon": -0.9325,
+    "osm": "way/58888906"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Stoneleigh Chase",
+   "kind": "road",
+   "map": {
+    "lat": 52.25252,
+    "lon": -0.93509,
+    "osm": "way/58888899"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Lodge Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.25942,
+    "lon": -0.94093,
+    "osm": "way/736420725"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Barn Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.25836,
+    "lon": -0.9422,
+    "osm": "way/61013085"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Whites Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.26277,
+    "lon": -0.95916,
+    "osm": "way/4328277"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Port Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25914,
+    "lon": -0.95307,
+    "osm": "way/662148439"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Upton Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.23713,
+    "lon": -0.93741,
+    "osm": "way/91498003"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Walter Tull Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.23751,
+    "lon": -0.92999,
+    "osm": "way/22890181"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Baring Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24406,
+    "lon": -0.91574,
+    "osm": "way/58779296"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Dallington Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24995,
+    "lon": -0.92031,
+    "osm": "way/470278096"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Glebeland Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25136,
+    "lon": -0.91927,
+    "osm": "way/67817842"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bants Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.24772,
+    "lon": -0.92472,
+    "osm": "way/110664943"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Chiltern Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.24554,
+    "lon": -0.93053,
+    "osm": "way/27119705"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Longmynd Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.251,
+    "lon": -0.93428,
+    "osm": "way/58888887"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hardlands Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25026,
+    "lon": -0.94267,
+    "osm": "way/58774147"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Kerrfield Estate",
+   "kind": "road",
+   "map": {
+    "lat": 52.24765,
+    "lon": -0.94493,
+    "osm": "way/137962498"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Larkhall Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.24209,
+    "lon": -0.98636,
+    "osm": "way/4543507"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Carrs Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.24014,
+    "lon": -0.9857,
+    "osm": "way/4543518"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Countess Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24662,
+    "lon": -0.91342,
+    "osm": "way/58989534"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Ellesmere Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.24424,
+    "lon": -0.93237,
+    "osm": "way/58880155"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Malcolm Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.24213,
+    "lon": -0.9241,
+    "osm": "way/58880161"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Danes Camp Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.22409,
+    "lon": -0.93102,
+    "osm": "way/238911684"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hunsbury Hill Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.21862,
+    "lon": -0.9271,
+    "osm": "way/50675123"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Hunslet Lane",
+   "kind": "road",
+   "map": {
+    "lat": 52.21989,
+    "lon": -0.93065,
+    "osm": "way/50675125"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Whaddon Close",
+   "kind": "road",
+   "map": {
+    "lat": 52.21883,
+    "lon": -0.931,
+    "osm": "way/74396130"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Thirlestane Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22582,
+    "lon": -0.90656,
+    "osm": "way/83653348"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Melrose Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.24614,
+    "lon": -0.92681,
+    "osm": "way/58880150"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Cameron Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.2456,
+    "lon": -0.92634,
+    "osm": "way/58880163"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Southfield Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24031,
+    "lon": -0.94374,
+    "osm": "way/59275775"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Orchard Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.24043,
+    "lon": -0.94386,
+    "osm": "way/59275773"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Stanfield Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24023,
+    "lon": -0.94165,
+    "osm": "way/59275723"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Warren Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24685,
+    "lon": -0.91682,
+    "osm": "way/58779297"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Haines Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22648,
+    "lon": -0.89926,
+    "osm": "way/786483918"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "St Leonard's Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22796,
+    "lon": -0.89921,
+    "osm": "way/758042665"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Broad Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.24253,
+    "lon": -0.89827,
+    "osm": "way/782085908"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Lincoln Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.25953,
+    "lon": -0.90153,
+    "osm": "way/34018103"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Garfield Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.26072,
+    "lon": -0.90395,
+    "osm": "way/54847380"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Washington Street",
+   "kind": "road",
+   "map": {
+    "lat": 52.26024,
+    "lon": -0.90234,
+    "osm": "way/54847377"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harborough Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25602,
+    "lon": -0.90062,
+    "osm": "way/463466858"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Welford Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.26253,
+    "lon": -0.9002,
+    "osm": "way/46608915"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "North Western Avenue",
+   "kind": "road",
+   "map": {
+    "lat": 52.26453,
+    "lon": -0.91235,
+    "osm": "way/56446200"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Leyland Drive",
+   "kind": "road",
+   "map": {
+    "lat": 52.26803,
+    "lon": -0.91308,
+    "osm": "way/56721478"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Grafton Way",
+   "kind": "road",
+   "map": {
+    "lat": 52.25631,
+    "lon": -0.94664,
+    "osm": "way/59471267"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Meadow Close",
+   "kind": "road",
+   "map": {
+    "lat": 52.25439,
+    "lon": -0.94785,
+    "osm": "way/59471272"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Eastfield Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.25251,
+    "lon": -0.94379,
+    "osm": "way/41242683"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Southampton Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22674,
+    "lon": -0.90034,
+    "osm": "way/31144471"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Queen Eleanor Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.22286,
+    "lon": -0.90213,
+    "osm": "way/54067654"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Vicarage Road",
+   "kind": "road",
+   "map": {
+    "lat": 52.24359,
+    "lon": -0.91527,
+    "osm": "way/58976774"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Millway (the lists' \"Mill Way\")",
+   "kind": "road",
+   "map": {
+    "lat": 52.24269,
+    "lon": -0.942,
+    "osm": "node/734990312"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Heathfield Way / Gladstone Road junction (the test centre's way out)",
+   "kind": "junction",
+   "map": {
+    "lat": 52.25211,
+    "lon": -0.91375,
+    "osm": "node: Heathfield Way meets Gladstone Road"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Mill Lane roundabout (Gladstone Road, Mill Lane, Park Drive)",
+   "kind": "roundabout",
+   "map": {
+    "lat": 52.25459,
+    "lon": -0.91713,
+    "osm": "way/8384676"
+   },
+   "sources": [
+    "s1",
+    "s2"
+   ],
+   "confidence": "confirmed"
+  },
+  {
+   "name": "Gladstone Road / Merthyr Road / Pembroke Road roundabout",
+   "kind": "roundabout",
+   "map": {
+    "lat": 52.25075,
+    "lon": -0.9127,
+    "osm": "way/59180523"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harlestone Road roundabout (Mill Lane, Harlestone Road, Bants Lane)",
+   "kind": "roundabout",
+   "map": {
+    "lat": 52.24785,
+    "lon": -0.92473,
+    "osm": "way/1238023063"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Harlestone Road / Warren Road junction",
+   "kind": "junction",
+   "map": {
+    "lat": 52.24479,
+    "lon": -0.92047,
+    "osm": "way/58779297"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Warren Road / Dallington Road junction",
+   "kind": "junction",
+   "map": {
+    "lat": 52.24686,
+    "lon": -0.91682,
+    "osm": "way/58779297"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Dallington Road / Merthyr Road junction",
+   "kind": "junction",
+   "map": {
+    "lat": 52.24764,
+    "lon": -0.9176,
+    "osm": "way/58779283"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Spencer Bridge Road / Gladstone Road traffic lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.24253,
+    "lon": -0.90947,
+    "osm": "node/4968633889"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Spencer Bridge Road / Harlestone Road traffic lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.24115,
+    "lon": -0.91584,
+    "osm": "node/765313513"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Spencer Bridge Road / Weedon Road traffic lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.2402,
+    "lon": -0.91695,
+    "osm": "node/765313508"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Bants Lane / Chiltern Avenue traffic lights",
+   "kind": "traffic-lights",
+   "map": {
+    "lat": 52.24518,
+    "lon": -0.92976,
+    "osm": "node/14133190332"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  },
+  {
+   "name": "Main Road / Berrywood Road mini-roundabout (Duston)",
+   "kind": "mini-roundabout",
+   "map": {
+    "lat": 52.24552,
+    "lon": -0.94828,
+    "osm": "node/17494417"
+   },
+   "sources": [
+    "s1"
+   ],
+   "confidence": "likely"
+  }
+ ],
+ "unmatched": [
+  "Horseshoe Street, Horsemarket (s1, town centre; not found by the name search; outside the test area used)",
+  "Malpas Road (s1; not found near the centre: perhaps Malpas Drive, Duston)",
+  "Brampton Road (s1, route 8; not found; perhaps Brampton Lane)",
+  "St Francis Road (s1 route 1, as written; the road off Gladstone Road is St Francis Avenue, recorded)",
+  "Sixfields, A45, Nene Valley Way, Northampton Road (s1: a retail park, a trunk road, a cycleway by that name and a road out of town; not recorded as roads near the centre)"
+ ],
+ "summary": "1 confirmed road (Gladstone Road) and 1 confirmed junction (the Mill Lane roundabout, named by the route lists and by a local instructor's tip), with about 80 likely roads and 11 likely junctions, almost all from one route-list publisher whose lists start and end at the current centre on Heathfield Way. A route meeting the overlap rule (most of its length on named roads, 3 or more known junctions) is easily possible round Gladstone Road, Mill Lane, Harlestone Road and Dallington; a second route could go south by Spencer Bridge Road's lights or west into Duston."
+}

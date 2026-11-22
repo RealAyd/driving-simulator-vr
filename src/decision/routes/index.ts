@@ -24,6 +24,11 @@ import {WOOD_GREEN_ROUTE_1} from './woodGreenRoute1';
 import {KETTERING_ROUTE_1} from './ketteringRoute1';
 import {CARDIFF_LLANISHEN_ROUTE_1} from './cardiffLlanishenRoute1';
 import {UPTON_ROUTE_1} from './uptonRoute1';
+import {BLETCHLEY_ROUTE_1} from './bletchleyRoute1';
+import {CHERTSEY_ROUTE_1} from './chertseyRoute1';
+import {NORTHAMPTON_ROUTE_1} from './northamptonRoute1';
+import {PRESTON_ROUTE_1} from './prestonRoute1';
+import {WEST_WICKHAM_ROUTE_1} from './westWickhamRoute1';
 
 /** The decision mock test routes, as offered on the home screen. */
 export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWOOD_ROUTE_2,CHELMSFORD_ROUTE_1,CHELMSFORD_ROUTE_2,
@@ -42,4 +47,9 @@ export const DECISION_ROUTES:readonly DecisionRoute[]=[BRENTWOOD_ROUTE_1,BRENTWO
   WOOD_GREEN_ROUTE_1,
   KETTERING_ROUTE_1,
   CARDIFF_LLANISHEN_ROUTE_1,
-  UPTON_ROUTE_1];
+  UPTON_ROUTE_1,
+  BLETCHLEY_ROUTE_1,
+  CHERTSEY_ROUTE_1,
+  NORTHAMPTON_ROUTE_1,
+  PRESTON_ROUTE_1,
+  WEST_WICKHAM_ROUTE_1];

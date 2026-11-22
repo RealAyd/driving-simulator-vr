@@ -74,7 +74,9 @@ describe('turn buttons',()=>{
       'pembroke-dock-1:leave-test-centre',
       'enfield-innova-1:ordnance-zebra',
       'wood-green-london-1:boreham-crossing','wood-green-london-1:awlfield-mini','wood-green-london-1:risley-roundabout',
-      'kettering-1:pytchley-crossing']);
+      'kettering-1:pytchley-crossing',
+      'bletchley-1:rickley-mini','bletchley-1:jemima-crossing','chertsey-london-1:curfew-mini','chertsey-london-1:heriot-crossing',
+      'northampton-1:mill-lane-crossing','preston-1:blackpool-crossing','west-wickham-london-1:addington-crossing']);
     for(const route of DECISION_ROUTES)for(const c of route.challenges)
       if(!ahead.has(c.id)&&!ahead.has(`${route.id}:${c.id}`))expect(c.turn,`${route.id}:${c.id}`).toBeTruthy();
   });
