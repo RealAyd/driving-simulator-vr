@@ -305,16 +305,21 @@ export class Traffic implements SimModule{
    * stands waiting (a car waiting to come out of a car park: there would be no getting by). */
   private closedTo(road:Road,dir:1|-1,from?:Vec2,learner?:Vec2):boolean{
     if(this.intoQuiet(road,dir,from,learner))return true;
-    // (Nor one ending just short of one: the way on from it would lead in.)
-    const end=dir>0?road.centreline.at(-1)!:road.centreline[0]!;
-    if((this.options.keepClear?.()??[]).some(c=>Math.hypot(end.x-c.x,end.z-c.z)<c.radius+QUIET_NEAR))return true;
+    // (Nor one ending just short of one: the way on from it would lead in. Unless this car is in one already, going
+    // away from the learner by it: out of the junction it is in, rather than turned back into the way of the scenario's
+    // own road user coming to it, Salisbury's Bishopdown Road mini-roundabout.)
+    const end=dir>0?road.centreline.at(-1)!:road.centreline[0]!,start=dir>0?road.centreline[0]!:road.centreline.at(-1)!;
+    const zones=this.options.keepClear?.()??[];
+    const far=(p:Vec2)=>learner?Math.hypot(p.x-learner.x,p.z-learner.z):0;
+    const leaving=!!from&&!!learner&&zones.some(c=>Math.hypot(from.x-c.x,from.z-c.z)<c.radius)&&far(end)>far(start)+TOWARDS_LEARNER;
+    if(!leaving&&zones.some(c=>Math.hypot(end.x-c.x,end.z-c.z)<c.radius+QUIET_NEAR))return true;
     if(roadHalfWidth(road)>=SINGLE_TRACK)return false;
     return (this.options.others?.()??[]).some(x=>x.speed<.3&&sampleRoad(road,x.pose.position.x,x.pose.position.z).distance<roadHalfWidth(road)+.5);
   }
   /** How far along its way (this leg, then the next) a car comes to a circle kept clear, up to `reach` metres
    * (Infinity: not that soon). */
-  private toQuiet(d:Driver,reach:number):number{
-    const zones=this.options.keepClear?.()??[];
+  private toQuiet(d:Driver,reach:number,but:ReadonlyArray<{x:number;z:number;radius:number}>=[]):number{
+    const zones=(this.options.keepClear?.()??[]).filter(c=>!but.includes(c));
     if(zones.length===0)return Infinity;
     const inside=(p:Vec2)=>zones.some(c=>Math.hypot(p.x-c.x,p.z-c.z)<c.radius);
     let base=-d.s;
@@ -805,10 +810,15 @@ export class Traffic implements SimModule{
       }
       // A junction kept clear just ahead (one this car is not already in): it waits short of it until it is released,
       // unless it is going the learner's way ahead of it (it leads the learner through, so is no part of the picture).
-      if(this.options.keepClear&&!this.inQuiet(pos)){
+      // (In one already, heading the learner's way: short of another it is not in yet. Two challenges' circles in hand at
+      // once overlap; a car going round the roundabout of the next drove on into the crossing of this one, West Wickham.)
+      const inZones=this.options.keepClear?(this.options.keepClear()).filter(c=>Math.hypot(pos.x-c.x,pos.z-c.z)<c.radius):[];
+      const lp0=learner.pose.position,toL=Math.hypot(lp0.x-pos.x,lp0.z-pos.z)||1;
+      const towards=((lp0.x-pos.x)*fwd.x+(lp0.z-pos.z)*fwd.z)/toL>.3;
+      if(this.options.keepClear&&(inZones.length===0||towards)){
         const lp=learner.pose.position,ldx=pos.x-lp.x,ldz=pos.z-lp.z;
         const leads=Math.cos(car.pose.heading-learner.pose.heading)>.7&&ldx*Math.sin(learner.pose.heading)-ldz*Math.cos(learner.pose.heading)>0&&Math.hypot(ldx,ldz)<150;
-        const toQuiet=leads?Infinity:this.toQuiet(d,QUIET_LOOKAHEAD);
+        const toQuiet=leads?Infinity:this.toQuiet(d,QUIET_LOOKAHEAD,inZones);
         if(toQuiet<QUIET_LOOKAHEAD){
           const room=toQuiet-car.halfLength-1;
           if(room<gap){gap=Math.max(0,room);why='junction kept clear';leadSpeed=0;following=false}
