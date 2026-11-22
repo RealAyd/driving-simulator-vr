@@ -213,7 +213,13 @@ export class PassingVehicle implements SimModule{
   fixedUpdate(dt:Seconds):void{
     if(this.waited<this.delay){this.waited+=dt;return}
     // (One shown waiting moves off from standing, not at its cruising speed.)
-    if(!this.moving){this.moving=true;if(this.shownWaiting)this.speed=0}
+    if(!this.moving){
+      this.moving=true;if(this.shownWaiting)this.speed=0;
+      // (Set going at its speed, unseen until then: no faster than it can stop from short of traffic standing in front of
+      // it (braking at 4 m/s²). Traffic cannot see one not yet there, and stopped just ahead of it: Enfield.)
+      const gap=Math.min(Infinity,...(this.traffic?.()??[]).map(o=>this.gapTo(o)));
+      if(gap<Infinity)this.speed=Math.min(this.speed,Math.sqrt(2*4*Math.max(0,gap-STOP_GAP)));
+    }
     let target=this.pace===null?this.cruise:Math.min(this.cruise,this.pace);
     if(this.speed>target)this.speed=Math.max(target,this.speed-1.5*dt);
     if(this.def.yieldsToLearner&&this.learner&&this.followsLearner){

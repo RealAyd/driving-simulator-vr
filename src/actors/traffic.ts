@@ -638,8 +638,9 @@ export class Traffic implements SimModule{
         const apart=Math.hypot(o.car.pose.position.x-p.x,o.car.pose.position.z-p.z);
         return apart<20||o.leg.road===road&&apart<70;
       }))continue;
-      // Nor near a scenario's own road users.
-      if((this.options.others?.()??[]).some(o=>Math.hypot(o.pose.position.x-p.x,o.pose.position.z-p.z)<40))continue;
+      // Nor near a scenario's own road users, nor in the way one is about to go (after Skip ahead, one set down in front
+      // of a road user on the move was run into: Enfield).
+      if((this.options.others?.()??[]).some(o=>Math.hypot(o.pose.position.x-p.x,o.pose.position.z-p.z)<40||(o.ahead?.()??[]).some(q=>Math.hypot(q.position.x-p.x,q.position.z-p.z)<15)))continue;
       // Not on top of a parked car (it would appear out of it), nor just behind one with no room to pull out.
       if(this.options.parked.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<9))continue;
       // Not just short of traffic lights (a car appearing there could not stop for red).
