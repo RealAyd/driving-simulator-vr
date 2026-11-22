@@ -2,6 +2,7 @@ import {MongoMemoryServer} from 'mongodb-memory-server-core';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {loadConfig} from '../src/config.js';
 import {MongoStore} from '../src/mongoStore.js';
+import {TRIAL_EACH} from '../src/store.js';
 import {OutboxMailer,fakeIdentities,fakeStripe} from '../src/providers.js';
 import {Service,type StripeEvent} from '../src/service.js';
 
@@ -31,28 +32,48 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('MongoDB store: concurrency an
     expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='purchase')).toHaveLength(1);
   });
 
-  it('many drives started at once with three sessions: exactly three start and the balance never goes below zero',async()=>{
+  // (A session is used when a drive is completed, not when it starts: server/README.md, Drives.)
+  it('drives completed at once, each reported twice, each use one session exactly once; past the last one, the balance goes below zero and is flagged',async()=>{
     const {store,service,checkout,account}=await setup();
     const a=await account('race@example.com');
     await service.handleStripeEvent(checkout(a.id,'vr-5',999));
-    for(let i=0;i<2;i++)await service.startDrive(a.id,'free','goodmayes-free-drive');
-    const r=await Promise.all(Array.from({length:12},()=>service.startDrive(a.id,'free','goodmayes-free-drive')));
-    expect(r.filter(x=>x.ok)).toHaveLength(3);
-    expect((await store.findAccount({id:a.id}))!.balance).toBe(0);
+    const drive=async()=>{const r=await service.startDrive(a.id,'free','goodmayes-free-drive');if(!r.ok)throw new Error('not started');return r.drive.id};
+    for(let i=0;i<2;i++)await service.driveStatus(a.id,await drive(),'completed');
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(3);
+    // Twelve started at once on three sessions: each starts (something is left to use when it starts).
+    const ids=await Promise.all(Array.from({length:12},drive));
+    await Promise.all([...ids,...ids].map(id=>service.driveStatus(a.id,id,'completed')));
+    const used=(await store.ledger({accountId:a.id})).filter(e=>e.type==='consumed');
+    expect(used).toHaveLength(14);
+    expect(new Set(used.map(e=>e.idempotencyKey)).size).toBe(14);
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(-9);
+    expect((await store.flags({state:'open'})).filter(f=>f.kind==='completed-without-session')).toHaveLength(9);
+    // Below zero: nothing more starts until it is topped up.
+    expect((await service.startDrive(a.id,'free','goodmayes-free-drive')).ok).toBe(false);
   });
 
-  it('Starter: separate pots; two Starter payments at the same moment grant once; replays grant nothing more',async()=>{
+  it('a drive on an unlimited pass uses nothing, however many complete at once',async()=>{
+    const {store,service,checkout,account}=await setup();
+    const a=await account('pass@example.com');
+    await service.handleStripeEvent(checkout(a.id,'vr-5',999));
+    await service.handleStripeEvent(checkout(a.id,'monthly',1099));
+    const ids=await Promise.all(Array.from({length:6},async()=>{const r=await service.startDrive(a.id,'free','goodmayes-free-drive');if(!r.ok)throw new Error('not started');return r.drive.id}));
+    await Promise.all(ids.map(id=>service.driveStatus(a.id,id,'completed')));
+    expect((await store.findAccount({id:a.id}))!.balance).toBe(5);
+    expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='consumed')).toHaveLength(0);
+  });
+
+  // (The Starter Pass now gives 3 general sessions, once per account: packs.json.)
+  it('Starter: two Starter payments at the same moment grant once; replays grant nothing more',async()=>{
     const {store,service,checkout,account}=await setup();
     const a=await account('starter@example.com');
     const one=checkout(a.id,'starter',299),two=checkout(a.id,'starter',299);
     await Promise.all([one,two,one,two,one].map(e=>service.handleStripeEvent(e)));
     const acc=(await store.findAccount({id:a.id}))!;
-    expect(acc.allowances).toEqual({lesson:1,test:1,free:1});
+    expect(acc.balance).toBe(3);
+    expect(acc.allowances??{}).toEqual({});
+    expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='purchase')).toHaveLength(2);
     expect((await store.ledger({accountId:a.id})).filter(e=>e.type==='starter_duplicate')).toHaveLength(1);
-    expect((await service.startDrive(a.id,'x','goodmayes-lesson')).ok).toBe(true);
-    expect((await service.startDrive(a.id,'x','goodmayes-lesson')).ok).toBe(false);
-    expect((await service.startDrive(a.id,'x','goodmayes-mock-test')).ok).toBe(true);
-    expect((await store.findAccount({id:a.id}))!.allowances).toEqual({lesson:0,test:0,free:1});
   });
 
   it('an account and its email are unique; the same email signing up twice at once gives one account',async()=>{
@@ -76,9 +97,9 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('MongoDB store: concurrency an
     expect(await store.countAccounts({})).toBe(2);
     expect(await store.countAccounts({paid:true})).toBe(2);
     expect(await store.countAccounts({referred:true})).toBe(1);
-    // friend: 1 free drive + 5 - 1 used; inviter: 1 referral session; Starter: 3 - 1 lesson used.
-    expect(await store.heldTotals()).toEqual({sessions:6,allowances:2});
-    expect(await store.driveCounts(new Date(Date.now()-60_000))).toEqual({lesson:1,test:0,free:1,failed:0,total:2});
+    // friend: 2 from the invite + 5 (the drive started, not completed, uses nothing yet); inviter: the Starter's 3.
+    expect(await store.heldTotals()).toEqual({sessions:10,allowances:0});
+    expect(await store.driveCounts(new Date(Date.now()-60_000))).toEqual({lesson:1,test:0,free:1,failed:0,total:2,completed:{lesson:0,test:0,free:0},ended:{}});
     expect((await store.listDrives({accountId:friend.id,limit:5}))).toHaveLength(1);
     expect(await store.referrers()).toEqual([{referrerId:inviter.id,joined:1,paid:1}]);
     expect((await store.findAccounts([inviter.id,friend.id,'nobody'])).map(a=>a.id).sort()).toEqual([inviter.id,friend.id].sort());
@@ -118,12 +139,13 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('MongoDB store: concurrency an
     expect(back.expiresAt).toBeUndefined();
   });
 
+  // (A free try holds TRIAL_EACH of each kind.)
   it('the free try: more drives of one kind than it holds, started at once, use only what it holds; a failed one gives it back',async()=>{
     const {store}=await setup();
     const t=await store.createTrial();
     const r=await Promise.all(Array.from({length:6},()=>store.moveTrial(t.id,'test',-1)));
-    expect(r.filter(Boolean)).toHaveLength(3);
-    expect((await store.getTrial(t.id))!.remaining).toEqual({lesson:3,test:0,free:3});
+    expect(r.filter(Boolean)).toHaveLength(TRIAL_EACH);
+    expect((await store.getTrial(t.id))!.remaining).toEqual({lesson:TRIAL_EACH,test:0,free:TRIAL_EACH});
     expect(await store.moveTrial(t.id,'test',1)).toBe(true);
     expect((await store.getTrial(t.id))!.remaining.test).toBe(1);
   });
