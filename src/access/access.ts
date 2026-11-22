@@ -10,7 +10,13 @@ type Pack={id:string;label:string;price:string;description:string;sessions:numbe
   preview?:boolean;
   deal?:string;sticker?:string;
   unlimited?:{days?:number;monthly?:boolean};saleEnds?:string};
-type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean;signInFirst?:boolean};
+type Config={gate:boolean;googleClientId:string|null;appleServicesId:string|null;appleRedirect:string;packs:Pack[];devCheckout:boolean;signInFirst?:boolean;
+  /** Practical Premium (Release 2), only where it is on: the scenarios open first to it. */
+  practicalPremium?:{premiumFirst:string[]}};
+/** The learner's Practical link and what Practical says now ('unconfirmed': it could not be asked). */
+type Practical={linked:boolean;premium:'confirmed'|'inactive'|'unconfirmed'|null};
+/** What the learner chose when Premium could not be confirmed. */
+type PremiumChoice='session'|'retry'|'cancel';
 /** The device's free try (no sign-up): what is left of its lessons, mock tests and free drives (FREE_EACH of each). */
 type Trial=Record<Pot,number>;
 type Me=({signedIn:false}|{signedIn:true;id:string;email:string|null;balance:number;allowances:Record<Pot,number>;starterBought:boolean;referralCode:string;invited:number;rewarded:number;admin?:boolean;
@@ -85,6 +91,8 @@ export class Access{
   onSignIn:()=>void=()=>{};
   private checked=false;
   private mode:Mode='account';
+  /** Practical Premium (Release 2): null where it is off, or until it is known. */
+  practical:Practical|null=null;
   /** The drive that sent the learner here to sign up or buy, and its kind: started again once it can be. */
   private pending:{pot:Pot;again:()=>void}|null=null;
 
@@ -102,7 +110,9 @@ export class Access{
     const ref=params.get('ref');
     if(ref&&/^[A-Za-z0-9]{4,20}$/.test(ref))store.set(REF_KEY,ref.toUpperCase());
     const signin=params.get('signin'),checkout=params.get('checkout');
-    if(ref||signin||checkout){for(const k of ['ref','signin','checkout'])params.delete(k);history.replaceState(null,'',`${location.pathname}${params.size?`?${params}`:''}${location.hash}`)}
+    // (Back from consenting at Practical: the one-time state and code, finished below once signed in.)
+    const linking=params.get('practical')==='done'?{state:params.get('state')??'',code:params.get('code')??''}:null;
+    if(ref||signin||checkout||linking){for(const k of ['ref','signin','checkout','practical','state','code'])params.delete(k);history.replaceState(null,'',`${location.pathname}${params.size?`?${params}`:''}${location.hash}`)}
     this.wire();
     const cfg=await api<Config>('config');
     this.config=cfg.data;
@@ -111,6 +121,57 @@ export class Access{
     if(signin==='expired'||signin==='failed')this.open(signin==='expired'?'That sign-in link has expired or was used already: ask for a new code.':'Sign-in did not finish. Please try again.');
     else if(signin==='done')this.open();
     if(checkout)void this.awaitPayment();
+    if(linking)void this.finishLink(linking.state,linking.code);
+    else void this.loadPractical();
+  }
+
+  // ---- Practical Premium (Release 2: only where the server has it on) ----
+
+  /** Whether Practical Premium is on here. */
+  get premiumOn():boolean{return !!this.config?.practicalPremium}
+  /** Whether a scenario opens first to Practical Premium learners. */
+  premiumFirst(scenario:string):boolean{return !!this.config?.practicalPremium?.premiumFirst.includes(scenario)}
+
+  /** The learner's link and what Practical says now. */
+  async loadPractical():Promise<void>{
+    if(!this.premiumOn||!this.me.signedIn){this.practical=null;return}
+    const r=await api<Practical>('practical/status');
+    this.practical=r.status===200&&r.data?r.data:{linked:false,premium:null};
+    this.render();this.onChange();
+  }
+  /** To Practical, to sign in there and allow the link (it comes back with ?practical=done). */
+  private async startLink(){
+    const r=await api<{authorizeUrl:string}>('practical/link',{});
+    if(r.status===200&&r.data?.authorizeUrl){location.assign(r.data.authorizeUrl);return}
+    this.open('Practical could not be reached. Please try again.');
+  }
+  private async finishLink(state:string,code:string){
+    const r=await api<{linked?:boolean;error?:string}>('practical/link/finish',{state,code});
+    await this.loadPractical();
+    this.open(r.status===200?undefined:r.data?.error==='taken'?'That Practical account is linked to another Driving Practice account.'
+      :'Linking did not finish. Please try again.');
+  }
+  private async unlink(){
+    await api('practical/unlink',{});
+    await this.loadPractical();
+  }
+  /** The account screen's line for it. */
+  private practicalLine():string{
+    const p=this.practical;
+    if(!p?.linked)return '';
+    return p.premium==='confirmed'?'Practical Premium: unlimited drives':p.premium==='unconfirmed'?'Practical Premium could not be confirmed':'Practical account linked';
+  }
+  /** Premium could not be confirmed for a drive: asks whether to use a session instead (only where there is one). */
+  private askPremium():Promise<PremiumChoice>{
+    const box=byId('premium-prompt'),session=byId<HTMLButtonElement>('premium-use-session');
+    session.hidden=total(this.me)<=0;
+    box.hidden=false;
+    return new Promise(done=>{
+      const pick=(c:PremiumChoice)=>()=>{box.hidden=true;for(const [id,f] of handlers)byId(id).removeEventListener('click',f);done(c)};
+      const handlers:Array<[string,()=>void]>=[['premium-use-session',pick('session')],['premium-retry',pick('retry')],['premium-cancel',pick('cancel')]];
+      for(const [id,f] of handlers)byId(id).addEventListener('click',f);
+      (session.hidden?byId('premium-retry'):session).focus();
+    });
   }
 
   private get ref(){return store.get(REF_KEY)}
@@ -148,7 +209,8 @@ export class Access{
   /** Whether a drive of this kind can start now. */
   private canStart(pot:Pot):boolean{
     if((this.me.trial?.[pot]??0)>0)return true;
-    return this.me.signedIn&&(!!this.me.admin||!!unlimitedUntil(this.me)||total(this.me)>0);
+    // (Linked to Practical: the server asks Practical at launch, so it decides.)
+    return this.me.signedIn&&(!!this.me.admin||!!unlimitedUntil(this.me)||total(this.me)>0||!!this.practical?.linked);
   }
 
   /** After signing up or paying: the drive that was waiting starts; signed up with nothing to drive on, the paywall. */
@@ -213,6 +275,8 @@ export class Access{
     if(!this.me.signedIn)return pot&&left>0?`${left===1&&FREE_EACH===1?`Your ${TRY_NAME[pot][0]}`:`${cap(TRY_NAME[pot][0])} ${Math.max(1,FREE_EACH-left+1)} of ${Math.max(FREE_EACH,left)}`}: no sign-up needed, used if you complete it`
       :pot?`You have used your ${TRY_NAME[pot][FREE_EACH===1?0:1]}. ${this.stillFree(pot)||INVITE_UNLOCK}`:'Sign in to start: a completed drive uses one session.';
     if(this.me.admin)return 'Admin: drives do not use sessions';
+    if(scenario&&this.premiumFirst(scenario)&&this.practical?.premium!=='confirmed')return 'Opens first to Practical Premium learners';
+    if(this.practical?.premium==='confirmed')return 'Practical Premium: unlimited';
     const until=unlimitedUntil(this.me);
     if(until)return until.getUTCFullYear()>=9999?'Unlimited':`Unlimited until ${day(until)}`;
     const n=total(this.me);
@@ -226,15 +290,23 @@ export class Access{
    * Before a drive: false if it cannot start (the account screen opens to sign in or buy); otherwise the drive whose
    * session was used (null where nothing is gated).
    */
-  async begin(kind:string,scenario:string,again?:()=>void):Promise<PaidDrive|null|false>{
+  async begin(kind:string,scenario:string,again?:()=>void,useSession=false):Promise<PaidDrive|null|false>{
     if(!this.gate)return null;
     const pot=modeOf(scenario);
     // Signed out with this kind's free try used: sign up (progress saved), then the drive carries on. Signed in with
     // nothing to drive on: the paywall. Admins drive without sessions (the server checks it too).
     const stop=(reason?:string)=>{this.pending=again?{pot,again}:null;this.open(reason,this.me.signedIn?'paywall':'save');return false as const};
     if(!this.canStart(pot))return stop();
-    const r=await api<{driveId:string;balance:number;error?:string}>('drives',{kind,scenario});
+    const r=await api<{driveId:string;balance:number;error?:string;premium?:boolean}>('drives',{kind,scenario,...(useSession?{useSession:true}:{})});
     if(r.status===200&&r.data){void this.refresh();return {id:r.data.driveId}}
+    // Practical Premium could not be confirmed: nothing is used unless the learner says so.
+    if(r.status===409&&r.data?.error==='premium-unconfirmed'){
+      const choice=await this.askPremium();
+      if(choice==='cancel')return false;
+      return this.begin(kind,scenario,again,choice==='session');
+    }
+    // Open first to Practical Premium learners: the account screen, where the link is.
+    if(r.status===403&&r.data?.error==='premium-first'){await this.loadPractical();this.open('This drive opens first to Practical Premium learners.');return false}
     if(r.status===401){await this.refresh();return stop()}
     if(r.status===402){await this.refresh();return stop()}
     // (Too many new free tries from this connection today: the try itself was not used.)
@@ -268,7 +340,7 @@ export class Access{
     byId('account-note').textContent=this.me.signedIn&&reason?reason:'';
     this.render();
     if(!this.me.signedIn)void this.providers();
-    if(mode==='account')void this.loadProfile();
+    if(mode==='account'){void this.loadProfile();void this.loadPractical()}
   }
 
   /** The learner's profile under their drives (account view only, signed in). */
@@ -361,6 +433,8 @@ export class Access{
     });
     byId('apple-button').addEventListener('click',()=>void this.appleSignIn());
     byId('account-signout').addEventListener('click',()=>void api('auth/logout',{}).then(()=>this.refresh()));
+    byId('practical-link').addEventListener('click',()=>void this.startLink());
+    byId('practical-unlink').addEventListener('click',()=>void this.unlink());
     byId('invite-share').addEventListener('click',()=>{
       this.share('Practise for your driving test on real UK streets. You get 2 free drives with my link:','#invite-share');
     });
@@ -393,13 +467,24 @@ export class Access{
     const starterLeft=signedIn?me.allowances.lesson+me.allowances.test+me.allowances.free:0;
     const drives=total(me);
     const until=unlimitedUntil(me);
-    chip.textContent=signedIn?(me.admin?'Admin':until?'Unlimited':`${drives} drive${drives===1?'':'s'}`):'Sign in';
+    // (Practical Premium confirmed: unlimited while it lasts, as a pass is; checked again at every launch.)
+    const premium=this.practical?.premium==='confirmed';
+    chip.textContent=signedIn?(me.admin?'Admin':until||premium?'Unlimited':`${drives} drive${drives===1?'':'s'}`):'Sign in';
     if(!signedIn)return;
     byId('account-email').textContent=me.email??'Apple account';
+    // Practical Premium: the link and what Practical says.
+    byId('practical-box').hidden=!this.premiumOn;
+    if(this.premiumOn){
+      // (Confirmed: the headline says it.)
+      const line=this.practical?.premium==='confirmed'?'':this.practicalLine();
+      byId('practical-status').textContent=line;byId('practical-status').hidden=!line;
+      byId('practical-link').hidden=!!this.practical?.linked;
+      byId('practical-unlink').hidden=!this.practical?.linked;
+    }
     byId<HTMLInputElement>('account-marketing').checked=!!me.marketing;
     // The headline is everything that can be started; below it, what that is made of.
-    byId('account-balance').textContent=until?'Unlimited':String(drives);
-    byId('account-balance-unit').textContent=until?(until.getUTCFullYear()>=9999?'no end date':`until ${day(until)}`):drives===1?'drive':'drives';
+    byId('account-balance').textContent=until||premium?'Unlimited':String(drives);
+    byId('account-balance-unit').textContent=premium&&!until?'with Practical Premium':until?(until.getUTCFullYear()>=9999?'no end date':`until ${day(until)}`):drives===1?'drive':'drives';
     const rows:HTMLElement[]=[];
     // Starter Pass drives still held from before it became sessions (for any kind of drive).
     if(starterLeft>0){
@@ -409,11 +494,11 @@ export class Access{
       li.append(b,span);rows.push(li);
     }
     // (Sessions: only what can be used; never a number below nothing.)
-    if(me.balance>0||(!until&&!starterLeft)){
+    if(me.balance>0||(!until&&!starterLeft&&!premium)){
       const n=Math.max(0,me.balance);
       const li=document.createElement('li');
       const b=document.createElement('b');b.textContent=`${n} session${n===1?'':'s'}`;
-      const span=document.createElement('span');span.textContent=n>0?until?'kept for after your pass':'for any lesson, mock test or free drive':'or choose a pass below';
+      const span=document.createElement('span');span.textContent=n>0?until?'kept for after your pass':premium?'kept for when Premium ends':'for any lesson, mock test or free drive':'or choose a pass below';
       li.append(b,span);rows.push(li);
     }
     byId('account-breakdown').replaceChildren(...rows);

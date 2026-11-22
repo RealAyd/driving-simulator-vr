@@ -24,6 +24,8 @@ export interface PracticalEntitlement{
 export interface CentreDemand{centre:string;area:string;requests:number;firstAt:string;lastAt:string}
 
 export interface PracticalApi{
+  /** Where the learner's browser goes to consent at Practical (its address for this state and PKCE challenge). */
+  authorizeUrl(p:{state:string;codeChallenge:string;redirectUri:string}):string;
   /** The learner's consent at Practical, finished: a one-time code and the PKCE verifier, for the verified account id. */
   exchangeCode(code:string,verifier:string):Promise<{practicalAccountId:string}>;
   /** Now, for one linked account: Practical's answer as it came (parseEntitlement checks it). Throws when unreachable. */
@@ -135,6 +137,10 @@ export function mockResolve(grants:readonly MockGrant[],now:Date):PracticalEntit
   return {type:'none',status:'inactive',expiry:{kind:'unknown'},checkedAt};
 }
 
+/** The kinds of Practical account the mock's consent page offers. */
+export const MOCK_KINDS=['monthly','lifetime','expired-plus-manual','instructor','none','unreachable'] as const;
+export type MockKind=typeof MOCK_KINDS[number];
+
 /** Local fakes and tests: a Practical whose accounts, grants and answers are set by hand. */
 export class MockPracticalApi implements PracticalApi{
   /** code → the Practical account it signs in. */
@@ -144,6 +150,26 @@ export class MockPracticalApi implements PracticalApi{
   demand:unknown[]=[];
   calls=0;
   constructor(private readonly now:()=>Date=()=>new Date()){}
+  /** Local fakes: the mock's own consent page (http.ts, dev fakes only). */
+  authorizeUrl(p:{state:string;codeChallenge:string;redirectUri:string}){
+    const q=new URLSearchParams({state:p.state,code_challenge:p.codeChallenge,code_challenge_method:'S256',redirect_uri:p.redirectUri});
+    return `/api/practical/mock/authorize?${q}`;
+  }
+  /** Local fakes: a Practical account of one of these kinds, signed in by a new one-time code (for the consent page). */
+  consent(kind:MockKind):string{
+    const id=`mock-${kind}-${Math.random().toString(36).slice(2,10)}`,code=`code-${Math.random().toString(36).slice(2,14)}`;
+    const day=86400_000,at=(d:number)=>({kind:'at' as const,at:new Date(this.now().getTime()+d*day).toISOString()});
+    const grants:Record<MockKind,MockGrant[]|'error'>={
+      monthly:[{source:'stripe_web',type:'learner_premium',state:'active',expiry:at(30)}],
+      lifetime:[{source:'admin_manual',type:'learner_premium',state:'active',expiry:{kind:'never'}}],
+      'expired-plus-manual':[{source:'revenuecat',type:'learner_premium',state:'active',expiry:at(-3)},{source:'admin_manual',type:'learner_premium',state:'active',expiry:{kind:'never'}}],
+      instructor:[{source:'stripe_web',type:'instructor',state:'active',expiry:at(30)}],
+      none:[],
+      unreachable:'error',
+    };
+    this.accounts.set(id,grants[kind]);this.codes.set(code,{practicalAccountId:id});
+    return code;
+  }
   async exchangeCode(code:string,verifier:string){
     const c=this.codes.get(code);
     if(!c||(c.verifier&&c.verifier!==verifier))throw new Error('invalid code');

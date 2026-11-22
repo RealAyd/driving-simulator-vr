@@ -30,14 +30,24 @@ const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 const b64url=(b:Buffer)=>b.toString('base64url');
 
 export class Premium{
-  constructor(private readonly store:PremiumStore,private readonly api:PracticalApi,private readonly options:PremiumOptions,
+  constructor(private readonly store:PremiumStore,readonly api:PracticalApi,private readonly options:PremiumOptions,
     private readonly now:()=>Date=()=>new Date()){}
 
   /** Linking, begun by the signed-in learner: a one-time state and the PKCE challenge to send to Practical's sign-in. */
-  async startLink(accountId:string):Promise<{state:string;codeChallenge:string;codeChallengeMethod:'S256'}>{
+  async startLink(accountId:string,redirectUri='/'):Promise<{state:string;codeChallenge:string;codeChallengeMethod:'S256';authorizeUrl:string}>{
     const state=b64url(randomBytes(32)),verifier=b64url(randomBytes(48));
     await this.store.saveState({stateHash:sha(state),accountId,verifier,expiresAt:new Date(this.now().getTime()+LINK_STATE_MS)});
-    return {state,codeChallenge:b64url(createHash('sha256').update(verifier).digest()),codeChallengeMethod:'S256'};
+    const codeChallenge=b64url(createHash('sha256').update(verifier).digest());
+    return {state,codeChallenge,codeChallengeMethod:'S256',authorizeUrl:this.api.authorizeUrl({state,codeChallenge,redirectUri})};
+  }
+
+  /** What the app needs to show: the scenarios open first to Premium (none once the owner opens them to everyone). */
+  get premiumFirstList():readonly string[]{return this.options.generalAvailability?[]:this.options.premiumFirst}
+
+  /** For the admin hub: links now, and the last `days` days of checks (Premium drives are the confirmed launches). */
+  async report(days=30){
+    const since=new Date(this.now().getTime()-days*86400_000);
+    return {linked:await this.store.linkCount(),days,checks:await this.store.checkCounts(since)};
   }
 
   /**

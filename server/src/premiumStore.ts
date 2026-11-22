@@ -34,7 +34,7 @@ export interface PremiumStore{
   /** A notice's event, the first time it is seen (true); false for one seen before (kept until `until`). */
   claimEvent(eventId:string,until:Date):Promise<boolean>;
   /** For the admin hub: checks and their results, and Premium drives, since a moment. */
-  checkCounts(since:Date):Promise<Record<'confirmed'|'inactive'|'error',number>>;
+  checkCounts(since:Date):Promise<Record<'confirmed'|'inactive'|'error'|'premiumDrives',number>>;
   /** How many accounts are linked now. */
   linkCount():Promise<number>;
 }
@@ -62,8 +62,8 @@ export class MemoryPremiumStore implements PremiumStore{
   private readonly events=new Map<string,Date>();
   async claimEvent(eventId:string,until:Date){if(this.events.has(eventId))return false;this.events.set(eventId,until);return true}
   async checkCounts(since:Date){
-    const n={confirmed:0,inactive:0,error:0};
-    for(const c of this.log)if(c.at.getTime()>=since.getTime())n[c.result]++;
+    const n={confirmed:0,inactive:0,error:0,premiumDrives:0};
+    for(const c of this.log)if(c.at.getTime()>=since.getTime()){n[c.result]++;if(c.reason==='launch'&&c.result==='confirmed')n.premiumDrives++}
     return n;
   }
   async linkCount(){return this.links.length}
@@ -107,8 +107,9 @@ export class MongoPremiumStore implements PremiumStore{
     catch(e){if(e instanceof MongoServerError&&e.code===11000)return false;throw e}
   }
   async checkCounts(since:Date){
-    const n={confirmed:0,inactive:0,error:0};
+    const n={confirmed:0,inactive:0,error:0,premiumDrives:0};
     for(const r of await this.log.aggregate<{_id:'confirmed'|'inactive'|'error';n:number}>([{$match:{at:{$gte:since}}},{$group:{_id:'$result',n:{$sum:1}}}]).toArray())n[r._id]=r.n;
+    n.premiumDrives=await this.log.countDocuments({at:{$gte:since},reason:'launch',result:'confirmed'});
     return n;
   }
   async linkCount(){return this.links.countDocuments({})}

@@ -282,6 +282,14 @@ html[data-theme="light"] .board-join button{color:#fff}
 .admin-hub{grid-column:1/-1;display:block;text-align:center;padding:11px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
 .invite-box{border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
 .invite-row{display:flex;gap:8px;margin-top:6px}
+.practical-box{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:8px 0}
+.practical-box p{margin:0;flex-basis:100%;font-weight:600}
+.premium-prompt{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(2,6,23,.55)}
+.premium-prompt[hidden]{display:none}
+.premium-prompt .card{max-width:360px;width:100%}
+.premium-prompt-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.choice[data-premium-first]{position:relative}
+.choice[data-premium-first]::after{content:'Premium first';position:absolute;top:6px;right:8px;font-size:11px;font-weight:700;padding:2px 6px;border-radius:999px;background:#f59e0b;color:#111}
 .account-history{margin:0;padding-left:18px;font-size:13px;color:var(--soft)}
 .session-note{margin-top:8px;text-align:center}
 .legal-links{font-size:12.5px}.legal-links a{color:var(--accent)}
@@ -904,6 +912,11 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
       <p id="account-email" class="unit not-paywall"></p>
       <p class="balance not-paywall"><b id="account-balance">0</b> <span id="account-balance-unit">drives</span></p>
       <ul id="account-breakdown" class="breakdown not-paywall"></ul>
+      <div id="practical-box" class="practical-box" hidden>
+        <p id="practical-status" role="status" hidden></p>
+        <button id="practical-link" type="button">Link Practical account</button>
+        <button id="practical-unlink" type="button" class="link" hidden>Unlink Practical</button>
+      </div>
       <section id="profile" class="profile not-paywall" aria-label="Your progress" hidden></section>
       <button id="account-board" type="button" class="board-link not-paywall"><span>🏆</span><b>Leaderboard</b><span id="account-board-rank"></span></button>
       <div id="admin-tools" class="admin-tools" hidden>
@@ -927,6 +940,17 @@ html[data-text=larger] .card,html[data-text=larger] #hud-task,html[data-text=lar
     </div>
   </div>
 </section>
+
+<div id="premium-prompt" class="premium-prompt" role="dialog" aria-modal="true" aria-labelledby="premium-prompt-text" hidden>
+  <div class="card">
+    <p id="premium-prompt-text"><b>Practical Premium could not be confirmed</b></p>
+    <div class="premium-prompt-row">
+      <button id="premium-use-session" type="button">Use a session</button>
+      <button id="premium-retry" type="button">Try again</button>
+      <button id="premium-cancel" type="button" class="link">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <section id="screen-board" class="screen" hidden aria-labelledby="board-title">
   <div class="card board-card">
