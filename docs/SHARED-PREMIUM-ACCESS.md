@@ -6,7 +6,7 @@
 
 > **Product decision:** A learner whose **Driving Practice mobile-app account has valid, active Premium** is entitled to **unlimited VR simulator sessions** without buying a separate VR pass, paying per drive, or using VR credits. The earlier version of this document incorrectly said mobile Premium could not unlock the simulator. That restriction is withdrawn.
 
-The simulator must still support its **separate Stripe VR passes for people without qualifying mobile Premium**. The Theory Ready app remains a separate product. This document is intentionally free of production credentials and customer records.
+The simulator must still support its **separate Stripe VR passes for people without qualifying Premium**. **See [Shared accounts, progress sync and transferability](SHARED-ACCOUNTS-PROGRESS-TRANSFER.md)** for the agreed mobile/web/VR shared-account architecture. The Theory Ready app remains a separate product. This document is intentionally free of production credentials and customer records.
 
 ## 1. Access matrix
 
@@ -18,15 +18,15 @@ The simulator must still support its **separate Stripe VR passes for people with
 | No Premium, but valid purchased VR pass/credits | Allow according to the VR pass's remaining allowance | No duplicate purchase |
 | Neither Premium nor VR pass | No paid simulator session | Offer existing VR pass checkout |
 | Instructor subscription alone (`instructor_subscription`) | Does **not** count as learner Premium | Separate entitlement unless learner Premium is also active |
-| Practical web-only Premium without mobile-recognised entitlement | **Not yet specified as part of this approval** | Do not silently expand or deny an existing verified entitlement; escalate this edge case to owner |
+| Valid Practical Premium purchased on web but not yet synced to mobile | **Unlimited simulator sessions once verified against the same canonical account** | Repair missing web-to-mobile entitlement sync; never require a second payment |
 
-**Owner-confirmed usage policy:** Valid mobile Driving Practice Premium unlocks **unlimited simulator access** while Premium remains active. There is **no drive-count cap, per-session VR charge, VR pass purchase requirement, or VR-credit decrement** for qualifying Premium use. This applies across simulator exercise modes available under the product, including lessons and mock tests; it does not promise availability of a feature that has not been built. If Premium expires and no other valid grant remains, future sessions require independent VR access. The simulator must re-check eligibility securely, rather than relying on a stale local Premium flag.
+**Owner-confirmed usage policy:** Valid Driving Practice learner Premium (originally purchased on mobile or the Practical web app, or independently granted) unlocks **unlimited simulator access** while Premium remains active. There is **no drive-count cap, per-session VR charge, VR pass purchase requirement, or VR-credit decrement** for qualifying Premium use. This applies across simulator exercise modes available under the product, including lessons and mock tests; it does not promise availability of a feature that has not been built. If Premium expires and no other valid grant remains, future sessions require independent VR access. The simulator must re-check eligibility securely, rather than relying on a stale local Premium flag.
 
 Previous VR pass products (for example VR 5, VR 15 and VR 35) remain independent for non-Premium visitors. They are prepaid simulator usage products, not the Practical app's learner Premium subscription. Live package sizes and prices must come from verified VR Stripe configuration, not hardcoded marketing copy. The prior **no free introductory VR drive** policy remains in effect for visitors who qualify for neither access route.
 
 ## 2. Authoritative mobile Premium identity
 
-The private `RealAyd/Driving-Practice` backend, not the VR frontend, is responsible for determining whether a learner's account has valid Premium access.
+The private `RealAyd/Driving-Practice` backend, not the VR frontend, is responsible for determining whether a learner's account has valid Premium access across mobile and web. The learner should have the same canonical `user_id` and Premium status across all platforms.
 
 Inspected Practical-app source (`feature/practical-website-preview`) shows:
 - Canonical **learner Premium** RevenueCat entitlement ID: `premium_access`.
@@ -81,7 +81,7 @@ A learner must authenticate as their **existing Driving Practice account**. Pres
 
 **Premium drive allowance is decided: UNLIMITED.** Do not impose caps, deduct VR credits, or display a VR paywall for an active qualifying mobile Premium account.
 
-**Web-only Premium eligibility:** The owner's explicit correction covers Premium under the **mobile app**. If the same effective Premium entitlement is shared to the mobile account, it qualifies. Whether a web-only purchase that has not synced to mobile should immediately unlock VR requires a separately confirmed product and backend decision.
+**Web-origin Premium eligibility:** A valid, backend-verified Practical web Premium purchase should unlock Premium on mobile and unlimited VR for the same canonical account. Missing web-to-mobile recognition is a sync issue to repair, not a separate charge or a reason to create another user. See [shared accounts and progress](SHARED-ACCOUNTS-PROGRESS-TRANSFER.md) for migration, offline storage, cross-device history and transferability. Temporary instructor-initiated trials are a separate entitlement-policy edge case and should not silently create unlimited paid VR entitlement.
 
 ## 7. Source and status
 
