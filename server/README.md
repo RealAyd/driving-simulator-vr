@@ -175,5 +175,8 @@ as before. `src/practical.ts` holds the provisional contract and the mock; `src/
   a fresh check and grants nothing.
 - **Records:** `practical_links`, `practical_link_states` (expire after 10 minutes), `practical_notice_events` (seen
   notices, kept 10 minutes) and `entitlement_checks` (append-only). Accounts, balances, allowances, passes, subscriptions and the ledger are never changed.
-- **Test-centre requests** (`GET /api/admin/centre-demand`, admins): centre, area, count and dates only.
+- **Test-centre requests** (`GET /api/admin/centre-demand`, admins; the hub's Test centre requests tab): centre, area,
+  count, first and latest day only; centres with fewer than 3 requests left out; nobody who asked.
+- **Admin hub counts:** accounts linked, checks by result, and Premium drives counted from the drives recorded
+  (`paidFrom: 'premium'`), not from checks (a confirmed check can end in no drive).
 - Tests: `npx vitest run server/test/premium.test.ts` (`MONGO_TESTS=1` adds the MongoDB uniqueness checks).

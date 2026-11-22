@@ -8,7 +8,7 @@ import {pick} from './home';
 // question asked when Premium cannot be confirmed. Nothing here talks to a real Practical.
 test.describe.configure({mode:'serial'});
 let api:ChildProcess;
-test.beforeAll(async()=>{api=await startServer({PRACTICAL_PREMIUM:'1',PRACTICAL_PREMIUM_FIRST:'crossing-restricted-view',PRACTICAL_NOTICE_SECRET:'test-only-secret'})});
+test.beforeAll(async()=>{api=await startServer({PRACTICAL_PREMIUM:'1',PRACTICAL_PREMIUM_FIRST:'crossing-restricted-view',PRACTICAL_NOTICE_SECRET:'test-only-secret',ADMIN_EMAILS:'boss@example.com'})});
 test.afterAll(()=>stopServer(api));
 
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
@@ -97,6 +97,31 @@ test('G40: link to Practical, Premium shown; a Premium drive uses nothing; a Pre
   await page.click('#premium-use-session');
   await expect.poll(()=>read(page,'session()'),{timeout:60_000}).toBe('running');
   expect(errors).toEqual([]);
+});
+
+test('G40: the admin hub counts Premium drives as recorded and shows the test-centre requests, sanitised',async({page})=>{
+  test.setTimeout(120_000);
+  await page.goto('./admin.html');
+  await expect(page.locator('#signin')).toBeVisible();
+  await page.fill('#email','boss@example.com');
+  await page.click('#email-form button');
+  await expect(page.locator('#code-form')).toBeVisible();
+  const mail=await (await page.request.get('/api/dev/outbox')).json() as Array<{to:string;subject:string}>;
+  await page.fill('#code',/(\d{6})/.exec(mail.filter(m=>m.to==='boss@example.com').at(-1)!.subject)![1]!);
+  await page.click('#code-form button');
+  // The learner above drove once under Premium (the zebra); their other launches were checks or used a session.
+  const premium=page.locator('.stat',{hasText:'Practical Premium drives'});
+  await expect(premium.locator('b')).toHaveText('1',{timeout:30_000});
+  await page.screenshot({path:test.info().outputPath('g40-05-admin-overview.png')});
+  // Test-centre requests: the local mock's invented totals; the centre with one request is not shown.
+  await page.click('[data-tab=centres]');
+  const rows=page.locator('#centre-rows tr');
+  await expect(rows).toHaveCount(2);
+  await expect(rows.nth(0)).toContainText('Example Centre A');
+  await expect(rows.nth(0)).toContainText('7');
+  await expect(rows.nth(1)).toContainText('Example Centre B');
+  await expect(page.locator('#centre-rows')).not.toContainText('Example Centre C');
+  await page.screenshot({path:test.info().outputPath('g40-06-admin-centre-requests.png')});
 });
 
 test('G40: off, nothing of it shows',async({page})=>{

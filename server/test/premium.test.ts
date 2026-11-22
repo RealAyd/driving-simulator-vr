@@ -275,14 +275,49 @@ describe('Practical Premium: notices from Practical',()=>{
   });
 });
 
+describe('Practical Premium: the admin hub counts Premium drives as recorded, not checks',()=>{
+  it('a confirmed check that ended in no drive is not a drive; started and completed come from the drives themselves',async()=>{
+    const {service,store,premium,api,account,link,start}=setup();
+    const a=await account('count@example.com');await link(a.id,'p-1');
+    api.accounts.set('p-1',[G.web()]);
+    const one=await start(a.id),two=await start(a.id);
+    if(!one.ok||!two.ok)throw new Error('not started');
+    await service.driveStatus(a.id,one.drive.id,'completed');
+    // (A launch confirmed by Practical that stopped before its drive was recorded, e.g. the app closed: a check, no drive.)
+    await premium.check(a.id,'launch');
+    // (And the learner's own status screen, and a refusal: checks, no drives.)
+    await premium.status(a.id);
+    api.accounts.set('p-1','error');
+    expect(await start(a.id)).toEqual({ok:false,reason:'premium-unconfirmed'});
+    const r=await premium.report(since=>store.premiumDrives(since));
+    expect(r.checks).toEqual({confirmed:4,inactive:0,error:1});
+    expect(r.drives).toEqual({started:2,completed:1});
+    expect(r.linked).toBe(1);
+  });
+});
+
 describe('Practical test-centre requests: only what the simulator may see',()=>{
-  it('keeps centre, area, count and dates; drops requesters, emails and anything else, and malformed rows',()=>{
-    expect(cleanDemand([
-      {centre:'Goodmayes',area:'IG3',requests:4,firstAt:'2026-11-01T10:00:00Z',lastAt:'2026-11-20T10:00:00Z',email:'x@example.com',requester:'Jo',note:'call me'},
-      {centre:'',area:'E1',requests:1,firstAt:'2026-11-01',lastAt:'2026-11-01'},
-      {centre:'Hendon',area:'NW9',requests:-1,firstAt:'2026-11-01',lastAt:'2026-11-01'},
+  it('keeps centre, area, count and the days; drops requesters, emails, anything else, malformed rows and centres with under 3 requests; most requested first',()=>{
+    const rows=cleanDemand([
+      {centre:'Goodmayes',area:'IG3',requests:4,firstAt:'2026-11-01T10:00:00Z',lastAt:'2026-11-20T23:30:00Z',email:'x@example.com',requester:'Jo',note:'call me'},
+      {centre:'Hendon',area:'NW9',requests:9,firstAt:'2026-11-02T08:00:00Z',lastAt:'2026-11-21T08:00:00Z',requesterIds:['u1','u2']},
+      {centre:'Morden',area:'SM4',requests:2,firstAt:'2026-11-01T10:00:00Z',lastAt:'2026-11-02T10:00:00Z'},
+      {centre:'',area:'E1',requests:5,firstAt:'2026-11-01',lastAt:'2026-11-01'},
+      {centre:'Tottenham',area:'N17',requests:-1,firstAt:'2026-11-01',lastAt:'2026-11-01'},
+      {centre:'Enfield',area:'EN3',requests:6,firstAt:'yesterday',lastAt:'2026-11-01'},
       'junk',null,
-    ])).toEqual([{centre:'Goodmayes',area:'IG3',requests:4,firstAt:'2026-11-01T10:00:00.000Z',lastAt:'2026-11-20T10:00:00.000Z'}]);
+    ]);
+    expect(rows).toEqual([
+      {centre:'Hendon',area:'NW9',requests:9,firstAt:'2026-11-02',lastAt:'2026-11-21'},
+      {centre:'Goodmayes',area:'IG3',requests:4,firstAt:'2026-11-01',lastAt:'2026-11-20'}]);
+    expect(JSON.stringify(rows)).not.toMatch(/@|Jo|call|u1|T\d\d:/);
+  });
+  it('the admin route: the sanitised table, or unavailable when Practical cannot be asked',async()=>{
+    const {premium,api}=setup();
+    api.demand=[{centre:'Hendon',area:'NW9',requests:3,firstAt:'2026-11-02T08:00:00Z',lastAt:'2026-11-03T08:00:00Z',email:'a@b.c'}];
+    expect(await premium.centreDemand()).toEqual([{centre:'Hendon',area:'NW9',requests:3,firstAt:'2026-11-02',lastAt:'2026-11-03'}]);
+    api.centreDemand=async()=>{throw new Error('down')};
+    expect(await premium.centreDemand()).toBe(null);
   });
 });
 
@@ -301,6 +336,12 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('Practical Premium: links and 
     await db.saveState({stateHash:'h1',accountId:'a',verifier:'v',expiresAt:new Date(Date.now()+60_000)});
     const taken=await Promise.all(Array.from({length:6},()=>db.takeState('h1',new Date())));
     expect(taken.filter(Boolean)).toHaveLength(1);
+    // (Premium drives counted from the drives collection.)
+    const drive=(paidFrom:'premium'|'sessions',status:'started'|'completed')=>store.createDrive({accountId:'a',owner:'a',kind:'free',scenario:'goodmayes-free-drive',
+      mode:'free',paidFrom,startedAt:new Date(),status});
+    await drive('premium','started');await drive('premium','completed');await drive('sessions','completed');
+    expect(await store.premiumDrives(new Date(Date.now()-60_000))).toEqual({started:2,completed:1});
+    expect(await store.premiumDrives(new Date(Date.now()+60_000))).toEqual({started:0,completed:0});
     const c=await db.recordCheck({accountId:'a',practicalAccountId:'p-1',at,result:'error',type:null,status:null,expiry:null,expiresAt:null,reason:'launch',error:'timeout'});
     expect((await db.checks('a'))[0]).toMatchObject({id:c.id,result:'error'});
   },60_000);

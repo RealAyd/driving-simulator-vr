@@ -296,7 +296,7 @@ export function handler(service:Service,outbox:OutboxMailer|null){
           return rows?send(res,200,{centres:rows}):send(res,503,{error:'practical-unavailable'});
         }
         if(method==='GET'&&path==='/api/admin/overview')return send(res,200,{...await admin.overview(),support:await support.counts(),
-          ...(service.premium?{practicalPremium:await service.premium.report()}:{}),
+          ...(service.premium?{practicalPremium:await service.premium.report(since=>service.store.premiumDrives(since))}:{}),
           webhooks:{...service.webhookStats,mode:config.stripeMode}});
         // Support: the queue, a request, and what an admin can do with it.
         if(method==='GET'&&path==='/api/admin/visits'){

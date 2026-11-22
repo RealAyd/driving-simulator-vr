@@ -215,6 +215,11 @@ export class MongoStore implements Store{
   async visitEvents(since:Date,limit:number){
     return (await this.visits.find({at:{$gte:since}},{projection:{_id:0}}).sort({at:1}).limit(limit).toArray()) as VisitEvent[];
   }
+  async premiumDrives(since:Date){
+    const q={paidFrom:'premium' as const,startedAt:{$gte:since}};
+    const [started,completed]=await Promise.all([this.drives.countDocuments(q),this.drives.countDocuments({...q,status:'completed'})]);
+    return {started,completed};
+  }
   async driveCounts(since:Date){
     const rows=await this.drives.aggregate<{_id:{mode:Mode;status:DriveStatus;outcome?:DriveOutcome};n:number}>([{$match:{startedAt:{$gte:since},status:{$ne:'unpaid'}}},
       {$group:{_id:{mode:'$mode',status:'$status',outcome:'$outcome'},n:{$sum:1}}}]).toArray();

@@ -20,8 +20,10 @@ export interface PracticalEntitlement{
   checkedAt:string;
 }
 
-/** One test centre's requests, as the simulator may see them: no requester, no email, no free text. */
+/** One test centre's requests, as the simulator may see them: no requester, no email, no free text; days, not times. */
 export interface CentreDemand{centre:string;area:string;requests:number;firstAt:string;lastAt:string}
+/** Fewer requests than this for a centre are not shown: a handful could point to who asked. */
+export const MIN_DEMAND=3;
 
 export interface PracticalApi{
   /** Where the learner's browser goes to consent at Practical (its address for this state and PKCE challenge). */
@@ -90,7 +92,11 @@ export function verifyNotice(body:string,timestamp:string|undefined,signature:st
   }catch{return null}
 }
 
-/** Only the fields named in CentreDemand, of the right kinds; anything else Practical sends is dropped. */
+/**
+ * Only the fields named in CentreDemand, of the right kinds; anything else Practical sends is dropped. Dates are cut to
+ * the day (UTC), centres with fewer than MIN_DEMAND requests are left out (Practical should already do both), and the
+ * most requested come first.
+ */
 export function cleanDemand(rows:unknown[]):CentreDemand[]{
   const out:CentreDemand[]=[];
   for(const r of rows){
@@ -99,10 +105,10 @@ export function cleanDemand(rows:unknown[]):CentreDemand[]{
     const text=(v:unknown,n:number)=>typeof v==='string'&&v.trim()?v.trim().slice(0,n):null;
     const centre=text(o['centre'],120),area=text(o['area'],12),first=text(o['firstAt'],40),last=text(o['lastAt'],40);
     const requests=typeof o['requests']==='number'&&Number.isInteger(o['requests'])&&o['requests']>0?o['requests']:null;
-    if(centre&&area&&first&&last&&requests&&!Number.isNaN(Date.parse(first))&&!Number.isNaN(Date.parse(last)))
-      out.push({centre,area,requests,firstAt:new Date(first).toISOString(),lastAt:new Date(last).toISOString()});
+    if(centre&&area&&first&&last&&requests&&requests>=MIN_DEMAND&&!Number.isNaN(Date.parse(first))&&!Number.isNaN(Date.parse(last)))
+      out.push({centre,area,requests,firstAt:new Date(first).toISOString().slice(0,10),lastAt:new Date(last).toISOString().slice(0,10)});
   }
-  return out;
+  return out.sort((a,b)=>b.requests-a.requests||a.centre.localeCompare(b.centre));
 }
 
 /**

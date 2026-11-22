@@ -44,11 +44,15 @@ export class Premium{
   /** What the app needs to show: the scenarios open first to Premium (none once the owner opens them to everyone). */
   get premiumFirstList():readonly string[]{return this.options.generalAvailability?[]:this.options.premiumFirst}
 
-  /** For the admin hub: links now, and the last `days` days of checks (Premium drives are the confirmed launches). */
-  async report(days=30){
+  /**
+   * For the admin hub: links now; the last `days` days of checks; and Premium drives as recorded (`drives`, the main
+   * store's count of drives paid from Premium): a confirmed check is not a drive (a launch can stop after it).
+   */
+  async report(drives:(since:Date)=>Promise<{started:number;completed:number}>,days=30){
     const since=new Date(this.now().getTime()-days*86400_000);
-    return {linked:await this.store.linkCount(),days,checks:await this.store.checkCounts(since)};
+    return {linked:await this.store.linkCount(),days,checks:await this.store.checkCounts(since),drives:await drives(since)};
   }
+
 
   /**
    * Back from Practical's sign-in: the state (once, for this same account, in time) and the code, exchanged server to

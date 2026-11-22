@@ -198,6 +198,8 @@ export interface Store{
   /** Uses (−1) or gives back (+1) one of a free try's drives; using is atomic and fails (false) when none is left. */
   moveTrial(id:string,mode:Mode,delta:-1|1):Promise<boolean>;
   driveCounts(since:Date):Promise<DriveCounts>;
+  /** Practical Premium drives actually recorded since a moment (paidFrom 'premium'), and how many were completed. */
+  premiumDrives(since:Date):Promise<{started:number;completed:number}>;
   /** Visits (analytics.ts): kept 400 days. */
   saveVisitEvents(events:VisitEvent[]):Promise<void>;
   /** Since then, oldest first, at most `limit`. */
@@ -333,6 +335,10 @@ export class MemoryStore implements Store{
     const n=countDrives();
     for(const d of this.drives.values())if(d.startedAt>=since&&d.status!=='unpaid')addDrive(n,d,1);
     return n;
+  }
+  async premiumDrives(since:Date){
+    const all=[...this.drives.values()].filter(d=>d.paidFrom==='premium'&&d.startedAt>=since);
+    return {started:all.length,completed:all.filter(d=>d.status==='completed').length};
   }
 }
 

@@ -27,7 +27,12 @@ void (async()=>{
   if(config.practicalPremium){
     const premiumStore=store instanceof MongoStore?new MongoPremiumStore(store.database):new MemoryPremiumStore();
     if(premiumStore instanceof MongoPremiumStore)await premiumStore.indexes();
-    ready.premium=new Premium(premiumStore,new MockPracticalApi(),config.practicalPremium);
+    const mock=new MockPracticalApi();
+    // (Invented requests, for the admin hub's table in local development; the mock is never used anywhere else.)
+    mock.demand=[{centre:'Example Centre A',area:'AB1',requests:7,firstAt:'2026-11-01T09:00:00Z',lastAt:'2026-11-20T17:00:00Z'},
+      {centre:'Example Centre B',area:'CD2',requests:4,firstAt:'2026-11-10T09:00:00Z',lastAt:'2026-11-18T12:00:00Z'},
+      {centre:'Example Centre C',area:'EF3',requests:1,firstAt:'2026-11-15T09:00:00Z',lastAt:'2026-11-15T09:00:00Z'}];
+    ready.premium=new Premium(premiumStore,mock,config.practicalPremium);
   }
   service=ready;
   serve=api(ready,outbox);
