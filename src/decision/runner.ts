@@ -116,6 +116,8 @@ const STREAM_CLEAR=10;
 const STREAM_RADIUS=24;
 /** Stuck with one road user this long (seconds, backing up and all), it turns off as a last resort. */
 const RETIRE_AFTER=25;
+/** Held by one, then on this far past where it was first held (path metres): no longer stuck with it. */
+const STUCK_PAST=5;
 /** Still held by it this long (seconds), the car backs up this far (metres) to make room. */
 const BACK_AFTER=12,BACK_DISTANCE=3.5;
 /** On the way back, the junctions within this far ahead (metres) are kept clear. */
@@ -449,6 +451,8 @@ export class DecisionRunner{
   private waved=false;
   private stuckWho='';
   private stuckTime=0;
+  /** Where (path metres) the car was first held by stuckWho. */
+  private stuckS=0;
   /** Backing up to here (path metres) to make room, or null. */
   private backTo:number|null=null;
 
@@ -490,7 +494,10 @@ export class DecisionRunner{
       if(!by&&car0.speed>1)this.waved=false;
       // Stuck with it longer still (no room behind to back into either): as a last resort it turns off, rather than
       // the test standing still for good.
-      if(by){this.stuckTime=by===this.stuckWho?this.stuckTime+1/60:0;this.stuckWho=by}else if(car0.speed>1){this.stuckTime=0;this.stuckWho=''}
+      // (Counted until the car is on past where it was first held: backing up to make room, then rolling up again, is
+      // still stuck with it, West Wickham's bus by the centre.)
+      if(by){if(by===this.stuckWho)this.stuckTime+=1/60;else{this.stuckTime=0;this.stuckWho=by;this.stuckS=this.carS()}}
+      else if(car0.speed>1&&this.carS()>this.stuckS+STUCK_PAST){this.stuckTime=0;this.stuckWho=''}
       if(by&&this.stuckTime>RETIRE_AFTER){this.scene.retire?.(by);this.stuckTime=0}
       // (One itself waiting for one of the route's own road users, standing (a car waiting at a junction's mouth, for the
       // car): neither goes; it turns off too, as a last resort.)
