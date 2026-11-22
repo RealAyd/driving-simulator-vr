@@ -1,5 +1,7 @@
 # Shared contracts (owned by Agent A)
 
+**Membership and payments:** See [Practical Premium and separate VR pass handover](SHARED-PREMIUM-ACCESS.md). It describes current access boundaries and the checks required before adding billing integration.
+
 All agents build against `src/contracts/`. Propose changes to this file and the contracts in a pull request; do not change them silently.
 
 ## Units
