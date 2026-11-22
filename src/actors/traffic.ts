@@ -1415,9 +1415,12 @@ export class Traffic implements SimModule{
       const q=this.at(d.leg,s);
       return {id:car.id,cx:q.x+q.dir.z*lat,cz:q.z-q.dir.x*lat,heading:headingFromDirection(q.dir),halfW:car.halfWidth+pad,halfD:car.halfLength+pad};
     };
-    for(const o of this.bodiesNear(car,learner,edging,car.speed*dt)){
-      const them={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength};
-      if(o.pads.some(pad=>boxesOverlap(body(s1,d.lat,pad),them)&&!boxesOverlap(body(d.s,lat0,pad),them))){car.speed=0;d.lat=lat0;return true}
+    const near=this.bodiesNear(car,learner,edging,car.speed*dt),box=(o:typeof near[number])=>({id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength});
+    // (Already in a road user's way: let on out of it, as below.)
+    const inWay=new Set(near.filter(o=>o.way&&o.pads.some(pad=>boxesOverlap(body(d.s,lat0,pad),box(o)))).map(o=>o.id));
+    for(const o of near){
+      if(o.way&&inWay.has(o.id))continue;
+      if(o.pads.some(pad=>boxesOverlap(body(s1,d.lat,pad),box(o))&&!boxesOverlap(body(d.s,lat0,pad),box(o)))){car.speed=0;d.lat=lat0;return true}
     }
     return false;
   }
@@ -1428,9 +1431,12 @@ export class Traffic implements SimModule{
    */
   private intoTouch(car:TrafficCar,from:Pose,to:Pose,learner:{pose:Pose},edging:boolean):boolean{
     const body=(p:Pose,pad:number)=>({id:car.id,cx:p.position.x,cz:p.position.z,heading:p.heading,halfW:car.halfWidth+pad,halfD:car.halfLength+pad});
-    for(const o of this.bodiesNear(car,learner,edging,1)){
-      const them={id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength};
-      if(o.pads.some(pad=>boxesOverlap(body(to,pad),them)&&!boxesOverlap(body(from,pad),them)))return true;
+    const near=this.bodiesNear(car,learner,edging,1),box=(o:typeof near[number])=>({id:o.id,cx:o.pose.position.x,cz:o.pose.position.z,heading:o.pose.heading,halfW:o.halfWidth,halfD:o.halfLength});
+    // (Already in a road user's way: let on out of it, not held there to be run into.)
+    const inWay=new Set(near.filter(o=>o.way&&o.pads.some(pad=>boxesOverlap(body(from,pad),box(o)))).map(o=>o.id));
+    for(const o of near){
+      if(o.way&&inWay.has(o.id))continue;
+      if(o.pads.some(pad=>boxesOverlap(body(to,pad),box(o))&&!boxesOverlap(body(from,pad),box(o))))return true;
     }
     return false;
   }
@@ -1439,11 +1445,11 @@ export class Traffic implements SimModule{
   private bodiesNear(car:TrafficCar,learner:{pose:Pose},edging:boolean,reach:number){
     const pos=car.pose.position;
     const others=this.options.others?.()??[];
-    return [{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[]},
-      ...others.map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[]})),
+    return [{id:'learner',pose:learner.pose,halfWidth:.9,halfLength:2.15,pads:(edging?KEEP_OFF.learner.slice(-1):KEEP_OFF.learner) as readonly number[],way:false},
+      ...others.map(o=>({id:o.id,pose:o.pose,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.other as readonly number[],way:false})),
       // (Not where its way runs this car's way: one ahead on it is followed by it, as it follows traffic, and held back
       // it would be run into from behind.)
-      ...others.flatMap(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>60?[]:(o.ahead?.()??[]).filter(q=>Math.cos(q.heading-car.pose.heading)<.7).map(q=>({id:o.id,pose:q,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.way as readonly number[]})))]
+      ...others.flatMap(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)>60?[]:(o.ahead?.()??[]).filter(q=>Math.cos(q.heading-car.pose.heading)<.7).map(q=>({id:o.id,pose:q,halfWidth:o.halfWidth??(o.halfLength>1?.9:.3),halfLength:o.halfLength,pads:KEEP_OFF.way as readonly number[],way:true})))]
       .filter(o=>Math.hypot(o.pose.position.x-pos.x,o.pose.position.z-pos.z)<car.halfLength+o.halfLength+reach+2);
   }
 

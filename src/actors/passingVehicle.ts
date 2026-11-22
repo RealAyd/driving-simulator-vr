@@ -250,9 +250,12 @@ export class PassingVehicle implements SimModule{
       if(gap===Infinity)continue;
       // (Its speed along this one's way only: one crossing the path, however fast, is no lead to follow at speed.)
       const lead=Math.max(0,(o.speed??0)*Math.cos(o.pose.heading-this.pose.heading)),want=Math.max(0,Math.min(this.cruise,lead+.6*(gap-STOP_GAP-1.2*lead)));
+      // (And braking at least as hard as stopping STOP_GAP short of it takes, closing on it: one pulled in just ahead,
+      // or crawling, was run into from behind with the gentler easing alone: Enfield.)
+      const closing=Math.max(0,this.speed-lead),need=closing*closing/(2*Math.max(gap-STOP_GAP,.1));
       if(want<target){
         target=want;
-        if(this.speed>target)this.speed=Math.max(target,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(1.5,(this.speed-target)*2))*dt);
+        if(this.speed>target)this.speed=Math.max(target,this.speed-Math.min(MAX_DECEL[this.def.body],Math.max(1.5,(this.speed-target)*2,need))*dt);
       }
     }
     // Traffic lights on its path ahead: stopped 1.5 m short of the line, braking steadily.
