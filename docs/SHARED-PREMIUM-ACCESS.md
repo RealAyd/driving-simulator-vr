@@ -1,79 +1,95 @@
-# Driving Practice membership and VR simulator access
-**Builder handover | 22 November 2026 | Documentation only**
+# Driving Practice Premium membership and VR simulator access
 
-**Applies to:** VR Driving Practice judgement simulator (`vr.drivingpractice.live`) and its relationship to the separate Practical Driving Practice app. This is a public, secrets-free integration guide for the simulator builder. It is **not** an instruction to change live entitlements, billing, customer data or production configuration.
+**Owner-approved entitlement policy, corrected 22 November 2026.**  
+**Status: implementation specification, not confirmation that cross-app unlock is live.**  
+**Audience:** simulator builder on `RealAyd/driving-simulator-vr`, branch `rebuild/3d-judgement-simulator`.
 
-## 1. Non-negotiable product boundary
+> **Product decision:** A learner whose **Driving Practice mobile-app account has valid, active Premium** must be able to open and use the VR judgement simulator without being required to buy a separate VR pass. The earlier version of this document incorrectly said mobile Premium could not unlock the simulator. That restriction is withdrawn.
 
-| Product | What a purchase currently unlocks | Billing and authority |
+The simulator must still support its **separate Stripe VR passes for people without qualifying mobile Premium**. The Theory Ready app remains a separate product. This document is intentionally free of production credentials and customer records.
+
+## 1. Access matrix
+
+| Verified learner status | Simulator access | Purchase requirement |
 | --- | --- | --- |
-| Practical Driving Practice (web, iOS, Android) | Practical scenarios/features governed by the existing app's Premium entitlement | Practical app backend and verified RevenueCat/Stripe/manual-grant state |
-| VR Driving Practice judgement simulator | A finite number of paid simulator drives, usable across simulator modes according to its own pass rules | VR's own verified Stripe checkout and server-side drive allowance |
-| Theory Ready | Theory preparation; separate product/access | Its own implementation and terms |
+| Mobile Driving Practice Premium active | **Allow** simulator access | **Do not demand a separate VR pass** |
+| Mobile Premium through a valid manual/admin grant recognised by the mobile app | **Allow**, subject to the same verified effective-Premium status | No extra VR purchase |
+| Mobile Premium expired, revoked, refunded with no other valid grant, or never held | No Premium-based unlock | Use existing valid VR pass or the VR checkout |
+| No Premium, but valid purchased VR pass/credits | Allow according to the VR pass's remaining allowance | No duplicate purchase |
+| Neither Premium nor VR pass | No paid simulator session | Offer existing VR pass checkout |
+| Instructor subscription alone (`instructor_subscription`) | Does **not** count as learner Premium | Separate entitlement unless learner Premium is also active |
+| Practical web-only Premium without mobile-recognised entitlement | **Not yet specified as part of this approval** | Do not silently expand or deny an existing verified entitlement; escalate this edge case to owner |
 
-**Do not infer that Practical Premium automatically grants simulator drives.** No cross-product Premium-to-VR unlock has been approved or evidenced in the inspected code. Do not show “VR included with Practical Premium,” grant unlimited VR, or create a hidden bundle. Practical and VR can cross-promote, but access is separate.
+**Important:** The owner's approval is to unlock **simulator access and use** for valid mobile Premium members. No maximum number of drives, frequency cap, or conversion rate from Premium to VR credits has been agreed in this handover. **Do not impose a new VR pass purchase requirement on these members**, but also **do not advertise “unlimited VR drives”** until usage limits are expressly settled. Treat any Premium-session limit as a separate product decision to confirm before production enforcement.
 
-**No free VR drive:** the last explicit product decision was that simulator sessions are paid, with no free introductory drive. Do not grant a “one free drive” allowance. A staging/test scenario can be available only behind development/test controls and must not become public paid-content bypass.
+Previous VR pass products (for example VR 5, VR 15 and VR 35) remain independent for non-Premium visitors. They are prepaid simulator usage products, not the Practical app's learner Premium subscription. Live package sizes and prices must come from verified VR Stripe configuration, not hardcoded marketing copy. The prior **no free introductory VR drive** policy remains in effect for visitors who qualify for neither access route.
 
-The simulator has used Stripe prepaid passes (including packages described as VR 5 / VR 15 / VR 35 drives and earlier Starter/top-up offers). **Do not hard-code sizes, prices or promotional claims from this document**: retrieve live package definitions and allowances from the simulator's actual Stripe/payment configuration. A pass is finite usage, not a Premium subscription. One VR wallet should be usable across VR lessons, mock tests, free-drive mode and future manoeuvres where supported.
+## 2. Authoritative mobile Premium identity
 
-## 2. Practical Driving Practice: what “Premium” means
+The private `RealAyd/Driving-Practice` backend, not the VR frontend, is responsible for determining whether a learner's account has valid Premium access.
 
-The **private** source repository is `RealAyd/Driving-Practice`. The simulator builder does not need access to that private repository to read this document.
+Inspected Practical-app source (`feature/practical-website-preview`) shows:
+- Canonical **learner Premium** RevenueCat entitlement ID: `premium_access`.
+- `instructor_subscription` is a separate entitlement and is not enough.
+- A canonical backend `user_id`; legacy RevenueCat identity can be `revenuecat_app_user_id`. Do **not** create a second user solely by matching email.
+- Premium can have multiple independent valid sources, including native RevenueCat purchase, valid manual/legacy grants and verified web Stripe orders. A revoked purchase must not remove some other still-valid grant.
+- The backend exposes an authenticated `GET /api/auth/me` account route. **This does not prove that a dedicated simulator eligibility route or secure browser-to-VR login bridge exists.** Do not invent a route or treat a frontend boolean as verified.
 
-The inspected Practical app source defines:
-- Canonical learner Premium entitlement ID: `premium_access` in RevenueCat. A separate `instructor_subscription` entitlement is **not** learner Premium.
-- Native iOS/Android purchases and restores use RevenueCat. Keep each person's existing `user_id` and original `revenuecat_app_user_id` linkage; never infer entitlement from an email match.
-- Practical web checkout code offers a **£19.99 one-time** and **£4.99 weekly** product through verified Stripe checkout. These are **source-code configured amounts, not a promise that every plan is live**.
-- Account Premium can also come from a valid manual/admin grant or an existing legacy entitlement. Backend reconciliation considers independent valid grants; a refund/revocation should remove only the benefit of the affected purchase, not unrelated valid grants.
-- A frontend flag, browser return URL, screenshot of payment, webhook with an invalid signature or an unverified RevenueCat SDK state **must not independently grant Premium**.
-- Existing mobile Premium is intended to carry into the **Practical web app** without a second purchase. Any reverse web-to-mobile sync and migrations need verified production testing; do not claim they're finished.
+A learner must authenticate as their **existing Driving Practice account**. Preserve original canonical account identity across mobile and VR. The VR app must not request the learner's Apple, Google, RevenueCat or Stripe credentials directly.
 
-For orientation only, the Practical backend includes `GET /api/auth/me` (authenticated bearer session) and its own entitlement reconciliation. **This is not a public simulator entitlement API.** Never call it from a public simulator with a server secret, copy an admin token, or mirror the entire user database into the VR application.
+## 3. Builder implementation contract
 
-## 3. What the simulator builder should implement
+1. **Audit what already exists** in the simulator: VR payment service, pass/credit wallet, sign-in, customer identity and secure backend. Do not replace working Stripe flows or overwrite existing VR customers.
+2. **Design the shared sign-in handoff securely.** Use the Practical app's existing authentication flow or an approved short-lived exchange and verify the resulting session server-side. Never put long-lived bearer tokens in query strings, logs, public JavaScript or localStorage that another origin can read.
+3. **Implement a server-verified eligibility decision**, combining two independent gates:
+   - **Mobile Premium gate:** the authenticated canonical learner has valid, effective Premium recognised by Driving Practice.
+   - **VR pass gate:** a non-Premium learner has a verified, unspent VR pass or other valid VR-specific credit/grant.
+   Grant access if **either** gate is valid.
+4. **Enforce the decision on actual session launch**, not just when hiding a checkout button. Direct scenario URLs, reloads, different viewer modes and retries must not bypass checks.
+5. **A qualifying Premium user must not be charged again or forced to purchase VR credits.** Do not decrement a separate prepaid VR balance just because the Premium learner launches a session unless the owner explicitly approves such a rule.
+6. **Keep existing VR credits separate.** Users who also own a VR pass retain it. An unrelated refund, RevenueCat expiration, or Practical membership change must not destroy legitimately purchased VR credits.
+7. **Reverify when required**, especially after subscription expiry, refund, manual revocation or account changes. During a verification outage, don't invent a Premium entitlement or erase existing grants; provide a recoverable error and safe retry path.
+8. **Maintain auditability and privacy.** Store the minimum access decision and source; do not publish customer lists, personal emails, purchase history, server tokens, webhook secrets or RevenueCat secret keys in this public repository.
 
-1. **Keep VR pass ownership separate.** A visitor's Practical Premium flag must not unlock a VR session. A verified VR pass or approved VR-specific grant is required.
-2. **Re-use the VR's existing account and payment flow**, if present, rather than spinning up another Stripe customer/payment system. If no secure server-side wallet exists, report that dependency; do not fake a balance in localStorage or deliver a browser-only access gate.
-3. **Verify VR payment server-side** (signed Stripe webhooks plus provider reconciliation as needed). Redirects and client-supplied order IDs alone are not proof of payment. Never put Stripe secret keys or webhook secrets in browser code.
-4. **Gate every paid launch path**, including direct scenario URLs, alternate modes, mobile/VR routes and “retry” routes. A UI paywall without a server-enforced allowance check is not sufficient.
-5. **Spend a drive exactly once under the agreed usage rule.** Use an atomic server-side decrement with an idempotency key. Retries caused by network errors must not double-charge a drive. Define precisely what constitutes a started/consumed drive in the VR product before enabling billing.
-6. **Keep passes account-bound**, not solely device-bound. Persist remaining allowance and purchase records securely. Restoring an existing pass must not create additional drives.
-7. **Handle refunds/chargebacks correctly.** Remove only the VR allowance or credits associated with the affected transaction (including unspent remaining units according to the documented refund policy); do not revoke a separate Practical Premium grant.
-8. **Display an accurate access message.** Example: “VR sessions require a simulator pass.” Link to `https://vr.drivingpractice.live/` for the current passes. Do not promise a specific pack or price until verified.
-9. **Avoid sharing sensitive information.** No production CSV export, customer emails, RevenueCat secret/API key, private purchase ledger, bearer tokens, webhook signing key or customer credentials in this public repository.
+**Do not assume cross-product access is already deployed.** The inspected simulator rebuild is a TypeScript/Vite/Babylon.js frontend; a secure account and entitlement bridge has not been verified. If the live simulator uses a separate hosted backend, discover and document that exact service before wiring the UI. Do not add a pretend `/api/vr-entitlements` endpoint without a real implementation and approved contract.
 
-A simulator **test/pre-release environment** must use isolated test payments and test accounts. Do not submit real charges during integration testing.
+## 4. Entitlement and payment lifecycle
 
-## 4. Shared accounts or a bundle: FUTURE DECISION, not live functionality
+- A native weekly/monthly Premium subscription unlocks the simulator **while the mobile account has effective Premium**. Restore, renew, cancellation and expiration should be reflected by backend verification, not by an old screenshot.
+- A valid non-expiring/lifetime mobile Premium purchase or approved manual Premium grant likewise unlocks the simulator while its verified grant remains active.
+- A refund or cancellation only changes the access provided by the affected purchase or subscription. If another valid Premium grant remains, simulator access remains.
+- A standalone VR pass remains subject to its own paid-drive consumption and refund rules. The system must use server-side idempotency for drive consumption and never double-decrement because of a network retry.
+- The simulator's separate checkout must still work for non-Premium members; **do not add a second Premium subscription or silently convert existing VR prepaid passes into subscriptions**.
+- Cross-app eligibility does **not** make Theory Ready Premium or an instructor subscription equivalent to learner Premium.
 
-A future sign-in bridge, combined bundle or promotional benefit could be designed, but **none is authorised by this handover**. If the owner later approves one, define:
-- A written entitlement matrix by product and purchase type (including weekly, one-time, manual grants, expiration, refunds and grandfathered memberships).
-- A server-to-server, least-privilege eligibility check linked by canonical account identity; identity verification cannot rely solely on a matching email.
-- Separate fields for **Practical Premium active** and **VR credits remaining**. An “active” Premium response must not be treated as unlimited drives.
-- Explicit rules for consumer consent, privacy, cancellation and source-specific revocation.
-- Audit logs, replay protection, downtime behavior and acceptance tests on staging.
+## 5. Tests required before release
 
-**Do not invent or call a `/api/vr-entitlements` or shared access endpoint: no such integration endpoint was verified.** A development agent must obtain an approved contract before implementing any cross-product access.
+- [ ] A current mobile Premium learner signs in to the simulator with the same canonical account and starts a real exercise **without a VR pass or second payment**.
+- [ ] A learner with a valid manual Premium grant sees the same result, where their mobile account recognises the grant.
+- [ ] A learner with only `instructor_subscription` is not mistaken for learner Premium.
+- [ ] A non-Premium learner with available VR credits may start a drive and consumes only the agreed VR credit.
+- [ ] A non-Premium learner with no valid pass gets the normal VR checkout, not a free drive.
+- [ ] An account holding Premium **and** prepaid VR credits can use Premium access without accidentally consuming purchased credits.
+- [ ] Expired Premium without another valid grant does not automatically unlock VR; a remaining independently purchased VR pass still works.
+- [ ] Refunding one Premium purchase does not revoke access where another valid grant remains; VR pass balances remain unaffected.
+- [ ] A mobile/web account switch does not expose the prior learner's Premium eligibility or credits.
+- [ ] Direct URLs, replays, reconnects, webhook retries and concurrent sessions cannot bypass access checks or double-charge.
+- [ ] iPhone Safari, Android Chrome and desktop browser sign-in, renewal/expiry and simulator launch work with a clean session.
+- [ ] Production credentials and customer data are absent from source, tests, browser logs and public documentation.
 
-## 5. Acceptance checklist for the VR builder
+## 6. Decision still required
 
-- [ ] No VR pass: a normal visitor cannot start a paid drive, including via deep links.
-- [ ] Practical Premium only: still no VR drives unless the user separately owns a valid VR pass.
-- [ ] Valid VR pass: the user can enter allowed VR modes; remaining allowance is read from verified server state.
-- [ ] Completed paid drive: one and only one unit is consumed according to the documented VR usage rule.
-- [ ] Network retry, page reload or webhook replay: no duplicate charge, credit or consumption.
-- [ ] Refunded/disputed VR purchase: remove only its VR-specific benefit; other purchases remain intact.
-- [ ] Practical web/mobile Premium and manual grants: unchanged by VR billing or refunds.
-- [ ] No live secrets or customer PII exposed in frontend code, GitHub or logs.
-- [ ] Staging Stripe test journey passes before production changes.
+**Premium drive allowance:** Whether mobile Premium provides unlimited simulator drives or a defined number of sessions is **not specified by the owner's current correction**. Do not invent a limit or advertise unlimited use. Before implementing a usage cap, obtain the owner's exact policy. In the meantime, the integration must **not require another VR pass purchase** for qualifying Premium members.
 
-## 6. Source and verification notes
+**Web-only Premium eligibility:** The owner's explicit correction covers Premium under the **mobile app**. If the same effective Premium entitlement is shared to the mobile account, it qualifies. Whether a web-only purchase that has not synced to mobile should immediately unlock VR requires a separately confirmed product and backend decision.
 
-**Inspected 22 November 2026:**
-- Private Practical source `RealAyd/Driving-Practice`, `feature/practical-website-preview`: `backend/revenuecat_router.py`, `backend/web_access.py`, `backend/web_billing.py`, `backend/auth.py`.
-- Public VR source `RealAyd/driving-simulator-vr`, `rebuild/3d-judgement-simulator`: `package.json`, `src/app/main.ts`, `docs/STANDALONE_PREVIEW.md`.
-- The checked VR rebuild is a browser-side TypeScript/Babylon app; the inspected build did **not** establish an operational, server-enforced VR membership wallet. A dedicated backend or existing VR payment service must enforce access.
-- These are code and product-rule findings, **not** confirmation of current live Stripe package prices, payment webhook health, successful purchases or membership synchronization.
+## 7. Source and status
 
-**Builder instruction:** Build only the VR access described above. Keep all Practical/VR/Theory product boundaries intact and return a concise implementation plan naming the existing services, missing server-side dependencies and exact acceptance evidence. Do not change billing or access terms without explicit owner approval.
+Reviewed on 22 November 2026:
+- Private Practical app `RealAyd/Driving-Practice`, `feature/practical-website-preview`: `backend/revenuecat_router.py`, `backend/web_access.py`, `backend/web_billing.py`, `backend/auth.py`.
+- Public VR app `RealAyd/driving-simulator-vr`, `rebuild/3d-judgement-simulator`: `package.json`, `src/app/main.ts`, `docs/STANDALONE_PREVIEW.md`.
+- **Owner's latest explicit rule supersedes earlier statements that Practical/mobile Premium could not open the simulator.**
+
+This document specifies the approved access relationship; it does **not** report a successful production implementation, live Stripe checkout verification, or deployed shared authentication.
+
+**Builder next action:** Review the existing VR access architecture, identify the smallest secure backend integration needed for the approved mobile-Premium unlock, and deliver a staging-tested implementation. Keep existing non-Premium VR passes and all production payments unchanged until validation.
