@@ -817,7 +817,12 @@ export class Traffic implements SimModule{
       const towards=((lp0.x-pos.x)*fwd.x+(lp0.z-pos.z)*fwd.z)/toL>.3;
       if(this.options.keepClear&&(inZones.length===0||towards)){
         const lp=learner.pose.position,ldx=pos.x-lp.x,ldz=pos.z-lp.z;
-        const leads=Math.cos(car.pose.heading-learner.pose.heading)>.7&&ldx*Math.sin(learner.pose.heading)-ldz*Math.cos(learner.pose.heading)>0&&Math.hypot(ldx,ldz)<150;
+        const front=ldx*Math.sin(learner.pose.heading)-ldz*Math.cos(learner.pose.heading)>0;
+        // (Or gone through in front of the learner and now driving away from it, round the corner: held there, just out
+        // of the junction and short of the challenge's next circle, it stood in the way out with the one behind it
+        // left on the mini-roundabout as the scene stopped, South Yardley's Vineries.)
+        const gone=front&&Math.hypot(ldx,ldz)<60&&(ldx*fwd.x+ldz*fwd.z)/(Math.hypot(ldx,ldz)||1)>.5;
+        const leads=gone||Math.cos(car.pose.heading-learner.pose.heading)>.7&&front&&Math.hypot(ldx,ldz)<150;
         const toQuiet=leads?Infinity:this.toQuiet(d,QUIET_LOOKAHEAD,inZones);
         if(toQuiet<QUIET_LOOKAHEAD){
           const room=toQuiet-car.halfLength-1;
