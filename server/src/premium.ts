@@ -1,5 +1,5 @@
 import {createHash,randomBytes} from 'node:crypto';
-import {cleanDemand,premiumConfirmed,verifyNotice,type CentreDemand,type PracticalApi} from './practical.js';
+import {NOTICE_WINDOW_MS,cleanDemand,parseEntitlement,premiumConfirmed,verifyNotice,type CentreDemand,type PracticalApi} from './practical.js';
 import type {PremiumStore} from './premiumStore.js';
 
 /**
@@ -57,23 +57,36 @@ export class Premium{
   /** Unlinked: Premium ends for this account at once; nothing bought is touched. */
   unlink(accountId:string){return this.store.unlink(accountId)}
 
-  /** Asks Practical now, records the answer, and says whether it is an active learner Premium. */
+  /**
+   * Asks Practical now, records the answer, and says what it allows. 'confirmed': an active learner Premium (premiumConfirmed).
+   * 'inactive': Practical said plainly there is none (no Premium, an instructor's access, ended). 'unconfirmed': it
+   * could not say: unreachable, too slow, an answer out of shape or stale, or a status or end it does not know. Only
+   * 'confirmed' opens anything, and only for this launch.
+   */
   async check(accountId:string,reason:'launch'|'notice'|'status'):Promise<AtLaunch>{
     const link=await this.store.findLink({accountId});
     if(!link)return {state:'unlinked'};
-    const at=this.now();
+    const at=this.now(),base={accountId,practicalAccountId:link.practicalAccountId,at,reason};
+    const failed=async(error:string)=>{
+      const c=await this.store.recordCheck({...base,result:'error',type:null,status:null,expiry:null,expiresAt:null,error});
+      return {state:'unconfirmed' as const,checkId:c.id};
+    };
+    let raw:unknown;
     try{
-      const e=await Promise.race([this.api.entitlement(link.practicalAccountId),
-        new Promise<never>((_,fail)=>setTimeout(()=>fail(new Error('timeout')),CHECK_TIMEOUT_MS).unref?.())]);
-      const ok=premiumConfirmed(e,at);
-      const c=await this.store.recordCheck({accountId,practicalAccountId:link.practicalAccountId,at,result:ok?'confirmed':'inactive',
-        type:typeof e.type==='string'?e.type.slice(0,40):null,expiresAt:e.expiresAt instanceof Date?e.expiresAt:null,reason});
-      return ok?{state:'confirmed',checkId:c.id}:{state:'inactive',checkId:c.id};
-    }catch(err){
-      const c=await this.store.recordCheck({accountId,practicalAccountId:link.practicalAccountId,at,result:'error',type:null,expiresAt:null,reason,
-        error:String(err instanceof Error?err.message:err).slice(0,120)});
-      return {state:'unconfirmed',checkId:c.id};
-    }
+      raw=await Promise.race([this.api.entitlement(link.practicalAccountId),
+        new Promise<never>((_,fail)=>{setTimeout(()=>fail(new Error('timeout')),CHECK_TIMEOUT_MS).unref?.()})]);
+    }catch(err){return failed(String(err instanceof Error?err.message:err).slice(0,120))}
+    const e=parseEntitlement(raw);
+    if(!e)return failed('malformed');
+    const ok=premiumConfirmed(e,at);
+    // (Plainly none: no Premium, an instructor's access, or one that has ended. Anything Practical could not vouch for,
+    // or an answer not made just now, is not "none": the learner is asked before a session is used.)
+    const ended=e.status==='inactive'||e.type!=='learner_premium'||e.expiry.kind==='at'&&Date.parse(e.expiry.at)<=at.getTime();
+    const fresh=Math.abs(at.getTime()-Date.parse(e.checkedAt))<=60_000;
+    const result=ok?'confirmed':ended&&fresh?'inactive':'error';
+    const c=await this.store.recordCheck({...base,result,type:e.type,status:e.status,expiry:e.expiry.kind,
+      expiresAt:e.expiry.kind==='at'?new Date(e.expiry.at):null,...(result==='error'?{error:fresh?'unverified':'stale'}:{})});
+    return ok?{state:'confirmed',checkId:c.id}:result==='inactive'?{state:'inactive',checkId:c.id}:{state:'unconfirmed',checkId:c.id};
   }
 
   /** Whether a scenario is one that opens first to verified learner Premium (until the owner opens it to everyone). */
@@ -82,9 +95,11 @@ export class Premium{
   }
 
   /** A notice from Practical: verified, then a fresh check for the account it names. It grants nothing by itself. */
-  async notice(body:string,timestamp:string|undefined,signature:string|undefined):Promise<'checked'|'unknown-account'|'refused'>{
+  async notice(body:string,timestamp:string|undefined,signature:string|undefined):Promise<'checked'|'unknown-account'|'refused'|'repeat'>{
     const n=verifyNotice(body,timestamp,signature,this.options.noticeSecret,this.now().getTime());
     if(!n)return 'refused';
+    // (Each event once: a replay inside the signature's window is answered, and does nothing.)
+    if(!await this.store.claimEvent(n.eventId,new Date(this.now().getTime()+2*NOTICE_WINDOW_MS)))return 'repeat';
     const link=await this.store.findLink({practicalAccountId:n.practicalAccountId});
     if(!link)return 'unknown-account';
     await this.check(link.accountId,'notice');

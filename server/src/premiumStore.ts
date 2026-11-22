@@ -13,9 +13,11 @@ export interface EntitlementCheck{
   id:string;accountId:string;practicalAccountId:string;at:Date;
   /** 'confirmed': an active learner Premium; 'inactive': anything else Practical said; 'error': it could not be asked. */
   result:'confirmed'|'inactive'|'error';
-  type:string|null;expiresAt:Date|null;
+  /** As Practical answered (null when it could not be asked or answered out of shape). */
+  type:string|null;status:string|null;expiry:'at'|'never'|'unknown'|null;expiresAt:Date|null;
   /** What asked: a launch, a notice from Practical, or the learner's own status screen. */
   reason:'launch'|'notice'|'status';
+  /** Why it is not an answer: unreachable, timeout, malformed, stale, or unverified (a status or end not known). */
   error?:string;
 }
 
@@ -29,6 +31,12 @@ export interface PremiumStore{
   takeState(stateHash:string,now:Date):Promise<LinkState|null>;
   recordCheck(c:Omit<EntitlementCheck,'id'>):Promise<EntitlementCheck>;
   checks(accountId:string,limit?:number):Promise<EntitlementCheck[]>;
+  /** A notice's event, the first time it is seen (true); false for one seen before (kept until `until`). */
+  claimEvent(eventId:string,until:Date):Promise<boolean>;
+  /** For the admin hub: checks and their results, and Premium drives, since a moment. */
+  checkCounts(since:Date):Promise<Record<'confirmed'|'inactive'|'error',number>>;
+  /** How many accounts are linked now. */
+  linkCount():Promise<number>;
 }
 
 export class MemoryPremiumStore implements PremiumStore{
@@ -51,6 +59,14 @@ export class MemoryPremiumStore implements PremiumStore{
   }
   async recordCheck(c:Omit<EntitlementCheck,'id'>){const x={...c,id:randomUUID()};this.log.push(x);return {...x}}
   async checks(accountId:string,limit=20){return this.log.filter(c=>c.accountId===accountId).slice(-limit).reverse()}
+  private readonly events=new Map<string,Date>();
+  async claimEvent(eventId:string,until:Date){if(this.events.has(eventId))return false;this.events.set(eventId,until);return true}
+  async checkCounts(since:Date){
+    const n={confirmed:0,inactive:0,error:0};
+    for(const c of this.log)if(c.at.getTime()>=since.getTime())n[c.result]++;
+    return n;
+  }
+  async linkCount(){return this.links.length}
 }
 
 type Doc<T>=Omit<T,'id'>&{_id:string};
@@ -59,11 +75,14 @@ export class MongoPremiumStore implements PremiumStore{
   private get links(){return this.db.collection<Doc<PracticalLink&{id:string}>>('practical_links')}
   private get states(){return this.db.collection<LinkState&{_id:string}>('practical_link_states')}
   private get log(){return this.db.collection<Doc<EntitlementCheck>>('entitlement_checks')}
+  private get events(){return this.db.collection<{_id:string;until:Date}>('practical_notice_events')}
   async indexes(){
     // One Practical account to one simulator account, both ways.
     await this.links.createIndex({practicalAccountId:1},{unique:true});
     await this.states.createIndex({expiresAt:1},{expireAfterSeconds:0});
     await this.log.createIndex({accountId:1,at:-1});
+    await this.log.createIndex({at:-1});
+    await this.events.createIndex({until:1},{expireAfterSeconds:0});
   }
   async link(l:PracticalLink){
     try{await this.links.insertOne({_id:l.accountId,accountId:l.accountId,practicalAccountId:l.practicalAccountId,linkedAt:l.linkedAt,consentAt:l.consentAt});return 'ok' as const}
@@ -83,4 +102,14 @@ export class MongoPremiumStore implements PremiumStore{
   async checks(accountId:string,limit=20){
     return (await this.log.find({accountId},{sort:{at:-1},limit}).toArray()).map(({_id,...rest})=>({...rest,id:_id}) as EntitlementCheck);
   }
+  async claimEvent(eventId:string,until:Date){
+    try{await this.events.insertOne({_id:eventId,until});return true}
+    catch(e){if(e instanceof MongoServerError&&e.code===11000)return false;throw e}
+  }
+  async checkCounts(since:Date){
+    const n={confirmed:0,inactive:0,error:0};
+    for(const r of await this.log.aggregate<{_id:'confirmed'|'inactive'|'error';n:number}>([{$match:{at:{$gte:since}}},{$group:{_id:'$result',n:{$sum:1}}}]).toArray())n[r._id]=r.n;
+    return n;
+  }
+  async linkCount(){return this.links.countDocuments({})}
 }

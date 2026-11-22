@@ -1,48 +1,80 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 
 /**
- * The Practical backend, as the simulator's server sees it. PROVISIONAL: the Practical builders supply the real
- * account-linking, Premium eligibility and test-centre request contract after Release 1; these shapes are what the
- * simulator needs from it, and only the mock below implements them. No live client exists, and the feature cannot be
- * turned on outside local fakes until one does (config.ts).
+ * The Practical backend, as the simulator's server sees it. PROPOSED: follows the draft contract
+ * (RealAyd/Driving-Practice, handover/practical-web-shared-account-migration,
+ * docs/RELEASE2-SIMULATOR-PRACTICAL-API-CONTRACT.md), not yet agreed or built on Practical's side. Only the mock below
+ * implements it; the feature cannot be turned on outside local fakes until a live client exists (config.ts).
  */
 
-/** What Practical says about an account's entitlement. Only a learner Premium counts here (`premiumConfirmed`). */
+/** When an entitlement ends, said outright: a date, verified never, or not known (which never opens anything). */
+export type Expiry={kind:'at';at:string}|{kind:'never'}|{kind:'unknown'};
+
+/** What Practical says about an account, already resolved from its independent grants (web, native, manual, legacy). */
 export interface PracticalEntitlement{
-  /** 'learner_premium': a learner's Premium, native, web or a manual grant. Anything else (an instructor's access,
-   * the free instructor app) never opens the simulator. */
-  type:'learner_premium'|'instructor'|'none'|string;
-  status:'active'|'inactive'|string;
-  /** When it ends, as Practical recorded it (null: no end given, which does not count as active). */
-  expiresAt:Date|null;
+  /** 'learner_premium' only opens the simulator; an instructor's access never does. */
+  type:'learner_premium'|'instructor'|'none';
+  status:'active'|'inactive'|'unknown';
+  expiry:Expiry;
+  /** When Practical worked it out (UTC). An answer not made just now is stale and opens nothing. */
+  checkedAt:string;
 }
 
 /** One test centre's requests, as the simulator may see them: no requester, no email, no free text. */
 export interface CentreDemand{centre:string;area:string;requests:number;firstAt:string;lastAt:string}
 
 export interface PracticalApi{
-  /** The learner's sign-in to Practical, finished: a one-time code and the PKCE verifier for the verified account id. */
+  /** The learner's consent at Practical, finished: a one-time code and the PKCE verifier, for the verified account id. */
   exchangeCode(code:string,verifier:string):Promise<{practicalAccountId:string}>;
-  /** Now, for one linked account. Throws when Practical cannot be asked or answers out of shape. */
-  entitlement(practicalAccountId:string):Promise<PracticalEntitlement>;
+  /** Now, for one linked account: Practical's answer as it came (parseEntitlement checks it). Throws when unreachable. */
+  entitlement(practicalAccountId:string):Promise<unknown>;
   /** New "Request my test centre" demand, sanitised by Practical. */
   centreDemand():Promise<unknown[]>;
 }
 
-/** Only an active learner Premium with an end after now: an instructor's access, an expired or open-ended one, never. */
+/** How old Practical's answer may be (ms), and how far ahead of the simulator's clock it may say it was made. */
+export const FRESH_MS=60_000,CLOCK_SKEW_MS=5_000;
+
+/** Practical's answer, checked field by field: null when anything is missing, of another kind or out of range. */
+export function parseEntitlement(raw:unknown):PracticalEntitlement|null{
+  if(!raw||typeof raw!=='object')return null;
+  const o=raw as Record<string,unknown>,x=o['expiry'] as Record<string,unknown>|undefined;
+  const type=o['type'],status=o['status'],checkedAt=o['checkedAt'];
+  if(type!=='learner_premium'&&type!=='instructor'&&type!=='none')return null;
+  if(status!=='active'&&status!=='inactive'&&status!=='unknown')return null;
+  if(typeof checkedAt!=='string'||!isoDate(checkedAt))return null;
+  if(!x||typeof x!=='object')return null;
+  let expiry:Expiry;
+  if(x['kind']==='never')expiry={kind:'never'};
+  else if(x['kind']==='unknown')expiry={kind:'unknown'};
+  else if(x['kind']==='at'&&typeof x['at']==='string'&&isoDate(x['at']))expiry={kind:'at',at:x['at']};
+  else return null;
+  return {type,status,expiry,checkedAt};
+}
+const isoDate=(s:string)=>/^\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d(\.\d+)?)?(Z|[+-]\d\d:\d\d)$/.test(s)&&!Number.isNaN(Date.parse(s));
+
+/**
+ * Learner Premium, confirmed: a learner Premium, active, worked out just now, ending at a time still ahead or verified
+ * never to end. An instructor's access, an unknown status or end, an expired one or a stale answer: never.
+ */
 export function premiumConfirmed(e:PracticalEntitlement,now=new Date()):boolean{
-  return e.type==='learner_premium'&&e.status==='active'&&e.expiresAt instanceof Date&&e.expiresAt.getTime()>now.getTime();
+  if(e.type!=='learner_premium'||e.status!=='active')return false;
+  const age=now.getTime()-Date.parse(e.checkedAt);
+  if(age>FRESH_MS||age< -CLOCK_SKEW_MS)return false;
+  if(e.expiry.kind==='never')return true;
+  return e.expiry.kind==='at'&&Date.parse(e.expiry.at)>now.getTime();
 }
 
-/** How long a signed notice from Practical stays acceptable (ms): older ones are replays. */
+/** How long a signed notice from Practical stays acceptable (ms): older ones are refused. */
 export const NOTICE_WINDOW_MS=5*60_000;
 
 /**
- * A notice from Practical (Premium changed for an account), signed with the shared secret over `<timestamp>.<body>`
- * (HMAC-SHA256, hex). Returns the account it names, or null: unsigned, wrong signature, too old or out of shape.
+ * A notice from Practical (Premium changed for an account): `{eventId, practicalAccountId}`, signed with the shared
+ * secret over `<timestamp>.<raw body>` (HMAC-SHA256, hex; X-DP-Timestamp, X-DP-Signature). Null: unsigned, wrong
+ * signature, outside the window or out of shape. Replays inside the window are stopped by eventId (premium.ts).
  * A notice grants nothing: it only starts a fresh check.
  */
-export function verifyNotice(body:string,timestamp:string|undefined,signature:string|undefined,secret:string|null,now=Date.now()):{practicalAccountId:string}|null{
+export function verifyNotice(body:string,timestamp:string|undefined,signature:string|undefined,secret:string|null,now=Date.now()):{eventId:string;practicalAccountId:string}|null{
   if(!secret||!timestamp||!signature||!/^\d{10,13}$/.test(timestamp)||!/^[0-9a-f]{64}$/.test(signature))return null;
   const at=timestamp.length<=10?Number(timestamp)*1000:Number(timestamp);
   if(Math.abs(now-at)>NOTICE_WINDOW_MS)return null;
@@ -50,8 +82,9 @@ export function verifyNotice(body:string,timestamp:string|undefined,signature:st
   const got=Buffer.from(signature,'hex');
   if(got.length!==want.length||!timingSafeEqual(got,want))return null;
   try{
-    const o=JSON.parse(body) as {practicalAccountId?:unknown};
-    return typeof o.practicalAccountId==='string'&&/^[\w-]{1,100}$/.test(o.practicalAccountId)?{practicalAccountId:o.practicalAccountId}:null;
+    const o=JSON.parse(body) as {eventId?:unknown;practicalAccountId?:unknown};
+    const id=(v:unknown)=>typeof v==='string'&&/^[\w-]{1,100}$/.test(v);
+    return id(o.eventId)&&id(o.practicalAccountId)?{eventId:o.eventId as string,practicalAccountId:o.practicalAccountId as string}:null;
   }catch{return null}
 }
 
@@ -70,25 +103,59 @@ export function cleanDemand(rows:unknown[]):CentreDemand[]{
   return out;
 }
 
-/** Local fakes and tests: a Practical whose answers are set by hand. */
+/**
+ * One of a Practical account's independent grants, as the mock keeps them (Practical's own resolver works these out
+ * from web orders, RevenueCat, manual and legacy records; the simulator only ever sees the resolved answer).
+ */
+export interface MockGrant{
+  source:'stripe_web'|'revenuecat'|'admin_manual'|'legacy';
+  type:'learner_premium'|'instructor';
+  /** 'revoked': refunded or cancelled (that source only). */
+  state:'active'|'revoked';
+  expiry:Expiry;
+}
+
+/**
+ * The mock's stand-in for Practical's resolver: learner Premium while any one learner grant is active and has not
+ * ended, whatever happened to the others (a refund revokes only its own source). A grant whose end is unknown proves
+ * nothing; with no other evidence the answer is status unknown.
+ */
+export function mockResolve(grants:readonly MockGrant[],now:Date):PracticalEntitlement{
+  const checkedAt=now.toISOString();
+  const live=(g:MockGrant)=>g.state==='active'&&(g.expiry.kind==='never'||g.expiry.kind==='at'&&Date.parse(g.expiry.at)>now.getTime());
+  const learner=grants.filter(g=>g.type==='learner_premium'&&live(g));
+  if(learner.some(g=>g.expiry.kind==='never'))return {type:'learner_premium',status:'active',expiry:{kind:'never'},checkedAt};
+  if(learner.length){
+    const at=learner.map(g=>(g.expiry as {at:string}).at).sort().at(-1)!;
+    return {type:'learner_premium',status:'active',expiry:{kind:'at',at},checkedAt};
+  }
+  if(grants.some(g=>g.type==='learner_premium'&&g.state==='active'&&g.expiry.kind==='unknown'))
+    return {type:'learner_premium',status:'unknown',expiry:{kind:'unknown'},checkedAt};
+  if(grants.some(g=>g.type==='instructor'&&live(g)))return {type:'instructor',status:'active',expiry:{kind:'unknown'},checkedAt};
+  return {type:'none',status:'inactive',expiry:{kind:'unknown'},checkedAt};
+}
+
+/** Local fakes and tests: a Practical whose accounts, grants and answers are set by hand. */
 export class MockPracticalApi implements PracticalApi{
   /** code → the Practical account it signs in. */
   readonly codes=new Map<string,{practicalAccountId:string;verifier?:string}>();
-  /** account → its entitlement, or 'error' (Practical cannot be asked). */
-  readonly entitlements=new Map<string,PracticalEntitlement|'error'>();
+  /** account → its grants (resolved as Practical would), or 'error' (unreachable), or a raw answer as given. */
+  readonly accounts=new Map<string,MockGrant[]|'error'|{raw:unknown}>();
   demand:unknown[]=[];
   calls=0;
+  constructor(private readonly now:()=>Date=()=>new Date()){}
   async exchangeCode(code:string,verifier:string){
     const c=this.codes.get(code);
     if(!c||(c.verifier&&c.verifier!==verifier))throw new Error('invalid code');
     this.codes.delete(code);
     return {practicalAccountId:c.practicalAccountId};
   }
-  async entitlement(practicalAccountId:string){
+  async entitlement(practicalAccountId:string):Promise<unknown>{
     this.calls++;
-    const e=this.entitlements.get(practicalAccountId);
-    if(e==='error')throw new Error('Practical unreachable');
-    return e??{type:'none',status:'inactive',expiresAt:null};
+    const a=this.accounts.get(practicalAccountId);
+    if(a==='error')throw new Error('Practical unreachable');
+    if(a&&!Array.isArray(a))return a.raw;
+    return mockResolve(a??[],this.now());
   }
   async centreDemand(){return this.demand}
 }

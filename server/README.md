@@ -150,7 +150,8 @@ off): signed out, no drive starts (`/api/drives` answers 401) and no free try is
 ## Practical Premium (Release 2: off, against a mocked Practical)
 
 Off unless `PRACTICAL_PREMIUM=1`, which is refused outside local fakes (`DP_DEV_FAKES=1`) until the live Practical
-client is built from the contract the Practical builders supply. With it off, nothing below exists and every drive is
+client is built from the contract the Practical builders supply (draft: RealAyd/Driving-Practice,
+`docs/RELEASE2-SIMULATOR-PRACTICAL-API-CONTRACT.md`, proposed). With it off, nothing below exists and every drive is
 as before. `src/practical.ts` holds the provisional contract and the mock; `src/premium.ts` the rules;
 `src/premiumStore.ts` the records.
 
@@ -158,16 +159,21 @@ as before. `src/practical.ts` holds the provisional contract and the mock; `src/
   challenge for Practical's sign-in; the code comes back and is exchanged server to server for the verified Practical
   account. The only way accounts are linked: no email is matched. One Practical account to one simulator account.
   `POST /api/practical/unlink` ends it.
-- **At launch** (`POST /api/drives`): Practical is asked afresh. Only an active learner Premium with an end after now
-  counts (never an instructor's access). Confirmed: the drive is `paidFrom: 'premium'`, with the check that allowed it,
+- **At launch** (`POST /api/drives`): Practical is asked afresh and its answer checked field by field. Only an active
+  learner Premium counts (never an instructor's access), answered within the last minute, whose `expiry` is
+  `{kind:'at'}` still ahead or `{kind:'never'}` (verified with no end: a manual grant, a lifetime purchase, legacy
+  unlimited). `{kind:'unknown'}`, a bare null, an unknown status or a stale answer never open anything. Practical
+  resolves an account's independent grants (web, native, manual, legacy) into that one answer, so an expired purchase
+  beside a still-valid grant is still Premium. Confirmed: the drive is `paidFrom: 'premium'`, with the check that allowed it,
   and uses nothing, also if Premium lapses during it; a failed load gives nothing back. Not confirmed because Practical
   could not be asked: `409 premium-unconfirmed`, nothing granted, no grace period; the app asks, then sends
   `useSession: true` to use a session instead. A Stripe pass drives on as today.
 - **Premium first** (`PRACTICAL_PREMIUM_FIRST`, scenario ids): `403 premium-first` without confirmed Premium, whatever
   is bought; `PRACTICAL_CHALLENGES_GA=1` opens them to everyone (the owner's switch).
-- **Notices** (`POST /api/practical/notice`): signed with `PRACTICAL_NOTICE_SECRET` over `<timestamp>.<body>`
-  (`X-Practical-Timestamp`, `X-Practical-Signature`), within 5 minutes; each starts a fresh check and grants nothing.
-- **Records:** `practical_links`, `practical_link_states` (expire after 10 minutes) and `entitlement_checks`
-  (append-only). Accounts, balances, allowances, passes, subscriptions and the ledger are never changed.
+- **Notices** (`POST /api/practical/notice`, `{eventId, practicalAccountId}`): signed with `PRACTICAL_NOTICE_SECRET`
+  over `<timestamp>.<raw body>` (`X-DP-Timestamp`, `X-DP-Signature`), within 5 minutes, each `eventId` once; each starts
+  a fresh check and grants nothing.
+- **Records:** `practical_links`, `practical_link_states` (expire after 10 minutes), `practical_notice_events` (seen
+  notices, kept 10 minutes) and `entitlement_checks` (append-only). Accounts, balances, allowances, passes, subscriptions and the ledger are never changed.
 - **Test-centre requests** (`GET /api/admin/centre-demand`, admins): centre, area, count and dates only.
 - Tests: `npx vitest run server/test/premium.test.ts` (`MONGO_TESTS=1` adds the MongoDB uniqueness checks).

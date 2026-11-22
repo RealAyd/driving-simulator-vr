@@ -206,7 +206,7 @@ export function handler(service:Service,outbox:OutboxMailer|null){
         if(method==='POST'&&path==='/api/practical/notice'){
           const raw=(await body(req,16_384)).toString('utf8');
           const one=(h:string|string[]|undefined)=>typeof h==='string'?h:undefined;
-          const r=await premium.notice(raw,one(req.headers['x-practical-timestamp']),one(req.headers['x-practical-signature']));
+          const r=await premium.notice(raw,one(req.headers['x-dp-timestamp']),one(req.headers['x-dp-signature']));
           return send(res,r==='refused'?401:200,{ok:r!=='refused'});
         }
       }
