@@ -486,7 +486,9 @@ export class DecisionRunner{
     {
       // (Only one waiting in turn for the car: one queuing at red lights, or behind another, is simply waited behind.)
       const held=this.heldBy.match(/^traffic (\S+)$|^junction busy \((\S+)\)$/)?.slice(1).find(Boolean)??'',car0=this.scene.car();
-      const by=held&&/learner/.test((this.scene.traffic?.()??[]).find(q=>q.id===held)?.why??'')?held:'';
+      // (Or one kept off the car, standing rather than come into touch with it: it goes nowhere until the car makes room,
+      // Brentwood's Crescent Road.)
+      const by=held&&/learner|^kept off/.test((this.scene.traffic?.()??[]).find(q=>q.id===held)?.why??'')?held:'';
       this.heldFor=by&&by===this.heldWho&&car0.speed<.1?this.heldFor+1/60:0;this.heldWho=by;
       if(by&&this.heldFor>WAVE_AFTER&&!this.waved){this.scene.waveOn?.(by);this.waved=true}
       // Still face to face a while later (it cannot get by either): the car backs up a little to make room.
