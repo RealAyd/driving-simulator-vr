@@ -158,14 +158,20 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('account export against MongoD
     await service.signIn('email',{sub:'late@example.com',email:'late@example.com',emailVerified:true});
     const client=new MongoClient(uri);await client.connect();
     const {files,write}=collect();
-    const m=await exportAccounts(client.db(),{unlimitedLabels:UNLIMITED,now:cutoff,write});
+    // (And updates that write no ledger entry: lessons finished before the accounts are read, a pass ending after.)
+    const accounts=client.db().collection('accounts');
+    const m=await exportAccounts(client.db(),{unlimitedLabels:UNLIMITED,now:cutoff,write,
+      between:async()=>{await accounts.updateOne({_id:ids.adjusted.id as never},{$set:{lessonsDone:['lesson-1']}})},
+      afterAccounts:async()=>{await accounts.updateOne({_id:ids.monthly.id as never},{$set:{unlimitedUntil:new Date()}})}});
     await client.close();
     expect(m.accounts).toBe(5);
     expect(files.get('accounts.jsonl')).not.toContain('late@example.com');
     expect(files.get('ledger.jsonl')).not.toContain('cs_late');
-    expect(m.changedDuringExport).toEqual([ids.payer.id]);
+    expect([...m.changedDuringExport].sort()).toEqual([ids.payer.id,ids.adjusted.id,ids.monthly.id].sort());
     expect(m.mismatched).toEqual([ids.free.id]);
-    expect(m.totals.changedDuringExport).toBe(1);
+    expect(m.totals.changedDuringExport).toBe(3);
+    // (The friend and the free account did not change: not set apart.)
+    expect(m.changedDuringExport).not.toContain(ids.friend.id);
   },120_000);
 });
 

@@ -66,13 +66,14 @@ export interface Manifest{
   accounts:number;
   /**
    * How the export saw one moment: 'snapshot', every read at one point in time (a replica set); 'cutoff', what existed
-   * at `cutoff` (a single server: accounts, entries and drives after it are left out, and an account with an entry
-   * after it is listed in changedDuringExport rather than as mismatched).
+   * at `cutoff` (a single server): accounts, entries and drives after it are left out, and an account that changed
+   * while the export ran (a ledger entry after the cutoff, or its record different at the start, when exported, or at
+   * the end) is listed in changedDuringExport rather than as mismatched.
    */
   consistency:'snapshot'|'cutoff';cutoff:string;
   /** Accounts whose cached balance or allowances differ from their ledger (to look at before migrating). */
   mismatched:string[];
-  /** Cutoff only: accounts with a ledger entry after the cutoff (their cached balance may already include it). */
+  /** Cutoff only: accounts that changed while the export ran (their row may show part of that change). */
   changedDuringExport:string[];
   totals:{accounts:number;withBalance:number;unlimitedActive:number;activeSubscription:number;promoOrReferral:number;
     unknownSourceEntries:number;accountsWithUnknownSource:number;mismatched:number;changedDuringExport:number};
@@ -122,6 +123,8 @@ export async function exportAccounts(db:Db,opts:{unlimitedLabels:readonly string
   session?:ClientSession;
   /** Tests only: called between reading the ledger and the accounts (where a payment arriving would land). */
   between?:()=>Promise<void>;
+  /** Tests only: called once the accounts have been read (where an update would come too late for the export). */
+  afterAccounts?:()=>Promise<void>;
   write:(name:string,lines:AsyncIterable<string>|Iterable<string>)=>Promise<{bytes:number;sha256:string}>}):Promise<Manifest>{
   const now=opts.now??new Date(),session=opts.session;
   const consistency=session?'snapshot':'cutoff';
@@ -131,6 +134,9 @@ export async function exportAccounts(db:Db,opts:{unlimitedLabels:readonly string
   const read=session?{session}:{};
   const counts:Record<string,number>={};
   for(const c of COLLECTIONS)counts[c]=await db.collection(c).countDocuments(filter[c]!,read);
+  // (Cutoff: each account's record as it was at the start, to compare with what is exported and what is there at the end.
+  // Updates that write no ledger entry, as lessons finished, a sign-in added or a pass ending, show only this way.)
+  const atStart=session?null:await accountHashes(db,filter['accounts']!);
   // The ledger, by account (read once, in order).
   const ledger=new Map<string,ExportedLedgerEntry[]>();
   const all:ExportedLedgerEntry[]=[];
@@ -158,8 +164,10 @@ export async function exportAccounts(db:Db,opts:{unlimitedLabels:readonly string
   }
   const accounts:ExportedAccount[]=[];
   const mismatched:string[]=[];
+  const changed=new Set<string>(),exported=new Map<string,string>();
   for await(const d of db.collection('accounts').find(filter['accounts']!,{sort:{createdAt:1,_id:1},...read})){
     const id=String(d._id),entries=ledger.get(id)??[];
+    if(atStart){const h=hashOf(d);exported.set(id,h);if(atStart.get(id)!==h)changed.add(id)}
     const byType:ExportedAccount['ledger']['byType']={},bySource:ExportedAccount['ledger']['bySource']={};
     let sessionsFromLedger=0;const allowancesFromLedger:Record<string,number>={};
     let latest:{e:ExportedLedgerEntry;src:UnlimitedSource}|null=null;
@@ -190,9 +198,13 @@ export async function exportAccounts(db:Db,opts:{unlimitedLabels:readonly string
       progress:{lessonsDone:Array.isArray(d['lessonsDone'])?(d['lessonsDone'] as unknown[]).map(String):[]},
     });
   }
+  await opts.afterAccounts?.();
   // (Cutoff: an account with an entry after it may have a cached balance that already counts that entry.)
-  const changed=new Set<string>();
-  if(!session)for await(const d of db.collection('ledger_entries').find({createdAt:{$gt:now}},{projection:{accountId:1}}))changed.add(String(d['accountId']));
+  if(!session){
+    for await(const d of db.collection('ledger_entries').find({createdAt:{$gt:now}},{projection:{accountId:1}}))changed.add(String(d['accountId']));
+    const atEnd=await accountHashes(db,filter['accounts']!);
+    for(const [id,h] of exported)if(atEnd.get(id)!==h)changed.add(id);
+  }
   const changedDuringExport=accounts.filter(a=>changed.has(a.id)).map(a=>a.id);
   const stillMismatched=mismatched.filter(id=>!changed.has(id));
   mismatched.length=0;mismatched.push(...stillMismatched);
@@ -210,6 +222,14 @@ export async function exportAccounts(db:Db,opts:{unlimitedLabels:readonly string
     mismatched:mismatched.length,changedDuringExport:changedDuringExport.length};
   return {tool:'simulator-account-export',version:1,exportedAt:now.toISOString(),database:db.databaseName,consistency,cutoff:now.toISOString(),
     counts,accounts:accounts.length,mismatched,changedDuringExport,totals,files};
+}
+
+/** A record's fingerprint: any change to any field changes it. */
+const hashOf=(d:unknown)=>createHash('sha256').update(JSON.stringify(d)).digest('hex');
+async function accountHashes(db:Db,filter:Record<string,unknown>):Promise<Map<string,string>>{
+  const m=new Map<string,string>();
+  for await(const d of db.collection('accounts').find(filter))m.set(String(d._id),hashOf(d));
+  return m;
 }
 
 /** What can be shared: counts and totals only, no account ids, emails or entries. */

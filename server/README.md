@@ -157,7 +157,9 @@ each file's SHA-256) and `summary.json` (counts and totals only, no ids: the one
 only. It prints the summary, never an account.
 
 - One moment: on a replica set every read is in one snapshot. On a single server it exports what existed when it
-  began (`cutoff`), and an account with a ledger entry after that is listed in `changedDuringExport`, not as mismatched.
+  began (`cutoff`). An account that changed while it ran is listed in `changedDuringExport`, not as mismatched: one with
+  a ledger entry after the cutoff, or whose record differs between the start, its row and the end (this catches updates
+  that write no ledger entry, as lessons finished, a sign-in added or a pass ending).
   `consistency` in the summary says which.
 
 - It runs only as a database user that cannot write (MongoDB's `read` role on the simulator's database). The app's
