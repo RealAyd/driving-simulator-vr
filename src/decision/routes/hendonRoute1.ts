@@ -145,8 +145,10 @@ export const HENDON_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       starts:[],
       lights:p(-162.4,-122),
       endAt:p(-95.6,-70.6),
-      // The junction (both carriageways of Watford Way), and the start of Greyhound Hill beyond it.
-      quiet:[{x:-140,z:-100,radius:36},{x:-195,z:-135,radius:22},{x:-100,z:-72,radius:22}],
+      // The junction (both carriageways of Watford Way), and the start of Greyhound Hill beyond it. (Within 26 m of its
+      // middle: the other ways' stop lines, 29 m off, are outside, so a car waiting at its red there, as at any lights,
+      // is not counted in the picture.)
+      quiet:[{x:-140,z:-100,radius:26},{x:-195,z:-135,radius:22},{x:-100,z:-72,radius:22}],
       place:{
         approach:{pause:{kind:'moving',at:p(-188.3,-132.3)},lights:'red',frame:{yaw:0,pitch:24},state:'Approaching the lights at 30 mph.'},
         line:{pause:{kind:'stop',at:p(-166,-123.5)},lights:'red',frame:{yaw:0,pitch:28},state:'Stopped at the stop line.'},

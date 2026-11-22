@@ -83,8 +83,10 @@ export const ISLEWORTH_ROUTE_1:DecisionRoute=withTurnButtons(withBeforeAfter({
       instructAt:p(241.81,-436.47),
       starts:[{actor:'worton-car',at:p(241.81,-436.47),delay:0},{actor:'blue-car',at:p(241.81,-436.47),delay:0}],
       endAt:p(275.7,-485.9),
-      // The way out, Worton Road to the right, where the white car comes from, and to the left.
-      quiet:[{x:238,z:-470,radius:22},{x:275,z:-485,radius:30},{x:200,z:-465,radius:30}],
+      // The way out, Worton Road to the right, where the white car comes from, and to the left. (And the Ruskin Road
+      // mini-roundabout the white car goes on round: a bus waiting at it, its front out over the give way line, was run
+      // into.)
+      quiet:[{x:238,z:-470,radius:22},{x:275,z:-485,radius:30},{x:200,z:-465,radius:30},{x:150,z:-462,radius:16}],
       place:{
         line:{pause:{kind:'stop',at:p(237.8,-465.7)},when:{actor:'worton-car',at:p(259.7,-476.7)},frame:{yaw:-70,pitch:32},
           state:'At the end of Fleming Way, at the edge of Worton Road.'},
