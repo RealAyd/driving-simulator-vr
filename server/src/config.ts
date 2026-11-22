@@ -44,6 +44,12 @@ export interface Config{
   packs:Pack[];
   /** Local development and tests only: in-memory store, emails kept in an outbox, a pretend checkout. */
   devFakes:boolean;
+  /**
+   * Practical Premium (Release 2): null, off (the default, and the only setting outside local fakes until the live
+   * Practical client exists). PRACTICAL_PREMIUM=1 turns it on against the mocked Practical; PRACTICAL_PREMIUM_FIRST
+   * lists scenario ids open first to verified Premium; PRACTICAL_CHALLENGES_GA=1 opens them to everyone.
+   */
+  practicalPremium:{premiumFirst:string[];generalAvailability:boolean;noticeSecret:string|null}|null;
 }
 
 export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
@@ -58,6 +64,9 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
   const sessionSecret=env['SESSION_SECRET']??(devFakes?'dev-only-secret-dev-only-secret-dev-only':'');
   if(sessionSecret.length<32)throw new Error('SESSION_SECRET must be at least 32 characters');
   const packsFile=env['PACKS_FILE']??new URL('../packs.json',import.meta.url).pathname;
+  const premiumOn=env['PRACTICAL_PREMIUM']==='1';
+  // (No live Practical client yet: the contract comes after Release 1. On anywhere but local fakes, refused.)
+  if(premiumOn&&!devFakes)throw new Error('PRACTICAL_PREMIUM needs the live Practical client, which is not built yet');
   return {
     port:Number(env['PORT']??8787),
     appBaseUrl:(env['APP_BASE_URL']??'http://localhost:4173').replace(/\/$/,''),
@@ -79,6 +88,8 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
     // (Local fakes: each pack gets a placeholder link so a pretend checkout can name it.)
     packs:(JSON.parse(readFileSync(packsFile,'utf8')) as {packs:Pack[]}).packs
       .map(p=>devFakes&&!p.links.test?{...p,links:{...p.links,test:`https://buy.stripe.com/test_dev_${p.id}`}}:p),
-    devFakes
+    devFakes,
+    practicalPremium:premiumOn?{premiumFirst:(env['PRACTICAL_PREMIUM_FIRST']??'').split(',').map(s=>s.trim()).filter(Boolean),
+      generalAvailability:env['PRACTICAL_CHALLENGES_GA']==='1',noticeSecret:env['PRACTICAL_NOTICE_SECRET']||null}:null
   };
 }

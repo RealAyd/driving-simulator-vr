@@ -20,6 +20,8 @@ const literal=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 export class MongoStore implements Store{
   readonly support:MongoSupportStore;
   private constructor(private readonly db:Db){this.support=new MongoSupportStore(db)}
+  /** The database itself, for stores kept beside this one (Practical Premium's, premiumStore.ts). */
+  get database():Db{return this.db}
 
   static async connect(uri:string):Promise<MongoStore>{
     const client=new MongoClient(uri);

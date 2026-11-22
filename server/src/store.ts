@@ -88,9 +88,12 @@ export interface Drive{
   mode:Mode;
   /**
    * Where its session came from (a refund goes back there); 'admin': an ADMIN_EMAILS account's drive, uses none;
-   * 'trial': the device's free try (the drive's accountId is then `trial:<id>`).
+   * 'trial': the device's free try (the drive's accountId is then `trial:<id>`); 'premium': a verified Practical learner
+   * Premium (Release 2), uses none.
    */
-  paidFrom:Pot|'sessions'|'admin'|'trial'|'pass';
+  paidFrom:Pot|'sessions'|'admin'|'trial'|'pass'|'premium';
+  /** 'premium': the entitlement check that confirmed Practical Premium at its launch (premiumStore.ts). */
+  entitlementCheck?:string;
   /**
    * Its session is taken when it is completed, not when it starts (true until then; drives started before that rule
    * have no `due` and were paid at the start).

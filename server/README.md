@@ -146,3 +146,28 @@ share one address). Signed in, an account's sessions are used first; with none l
 
 Sign-in first (`SIGN_IN_FIRST=1`; on by default when `APP_BASE_URL` is `https://staging.drivingpractice.live`, `0` turns it
 off): signed out, no drive starts (`/api/drives` answers 401) and no free try is offered; signed in, as above.
+
+## Practical Premium (Release 2: off, against a mocked Practical)
+
+Off unless `PRACTICAL_PREMIUM=1`, which is refused outside local fakes (`DP_DEV_FAKES=1`) until the live Practical
+client is built from the contract the Practical builders supply. With it off, nothing below exists and every drive is
+as before. `src/practical.ts` holds the provisional contract and the mock; `src/premium.ts` the rules;
+`src/premiumStore.ts` the records.
+
+- **Linking** (`POST /api/practical/link`, then `/api/practical/link/finish {state, code}`): a one-time state and a PKCE
+  challenge for Practical's sign-in; the code comes back and is exchanged server to server for the verified Practical
+  account. The only way accounts are linked: no email is matched. One Practical account to one simulator account.
+  `POST /api/practical/unlink` ends it.
+- **At launch** (`POST /api/drives`): Practical is asked afresh. Only an active learner Premium with an end after now
+  counts (never an instructor's access). Confirmed: the drive is `paidFrom: 'premium'`, with the check that allowed it,
+  and uses nothing, also if Premium lapses during it; a failed load gives nothing back. Not confirmed because Practical
+  could not be asked: `409 premium-unconfirmed`, nothing granted, no grace period; the app asks, then sends
+  `useSession: true` to use a session instead. A Stripe pass drives on as today.
+- **Premium first** (`PRACTICAL_PREMIUM_FIRST`, scenario ids): `403 premium-first` without confirmed Premium, whatever
+  is bought; `PRACTICAL_CHALLENGES_GA=1` opens them to everyone (the owner's switch).
+- **Notices** (`POST /api/practical/notice`): signed with `PRACTICAL_NOTICE_SECRET` over `<timestamp>.<body>`
+  (`X-Practical-Timestamp`, `X-Practical-Signature`), within 5 minutes; each starts a fresh check and grants nothing.
+- **Records:** `practical_links`, `practical_link_states` (expire after 10 minutes) and `entitlement_checks`
+  (append-only). Accounts, balances, allowances, passes, subscriptions and the ledger are never changed.
+- **Test-centre requests** (`GET /api/admin/centre-demand`, admins): centre, area, count and dates only.
+- Tests: `npx vitest run server/test/premium.test.ts` (`MONGO_TESTS=1` adds the MongoDB uniqueness checks).

@@ -5,6 +5,9 @@ import {MongoStore} from './mongoStore.js';
 import {OutboxMailer,OutboxPusher,fakeIdentities,fakeStripe,identityVerifier,ntfyPusher,resendMailer,stripeApi} from './providers.js';
 import {Service} from './service.js';
 import {MemoryStore} from './store.js';
+import {Premium} from './premium.js';
+import {MemoryPremiumStore,MongoPremiumStore} from './premiumStore.js';
+import {MockPracticalApi} from './practical.js';
 import {describe,notReady,retrying} from './startup.js';
 
 const config=loadConfig();
@@ -20,6 +23,12 @@ void (async()=>{
     (attempt,e,wait)=>console.error(`Database not reached (attempt ${attempt}): ${describe(e)}; trying again in ${wait} s`));
   const ready=new Service(config,store,outbox??resendMailer(config),config.devFakes?fakeIdentities:identityVerifier(config),
     config.devFakes?fakeStripe(config):stripeApi(config),config.devFakes?new OutboxPusher():config.supportPushUrl?ntfyPusher:null);
+  // Practical Premium: only with PRACTICAL_PREMIUM=1 under local fakes (config.ts), against the mocked Practical.
+  if(config.practicalPremium){
+    const premiumStore=store instanceof MongoStore?new MongoPremiumStore(store.database):new MemoryPremiumStore();
+    if(premiumStore instanceof MongoPremiumStore)await premiumStore.indexes();
+    ready.premium=new Premium(premiumStore,new MockPracticalApi(),config.practicalPremium);
+  }
   service=ready;
   serve=api(ready,outbox);
   console.log('Database reached: the API is answering.');

@@ -127,7 +127,7 @@ test('G2: a fast attempt is flagged, findings cite real events, and Try again re
 
   // Saved on this device; Try again starts a clean attempt.
   expect(await read(page,'storage')).toBe('indexeddb');
-  await expect(page.locator('#results-meta')).toContainText('saved on this device');
+  await expect(page.locator('#results-meta')).toContainText('Saved on this device');
   await page.click('#retry-button');
   expect(await read(page,'session()')).toBe('running');
   const fresh=await read(page,'vehicle()');

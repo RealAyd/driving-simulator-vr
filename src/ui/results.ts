@@ -62,6 +62,6 @@ export function renderResults(result:AttemptResult,eventTime:(id:string)=>number
     `${result.durationSeconds.toFixed(0)} s · `+
     (attemptsSaved<0?'parked practice: not scored and not saved'
       :saveFailed?'this attempt could not be saved on this device'
-      :storage==='indexeddb'?`${attemptsSaved} attempt${attemptsSaved===1?'':'s'} saved on this device`:'results are not saved in this browser');
+      :storage==='indexeddb'?'Saved on this device':'results are not saved in this browser');
 }
 
