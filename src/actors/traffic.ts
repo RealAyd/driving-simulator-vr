@@ -156,6 +156,8 @@ const WAVED_SECONDS=6;
 const QUIET_LOOKAHEAD=50;
 /** A road ending this close to a junction kept clear (metres beyond its circle) leads into it. */
 const QUIET_NEAR=40;
+/** A way from inside a circle kept clear to inside one ending this much nearer the learner goes into it (m). */
+const TOWARDS_LEARNER=5;
 /** A road narrower than this (half its width, metres) is single track: two cars cannot pass on it. */
 const SINGLE_TRACK=2.2;
 /** How hard traffic slows for a give way or STOP line ahead (m/s²). */
@@ -301,8 +303,8 @@ export class Traffic implements SimModule{
   }
   /** Whether a road is no way to go now: into a circle kept clear, or a single-track road where a scenario's road user
    * stands waiting (a car waiting to come out of a car park: there would be no getting by). */
-  private closedTo(road:Road,dir:1|-1):boolean{
-    if(this.intoQuiet(road,dir))return true;
+  private closedTo(road:Road,dir:1|-1,from?:Vec2,learner?:Vec2):boolean{
+    if(this.intoQuiet(road,dir,from,learner))return true;
     // (Nor one ending just short of one: the way on from it would lead in.)
     const end=dir>0?road.centreline.at(-1)!:road.centreline[0]!;
     if((this.options.keepClear?.()??[]).some(c=>Math.hypot(end.x-c.x,end.z-c.z)<c.radius+QUIET_NEAR))return true;
@@ -329,12 +331,19 @@ export class Traffic implements SimModule{
     return Infinity;
   }
   /** Whether a road driven one way runs into a circle kept clear (it ends in one, or passes through one): not one
-   * coming out of one. */
-  private intoQuiet(road:Road,dir:1|-1):boolean{
+   * coming out of one. (One that starts in one is coming out of it only for a car in it already, `from` where the car is:
+   * one coming off a roundabout on to a road that starts in a crossing's circle drives into it, West Wickham. And only
+   * going away from the learner: one in it turning back towards the learner, into a dead end by the place the car pulls
+   * up, Bletchley, or back across a dual carriageway into the junction the car waits at, Enfield, goes on into it.) */
+  private intoQuiet(road:Road,dir:1|-1,from?:Vec2,learner?:Vec2):boolean{
     const zones=this.options.keepClear?.()??[];
     if(zones.length===0)return false;
     const line=dir>0?road.centreline:[...road.centreline].reverse(),inside=(p:Vec2)=>zones.some(c=>Math.hypot(p.x-c.x,p.z-c.z)<c.radius);
-    let out=!inside(line[0]!);
+    if(learner&&inside(line[0]!)&&inside(line.at(-1)!)){
+      const far=(p:Vec2)=>Math.hypot(p.x-learner.x,p.z-learner.z);
+      if(far(line.at(-1)!)<far(line[0]!)-TOWARDS_LEARNER)return true;
+    }
+    let out=!inside(line[0]!)||(!!from&&!inside(from));
     for(const p of line.slice(1)){const now=inside(p);if(now&&out)return true;out=!now}
     return false;
   }
@@ -450,7 +459,7 @@ export class Traffic implements SimModule{
   }
 
   /** The way on at the end of a leg: a side road it turns into, or another road at the node (not straight back). */
-  private choose(leg:Leg,kind:TrafficCar['kind'],learner:{pose:Pose}):Leg|null{
+  private choose(leg:Leg,kind:TrafficCar['kind'],learner:{pose:Pose},from?:Vec2):Leg|null{
     let options=this.waysOn(leg,kind);
     // Not into a road that leads nowhere (it stops at the edge of the area, where the map data ends): a car there
     // would have to vanish in view. Only when there is nothing else. (A bus, kept to the through roads, takes a side
@@ -474,9 +483,16 @@ export class Traffic implements SimModule{
     // Not into a junction kept clear, nor a single-track road with a road user waiting in it: another way; with none,
     // it turns off out of the learner's sight (no way on).
     if(this.options.keepClear||this.options.others){
-      const clear=pick.filter(o=>!this.closedTo(o.road,o.dir));
+      const lp=learner.pose.position;
+      const clear=pick.filter(o=>!this.closedTo(o.road,o.dir,from,lp));
       if(clear.length)pick=clear;
-      else{const others=options.filter(o=>!this.closedTo(o.road,o.dir));if(others.length)pick=others;else if(!this.seen(end,learner))return null}
+      else{
+        const others=options.filter(o=>!this.closedTo(o.road,o.dir,from,lp));
+        if(others.length)pick=others;
+        else if(!this.seen(end,learner))return null;
+        // (In view, every way on closed: one that at least goes on out of the circles, not further in.)
+        else{const out=options.filter(o=>!this.intoQuiet(o.road,o.dir,from,lp));if(out.length)pick=out}
+      }
     }
     return pick[Math.floor(this.rand()*pick.length)]!.make();
   }
@@ -1327,8 +1343,8 @@ export class Traffic implements SimModule{
           d.leg=d.next;d.next=null;d.s=over;d.deadEnd=undefined;d.atLine=undefined;d.ringEdge=undefined;d.signal=undefined;continue;
         }
         // (Chosen in good time; again now if it has since been closed: a junction kept clear for a moment in hand.)
-        const closed=!!d.upcoming?.road&&(!!this.options.keepClear||!!this.options.others)&&this.closedTo(d.upcoming.road,d.upcoming.dir);
-        const next=d.upcoming!==undefined&&!closed?d.upcoming:this.choose(d.leg,car.kind,learner);
+        const closed=!!d.upcoming?.road&&(!!this.options.keepClear||!!this.options.others)&&this.closedTo(d.upcoming.road,d.upcoming.dir,car.pose.position,learner.pose.position);
+        const next=d.upcoming!==undefined&&!closed?d.upcoming:this.choose(d.leg,car.kind,learner,car.pose.position);
         d.upcoming=undefined;
         // No way on (the edge of the area): it waits there while the learner can see it, and goes once it cannot.
         if(!next){if(this.seen(car.pose.position,learner)){d.s=d.leg.lengths.at(-1)!;car.speed=0;break}car.visible=false;break}
@@ -1346,7 +1362,7 @@ export class Traffic implements SimModule{
       {
         const remaining=d.leg.lengths.at(-1)!-d.s;
         if(d.leg.road&&!d.leg.exit&&remaining<SIGNAL_AHEAD&&d.upcoming===undefined){
-          d.upcoming=this.choose(d.leg,car.kind,learner);
+          d.upcoming=this.choose(d.leg,car.kind,learner,car.pose.position);
           // (By the way through the junction to it: the exit is the same whichever lane round a roundabout is taken.)
           d.signal=d.upcoming?this.turnSignal(d.leg,this.connector(d.leg,d.upcoming)):'off';
         }
