@@ -1113,6 +1113,12 @@ export class Traffic implements SimModule{
           // once it has stood a while, letting this car go (each waiting for the other: this one goes first).
           const r=Math.hypot(learner.pose.position.x-point.x,learner.pose.position.z-point.z);
           if(r<reach&&r<5&&d.waited>5&&Math.abs(learner.speed)<.3&&!d.waved){d.waved=6;return false}
+          // (Or coming to it at speed, a few seconds off: one drove out across a crossroads ten metres in front of the
+          // car and stood there in its way, Brentwood's Crescent Road.)
+          {
+            const lv=Math.abs(learner.speed),lx=point.x-learner.pose.position.x,lz=point.z-learner.pose.position.z;
+            if(lv>1&&r<80&&r/lv<SAFE_GAP&&(Math.sin(learner.pose.heading)*lx-Math.cos(learner.pose.heading)*lz)/(r||1)>.5)return true;
+          }
           return r<reach&&(Math.abs(learner.speed)>.5||(r<5&&!d.waved));
         })();
         // Out of a side road with give way or STOP lines: wait at the line for a safe gap in the main road's traffic
