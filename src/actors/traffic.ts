@@ -156,6 +156,8 @@ const WAVED_SECONDS=6;
 const QUIET_LOOKAHEAD=50;
 /** A road ending this close to a junction kept clear (metres beyond its circle) leads into it. */
 const QUIET_NEAR=40;
+/** The learner coming along the main road within this of a side road's mouth is let by first (m). */
+const LEARNER_FIRST=120;
 /** A way from inside a circle kept clear to inside one ending this much nearer the learner goes into it (m). */
 const TOWARDS_LEARNER=5;
 /** A road narrower than this (half its width, metres) is single track: two cars cannot pass on it. */
@@ -810,12 +812,10 @@ export class Traffic implements SimModule{
       }
       // A junction kept clear just ahead (one this car is not already in): it waits short of it until it is released,
       // unless it is going the learner's way ahead of it (it leads the learner through, so is no part of the picture).
-      // (In one already, heading the learner's way: short of another it is not in yet. Two challenges' circles in hand at
-      // once overlap; a car going round the roundabout of the next drove on into the crossing of this one, West Wickham.)
+      // (One in a circle already is not held short of another: it would stand in the junction, in the picture,
+      // Chesterfield's Newbold Road mini-roundabout.)
       const inZones=this.options.keepClear?(this.options.keepClear()).filter(c=>Math.hypot(pos.x-c.x,pos.z-c.z)<c.radius):[];
-      const lp0=learner.pose.position,toL=Math.hypot(lp0.x-pos.x,lp0.z-pos.z)||1;
-      const towards=((lp0.x-pos.x)*fwd.x+(lp0.z-pos.z)*fwd.z)/toL>.3;
-      if(this.options.keepClear&&(inZones.length===0||towards)){
+      if(this.options.keepClear&&inZones.length===0){
         const lp=learner.pose.position,ldx=pos.x-lp.x,ldz=pos.z-lp.z;
         const front=ldx*Math.sin(learner.pose.heading)-ldz*Math.cos(learner.pose.heading)>0;
         // (Or gone through in front of the learner and now driving away from it, round the corner: held there, just out
@@ -1616,7 +1616,15 @@ export class Traffic implements SimModule{
     const lp=learner.pose.position;
     // (Careful: wherever the learner comes from towards the mouth, not only along the main road as mapped: a split
     // carriageway's other half joins it there.)
-    return (!!this.options.careful||sampleRoad(main,lp.x,lp.z).distance<roadHalfWidth(main)+1)&&coming(lp,learner.pose.heading,Math.abs(learner.speed),2.15);
+    const near=!!this.options.careful||sampleRoad(main,lp.x,lp.z).distance<roadHalfWidth(main)+1;
+    // (On a drive with junctions kept clear for it, the learner coming within LEARNER_FIRST goes by first: one pulling
+    // out ahead of it led it up to the next junction, stood at its line in front of it and went on through just as the
+    // scene stopped, South Yardley's Vineries; or slowed it where it is shown at speed, Brentwood.)
+    if(near&&this.options.keepClear&&Math.abs(learner.speed)>1){
+      const dx=point.x-lp.x,dz=point.z-lp.z,dist=Math.hypot(dx,dz)||1;
+      if(dist<LEARNER_FIRST&&(Math.sin(learner.pose.heading)*dx-Math.cos(learner.pose.heading)*dz)/dist>.5)return true;
+    }
+    return near&&coming(lp,learner.pose.heading,Math.abs(learner.speed),2.15);
   }
 
   /** Oncoming traffic (or the learner) that makes turning right off the main road unsafe now. */
