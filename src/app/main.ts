@@ -710,6 +710,7 @@ export async function boot():Promise<void>{
       parked:kerbCars,learner:()=>({pose:vehicle.pose,speed:vehicle.state.speed}),signals:()=>trafficSignals?.stops??[],
       // (A decision test keeps the junction in hand to its own road users; the exercise's road users are followed.)
       keepClear:()=>decision&&runtime?.scenario.id===decision.scenarioId?decision.runner.keepClear():[],
+      learnerAhead:()=>decision&&runtime?.scenario.id===decision.scenarioId?decision.runner.pathAhead():[],
       // (Oncoming traffic down the learner's road too: the car keeps to its lane.)
       oncoming:decisionStreets,careful:decisionStreets,...(decisionStreets?{range:DECISION_RANGE,offLimits:startRoads(place,decisionAsked!)}:{}),
       others:()=>passers.filter(p=>p.present).map(p=>({id:p.id,pose:p.pose,speed:p.started?p.speed:0,halfLength:p.size.halfLength,halfWidth:p.size.halfWidth,

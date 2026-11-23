@@ -652,6 +652,15 @@ export class DecisionRunner{
   }
   private readonly actorMarks=new Map<string,number>();
 
+  /** The car's way ahead along the route (points every `step` metres, `reach` metres of it): background traffic does not
+   * keep leading the car along it (traffic.ts `learnerAhead`). Empty once the drive is over. */
+  pathAhead(reach=80,step=8):Array<{x:number;z:number}>{
+    if(this.phase==='finished')return [];
+    const s=this.carS(),out:Array<{x:number;z:number}>=[];
+    for(let d=step;d<=reach;d+=step){const p=this.assist.pointAt(s+d);out.push({x:p.x,z:p.z})}
+    return out;
+  }
+
   /** Where background traffic keeps out now: the quiet circles of each challenge in hand (from a little before its
    * direction is given until the car is past it). */
   keepClear():ReadonlyArray<{x:number;z:number;radius:number}>{

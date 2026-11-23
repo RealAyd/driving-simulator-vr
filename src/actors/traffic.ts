@@ -115,7 +115,9 @@ const OTHER_STANDING=12;
  * Room never closed by a step of its own (metres, body to body): from the learner's car, and from a scenario's own road
  * users. Checked at each of these in turn, so one already inside the outer is still kept from coming nearer.
  */
-const KEEP_OFF={learner:[.3,.18,.08],other:[.15,.06],
+// (From the learner, never under a quarter of a metre and a bit, edging past included: nearer is a touch as the drive
+// tests measure it (Enfield, a car creeping past at 0.24 m; Cardiff, one alongside at 0.248 m).)
+const KEEP_OFF={learner:[.3,.26],other:[.15,.06],
   /** From the way a scenario's road user is about to go: it keeps to its path and gives way to no one but the learner,
    * so a car standing a hand's width off that path, or pulling into it just ahead, was run into (Isleworth's bus at
    * Worton Road, Chesterfield, Brentwood, Enfield). */
@@ -146,6 +148,16 @@ const SIGNAL_TURN=.6;
 const ROUND_PAST_TWELVE=Math.PI*1.15,FIRST_EXIT=Math.PI*.6;
 const dirOf=(a:Vec2,b:Vec2)=>{const l=Math.hypot(b.x-a.x,b.z-a.z)||1;return {x:(b.x-a.x)/l,z:(b.z-a.z)/l}};
 const startDir=(leg:{points:Vec2[]})=>dirOf(leg.points[0]!,leg.points[Math.min(1,leg.points.length-1)]!);
+/** A point `d` metres along a road driven one way from its start. */
+const alongRoad=(road:Road,dir:1|-1,d:number):Vec2=>{
+  const line=dir>0?road.centreline:[...road.centreline].reverse();
+  for(let i=1;i<line.length;i++){
+    const a=line[i-1]!,b=line[i]!,l=Math.hypot(b.x-a.x,b.z-a.z);
+    if(d<=l)return {x:a.x+(b.x-a.x)*d/(l||1),z:a.z+(b.z-a.z)*d/(l||1)};
+    d-=l;
+  }
+  return line.at(-1)!;
+};
 const endDir=(leg:{points:Vec2[]})=>dirOf(leg.points[Math.max(0,leg.points.length-2)]!,leg.points.at(-1)!);
 /** Signed turn from one direction to another (radians; positive to the right). */
 const turnBetween=(a:Vec2,b:Vec2)=>Math.atan2(a.x*b.z-a.z*b.x,a.x*b.x+a.z*b.z);
@@ -185,6 +197,8 @@ export interface TrafficOptions{
   /** Circles kept clear now (a decision test's junction in hand, kept to its own road users): traffic takes another
    * way rather than into one, is never brought in near one, and one in it out of the learner's sight turns off. */
   keepClear?:()=>ReadonlyArray<{x:number;z:number;radius:number}>;
+  /** The learner's way ahead (a decision test's route): traffic ahead of the learner on it turns off rather than lead it on. */
+  learnerAhead?:()=>ReadonlyArray<Vec2>;
   /** Traffic heading down the learner's road towards it as often as anywhere (it keeps to its lane: a decision test),
    * rather than kept for junctions. */
   oncoming?:boolean;
@@ -465,6 +479,21 @@ export class Traffic implements SimModule{
     return {points:pts,lengths,road:null,dir:1,cruise:n?.junction?4.5:Math.min(6,to.cruise),lane:split?Math.max(from.lane,to.lane):Math.min(from.lane,to.lane),endNode:-1};
   }
 
+  /**
+   * The way ahead of whoever this car, at `at` heading `dir`, is leading: the learner close behind it on the learner's
+   * route, or a scenario's own road user close behind it going its way. Empty when it leads no one.
+   */
+  private followers(at:Vec2,dir:Vec2,learner:{pose:Pose}):Vec2[]{
+    const out:Vec2[]=[];
+    const behind=(p:Vec2,heading:number,reach:number)=>{
+      const dx=at.x-p.x,dz=at.z-p.z,along=dx*Math.sin(heading)-dz*Math.cos(heading);
+      return along>0&&along<reach&&Math.abs(dx*Math.cos(heading)+dz*Math.sin(heading))<6&&Math.sin(heading)*dir.x-Math.cos(heading)*dir.z>.7;
+    };
+    if(this.options.learnerAhead&&behind(learner.pose.position,learner.pose.heading,80))out.push(...this.options.learnerAhead());
+    for(const o of this.options.others?.()??[])if(o.speed>.5&&behind(o.pose.position,o.pose.heading,60))out.push(...(o.ahead?.()??[]).map(q=>q.position));
+    return out;
+  }
+
   /** The way on at the end of a leg: a side road it turns into, or another road at the node (not straight back). */
   private choose(leg:Leg,kind:TrafficCar['kind'],learner:{pose:Pose},from?:Vec2):Leg|null{
     let options=this.waysOn(leg,kind);
@@ -500,6 +529,14 @@ export class Traffic implements SimModule{
         // (In view, every way on closed: one that at least goes on out of the circles, not further in.)
         else{const out=options.filter(o=>!this.intoQuiet(o.road,o.dir,from,lp));if(out.length)pick=out}
       }
+    }
+    // Not on along the way the learner, or a scenario's own road user following it, is about to drive: one leading them
+    // on held them up behind it (a slow car ahead of Gillingham's van, Kettering's cyclist, Chelmsford's car, which came
+    // to their part late; the learner slowed where it is shown on the move, Brentwood, Preston). Another way where there is one.
+    const led=this.followers(end,endDir(leg),learner);
+    if(led.length){
+      const off=pick.filter(o=>{const p=alongRoad(o.road,o.dir,20);return !led.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<6)});
+      if(off.length)pick=off;
     }
     return pick[Math.floor(this.rand()*pick.length)]!.make();
   }
@@ -1113,12 +1150,6 @@ export class Traffic implements SimModule{
           // once it has stood a while, letting this car go (each waiting for the other: this one goes first).
           const r=Math.hypot(learner.pose.position.x-point.x,learner.pose.position.z-point.z);
           if(r<reach&&r<5&&d.waited>5&&Math.abs(learner.speed)<.3&&!d.waved){d.waved=6;return false}
-          // (Or coming to it at speed, a few seconds off: one drove out across a crossroads ten metres in front of the
-          // car and stood there in its way, Brentwood's Crescent Road.)
-          {
-            const lv=Math.abs(learner.speed),lx=point.x-learner.pose.position.x,lz=point.z-learner.pose.position.z;
-            if(lv>1&&r<80&&r/lv<SAFE_GAP&&(Math.sin(learner.pose.heading)*lx-Math.cos(learner.pose.heading)*lz)/(r||1)>.5)return true;
-          }
           return r<reach&&(Math.abs(learner.speed)>.5||(r<5&&!d.waved));
         })();
         // Out of a side road with give way or STOP lines: wait at the line for a safe gap in the main road's traffic
@@ -1546,6 +1577,8 @@ export class Traffic implements SimModule{
    */
   private backUp(d:Driver,learner:{pose:Pose;speed:number},dt:number){
     const b=d.backing!,car=d.car,pos=car.pose.position,fwd={x:Math.sin(car.pose.heading),z:-Math.cos(car.pose.heading)};
+    // (Where it stands before this step: taken back if the step would bring it into touch with the learner, below.)
+    const wasS=d.s,wasLat=d.lat,wasPose=car.pose;
     const them=this.other(b.for,learner);
     const room=them?(them.pose.position.x-pos.x)*fwd.x+(them.pose.position.z-pos.z)*fwd.z-car.halfLength-them.halfLength:Infinity;
     // Done: the other is no longer in its way (gone by, turned away, moved aside); or there is room now. Face to face,
@@ -1589,6 +1622,9 @@ export class Traffic implements SimModule{
     }
     d.why=`backing for ${b.for}`;
     this.place(d);
+    // (Never into touch with the learner, backing as going forward: a car backing to let another through hit the learner
+    // standing side on behind it, Salisbury. The rough check above looks straight behind only.)
+    if(wasPose&&this.intoTouch(car,wasPose,car.pose,learner,false)){d.s=wasS;d.lat=wasLat;car.pose=wasPose;b.stuck=(b.stuck??0)+dt}
   }
 
   /**
