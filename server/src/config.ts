@@ -49,7 +49,9 @@ export interface Config{
    * Practical client exists). PRACTICAL_PREMIUM=1 turns it on against the mocked Practical; PRACTICAL_PREMIUM_FIRST
    * lists scenario ids open first to verified Premium; PRACTICAL_CHALLENGES_GA=1 opens them to everyone.
    */
-  practicalPremium:{premiumFirst:string[];generalAvailability:boolean;noticeSecret:string|null}|null;
+  practicalPremium:{premiumFirst:string[];generalAvailability:boolean;noticeSecret:string|null;
+    /** The live Practical (practicalClient.ts); null: the local mock (local fakes only). */
+    live:{base:string;clientId:string;premiumToken:string;demandToken:string|null}|null}|null;
 }
 
 export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
@@ -65,8 +67,17 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
   if(sessionSecret.length<32)throw new Error('SESSION_SECRET must be at least 32 characters');
   const packsFile=env['PACKS_FILE']??new URL('../packs.json',import.meta.url).pathname;
   const premiumOn=env['PRACTICAL_PREMIUM']==='1';
-  // (No live Practical client yet: the contract comes after Release 1. On anywhere but local fakes, refused.)
-  if(premiumOn&&!devFakes)throw new Error('PRACTICAL_PREMIUM needs the live Practical client, which is not built yet');
+  // Practical Premium against the live Practical: every credential set (kept in the Hostless app's settings, never in
+  // code). Outside local fakes only on staging: production is refused here until a reviewed change allows it, after
+  // the owner's approval (Release 2 waits on Release 1).
+  const liveNeeds=['PRACTICAL_API_BASE','PRACTICAL_CLIENT_ID','PRACTICAL_PREMIUM_TOKEN','PRACTICAL_NOTICE_SECRET'];
+  const liveMissing=liveNeeds.filter(k=>!env[k]);
+  const live=premiumOn&&liveMissing.length<liveNeeds.length;
+  if(premiumOn&&!devFakes){
+    if(!/^https:\/\/staging\.drivingpractice\.live\/?$/.test(env['APP_BASE_URL']??''))throw new Error('PRACTICAL_PREMIUM is allowed on staging only until Release 2 is approved');
+    if(liveMissing.length)throw new Error(`PRACTICAL_PREMIUM on staging needs ${liveMissing.join(', ')}`);
+  }
+  if(live&&liveMissing.length)throw new Error(`PRACTICAL_PREMIUM with the live Practical needs ${liveMissing.join(', ')}`);
   return {
     port:Number(env['PORT']??8787),
     appBaseUrl:(env['APP_BASE_URL']??'http://localhost:4173').replace(/\/$/,''),
@@ -90,6 +101,8 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
       .map(p=>devFakes&&!p.links.test?{...p,links:{...p.links,test:`https://buy.stripe.com/test_dev_${p.id}`}}:p),
     devFakes,
     practicalPremium:premiumOn?{premiumFirst:(env['PRACTICAL_PREMIUM_FIRST']??'').split(',').map(s=>s.trim()).filter(Boolean),
-      generalAvailability:env['PRACTICAL_CHALLENGES_GA']==='1',noticeSecret:env['PRACTICAL_NOTICE_SECRET']||null}:null
+      generalAvailability:env['PRACTICAL_CHALLENGES_GA']==='1',noticeSecret:env['PRACTICAL_NOTICE_SECRET']||null,
+      live:live?{base:env['PRACTICAL_API_BASE']!,clientId:env['PRACTICAL_CLIENT_ID']!,premiumToken:env['PRACTICAL_PREMIUM_TOKEN']!,
+        demandToken:env['PRACTICAL_DEMAND_TOKEN']||null}:null}:null
   };
 }

@@ -51,7 +51,7 @@ describe('Practical Premium: off unless asked for, and never outside local fakes
   it('off by default; on is refused without local fakes',()=>{
     expect(loadConfig({DP_DEV_FAKES:'1',APP_BASE_URL:'https://x.example'}).practicalPremium).toBe(null);
     expect(()=>loadConfig({PRACTICAL_PREMIUM:'1',STRIPE_SECRET_KEY:'sk_test_x',STRIPE_WEBHOOK_SECRET:'w',RESEND_API_KEY:'r',MONGODB_URI:'mongodb://x',
-      SESSION_SECRET:'s'.repeat(40)})).toThrow(/live Practical client/);
+      SESSION_SECRET:'s'.repeat(40)})).toThrow(/staging only/);
   });
   it('off: a drive is exactly as before (a session is used on completion)',async()=>{
     const {service,pay,account}=setup();service.premium=null;

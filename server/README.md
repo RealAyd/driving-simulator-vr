@@ -149,9 +149,14 @@ off): signed out, no drive starts (`/api/drives` answers 401) and no free try is
 
 ## Practical Premium (Release 2: off, against a mocked Practical)
 
-Off unless `PRACTICAL_PREMIUM=1`, which is refused outside local fakes (`DP_DEV_FAKES=1`) until the live Practical
-client is built from the contract the Practical builders supply (draft: RealAyd/Driving-Practice,
-`docs/RELEASE2-SIMULATOR-PRACTICAL-API-CONTRACT.md`, proposed). With it off, nothing below exists and every drive is
+Off unless `PRACTICAL_PREMIUM=1`. Local fakes (`DP_DEV_FAKES=1`) use the mocked Practical. The live Practical
+client (`src/practicalClient.ts`) follows the draft contract (RealAyd/Driving-Practice,
+`docs/RELEASE2-SIMULATOR-PRACTICAL-API-CONTRACT.md`, proposed: Practical has not built these endpoints yet). Outside
+local fakes it is allowed **on staging only**, and only with every credential set in the Hostless app's settings:
+`PRACTICAL_API_BASE` (https), `PRACTICAL_CLIENT_ID`, `PRACTICAL_PREMIUM_TOKEN` (scope simulator.premium.read),
+`PRACTICAL_NOTICE_SECRET`, and optionally `PRACTICAL_DEMAND_TOKEN` (scope simulator.centre-demand.read). Production is
+refused in code until a reviewed change allows it, after the owner approves Release 2. Credentials go only in the
+Authorization header and never appear in an error. Practical must allowlist the redirect `<APP_BASE_URL>/?practical=done`. With it off, nothing below exists and every drive is
 as before. `src/practical.ts` holds the provisional contract and the mock; `src/premium.ts` the rules;
 `src/premiumStore.ts` the records.
 
@@ -179,4 +184,5 @@ as before. `src/practical.ts` holds the provisional contract and the mock; `src/
   count, first and latest day only; centres with fewer than 3 requests left out; nobody who asked.
 - **Admin hub counts:** accounts linked, checks by result, and Premium drives counted from the drives recorded
   (`paidFrom: 'premium'`), not from checks (a confirmed check can end in no drive).
-- Tests: `npx vitest run server/test/premium.test.ts` (`MONGO_TESTS=1` adds the MongoDB uniqueness checks).
+- Tests: `npx vitest run server/test/premium.test.ts server/test/practicalClient.test.ts` (the second against a
+  fake Practical on this machine; `MONGO_TESTS=1` adds the MongoDB uniqueness checks).
