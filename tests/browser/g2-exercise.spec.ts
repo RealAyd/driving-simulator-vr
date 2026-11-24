@@ -7,6 +7,8 @@ test.setTimeout(480_000);
 type Car={position:{x:number;z:number};heading:number;speed:number};
 const read=(page:Page,expr:string)=>page.evaluate(`window.__drivingPractice.${expr}`) as Promise<any>;
 const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
+/** Real time the simulation runs between the scripted driver's decisions (ms). */
+const STEP_MS=40;
 
 /** Metres past z = 40 (40 m behind the start) on the straight; the road itself now starts 290 m further back, at z = 330. */
 const alongOf=(car:Car)=>40-car.position.z;
@@ -15,7 +17,10 @@ const GIVE_WAY=(436-290)-2-1;
 /**
  * A simple scripted driver: holds keys to track a target speed and lateral
  * position. Decisions use live simulation state, never fixed durations, so
- * the result does not depend on how fast the machine renders.
+ * the result does not depend on how fast the machine renders. Simulation time
+ * is stopped while it reads the car and sets the keys, then runs in short
+ * steps: on a slow machine a poll can take a second of real time, and a key
+ * held through it turned the car into a garden wall.
  */
 class TestDriver{
   private held=new Set<string>();
@@ -24,10 +29,14 @@ class TestDriver{
     if(on&&!this.held.has(key)){this.held.add(key);await this.page.keyboard.down(key)}
     if(!on&&this.held.has(key)){this.held.delete(key);await this.page.keyboard.up(key)}
   }
-  async release(){for(const k of [...this.held])await this.hold(k,false)}
+  async release(){for(const k of [...this.held])await this.hold(k,false);await read(this.page,'freezeTime(false)')}
   async drive(opts:{speed:(car:Car)=>number;laneX:(car:Car)=>number;until:(car:Car,ped:{state:string})=>boolean;timeout?:number}){
     const end=Date.now()+(opts.timeout??240_000);
     for(;;){
+      // (A short step of simulation time, then stopped while the keys are decided.)
+      await read(this.page,'freezeTime(false)');
+      await sleep(STEP_MS);
+      await read(this.page,'freezeTime(true)');
       if(await read(this.page,'session()')!=='running')return this.release();
       const car:Car=await read(this.page,'vehicle()');
       const ped=await read(this.page,'pedestrian()');
@@ -44,7 +53,6 @@ class TestDriver{
       const band=car.speed>9?.01:.02;
       await this.hold('KeyD',car.speed>.5&&heading<desired-band);
       await this.hold('KeyA',car.speed>.5&&heading>desired+band);
-      await sleep(30);
     }
   }
 }
@@ -57,10 +65,14 @@ async function startExercise(page:Page){
   expect(await read(page,'session()')).toBe('running');
 }
 
-/** Pass the parked van in the right-hand lane between along 95 and 155. */
-const passVanLane=(car:Car)=>{const a=alongOf(car);return a>95&&a<155?1.3:-1.6};
+/**
+ * Pass the parked van in the right-hand lane: out by along 112 and back from along 165, as the scenario's own assist
+ * path (z = -72 to -118 out in the other lane, back by -138). Started later, the car was still pulling out as it
+ * reached the van.
+ */
+const passVanLane=(car:Car)=>{const a=alongOf(car);return a>80&&a<165?1.3:-1.6};
 /** Fast attempt: change lane early at low speed, then hold the other lane at 30 mph. */
-const passVanLaneFast=(car:Car)=>{const a=alongOf(car);return a>45&&a<160?1.3:-1.6};
+const passVanLaneFast=(car:Car)=>{const a=alongOf(car);return a>45&&a<165?1.3:-1.6};
 const fastSpeed=(car:Car)=>{const a=alongOf(car);return a<75?7:13.4};
 
 test('G2: a careful attempt (mirror check, slow approach, gives way) completes without serious findings',async({page},testInfo)=>{
@@ -89,7 +101,7 @@ test('G2: a careful attempt (mirror check, slow approach, gives way) completes w
   expect(follower.gap).toBeGreaterThan(1);
   // Wait for the pedestrian to finish crossing, then drive on to the end.
   await page.waitForFunction(()=>(window as any).__drivingPractice.pedestrian().state==='clear',null,{timeout:60_000});
-  await driver.drive({speed:()=>8,laneX:c=>alongOf(c)<160?1.3:-1.6,until:()=>false,timeout:90_000});
+  await driver.drive({speed:()=>8,laneX:c=>alongOf(c)<165?1.3:-1.6,until:()=>false,timeout:90_000});
 
   await expect(page.locator('#screen-results')).toBeVisible({timeout:30_000});
   const result=await read(page,'result()');
@@ -127,7 +139,7 @@ test('G2: a fast attempt is flagged, findings cite real events, and Try again re
 
   // Saved on this device; Try again starts a clean attempt.
   expect(await read(page,'storage')).toBe('indexeddb');
-  await expect(page.locator('#results-meta')).toContainText('saved on this device');
+  await expect(page.locator('#results-meta')).toContainText('Saved on this device');
   await page.click('#retry-button');
   expect(await read(page,'session()')).toBe('running');
   const fresh=await read(page,'vehicle()');

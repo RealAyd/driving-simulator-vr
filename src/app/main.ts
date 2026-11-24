@@ -2000,7 +2000,14 @@ export async function boot():Promise<void>{
     }
   };
   showOffer();
-  paidAccess.onChange=showOffer;
+  // Practical Premium (Release 2, only where it is on): cards whose drives open first to Premium say so.
+  const markPremiumFirst=()=>{
+    for(const b of document.querySelectorAll<HTMLButtonElement>('[data-exercise]')){
+      const e=EXERCISES[b.dataset['exercise']!];
+      b.toggleAttribute('data-premium-first',!!e&&[e.scenario,e.test,e.lesson].some(id=>!!id&&paidAccess.premiumFirst(id)));
+    }
+  };
+  paidAccess.onChange=()=>{showOffer();markPremiumFirst()};
   byId('view-passes').addEventListener('click',()=>paidAccess.viewPasses());
   byId('invite-home').addEventListener('click',()=>paidAccess.invite());
   byId('offer-banner').addEventListener('click',()=>paidAccess.viewPasses());

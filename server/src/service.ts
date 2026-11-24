@@ -1,3 +1,4 @@
+import type {Premium} from './premium.js';
 import {createHash,randomBytes,randomInt,timingSafeEqual} from 'node:crypto';
 import type {Config,Pack} from './config.js';
 import {profileOf} from './profile.js';
@@ -81,7 +82,10 @@ const SMALL_PARTIAL_REFUND_PENCE=500;
 /** A drive that fails to load within this long of starting gives its session back; at most this many a day. */
 const REFUND_WINDOW_MS=15*60_000,REFUNDS_PER_DAY=3;
 
-export type DriveStart={ok:true;drive:Drive;balance:number}|{ok:false;reason:'no-sessions'|'trial-used'};
+export type DriveStart={ok:true;drive:Drive;balance:number}|{ok:false;reason:'no-sessions'|'trial-used'}
+  /** Practical Premium (Release 2, off by default): Premium could not be confirmed and the learner has sessions or a
+   * pass to use instead (asked, never taken without `useSession`); or a scenario open first to verified Premium. */
+  |{ok:false;reason:'premium-unconfirmed'}|{ok:false;reason:'premium-first'};
 /** New free tries from one address in a day (a device's try is in its cookie; this stops clearing it for more). Many
  * phones share one address (mobile networks, a school or office Wi-Fi), so it is well above one household's. */
 export const TRIALS_PER_IP_PER_DAY=30;
@@ -91,6 +95,8 @@ const LESSON_ID=/^[a-z0-9-]{1,40}$/,MAX_LESSONS=100;
 export class Service{
   /** Support requests (tickets, the response timer, the notification outbox). */
   readonly support:Support;
+  /** Practical Premium (Release 2): set only when PRACTICAL_PREMIUM is on (index.ts); null, every drive is as before. */
+  premium:Premium|null=null;
   constructor(readonly config:Config,readonly store:Store,private readonly mail:Mailer,private readonly ids:IdentityVerifier,private readonly stripe:StripeApi|null,pusher:Pusher|null=null){
     this.support=new Support(config,store,mail,pusher);
   }
@@ -214,13 +220,26 @@ export class Service{
    * A drive starts with a session to use (general sessions, or any Starter Pass drive left on an older account);
    * nothing is taken until it is completed (completeDrive).
    */
-  async startDrive(accountId:string,kind:string,scenario:string):Promise<DriveStart>{
+  async startDrive(accountId:string,kind:string,scenario:string,opts:{useSession?:boolean}={}):Promise<DriveStart>{
     if(!SCENARIO.test(scenario))return {ok:false,reason:'no-sessions'};
     const mode=modeOf(scenario);
     const account=await this.store.findAccount({id:accountId});
     if(!account)return {ok:false,reason:'no-sessions'};
     // The admins (ADMIN_EMAILS) drive without using sessions: recorded as a drive, nothing taken.
     const admin=isAdminEmail(this.config,account.email);
+    // Practical Premium, asked afresh now (never a stored answer): confirmed, the drive uses nothing, whatever else
+    // the account holds; a scenario open first to Premium needs it confirmed. Not confirmed because Practical could not
+    // be asked: the learner is asked before a session or pass is used instead.
+    const premium=this.premium&&!admin?await this.premium.check(accountId,'launch'):null;
+    if(premium?.state==='confirmed'){
+      const drive=await this.store.createDrive({accountId,owner:accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'premium',
+        entitlementCheck:premium.checkId,startedAt:new Date(),status:'started'});
+      return {ok:true,drive,balance:account.balance};
+    }
+    if(this.premium&&!admin&&this.premium.premiumFirst(scenario))return {ok:false,reason:'premium-first'};
+    // (A pass uses nothing either: it goes on as today, nothing to ask.)
+    const pass=!!account.unlimitedUntil&&account.unlimitedUntil.getTime()>Date.now();
+    if(premium?.state==='unconfirmed'&&!pass&&!opts.useSession)return {ok:false,reason:'premium-unconfirmed'};
     // An unlimited pass: every drive, nothing used.
     if(!admin&&account.unlimitedUntil&&account.unlimitedUntil.getTime()>Date.now()){
       const drive=await this.store.createDrive({accountId,owner:accountId,kind:kind.slice(0,40),scenario,mode,paidFrom:'pass',startedAt:new Date(),status:'started'});
@@ -314,7 +333,7 @@ export class Service{
     if(!d||d.accountId!==accountId||d.status==='unpaid')return false;
     if(status==='completed'&&d.status!=='completed')await this.completeDrive(d);
     // (A drive paid at its start, before sessions were used on completion: one that fails to load gives it back.)
-    if(status==='failed'&&!d.due&&d.status==='started'&&d.paidFrom!=='admin'&&d.paidFrom!=='pass'&&!d.refunded&&Date.now()-d.startedAt.getTime()<=REFUND_WINDOW_MS){
+    if(status==='failed'&&!d.due&&d.status==='started'&&d.paidFrom!=='admin'&&d.paidFrom!=='pass'&&d.paidFrom!=='premium'&&!d.refunded&&Date.now()-d.startedAt.getTime()<=REFUND_WINDOW_MS){
       // A free try's drive goes back to the try (once).
       if(d.paidFrom==='trial'){
         await this.store.updateDrive(driveId,{status,refunded:true});

@@ -20,6 +20,8 @@ const literal=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 export class MongoStore implements Store{
   readonly support:MongoSupportStore;
   private constructor(private readonly db:Db){this.support=new MongoSupportStore(db)}
+  /** The database itself, for stores kept beside this one (Practical Premium's, premiumStore.ts). */
+  get database():Db{return this.db}
 
   static async connect(uri:string):Promise<MongoStore>{
     const client=new MongoClient(uri);
@@ -212,6 +214,11 @@ export class MongoStore implements Store{
   async saveVisitEvents(events:VisitEvent[]){if(events.length)await this.visits.insertMany(events.map(e=>({...e})))}
   async visitEvents(since:Date,limit:number){
     return (await this.visits.find({at:{$gte:since}},{projection:{_id:0}}).sort({at:1}).limit(limit).toArray()) as VisitEvent[];
+  }
+  async premiumDrives(since:Date){
+    const q={paidFrom:'premium' as const,startedAt:{$gte:since}};
+    const [started,completed]=await Promise.all([this.drives.countDocuments(q),this.drives.countDocuments({...q,status:'completed'})]);
+    return {started,completed};
   }
   async driveCounts(since:Date){
     const rows=await this.drives.aggregate<{_id:{mode:Mode;status:DriveStatus;outcome?:DriveOutcome};n:number}>([{$match:{startedAt:{$gte:since},status:{$ne:'unpaid'}}},
