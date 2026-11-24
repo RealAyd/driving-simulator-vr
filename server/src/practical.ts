@@ -7,6 +7,15 @@ import {createHmac,timingSafeEqual} from 'node:crypto';
  * implements it; the feature cannot be turned on outside local fakes until a live client exists (config.ts).
  */
 
+/** Practical's account ids (its ACCOUNT_ID pattern). */
+export const PRACTICAL_ID=/^[A-Za-z0-9_\-:.]{1,128}$/;
+
+/**
+ * Practical says this account is not linked (the learner withdrew consent there): the link here ends too. Only an
+ * authenticated "Not linked" answer, never a Practical that is off or unreachable (that is not confirmed, and asks).
+ */
+export class NotLinkedError extends Error{constructor(){super('Practical: not linked')}}
+
 /** When an entitlement ends, said outright: a date, verified never, or not known (which never opens anything). */
 export type Expiry={kind:'at';at:string}|{kind:'never'}|{kind:'unknown'};
 
@@ -88,7 +97,7 @@ export function verifyNotice(body:string,timestamp:string|undefined,signature:st
   try{
     const o=JSON.parse(body) as {eventId?:unknown;practicalAccountId?:unknown};
     const id=(v:unknown)=>typeof v==='string'&&/^[\w-]{1,100}$/.test(v);
-    return id(o.eventId)&&id(o.practicalAccountId)?{eventId:o.eventId as string,practicalAccountId:o.practicalAccountId as string}:null;
+    return id(o.eventId)&&typeof o.practicalAccountId==='string'&&PRACTICAL_ID.test(o.practicalAccountId)?{eventId:o.eventId as string,practicalAccountId:o.practicalAccountId as string}:null;
   }catch{return null}
 }
 

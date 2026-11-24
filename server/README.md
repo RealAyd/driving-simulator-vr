@@ -154,7 +154,11 @@ client (`src/practicalClient.ts`) follows the draft contract (RealAyd/Driving-Pr
 `docs/RELEASE2-SIMULATOR-PRACTICAL-API-CONTRACT.md`, proposed: Practical has not built these endpoints yet). Outside
 local fakes it is allowed **on staging only**, and only with every credential set in the Hostless app's settings:
 `PRACTICAL_API_BASE` (https), `PRACTICAL_CLIENT_ID`, `PRACTICAL_PREMIUM_TOKEN` (scope simulator.premium.read),
-`PRACTICAL_NOTICE_SECRET`, and optionally `PRACTICAL_DEMAND_TOKEN` (scope simulator.centre-demand.read). Production is
+and optionally `PRACTICAL_DEMAND_TOKEN` (scope simulator.centre-demand.read) and `PRACTICAL_NOTICE_SECRET` (change
+notices are left out for now, the owner's decision; unset, they are refused). Practical's side: RealAyd/Driving-Practice
+`feature/simulator-premium-integration`, `docs/RELEASE2-PRACTICAL-SIMULATOR-INTEGRATION.md`. A link whose learner
+withdrew consent at Practical (404 "Not linked") ends here too; Practical switched off (404 "Not found") is not
+confirmed, and the learner is asked. Production is
 refused in code until a reviewed change allows it, after the owner approves Release 2. Credentials go only in the
 Authorization header and never appear in an error. Practical must allowlist the redirect `<APP_BASE_URL>/?practical=done`. With it off, nothing below exists and every drive is
 as before. `src/practical.ts` holds the provisional contract and the mock; `src/premium.ts` the rules;

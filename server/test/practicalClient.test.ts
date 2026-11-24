@@ -20,8 +20,10 @@ const fake={
   accounts:new Map<string,unknown>(),
   codes:new Map<string,{practicalAccountId:string;challenge:string;redirect:string}>(),
   seen:[] as Array<{method:string;url:string;auth:string|undefined;body:string}>,
-  /** Answer the next entitlement this way instead. */
-  next:null as null|'500'|'401'|'slow'|'html',
+  /** Answer the next entitlement this way instead ('off': Practical with its settings cleared, a rollback). */
+  next:null as null|'500'|'401'|'slow'|'html'|'off',
+  /** Accounts whose learner withdrew consent at Practical (it answers 404 "Not linked", as FastAPI does). */
+  withdrawn:new Set<string>(),
   demand:[] as unknown[],
 };
 let server:Server,base='';
@@ -52,8 +54,10 @@ beforeAll(async()=>{
       if(mode==='slow'){await new Promise(r=>setTimeout(r,300));return json(200,{})}
       if(mode==='500')return json(500,{error:'down'});
       if(mode==='html'){res.writeHead(200,{'Content-Type':'text/html'});return res.end('<html>')}
+      if(mode==='off')return json(404,{detail:'Not found'});
       if(mode==='401'||auth!==`Bearer ${PREMIUM_TOKEN}`)return json(401,{error:'auth'});
       const {practicalAccountId}=JSON.parse(body) as {practicalAccountId:string};
+      if(fake.withdrawn.has(practicalAccountId))return json(404,{detail:'Not linked'});
       return json(200,fake.accounts.get(practicalAccountId)??{type:'none',status:'inactive',expiry:{kind:'unknown'},checkedAt:new Date().toISOString()});
     }
     if(req.method==='GET'&&url.pathname==='/api/integrations/simulator/centre-demand'){
@@ -174,8 +178,41 @@ describe('the live Practical client (proposed contract, against a fake Practical
   });
 });
 
+describe('Practical\'s own answers (its branch feature/simulator-premium-integration)',()=>{
+  it('account ids as Practical makes them (letters, digits, _ - : . up to 128) link',async()=>{
+    const {service,premium}=setup();
+    const a=await service.signIn('email',{sub:'id@example.com',email:'id@example.com',emailVerified:true});
+    const id='user:abc.123-XYZ_'+'x'.repeat(100);
+    expect(await link(premium,a.id,id)).toEqual({ok:true,practicalAccountId:id});
+  });
+  it('consent withdrawn at Practical ("Not linked"): the link ends here too, nothing asked, the learner can link again',async()=>{
+    const {service,premium}=setup();
+    const a=await service.signIn('email',{sub:'w@example.com',email:'w@example.com',emailVerified:true});
+    await service.handleStripeEvent({id:'evt_w',type:'checkout.session.completed',data:{object:{id:'cs_w',payment_status:'paid',client_reference_id:a.id,
+      payment_link:'vr-5',amount_total:999,currency:'gbp',payment_intent:'pi_w',customer_details:{email:null}}}});
+    expect(await link(premium,a.id,'w-1')).toMatchObject({ok:true});
+    fake.accounts.set('w-1',learnerPremium({kind:'never'}));
+    fake.withdrawn.add('w-1');
+    expect(await service.startDrive(a.id,'free','goodmayes-free-drive')).toMatchObject({ok:true,drive:{paidFrom:'sessions',due:true}});
+    expect(await premium.status(a.id)).toEqual({linked:false,premium:null});
+    fake.withdrawn.delete('w-1');
+    expect(await link(premium,a.id,'w-1')).toMatchObject({ok:true});
+    expect(await service.startDrive(a.id,'free','goodmayes-free-drive')).toMatchObject({ok:true,drive:{paidFrom:'premium'}});
+  });
+  it('Practical switched off ("Not found", a rollback): not confirmed, the learner asked; the link stays',async()=>{
+    const {service,premium}=setup();
+    const a=await service.signIn('email',{sub:'o@example.com',email:'o@example.com',emailVerified:true});
+    expect(await link(premium,a.id,'o-1')).toMatchObject({ok:true});
+    fake.next='off';
+    expect(await service.startDrive(a.id,'free','goodmayes-free-drive')).toEqual({ok:false,reason:'premium-unconfirmed'});
+    fake.next='off';
+    expect(await premium.status(a.id)).toEqual({linked:true,premium:'unconfirmed'});
+  });
+});
+
 describe('the switch: off by default; live Practical only on staging, every credential set; never on production yet',()=>{
-  const live={PRACTICAL_API_BASE:'https://api.practical.example',PRACTICAL_CLIENT_ID:'sim',PRACTICAL_PREMIUM_TOKEN:'t',PRACTICAL_NOTICE_SECRET:'n'};
+  // (No notice secret: change notices are left out for now.)
+  const live={PRACTICAL_API_BASE:'https://api.practical.example',PRACTICAL_CLIENT_ID:'sim',PRACTICAL_PREMIUM_TOKEN:'t'};
   const hosted=(base:string,o:Record<string,string>={})=>loadConfig({PRACTICAL_PREMIUM:'1',APP_BASE_URL:base,STRIPE_SECRET_KEY:'sk_test_x',STRIPE_WEBHOOK_SECRET:'w',
     RESEND_API_KEY:'r',MONGODB_URI:'mongodb://x',SESSION_SECRET:'s'.repeat(40),...o});
   it('off unless PRACTICAL_PREMIUM=1',()=>{
@@ -186,7 +223,7 @@ describe('the switch: off by default; live Practical only on staging, every cred
   });
   it('staging: refused until every credential is set, naming what is missing (never their values)',()=>{
     expect(()=>hosted('https://staging.drivingpractice.live',{PRACTICAL_API_BASE:'https://api.practical.example'}))
-      .toThrow('PRACTICAL_PREMIUM on staging needs PRACTICAL_CLIENT_ID, PRACTICAL_PREMIUM_TOKEN, PRACTICAL_NOTICE_SECRET');
+      .toThrow('PRACTICAL_PREMIUM on staging needs PRACTICAL_CLIENT_ID, PRACTICAL_PREMIUM_TOKEN');
     expect(hosted('https://staging.drivingpractice.live',live).practicalPremium?.live).toEqual({base:'https://api.practical.example',clientId:'sim',premiumToken:'t',demandToken:null});
   });
   it('local fakes: the mock unless a live Practical is named, then all of it is needed',()=>{

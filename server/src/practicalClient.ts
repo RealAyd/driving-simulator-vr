@@ -1,4 +1,4 @@
-import type {PracticalApi} from './practical.js';
+import {NotLinkedError,PRACTICAL_ID,type PracticalApi} from './practical.js';
 
 /**
  * The live Practical client (Release 2), for the PROPOSED contract (RealAyd/Driving-Practice,
@@ -58,12 +58,12 @@ export class HttpPracticalApi implements PracticalApi{
   async exchangeCode(code:string,verifier:string):Promise<{practicalAccountId:string}>{
     const r=await this.call('POST','/api/integrations/simulator/link/exchange',this.o.premiumToken,
       {code,code_verifier:verifier,redirect_uri:this.o.redirectUri,client_id:this.o.clientId}) as {practicalAccountId?:unknown};
-    if(typeof r?.practicalAccountId!=='string'||!/^[\w-]{1,100}$/.test(r.practicalAccountId))throw new Error('Practical: malformed exchange answer');
+    if(typeof r?.practicalAccountId!=='string'||!PRACTICAL_ID.test(r.practicalAccountId))throw new Error('Practical: malformed exchange answer');
     return {practicalAccountId:r.practicalAccountId};
   }
 
   entitlement(practicalAccountId:string):Promise<unknown>{
-    return this.call('POST','/api/integrations/simulator/entitlement',this.o.premiumToken,{practicalAccountId});
+    return this.call('POST','/api/integrations/simulator/entitlement',this.o.premiumToken,{practicalAccountId},true);
   }
 
   async centreDemand():Promise<unknown[]>{
@@ -74,7 +74,7 @@ export class HttpPracticalApi implements PracticalApi{
   }
 
   /** One request: JSON in and out, the credential in the header, a time limit; any failure throws (never grants). */
-  private async call(method:'GET'|'POST',path:string,token:string,body?:unknown):Promise<unknown>{
+  private async call(method:'GET'|'POST',path:string,token:string,body?:unknown,linked=false):Promise<unknown>{
     let res:Response;
     try{
       res=await this.fetch(`${this.base}${path}`,{method,redirect:'error',signal:AbortSignal.timeout(this.o.timeoutMs??5000),
@@ -84,6 +84,8 @@ export class HttpPracticalApi implements PracticalApi{
       // (Only the kind of failure: never the address with anything in it, never the credential.)
       throw new Error(`Practical unreachable (${e instanceof Error&&e.name==='TimeoutError'?'timeout':'network'})`);
     }
+    // (Asked about a linked account and told it is not linked: consent was withdrawn at Practical.)
+    if(linked&&res.status===404&&await res.json().then((b:unknown)=>(b as {detail?:unknown}|null)?.detail==='Not linked',()=>false))throw new NotLinkedError();
     if(!res.ok)throw new Error(`Practical answered ${res.status}`);
     if(!(res.headers.get('content-type')??'').includes('application/json'))throw new Error('Practical: not JSON');
     try{return await res.json() as unknown}catch{throw new Error('Practical: malformed JSON')}

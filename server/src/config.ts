@@ -70,7 +70,8 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
   // Practical Premium against the live Practical: every credential set (kept in the Hostless app's settings, never in
   // code). Outside local fakes only on staging: production is refused here until a reviewed change allows it, after
   // the owner's approval (Release 2 waits on Release 1).
-  const liveNeeds=['PRACTICAL_API_BASE','PRACTICAL_CLIENT_ID','PRACTICAL_PREMIUM_TOKEN','PRACTICAL_NOTICE_SECRET'];
+  // (PRACTICAL_NOTICE_SECRET is optional: change notices are left out for now, the owner's decision; unset, they are refused.)
+  const liveNeeds=['PRACTICAL_API_BASE','PRACTICAL_CLIENT_ID','PRACTICAL_PREMIUM_TOKEN'];
   const liveMissing=liveNeeds.filter(k=>!env[k]);
   const live=premiumOn&&liveMissing.length<liveNeeds.length;
   if(premiumOn&&!devFakes){

@@ -1,5 +1,5 @@
 import {createHash,randomBytes} from 'node:crypto';
-import {NOTICE_WINDOW_MS,cleanDemand,parseEntitlement,premiumConfirmed,verifyNotice,type CentreDemand,type PracticalApi} from './practical.js';
+import {NOTICE_WINDOW_MS,NotLinkedError,cleanDemand,parseEntitlement,premiumConfirmed,verifyNotice,type CentreDemand,type PracticalApi} from './practical.js';
 import type {PremiumStore} from './premiumStore.js';
 
 /**
@@ -89,7 +89,15 @@ export class Premium{
     try{
       raw=await Promise.race([this.api.entitlement(link.practicalAccountId),
         new Promise<never>((_,fail)=>{setTimeout(()=>fail(new Error('timeout')),CHECK_TIMEOUT_MS).unref?.()})]);
-    }catch(err){return failed(String(err instanceof Error?err.message:err).slice(0,120))}
+    }catch(err){
+      // (Consent withdrawn at Practical: the link ends here too, recorded; the learner can link again.)
+      if(err instanceof NotLinkedError){
+        await this.store.recordCheck({...base,result:'inactive',type:null,status:null,expiry:null,expiresAt:null,error:'withdrawn'});
+        await this.store.unlink(accountId);
+        return {state:'unlinked'};
+      }
+      return failed(String(err instanceof Error?err.message:err).slice(0,120));
+    }
     const e=parseEntitlement(raw);
     if(!e)return failed('malformed');
     const ok=premiumConfirmed(e,at);
