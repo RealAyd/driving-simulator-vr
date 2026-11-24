@@ -68,15 +68,17 @@ export function loadConfig(env:NodeJS.ProcessEnv=process.env):Config{
   const packsFile=env['PACKS_FILE']??new URL('../packs.json',import.meta.url).pathname;
   const premiumOn=env['PRACTICAL_PREMIUM']==='1';
   // Practical Premium against the live Practical: every credential set (kept in the Hostless app's settings, never in
-  // code). Outside local fakes only on staging: production is refused here until a reviewed change allows it, after
-  // the owner's approval (Release 2 waits on Release 1).
+  // code). Outside local fakes on staging and production only (the owner approved Release 2's launch); any other copy is
+  // refused. Production never talks to Practical's staging backend.
   // (PRACTICAL_NOTICE_SECRET is optional: change notices are left out for now, the owner's decision; unset, they are refused.)
   const liveNeeds=['PRACTICAL_API_BASE','PRACTICAL_CLIENT_ID','PRACTICAL_PREMIUM_TOKEN'];
   const liveMissing=liveNeeds.filter(k=>!env[k]);
   const live=premiumOn&&liveMissing.length<liveNeeds.length;
   if(premiumOn&&!devFakes){
-    if(!/^https:\/\/staging\.drivingpractice\.live\/?$/.test(env['APP_BASE_URL']??''))throw new Error('PRACTICAL_PREMIUM is allowed on staging only until Release 2 is approved');
-    if(liveMissing.length)throw new Error(`PRACTICAL_PREMIUM on staging needs ${liveMissing.join(', ')}`);
+    const site=/^https:\/\/(staging|vr)\.drivingpractice\.live\/?$/.exec(env['APP_BASE_URL']??'')?.[1];
+    if(!site)throw new Error('PRACTICAL_PREMIUM is allowed on staging and production only');
+    if(liveMissing.length)throw new Error(`PRACTICAL_PREMIUM on ${site==='vr'?'production':'staging'} needs ${liveMissing.join(', ')}`);
+    if(site==='vr'&&/staging/i.test(env['PRACTICAL_API_BASE']??''))throw new Error('PRACTICAL_PREMIUM on production must not use Practical staging');
   }
   if(live&&liveMissing.length)throw new Error(`PRACTICAL_PREMIUM with the live Practical needs ${liveMissing.join(', ')}`);
   return {

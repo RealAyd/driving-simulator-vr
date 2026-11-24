@@ -210,7 +210,7 @@ describe('Practical\'s own answers (its branch feature/simulator-premium-integra
   });
 });
 
-describe('the switch: off by default; live Practical only on staging, every credential set; never on production yet',()=>{
+describe('the switch: off by default; live Practical on staging and production, every credential set; nowhere else',()=>{
   // (No notice secret: change notices are left out for now.)
   const live={PRACTICAL_API_BASE:'https://api.practical.example',PRACTICAL_CLIENT_ID:'sim',PRACTICAL_PREMIUM_TOKEN:'t'};
   const hosted=(base:string,o:Record<string,string>={})=>loadConfig({PRACTICAL_PREMIUM:'1',APP_BASE_URL:base,STRIPE_SECRET_KEY:'sk_test_x',STRIPE_WEBHOOK_SECRET:'w',
@@ -218,8 +218,11 @@ describe('the switch: off by default; live Practical only on staging, every cred
   it('off unless PRACTICAL_PREMIUM=1',()=>{
     expect(loadConfig({DP_DEV_FAKES:'1',APP_BASE_URL:'https://x.example',...live}).practicalPremium).toBe(null);
   });
-  it('production refused, whatever is set',()=>{
-    expect(()=>hosted('https://vr.drivingpractice.live',live)).toThrow(/staging only/);
+  it('production: on with every credential set, never against Practical staging; any other copy refused',()=>{
+    expect(hosted('https://vr.drivingpractice.live',live).practicalPremium?.live?.base).toBe('https://api.practical.example');
+    expect(()=>hosted('https://vr.drivingpractice.live',{PRACTICAL_API_BASE:'https://api.practical.example'})).toThrow('PRACTICAL_PREMIUM on production needs PRACTICAL_CLIENT_ID, PRACTICAL_PREMIUM_TOKEN');
+    expect(()=>hosted('https://vr.drivingpractice.live',{...live,PRACTICAL_API_BASE:'https://driving-practice-api-staging.hostless.app'})).toThrow(/must not use Practical staging/);
+    expect(()=>hosted('https://preview.example',live)).toThrow(/staging and production only/);
   });
   it('staging: refused until every credential is set, naming what is missing (never their values)',()=>{
     expect(()=>hosted('https://staging.drivingpractice.live',{PRACTICAL_API_BASE:'https://api.practical.example'}))
