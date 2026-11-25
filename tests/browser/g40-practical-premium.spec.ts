@@ -22,6 +22,8 @@ async function home(page:Page){
 async function link(page:Page,kind:string){
   await page.click('#account-chip');
   await page.click('#practical-link');
+  // (Leaving for the consent page takes a moment: until it has loaded, the simulator's own headings are still there.)
+  await page.waitForURL('**/api/practical/mock/authorize?**');
   await expect(page.locator('h1')).toHaveText('Mock Practical: allow the simulator?');
   await page.click(`text=${kind}`);
   await expect(page.locator('#screen-account')).toBeVisible({timeout:60_000});
