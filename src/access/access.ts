@@ -258,14 +258,17 @@ export class Access{
 
   /** The offer on sale now for the home screen's banner (the Black Friday pass while it is sold), or null. */
   offer():{price:string}|null{
-    // (Not for someone whose pass is running: nothing to buy.)
-    if(unlimitedUntil(this.me))return null;
+    // (Not for someone whose pass is running, or whose Practical Premium is confirmed: nothing to buy.)
+    if(this.unlimitedNow)return null;
     const p=this.gate?this.config?.packs.find(x=>x.id==='black-friday-week'&&(x.onSale||x.preview)):undefined;
     return p?{price:p.price}:null;
   }
 
   /** The passes: the paywall, or for someone not signed in, signing up first (the paywall follows). */
-  viewPasses():void{this.open(undefined,!this.me.signedIn?'save':unlimitedUntil(this.me)?'account':'paywall')}
+  viewPasses():void{this.open(undefined,!this.me.signedIn?'save':this.unlimitedNow?'account':'paywall')}
+
+  /** Unlimited drives now: a pass running, or Practical Premium confirmed (checked again at every launch). */
+  private get unlimitedNow():boolean{return !!unlimitedUntil(this.me)||this.practical?.premium==='confirmed'}
 
   /** A line for the exercise screen under Start, for the drive about to start. */
   note(scenario:string|null):string{
@@ -504,8 +507,8 @@ export class Access{
     }
     byId('account-breakdown').replaceChildren(...rows);
     byId('account-breakdown').hidden=!rows.length;
-    // A pass running: just how long it lasts; nothing to buy until it ends.
-    byId('pack-list').hidden=!!until;
+    // A pass running, or Practical Premium confirmed: nothing to buy while it lasts.
+    byId('pack-list').hidden=!!until||premium;
     const packs=(this.config?.packs??[]).filter(p=>!(p.starter&&me.starterBought)&&(p.onSale||p.preview));
     byId('pack-list').replaceChildren(...packs.map(p=>{
       const b=document.createElement('button');b.type='button';b.dataset['pack']=p.id;

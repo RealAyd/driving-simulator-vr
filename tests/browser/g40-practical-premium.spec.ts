@@ -51,8 +51,11 @@ test('G40: link to Practical, Premium shown; a Premium drive uses nothing; a Pre
   await expect(page.locator('#account-balance-unit')).toHaveText('with Practical Premium');
   await expect(page.locator('#account-chip')).toHaveText('Unlimited');
   await expect(page.locator('#practical-unlink')).toBeVisible();
+  // (Nothing to buy while Premium is confirmed: no passes, no offer on the home screen.)
+  await expect(page.locator('#pack-list')).toBeHidden();
   await page.screenshot({path:test.info().outputPath('g40-02-premium-linked.png')});
   await page.click('#account-close');
+  await expect(page.locator('#offer-banner')).toBeHidden();
 
   // The zebra card opens first to Premium learners: it says so.
   await page.click('[data-drive-mode=lesson]');
@@ -82,6 +85,8 @@ test('G40: link to Practical, Premium shown; a Premium drive uses nothing; a Pre
   await page.request.post('/api/dev/checkout',{data:{pack:'vr-5'}});
   await link(page,'unreachable');
   await expect(page.locator('#practical-status')).toHaveText('Practical Premium could not be confirmed');
+  // (Not confirmed: the passes are there again.)
+  await expect(page.locator('#pack-list')).toBeVisible();
   await page.click('#account-close');
   await pick(page,'moving-off');
   await page.click('#start-practice');
