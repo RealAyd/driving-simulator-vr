@@ -85,7 +85,37 @@ describe('Practical Premium: linking',()=>{
     const a=await account('a@example.com'),b=await account('b@example.com');
     expect(await link(a.id,'p-1')).toMatchObject({ok:true});
     expect(await link(b.id,'p-1')).toEqual({ok:false,reason:'taken'});
-    expect(await link(a.id,'p-2')).toEqual({ok:false,reason:'taken'});
+  });
+  it('a relink replaces the old Practical account: checks ask about the new one, and the old one is free to link',async()=>{
+    const {premium,api,account,link}=setup();
+    const a=await account('a@example.com'),b=await account('b@example.com');
+    const asked:string[]=[];const ask=api.entitlement.bind(api);
+    api.entitlement=async(id:string)=>{asked.push(id);return ask(id)};
+    expect(await link(a.id,'p-1')).toMatchObject({ok:true});
+    await premium.check(a.id,'launch');
+    expect(await link(a.id,'p-2')).toEqual({ok:true,practicalAccountId:'p-2'});
+    await premium.check(a.id,'launch');await premium.status(a.id);
+    expect(asked).toEqual(['p-1','p-2','p-2']);
+    expect(await link(b.id,'p-1')).toMatchObject({ok:true});
+    expect(await link(a.id,'p-1')).toEqual({ok:false,reason:'taken'});
+    // (Refused: the link it had stays as it was.)
+    await premium.check(a.id,'launch');
+    expect(asked.at(-1)).toBe('p-2');
+  });
+  it('unlink removes the link whole: nothing is asked, and the next link starts fresh',async()=>{
+    const {premium,api,account,link}=setup();
+    const a=await account('a@example.com');
+    const asked:string[]=[];const ask=api.entitlement.bind(api);
+    api.entitlement=async(id:string)=>{asked.push(id);return ask(id)};
+    expect(await link(a.id,'p-1')).toMatchObject({ok:true});
+    expect(await premium.unlink(a.id)).toBe(true);
+    expect(await premium.status(a.id)).toEqual({linked:false,premium:null});
+    expect(await premium.check(a.id,'launch')).toEqual({state:'unlinked'});
+    expect(asked).toEqual([]);
+    expect(await premium.unlink(a.id)).toBe(false);
+    expect(await link(a.id,'p-2')).toEqual({ok:true,practicalAccountId:'p-2'});
+    await premium.check(a.id,'launch');
+    expect(asked).toEqual(['p-2']);
   });
   it('a matching email links nothing: no link, no Premium',async()=>{
     const {api,account,start,pay}=setup();
@@ -332,7 +362,18 @@ describe.skipIf(process.env['MONGO_TESTS']!=='1')('Practical Premium: links and 
     const at=new Date();
     const r=await Promise.all(['a','b','c','d'].map(id=>db.link({accountId:id,practicalAccountId:'p-1',linkedAt:at,consentAt:at})));
     expect(r.filter(x=>x==='ok')).toHaveLength(1);
-    expect(await db.link({accountId:'a',practicalAccountId:'p-2',linkedAt:at,consentAt:at})).toBe(r[0]==='ok'?'taken':'ok');
+    // (A relink replaces: whichever won p-1 moves to p-2, and p-1 is free again.)
+    const won=['a','b','c','d'][r.indexOf('ok')]!;
+    expect(await db.link({accountId:won,practicalAccountId:'p-2',linkedAt:at,consentAt:at})).toBe('ok');
+    expect(await db.findLink({accountId:won})).toMatchObject({practicalAccountId:'p-2'});
+    expect(await db.findLink({practicalAccountId:'p-1'})).toBe(null);
+    const other=won==='a'?'b':'a';
+    expect(await db.link({accountId:other,practicalAccountId:'p-2',linkedAt:at,consentAt:at})).toBe('taken');
+    expect(await db.link({accountId:other,practicalAccountId:'p-1',linkedAt:at,consentAt:at})).toBe('ok');
+    expect(await db.unlink(won)).toBe(true);
+    expect(await db.findLink({accountId:won})).toBe(null);
+    expect(await db.findLink({practicalAccountId:'p-2'})).toBe(null);
+    expect(await db.unlink(won)).toBe(false);
     await db.saveState({stateHash:'h1',accountId:'a',verifier:'v',expiresAt:new Date(Date.now()+60_000)});
     const taken=await Promise.all(Array.from({length:6},()=>db.takeState('h1',new Date())));
     expect(taken.filter(Boolean)).toHaveLength(1);

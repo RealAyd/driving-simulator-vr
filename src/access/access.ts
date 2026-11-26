@@ -152,8 +152,9 @@ export class Access{
       :'Linking did not finish. Please try again.');
   }
   private async unlink(){
-    await api('practical/unlink',{});
+    const r=await api('practical/unlink',{});
     await this.loadPractical();
+    if(r.status!==200)this.open('Unlinking did not finish. Please try again.');
   }
   /** The account screen's line for it. */
   private practicalLine():string{

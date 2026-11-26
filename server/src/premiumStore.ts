@@ -23,6 +23,10 @@ export interface EntitlementCheck{
 
 export interface PremiumStore{
   /** 'taken': that Practical account (or this simulator account) is linked already. */
+  /**
+   * Links, or relinks: a simulator account linked already now points to the Practical account just consented to (the
+   * old one is let go). 'taken': that Practical account is linked to another simulator account, and nothing changes.
+   */
   link(l:PracticalLink):Promise<'ok'|'taken'>;
   findLink(q:{accountId:string}|{practicalAccountId:string}):Promise<PracticalLink|null>;
   unlink(accountId:string):Promise<boolean>;
@@ -45,8 +49,10 @@ export class MemoryPremiumStore implements PremiumStore{
   private readonly states=new Map<string,LinkState>();
   private readonly log:EntitlementCheck[]=[];
   async link(l:PracticalLink){
-    if(this.links.some(x=>x.accountId===l.accountId||x.practicalAccountId===l.practicalAccountId))return 'taken' as const;
-    this.links.push({...l});return 'ok' as const;
+    if(this.links.some(x=>x.practicalAccountId===l.practicalAccountId&&x.accountId!==l.accountId))return 'taken' as const;
+    const i=this.links.findIndex(x=>x.accountId===l.accountId);
+    if(i>=0)this.links[i]={...l};else this.links.push({...l});
+    return 'ok' as const;
   }
   async findLink(q:{accountId:string}|{practicalAccountId:string}){
     const l='accountId' in q?this.links.find(x=>x.accountId===q.accountId):this.links.find(x=>x.practicalAccountId===q.practicalAccountId);
@@ -86,8 +92,17 @@ export class MongoPremiumStore implements PremiumStore{
     await this.events.createIndex({until:1},{expireAfterSeconds:0});
   }
   async link(l:PracticalLink){
-    try{await this.links.insertOne({_id:l.accountId,accountId:l.accountId,practicalAccountId:l.practicalAccountId,linkedAt:l.linkedAt,consentAt:l.consentAt});return 'ok' as const}
-    catch(e){if(e instanceof MongoServerError&&e.code===11000)return 'taken' as const;throw e}
+    // (Replaced whole on a relink: the unique index refuses, as 'taken', a Practical account linked to another account.)
+    const doc={accountId:l.accountId,practicalAccountId:l.practicalAccountId,linkedAt:l.linkedAt,consentAt:l.consentAt};
+    for(let attempt=0;;attempt++){
+      try{await this.links.replaceOne({_id:l.accountId},doc,{upsert:true});return 'ok' as const}
+      catch(e){
+        if(!(e instanceof MongoServerError&&e.code===11000))throw e;
+        // (Two upserts for this same account at once: the one that lost tries again, as a replace.)
+        if(e.keyPattern?.['_id']!==undefined&&attempt===0)continue;
+        return 'taken' as const;
+      }
+    }
   }
   async findLink(q:{accountId:string}|{practicalAccountId:string}){
     const d=await this.links.findOne('accountId' in q?{_id:q.accountId}:{practicalAccountId:q.practicalAccountId});
