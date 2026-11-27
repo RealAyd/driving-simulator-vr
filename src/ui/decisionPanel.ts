@@ -11,7 +11,8 @@ const LEVEL:Record<string,string>={minor:'Minor',serious:'Serious',dangerous:'Da
 export interface DecisionPanelHooks{
   /** An observation button was pressed: show what it sees (the camera turns there for a moment). */
   look(action:string):void;
-  submit(sequence:readonly string[]):StageVerdict;
+  /** Marks the order chosen; null: no decision test is running any more (the panel is left over), nothing marked. */
+  submit(sequence:readonly string[]):StageVerdict|null;
   continue():void;
 }
 
@@ -105,6 +106,7 @@ export class DecisionPanel{
 
   private submit():void{
     const verdict=this.hooks.submit(this.sequence);
+    if(!verdict){this.hide();return}
     byId('decision-confirm').hidden=true;
     byId('decision-after').hidden=false;
     const note=byId('decision-note'),feedback=byId('decision-feedback');

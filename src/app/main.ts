@@ -1002,6 +1002,7 @@ export async function boot():Promise<void>{
       clearHeldButtons();
       head.hold(null);
       clock.pause();
+      clearDecisionPanel();
       const result=runtime!.finish(outcome);
       const decided=decision?.result?decisionReport(decision.result):null;
       if(decided){
@@ -2109,6 +2110,8 @@ export async function boot():Promise<void>{
   const start=(scenarioId:string,options:{familiarisation?:boolean}={})=>{
     if(session.state!=='ready')return;
     runtime?.dispose();
+    // (Nothing left over from a decision test left mid-decision: its panel and its picture.)
+    clearDecisionPanel();
     const scenario=scenarios.get(scenarioId)!;
     useLocation(scenario.locationId);
     // A decision test on this place: the way it drives is planned first (the steering assistance and the off-route
@@ -2390,6 +2393,8 @@ export async function boot():Promise<void>{
     aimCamera(frame.yaw,frame.pitch,frame.shift);
   };
   let lookTimer=0;
+  /** The decision panel put away, with its picture and the look it was holding. */
+  const clearDecisionPanel=()=>{clearTimeout(lookTimer);decisionFrame=null;decisionPanel.hide()};
   /** An observation pressed while paused: the camera turns to what it sees (or the mirror view), then back. */
   const decisionLook=(action:string)=>{
     const look=ACTION_LOOK[action];
@@ -2407,7 +2412,7 @@ export async function boot():Promise<void>{
   };
   const decisionPanel=new DecisionPanel({
     look:decisionLook,
-    submit:sequence=>decision!.runner.submit(sequence),
+    submit:sequence=>decision?decision.runner.submit(sequence):null,
     continue:()=>decision?.runner.continue()
   });
   const decisionScene:RunnerScene={
