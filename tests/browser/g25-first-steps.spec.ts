@@ -13,7 +13,7 @@ test('G25: home: three cards, the menu, guided practice with lessons and drills,
   await page.goto('./');
   await expect(page.locator('#screen-start')).toBeVisible({timeout:60_000});
   await expect(page.locator('.home-tagline')).toHaveText('Learn Faster Pass First Time');
-  await expect(page.locator('.mode-card b')).toHaveText(['Free Drive','Guided Practice','Mock Tests']);
+  await expect(page.locator('.mode-card b')).toHaveText(['Mock Tests','Guided Practice','Free Drive']);
   // (A preview copy is not paid: no free-try badge and no passes.)
   await expect(page.locator('#free-badge')).toBeHidden();
   await expect(page.locator('#view-passes')).toBeHidden();
